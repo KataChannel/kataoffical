@@ -2,7 +2,6 @@
 import inquirer from 'inquirer';
 import { generateNestFiles } from './nestjs.js';
 import { generateAngularFiles } from './angular.js';
-import inquirer from 'inquirer';
 
 async function promptUser(type, name, outputDir) {
   const questions = [];

@@ -1,25 +1,35 @@
 import inquirer from 'inquirer';
+
 import fs from 'fs-extra';
 import path from 'path';
 import chalk from 'chalk';
-async function promptUser(type, name, outputDir) {
-  const questions = [];
-  if (!type) {
-    questions.push({
-      type: 'input',
-      name: 'type',
-      message: 'Chọn Loại Ứng Dụng',
-      default: 'nestjs',
-      validate: (input) => (input ? true : 'Type cannot be empty.'),
-    });
+
+// Parse command-line arguments
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const parsedArgs = {};
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i].startsWith('--')) {
+      const key = args[i].replace('--', '');
+      const value = args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : true;
+      parsedArgs[key] = value;
+    }
   }
+
+  return parsedArgs;
+}
+
+// Prompt user for missing values
+async function promptUser(name, outputDir) {
+  const questions = [];
 
   if (!name) {
     questions.push({
       type: 'input',
       name: 'name',
       message: 'Tên Ứng Dụng:',
-      validate: (input) => (input ? true : 'Name cannot be empty.'),
+      validate: (input) => (input.trim() ? true : 'Tên ứng dụng không được để trống.'),
     });
   }
 
@@ -35,48 +45,29 @@ async function promptUser(type, name, outputDir) {
   const answers = await inquirer.prompt(questions);
 
   return {
-    type: type || answers.type,
     name: name || answers.name,
     outputDir: outputDir || answers.outputDir,
   };
 }
 
-// Parse command-line arguments
-function parseArgs() {
-  const args = process.argv.slice(2);
-  const parsedArgs = {};
-
-  for (let i = 0; i < args.length; i += 2) {
-    const key = args[i].replace('--', '');
-    const value = args[i + 1];
-    parsedArgs[key] = value;
-  }
-
-  return parsedArgs;
-}
-
 // Main function
 (async function main() {
-  const args = parseArgs();
+  try {
+    const args = parseArgs();
+    const answers = await promptUser(args.name, args.outputDir);
 
-  const answers = await promptUser(args.type, args.name, args.outputDir);
-  console.log(answers);
+    console.log('🚀 Generating Angular Files with:', answers);
 
-  switch (answers.type) {
-    case 'nestjs':
-      console.log('nestjs');
-      await generateNestFiles(answers);
-      break;
-    case 'angular':
-      console.log('angular');
+    if (typeof generateAngularFiles === 'function') {
       await generateAngularFiles(answers);
-      break;
-    default:
-      console.log('Invalid type');
-      break;
+    } else {
+      console.warn('⚠️ Warning: generateAngularFiles function is not defined.');
+    }
+  } catch (error) {
+    console.error('❌ Error:', error.message);
+    process.exit(1);
   }
 })();
-
 
 async function generateFile(filePath, content) {
     try {
@@ -101,14 +92,14 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { Forms, List${capitalize(dasherizedName)} } from './list${dasherizedName}';
+import { Forms, List${pascalCaseName} } from './list${dasherizedName}';
 import { MatMenuModule } from '@angular/material/menu';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { ${capitalize(dasherizedName)}sService } from './list${dasherizedName}.service';
+import { ${pascalCaseName}sService } from './list${dasherizedName}.service';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { convertToSlug } from '../../../shared/shared.utils';
@@ -132,7 +123,7 @@ import { convertToSlug } from '../../../shared/shared.utils';
     CommonModule
   ],
 })
-export class List${capitalize(dasherizedName)}Component implements AfterViewInit {
+export class List${pascalCaseName}Component implements AfterViewInit {
   Detail: any = {};
   dataSource!: MatTableDataSource<any>;
   displayedColumns: string[] = [];
@@ -140,13 +131,13 @@ export class List${capitalize(dasherizedName)}Component implements AfterViewInit
   Forms: any[] = Forms;
   FilterColumns: any[] = JSON.parse(localStorage.getItem('${dasherizedName}_FilterColumns') || '[]');
   Columns: any[] = [];
-  List${dasherizedName}: any[] = List${capitalize(dasherizedName)};
+  List${dasherizedName}: any[] = List${pascalCaseName};
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
 
-  private _${dasherizedName}sService: ${capitalize(dasherizedName)}sService = inject(${capitalize(dasherizedName)}sService);
+  private _${dasherizedName}sService: ${pascalCaseName}sService = inject(${pascalCaseName}sService);
 
   constructor(
     private _breakpointObserver: BreakpointObserver,
@@ -154,7 +145,7 @@ export class List${capitalize(dasherizedName)}Component implements AfterViewInit
   ) {}
 
   async ngOnInit(): Promise<void> {
-    await this._${dasherizedName}sService.getAll${capitalize(dasherizedName)}();
+    await this._${dasherizedName}sService.getAll${pascalCaseName}();
     this.List${dasherizedName} = this._${dasherizedName}sService.List${dasherizedName}();
     this.List${dasherizedName}.forEach((v:any) => {
       v.giagoc = v.Giagoc[0].gia;
@@ -167,9 +158,9 @@ export class List${capitalize(dasherizedName)}Component implements AfterViewInit
   }
 
   private initializeColumns(): void {
-    this.Columns = Object.keys(List${capitalize(dasherizedName)}[0]).map(key => ({
+    this.Columns = Object.keys(List${pascalCaseName}[0]).map(key => ({
       key,
-      value: List${capitalize(dasherizedName)}[0][key],
+      value: List${pascalCaseName}[0][key],
       isShow: true
     }));
     if (this.FilterColumns.length === 0) {
@@ -274,7 +265,7 @@ import { Component, inject } from '@angular/core';
   import { List${dasherizedName}Component } from '../list${dasherizedName}.component';
   import { MatButtonModule } from '@angular/material/button';
   import { ActivatedRoute } from '@angular/router';
-  import { Forms, List${capitalize(dasherizedName)} } from '../list${dasherizedName}';
+  import { Forms, List${pascalCaseName} } from '../list${dasherizedName}';
   @Component({
     selector: 'app-detail${dasherizedName}',
     imports: [
@@ -287,22 +278,22 @@ import { Component, inject } from '@angular/core';
     templateUrl: './detail${dasherizedName}.component.html',
     styleUrl: './detail${dasherizedName}.component.scss'
   })
-  export class Detail${capitalize(dasherizedName)}Component {
+  export class Detail${pascalCaseName}Component {
     _List${dasherizedName}Component:List${dasherizedName}Component = inject(List${dasherizedName}Component)
     _router:ActivatedRoute = inject(ActivatedRoute)
     constructor(){}
     Detail:any={Data:{},Forms:[]}
     isEdit:boolean=false
     isDelete:boolean=false
-    id${capitalize(dasherizedName)}:any
+    id${pascalCaseName}:any
     ngOnInit(): void {
       this._router.paramMap.subscribe(async (data: any) => {
-        this.id${capitalize(dasherizedName)} = data.get('id')
+        this.id${pascalCaseName} = data.get('id')
         this.Detail.Forms = Forms;
-        this.isEdit = this.id${capitalize(dasherizedName)} === '0';   
-        if (this.id${capitalize(dasherizedName)}) {
+        this.isEdit = this.id${pascalCaseName} === '0';   
+        if (this.id${pascalCaseName}) {
           this._List${dasherizedName}Component.drawer.open();     
-          this.Detail.Data = List${capitalize(dasherizedName)}.find((v: any) => v.id === this.id${capitalize(dasherizedName)}) || {};
+          this.Detail.Data = List${pascalCaseName}.find((v: any) => v.id === this.id${pascalCaseName}) || {};
         } else {
           this.Detail.Data = {};
         }
@@ -310,13 +301,13 @@ import { Component, inject } from '@angular/core';
     }
     SaveData()
     {
-      if(this.id${capitalize(dasherizedName)}=='0')
+      if(this.id${pascalCaseName}=='0')
       {
-        List${capitalize(dasherizedName)}.push(this.Detail.Data)
+        List${pascalCaseName}.push(this.Detail.Data)
       }
       else
       {
-        List${capitalize(dasherizedName)}[this.id${capitalize(dasherizedName)}]=this.Detail.Data
+        List${pascalCaseName}[this.id${pascalCaseName}]=this.Detail.Data
       }
       this.isEdit=false  
     }
@@ -471,7 +462,7 @@ import { StorageService } from '../../../shared/utils/storage.service';
 @Injectable({
   providedIn: 'root'
 })
-export class ${capitalize(dasherizedName)}sService {
+export class ${pascalCaseName}sService {
   private _authenticated: boolean = false;
   private APIURL: string = environment.APIURL;
   private isBrowser: boolean;
@@ -482,9 +473,9 @@ export class ${capitalize(dasherizedName)}sService {
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
-  List${capitalize(dasherizedName)} = signal<any[]>([]);
-  ${capitalize(dasherizedName)} = signal<any>({});
-  async Create${capitalize(dasherizedName)}(dulieu: any) {
+  List${pascalCaseName} = signal<any[]>([]);
+  ${pascalCaseName} = signal<any>({});
+  async Create${pascalCaseName}(dulieu: any) {
     try {
       const options = {
           method:'POST',
@@ -516,14 +507,14 @@ export class ${capitalize(dasherizedName)}sService {
             this.router.navigate(['/errorserver'], { queryParams: {data:result}});
           }
         }
-        this.getAll${capitalize(dasherizedName)}()
+        this.getAll${pascalCaseName}()
         return data;
     } catch (error) {
         return console.error(error);
     }
   }
 
-  async getAll${capitalize(dasherizedName)}() {
+  async getAll${pascalCaseName}() {
     try {
       const options = {
         method: 'GET',
@@ -551,13 +542,13 @@ export class ${capitalize(dasherizedName)}sService {
         }
       }
       const data = await response.json();     
-      this.List${capitalize(dasherizedName)}.set(data)
+      this.List${pascalCaseName}.set(data)
       return data;
     } catch (error) {
       return console.error(error);
     }
   }
-  async Search${capitalize(dasherizedName)}(SearchParams:any) {
+  async Search${pascalCaseName}(SearchParams:any) {
     try {
       const options = {
         method:'POST',
@@ -586,13 +577,13 @@ export class ${capitalize(dasherizedName)}sService {
             }
           }
           const data = await response.json();
-          this.${capitalize(dasherizedName)}.set(data.items)
+          this.${pascalCaseName}.set(data.items)
           return data;
       } catch (error) {
           return console.error(error);
       }
   }
-  async get${capitalize(dasherizedName)}Byid(id: any) {
+  async get${pascalCaseName}Byid(id: any) {
     try {
       const options = {
         method: 'GET',
@@ -620,12 +611,12 @@ export class ${capitalize(dasherizedName)}sService {
         }
       }
       const data = await response.json();
-      this.${capitalize(dasherizedName)}.set(data)
+      this.${pascalCaseName}.set(data)
     } catch (error) {
       return console.error(error);
     }
   }
-  async updateOne${capitalize(dasherizedName)}(dulieu: any) {
+  async updateOne${pascalCaseName}(dulieu: any) {
     try {
       const options = {
           method:'PATCH',
@@ -657,13 +648,13 @@ export class ${capitalize(dasherizedName)}sService {
             this.router.navigate(['/errorserver'], { queryParams: {data:result}});
           }
         }
-        this.getAll${capitalize(dasherizedName)}()
+        this.getAll${pascalCaseName}()
         return data;
     } catch (error) {
         return console.error(error);
     }
   }
-  async Delete${capitalize(dasherizedName)}(item:any) {    
+  async Delete${pascalCaseName}(item:any) {    
     try {
         const options = {
             method:'DELETE',
@@ -687,7 +678,7 @@ export class ${capitalize(dasherizedName)}sService {
               this.router.navigate(['/errorserver'], { queryParams: {data:result}});
             }
           }
-          this.getAll${capitalize(dasherizedName)}()
+          this.getAll${pascalCaseName}()
           return await response.json();
       } catch (error) {
           return console.error(error);
@@ -695,7 +686,7 @@ export class ${capitalize(dasherizedName)}sService {
   }
 }`;
 const componentMockdataFile = path.join(outputDir, `list${dasherizedName}/list${dasherizedName}.ts`);
-const componentMockdataContent = `export const List${capitalize(dasherizedName)}:any[]=[
+const componentMockdataContent = `export const List${pascalCaseName}:any[]=[
     {
         "id": "8efd5ba3-d073-4baf-ab89-31180ee7471d",
         "ref_id": "0",
@@ -1268,4 +1259,7 @@ export const Forms = [
   await generateFile(componentServiceFile, componentServiceContent);
   await generateFile(componentMockdataFile, componentMockdataContent);
 }
+
+
+// Main function
 
