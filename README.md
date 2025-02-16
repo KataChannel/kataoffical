@@ -10,3 +10,5 @@ Cập nhật package (nếu cần) → Tăng version + npm publish
 git add .
 git commit -m "update"
 git push
+
+npx katacreate --type nestjs --name myApp --outputDir ./myDir

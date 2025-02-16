@@ -1,12 +1,10 @@
 {
-  "name": "@katachannelofficial/kata-snippets",
+  "name": "@katachanneloffical/kata-snippets",
   "type": "module",
-  "version": "1.0.4",
+  "version": "1.0.7",
   "main": "index.js",
   "bin": {
-    "katacreate": "./index.js",
-    "kataangular": "./angular.js",
-    "katanestjs": "./nestjs.js"
+    "katacreate": "./index.js"
   },
   "keywords": ["kata", "snippets", "cli", "generator", "angular", "nestjs"],
   "author": "Kata Channel",
