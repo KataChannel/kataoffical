@@ -1,19 +1,35 @@
 {
-  "name": "@katachanneloffical/kata-snippets",
+  "name": "@katachannelofficial/kata-snippets",
   "type": "module",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "index.js",
   "bin": {
-    "katacreate": "index.js",
-    "kataangular": "angular.js"
+    "katacreate": "./index.js",
+    "kataangular": "./angular.js",
+    "katanestjs": "./nestjs.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["kata", "snippets", "cli", "generator", "angular", "nestjs"],
+  "author": "Kata Channel",
   "license": "MIT",
   "description": "A simple component generator for projects",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/katachannel/kata-snippets.git"
+  },
   "dependencies": {
     "chalk": "^5.4.1",
     "fs-extra": "^11.2.0",
     "inquirer": "^12.3.2"
+  },
+  "files": [
+    "index.js",
+    "angular.js",
+    "nestjs.js",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "import": "./index.js"
+    }
   }
 }
