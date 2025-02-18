@@ -17,7 +17,7 @@ COPY .env .env
 # (Tùy chọn) Nếu cần chạy migrate Prisma:
 # RUN bunx prisma migrate deploy
 # RUN bun prisma migrate dev --name init
-# RUN bun run build
+RUN bun run build
 RUN bun prisma generate
 # Mở cổng mà ứng dụng NestJS sử dụng (ví dụ: 3000)
 EXPOSE 3000
