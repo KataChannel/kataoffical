@@ -1,24 +1,37 @@
-# Sử dụng image BunJS chính thức
+# Use the official BunJS image
 FROM oven/bun:latest
 
-# Thiết lập thư mục làm việc
+# Set the working directory
 WORKDIR /app
 
-# Copy file package.json và bun.lockb trước để cache dependencies
+# Copy package.json and bun.lock to cache dependencies
 COPY package.json bun.lock ./
 
-# Cài đặt dependencies bằng Bun
-# Copy toàn bộ source code vào container
-COPY . .
-COPY .env .env
+# Install dependencies using Bun
 RUN bun install
-# (Tùy chọn) Nếu cần chạy migrate Prisma:
+
+# Copy the entire source code into the container
+COPY . .
+
+# Copy the environment file
+COPY .env .env
+
+# (Optional) If you need to run Prisma migrations:
 # RUN bunx prisma migrate deploy
 # RUN bun prisma migrate dev --name init
-# RUN bun run build
-RUN bun prisma generate
-# Mở cổng mà ứng dụng NestJS sử dụng (ví dụ: 3000)
-EXPOSE 3000
 
-# Chạy ứng dụng
-CMD ["bun", "dist/main.js"]
+# Install Prisma globally
+RUN bun install -g prisma
+
+# Generate Prisma client
+RUN bun prisma generate
+
+# Open Prisma Studio
+RUN bun prisma studio
+
+# Expose the ports used by the NestJS application (e.g., 3000) and Prisma Studio (5555)
+EXPOSE 3000
+EXPOSE 5555
+
+# Run the application
+CMD ["bun", "run", "dist/main.js"]

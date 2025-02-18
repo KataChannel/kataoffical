@@ -14,7 +14,24 @@ docker exec -it 718c1476fbfa5c668913f7fa553aed3bb5fad70995f90e6f70a3e806bf61e502
 docker exec -it fullstack-postgres-1 psql -U postgres -d mydb
 
 docker exec -it kataoffical-backend-1 /bin/bash
-docker exec kataoffical-backend-1 ls -l /bin/bash
+docker exec kataoffical-frontend-1 ls -l /bin/bash
+docker --version
+docker-compose --version
+docker-compose logs -f node:18
+docker logs node:18
+docker stop priceless_pike
+docker rm priceless_pike
+
+
+docker exec -it kataoffical-backend-1 sh
+bun install -g prisma
+
+prisma studio
+
+docker exec -it kataoffical-backend-1 npx prisma studio
+
+
+
 
 bun install @prisma/client
 bun install -D prisma
@@ -34,9 +51,7 @@ cat ~/.ssh/id_rsa.pub
 ssh chikiet@116.118.49.243 
 ssh root@116.118.49.243 
 
-docker --version
-docker-compose --version
-
+# Ubuntu
 sudo ufw status
 sudo firewall-cmd --state
 
@@ -47,14 +62,13 @@ sudo ufw allow 22/tcp  #
 sudo ufw allow 4200/tcp
 sudo ufw allow 5050/tcp
 sudo ufw allow 3000/tcp
+sudo ufw allow 5555/tcp
 sudo ufw reload
-
-
-docker-compose logs -f
-
 
 sudo crontab -e
 sudo crontab -l
+
+
 @reboot cd kataoffical && docker-compose up -d
 
 Cách lưu lại crontab sau khi chỉnh sửa
