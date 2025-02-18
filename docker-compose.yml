@@ -20,7 +20,7 @@ services:
     depends_on:
       - postgres  
   backend:
-    build: ./backend
+    build: ./api
     restart: always
     depends_on:
       - postgres
