@@ -13,6 +13,18 @@ docker exec -it 718c1476fbfa5c668913f7fa553aed3bb5fad70995f90e6f70a3e806bf61e502
 
 docker exec -it fullstack-postgres-1 psql -U postgres -d mydb
 
+docker exec -it kataoffical-backend-1 /bin/bash
+docker exec kataoffical-backend-1 ls -l /bin/bash
+
+bun install @prisma/client
+bun install -D prisma
+bun prisma init
+bun prisma migrate deploy
+bun prisma migrate dev --name init
+RUN bun run build
+RUN bun prisma generate
+
+
 
 # Cài Đặt SSH Docker Cho ubuntu 22.04
 
