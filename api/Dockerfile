@@ -8,16 +8,14 @@ WORKDIR /app
 COPY package.json bun.lock ./
 
 # Cài đặt dependencies bằng Bun
-RUN bun install
-
 # Copy toàn bộ source code vào container
 COPY . .
 COPY .env .env
-
+RUN bun install
 # (Tùy chọn) Nếu cần chạy migrate Prisma:
 # RUN bunx prisma migrate deploy
 # RUN bun prisma migrate dev --name init
-RUN bun run build
+# RUN bun run build
 RUN bun prisma generate
 # Mở cổng mà ứng dụng NestJS sử dụng (ví dụ: 3000)
 EXPOSE 3000
