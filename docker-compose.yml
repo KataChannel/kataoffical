@@ -29,6 +29,18 @@ services:
       JWT_SECRET : "supersecret"
     ports:
       - "3000:3000"
+  prisma-studio:
+    image: node:18
+    container_name: prisma-studio
+    working_dir: /app
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./prisma:/app/prisma
+    depends_on:
+      - backend
+    command: >
+      sh -c "npm install -g prisma && prisma studio"
 
   frontend:
     build: ./frontend
