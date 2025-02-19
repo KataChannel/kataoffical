@@ -22,6 +22,7 @@ docker logs node:18
 docker stop priceless_pike
 docker rm priceless_pike
 
+docker compose -f 'docker-compose.yml' up -d --build 'backend'
 
 docker exec -it kataoffical-backend-1 sh
 bun install -g prisma
