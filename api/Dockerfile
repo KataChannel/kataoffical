@@ -13,12 +13,12 @@ RUN bun install --no-cache
 # Copy the entire source code into the container
 COPY . .
 
-# Build the application
-RUN bun run build
+# # Build the application
+# RUN bun run build
 
-# Install Prisma globally and run migrations
-RUN bun install -g prisma
-RUN bun prisma migrate dev --name init
+# # Install Prisma globally and run migrations
+# RUN bun install -g prisma
+# RUN bun prisma migrate dev --name init
 RUN bun prisma generate
 
 # Use a smaller runtime image
