@@ -16,16 +16,11 @@ COPY . .
 # Copy the environment file
 COPY .env .env
 
-# (Optional) If you need to run Prisma migrations:
-# RUN bunx prisma migrate deploy
-# RUN bun prisma migrate dev --name init
-# Install Prisma globally
 RUN bun install -g prisma
-
-# Generate Prisma client
+RUN bun prisma migrate dev --name init
 RUN bun prisma generate
 
 # Expose the ports used by the NestJS application (e.g., 3000) and Prisma Studio (5555)
 EXPOSE 3000
 # Run the application
-CMD ["bun", "run", "dist/src/main.js"]
+CMD ["bun","start"]

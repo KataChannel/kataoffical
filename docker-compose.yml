@@ -25,7 +25,7 @@ services:
     depends_on:
       - postgres
     environment:
-      DATABASE_URL: "postgresql://postgres:password@bda57c4d8ac9_kataoffical-postgres-1:5432/mydb"  
+      DATABASE_URL : "postgresql://postgres:password@116.118.49.243:5432/mydb"
       JWT_SECRET : "supersecret"
     ports:
       - "3000:3000"
