@@ -41,6 +41,8 @@ services:
       - backend
     command: >
       sh -c "npm install -g prisma && prisma studio"
+    ports:
+      - "5555:5555"
 
   frontend:
     build: ./frontend

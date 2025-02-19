@@ -17,8 +17,9 @@ docker exec -it kataoffical-backend-1 /bin/bash
 docker exec kataoffical-frontend-1 ls -l /bin/bash
 docker --version
 docker-compose --version
-docker-compose logs -f node:18
+docker-compose logs -f kataoffical-backend-1
 docker logs node:18
+docker logs kataoffical-backend
 docker stop priceless_pike
 docker rm priceless_pike
 
@@ -30,6 +31,7 @@ bun install -g prisma
 prisma studio
 
 docker exec -it kataoffical-backend-1 npx prisma studio
+docker exec -it 619a78c186ab npx prisma studio --host 0.0.0.0 --port 5555
 
 
 
