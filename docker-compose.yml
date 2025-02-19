@@ -24,8 +24,6 @@ services:
     restart: always
     depends_on:
       - postgres
-    volumes:
-      - ./api/prisma:/app/prisma
     environment:
       DATABASE_URL: "postgresql://postgres:password@116.118.49.243:5432/mydb"
       JWT_SECRET: "supersecret"
@@ -35,14 +33,14 @@ services:
     image: node:18
     container_name: prisma-studio
     working_dir: /app
+    ports:
+      - "5555:5555"
     volumes:
       - ./api/prisma:/app/prisma
     depends_on:
       - backend
     command: >
       sh -c "npm install -g prisma && prisma studio"
-    ports:
-      - "5555:5555"
 
   frontend:
     build: ./frontend
