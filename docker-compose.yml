@@ -21,9 +21,6 @@ services:
       - postgres  
   backend:
     build: ./api
-    volumes:
-      - prisma-data:/app/prisma 
-    command: sh -c "bun prisma generate && bun start"  
     restart: always
     depends_on:
       - postgres
@@ -31,12 +28,12 @@ services:
       - "3000:3000"
   prisma-studio:
     image: node:18
-    volumes:
-      - prisma-data:/app/prisma 
     container_name: prisma-studio
     working_dir: /app
     ports:
       - "5555:5555"
+    volumes:
+      - ./api/prisma:/app/prisma
     depends_on:
       - backend
     command: >
@@ -53,5 +50,3 @@ services:
       - NODE_ENV=production      
 volumes:
   pg_data: 
-  prisma-data:
-
