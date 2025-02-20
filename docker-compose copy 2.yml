@@ -1,4 +1,3 @@
-version: '3'
 services:
   postgres:
     image: postgres:15
@@ -9,9 +8,6 @@ services:
       POSTGRES_DB: mydb
     ports:
       - "5432:5432"
-    volumes:
-      - pg_data:/var/lib/postgresql/data  # Lưu dữ liệu PostgreSQL
-
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
@@ -22,8 +18,7 @@ services:
     ports:
       - "5050:80"
     depends_on:
-      - postgres
-
+      - postgres  
   backend:
     build: ./api
     restart: always
@@ -31,13 +26,6 @@ services:
       - postgres
     ports:
       - "3000:3000"
-    volumes:
-      - ./api:/app  # Mount toàn bộ thư mục backend để chia sẻ schema
-    environment:
-      DATABASE_URL: "postgresql://postgres:password@postgres:5432/mydb"  # Kết nối đến PostgreSQL
-    command: >
-      sh -c "npx prisma generate && npm start"  # Generate client trước khi khởi động
-
   prisma-studio:
     image: node:18
     container_name: prisma-studio
@@ -45,11 +33,9 @@ services:
     ports:
       - "5555:5555"
     volumes:
-      - ./api:/app  # Mount cùng thư mục backend để chia sẻ schema
+      - ./api/prisma:/app/prisma
     depends_on:
       - backend
-    environment:
-      DATABASE_URL: "postgresql://postgres:password@postgres:5432/mydb"  # Kết nối đến PostgreSQL
     command: >
       sh -c "npm install -g prisma && prisma studio"
 
@@ -61,7 +47,6 @@ services:
     ports:
       - "4200:4200"
     environment:
-      - NODE_ENV=production
-
+      - NODE_ENV=production      
 volumes:
-  pg_data:
+  pg_data: 
