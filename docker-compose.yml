@@ -36,7 +36,7 @@ services:
     environment:
       DATABASE_URL: "postgresql://postgres:password@postgres:5432/mydb"  # Kết nối đến PostgreSQL
     command: >
-      sh -c "bun prisma generate && bun start"  # Generate client trước khi khởi động
+      sh -c "npm install -g prisma && bun prisma generate && bun start"  # Generate client trước khi khởi động
 
   prisma-studio:
     image: node:18
