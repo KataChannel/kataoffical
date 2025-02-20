@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pg_data:/var/lib/postgresql/data  # Lưu dữ liệu PostgreSQL
+      - pg_data:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4
@@ -32,11 +32,11 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./api:/app  # Mount toàn bộ thư mục backend để chia sẻ schema
+      - ./api:/app
     environment:
-      DATABASE_URL: "postgresql://postgres:password@postgres:5432/mydb"  # Kết nối đến PostgreSQL
+      DATABASE_URL: "postgresql://postgres:password@postgres:5432/mydb"
     command: >
-      sh -c "bun install -g prisma && bun prisma generate && bun start"  # Generate client trước khi khởi động
+      sh -c "bun install && bunx prisma generate && bun start"  # Sử dụng bun thay vì npm
 
   prisma-studio:
     image: node:18
@@ -45,11 +45,11 @@ services:
     ports:
       - "5555:5555"
     volumes:
-      - ./api:/app  # Mount cùng thư mục backend để chia sẻ schema
+      - ./api:/app
     depends_on:
       - backend
     environment:
-      DATABASE_URL: "postgresql://postgres:password@postgres:5432/mydb"  # Kết nối đến PostgreSQL
+      DATABASE_URL: "postgresql://postgres:password@postgres:5432/mydb"
     command: >
       sh -c "npm install -g prisma && prisma studio"
 
