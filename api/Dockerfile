@@ -17,8 +17,8 @@ COPY . .
 # RUN bun run build
 
 # # Install Prisma globally and run migrations
-# RUN bun install -g prisma
-# RUN bun prisma migrate dev --name init
+RUN bun install -g prisma
+RUN bun prisma migrate dev --name init
 RUN bun prisma generate
 
 # Use a smaller runtime image
