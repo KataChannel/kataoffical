@@ -23,7 +23,7 @@ services:
     build: ./api
     volumes:
       - prisma-data:/app/prisma 
-    command: sh -c "npx prisma generate && npm start"  
+    command: sh -c "bun prisma generate && bun start"  
     restart: always
     depends_on:
       - postgres
