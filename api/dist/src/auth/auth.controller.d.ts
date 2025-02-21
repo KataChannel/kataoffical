@@ -5,11 +5,17 @@ export declare class AuthController {
     register(body: {
         email: string;
         password: string;
-    }): Promise<any>;
+    }): Promise<{
+        id: string;
+        email: string;
+        password: string;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
     login(body: {
         email: string;
         password: string;
     }): Promise<{
-        token: any;
+        token: string;
     }>;
 }
