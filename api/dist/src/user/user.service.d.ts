@@ -7,6 +7,8 @@ export declare class UserService {
         id: string;
         email: string;
         password: string;
+        provider: string | null;
+        providerId: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -14,6 +16,8 @@ export declare class UserService {
         id: string;
         email: string;
         password: string;
+        provider: string | null;
+        providerId: string | null;
         createdAt: Date;
         updatedAt: Date;
     }[]>;

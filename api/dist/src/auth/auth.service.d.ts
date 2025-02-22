@@ -8,6 +8,8 @@ export declare class AuthService {
         id: string;
         email: string;
         password: string;
+        provider: string | null;
+        providerId: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -18,10 +20,24 @@ export declare class AuthService {
         id: string;
         email: string;
         password: string;
+        provider: string | null;
+        providerId: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
     generateRandomPassword(userId: string): Promise<{
         newPassword: string;
+    }>;
+    validateOAuthLogin(provider: string, providerId: string, email?: string): Promise<{
+        token: string;
+        user: {
+            id: string;
+            email: string;
+            password: string;
+            provider: string | null;
+            providerId: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+        };
     }>;
 }

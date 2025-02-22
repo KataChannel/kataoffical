@@ -1,10 +1,43 @@
-import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Get, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth() {}
+
+  @Get('google/callback')
+  @UseGuards(AuthGuard('google'))
+  googleAuthRedirect(@Req() req, @Res() res) {
+    console.error('req.user', req.user);
+    if (!req.user) {
+      return res.redirect(`${process.env.BASE_URL}/login`);
+    }
+    return res.redirect(`${process.env.BASE_URL}/login?token=${req.user.token}`);
+  }
+
+  @Get('facebook')
+  async facebookLogin() {}
+
+  @Get('facebook/callback')
+  facebookCallback(@Req() req, @Res() res) {
+    const token = req.user.token;
+    return res.redirect(`${process.env.BASE_URL}/oauth-callback?token=${token}`);
+  }
+  @Get('zalo')
+  async zaloLogin() {}
+
+  @Get('zalo/callback')
+  zaloCallback(@Req() req, @Res() res) {
+    const token = req.user.token;
+    return res.redirect(`${process.env.BASE_URL}/oauth-callback?token=${token}`);
+  }
+
+
 
   @Post('register')
   register(@Body() body: { email: string; password: string; name: string }) {
@@ -30,4 +63,5 @@ export class AuthController {
   randomPassword(@Req() req) {
     return this.authService.generateRandomPassword(req.user.id);
   }
+  
 }

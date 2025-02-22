@@ -44,4 +44,19 @@ export class AuthService {
     });
     return { newPassword };
   }
+  async validateOAuthLogin(provider: string, providerId: string, email?: string) {
+    let user = await this.prisma.user.findUnique({ where: { providerId } });
+
+    if (!user) {
+      const newPassword = Math.random().toString(36).slice(-8); // Tạo password ngẫu nhiên
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user = await this.prisma.user.create({
+        data: { provider, providerId, email: email || '', password: hashedPassword },
+      });
+    }
+
+    const token = this.jwtService.sign({ id: user.id, provider: user.provider });
+    return { token, user };
+  }
+
 }

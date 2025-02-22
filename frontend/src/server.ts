@@ -37,6 +37,8 @@ app.use(
   }),
 );
 
+
+
 /**
  * Handle all other requests by rendering the Angular application.
  */
@@ -61,6 +63,6 @@ if (isMainModule(import.meta.url)) {
 }
 
 /**
- * Request handler used by the Angular CLI (for dev-server and during build) or Firebase Cloud Functions.
+ * The request handler used by the Angular CLI (dev-server and during build).
  */
 export const reqHandler = createNodeRequestHandler(app);
