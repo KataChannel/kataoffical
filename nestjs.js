@@ -14,56 +14,56 @@ async function generateFile(filePath, content) {
   
   // Generate all files
   export async function generateNestFiles({ name, outputDir }) {
-    const pascalCaseName = name.charAt(0).toUpperCase() + name.slice(1);
-    const dasherizedName = name.toLowerCase().replace(/\s+/g, '-');
+    const Viethoa = name.charAt(0).toUpperCase() + name.slice(1);
+    const TenThuong = name.toLowerCase().replace(/\s+/g, '-');
   
     // Define file paths
-    const componentFile = path.join(outputDir, `${dasherizedName}.controller.ts`);
-    const serviceFile = path.join(outputDir, `${dasherizedName}.service.ts`);
-    const moduleFile = path.join(outputDir, `${dasherizedName}.module.ts`);
-    const entityFile = path.join(outputDir, `entities/${dasherizedName}.entity.ts`);
+    const componentFile = path.join(outputDir, `${TenThuong}.controller.ts`);
+    const serviceFile = path.join(outputDir, `${TenThuong}.service.ts`);
+    const moduleFile = path.join(outputDir, `${TenThuong}.module.ts`);
+    const entityFile = path.join(outputDir, `entities/${TenThuong}.entity.ts`);
   
   
     // Define file content
     const componentContent = `
   import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-  import {${pascalCaseName}Service } from './${pascalCaseName.toLowerCase()}.service';
-  @Controller('${pascalCaseName}')
-  export class ${pascalCaseName}Controller {
-    constructor(private readonly ${pascalCaseName}Service:${pascalCaseName}Service) {}
+  import {${Viethoa}Service } from './${Viethoa.toLowerCase()}.service';
+  @Controller('${Viethoa}')
+  export class ${Viethoa}Controller {
+    constructor(private readonly ${Viethoa}Service:${Viethoa}Service) {}
   
     @Post()
     create(@Body() data: any) {
-      return this.${pascalCaseName}Service.create(data);
+      return this.${Viethoa}Service.create(data);
     }
     @Get()
     async findAll() {
-      return await this.${pascalCaseName}Service.findAll();
+      return await this.${Viethoa}Service.findAll();
     }
     @Get('findid/:id')
     async findOne(@Param('id') id: string) {
-      return await this.${pascalCaseName}Service.findid(id);
+      return await this.${Viethoa}Service.findid(id);
     }
     @Get('findslug/:slug')
     async findslug(@Param('slug') slug: string) {
-      return await this.${pascalCaseName}Service.findslug(slug);
+      return await this.${Viethoa}Service.findslug(slug);
     }
     @Get('pagination')
     async findPagination(@Query('page') page: number,@Query('perPage') perPage: number){
-         return await this.${pascalCaseName}Service.findPagination(page,perPage);
+         return await this.${Viethoa}Service.findPagination(page,perPage);
       }
     @Post('search')
       async findQuery(@Body() SearchParams: any){
-        return await this.${pascalCaseName}Service.findQuery(SearchParams);
+        return await this.${Viethoa}Service.findQuery(SearchParams);
     }
     @Patch(':id')
     update(@Param('id') id: string, @Body() data: any) {
-      return this.${pascalCaseName}Service.update(id, data);
+      return this.${Viethoa}Service.update(id, data);
     }
   
     @Delete(':id')
     remove(@Param('id') id: string) {
-      return this.${pascalCaseName}Service.remove(id);
+      return this.${Viethoa}Service.remove(id);
     }
   }
   `;
@@ -73,18 +73,18 @@ async function generateFile(filePath, content) {
   import { Injectable } from '@nestjs/common';
   import { InjectRepository } from '@nestjs/typeorm';
   import { Like, Repository } from 'typeorm';
-  import { ${pascalCaseName}Entity } from './entities/${pascalCaseName.toLowerCase()}.entity';
+  import { ${Viethoa}Entity } from './entities/${Viethoa.toLowerCase()}.entity';
   @Injectable()
-  export class ${pascalCaseName}Service {
+  export class ${Viethoa}Service {
     constructor(
-      @InjectRepository(${pascalCaseName}Entity)
-      private ${pascalCaseName}Repository: Repository<${pascalCaseName}Entity>
+      @InjectRepository(${Viethoa}Entity)
+      private ${Viethoa}Repository: Repository<${Viethoa}Entity>
     ) { }
     async create(data: any) {
       const check = await this.findSHD(data)
       if(!check) {
-        this.${pascalCaseName}Repository.create(data);
-        return await this.${pascalCaseName}Repository.save(data);
+        this.${Viethoa}Repository.create(data);
+        return await this.${Viethoa}Repository.save(data);
       }
       else {
         return { error: 1001, data: "Trùng Dữ Liệu" }
@@ -93,13 +93,13 @@ async function generateFile(filePath, content) {
     }
   
     async findAll() {
-      return await this.${pascalCaseName}Repository.find();
+      return await this.${Viethoa}Repository.find();
     }
     async findid(id: string) {
-      return await this.${pascalCaseName}Repository.findOne({ where: { id: id } });
+      return await this.${Viethoa}Repository.findOne({ where: { id: id } });
     }
     async findSHD(data: any) {
-      return await this.${pascalCaseName}Repository.findOne({
+      return await this.${Viethoa}Repository.findOne({
         where: {
           Title: data.Title,
           Type: data.Type
@@ -107,33 +107,33 @@ async function generateFile(filePath, content) {
       });
     }
     async findslug(Title: any) {
-      return await this.${pascalCaseName}Repository.findOne({
+      return await this.${Viethoa}Repository.findOne({
         where: { Title: Title },
       });
     }
     async findPagination(page: number, perPage: number) {
       const skip = (page - 1) * perPage;
-      const totalItems = await this.${pascalCaseName}Repository.count();
-      const ${pascalCaseName}s = await this.${pascalCaseName}Repository.find({ skip, take: perPage });
+      const totalItems = await this.${Viethoa}Repository.count();
+      const ${Viethoa}s = await this.${Viethoa}Repository.find({ skip, take: perPage });
       return {
         currentPage: page,
         perPage,
         totalItems,
         totalPages: Math.ceil(totalItems / perPage),
-        data: ${pascalCaseName}s,
+        data: ${Viethoa}s,
       };
     }
     async findQuery(params: any) {
       console.error(params);
-      const queryBuilder = this.${pascalCaseName}Repository.createQueryBuilder('${pascalCaseName}');
+      const queryBuilder = this.${Viethoa}Repository.createQueryBuilder('${Viethoa}');
       if (params.Batdau && params.Ketthuc) {
-        queryBuilder.andWhere('${pascalCaseName}.CreateAt BETWEEN :startDate AND :endDate', {
+        queryBuilder.andWhere('${Viethoa}.CreateAt BETWEEN :startDate AND :endDate', {
           startDate: params.Batdau,
           endDate: params.Ketthuc,
         });
       }
       if (params.Title) {
-        queryBuilder.andWhere('${pascalCaseName}.Title LIKE :Title', { SDT: \`%\${params.Title}%\` });
+        queryBuilder.andWhere('${Viethoa}.Title LIKE :Title', { SDT: \`%\${params.Title}%\` });
       }
       const [items, totalCount] = await queryBuilder
         .limit(params.pageSize || 10) // Set a default page size if not provided
@@ -143,13 +143,13 @@ async function generateFile(filePath, content) {
   
       return { items, totalCount };
     }
-    async update(id: string, Update${pascalCaseName}Dto: any) {
-      this.${pascalCaseName}Repository.save(Update${pascalCaseName}Dto);
-      return await this.${pascalCaseName}Repository.findOne({ where: { id: id } });
+    async update(id: string, Update${Viethoa}Dto: any) {
+      this.${Viethoa}Repository.save(Update${Viethoa}Dto);
+      return await this.${Viethoa}Repository.findOne({ where: { id: id } });
     }
     async remove(id: string) {
       console.error(id)
-      await this.${pascalCaseName}Repository.delete(id);
+      await this.${Viethoa}Repository.delete(id);
       return { deleted: true };
     }
   }
@@ -160,17 +160,17 @@ async function generateFile(filePath, content) {
   
     const moduleContent = `
   import { Module } from '@nestjs/common';
-  import { ${pascalCaseName}Service } from './${pascalCaseName.toLowerCase()}.service';
-  import { ${pascalCaseName}Controller } from './${pascalCaseName.toLowerCase()}.controller';
+  import { ${Viethoa}Service } from './${Viethoa.toLowerCase()}.service';
+  import { ${Viethoa}Controller } from './${Viethoa.toLowerCase()}.controller';
   import { TypeOrmModule } from '@nestjs/typeorm';
-  import { ${pascalCaseName}Entity } from './entities/${pascalCaseName.toLowerCase()}.entity';
+  import { ${Viethoa}Entity } from './entities/${Viethoa.toLowerCase()}.entity';
   @Module({
-    imports: [TypeOrmModule.forFeature([${pascalCaseName}Entity])],
-    controllers: [${pascalCaseName}Controller],
-    providers: [${pascalCaseName}Service],
-    exports:[${pascalCaseName}Service]
+    imports: [TypeOrmModule.forFeature([${Viethoa}Entity])],
+    controllers: [${Viethoa}Controller],
+    providers: [${Viethoa}Service],
+    exports:[${Viethoa}Service]
   })
-  export class ${pascalCaseName}Module {}
+  export class ${Viethoa}Module {}
   
   `;
   
@@ -183,8 +183,8 @@ async function generateFile(filePath, content) {
      UpdateDateColumn,
      DeleteDateColumn,
    } from 'typeorm';
-   @Entity('${pascalCaseName.toLowerCase()}', {orderBy: { CreateAt: 'DESC' } })
-   export class ${pascalCaseName}Entity {
+   @Entity('${Viethoa.toLowerCase()}', {orderBy: { CreateAt: 'DESC' } })
+   export class ${Viethoa}Entity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
     @Column({ nullable: true,default:'0'})

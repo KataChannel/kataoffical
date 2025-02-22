@@ -12,3 +12,4 @@ git commit -m "update"
 git push
 
 npx katacreate --type nestjs --name myApp --outputDir ./myDir
+node index.js--type angular --name test --outputDir ./test

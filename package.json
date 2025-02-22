@@ -1,7 +1,7 @@
 {
   "name": "@katachanneloffical/kata-snippets",
   "type": "module",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "main": "index.js",
   "bin": {
     "katacreate": "./index.js"
