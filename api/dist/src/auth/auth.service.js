@@ -28,9 +28,42 @@ let AuthService = class AuthService {
     async login(email, password) {
         const user = await this.prisma.user.findUnique({ where: { email } });
         if (!user || !(await bcrypt.compare(password, user.password))) {
-            throw new Error('Invalid credentials');
+            throw new common_1.UnauthorizedException('Invalid credentials');
         }
-        return { token: this.jwtService.sign({ userId: user.id }) };
+        const token = this.jwtService.sign({ id: user.id, email: user.email });
+        return { token };
+    }
+    async changePassword(userId, oldPassword, newPassword) {
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!user || !(await bcrypt.compare(oldPassword, user.password))) {
+            throw new common_1.UnauthorizedException('Old password is incorrect');
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        return this.prisma.user.update({
+            where: { id: userId },
+            data: { password: hashedPassword },
+        });
+    }
+    async generateRandomPassword(userId) {
+        const newPassword = Math.random().toString(36).slice(-8);
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { password: hashedPassword },
+        });
+        return { newPassword };
+    }
+    async validateOAuthLogin(provider, providerId, email) {
+        let user = await this.prisma.user.findUnique({ where: { providerId } });
+        if (!user) {
+            const newPassword = Math.random().toString(36).slice(-8);
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            user = await this.prisma.user.create({
+                data: { provider, providerId, email: email || '', password: hashedPassword },
+            });
+        }
+        const token = this.jwtService.sign({ id: user.id, provider: user.provider });
+        return { token, user };
     }
 };
 exports.AuthService = AuthService;
