@@ -5,7 +5,7 @@ export declare class UserController {
     constructor(userService: UserService);
     create(dto: CreateUserDto): Promise<{
         id: string;
-        email: string;
+        email: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
@@ -14,7 +14,7 @@ export declare class UserController {
     }>;
     findAll(): Promise<{
         id: string;
-        email: string;
+        email: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;

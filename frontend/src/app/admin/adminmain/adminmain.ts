@@ -9,6 +9,10 @@ export const User:any={
 }
 export const TREE_DATA: any[] = [
     {
+      name: 'Menu',
+      Slug:'menu'
+    },
+    {
       name: 'Danh Mục',
       Slug:'danhmuc'
     },

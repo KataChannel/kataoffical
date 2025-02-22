@@ -34,8 +34,6 @@ docker exec -it kataoffical-backend-1 npx prisma studio
 docker exec -it 619a78c186ab npx prisma studio --host 0.0.0.0 --port 5555
 
 
-
-
 bun install @prisma/client
 bun install -D prisma
 bun prisma init
@@ -86,3 +84,8 @@ Nhấn Esc để đảm bảo bạn không ở chế độ Insert.
 Gõ :wq rồi nhấn Enter để lưu và thoát.
 3. Nếu đang dùng vi
 Nhấn Esc rồi nhập :wq! và nhấn Enter.
+
+
+
+
+npx katacreate --type angular --name khachhang --outputDir khachhang

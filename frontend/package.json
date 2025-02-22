@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --watch --configuration development --port 4301",
+    "start": "ng serve --watch --configuration development --no-hmr --port 4301",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -32,7 +32,7 @@
     "@editorjs/header": "^2.8.8",
     "@editorjs/image": "^2.10.2",
     "@ionic-native/fingerprint-aio": "^5.36.0",
-    "@katachanneloffical/kata-snippets": "^1.0.0",
+    "@katachanneloffical/kata-snippets": "^1.0.8",
     "@schematics/angular": "^19.0.6",
     "@tiptap/core": "^2.11.5",
     "@tiptap/extension-bold": "^2.11.5",
@@ -51,6 +51,7 @@
     "socket.io-client": "^4.8.1",
     "swiper": "^11.1.15",
     "tslib": "^2.3.0",
+    "xlsx": "^0.18.5",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {

@@ -6,7 +6,7 @@ export declare class AuthService {
     constructor(prisma: PrismaService, jwtService: JwtService);
     register(email: string, password: string): Promise<{
         id: string;
-        email: string;
+        email: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
@@ -18,7 +18,7 @@ export declare class AuthService {
     }>;
     changePassword(userId: string, oldPassword: string, newPassword: string): Promise<{
         id: string;
-        email: string;
+        email: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
@@ -32,7 +32,7 @@ export declare class AuthService {
         token: string;
         user: {
             id: string;
-            email: string;
+            email: string | null;
             password: string;
             provider: string | null;
             providerId: string | null;

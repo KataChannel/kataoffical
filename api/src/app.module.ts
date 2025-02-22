@@ -5,12 +5,15 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PrismaService } from '../prisma/prisma.service';
-import { FacebookStrategy } from './auth/strategies/facebook.strategy';
-import { GoogleStrategy } from './auth/strategies/google.strategy';
-import { ZaloStrategy } from './auth/strategies/zalo.strategy';
+import { MenuModule } from './menu/menu.module';
 
 @Module({
-  imports: [AuthModule, UserModule,PrismaModule],
+  imports: [
+    AuthModule, 
+    UserModule,
+    PrismaModule,
+    MenuModule
+  ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  
   exports: [PrismaService],

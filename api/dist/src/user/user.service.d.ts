@@ -5,7 +5,7 @@ export declare class UserService {
     constructor(prisma: PrismaService);
     createUser(dto: CreateUserDto): Promise<{
         id: string;
-        email: string;
+        email: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
@@ -14,7 +14,7 @@ export declare class UserService {
     }>;
     getUsers(): Promise<{
         id: string;
-        email: string;
+        email: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;

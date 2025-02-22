@@ -23,7 +23,6 @@ let AuthController = class AuthController {
     }
     async googleAuth() { }
     googleAuthRedirect(req, res) {
-        console.error('req.user', req.user);
         if (!req.user) {
             return res.redirect(`${process.env.BASE_URL}/login`);
         }

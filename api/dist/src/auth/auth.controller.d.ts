@@ -14,7 +14,7 @@ export declare class AuthController {
         name: string;
     }): Promise<{
         id: string;
-        email: string;
+        email: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
@@ -32,7 +32,7 @@ export declare class AuthController {
         newPassword: string;
     }): Promise<{
         id: string;
-        email: string;
+        email: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;

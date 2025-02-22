@@ -21,6 +21,21 @@ model User {
 }
 
 
+model Menu {
+  id        String   @id @default(uuid())
+  title     String
+  icon      String?  // Optional icon for menu
+  slug      String?  // URL of the menu item
+  parentId  String?  // Reference to parent menu (null if root)
+  parent    Menu?    @relation("MenuChildren", fields: [parentId], references: [id])
+  children  Menu[]   @relation("MenuChildren")
+  order     Int      // For sorting menus
+  isActive  Boolean  @default(true) // Enable/Disable menu
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
 model Profile {
   id     String  @id @default(uuid())
   userId String  @unique

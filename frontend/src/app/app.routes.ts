@@ -14,6 +14,20 @@ export const routes: Routes = [
       loadComponent: () => import('./admin/adminmain/adminmain.component').then((c) => c.AdminmainComponent),
       children: [
         {
+          path: 'menu',
+          loadComponent: () => import('./admin/menu/menu/listmenu/listmenu.component').then((c) => c.ListMenuComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/menu/menu/listmenu/listmenu.component').then((c) => c.ListMenuComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/menu/menu/detailmenu/detailmenu.component').then((c) => c.DetailMenuComponent),
+            },
+          ],
+        },
+        {
           path: 'hotro',
           loadComponent: () => import('./admin/hotro/listhotro/listhotro.component').then((c) => c.ListHotroComponent),
           children: [

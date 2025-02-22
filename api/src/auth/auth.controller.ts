@@ -13,7 +13,6 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   googleAuthRedirect(@Req() req, @Res() res) {
-    console.error('req.user', req.user);
     if (!req.user) {
       return res.redirect(`${process.env.BASE_URL}/login`);
     }
