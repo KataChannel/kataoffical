@@ -861,9 +861,9 @@ export class SanphamService {
               const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
               this.router.navigate(['/errorserver'], { queryParams: {data:result}});
             } else {
-              const result  = JSON.stringify({ code:response.status: {data:result}});
-            }s,title:'Lỗi không xác định' })
-              this.router.navigate(['/errorserver'], { queryParam
+              const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
+              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            }
           }
           this.getAllSanpham()
       } catch (error) {
