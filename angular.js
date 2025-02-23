@@ -50,18 +50,18 @@ async function generateFile(filePath, content) {
                 <button matTooltip="Bộ Lọc" color="primary" class="{{isFilter ? '!bg-slate-200' : ''}}" (click)="isFilter = !isFilter" mat-icon-button>
                     <mat-icon>filter_list</mat-icon>
                 </button>
-                <button matTooltip="Tải file excel Mẫu" (click)="writeExcelFile()" color="primary" mat-icon-button>
+                <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(Listsanpham(),'Sanpham')" color="primary" mat-icon-button>
                     <mat-icon>file_download</mat-icon>
                 </button>
                 <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
                     <mat-icon>file_upload</mat-icon>
                 </button>
-                <input class="hidden" (change)="readExcelFile($event)" type="file" #uploadfile>
+                <input class="hidden" (change)="ImporExcel($event)" type="file" #uploadfile>
                 <button matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
                     <mat-icon>cloud_download</mat-icon>
                 </button>
                 <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
-                    {{CountItem}} Menu
+                    {{CountItem}} Sản Phẩm
                 </span>
             </div>
         </div>
@@ -92,6 +92,16 @@ async function generateFile(filePath, content) {
                             {{ row[column]|date:'dd/MM/yyyy'}}
                         </span>
                         }
+                        @case ('isActive') {
+                        <span class="max-w-40 line-clamp-4">
+                            @if (row[column]) {
+                            <mat-icon class="text-green-500">check_circle</mat-icon>
+                            }
+                            @else {
+                            <mat-icon class="text-red-500">cancel</mat-icon>
+                            }
+                        </span>
+                        }
                         @case ('updatedAt') {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column]|date:'dd/MM/yyyy'}}
@@ -107,7 +117,7 @@ async function generateFile(filePath, content) {
                 </ng-container>
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{menuId()==row.id?'!bg-slate-200':''}}" (click)="goToDetail(row);"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{sanphamId()==row.id?'!bg-slate-200':''}}" (click)="goToDetail(row);"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
@@ -389,13 +399,15 @@ export class ListSanphamComponent {
   }
 }`;
 const componentListCssContent = ``;
-const componentDetailHTMLContent = `<div class="flex flex-row justify-between items-center space-x-2 p-2">
+const componentDetailHTMLContent = `
+<div class="flex flex-row justify-between items-center space-x-2 p-2">
   <button mat-icon-button color="primary" (click)="goBack()">
     <mat-icon>arrow_back</mat-icon>
   </button>
-  <div class="font-bold">{{ DetailMenu()?.title || 'Không có dữ liệu' }}</div>
+  <div class="font-bold">{{ DetailSanpham()?.title || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
-    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleMenuAction()">
+    <mat-slide-toggle [(ngModel)]="DetailSanpham().isActive" [disabled]="!isEdit()">{{DetailSanpham().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleSanphamAction()">
       <mat-icon>save</mat-icon>
     </button>
     <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
@@ -419,11 +431,11 @@ const componentDetailHTMLContent = `<div class="flex flex-row justify-between it
     </div>
   </ng-container>
 
-  <!-- Chi tiết Menu -->
+  <!-- Chi tiết Sanpham -->
   <ng-container *ngIf="!isDelete()">
     <!-- <div *ngIf="!isEdit()" class="flex flex-col space-y-2 justify-center items-center border p-4 rounded-lg">
-      <div class="font-bold p-2 rounded-lg border">{{ DetailMenu()?.Nhacungcap?.Title }}</div>
-      <div>{{ DetailMenu()?.CreateAt | date: 'dd/MM/yyyy' }}</div>
+      <div class="font-bold p-2 rounded-lg border">{{ DetailSanpham()?.Nhacungcap?.Title }}</div>
+      <div>{{ DetailSanpham()?.CreateAt | date: 'dd/MM/yyyy' }}</div>
       <table class="min-w-full divide-y divide-gray-200 border">
         <thead class="bg-gray-50">
           <tr>
@@ -434,7 +446,7 @@ const componentDetailHTMLContent = `<div class="flex flex-row justify-between it
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr *ngFor="let item of DetailMenu()?.Sanpham; let i = index; trackBy: trackByFn">
+          <tr *ngFor="let item of DetailSanpham()?.Sanpham; let i = index; trackBy: trackByFn">
             <td class="px-6 py-4 text-sm text-gray-500">{{ i + 1 }}</td>
             <td class="px-6 py-4 text-sm text-gray-500">{{ GetInfoSanpham(item.idSP)?.Title }}</td>
             <td class="px-6 py-4 text-sm text-gray-500">
@@ -450,14 +462,31 @@ const componentDetailHTMLContent = `<div class="flex flex-row justify-between it
 
       <mat-form-field appearance="outline">
         <mat-label>Tiêu Đề</mat-label>
-        <input matInput [(ngModel)]="DetailMenu().title" (input)="FillSlug()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
+        <input matInput [(ngModel)]="DetailSanpham().title" (input)="FillSlug()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Slug</mat-label>
-        <input matInput [(ngModel)]="DetailMenu().slug" [disabled]="!isEdit()" placeholder="Vui lòng nhập Slug"/>
+        <mat-label>Mã Sản Phẩm</mat-label>
+        <input matInput [(ngModel)]="DetailSanpham().masp" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
       </mat-form-field>
-
-      <mat-slide-toggle [(ngModel)]="DetailMenu().isActive" [disabled]="!isEdit()">{{DetailMenu().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+      <mat-form-field appearance="outline">
+        <mat-label>Giá Gốc</mat-label>
+        <input matInput type="number" [(ngModel)]="DetailSanpham().giagoc" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giá Gốc"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Đơn Vị Tính</mat-label>
+        <input matInput [(ngModel)]="DetailSanpham().dvt" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+      </mat-form-field>
+      <div class="flex flex-row space-x-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Số Lượng</mat-label>
+          <input matInput type="number" [(ngModel)]="DetailSanpham().soluong" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Số Lượng Kho</mat-label>
+          <input matInput type="number" [(ngModel)]="DetailSanpham().soluongkho" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+        </mat-form-field>
+      </div>
+ 
 
 <!--       
       <mat-form-field appearance="outline">
@@ -498,8 +527,7 @@ const componentDetailHTMLContent = `<div class="flex flex-row justify-between it
     </ng-container>
 
   </ng-container>
-</div>
-`;
+</div>`;
 const componentDetailContent = `import { Component, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -511,12 +539,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
-import { ListMenuComponent } from '../listmenu/listmenu.component';
-import { MenuService } from '../menu.service';
-import { convertToSlug, GenId } from '../../../../shared/utils/shared.utils';
+import { ListSanphamComponent } from '../listsanpham/listsanpham.component';
+import { SanphamService } from '../sanpham.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   @Component({
-    selector: 'app-detailmenu',
+    selector: 'app-detailsanpham',
     imports: [
       MatFormFieldModule,
       MatInputModule,
@@ -528,58 +556,58 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
       CommonModule,
       MatSlideToggleModule
     ],
-    templateUrl: './detailmenu.component.html',
-    styleUrl: './detailmenu.component.scss'
+    templateUrl: './detailsanpham.component.html',
+    styleUrl: './detailsanpham.component.scss'
   })
-  export class DetailMenuComponent {
-    _ListmenuComponent:ListMenuComponent = inject(ListMenuComponent)
-    _MenuService:MenuService = inject(MenuService)
+  export class DetailSanphamComponent {
+    _ListsanphamComponent:ListSanphamComponent = inject(ListSanphamComponent)
+    _SanphamService:SanphamService = inject(SanphamService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
     constructor(){
       this._route.paramMap.subscribe((params) => {
         const id = params.get('id');
-        this._MenuService.setMenuId(id);
+        this._SanphamService.setSanphamId(id);
       });
   
       effect(async () => {
-        const id = this._MenuService.menuId();
+        const id = this._SanphamService.sanphamId();
       
         if (!id){
-          this._router.navigate(['/admin/menu']);
-          this._ListmenuComponent.drawer.close();
+          this._router.navigate(['/admin/sanpham']);
+          this._ListsanphamComponent.drawer.close();
         }
         if(id === '0'){
-          this.DetailMenu.set({ title: GenId(8, false), slug: GenId(8, false) });
-          this._ListmenuComponent.drawer.open();
+          this.DetailSanpham.set({ title: GenId(8, false), slug: GenId(8, false) });
+          this._ListsanphamComponent.drawer.open();
           this.isEdit.update(value => !value);
-          this._router.navigate(['/admin/menu', "0"]);
+          this._router.navigate(['/admin/sanpham', "0"]);
         }
         else{
-            await this._MenuService.getMenuByid(id);
-            this._ListmenuComponent.drawer.open();
-            this._router.navigate(['/admin/menu', id]);
+            await this._SanphamService.getSanphamByid(id);
+            this._ListsanphamComponent.drawer.open();
+            this._router.navigate(['/admin/sanpham', id]);
         }
       });
     }
-    DetailMenu: any = this._MenuService.DetailMenu;
+    DetailSanpham: any = this._SanphamService.DetailSanpham;
     isEdit = signal(false);
     isDelete = signal(false);  
-    menuId:any = this._MenuService.menuId
+    sanphamId:any = this._SanphamService.sanphamId
     async ngOnInit() {       
     }
-    async handleMenuAction() {
-      if (this.menuId() === '0') {
-        await this.createMenu();
+    async handleSanphamAction() {
+      if (this.sanphamId() === '0') {
+        await this.createSanpham();
       }
       else {
-        await this.updateMenu();
+        await this.updateSanpham();
       }
     }
-    private async createMenu() {
+    private async createSanpham() {
       try {
-        await this._MenuService.CreateMenu({ title: GenId(8,false), slug: GenId(8,false) });
+        await this._SanphamService.CreateSanpham(this.DetailSanpham());
         this._snackBar.open('Tạo Mới Thành Công', '', {
           duration: 1000,
           horizontalPosition: 'end',
@@ -588,13 +616,13 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
         });
         this.isEdit.update(value => !value);
       } catch (error) {
-        console.error('Lỗi khi tạo menu:', error);
+        console.error('Lỗi khi tạo sanpham:', error);
       }
     }
 
-    private async updateMenu() {
+    private async updateSanpham() {
       try {
-        await this._MenuService.updateMenu(this.DetailMenu());
+        await this._SanphamService.updateSanpham(this.DetailSanpham());
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,
           horizontalPosition: 'end',
@@ -603,13 +631,13 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
         });
         this.isEdit.update(value => !value);
       } catch (error) {
-        console.error('Lỗi khi cập nhật menu:', error);
+        console.error('Lỗi khi cập nhật sanpham:', error);
       }
     }
     async DeleteData()
     {
       try {
-        await this._MenuService.DeleteMenu(this.DetailMenu());
+        await this._SanphamService.DeleteSanpham(this.DetailSanpham());
   
         this._snackBar.open('Xóa Thành Công', '', {
           duration: 1000,
@@ -618,14 +646,14 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
           panelClass: ['snackbar-success'],
         });
   
-        this._router.navigate(['/admin/menu']);
+        this._router.navigate(['/admin/sanpham']);
       } catch (error) {
-        console.error('Lỗi khi xóa menu:', error);
+        console.error('Lỗi khi xóa sanpham:', error);
       }
     }
     goBack(){
-      this._router.navigate(['/admin/menu'])
-      this._ListmenuComponent.drawer.close();
+      this._router.navigate(['/admin/sanpham'])
+      this._ListsanphamComponent.drawer.close();
     }
     trackByFn(index: number, item: any): any {
       return item.id;
@@ -638,38 +666,39 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
       this.isDelete.update(value => !value);
     }
     FillSlug(){
-      this.DetailMenu.update((v:any)=>{
+      this.DetailSanpham.update((v:any)=>{
         v.slug = convertToSlug(v.title);
         return v;
       })
     }
   }`;
 const componentDetailCssContent = ``;
-const componentServiceContent = `import { Inject, Injectable, signal,Signal } from '@angular/core';
-import { environment } from '../../../../environments/environment';
-import { StorageService } from '../../../shared/utils/storage.service';
+const componentServiceContent = `
+import { Inject, Injectable, signal,Signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment.development';
+import { StorageService } from '../../shared/utils/storage.service';
 @Injectable({
   providedIn: 'root'
 })
-export class MenuService {
+export class SanphamService {
   constructor(
     private _StorageService: StorageService,
     private router: Router,
   ) { }
-  ListMenu = signal<any[]>([]);
-  DetailMenu = signal<any>({});
-  menuId = signal<string | null>(null);
-  setMenuId(id: string | null) {
-    this.menuId.set(id);
+  ListSanpham = signal<any[]>([]);
+  DetailSanpham = signal<any>({});
+  sanphamId = signal<string | null>(null);
+  setSanphamId(id: string | null) {
+    this.sanphamId.set(id);
   }
-  // getListMenu(): Signal<any[]> {    
-  //   return this.ListMenu;
+  // getListSanpham(): Signal<any[]> {    
+  //   return this.ListSanpham;
   // }
-  // getDetailMenu(): Signal<any | null> {
-  //   return this.DetailMenu;
+  // getDetailSanpham(): Signal<any | null> {
+  //   return this.DetailSanpham;
   // }
-  async CreateMenu(dulieu: any) {
+  async CreateSanpham(dulieu: any) {
     try {
       const options = {
           method:'POST',
@@ -678,7 +707,7 @@ export class MenuService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(\`\${environment.APIURL}/menu\`, options);
+        const response = await fetch(\`\${environment.APIURL}/sanpham\`, options);
         if (!response.ok) {
           throw new Error(\`HTTP error! status: \${response.status}\`);
         }
@@ -701,14 +730,14 @@ export class MenuService {
             this.router.navigate(['/errorserver'], { queryParams: {data:result}});
           }
         }
-        this.getAllMenu()
-        this.menuId.set(data.id)
+        this.getAllSanpham()
+        this.sanphamId.set(data.id)
     } catch (error) {
         return console.error(error);
     }
   }
 
-  async getAllMenu() {
+  async getAllSanpham() {
     try {
       const options = {
         method: 'GET',
@@ -717,7 +746,7 @@ export class MenuService {
           'Authorization': 'Bearer '+this._StorageService.getItem('token')
         },
       };
-      const response = await fetch(\`\${environment.APIURL}/menu\`, options);
+      const response = await fetch(\`\${environment.APIURL}/sanpham\`, options);
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -736,12 +765,12 @@ export class MenuService {
         }
       }
       const data = await response.json();           
-      this.ListMenu.set(data)
+      this.ListSanpham.set(data)
     } catch (error) {
       return console.error(error);
     }
   }
-  async getMenuByid(id: any) {
+  async getSanphamByid(id: any) {
     try {
       const options = {
         method: 'GET',
@@ -749,7 +778,7 @@ export class MenuService {
           'Content-Type': 'application/json',
         },
       };
-      const response = await fetch(\`\${environment.APIURL}/menu/findid/\${id}\`, options);      
+      const response = await fetch(\`\${environment.APIURL}/sanpham/findid/\${id}\`, options);      
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -769,12 +798,12 @@ export class MenuService {
         }
       }
       const data = await response.json();      
-      this.DetailMenu.set(data)
+      this.DetailSanpham.set(data)
     } catch (error) {
       return console.error(error);
     }
   }
-  async updateMenu(dulieu: any) {
+  async updateSanpham(dulieu: any) {
     try {
       const options = {
           method:'PATCH',
@@ -783,7 +812,7 @@ export class MenuService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(\`\${environment.APIURL}/menu/\${dulieu.id}\`, options);
+        const response = await fetch(\`\${environment.APIURL}/sanpham/\${dulieu.id}\`, options);
         if (!response.ok) {
           throw new Error(\`HTTP error! status: \${response.status}\`);
         }
@@ -806,13 +835,13 @@ export class MenuService {
             this.router.navigate(['/errorserver'], { queryParams: {data:result}});
           }
         }
-        this.getAllMenu()
-        this.getMenuByid(dulieu.id)
+        this.getAllSanpham()
+        this.getSanphamByid(dulieu.id)
     } catch (error) {
         return console.error(error);
     }
   }
-  async DeleteMenu(item:any) {    
+  async DeleteSanpham(item:any) {    
     try {
         const options = {
             method:'DELETE',
@@ -820,7 +849,7 @@ export class MenuService {
               'Content-Type': 'application/json',
             },
           };
-          const response = await fetch(\`\${environment.APIURL}/menu/\${item.id}\`, options);
+          const response = await fetch(\`\${environment.APIURL}/sanpham/\${item.id}\`, options);
           if (!response.ok) {
             if (response.status === 401) {
               const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
@@ -832,11 +861,11 @@ export class MenuService {
               const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
               this.router.navigate(['/errorserver'], { queryParams: {data:result}});
             } else {
-              const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            }
+              const result  = JSON.stringify({ code:response.status: {data:result}});
+            }s,title:'Lỗi không xác định' })
+              this.router.navigate(['/errorserver'], { queryParam
           }
-          this.getAllMenu()
+          this.getAllSanpham()
       } catch (error) {
           return console.error(error);
       }
