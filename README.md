@@ -10,6 +10,7 @@ Cập nhật package (nếu cần) → Tăng version + npm publish
 git add .
 git commit -m "update"
 git push
+npm publish
 
 npx katacreate --type nestjs --name myApp --outputDir ./myDir
 node index.js--type angular --name test --outputDir ./test

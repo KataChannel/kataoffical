@@ -117,14 +117,12 @@ async function generateFile(filePath, content) {
     </div>
 </mat-drawer-container>`;
     
-const componentListContent = `
-import { AfterViewInit, Component, inject, ViewChild } from '@angular/core';
+const componentListContent = `import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { Forms, ListDathangncc } from './listdathangncc';
 import { MatMenuModule } from '@angular/material/menu';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
@@ -137,12 +135,12 @@ import * as XLSX from 'xlsx';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { DonnccsService } from './listdathangncc.service';
-import { NhacungcapsService } from '../../nhacungcap/listnhacungcap/listnhacungcap.service';
+import { MenuService } from '../menu.service';
+import moment from 'moment';
 @Component({
-  selector: 'app-listdathangncc',
-  templateUrl: './listdathangncc.component.html',
-  styleUrls: ['./listdathangncc.component.scss'],
+  selector: 'app-listmenu',
+  templateUrl: './listmenu.component.html',
+  styleUrls: ['./listmenu.component.scss'],
   imports: [
     MatFormFieldModule,
     MatInputModule,
@@ -160,80 +158,85 @@ import { NhacungcapsService } from '../../nhacungcap/listnhacungcap/listnhacungc
     MatTooltipModule
   ],
 })
-export class ListDathangnccComponent {
+export class ListMenuComponent {
   Detail: any = {};
-  dataSource!: MatTableDataSource<any>;
   displayedColumns: string[] = [
     'STT',
-    'MaDH',
-    'idNCC',
-    'Sanpham',
-    'CreateAt',
+    'title',
+    'slug',
+    'parent',
+    'order',
+    'isActive',
+    'createdAt',
+    'updatedAt',
   ];
   ColumnName: any = {
     STT: 'STT',
-    MaDH: 'Mã Đơn hàng',
-    idNCC: 'Nhà Cung Cấp',
-    Sanpham: 'Sản Phẩm',
-    CreateAt: 'Ngày Tạo',
+    title: 'Tiêu Đề',
+    slug: 'Đường Dẫn',
+    parent: 'Menu Cha',
+    order: 'Thứ Tự',
+    isActive: 'Trạng Thái',
+    createdAt:'Ngày Tạo',
+    updatedAt:'Ngày Cập Nhật'
   };
   FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('dathangncc_FilterColumns') || '[]'
+    localStorage.getItem('MenuColFilter') || '[]'
   );
   Columns: any[] = [];
-  Listdathangncc: any[] = [];
-  ListNhacungcap: any[] = [];
   isFilter: boolean = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
-  private _nhacungcapsService: NhacungcapsService = inject(NhacungcapsService);
-  private _DonnccsService: DonnccsService = inject(DonnccsService);
-
-  constructor(
-    private _breakpointObserver: BreakpointObserver,
-    private _router: Router
-  ) {
+  private _MenuService: MenuService = inject(MenuService);
+  private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
+  private _router: Router = inject(Router);
+  Listmenu:any = this._MenuService.ListMenu;
+  dataSource = computed(() => {
+    const ds = new MatTableDataSource(this.Listmenu());
+    ds.filterPredicate = this.createFilter();
+    ds.paginator = this.paginator;
+    ds.sort = this.sort;
+    return ds;
+  });
+  menuId:any = this._MenuService.menuId;
+  _snackBar: MatSnackBar = inject(MatSnackBar);
+  CountItem: any = 0;
+  constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
     });
   }
-  createFilter(): (data: any, filter: string) => boolean {    
+  createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
-      const filterObject = JSON.parse(filter); // Chuyển đổi filter từ string sang object
+      const filterObject = JSON.parse(filter);
       let isMatch = true;
-      console.log(data, filter);
-      // Kiểm tra từng điều kiện lọc
       this.displayedColumns.forEach(column => {
         if (filterObject[column]) {
-          isMatch = isMatch && data[column].toString().toLowerCase().includes(filterObject[column].toLowerCase());
+          const value = data[column] ? data[column].toString().toLowerCase() : '';
+          isMatch = isMatch && value.includes(filterObject[column].toLowerCase());
         }
       });
       return isMatch;
     };
   }
-
-  // Hàm áp dụng bộ lọc
   applyFilter() {
-    this.dataSource.filter = JSON.stringify(this.filterValues);
+    this.dataSource().filter = JSON.stringify(this.filterValues);
   }
-  async ngOnInit(): Promise<void> {
-    await this._DonnccsService.getAllDonncc();
-    this.Listdathangncc = this._DonnccsService.ListDonncc();
-    this.CountItem = this.Listdathangncc.length;
-    const ids = this.Listdathangncc.map(v =>v.idNCC);
-    console.log(ids);
-    this._nhacungcapsService.Findlistid(ids).then((data:any)=>{
-      if(data){this.ListNhacungcap = data} 
-    })
-    console.log(this.Listdathangncc);
+  async ngOnInit(): Promise<void> {    
+    await this._MenuService.getAllMenu();
+    this.CountItem = this.Listmenu().length;
     this.initializeColumns();
-    this.setupDataSource();
     this.setupDrawer();
+    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+    this.paginator._intl.previousPageLabel = 'Về Trước';
+    this.paginator._intl.firstPageLabel = 'Trang Đầu';
+    this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
-  GetNhacungcap(id: any): any {
-    return this.ListNhacungcap.find((v) => v.id === id);
+  async refresh() {
+   await this._MenuService.getAllMenu();
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -244,12 +247,9 @@ export class ListDathangnccComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem(
-        'dathangncc_FilterColumns',
-        JSON.stringify(this.FilterColumns)
+      localStorage.setItem('MenuColFilter',JSON.stringify(this.FilterColumns)
       );
     }
-
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
     );
@@ -259,17 +259,6 @@ export class ListDathangnccComponent {
     }, {} as Record<string, string>);
   }
 
-  private setupDataSource(): void {
-    this.dataSource = new MatTableDataSource(this.Listdathangncc);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.dataSource.filterPredicate = this.createFilter();
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
-  }
   private setupDrawer(): void {
     this._breakpointObserver
       .observe([Breakpoints.Handset])
@@ -282,7 +271,6 @@ export class ListDathangnccComponent {
         }
       });
   }
-
   toggleColumn(item: any): void {
     const column = this.FilterColumns.find((v) => v.key === item.key);
     if (column) {
@@ -298,10 +286,7 @@ export class ListDathangnccComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    this.setupDataSource();
-    localStorage.setItem(
-      'dathangncc_FilterColumns',
-      JSON.stringify(this.FilterColumns)
+    localStorage.setItem('MenuColFilter',JSON.stringify(this.FilterColumns)
     );
   }
   doFilterColumns(event: any): void {
@@ -312,15 +297,13 @@ export class ListDathangnccComponent {
   }
   create(): void {
     this.drawer.open();
-    this._router.navigate(['admin/dathangncc', 0]);
+    this._router.navigate(['admin/menu', 0]);
   }
   goToDetail(item: any): void {
+     this._MenuService.setMenuId(item.id);
     this.drawer.open();
-    this.Detail = item;
-    this._router.navigate(['admin/dathangncc', item.id]);
+    this._router.navigate(['admin/menu', item.id]);
   }
-  _snackBar: MatSnackBar = inject(MatSnackBar);
-  CountItem: any = 0;
   async LoadDrive() {
     const DriveInfo = {
       IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
@@ -412,7 +395,7 @@ export class ListDathangnccComponent {
     // const url: string = window.URL.createObjectURL(data);
     // const link: HTMLAnchorElement = document.createElement('a');
     // link.href = url;
-    // link.download = \`\${fileName}.xlsx\`\;
+    // link.download = \`\${fileName}.xlsx\`;
     // link.click();
     // window.URL.revokeObjectURL(url);
     // link.remove();
@@ -486,6 +469,9 @@ const componentDetailHTMLContent = `<div class="flex flex-row justify-between it
         <mat-label>Slug</mat-label>
         <input matInput [(ngModel)]="DetailMenu().slug" [disabled]="!isEdit()" placeholder="Vui lòng nhập Slug"/>
       </mat-form-field>
+
+      <mat-slide-toggle [(ngModel)]="DetailMenu().isActive" [disabled]="!isEdit()">{{DetailMenu().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+
 <!--       
       <mat-form-field appearance="outline">
         <mat-label>Nhà Cung Cấp</mat-label>
@@ -541,6 +527,7 @@ import { CommonModule } from '@angular/common';
 import { ListMenuComponent } from '../listmenu/listmenu.component';
 import { MenuService } from '../menu.service';
 import { convertToSlug, GenId } from '../../../../shared/utils/shared.utils';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
   @Component({
     selector: 'app-detailmenu',
     imports: [
@@ -551,7 +538,8 @@ import { convertToSlug, GenId } from '../../../../shared/utils/shared.utils';
       MatButtonModule,
       MatSelectModule,
       MatDialogModule,
-      CommonModule
+      CommonModule,
+      MatSlideToggleModule
     ],
     templateUrl: './detailmenu.component.html',
     styleUrl: './detailmenu.component.scss'
@@ -670,8 +658,7 @@ import { convertToSlug, GenId } from '../../../../shared/utils/shared.utils';
     }
   }`;
 const componentDetailCssContent = ``;
-const componentServiceContent = `
-import { Inject, Injectable, signal,Signal } from '@angular/core';
+const componentServiceContent = `import { Inject, Injectable, signal,Signal } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { StorageService } from '../../../shared/utils/storage.service';
 import { Router } from '@angular/router';
@@ -867,8 +854,7 @@ export class MenuService {
           return console.error(error);
       }
   }
-}
-`;
+}`;
 const componentTypeContent = ``;
 const componentMockdataContent = `export const List${Viethoa}:any[]=[]`;
 
