@@ -65,6 +65,9 @@
         <mat-label>Slug</mat-label>
         <input matInput [(ngModel)]="DetailMenu().slug" [disabled]="!isEdit()" placeholder="Vui lòng nhập Slug"/>
       </mat-form-field>
+
+      <mat-slide-toggle [(ngModel)]="DetailMenu().isActive" [disabled]="!isEdit()">{{DetailMenu().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+
 <!--       
       <mat-form-field appearance="outline">
         <mat-label>Nhà Cung Cấp</mat-label>

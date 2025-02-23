@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { ListMenuComponent } from '../listmenu/listmenu.component';
 import { MenuService } from '../menu.service';
 import { convertToSlug, GenId } from '../../../../shared/utils/shared.utils';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
   @Component({
     selector: 'app-detailmenu',
     imports: [
@@ -22,7 +23,8 @@ import { convertToSlug, GenId } from '../../../../shared/utils/shared.utils';
       MatButtonModule,
       MatSelectModule,
       MatDialogModule,
-      CommonModule
+      CommonModule,
+      MatSlideToggleModule
     ],
     templateUrl: './detailmenu.component.html',
     styleUrl: './detailmenu.component.scss'

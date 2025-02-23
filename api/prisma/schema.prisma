@@ -15,7 +15,6 @@ model User {
   provider  String?  // "google", "facebook", "zalo"
   providerId String? @unique
   profile   Profile?
-  products  Product[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -45,22 +44,80 @@ model Profile {
   bio    String?
 }
 
-model Product {
-  id         String   @id @default(uuid())
-  name       String
-  price      Decimal
-  stock      Int
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+
+model Sanpham {
+  id        String   @id @default(uuid())
+  title     String
+  slug      String?   @unique
+  masp      String   @unique
+  giagoc    Float @default(0)
+  dvt       String?
+  hinhanh   String?
+  soluong   Int @default(0)
+  soluongkho Int @default(0)
+  ghichu    String?
+  order     Int? @default(1)
+  // Quan hệ N-N với GioHang
+  giohang   Giohangsanpham[]
+  
+  // Quan hệ N-N với BangGia
+  banggia   Banggiasanpham[]
 }
 
-model Category {
-  id       String    @id @default(uuid())
-  name     String    @unique
-  products Product[]
+model Donhang {
+  id          String  @id @default(uuid())
+  title       String
+  type        String
+  madonhang   String  @unique
+  ngaygiao    DateTime
+  ghichu      String?
+  khachhang   String
+  order     Int 
+  // Mối quan hệ 1-1 với Giỏ Hàng
+  giohang     Giohang?
 }
 
+model Giohang {
+  id        String   @id @default(uuid())
+  title     String
+  donhang   Donhang  @relation(fields: [donhangId], references: [id])
+  donhangId String   @unique
+  order     Int 
+  // Quan hệ N-N với SanPham
+  sanpham   Giohangsanpham[]
+}
+
+model Giohangsanpham {
+  id        String   @id @default(uuid())
+  idSP      String
+  title     String
+  sldat     Int
+  slgiao    Int
+  slnhan    Int
+  ttdat     Float
+  ttgiao    Float
+  ttnhan    Float
+
+  sanpham   Sanpham  @relation(fields: [idSP], references: [id])
+  giohang   Giohang  @relation(fields: [giohangId], references: [id])
+  giohangId String
+}
+
+model Banggia {
+  id       String   @id @default(uuid())
+  title    String
+  type     String
+  batdau   DateTime
+  ketthuc  DateTime
+  order     Int 
+  // Quan hệ N-N với SanPham
+  sanpham  Banggiasanpham[]
+}
+
+model Banggiasanpham {
+  id        String   @id @default(uuid())
+  sanphamId String
+  banggiaId String
+  sanpham   Sanpham  @relation(fields: [sanphamId], references: [id])
+  banggia   Banggia  @relation(fields: [banggiaId], references: [id])
+}

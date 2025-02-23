@@ -88,3 +88,12 @@ Nhấn Esc để đảm bảo bạn không ở chế độ Insert.
 Gõ :wq rồi nhấn Enter để lưu và thoát.
 3. Nếu đang dùng vi
 Nhấn Esc rồi nhập :wq! và nhấn Enter.
+
+
+
+
+
+#Backup
+docker cp <container_name_or_id>:/path/to/backup/file /path/to/destination
+
+docker cp pgadmin:/var/lib/pgadmin/storage/admin_example.com/bk_23_02_2025 ./bk_23_02_2025

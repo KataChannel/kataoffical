@@ -73,11 +73,15 @@ export const routes: Routes = [
         },
         {
           path: 'sanpham',
-          loadComponent: () => import('./admin/listsanpham/listsanpham.component').then((c) => c.ListsanphamComponent),
+          loadComponent: () => import('./admin/sanpham/listsanpham/listsanpham.component').then((c) => c.ListSanphamComponent),
           children: [
             {
+              path: '',
+              loadComponent: () => import('./admin/sanpham/listsanpham/listsanpham.component').then((c) => c.ListSanphamComponent),
+            },
+            {
               path: ':id',
-              loadComponent: () => import('./admin/listsanpham/detailsanpham/detailsanpham.component').then((c) => c.DetailSanphamComponent),
+              loadComponent: () => import('./admin/sanpham/detailsanpham/detailsanpham.component').then((c) => c.DetailSanphamComponent),
             },
           ],
         },

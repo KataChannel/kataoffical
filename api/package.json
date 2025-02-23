@@ -24,7 +24,7 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
-    "@katachanneloffical/kata-snippets": "^1.0.8",
+    "@katachanneloffical/kata-snippets": "^1.0.10",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.1",

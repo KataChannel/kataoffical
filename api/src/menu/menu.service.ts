@@ -56,7 +56,13 @@ export class MenuService {
     }
   }
   async findAll() {
-    return this.prisma.menu.findMany();
+    return this.prisma.menu.findMany({
+        orderBy: [
+        {
+          order: 'asc', // Sắp xếp tăng dần theo order
+        },
+      ],
+      });
   }
 
   async findOne(id: string) {

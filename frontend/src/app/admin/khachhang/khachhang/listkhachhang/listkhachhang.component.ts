@@ -19,6 +19,8 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DonnccsService } from './listdathangncc.service';
 import { NhacungcapsService } from '../../nhacungcap/listnhacungcap/listnhacungcap.service';
+import { GoogleSheetService } from '../../../../shared/googlesheets/googlesheets.service';
+import { ConvertDriveData } from '../../../../shared/utils/shared.utils';
 @Component({
   selector: 'app-listdathangncc',
   templateUrl: './listdathangncc.component.html',
@@ -70,6 +72,7 @@ export class ListDathangnccComponent {
   filterValues: { [key: string]: string } = {};
   private _nhacungcapsService: NhacungcapsService = inject(NhacungcapsService);
   private _DonnccsService: DonnccsService = inject(DonnccsService);
+  private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
 
   constructor(
     private _breakpointObserver: BreakpointObserver,
@@ -207,9 +210,9 @@ export class ListDathangnccComponent {
       SheetName: 'Khachhangimport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
-    // const result: any = await this._DonhangsService.getDrive(DriveInfo);
-    // const data = ConvertDriveData(result.values);
-    // console.log(data);
+   const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
+   const data = ConvertDriveData(result.values);
+   console.log(data);
     // const updatePromises = data.map(async (v: any) => {
     //   const item = this._KhachhangsService
     //     .ListKhachhang()

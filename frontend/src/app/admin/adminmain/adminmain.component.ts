@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Config, folders, notes, TREE_DATA, User } from './adminmain';
+import { Config, User } from './adminmain';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeModule, MatTreeFlattener, MatTreeFlatDataSource } from '@angular/material/tree';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,7 +13,7 @@ import {MatListModule} from '@angular/material/list';
 import { CommonModule } from '@angular/common';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { UsersService } from './listuser/listuser.services';
-import { ConversationComponent } from '../../shared/common/conversation/conversation.component';
+import { MenuService } from '../menu/menu/menu.service';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -29,9 +29,7 @@ import { ConversationComponent } from '../../shared/common/conversation/conversa
     CommonModule,
     RouterLink,
     RouterLinkActive,
-    // ConversationComponent
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './adminmain.component.html',
   styleUrl: './adminmain.component.scss'
 })
@@ -40,14 +38,10 @@ export class AdminmainComponent {
   showFiller = false;
   Config:any =Config
   User:any =User
-
-  folders: any[] =  folders
-  notes: any[] = notes
-
   private _transformer = (node: any, level: number) => {
     return {
       expandable: !!node?.children && node?.children.length > 0,
-      name: node.name,
+      title: node.title,
       level: level,
       node:node,
     };
@@ -66,17 +60,18 @@ export class AdminmainComponent {
   );
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+  _MenuService:MenuService = inject(MenuService)
   constructor(
     private _breakpointObserver:BreakpointObserver,
     private _UsersService:UsersService,
-  ) {
-    this.dataSource.data = TREE_DATA;
-  }
+  ) {}
 
   hasChild = (_: number, node: any) => node.expandable;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   @ViewChild('drawer1', { static: true }) drawer1!: MatDrawer;
   async ngOnInit() {
+    await this._MenuService.getAllMenu()
+    this.dataSource.data = this._MenuService.ListMenu().filter((item:any)=>item.isActive==true);    
     this._breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       if (result.matches) {
         this.drawer.mode = 'over';

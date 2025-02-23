@@ -56,7 +56,13 @@ let MenuService = class MenuService {
         }
     }
     async findAll() {
-        return this.prisma.menu.findMany();
+        return this.prisma.menu.findMany({
+            orderBy: [
+                {
+                    order: 'asc',
+                },
+            ],
+        });
     }
     async findOne(id) {
         const menu = await this.prisma.menu.findUnique({ where: { id } });

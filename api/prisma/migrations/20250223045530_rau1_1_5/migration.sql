@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Sanpham" ALTER COLUMN "slug" DROP NOT NULL,
+ALTER COLUMN "order" DROP NOT NULL;

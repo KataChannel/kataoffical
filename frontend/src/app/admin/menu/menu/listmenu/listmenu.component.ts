@@ -77,6 +77,8 @@ export class ListMenuComponent {
   dataSource = computed(() => {
     const ds = new MatTableDataSource(this.Listmenu());
     ds.filterPredicate = this.createFilter();
+    ds.paginator = this.paginator;
+    ds.sort = this.sort;
     return ds;
   });
   menuId:any = this._MenuService.menuId;
@@ -103,14 +105,16 @@ export class ListMenuComponent {
   applyFilter() {
     this.dataSource().filter = JSON.stringify(this.filterValues);
   }
-  async ngOnInit(): Promise<void> {
-    console.log(this.menuId());
-    
+  async ngOnInit(): Promise<void> {    
     await this._MenuService.getAllMenu();
     this.CountItem = this.Listmenu().length;
     this.initializeColumns();
-    this.setupDataSource();
     this.setupDrawer();
+    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+    this.paginator._intl.previousPageLabel = 'Về Trước';
+    this.paginator._intl.firstPageLabel = 'Trang Đầu';
+    this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
   async refresh() {
    await this._MenuService.getAllMenu();
@@ -136,22 +140,6 @@ export class ListMenuComponent {
     }, {} as Record<string, string>);
   }
 
-  private setupDataSource(): void {
-    // this.dataSource = new MatTableDataSource(this.Listmenu());
-    if(this.dataSource().paginator){
-      this.dataSource().paginator = this.paginator;
-      this.dataSource().filterPredicate = this.createFilter();
-      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-      this.paginator._intl.previousPageLabel = 'Về Trước';
-      this.paginator._intl.firstPageLabel = 'Trang Đầu';
-      this.paginator._intl.lastPageLabel = 'Trang Cuối';
-    }
-    if(this.dataSource().sort){
-      this.dataSource().sort = this.sort;
-    }
-
-  }
   private setupDrawer(): void {
     this._breakpointObserver
       .observe([Breakpoints.Handset])
@@ -179,7 +167,6 @@ export class ListMenuComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    this.setupDataSource();
     localStorage.setItem('MenuColFilter',JSON.stringify(this.FilterColumns)
     );
   }
