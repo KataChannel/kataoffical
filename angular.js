@@ -117,13 +117,13 @@ async function generateFile(filePath, content) {
     </div>
 </mat-drawer-container>`;
     
-const componentListContent = `import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+const componentListContent = `
+import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatMenuModule } from '@angular/material/menu';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
@@ -131,16 +131,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
-import * as XLSX from 'xlsx';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MenuService } from '../menu.service';
-import moment from 'moment';
+import { SanphamService } from '../sanpham.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
+import { convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 @Component({
-  selector: 'app-listmenu',
-  templateUrl: './listmenu.component.html',
-  styleUrls: ['./listmenu.component.scss'],
+  selector: 'app-listsanpham',
+  templateUrl: './listsanpham.component.html',
+  styleUrls: ['./listsanpham.component.scss'],
   imports: [
     MatFormFieldModule,
     MatInputModule,
@@ -158,11 +159,12 @@ import moment from 'moment';
     MatTooltipModule
   ],
 })
-export class ListMenuComponent {
+export class ListSanphamComponent {
   Detail: any = {};
   displayedColumns: string[] = [
     'STT',
     'title',
+    'masp',
     'slug',
     'parent',
     'order',
@@ -173,15 +175,16 @@ export class ListMenuComponent {
   ColumnName: any = {
     STT: 'STT',
     title: 'Tiêu Đề',
+    masp: 'Mã SP',
     slug: 'Đường Dẫn',
-    parent: 'Menu Cha',
+    parent: 'Sanpham Cha',
     order: 'Thứ Tự',
     isActive: 'Trạng Thái',
     createdAt:'Ngày Tạo',
     updatedAt:'Ngày Cập Nhật'
   };
   FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('MenuColFilter') || '[]'
+    localStorage.getItem('SanphamColFilter') || '[]'
   );
   Columns: any[] = [];
   isFilter: boolean = false;
@@ -189,18 +192,18 @@ export class ListMenuComponent {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
-  private _MenuService: MenuService = inject(MenuService);
+  private _SanphamService: SanphamService = inject(SanphamService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _router: Router = inject(Router);
-  Listmenu:any = this._MenuService.ListMenu;
+  Listsanpham:any = this._SanphamService.ListSanpham;
   dataSource = computed(() => {
-    const ds = new MatTableDataSource(this.Listmenu());
+    const ds = new MatTableDataSource(this.Listsanpham());
     ds.filterPredicate = this.createFilter();
     ds.paginator = this.paginator;
     ds.sort = this.sort;
     return ds;
   });
-  menuId:any = this._MenuService.menuId;
+  sanphamId:any = this._SanphamService.sanphamId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   constructor() {
@@ -225,8 +228,8 @@ export class ListMenuComponent {
     this.dataSource().filter = JSON.stringify(this.filterValues);
   }
   async ngOnInit(): Promise<void> {    
-    await this._MenuService.getAllMenu();
-    this.CountItem = this.Listmenu().length;
+    await this._SanphamService.getAllSanpham();
+    this.CountItem = this.Listsanpham().length;
     this.initializeColumns();
     this.setupDrawer();
     this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
@@ -236,7 +239,7 @@ export class ListMenuComponent {
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
   async refresh() {
-   await this._MenuService.getAllMenu();
+   await this._SanphamService.getAllSanpham();
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -247,7 +250,7 @@ export class ListMenuComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('MenuColFilter',JSON.stringify(this.FilterColumns)
+      localStorage.setItem('SanphamColFilter',JSON.stringify(this.FilterColumns)
       );
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -286,7 +289,7 @@ export class ListMenuComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('MenuColFilter',JSON.stringify(this.FilterColumns)
+    localStorage.setItem('SanphamColFilter',JSON.stringify(this.FilterColumns)
     );
   }
   doFilterColumns(event: any): void {
@@ -297,12 +300,12 @@ export class ListMenuComponent {
   }
   create(): void {
     this.drawer.open();
-    this._router.navigate(['admin/menu', 0]);
+    this._router.navigate(['admin/sanpham', 0]);
   }
   goToDetail(item: any): void {
-     this._MenuService.setMenuId(item.id);
+     this._SanphamService.setSanphamId(item.id);
     this.drawer.open();
-    this._router.navigate(['admin/menu', item.id]);
+    this._router.navigate(['admin/sanpham', item.id]);
   }
   async LoadDrive() {
     const DriveInfo = {
@@ -334,71 +337,55 @@ export class ListMenuComponent {
     //   //  window.location.reload();
     // });
   }
-  readExcelFile(event: any) {
-    const file = event.target.files[0];
-    const fileReader = new FileReader();
-    fileReader.onload = (e) => {
-      const data = new Uint8Array((e.target as any).result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-      console.log(jsonData);
-      // const transformedData = jsonData.map((v: any) => ({
-      //   Title: v.Title.trim(),
-      //   MaSP: v.MaSP.trim(),
-      //   giagoc: Number(v.giagoc),
-      //   dvt: v.dvt,
-      // }));
-      // const updatePromises = jsonData.map(async (v: any) => {
-      //   const item = this._KhachhangsService
-      //     .ListKhachhang()
-      //     .find((v1) => v1.MaKH === v.MaKH);
-      //   if (item) {
-      //     const item1 = { ...item, ...v };
-      //     //await this._KhachhangsService.updateOneKhachhang(item1);
-      //   }
-      // });
-    //   Promise.all(updatePromises).then(() => {
-    //     this._snackBar.open('Cập Nhật Thành Công', '', {
-    //       duration: 1000,
-    //       horizontalPosition: 'end',
-    //       verticalPosition: 'top',
-    //       panelClass: ['snackbar-success'],
-    //     });
-    //     window.location.reload();
-    //   });
-    // };
-    // fileReader.readAsArrayBuffer(file);
-  }
+  async ImporExcel(event: any) {
+   const data = await readExcelFile(event);
+  const transformedData = data.map((v: any) => ({
+      title: v.title.trim(),
+      masp: v.masp.trim(),
+      slug:\`\${convertToSlug(v.title.trim())}_\${GenId(5,false)}\`,
+      giagoc: Number(v.giagoc)||0,
+      dvt: v.dvt,
+      soluong: Number(v.soluong)||0,
+      soluongkho: Number(v.soluongkho)||0,
+      ghichu: v.ghichu,
+      order: Number(v.order),
+   }));
+   // Filter out duplicate masp values
+   const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
+      index === self.findIndex((t:any) => (
+        t.masp === value.masp
+      ))
+   )
+    const listId2 = uniqueData.map((v: any) => v.masp);
+    const listId1 = this._SanphamService.ListSanpham().map((v: any) => v.masp);
+    const listId3 = listId2.filter((item:any) => !listId1.includes(item));
+    const createuppdateitem = uniqueData.map(async (v: any) => {
+        const item = this._SanphamService.ListSanpham().find((v1) => v1.masp === v.masp);
+        if (item) {
+          const item1 = { ...item, ...v };
+          await this._SanphamService.updateSanpham(item1);
+        }
+        else{
+          await this._SanphamService.CreateSanpham(v);
+        }
+      });
+     const disableItem = listId3.map(async (v: any) => {
+        const item = this._SanphamService.ListSanpham().find((v1) => v1.masp === v);
+        item.isActive = false;
+        await this._SanphamService.updateSanpham(item);
+      });
+      Promise.all([...createuppdateitem, ...disableItem]).then(() => {
+        this._snackBar.open('Cập Nhật Thành Công', '', {
+          duration: 1000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+       // window.location.reload();
+      });
   }   
-  writeExcelFile() {
-    // this._KhachhangsService.ListKhachhang();
-    // const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(
-    //   this._KhachhangsService.ListKhachhang()
-    // );
-    // const workbook: XLSX.WorkBook = {
-    //   Sheets: { Sheet1: worksheet },
-    //   SheetNames: ['Sheet1'],
-    // };
-    // const excelBuffer: any = XLSX.write(workbook, {
-    //   bookType: 'xlsx',
-    //   type: 'array',
-    // });
-    // this.saveAsExcelFile(
-    //   excelBuffer,
-    //   'danhsachkhachhang_' + moment().format('DD_MM_YYYY')
-    // );
-  }
-  saveAsExcelFile(buffer: any, fileName: string) {
-    // const data: Blob = new Blob([buffer], { type: 'application/octet-stream' });
-    // const url: string = window.URL.createObjectURL(data);
-    // const link: HTMLAnchorElement = document.createElement('a');
-    // link.href = url;
-    // link.download = \`\${fileName}.xlsx\`;
-    // link.click();
-    // window.URL.revokeObjectURL(url);
-    // link.remove();
+  ExportExcel(data:any,title:any) {
+    writeExcelFile(data,title);
   }
 }`;
 const componentListCssContent = ``;
