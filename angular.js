@@ -127,8 +127,7 @@ async function generateFile(filePath, content) {
     </div>
 </mat-drawer-container>`;
     
-const componentListContent = `
-import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+const componentListContent = `import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -147,7 +146,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { SanphamService } from '../sanpham.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
-import { convertToSlug, GenId } from '../../../shared/utils/shared.utils';
+import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
+import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 @Component({
   selector: 'app-listsanpham',
   templateUrl: './listsanpham.component.html',
@@ -175,7 +175,6 @@ export class ListSanphamComponent {
     'STT',
     'title',
     'masp',
-    'slug',
     'parent',
     'order',
     'isActive',
@@ -187,7 +186,6 @@ export class ListSanphamComponent {
     title: 'Tiêu Đề',
     masp: 'Mã SP',
     slug: 'Đường Dẫn',
-    parent: 'Sanpham Cha',
     order: 'Thứ Tự',
     isActive: 'Trạng Thái',
     createdAt:'Ngày Tạo',
@@ -204,6 +202,7 @@ export class ListSanphamComponent {
   filterValues: { [key: string]: string } = {};
   private _SanphamService: SanphamService = inject(SanphamService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
+  private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   Listsanpham:any = this._SanphamService.ListSanpham;
   dataSource = computed(() => {
@@ -320,12 +319,13 @@ export class ListSanphamComponent {
   async LoadDrive() {
     const DriveInfo = {
       IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'Khachhangimport',
+      SheetName: 'SPImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
-    // const result: any = await this._DonhangsService.getDrive(DriveInfo);
-    // const data = ConvertDriveData(result.values);
-    // console.log(data);
+   const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
+   const data = ConvertDriveData(result.values);
+   console.log(data);
+   this.DoImportData(data);
     // const updatePromises = data.map(async (v: any) => {
     //   const item = this._KhachhangsService
     //     .ListKhachhang()
@@ -347,18 +347,20 @@ export class ListSanphamComponent {
     //   //  window.location.reload();
     // });
   }
-  async ImporExcel(event: any) {
-   const data = await readExcelFile(event);
-  const transformedData = data.map((v: any) => ({
-      title: v.title.trim(),
-      masp: v.masp.trim(),
-      slug:\`\${convertToSlug(v.title.trim())}_\${GenId(5,false)}\`,
+  DoImportData(data:any)
+  {
+    console.log(data);
+    
+    const transformedData = data.map((v: any) => ({
+      title: v.title?.trim()||'',
+      masp: v.masp?.trim()||'',
+      slug:\`\${convertToSlug(v?.title?.trim()||'')}_\${GenId(5,false)}\`,
       giagoc: Number(v.giagoc)||0,
-      dvt: v.dvt,
+      dvt: v.dvt||'',
       soluong: Number(v.soluong)||0,
       soluongkho: Number(v.soluongkho)||0,
-      ghichu: v.ghichu,
-      order: Number(v.order),
+      ghichu: v.ghichu||'',
+      order: Number(v.order)||0,
    }));
    // Filter out duplicate masp values
    const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
@@ -393,6 +395,10 @@ export class ListSanphamComponent {
         });
        // window.location.reload();
       });
+  }
+  async ImporExcel(event: any) {
+  const data = await readExcelFile(event)
+  this.DoImportData(data);
   }   
   ExportExcel(data:any,title:any) {
     writeExcelFile(data,title);
