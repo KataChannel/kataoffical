@@ -3,8 +3,6 @@ services:
   berausach:
     build: ./api
     restart: always
-    depends_on:
-      - postgres
     ports:
       - "3331:3331"
     volumes:
