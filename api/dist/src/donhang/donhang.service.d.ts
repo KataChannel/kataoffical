@@ -2,34 +2,6 @@ import { PrismaService } from 'prisma/prisma.service';
 export declare class DonhangService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    create(dto: any): Promise<{
-        sanpham: {
-            id: string;
-            order: number | null;
-            isActive: boolean | null;
-            ghichu: string | null;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
-            idSP: string;
-            donhangId: string;
-        }[];
-    } & {
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        order: number | null;
-        title: string;
-        isActive: boolean;
-        ghichu: string | null;
-        type: string | null;
-        madonhang: string;
-        ngaygiao: Date | null;
-        khachhangId: string;
-    }>;
     reorderDonHangs(donhangIds: string[]): Promise<void>;
     search(params: any): Promise<{
         id: string;
@@ -130,19 +102,47 @@ export declare class DonhangService {
         ngaygiao: Date | null;
         khachhangId: string;
     }>;
-    update(id: string, data: any): Promise<{
+    create(dto: any): Promise<{
         sanpham: {
             id: string;
             order: number | null;
             isActive: boolean | null;
             ghichu: string | null;
+            idSP: string;
             sldat: number | null;
             slgiao: number | null;
             slnhan: number | null;
             ttdat: number | null;
             ttgiao: number | null;
             ttnhan: number | null;
+            donhangId: string;
+        }[];
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        order: number | null;
+        title: string;
+        isActive: boolean;
+        ghichu: string | null;
+        type: string | null;
+        madonhang: string;
+        ngaygiao: Date | null;
+        khachhangId: string;
+    }>;
+    update(id: string, data: any): Promise<{
+        sanpham: {
+            id: string;
+            order: number | null;
+            isActive: boolean | null;
+            ghichu: string | null;
             idSP: string;
+            sldat: number | null;
+            slgiao: number | null;
+            slnhan: number | null;
+            ttdat: number | null;
+            ttgiao: number | null;
+            ttnhan: number | null;
             donhangId: string;
         }[];
     } & {

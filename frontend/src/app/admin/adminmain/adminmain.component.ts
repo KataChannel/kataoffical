@@ -91,4 +91,11 @@ export class AdminmainComponent {
       }
     });
   }
+  ClearCache(){
+    const token = localStorage.getItem('token');
+    localStorage.clear();
+    if (token) {
+      localStorage.setItem('token', token);
+    }
+  }
 }

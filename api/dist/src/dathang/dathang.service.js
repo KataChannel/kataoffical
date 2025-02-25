@@ -16,35 +16,6 @@ let DathangService = class DathangService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async create(data) {
-        return this.prisma.dathang.create({
-            data: {
-                title: data.title,
-                type: data.type,
-                madncc: data.madncc,
-                ngaynhan: new Date(data.ngaynhan),
-                ghichu: data.ghichu,
-                nhacungcapId: data.nhacungcapId,
-                order: data.order,
-                isActive: data.isActive,
-                sanpham: {
-                    create: data.sanpham.map(sp => ({
-                        idSP: sp.idSP,
-                        sldat: sp.sldat,
-                        slgiao: sp.slgiao,
-                        slnhan: sp.slnhan,
-                        ttdat: sp.ttdat,
-                        ttgiao: sp.ttgiao,
-                        ttnhan: sp.ttnhan,
-                        ghichu: sp.ghichu,
-                        order: sp.order,
-                        isActive: sp.isActive,
-                    })),
-                },
-            },
-            include: { sanpham: true },
-        });
-    }
     async reorderDathangs(dathangIds) {
         for (let i = 0; i < dathangIds.length; i++) {
             await this.prisma.dathang.update({
@@ -71,37 +42,105 @@ let DathangService = class DathangService {
             throw new common_1.NotFoundException('Dathang not found');
         return dathang;
     }
-    async update(id, data) {
-        const existingOrder = await this.prisma.dathang.findUnique({ where: { id } });
-        if (!existingOrder)
-            throw new common_1.NotFoundException('Đơn hàng không tồn tại');
-        return this.prisma.dathang.update({
-            where: { id },
-            data: {
-                title: data.title,
-                type: data.type,
-                madncc: data.madncc,
-                ngaynhan: new Date(data.ngaynhan),
-                ghichu: data.ghichu,
-                order: data.order,
-                isActive: data.isActive,
-                sanpham: {
-                    deleteMany: {},
-                    create: data.sanpham.map((sp) => ({
-                        idSP: sp.idSP,
-                        sldat: sp.sldat,
-                        slgiao: sp.slgiao,
-                        slnhan: sp.slnhan,
-                        ttdat: sp.ttdat,
-                        ttgiao: sp.ttgiao,
-                        ttnhan: sp.ttnhan,
-                        ghichu: sp.ghichu,
-                        order: sp.order,
-                        isActive: sp.isActive,
-                    })),
+    async create(data) {
+        return this.prisma.$transaction(async (prisma) => {
+            const newDathang = await prisma.dathang.create({
+                data: {
+                    title: data.title,
+                    type: data.type,
+                    madncc: data.madncc,
+                    ngaynhan: new Date(data.ngaynhan),
+                    ghichu: data.ghichu,
+                    nhacungcapId: data.nhacungcapId,
+                    order: data.order,
+                    isActive: data.isActive,
+                    sanpham: {
+                        create: data.sanpham.map(sp => ({
+                            idSP: sp.idSP,
+                            sldat: sp.sldat,
+                            slgiao: sp.slgiao,
+                            slnhan: sp.slnhan,
+                            ttdat: sp.ttdat,
+                            ttgiao: sp.ttgiao,
+                            ttnhan: sp.ttnhan,
+                            ghichu: sp.ghichu,
+                            order: sp.order,
+                            isActive: sp.isActive,
+                        })),
+                    },
                 },
-            },
-            include: { sanpham: true },
+                include: { sanpham: true },
+            });
+            for (const sp of data.sanpham) {
+                await prisma.sanpham.update({
+                    where: { id: sp.idSP },
+                    data: {
+                        soluong: {
+                            increment: sp.slnhan ?? 0,
+                        },
+                    },
+                });
+            }
+            return newDathang;
+        });
+    }
+    async update(id, data) {
+        return this.prisma.$transaction(async (prisma) => {
+            const oldDathang = await prisma.dathang.findUnique({
+                where: { id },
+                include: { sanpham: true },
+            });
+            if (!oldDathang)
+                throw new common_1.NotFoundException('Đơn hàng không tồn tại');
+            for (const oldSP of oldDathang.sanpham) {
+                await prisma.sanpham.update({
+                    where: { id: oldSP.idSP },
+                    data: {
+                        soluong: {
+                            decrement: oldSP.slnhan ?? 0,
+                        },
+                    },
+                });
+            }
+            const updatedDathang = await prisma.dathang.update({
+                where: { id },
+                data: {
+                    title: data.title,
+                    type: data.type,
+                    madncc: data.madncc,
+                    ngaynhan: new Date(data.ngaynhan),
+                    ghichu: data.ghichu,
+                    order: data.order,
+                    isActive: data.isActive,
+                    sanpham: {
+                        deleteMany: {},
+                        create: data.sanpham.map((sp) => ({
+                            idSP: sp.idSP,
+                            sldat: sp.sldat,
+                            slgiao: sp.slgiao,
+                            slnhan: sp.slnhan,
+                            ttdat: sp.ttdat,
+                            ttgiao: sp.ttgiao,
+                            ttnhan: sp.ttnhan,
+                            ghichu: sp.ghichu,
+                            order: sp.order,
+                            isActive: sp.isActive,
+                        })),
+                    },
+                },
+                include: { sanpham: true },
+            });
+            for (const newSP of data.sanpham) {
+                await prisma.sanpham.update({
+                    where: { id: newSP.idSP },
+                    data: {
+                        soluong: {
+                            increment: newSP.slnhan ?? 0,
+                        },
+                    },
+                });
+            }
+            return updatedDathang;
         });
     }
     async remove(id) {

@@ -8,13 +8,13 @@ export declare class DathangController {
             order: number | null;
             isActive: boolean;
             ghichu: string | null;
+            idSP: string;
             sldat: number | null;
             slgiao: number | null;
             slnhan: number | null;
             ttdat: number | null;
             ttgiao: number | null;
             ttnhan: number | null;
-            idSP: string;
             dathangId: string;
         }[];
     } & {
@@ -46,13 +46,13 @@ export declare class DathangController {
             order: number | null;
             isActive: boolean;
             ghichu: string | null;
+            idSP: string;
             sldat: number | null;
             slgiao: number | null;
             slnhan: number | null;
             ttdat: number | null;
             ttgiao: number | null;
             ttnhan: number | null;
-            idSP: string;
             dathangId: string;
         }[];
     } & {
@@ -84,13 +84,13 @@ export declare class DathangController {
             order: number | null;
             isActive: boolean;
             ghichu: string | null;
+            idSP: string;
             sldat: number | null;
             slgiao: number | null;
             slnhan: number | null;
             ttdat: number | null;
             ttgiao: number | null;
             ttnhan: number | null;
-            idSP: string;
             dathangId: string;
         }[];
     } & {
@@ -110,13 +110,13 @@ export declare class DathangController {
             order: number | null;
             isActive: boolean;
             ghichu: string | null;
+            idSP: string;
             sldat: number | null;
             slgiao: number | null;
             slnhan: number | null;
             ttdat: number | null;
             ttgiao: number | null;
             ttnhan: number | null;
-            idSP: string;
             dathangId: string;
         }[];
     } & {

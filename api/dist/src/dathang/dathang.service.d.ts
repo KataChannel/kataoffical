@@ -2,32 +2,6 @@ import { PrismaService } from 'prisma/prisma.service';
 export declare class DathangService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    create(data: any): Promise<{
-        sanpham: {
-            id: string;
-            order: number | null;
-            isActive: boolean;
-            ghichu: string | null;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
-            idSP: string;
-            dathangId: string;
-        }[];
-    } & {
-        id: string;
-        order: number | null;
-        title: string | null;
-        isActive: boolean;
-        ghichu: string | null;
-        type: string | null;
-        madncc: string | null;
-        ngaynhan: Date | null;
-        nhacungcapId: string;
-    }>;
     reorderDathangs(dathangIds: string[]): Promise<void>;
     findAll(): Promise<({
         nhacungcap: {
@@ -47,13 +21,13 @@ export declare class DathangService {
             order: number | null;
             isActive: boolean;
             ghichu: string | null;
+            idSP: string;
             sldat: number | null;
             slgiao: number | null;
             slnhan: number | null;
             ttdat: number | null;
             ttgiao: number | null;
             ttnhan: number | null;
-            idSP: string;
             dathangId: string;
         }[];
     } & {
@@ -85,13 +59,39 @@ export declare class DathangService {
             order: number | null;
             isActive: boolean;
             ghichu: string | null;
+            idSP: string;
             sldat: number | null;
             slgiao: number | null;
             slnhan: number | null;
             ttdat: number | null;
             ttgiao: number | null;
             ttnhan: number | null;
+            dathangId: string;
+        }[];
+    } & {
+        id: string;
+        order: number | null;
+        title: string | null;
+        isActive: boolean;
+        ghichu: string | null;
+        type: string | null;
+        madncc: string | null;
+        ngaynhan: Date | null;
+        nhacungcapId: string;
+    }>;
+    create(data: any): Promise<{
+        sanpham: {
+            id: string;
+            order: number | null;
+            isActive: boolean;
+            ghichu: string | null;
             idSP: string;
+            sldat: number | null;
+            slgiao: number | null;
+            slnhan: number | null;
+            ttdat: number | null;
+            ttgiao: number | null;
+            ttnhan: number | null;
             dathangId: string;
         }[];
     } & {
@@ -111,13 +111,13 @@ export declare class DathangService {
             order: number | null;
             isActive: boolean;
             ghichu: string | null;
+            idSP: string;
             sldat: number | null;
             slgiao: number | null;
             slnhan: number | null;
             ttdat: number | null;
             ttgiao: number | null;
             ttnhan: number | null;
-            idSP: string;
             dathangId: string;
         }[];
     } & {

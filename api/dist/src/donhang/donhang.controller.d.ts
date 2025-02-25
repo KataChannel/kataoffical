@@ -8,13 +8,13 @@ export declare class DonhangController {
             order: number | null;
             isActive: boolean | null;
             ghichu: string | null;
+            idSP: string;
             sldat: number | null;
             slgiao: number | null;
             slnhan: number | null;
             ttdat: number | null;
             ttgiao: number | null;
             ttnhan: number | null;
-            idSP: string;
             donhangId: string;
         }[];
     } & {
@@ -135,13 +135,13 @@ export declare class DonhangController {
             order: number | null;
             isActive: boolean | null;
             ghichu: string | null;
+            idSP: string;
             sldat: number | null;
             slgiao: number | null;
             slnhan: number | null;
             ttdat: number | null;
             ttgiao: number | null;
             ttnhan: number | null;
-            idSP: string;
             donhangId: string;
         }[];
     } & {

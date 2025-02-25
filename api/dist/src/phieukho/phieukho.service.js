@@ -16,28 +16,6 @@ let PhieukhoService = class PhieukhoService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async create(data) {
-        return this.prisma.phieuKho.create({
-            data: {
-                maphieu: data.maphieu,
-                ngay: new Date(data.ngay),
-                type: data.type,
-                khoId: data.khoId,
-                ghichu: data.ghichu,
-                isActive: data.isActive ?? true,
-                sanpham: {
-                    create: data.sanpham.map((sp) => ({
-                        sanphamId: sp.sanphamId,
-                        soluong: sp.soluong,
-                        ghichu: sp.ghichu,
-                    })),
-                },
-            },
-            include: {
-                sanpham: true,
-            },
-        });
-    }
     async findAll() {
         return this.prisma.phieuKho.findMany({
             include: {
@@ -58,28 +36,88 @@ let PhieukhoService = class PhieukhoService {
             throw new common_1.NotFoundException('phieuKho not found');
         return phieuKho;
     }
-    async update(id, data) {
-        return this.prisma.phieuKho.update({
-            where: { id },
-            data: {
-                maphieu: data.maphieu,
-                ngay: new Date(data.ngay),
-                type: data.type,
-                khoId: data.khoId,
-                ghichu: data.ghichu,
-                isActive: data.isActive ?? true,
-                sanpham: {
-                    deleteMany: {},
-                    create: data.sanpham.map((sp) => ({
-                        sanphamId: sp.sanphamId,
-                        soluong: sp.soluong,
-                        ghichu: sp.ghichu,
-                    })),
+    async create(data) {
+        return this.prisma.$transaction(async (prisma) => {
+            const newPhieuKho = await prisma.phieuKho.create({
+                data: {
+                    maphieu: data.maphieu,
+                    ngay: new Date(data.ngay),
+                    type: data.type,
+                    khoId: data.khoId,
+                    ghichu: data.ghichu,
+                    isActive: data.isActive ?? true,
+                    sanpham: {
+                        create: data.sanpham.map((sp) => ({
+                            sanphamId: sp.sanphamId,
+                            soluong: sp.soluong,
+                            ghichu: sp.ghichu,
+                        })),
+                    },
                 },
-            },
-            include: {
-                sanpham: true,
-            },
+                include: { sanpham: true },
+            });
+            for (const sp of data.sanpham) {
+                await prisma.sanpham.update({
+                    where: { id: sp.sanphamId },
+                    data: {
+                        soluongkho: data.type === 'nhap'
+                            ? { increment: sp.soluong }
+                            : { decrement: sp.soluong },
+                    },
+                });
+            }
+            return newPhieuKho;
+        });
+    }
+    async update(id, data) {
+        return this.prisma.$transaction(async (prisma) => {
+            const oldPhieuKho = await prisma.phieuKho.findUnique({
+                where: { id },
+                include: { sanpham: true },
+            });
+            if (!oldPhieuKho)
+                throw new common_1.NotFoundException('Phiếu kho không tồn tại');
+            for (const oldSP of oldPhieuKho.sanpham) {
+                await prisma.sanpham.update({
+                    where: { id: oldSP.sanphamId },
+                    data: {
+                        soluongkho: oldPhieuKho.type === 'nhap'
+                            ? { decrement: oldSP.soluong }
+                            : { increment: oldSP.soluong },
+                    },
+                });
+            }
+            const updatedPhieuKho = await prisma.phieuKho.update({
+                where: { id },
+                data: {
+                    maphieu: data.maphieu,
+                    ngay: new Date(data.ngay),
+                    type: data.type,
+                    khoId: data.khoId,
+                    ghichu: data.ghichu,
+                    isActive: data.isActive ?? true,
+                    sanpham: {
+                        deleteMany: {},
+                        create: data.sanpham.map((sp) => ({
+                            sanphamId: sp.sanphamId,
+                            soluong: sp.soluong,
+                            ghichu: sp.ghichu,
+                        })),
+                    },
+                },
+                include: { sanpham: true },
+            });
+            for (const newSP of data.sanpham) {
+                await prisma.sanpham.update({
+                    where: { id: newSP.sanphamId },
+                    data: {
+                        soluongkho: data.type === 'nhap'
+                            ? { increment: newSP.soluong }
+                            : { decrement: newSP.soluong },
+                    },
+                });
+            }
+            return updatedPhieuKho;
         });
     }
     async remove(id) {

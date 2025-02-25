@@ -16,35 +16,6 @@ let DonhangService = class DonhangService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async create(dto) {
-        return this.prisma.donhang.create({
-            data: {
-                title: dto.title,
-                type: dto.type,
-                madonhang: dto.madonhang,
-                ngaygiao: new Date(dto.ngaygiao),
-                khachhangId: dto.khachhangId,
-                isActive: dto.isActive,
-                order: dto.order,
-                ghichu: dto.ghichu,
-                sanpham: {
-                    create: dto?.sanpham?.map((sp) => ({
-                        idSP: sp.id,
-                        ghichu: sp.ghichu,
-                        sldat: sp.sldat ?? 0,
-                        slgiao: sp.slgiao ?? 0,
-                        slnhan: sp.slnhan ?? 0,
-                        ttdat: sp.ttdat ?? 0,
-                        ttgiao: sp.ttgiao ?? 0,
-                        ttnhan: sp.ttnhan ?? 0,
-                    })),
-                },
-            },
-            include: {
-                sanpham: true,
-            },
-        });
-    }
     async reorderDonHangs(donhangIds) {
         for (let i = 0; i < donhangIds.length; i++) {
             await this.prisma.donhang.update({
@@ -124,35 +95,106 @@ let DonhangService = class DonhangService {
             })),
         };
     }
-    async update(id, data) {
-        return this.prisma.donhang.update({
-            where: { id },
-            data: {
-                title: data.title,
-                type: data.type,
-                madonhang: data.madonhang,
-                ngaygiao: new Date(data.ngaygiao),
-                khachhangId: data.khachhangId,
-                isActive: data.isActive,
-                order: data.order,
-                ghichu: data.ghichu,
-                sanpham: {
-                    deleteMany: {},
-                    create: data?.sanpham?.map((sp) => ({
-                        idSP: sp.id,
-                        ghichu: sp.ghichu,
-                        sldat: sp.sldat ?? 0,
-                        slgiao: sp.slgiao ?? 0,
-                        slnhan: sp.slnhan ?? 0,
-                        ttdat: sp.ttdat ?? 0,
-                        ttgiao: sp.ttgiao ?? 0,
-                        ttnhan: sp.ttnhan ?? 0,
-                    })),
+    async create(dto) {
+        return this.prisma.$transaction(async (prisma) => {
+            const newDonhang = await prisma.donhang.create({
+                data: {
+                    title: dto.title,
+                    type: dto.type,
+                    madonhang: dto.madonhang,
+                    ngaygiao: new Date(dto.ngaygiao),
+                    khachhangId: dto.khachhangId,
+                    isActive: dto.isActive,
+                    order: dto.order,
+                    ghichu: dto.ghichu,
+                    sanpham: {
+                        create: dto?.sanpham?.map((sp) => ({
+                            idSP: sp.id,
+                            ghichu: sp.ghichu,
+                            sldat: sp.sldat ?? 0,
+                            slgiao: sp.slgiao ?? 0,
+                            slnhan: sp.slnhan ?? 0,
+                            ttdat: sp.ttdat ?? 0,
+                            ttgiao: sp.ttgiao ?? 0,
+                            ttnhan: sp.ttnhan ?? 0,
+                        })),
+                    },
                 },
-            },
-            include: {
-                sanpham: true,
-            },
+                include: {
+                    sanpham: true,
+                },
+            });
+            for (const sp of dto.sanpham) {
+                await prisma.sanpham.update({
+                    where: { id: sp.id },
+                    data: {
+                        soluong: {
+                            decrement: sp.sldat ?? 0,
+                        },
+                    },
+                });
+            }
+            return newDonhang;
+        });
+    }
+    async update(id, data) {
+        return this.prisma.$transaction(async (prisma) => {
+            const oldDonhang = await prisma.donhang.findUnique({
+                where: { id },
+                include: { sanpham: true },
+            });
+            if (!oldDonhang)
+                throw new Error('Đơn hàng không tồn tại');
+            for (const oldSP of oldDonhang.sanpham) {
+                await prisma.sanpham.update({
+                    where: { id: oldSP.idSP },
+                    data: {
+                        soluong: {
+                            increment: oldSP.sldat ?? 0,
+                        },
+                    },
+                });
+            }
+            const updatedDonhang = await prisma.donhang.update({
+                where: { id },
+                data: {
+                    title: data.title,
+                    type: data.type,
+                    madonhang: data.madonhang,
+                    ngaygiao: new Date(data.ngaygiao),
+                    khachhangId: data.khachhangId,
+                    isActive: data.isActive,
+                    order: data.order,
+                    ghichu: data.ghichu,
+                    sanpham: {
+                        deleteMany: {},
+                        create: data?.sanpham?.map((sp) => ({
+                            idSP: sp.id,
+                            ghichu: sp.ghichu,
+                            sldat: sp.sldat ?? 0,
+                            slgiao: sp.slgiao ?? 0,
+                            slnhan: sp.slnhan ?? 0,
+                            ttdat: sp.ttdat ?? 0,
+                            ttgiao: sp.ttgiao ?? 0,
+                            ttnhan: sp.ttnhan ?? 0,
+                        })),
+                    },
+                },
+                include: {
+                    sanpham: true,
+                },
+            });
+            for (const newSP of data.sanpham) {
+                await prisma.sanpham.update({
+                    where: { id: newSP.id },
+                    data: {
+                        soluong: {
+                            decrement: newSP.sldat ?? 0,
+                        },
+                    },
+                });
+            }
+            return updatedDonhang;
         });
     }
     async remove(id) {
