@@ -20,13 +20,15 @@ docker exec kataoffical-frontend-1 ls -l /bin/bash
 docker --version
 docker-compose --version
 docker-compose logs -f kataoffical-backend-1
-docker-compose logs -f  rausach-ferausach
+docker-compose logs -f rausach-ferausach
+docker-compose logs -f rausach-berausach-1
 docker logs node:18
 docker logs kataoffical-backend
 docker stop priceless_pike
 docker rm priceless_pike
 
 docker compose -f 'docker-compose.yml' up -d --build 'backend'
+docker compose -f 'docker-compose.yml' up -d --build 'berausach' 
 
 docker exec -it kataoffical-backend-1 sh
 bun install -g prisma
@@ -70,6 +72,7 @@ sudo ufw allow 5050/tcp
 sudo ufw allow 3000/tcp
 sudo ufw allow 5555/tcp
 sudo ufw allow 4301/tcp
+sudo ufw allow 3331/tcp
 sudo ufw reload
 
 sudo crontab -e
