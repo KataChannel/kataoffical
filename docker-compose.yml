@@ -5,8 +5,6 @@ services:
     restart: always
     ports:
       - "3331:3331"
-    volumes:
-      - ./api:/app
     environment:
       - DATABASE_URL=postgresql://postgres:password@116.118.49.243:5432/rausachv2
       - GOOGLE_CLIENT_ID=897974685698-efprsqffgop935h5d5l2lidle1go9i17.apps.googleusercontent.com
@@ -22,10 +20,7 @@ services:
     build: ./frontend
     restart: always
     ports:
-      - "4000:4301"
-    depends_on:
-      - berausach
-      - nginx
+      - "4301:4301"
     environment:
       - NODE_ENV=production
 
@@ -35,8 +30,5 @@ services:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - ferausach
-
 volumes:
   pg_data:
