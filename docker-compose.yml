@@ -1,65 +1,32 @@
 version: '3'
 services:
-  postgres:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydb
-    ports:
-      - "5432:5432"
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin123
-    ports:
-      - "5050:80"
-    depends_on:
-      - postgres
-
-  backend:
+  berausach:
     build: ./api
     restart: always
     depends_on:
       - postgres
     ports:
-      - "3000:3000"
+      - "3331:3331"
     volumes:
       - ./api:/app
     environment:
-      DATABASE_URL : "postgresql://postgres:password@116.118.49.243:5432/mydb"
-    command: >
-      sh -c "bun install && bunx prisma generate && bun start"  # Sử dụng bun thay vì npm
-
-  prisma-studio:
-    image: node:18
-    container_name: prisma-studio
-    working_dir: /app
-    ports:
-      - "5555:5555"
-    volumes:
-      - ./api:/app
-    depends_on:
-      - backend
-    environment:
-      DATABASE_URL : "postgresql://postgres:password@116.118.49.243:5432/mydb"
-    command: >
-      sh -c "npm install -g prisma && prisma studio"
-
-  frontend:
+      - DATABASE_URL=postgresql://postgres:password@116.118.49.243:5432/rausachv2
+      - GOOGLE_CLIENT_ID=897974685698-efprsqffgop935h5d5l2lidle1go9i17.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
+      - FACEBOOK_CLIENT_ID=your-facebook-client-id
+      - FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
+      - ZALO_APP_ID=your-zalo-app-id
+      - ZALO_APP_SECRET=your-zalo-app-secret
+      - BASE_URL=http://localhost:4301
+      - SERVER_URL=http://localhost:3331
+      - PORT=3331
+  ferausach:
     build: ./frontend
     restart: always
     depends_on:
-      - backend
+      - berausach
     ports:
-      - "4200:4200"
+      - "4301:4301"
     environment:
       - NODE_ENV=production
 
