@@ -12,7 +12,7 @@ FROM node:18-alpine
 
 WORKDIR /app
 COPY --from=build /app /app
-RUN npm install --omit=dev
+RUN npm install --force --omit=dev
 
 EXPOSE 4301
 CMD ["node", "dist/server/main.server.mjs"]
