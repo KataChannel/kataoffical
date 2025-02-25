@@ -15,4 +15,4 @@ COPY --from=build /app /app
 RUN npm install --force --omit=dev
 
 EXPOSE 4301
-CMD ["node", "dist/frontend/server/main.server.mjs"]
+CMD ["node", "dist/frontend/server/server.mjs"]

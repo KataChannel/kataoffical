@@ -20,6 +20,7 @@ docker exec kataoffical-frontend-1 ls -l /bin/bash
 docker --version
 docker-compose --version
 docker-compose logs -f kataoffical-backend-1
+docker-compose logs -f  rausach-ferausach
 docker logs node:18
 docker logs kataoffical-backend
 docker stop priceless_pike
@@ -68,6 +69,7 @@ sudo ufw allow 4200/tcp
 sudo ufw allow 5050/tcp
 sudo ufw allow 3000/tcp
 sudo ufw allow 5555/tcp
+sudo ufw allow 4301/tcp
 sudo ufw reload
 
 sudo crontab -e
