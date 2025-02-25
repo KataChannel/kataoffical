@@ -21,12 +21,22 @@ services:
   ferausach:
     build: ./frontend
     restart: always
+    ports:
+      - "4000:4301"
     depends_on:
       - berausach
-    ports:
-      - "4301:4301"
+      - nginx
     environment:
       - NODE_ENV=production
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - ferausach
 
 volumes:
   pg_data:

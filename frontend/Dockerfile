@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Sao chép package.json và cài đặt dependencies
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm install --force
 
 # Sao chép toàn bộ project và build Angular
 COPY . .
