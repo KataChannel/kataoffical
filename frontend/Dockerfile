@@ -1,20 +1,18 @@
-# Sử dụng image Node.js mới nhất
-FROM node:20-alpine AS build
+# Stage 1: Build Angular SSR
+FROM node:18 AS build
 
-# Thiết lập thư mục làm việc
 WORKDIR /app
-
-# Sao chép package.json và cài đặt dependencies
 COPY package.json package-lock.json ./
 RUN npm install --force
-
-# Sao chép toàn bộ project và build Angular
 COPY . .
-RUN npm run build --prod
+RUN npm run build --prod  # Build Angular với Universal (SSR)
 
-# Dùng Nginx để phục vụ ứng dụng
-FROM nginx:alpine
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY --from=build /app/dist/frontend/browser /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Stage 2: Chạy SSR trên Node.js
+FROM node:18-alpine
+
+WORKDIR /app
+COPY --from=build /app /app
+RUN npm install --omit=dev
+
+EXPOSE 4301
+CMD ["node", "dist/server/main.server.mjs"]
