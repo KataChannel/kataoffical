@@ -16,16 +16,32 @@ let DonhangService = class DonhangService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async create(data) {
-        let newOrder;
-        const maxOrder = await this.prisma.sanpham.aggregate({
-            _max: { order: true },
-        });
-        newOrder = (maxOrder._max?.order || 0) + 1;
-        return this.prisma.sanpham.create({
+    async create(dto) {
+        return this.prisma.donhang.create({
             data: {
-                ...data,
-                order: newOrder,
+                title: dto.title,
+                type: dto.type,
+                madonhang: dto.madonhang,
+                ngaygiao: new Date(dto.ngaygiao),
+                khachhangId: dto.khachhangId,
+                isActive: dto.isActive,
+                order: dto.order,
+                ghichu: dto.ghichu,
+                sanpham: {
+                    create: dto?.sanpham?.map((sp) => ({
+                        idSP: sp.id,
+                        ghichu: sp.ghichu,
+                        sldat: sp.sldat ?? 0,
+                        slgiao: sp.slgiao ?? 0,
+                        slnhan: sp.slnhan ?? 0,
+                        ttdat: sp.ttdat ?? 0,
+                        ttgiao: sp.ttgiao ?? 0,
+                        ttnhan: sp.ttnhan ?? 0,
+                    })),
+                },
+            },
+            include: {
+                sanpham: true,
             },
         });
     }
@@ -37,17 +53,107 @@ let DonhangService = class DonhangService {
             });
         }
     }
+    async search(params) {
+        const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;
+        console.log(params);
+        return this.prisma.donhang.findMany({
+            where: {
+                ngaygiao: {
+                    gte: new Date(Batdau) || new Date(),
+                    lte: new Date(Ketthuc) || new Date(),
+                },
+                type: Type,
+            },
+            take: pageSize,
+            skip: pageNumber * pageSize,
+            orderBy: { ngaygiao: 'desc' },
+        });
+    }
     async findAll() {
-        return this.prisma.donhang.findMany();
+        const donhangs = await this.prisma.donhang.findMany({
+            include: {
+                sanpham: {
+                    include: {
+                        sanpham: true,
+                    },
+                },
+                khachhang: true,
+            },
+        });
+        return donhangs.map((donhang) => ({
+            ...donhang,
+            sanpham: donhang.sanpham.map((item) => ({
+                ...item.sanpham,
+                idSP: item.idSP,
+                sldat: item.sldat,
+                slgiao: item.slgiao,
+                slnhan: item.slnhan,
+                ttdat: item.ttdat,
+                ttgiao: item.ttgiao,
+                ttnhan: item.ttnhan,
+                ghichu: item.ghichu,
+            })),
+        }));
     }
     async findOne(id) {
-        const donhang = await this.prisma.donhang.findUnique({ where: { id } });
+        const donhang = await this.prisma.donhang.findUnique({
+            where: { id },
+            include: {
+                sanpham: {
+                    include: {
+                        sanpham: true,
+                    },
+                },
+                khachhang: true,
+            },
+        });
         if (!donhang)
             throw new common_1.NotFoundException('DonHang not found');
-        return donhang;
+        return {
+            ...donhang,
+            sanpham: donhang.sanpham.map((item) => ({
+                ...item.sanpham,
+                idSP: item.idSP,
+                sldat: item.sldat,
+                slgiao: item.slgiao,
+                slnhan: item.slnhan,
+                ttdat: item.ttdat,
+                ttgiao: item.ttgiao,
+                ttnhan: item.ttnhan,
+                ghichu: item.ghichu,
+            })),
+        };
     }
     async update(id, data) {
-        return this.prisma.donhang.update({ where: { id }, data });
+        return this.prisma.donhang.update({
+            where: { id },
+            data: {
+                title: data.title,
+                type: data.type,
+                madonhang: data.madonhang,
+                ngaygiao: new Date(data.ngaygiao),
+                khachhangId: data.khachhangId,
+                isActive: data.isActive,
+                order: data.order,
+                ghichu: data.ghichu,
+                sanpham: {
+                    deleteMany: {},
+                    create: data?.sanpham?.map((sp) => ({
+                        idSP: sp.id,
+                        ghichu: sp.ghichu,
+                        sldat: sp.sldat ?? 0,
+                        slgiao: sp.slgiao ?? 0,
+                        slnhan: sp.slnhan ?? 0,
+                        ttdat: sp.ttdat ?? 0,
+                        ttgiao: sp.ttgiao ?? 0,
+                        ttnhan: sp.ttnhan ?? 0,
+                    })),
+                },
+            },
+            include: {
+                sanpham: true,
+            },
+        });
     }
     async remove(id) {
         return this.prisma.donhang.delete({ where: { id } });

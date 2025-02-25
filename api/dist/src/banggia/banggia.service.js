@@ -29,6 +29,27 @@ let BanggiaService = class BanggiaService {
             },
         });
     }
+    async createBanggia(data) {
+        console.error(data);
+        return this.prisma.banggia.create({
+            data: {
+                title: data.title,
+                type: data.type,
+                batdau: data.batdau ? new Date(data.batdau) : null,
+                ketthuc: data.ketthuc ? new Date(data.ketthuc) : null,
+                isActive: data.isActive ?? false,
+                sanpham: {
+                    create: data.sanpham?.map((sp) => ({
+                        sanphamId: sp.sanphamId,
+                        giaban: sp.giaban,
+                    })),
+                },
+            },
+            include: {
+                sanpham: true,
+            },
+        });
+    }
     async reorderBanggias(banggiaIds) {
         for (let i = 0; i < banggiaIds.length; i++) {
             await this.prisma.banggia.update({
@@ -38,16 +59,58 @@ let BanggiaService = class BanggiaService {
         }
     }
     async findAll() {
-        return this.prisma.banggia.findMany();
+        return this.prisma.banggia.findMany({
+            include: {
+                sanpham: true,
+            },
+            orderBy: {
+                order: 'asc',
+            },
+        });
     }
     async findOne(id) {
-        const banggia = await this.prisma.banggia.findUnique({ where: { id } });
-        if (!banggia)
-            throw new common_1.NotFoundException('Banggia not found');
-        return banggia;
+        const banggia = await this.prisma.banggia.findUnique({
+            where: { id },
+            include: {
+                sanpham: {
+                    include: {
+                        sanpham: true,
+                    },
+                },
+            },
+        });
+        if (!banggia) {
+            throw new common_1.NotFoundException(`Banggia with ID "${id}" not found`);
+        }
+        return {
+            ...banggia,
+            sanpham: banggia.sanpham.map((item) => ({
+                giaban: item.giaban,
+                ...item.sanpham,
+            })),
+        };
     }
     async update(id, data) {
-        return this.prisma.banggia.update({ where: { id }, data });
+        return this.prisma.banggia.update({
+            where: { id },
+            data: {
+                title: data.title,
+                isActive: data.isActive,
+                type: data.type,
+                batdau: data.batdau ? new Date(data.batdau) : null,
+                ketthuc: data.ketthuc ? new Date(data.ketthuc) : null,
+                sanpham: {
+                    deleteMany: {},
+                    create: data.sanpham?.map((sp) => ({
+                        sanphamId: sp.sanphamId,
+                        giaban: sp.giaban,
+                    })),
+                },
+            },
+            include: {
+                sanpham: true,
+            },
+        });
     }
     async remove(id) {
         return this.prisma.banggia.delete({ where: { id } });

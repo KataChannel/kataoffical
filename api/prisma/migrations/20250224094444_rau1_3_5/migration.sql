@@ -1,0 +1,28 @@
+/*
+  Warnings:
+
+  - You are about to drop the column `title` on the `Dathangsanpham` table. All the data in the column will be lost.
+
+*/
+-- AlterTable
+ALTER TABLE "Dathangsanpham" DROP COLUMN "title",
+ALTER COLUMN "sldat" DROP NOT NULL,
+ALTER COLUMN "sldat" SET DATA TYPE DOUBLE PRECISION,
+ALTER COLUMN "slgiao" DROP NOT NULL,
+ALTER COLUMN "slgiao" SET DATA TYPE DOUBLE PRECISION,
+ALTER COLUMN "slnhan" DROP NOT NULL,
+ALTER COLUMN "slnhan" SET DATA TYPE DOUBLE PRECISION,
+ALTER COLUMN "ttdat" DROP NOT NULL,
+ALTER COLUMN "ttgiao" DROP NOT NULL,
+ALTER COLUMN "ttnhan" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "Donhangsanpham" ALTER COLUMN "sldat" SET DATA TYPE DOUBLE PRECISION,
+ALTER COLUMN "slgiao" SET DATA TYPE DOUBLE PRECISION,
+ALTER COLUMN "slnhan" SET DATA TYPE DOUBLE PRECISION;
+
+-- AlterTable
+ALTER TABLE "Sanpham" ALTER COLUMN "soluong" SET DEFAULT 0,
+ALTER COLUMN "soluong" SET DATA TYPE DOUBLE PRECISION,
+ALTER COLUMN "soluongkho" SET DEFAULT 0,
+ALTER COLUMN "soluongkho" SET DATA TYPE DOUBLE PRECISION;

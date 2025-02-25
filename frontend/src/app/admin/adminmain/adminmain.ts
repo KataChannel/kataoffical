@@ -1,8 +1,8 @@
 export const Config:any={
-    Logoimage:"logo/logo.png"
+    Logoimage:"/images/logo-full.png"
 }
 export const User:any={
-    Avatar:"logo/logo.png",
+    Avatar:"/images/logo-full.png",
     Hoten:"Phạm Chí Kiệt",
     email:"it@tazagroup.vn",
     Vitri:"Leader IT"

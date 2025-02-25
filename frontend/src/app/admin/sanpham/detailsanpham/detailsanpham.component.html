@@ -4,6 +4,7 @@
   </button>
   <div class="font-bold">{{ DetailSanpham()?.title || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
+    <mat-slide-toggle [(ngModel)]="DetailSanpham().isActive" [disabled]="!isEdit()">{{DetailSanpham().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleSanphamAction()">
       <mat-icon>save</mat-icon>
     </button>
@@ -62,14 +63,28 @@
         <input matInput [(ngModel)]="DetailSanpham().title" (input)="FillSlug()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Slug</mat-label>
-        <input matInput [(ngModel)]="DetailSanpham().slug" [disabled]="!isEdit()" placeholder="Vui lòng nhập Slug"/>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
         <mat-label>Mã Sản Phẩm</mat-label>
         <input matInput [(ngModel)]="DetailSanpham().masp" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
       </mat-form-field>
-      <mat-slide-toggle [(ngModel)]="DetailSanpham().isActive" [disabled]="!isEdit()">{{DetailSanpham().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+      <mat-form-field appearance="outline">
+        <mat-label>Giá Gốc</mat-label>
+        <input matInput type="number" [(ngModel)]="DetailSanpham().giagoc" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giá Gốc"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Đơn Vị Tính</mat-label>
+        <input matInput [(ngModel)]="DetailSanpham().dvt" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+      </mat-form-field>
+      <div class="flex flex-row space-x-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Số Lượng</mat-label>
+          <input matInput type="number" [(ngModel)]="DetailSanpham().soluong" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Số Lượng Kho</mat-label>
+          <input matInput type="number" [(ngModel)]="DetailSanpham().soluongkho" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+        </mat-form-field>
+      </div>
+ 
 
 <!--       
       <mat-form-field appearance="outline">

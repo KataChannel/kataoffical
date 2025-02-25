@@ -72,6 +72,16 @@
                             {{ row[column]|date:'dd/MM/yyyy'}}
                         </span>
                         }
+                        @case ('isActive') {
+                        <span class="max-w-40 line-clamp-4">
+                            @if (row[column]) {
+                            <mat-icon class="text-green-500">check_circle</mat-icon>
+                            }
+                            @else {
+                            <mat-icon class="text-red-500">cancel</mat-icon>
+                            }
+                        </span>
+                        }
                         @case ('updatedAt') {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column]|date:'dd/MM/yyyy'}}

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common';
 import { DonhangService } from './donhang.service';
 
 @Controller('donhang')
@@ -9,7 +9,11 @@ export class DonhangController {
   create(@Body() createDonhangDto: any) {
     return this.donhangService.create(createDonhangDto);
   }
+  @Post('search')
+  async search(@Body() params: any) {
 
+    return this.donhangService.search(params);
+  }
   @Get()
   findAll() {
     return this.donhangService.findAll();

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "SanphamKho" ADD COLUMN     "ghichu" TEXT,
+ADD COLUMN     "sldat" DOUBLE PRECISION NOT NULL DEFAULT 0;

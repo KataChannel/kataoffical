@@ -7,6 +7,7 @@ export declare class SanphamController {
         order: number | null;
         title: string;
         slug: string | null;
+        isActive: boolean;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -20,6 +21,7 @@ export declare class SanphamController {
         order: number | null;
         title: string;
         slug: string | null;
+        isActive: boolean;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -33,6 +35,7 @@ export declare class SanphamController {
         order: number | null;
         title: string;
         slug: string | null;
+        isActive: boolean;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -46,6 +49,7 @@ export declare class SanphamController {
         order: number | null;
         title: string;
         slug: string | null;
+        isActive: boolean;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -59,6 +63,7 @@ export declare class SanphamController {
         order: number | null;
         title: string;
         slug: string | null;
+        isActive: boolean;
         masp: string;
         giagoc: number;
         dvt: string | null;

@@ -6,7 +6,7 @@ export declare class MenuController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number;
+        order: number | null;
         parentId: string | null;
         title: string;
         icon: string | null;
@@ -17,7 +17,7 @@ export declare class MenuController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number;
+        order: number | null;
         parentId: string | null;
         title: string;
         icon: string | null;
@@ -28,7 +28,7 @@ export declare class MenuController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number;
+        order: number | null;
         parentId: string | null;
         title: string;
         icon: string | null;
@@ -39,7 +39,7 @@ export declare class MenuController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number;
+        order: number | null;
         parentId: string | null;
         title: string;
         icon: string | null;
@@ -50,7 +50,7 @@ export declare class MenuController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number;
+        order: number | null;
         parentId: string | null;
         title: string;
         icon: string | null;

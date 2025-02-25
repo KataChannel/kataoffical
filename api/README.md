@@ -1,7 +1,7 @@
 npx bun add @nestjs/config @nestjs/jwt @nestjs/passport passport passport-jwt bcryptjs
 npx bun add @prisma/client
 npx bun add -d prisma
-npx bun prisma migrate dev --name rau1.1.2
+npx bun prisma migrate dev --name rau1.1.6
 npx prisma db push
 npx bun prisma generate
 
@@ -12,6 +12,11 @@ npx katacreate --type nestjs --name sanpham --outputDir sanpham
 npx katacreate --type nestjs --name donhang --outputDir donhang
 npx katacreate --type nestjs --name banggia --outputDir banggia
 npx katacreate --type nestjs --name giohang --outputDir giohang
+npx katacreate --type nestjs --name khachhang --outputDir khachhang
+npx katacreate --type nestjs --name nhacungcap --outputDir nhacungcap
+npx katacreate --type nestjs --name dathang --outputDir dathang
+npx katacreate --type nestjs --name kho --outputDir kho
+npx katacreate --type nestjs --name phieukho --outputDir phieukho
 
 
 Tình huống	Lệnh cần chạy
@@ -36,19 +41,19 @@ giohang-donhang:1-1
 
 banggia-sanpham:n-n
 
-{
-    "id": "098293bb-4ecc-4a01-89a3-5648d310ec99",
-    "Title": "Khổ qua rừng",
-    "Slug": "kho-qua-rung",
-    "MaSP": "I100740",
-    "giagoc": 0,
-    "dvt": "Kg",
-    "Image": {},
-    "Soluong": 10,
-    "SLTT": 1,
-    "Tongtien": 0,
-    "SLTG": 10,
-    "TongtienG": 0,
-    "SLTN": 1,
-    "TongtienN": 0
+
+nhacungcap: id,name,mancc,diachi,email,sdt,ghichu,isActive
+dathang:id,madncc,title,status,isActive,nhacungcap,sanpham
+1 nhacungcap - nhiều dathang
+1 dathang - 1 nhacungcap
+1 giohang - 1 dathang
+
+model Giohang {
+  id        String   @id @default(uuid())
+  title     String
+  donhang   Donhang  @relation(fields: [donhangId], references: [id])
+  donhangId String   @unique
+  order     Int
+  isActive  Boolean  @default(false)
+  sanpham   Giohangsanpham[]
 }

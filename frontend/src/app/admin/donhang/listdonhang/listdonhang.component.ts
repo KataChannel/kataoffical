@@ -1,32 +1,27 @@
-import {
-  AfterViewInit,
-  Component,
-  inject,
-  ViewChild,
-  ChangeDetectionStrategy,
-  signal,
-} from '@angular/core';
+import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatMenuModule } from '@angular/material/menu';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { DonhangsService } from './listdonhang.service';
-import moment from 'moment';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { CommonModule } from '@angular/common';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { DonhangService } from '../donhang.service';
+import { MatMenuModule } from '@angular/material/menu';
+import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
+import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
+import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { CommonModule } from '@angular/common';
-import { ConvertDriveData } from '../../../shared/shared.utils';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import * as XLSX from 'xlsx';
+import moment from 'moment';
 @Component({
   selector: 'app-listdonhang',
   templateUrl: './listdonhang.component.html',
@@ -43,36 +38,71 @@ import * as XLSX from 'xlsx';
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
-    FormsModule,
-    MatDatepickerModule,
-    RouterLink,
     CommonModule,
+    FormsModule,
+    MatTooltipModule,
+    MatDatepickerModule
   ],
-  providers: [provideNativeDateAdapter()],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers:[provideNativeDateAdapter()]
 })
-export class ListdonhangComponent {
+export class ListDonhangComponent {
   Detail: any = {};
-  dataSource!: MatTableDataSource<any>;
   displayedColumns: string[] = [
     'STT',
-    'MaDonHang',
-    'TenKH',
-    'SDT',
-    'Diachi',
-    'Ghichu',
-    'Ngaygiao',
-    'Status',
+    'title',
+    'madonhang',
+    'khachhang',
+    'sanpham',
+    'ngaygiao',
+    'ghichu',
+    'order',
+    'isActive',
+    'createdAt',
+    'updatedAt',
   ];
   ColumnName: any = {
     STT: 'STT',
-    MaDonHang: 'Mã Đơn Hàng',
-    TenKH: 'Tên Khách Hàng',
-    SDT: 'SDT',
-    Diachi: 'Địa Chỉ',
-    Ghichu: 'Ghi Chú',
-    Status: 'Trạng Thái',
-    Ngaygiao: 'Ngày Giao',
+    title: 'Tiêu Đề',
+    madonhang: 'Mã Đơn Hàng',
+    khachhang: 'Khách Hàng',
+    sanpham: 'Sản Phẩm',
+    ngaygiao: 'Ngày Giao',
+    ghichu: 'Ghi Chú',
+    order: 'Thứ Tự',
+    isActive: 'Trạng Thái',
+    createdAt:'Ngày Tạo',
+    updatedAt:'Ngày Cập Nhật'
+  };
+  FilterColumns: any[] = JSON.parse(
+    localStorage.getItem('DonhangColFilter') || '[]'
+  );
+  Columns: any[] = [];
+  isFilter: boolean = false;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
+  filterValues: { [key: string]: string } = {};
+  private _DonhangService: DonhangService = inject(DonhangService);
+  private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
+  private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
+  private _router: Router = inject(Router);
+  Listdonhang:any = this._DonhangService.ListDonhang;
+  dataSource = computed(() => {
+    const ds = new MatTableDataSource(this.Listdonhang());
+    ds.filterPredicate = this.createFilter();
+    ds.paginator = this.paginator;
+    ds.sort = this.sort;
+    return ds;
+  });
+  donhangId:any = this._DonhangService.donhangId;
+  _snackBar: MatSnackBar = inject(MatSnackBar);
+  CountItem: any = 0;
+  SearchParams: any = {
+    Batdau: moment().format('YYYY-MM-DD'),
+    Ketthuc: moment().add(1,'day').format('YYYY-MM-DD'),
+    Type: 'donsi',
+    pageSize: 9999,
+    pageNumber: 0,
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -80,71 +110,70 @@ export class ListdonhangComponent {
     { id: 3, Title: '1 Tháng', value: 'month' },
     { id: 4, Title: '1 Năm', value: 'year' },
   ];
-  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('ListDonhang_FilterColumns') || '[]'
-  );
-  private _DonhangsService: DonhangsService = inject(DonhangsService);
-  private _snackBar: MatSnackBar = inject(MatSnackBar);
-  ListDonhang = signal<any[]>([]);
-  SearchParams: any = {
-    Batdau: moment().startOf('day').toDate(),
-    Ketthuc: moment().endOf('day').toDate(),
-    Type: 'donsi',
-    pageSize: 9999,
-    pageNumber: 0,
-  };
   Chonthoigian: any = 'day';
-  Columns: any[] = [];
-  CountItem: number = 0;
-  constructor(
-    private _breakpointObserver: BreakpointObserver,
-    private _router: Router
-  ) {}
+  constructor() {
+    this.displayedColumns.forEach(column => {
+      this.filterValues[column] = '';
+    });
+  }
+  onSelectionChange(event: MatSelectChange): void {
+    const timeFrames: { [key: string]: () => void } = {
+      day: () => {
+        this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment().endOf('day').add(1,'day').format('YYYY-MM-DD');
+      },
+      week: () => {
+        this.SearchParams.Batdau = moment().startOf('week').format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
+      },
+      month: () => {
+        this.SearchParams.Batdau = moment().startOf('month').format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment().endOf('month').format('YYYY-MM-DD');
+      },
+      year: () => {
+        this.SearchParams.Batdau = moment().startOf('year').format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
+      },
+    };
 
-  async ngOnInit(): Promise<void> {
-    await this.loadData();
-    this.setupBreakpointObserver();
-    this.initializeColumns();
+    timeFrames[event.value]?.();
+    // this.loadData();
   }
-  ApplyDate(): void {
-    this.loadData();
-  }
-  private async loadData(): Promise<void> {
-    await this._DonhangsService.SearchDonhang(this.SearchParams);
-    this.ListDonhang = this._DonhangsService.ListDonhang;
-    this.dataSource = new MatTableDataSource(
-      this.ListDonhang().sort((a: any, b: any) => b.Ordering - a.Ordering)
-    );
-    this.CountItem = this.dataSource.data.length;
-    if (this.sort) {
-      this.dataSource.sort = this.sort;
-    }
-    if (this.paginator) {
-      this.dataSource.paginator = this.paginator;
-      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-      this.paginator._intl.previousPageLabel = 'Về Trước';
-      this.paginator._intl.firstPageLabel = 'Trang Đầu';
-      this.paginator._intl.lastPageLabel = 'Trang Cuối';
+  onDateChange(event: any): void {
+    console.log(event);
+    if(event.value){
     }
   }
-
-  private setupBreakpointObserver(): void {
-    this._breakpointObserver
-      .observe([Breakpoints.Handset])
-      .subscribe((result) => {
-        if (result.matches) {
-          this.drawer.mode = 'over';
-          this.paginator.hidePageSize = true;
-        } else {
-          this.drawer.mode = 'over';
+  createFilter(): (data: any, filter: string) => boolean {
+    return (data, filter) => {
+      const filterObject = JSON.parse(filter);
+      let isMatch = true;
+      this.displayedColumns.forEach(column => {
+        if (filterObject[column]) {
+          const value = data[column] ? data[column].toString().toLowerCase() : '';
+          isMatch = isMatch && value.includes(filterObject[column].toLowerCase());
         }
       });
+      return isMatch;
+    };
   }
-
+  applyFilter() {
+    this.dataSource().filter = JSON.stringify(this.filterValues);
+  }
+  async ngOnInit(): Promise<void> {    
+    await this._DonhangService.getAllDonhang();
+    this.CountItem = this.Listdonhang().length;
+    this.initializeColumns();
+    this.setupDrawer();
+    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+    this.paginator._intl.previousPageLabel = 'Về Trước';
+    this.paginator._intl.firstPageLabel = 'Trang Đầu';
+    this.paginator._intl.lastPageLabel = 'Trang Cuối';
+  }
+  async refresh() {
+   await this._DonhangService.getAllDonhang();
+  }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
       key,
@@ -154,12 +183,9 @@ export class ListdonhangComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem(
-        'Vandon_FilterColumns',
-        JSON.stringify(this.FilterColumns)
+      localStorage.setItem('DonhangColFilter',JSON.stringify(this.FilterColumns)
       );
     }
-
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
     );
@@ -169,50 +195,18 @@ export class ListdonhangComponent {
     }, {} as Record<string, string>);
   }
 
-  onSelectionChange(event: MatSelectChange): void {
-    const timeFrames: { [key: string]: () => void } = {
-      day: () => {
-        this.SearchParams.Batdau = moment().startOf('day').toDate();
-        this.SearchParams.Ketthuc = moment().endOf('day').toDate();
-      },
-      week: () => {
-        this.SearchParams.Batdau = moment().startOf('week').toDate();
-        this.SearchParams.Ketthuc = moment().endOf('week').toDate();
-      },
-      month: () => {
-        this.SearchParams.Batdau = moment().startOf('month').toDate();
-        this.SearchParams.Ketthuc = moment().endOf('month').toDate();
-      },
-      year: () => {
-        this.SearchParams.Batdau = moment().startOf('year').toDate();
-        this.SearchParams.Ketthuc = moment().endOf('year').toDate();
-      },
-    };
-
-    timeFrames[event.value]?.();
-    this.loadData();
+  private setupDrawer(): void {
+    this._breakpointObserver
+      .observe([Breakpoints.Handset])
+      .subscribe((result) => {
+        if (result.matches) {
+          this.drawer.mode = 'over';
+          this.paginator.hidePageSize = true;
+        } else {
+          this.drawer.mode = 'side';
+        }
+      });
   }
-
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    this.CountItem = this.dataSource.filteredData.length;
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
-  Create(): void {
-    this.drawer.open();
-    this._router.navigate(['admin/donhang/donsi', 0]);
-  }
-
-  doFilterColumns(event: any): void {
-    const query = event.target.value.toLowerCase();
-    this.FilterColumns = this.Columns.filter((v) =>
-      v.value.toLowerCase().includes(query)
-    );
-  }
-
   toggleColumn(item: any): void {
     const column = this.FilterColumns.find((v) => v.key === item.key);
     if (column) {
@@ -228,112 +222,109 @@ export class ListdonhangComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    this.setupDataSource();
-    localStorage.setItem(
-      'Vandon_FilterColumns',
-      JSON.stringify(this.FilterColumns)
+    localStorage.setItem('DonhangColFilter',JSON.stringify(this.FilterColumns)
     );
   }
-  private setupDataSource(): void {
-    this.dataSource = new MatTableDataSource(this.ListDonhang());
-    this.CountItem = this.dataSource.data.length;
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
+  doFilterColumns(event: any): void {
+    const query = event.target.value.toLowerCase();
+    this.FilterColumns = this.Columns.filter((v) =>
+      v.value.toLowerCase().includes(query)
+    );
   }
-  
+  create(): void {
+    this.drawer.open();
+    this._router.navigate(['admin/donhang', 0]);
+  }
+  goToDetail(item: any): void {
+     this._DonhangService.setDonhangId(item.id);
+    this.drawer.open();
+    this._router.navigate(['admin/donhang', item.id]);
+  }
   async LoadDrive() {
     const DriveInfo = {
       IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'Khachhangimport',
+      SheetName: 'SPImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
-    const result: any = await this._DonhangsService.getDrive(DriveInfo);
-    const data = ConvertDriveData(result.values);
-    console.log(data);
-    const updatePromises = data.map(async (v: any) => {
-      const item = this._DonhangsService.ListDonhang().find((v1) => v1.MaKH === v.MaKH);
-      if (item) {
-        const item1 = { ...item, ...v };
-        console.log(item1);
-      }
-    });
-    Promise.all(updatePromises).then(() => {
-      this._snackBar.open('Cập Nhật Thành Công', '', {
-        duration: 1000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
-    });
-  }
+   const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
+   const data = ConvertDriveData(result.values);
+   console.log(data);
+   this.DoImportData(data);
+    // const updatePromises = data.map(async (v: any) => {
+    //   const item = this._KhachhangsService
+    //     .ListKhachhang()
+    //     .find((v1) => v1.MaKH === v.MaKH);
+    //   if (item) {
+    //     const item1 = { ...item, ...v };
+    //     console.log(item1);
 
-  readExcelFile(event: any) {
-    const file = event.target.files[0];
-    const fileReader = new FileReader();
-    fileReader.onload = (e) => {
-      const data = new Uint8Array((e.target as any).result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-      console.log(jsonData);
-      // const transformedData = jsonData.map((v: any) => ({
-      //   Title: v.Title.trim(),
-      //   MaSP: v.MaSP.trim(),
-      //   giagoc: Number(v.giagoc),
-      //   dvt: v.dvt,
-      // }));
-      const updatePromises = jsonData.map(async (v: any) => {
-      const item = this._DonhangsService.ListDonhang().find((v1) => v1.MaKH === v.MaKH);
+    //     await this._KhachhangsService.updateOneKhachhang(item1);
+    //   }
+    // });
+    // Promise.all(updatePromises).then(() => {
+    //   this._snackBar.open('Cập Nhật Thành Công', '', {
+    //     duration: 1000,
+    //     horizontalPosition: 'end',
+    //     verticalPosition: 'top',
+    //     panelClass: ['snackbar-success'],
+    //   });
+    //   //  window.location.reload();
+    // });
+  }
+  DoImportData(data:any)
+  {
+    console.log(data);
+    
+    const transformedData = data.map((v: any) => ({
+      title: v.title?.trim()||'',
+      masp: v.masp?.trim()||'',
+      slug:`${convertToSlug(v?.title?.trim()||'')}_${GenId(5,false)}`,
+      giagoc: Number(v.giagoc)||0,
+      dvt: v.dvt||'',
+      soluong: Number(v.soluong)||0,
+      soluongkho: Number(v.soluongkho)||0,
+      ghichu: v.ghichu||'',
+      order: Number(v.order)||0,
+   }));
+   // Filter out duplicate masp values
+   const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
+      index === self.findIndex((t:any) => (
+        t.masp === value.masp
+      ))
+   )
+    const listId2 = uniqueData.map((v: any) => v.masp);
+    const listId1 = this._DonhangService.ListDonhang().map((v: any) => v.masp);
+    const listId3 = listId2.filter((item:any) => !listId1.includes(item));
+    const createuppdateitem = uniqueData.map(async (v: any) => {
+        const item = this._DonhangService.ListDonhang().find((v1) => v1.masp === v.masp);
         if (item) {
           const item1 = { ...item, ...v };
-          console.log(item1);
+          await this._DonhangService.updateDonhang(item1);
+        }
+        else{
+          await this._DonhangService.CreateDonhang(v);
         }
       });
-      Promise.all(updatePromises).then(() => {
+     const disableItem = listId3.map(async (v: any) => {
+        const item = this._DonhangService.ListDonhang().find((v1) => v1.masp === v);
+        item.isActive = false;
+        await this._DonhangService.updateDonhang(item);
+      });
+      Promise.all([...createuppdateitem, ...disableItem]).then(() => {
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
         });
-        window.location.reload();
+       // window.location.reload();
       });
-    };
-    fileReader.readAsArrayBuffer(file);
   }
-
-  writeExcelFile() {
-    this._DonhangsService.ListDonhang();
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(
-      this._DonhangsService.ListDonhang()
-    );
-    const workbook: XLSX.WorkBook = {
-      Sheets: { Sheet1: worksheet },
-      SheetNames: ['Sheet1'],
-    };
-    const excelBuffer: any = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-    this.saveAsExcelFile(
-      excelBuffer,
-      'danhsachdonhang_' + moment().format('DD_MM_YYYY')
-    );
-  }
-  saveAsExcelFile(buffer: any, fileName: string) {
-    const data: Blob = new Blob([buffer], { type: 'application/octet-stream' });
-    const url: string = window.URL.createObjectURL(data);
-    const link: HTMLAnchorElement = document.createElement('a');
-    link.href = url;
-    link.download = `${fileName}.xlsx`;
-    link.click();
-    window.URL.revokeObjectURL(url);
-    link.remove();
+  async ImporExcel(event: any) {
+  const data = await readExcelFile(event)
+  this.DoImportData(data);
+  }   
+  ExportExcel(data:any,title:any) {
+    writeExcelFile(data,title);
   }
 }

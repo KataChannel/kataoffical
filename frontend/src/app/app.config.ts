@@ -21,6 +21,7 @@ export const MY_DATE_FORMATS = {
 };
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig },
     { provide: MAT_DATE_LOCALE, useValue: 'vi-VN' }, // Ngôn ngữ tiếng Việt
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
     provideZoneChangeDetection({ eventCoalescing: true }), 

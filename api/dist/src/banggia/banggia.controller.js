@@ -20,7 +20,7 @@ let BanggiaController = class BanggiaController {
         this.banggiaService = banggiaService;
     }
     create(createBanggiaDto) {
-        return this.banggiaService.create(createBanggiaDto);
+        return this.banggiaService.createBanggia(createBanggiaDto);
     }
     findAll() {
         return this.banggiaService.findAll();

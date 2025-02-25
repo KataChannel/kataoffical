@@ -18,7 +18,11 @@ const menu_module_1 = require("./menu/menu.module");
 const sanpham_module_1 = require("./sanpham/sanpham.module");
 const banggia_module_1 = require("./banggia/banggia.module");
 const donhang_module_1 = require("./donhang/donhang.module");
-const giohang_module_1 = require("./giohang/giohang.module");
+const khachhang_module_1 = require("./khachhang/khachhang.module");
+const nhacungcap_module_1 = require("./nhacungcap/nhacungcap.module");
+const dathang_module_1 = require("./dathang/dathang.module");
+const kho_module_1 = require("./kho/kho.module");
+const phieukho_module_1 = require("./phieukho/phieukho.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -32,7 +36,11 @@ exports.AppModule = AppModule = __decorate([
             sanpham_module_1.SanphamModule,
             banggia_module_1.BanggiaModule,
             donhang_module_1.DonhangModule,
-            giohang_module_1.GiohangModule
+            khachhang_module_1.KhachhangModule,
+            nhacungcap_module_1.NhacungcapModule,
+            dathang_module_1.DathangModule,
+            kho_module_1.khoModule,
+            phieukho_module_1.PhieukhoModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

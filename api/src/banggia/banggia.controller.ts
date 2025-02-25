@@ -7,7 +7,7 @@ export class BanggiaController {
 
   @Post()
   create(@Body() createBanggiaDto: any) {
-    return this.banggiaService.create(createBanggiaDto);
+    return this.banggiaService.createBanggia(createBanggiaDto);
   }
 
   @Get()

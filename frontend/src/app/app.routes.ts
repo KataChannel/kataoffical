@@ -3,7 +3,7 @@ import { GuestGuard } from './shared/users/guards/guest.guard';
 import { AuthGuard } from './shared/users/guards/auth.guard';
 import { DynamicComponentResolver } from './dynamic-component.resolver';
 export const routes: Routes = [
-    { path: '', redirectTo: 'admin/hotro', pathMatch: 'full' },
+    { path: '', redirectTo: 'admin/menu', pathMatch: 'full' },
     {
       path: '404',
       loadComponent: () => import('./site/notfound/notfound.component').then((c) => c.NotfoundComponent),
@@ -82,6 +82,108 @@ export const routes: Routes = [
             {
               path: ':id',
               loadComponent: () => import('./admin/sanpham/detailsanpham/detailsanpham.component').then((c) => c.DetailSanphamComponent),
+            },
+          ],
+        },
+        {
+          path: 'banggia',
+          loadComponent: () => import('./admin/banggia/listbanggia/listbanggia.component').then((c) => c.ListBanggiaComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/banggia/listbanggia/listbanggia.component').then((c) => c.ListBanggiaComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/banggia/detailbanggia/detailbanggia.component').then((c) => c.DetailBanggiaComponent),
+            },
+          ],
+        },
+        {
+          path: 'khachhang',
+          loadComponent: () => import('./admin/khachhang/listkhachhang/listkhachhang.component').then((c) => c.ListKhachhangComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/khachhang/listkhachhang/listkhachhang.component').then((c) => c.ListKhachhangComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/khachhang/detailkhachhang/detailkhachhang.component').then((c) => c.DetailKhachhangComponent),
+            },
+          ],
+        },
+        {
+          path: 'nhacungcap',
+          loadComponent: () => import('./admin/nhacungcap/listnhacungcap/listnhacungcap.component').then((c) => c.ListNhacungcapComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/nhacungcap/listnhacungcap/listnhacungcap.component').then((c) => c.ListNhacungcapComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/nhacungcap/detailnhacungcap/detailnhacungcap.component').then((c) => c.DetailNhacungcapComponent),
+            },
+          ],
+        },
+        {
+          path: 'dathang',
+          loadComponent: () => import('./admin/dathang/listdathang/listdathang.component').then((c) => c.ListDathangComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/dathang/listdathang/listdathang.component').then((c) => c.ListDathangComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/dathang/detaildathang/detaildathang.component').then((c) => c.DetailDathangComponent),
+            },
+          ],
+        },
+        {
+          path: 'donhang',
+          loadComponent: () => import('./admin/donhang/listdonhang/listdonhang.component').then((c) => c.ListDonhangComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/donhang/listdonhang/listdonhang.component').then((c) => c.ListDonhangComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/donhang/detaildonhang/detaildonhang.component').then((c) => c.DetailDonhangComponent),
+            },
+          ],
+        },
+        {
+          path: 'vandon',
+          loadComponent: () => import('./admin/donhang/vandon/vandon.component').then((c) => c.VandonComponent),
+        },
+        {
+          path: 'kho',
+          loadComponent: () => import('./admin/kho/listkho/listkho.component').then((c) => c.ListKhoComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/kho/listkho/listkho.component').then((c) => c.ListKhoComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/kho/detailkho/detailkho.component').then((c) => c.DetailKhoComponent),
+            },
+          ],
+        },
+        {
+          path: 'phieukho',
+          loadComponent: () => import('./admin/phieukho/listphieukho/listphieukho.component').then((c) => c.ListPhieukhoComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/phieukho/listphieukho/listphieukho.component').then((c) => c.ListPhieukhoComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/phieukho/detailphieukho/detailphieukho.component').then((c) => c.DetailPhieukhoComponent),
             },
           ],
         },

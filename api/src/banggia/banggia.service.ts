@@ -22,6 +22,28 @@ export class BanggiaService {
       },
     });
   }
+  async createBanggia(data: any) {
+    console.error(data);
+    
+    return this.prisma.banggia.create({
+      data: {
+        title: data.title,
+        type: data.type,
+        batdau: data.batdau ? new Date(data.batdau) : null,
+        ketthuc: data.ketthuc ? new Date(data.ketthuc) : null,
+        isActive: data.isActive ?? false,
+        sanpham: {
+          create: data.sanpham?.map((sp:any) => ({
+            sanphamId: sp.sanphamId,
+            giaban: sp.giaban,
+          })),
+        },
+      },
+      include: {
+        sanpham: true,
+      },
+    });
+  }
 
   async reorderBanggias(banggiaIds: string[]) {
     // Update the order of each banggia based on its position in the array
@@ -33,17 +55,60 @@ export class BanggiaService {
     }
   }
   async findAll() {
-    return this.prisma.banggia.findMany();
+    return this.prisma.banggia.findMany({
+      include: {
+        sanpham: true,
+      },
+      orderBy: {
+        order: 'asc',
+      },
+    });
   }
 
   async findOne(id: string) {
-    const banggia = await this.prisma.banggia.findUnique({ where: { id } });
-    if (!banggia) throw new NotFoundException('Banggia not found');
-    return banggia;
+    const banggia = await this.prisma.banggia.findUnique({
+      where: { id },
+      include: {
+        sanpham: {
+          include: {
+            sanpham: true, // Lấy đầy đủ thông tin sản phẩm
+          },
+        },
+      },
+    });
+    if (!banggia) {
+      throw new NotFoundException(`Banggia with ID "${id}" not found`);
+    }
+    return {
+      ...banggia,
+      sanpham: banggia.sanpham.map((item) => ({
+        giaban: item.giaban,
+        ...item.sanpham, // Gộp thông tin sản phẩm vào cùng object
+      })),
+    };
   }
 
   async update(id: string, data: any) {
-    return this.prisma.banggia.update({ where: { id }, data });
+    return this.prisma.banggia.update({
+      where: { id },
+      data: {
+        title: data.title,
+        isActive: data.isActive,
+        type: data.type,
+        batdau: data.batdau ? new Date(data.batdau) : null,
+        ketthuc: data.ketthuc ? new Date(data.ketthuc) : null,
+        sanpham: {
+          deleteMany: {}, // Xóa tất cả sản phẩm cũ trước khi cập nhật
+          create: data.sanpham?.map((sp:any) => ({
+            sanphamId: sp.sanphamId,
+            giaban: sp.giaban,
+          })),
+        },
+      },
+      include: {
+        sanpham: true,
+      },
+    });
   }
 
   async remove(id: string) {
