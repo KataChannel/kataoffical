@@ -105,3 +105,7 @@ Nhấn Esc rồi nhập :wq! và nhấn Enter.
 docker cp <container_name_or_id>:/path/to/backup/file /path/to/destination
 
 docker cp pgadmin:/var/lib/pgadmin/storage/admin_example.com/bk_23_02_2025 ./bk_23_02_2025
+
+cd /etc/nginx/sites-available
+sudo certbot --nginx -d sandboxapi2.rausachtrangia.com -d sandbox2.rausachtrangia.com
+sudo certbot renew --dry-run

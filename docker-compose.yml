@@ -12,8 +12,8 @@ services:
       - FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
       - ZALO_APP_ID=your-zalo-app-id
       - ZALO_APP_SECRET=your-zalo-app-secret
-      - BASE_URL=http://116.118.49.243/:4301
-      - SERVER_URL=http://116.118.49.243/:3331
+      - BASE_URL=https://sandbox2.rausachtrangia.com
+      - SERVER_URL=https://sandboxapi2.rausachtrangia.com
       - PORT=3331
   ferausach:
     build: ./frontend
