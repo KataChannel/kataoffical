@@ -7,10 +7,10 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Cài đặt toàn bộ dependencies (bao gồm devDependencies để build)
-RUN npm ci
+RUN npm ci --force
 
 # Cài đặt Angular CLI toàn cục (nếu không có trong dependencies)
-RUN npm install -g @angular/cli
+RUN npm install -g @angular/cli --force
 
 # Copy toàn bộ mã nguồn
 COPY . .
