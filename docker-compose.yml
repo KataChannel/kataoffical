@@ -45,12 +45,5 @@ services:
       - "4301:4301"
     environment:
       - NODE_ENV=production
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./frontend/nginx.conf:/etc/nginx/nginx.conf
 volumes:
   pg_data:
