@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # Cài đặt dependencies ở chế độ production
-RUN npm ci --production
+RUN npm ci --production --force
 
 # Copy toàn bộ source code vào container
 COPY . .
@@ -30,4 +30,4 @@ COPY --from=build /app/package.json /app/package.json
 
 # Chạy ứng dụng
 EXPOSE 4301
-CMD ["node", "dist/frontend/server/main.js"]
+CMD ["node", "dist/frontend/server/main.mjs"]
