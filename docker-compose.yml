@@ -38,21 +38,6 @@ services:
     command: >
       sh -c "bun install && bunx prisma generate && bun start"  # Sử dụng bun thay vì npm
 
-  prisma-studio:
-    image: node:18
-    container_name: prisma-studio
-    working_dir: /app
-    ports:
-      - "5555:5555"
-    volumes:
-      - ./api:/app
-    depends_on:
-      - backend
-    environment:
-      DATABASE_URL : "postgresql://postgres:password@116.118.49.243:5432/mydb"
-    command: >
-      sh -c "npm install -g prisma && prisma studio"
-
   frontend:
     build: ./frontend
     restart: always
