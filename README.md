@@ -4,7 +4,11 @@ git commit -m "update"
 git push
 
 xóa cache và thử lại:
+
 docker builder prune -af
+docker image prune -a -f
+
+
 docker compose up --build
 docker compose up -d
 docker compose up --no-recreate -d

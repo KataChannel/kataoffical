@@ -16,7 +16,7 @@ COPY . .
 ENV NODE_OPTIONS="--max-old-space-size=2048"
 
 # Build Angular Universal (SSR)
-RUN npm run build:ssr
+RUN npm run build --prod
 
 # Stage 2: Chạy SSR trên Node.js
 FROM node:18-alpine AS runtime
