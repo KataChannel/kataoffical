@@ -1,18 +1,33 @@
 # Stage 1: Build Angular SSR
-FROM node:18 AS build
+FROM node:18-alpine AS build
 
 WORKDIR /app
+
+# Copy chỉ những file cần thiết để cache tốt hơn
 COPY package.json package-lock.json ./
-RUN npm install --force
+
+# Cài đặt dependencies ở chế độ production
+RUN npm ci --production
+
+# Copy toàn bộ source code vào container
 COPY . .
-RUN npm run build --prod  # Build Angular với Universal (SSR)
+
+# Tăng giới hạn bộ nhớ để tránh lỗi out of memory khi build
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+
+# Build Angular Universal (SSR)
+RUN npm run build:ssr
 
 # Stage 2: Chạy SSR trên Node.js
-FROM node:18-alpine
+FROM node:18-alpine AS runtime
 
 WORKDIR /app
-COPY --from=build /app /app
-RUN npm install --force --omit=dev
 
+# Copy build từ stage trước
+COPY --from=build /app/dist/frontend /app/dist/frontend
+COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/package.json /app/package.json
+
+# Chạy ứng dụng
 EXPOSE 4301
-CMD ["node", "dist/frontend/server/server.mjs"]
+CMD ["node", "dist/frontend/server/main.js"]
