@@ -3,19 +3,21 @@ FROM node:18-alpine AS build
 
 WORKDIR /app
 
-# Copy chỉ những file cần thiết để cache tốt hơn
+# Copy package.json và package-lock.json trước để tối ưu cache
 COPY package.json package-lock.json ./
 
-# Cài đặt dependencies ở chế độ production
-RUN npm ci --production --force
+# Cài đặt toàn bộ dependencies (bao gồm devDependencies để build)
+RUN npm ci
 
-# Copy toàn bộ source code vào container
+# Cài đặt Angular CLI toàn cục (nếu không có trong dependencies)
+RUN npm install -g @angular/cli
+
+# Copy toàn bộ mã nguồn
 COPY . .
 
-# Tăng giới hạn bộ nhớ để tránh lỗi out of memory khi build
 ENV NODE_OPTIONS="--max-old-space-size=2048"
 
-# Build Angular Universal (SSR)
+# Build Angular với Universal (SSR)
 RUN npm run build --prod
 
 # Stage 2: Chạy SSR trên Node.js
@@ -23,11 +25,12 @@ FROM node:18-alpine AS runtime
 
 WORKDIR /app
 
-# Copy build từ stage trước
+# Chỉ copy những file cần thiết từ build stage để giảm kích thước image
 COPY --from=build /app/dist/frontend /app/dist/frontend
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/package.json /app/package.json
 
-# Chạy ứng dụng
+# Chạy ứng dụng SSR
 EXPOSE 4301
-CMD ["node", "dist/frontend/server/main.mjs"]
+CMD ["node", "dist/frontend/server/main.js"]
+
