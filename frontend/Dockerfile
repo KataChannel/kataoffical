@@ -32,5 +32,5 @@ COPY --from=build /app/package.json /app/package.json
 
 # Chạy ứng dụng SSR
 EXPOSE 4301
-CMD ["node", "dist/frontend/server/main.js"]
+CMD ["node", "dist/frontend/server/server.mjs"]
 
