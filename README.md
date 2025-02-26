@@ -27,6 +27,8 @@ docker logs kataoffical-backend
 docker stop priceless_pike
 docker rm priceless_pike
 
+docker compose exec rausach-berausach-1 printenv | grep DATABASE_URL
+
 docker compose -f 'docker-compose.yml' up -d --build 'backend'
 docker compose -f 'docker-compose.yml' up -d --build 'berausach' 
 
