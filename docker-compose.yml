@@ -1,5 +1,5 @@
 services:
-  postgresrau:
+  postgres:
     image: postgres:15
     restart: always
     environment:
@@ -21,7 +21,7 @@ services:
     ports:
       - "5050:80"
     depends_on:
-      - postgresrau
+      - postgres
   berausach:
     build: ./api
     restart: always
