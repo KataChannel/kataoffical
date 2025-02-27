@@ -32,7 +32,8 @@ docker exec -it rausach-postgres-1 cat /var/lib/postgresql/data/pg_hba.conf
 
 docker cp rausach-postgres-1:/var/lib/postgresql/data/pg_hba.conf .
 docker cp pg_hba.conf rausach-postgres-1:/var/lib/postgresql/data/pg_hba.conf
-
+docker restart rausach-postgres-1
+psql -U postgres -d postgres
 
 CREATE USER postgres WITH SUPERUSER PASSWORD 'rausach#2025';
 
@@ -53,6 +54,7 @@ docker compose exec rausach-berausach-1 printenv | grep DATABASE_URL
 docker compose -f 'docker-compose.yml' up -d --build 'backend'
 docker compose -f 'docker-compose.yml' up -d --build 'berausach' 
 docker compose -f 'docker-compose.yml' up -d --build 'postgres' 
+docker compose -f 'docker-compose.yml' up -d --build 'pgadmin' 
 docker compose -f 'docker-compose.yml' up -d --build '36c39a3e4a35_kataoffical-postgres-1' 
 
 docker exec -it kataoffical-backend-1 sh
