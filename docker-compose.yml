@@ -1,5 +1,5 @@
 services:
-  postgres:
+  postgresrau:
     image: postgres:15
     restart: always
     environment:
