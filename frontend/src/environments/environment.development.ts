@@ -4,7 +4,7 @@ export const environment = {
   APITINYMCE: 't9hvocq9xlyr70tvuoonphblkih76rbxyvnvffr6c3z93slx',
   //APIURL:'http://localhost:3335',
   APIURL: 'https://sandboxapi2.rausachtrangia.com',
-  // APIURL: 'http://localhost:3331',
+  //APIURL: 'http://localhost:3331',
   ImageURL: 'http://localhost:4301',
   app_id: '1416835846626859002',
   secret_key: 'HLBWj23hToA9fuiQvQY4',

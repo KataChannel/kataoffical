@@ -1,9 +1,13 @@
 import { PrismaService } from 'prisma/prisma.service';
+import { SanphamGateway } from './sanpham.gateway';
 export declare class SanphamService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private sanphamGateway;
+    constructor(prisma: PrismaService, sanphamGateway: SanphamGateway);
     create(data: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         slug: string | null;
@@ -19,6 +23,8 @@ export declare class SanphamService {
     reorderSanphams(sanphamIds: string[]): Promise<void>;
     findAll(): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         slug: string | null;
@@ -33,6 +39,8 @@ export declare class SanphamService {
     }[]>;
     findOne(id: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         slug: string | null;
@@ -47,6 +55,8 @@ export declare class SanphamService {
     }>;
     update(id: string, data: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         slug: string | null;
@@ -61,6 +71,8 @@ export declare class SanphamService {
     }>;
     remove(id: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         slug: string | null;

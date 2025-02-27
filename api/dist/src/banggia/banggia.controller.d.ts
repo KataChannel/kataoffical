@@ -41,6 +41,8 @@ export declare class BanggiaController {
     findOne(id: string): Promise<{
         sanpham: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             order: number | null;
             title: string;
             slug: string | null;

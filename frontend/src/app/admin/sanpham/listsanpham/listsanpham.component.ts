@@ -80,13 +80,7 @@ export class ListSanphamComponent {
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   Listsanpham:any = this._SanphamService.ListSanpham;
-  dataSource = computed(() => {
-    const ds = new MatTableDataSource(this.Listsanpham());
-    ds.filterPredicate = this.createFilter();
-    ds.paginator = this.paginator;
-    ds.sort = this.sort;
-    return ds;
-  });
+  dataSource = new MatTableDataSource([])
   sanphamId:any = this._SanphamService.sanphamId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
@@ -109,10 +103,20 @@ export class ListSanphamComponent {
     };
   }
   applyFilter() {
-    this.dataSource().filter = JSON.stringify(this.filterValues);
+    this.dataSource.filter = JSON.stringify(this.filterValues);
+    this.CountItem = this.dataSource.filteredData.length;
+    this.dataSource.paginator?.firstPage();
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
   }
   async ngOnInit(): Promise<void> {    
     await this._SanphamService.getAllSanpham();
+    await this._SanphamService.fetchSanphams();
+    this._SanphamService.listenSanphamUpdates();
+    this.dataSource = new MatTableDataSource(this.Listsanpham());
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.filterPredicate = this.createFilter();
     this.CountItem = this.Listsanpham().length;
     this.initializeColumns();
     this.setupDrawer();

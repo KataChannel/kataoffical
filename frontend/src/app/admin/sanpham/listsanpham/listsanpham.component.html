@@ -52,7 +52,7 @@
             </mat-form-field>
         </div>
         <div class="w-full overflow-auto">
-            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource()" matSort>
+            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
                     <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>

@@ -1,9 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { SanphamGateway } from './sanpham.gateway';
 
 @Injectable()
 export class SanphamService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private sanphamGateway: SanphamGateway,
+  ) {}
 
   // async create(data: any) {
   //   return this.prisma.sanpham.create({ data });
@@ -15,6 +19,7 @@ export class SanphamService {
     });
     newOrder = (maxOrder._max?.order || 0) + 1;
     // Create the new sanpham entry
+    this.sanphamGateway.sendSanphamUpdate();
     return this.prisma.sanpham.create({
       data: {
         ...data,
@@ -48,6 +53,7 @@ export class SanphamService {
       await this.prisma.sanpham.update({ where: { id }, data: rest });
       await this.prisma.sanpham.update({ where: { id }, data: { order } });
     }
+    this.sanphamGateway.sendSanphamUpdate();
     return this.prisma.sanpham.update({ where: { id }, data });
   }
 

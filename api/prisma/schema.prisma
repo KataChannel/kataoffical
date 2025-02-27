@@ -262,6 +262,8 @@ model Sanpham {
   ghichu    String?
   order     Int? @default(1)
   isActive  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   banggia   Banggiasanpham[]
   Donhangsanpham Donhangsanpham[]
   Dathangsanpham Dathangsanpham[]

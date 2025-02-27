@@ -12,9 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SanphamService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const sanpham_gateway_1 = require("./sanpham.gateway");
 let SanphamService = class SanphamService {
-    constructor(prisma) {
+    constructor(prisma, sanphamGateway) {
         this.prisma = prisma;
+        this.sanphamGateway = sanphamGateway;
     }
     async create(data) {
         let newOrder;
@@ -22,6 +24,7 @@ let SanphamService = class SanphamService {
             _max: { order: true },
         });
         newOrder = (maxOrder._max?.order || 0) + 1;
+        this.sanphamGateway.sendSanphamUpdate();
         return this.prisma.sanpham.create({
             data: {
                 ...data,
@@ -52,6 +55,7 @@ let SanphamService = class SanphamService {
             await this.prisma.sanpham.update({ where: { id }, data: rest });
             await this.prisma.sanpham.update({ where: { id }, data: { order } });
         }
+        this.sanphamGateway.sendSanphamUpdate();
         return this.prisma.sanpham.update({ where: { id }, data });
     }
     async remove(id) {
@@ -61,6 +65,7 @@ let SanphamService = class SanphamService {
 exports.SanphamService = SanphamService;
 exports.SanphamService = SanphamService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        sanpham_gateway_1.SanphamGateway])
 ], SanphamService);
 //# sourceMappingURL=sanpham.service.js.map

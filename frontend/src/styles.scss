@@ -159,6 +159,72 @@ body {
 //   margin:15% !important
 // }
 
+.input-edit.mat-column-STT {
+  width: 10px !important;
+}
+.mat-column-id {
+  display: none !important;
+}
+.input-edit.mat-column-Soluong,
+.input-edit.mat-column-SLTG,
+.input-edit.mat-column-SLTN
+{
+  text-align: right !important;
+  max-width: 40px !important;
+}
+.mat-column-Tongtien,
+.mat-column-TongtienG,
+.mat-column-TongtienN {
+  text-align: right !important;
+}
+
+.admin .mat-mdc-row
+{
+  height: 30px;
+}
+
+.text-md.mat-mdc-icon-button.mat-mdc-button-base {
+  --mdc-icon-button-state-layer-size: 32px;
+  padding: 4px;
+}
+
+
+.mat-mdc-snack-bar-container .mat-mdc-snackbar-surface {
+  // color: var(--mdc-snackbar-supporting-text-color, var(--mat-sys-inverse-on-surface));
+  // border-radius: var(--mdc-snackbar-container-shape, var(--mat-sys-corner-extra-small));
+  background-color: transparent !important
+}
+
+/* Custom styles for MatSnackBar */
+.snackbar-success {
+  background-color: #3f51b5; /* Green */
+  color: white;
+  border-radius: 5px;
+}
+
+.snackbar-warning {
+  background-color: #ff9800; /* Orange */
+  color: white;
+  border-radius: 5px;
+}
+
+.snackbar-error {
+  background-color: #f44336; /* Red */
+  color: white;
+  border-radius: 5px;
+}
+// .danger .mdc-snackbar__surface{
+//   color: white !important;
+//   background-color:#D9534F !important;
+// }
+// .warning .mdc-snackbar__surface{
+//   color: white !important;
+//   background-color:#F0AD4E !important;
+// }
+// .info .mdc-snackbar__surface{
+//   color: white !important;
+//   background-color:#5BC0DE !important;
+// }
 .p-sidebar-mask
 {
   z-index: 1 !important;
@@ -178,9 +244,9 @@ body {
 .mdc-dialog .mdc-dialog__content {
   padding: 15px;
 }
-// .mdc-data-table__cell, .mdc-data-table__header-cell{
-//   padding: 4px !important;
-// }
+.mdc-data-table__cell, .mdc-data-table__header-cell{
+  padding: 5px 10px !important;
+}
 // .mat-mdc-form-field-bottom-align
 // {
 //   height: 0;
@@ -204,36 +270,18 @@ body {
   max-height: 100vh !important;
 }
 
-.text-sm .mdc-text-field--outlined .mat-mdc-form-field-infix,.text-sm .mdc-text-field--no-label .mat-mdc-form-field-infix {
-  padding-top: 12px !important;
-  padding-bottom: 12px !important;
-}
-.text-sm .mat-mdc-form-field-infix
+.text-sm .mdc-text-field--outlined .mat-mdc-form-field-infix, .mdc-text-field--no-label .mat-mdc-form-field-infix
 {
   min-height: 0 !important;
-  padding: 0.5rem !important;
+  padding: 0.5rem 0.5rem 0.5rem 0.25rem !important;
 }
-
-.codex-editor__redactor {
-  padding: 10px !important;
-  margin-bottom: 0;
+.text-sm .mdc-text-field--outlined
+{
+  padding: 0 !important;
 }
-
-.ce-toolbar__content,.ce-block__content{
-  max-width: 85% !important;
-}
-
-.ce-popover .ce-popover__container {
-  --offset: 5px;
-  position: fixed;
-  width: 600px;
-  left: var(--offset);
-  right: var(--offset);
-  bottom: calc(var(--offset) + env(safe-area-inset-bottom));
-  top: auto;
-  border-radius: 10px;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.text-sm .mat-mdc-form-field-icon-prefix>.mat-icon,.text-sm .mat-mdc-form-field-icon-suffix>.mat-icon {
+  padding: 0 6px;
+  box-sizing: content-box;
 }
 
 

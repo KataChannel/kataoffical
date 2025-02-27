@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -39,6 +39,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
     FormsModule,
     MatTooltipModule
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListKhachhangComponent {
   Detail: any = {};

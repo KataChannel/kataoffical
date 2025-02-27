@@ -4,6 +4,8 @@ export declare class SanphamController {
     constructor(sanphamService: SanphamService);
     create(createSanphamDto: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         slug: string | null;
@@ -18,6 +20,8 @@ export declare class SanphamController {
     }>;
     findAll(): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         slug: string | null;
@@ -32,6 +36,8 @@ export declare class SanphamController {
     }[]>;
     findOne(id: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         slug: string | null;
@@ -46,6 +52,8 @@ export declare class SanphamController {
     }>;
     update(id: string, updateSanphamDto: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         slug: string | null;
@@ -60,6 +68,8 @@ export declare class SanphamController {
     }>;
     remove(id: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         slug: string | null;

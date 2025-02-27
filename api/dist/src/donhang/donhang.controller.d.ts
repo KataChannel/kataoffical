@@ -87,6 +87,8 @@ export declare class DonhangController {
             ttnhan: number | null;
             ghichu: string | null;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             order: number | null;
             title: string;
             slug: string | null;

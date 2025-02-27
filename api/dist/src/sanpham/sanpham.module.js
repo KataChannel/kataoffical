@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const sanpham_service_1 = require("./sanpham.service");
 const sanpham_controller_1 = require("./sanpham.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
+const sanpham_gateway_1 = require("./sanpham.gateway");
 let SanphamModule = class SanphamModule {
 };
 exports.SanphamModule = SanphamModule;
@@ -18,7 +19,7 @@ exports.SanphamModule = SanphamModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule],
         controllers: [sanpham_controller_1.SanphamController],
-        providers: [sanpham_service_1.SanphamService],
+        providers: [sanpham_service_1.SanphamService, sanpham_gateway_1.SanphamGateway],
         exports: [sanpham_service_1.SanphamService]
     })
 ], SanphamModule);

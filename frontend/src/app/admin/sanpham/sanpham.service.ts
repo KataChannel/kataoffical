@@ -2,6 +2,8 @@ import { Inject, Injectable, signal,Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
+import { io } from 'socket.io-client';
+import { openDB } from 'idb';
 @Injectable({
   providedIn: 'root'
 })
@@ -16,12 +18,7 @@ export class SanphamService {
   setSanphamId(id: string | null) {
     this.sanphamId.set(id);
   }
-  // getListSanpham(): Signal<any[]> {    
-  //   return this.ListSanpham;
-  // }
-  // getDetailSanpham(): Signal<any | null> {
-  //   return this.DetailSanpham;
-  // }
+  private socket = io(`${environment.APIURL}`);
   async CreateSanpham(dulieu: any) {
     try {
       const options = {
@@ -61,7 +58,90 @@ export class SanphamService {
     }
   }
 
+  async fetchSanphams() {
+    const db = await this.initDB();
+    const cachedData = await db.getAll('sanphams');
+    const updatedAtCache = parseInt(localStorage.getItem('updatedAt') || '0');
+
+    // 1️⃣ Gọi API lấy lastUpdated từ server
+    try {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer '+this._StorageService.getItem('token')
+        },
+      };
+      const response = await fetch(`${environment.APIURL}/sanpham`, options);
+      if (!response.ok) {
+        if (response.status === 401) {
+          const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          // this.Dangxuat()
+        } else if (response.status === 403) {
+          const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          // this.Dangxuat()
+        } else if (response.status === 500) {
+          const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+        } else {
+          const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+        }
+      }
+      const data = await response.json();       
+      const updatedAtServer = data.reduce((max:any, p:any) => Math.max(max, new Date(p.updatedAt).getTime()), 0);
+
+      // 2️⃣ Nếu dữ liệu trên server mới hơn, cập nhật IndexedDB + LocalStorage
+      if (updatedAtServer > updatedAtCache) {
+        await this.saveSanphams(data);
+        localStorage.setItem('lastUpdated', updatedAtServer.toString());
+        localStorage.setItem('sanphams', JSON.stringify(data));
+      }
+  
+      return cachedData.length > 0 ? cachedData : data;    
+      // this.ListSanpham.set(data)
+      // localStorage.setItem('sanphams', JSON.stringify(data)); // Cache vào LocalStorage
+    } catch (error) {
+      return console.error(error);
+    }
+  }
+
+  // 3️⃣ Lắng nghe cập nhật từ WebSocket
+  listenSanphamUpdates() {
+    this.socket.on('sanpham-updated', async () => {
+      console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
+      await this.fetchSanphams();
+    });
+  }
+  // Khởi tạo IndexedDB
+  private async initDB() {
+    return await openDB('SanphamDB', 1, {
+      upgrade(db) {
+        db.createObjectStore('sanphams', { keyPath: 'id' });
+      },
+    });
+  }
+
+  // Lưu vào IndexedDB
+  private async saveSanphams(data: any[]) {
+    const db = await this.initDB();
+    const tx = db.transaction('sanphams', 'readwrite');
+    const store = tx.objectStore('sanphams');
+    await store.clear(); // Xóa dữ liệu cũ
+    data.forEach(item => store.put(item));
+    await tx.done;
+  }
+
   async getAllSanpham() {
+    if (this.ListSanpham().length > 0) return; // Nếu đã có cache, không gọi API
+    const cachedData = localStorage.getItem('sanphams');
+    if (cachedData) {
+      const data = JSON.parse(cachedData);
+      this.ListSanpham.set(data);
+      return;
+    }
     try {
       const options = {
         method: 'GET',
@@ -90,6 +170,7 @@ export class SanphamService {
       }
       const data = await response.json();           
       this.ListSanpham.set(data)
+      localStorage.setItem('sanphams', JSON.stringify(data)); // Cache vào LocalStorage
     } catch (error) {
       return console.error(error);
     }
