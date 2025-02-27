@@ -4,7 +4,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: "@Hikiet1988"
+      POSTGRES_PASSWORD: rausach#2025
       POSTGRES_DB: rausachv2
     ports:
       - "5432:5432"
@@ -16,8 +16,8 @@ services:
     container_name: pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: chikiet88@gmail.com
-      PGADMIN_DEFAULT_PASSWORD: "@Hikiet1988"
+      PGADMIN_DEFAULT_EMAIL: ceo@rausachtrangia.com
+      PGADMIN_DEFAULT_PASSWORD: rausach#2025
     ports:
       - "5050:80"
     depends_on:
