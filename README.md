@@ -28,6 +28,7 @@ docker exec -it fullstack-postgres-1 psql -U postgres -d mydb
 
 docker exec -it rausach-postgres-1 psql -U postgres
 docker inspect rausach-postgres-1 | grep POSTGRES
+docker inspect rausach-berausach-1 | grep POSTGRES
 docker exec -it rausach-postgres-1 cat /var/lib/postgresql/data/pg_hba.conf
 docker cp rausach-postgres-1:/var/lib/postgresql/data/pg_hba.conf .
 docker cp pg_hba.conf rausach-postgres-1:/var/lib/postgresql/data/pg_hba.conf
