@@ -13,6 +13,7 @@ systemctl restart docker
 xóa cache và thử lại:
 docker builder prune -af
 docker image prune -a -f
+docker volume prune -a -f
 
 
 docker compose up --build
@@ -21,21 +22,20 @@ docker compose up --no-recreate -d
 docker compose down
 docker exec -it 718c1476fbfa5c668913f7fa553aed3bb5fad70995f90e6f70a3e806bf61e502 sh
 
-docker exec -it kataoffical-backend-1 sh
+docker exec -it berausach-1 sh
 
 docker exec -it fullstack-postgres-1 psql -U postgres -d mydb
 
 docker exec -it rausach-postgres-1 psql -U postgres
 docker inspect rausach-postgres-1 | grep POSTGRES
-docker exec -it rausach-postgres-1 bash
 docker exec -it rausach-postgres-1 cat /var/lib/postgresql/data/pg_hba.conf
-
 docker cp rausach-postgres-1:/var/lib/postgresql/data/pg_hba.conf .
 docker cp pg_hba.conf rausach-postgres-1:/var/lib/postgresql/data/pg_hba.conf
 docker restart rausach-postgres-1
 psql -U postgres -d postgres
 
-CREATE USER postgres WITH SUPERUSER PASSWORD 'rausach#2025';
+CREATE USER rausach WITH SUPERUSER PASSWORD 'rausach#2025';
+CREATE ROLE rausach WITH SUPERUSER CREATEDB CREATEROLE LOGIN PASSWORD 'rausach#2025';
 
 docker exec -it kataoffical-backend-1 /bin/bash
 docker exec kataoffical-frontend-1 ls -l /bin/bash
