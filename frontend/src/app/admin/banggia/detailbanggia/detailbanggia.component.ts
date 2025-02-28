@@ -71,11 +71,13 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
     };
     dataSource = signal(new MatTableDataSource<any>([]));
     CountItem = computed(() => this.dataSource().data.length);
+    filterSanpham:any[]=[];
     constructor(){
       this._route.paramMap.subscribe(async (params) => {
         const id = params.get('id');
         this._BanggiaService.setBanggiaId(id);
-        await this._SanphamService.getAllSanpham();        
+        await this._SanphamService.getAllSanpham(); 
+        this.filterSanpham = this._SanphamService.ListSanpham();
       });
   
       effect(async () => {      
@@ -86,7 +88,8 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
         }
         if(id === '0'){
           this.DetailBanggia.set({ 
-            title: GenId(8, false),      
+            title: GenId(8, false),   
+            type:'bansi',   
             batdau: moment().startOf('month').toDate(),
             ketthuc: moment().endOf('month').toDate()
           });
@@ -235,11 +238,50 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
           return item;
         });
         v.sanpham = listdata
+        this.reloadfilter();
         return v;
       })       
       this.dataSource().data = this.DetailBanggia().sanpham;
       this.dataSource().paginator = this.paginator;
       this.dataSource().sort = this.sort;
 
+      }
+      AddSanpham(){
+    
+      }
+      reloadfilter(){
+        this.filterSanpham = this._SanphamService.ListSanpham().filter((v:any) => !this.DetailBanggia().sanpham.some((v2:any) => v2.id === v.id));
+      }
+      SelectSanpham(event:any){
+        const value = event.value;
+        const item = this._SanphamService.ListSanpham().find((v) => v.id === value);
+        this.DetailBanggia.update((v:any)=>{
+          if(!v.sanpham){
+            v.sanpham = [];
+            v.sanpham.push(item);
+          }
+          else{
+              v.sanpham.push(item);
+          }
+          this.reloadfilter();
+          return v;
+        })
+        this.dataSource().data = this.DetailBanggia().sanpham;
+        this.dataSource().paginator = this.paginator;
+        this.dataSource().sort = this.sort;
+      }
+      RemoveSanpham(item:any){
+        this.DetailBanggia.update((v:any)=>{
+          v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
+          this.reloadfilter();
+          return v;
+        })
+        this.dataSource().data = this.DetailBanggia().sanpham;
+        this.dataSource().paginator = this.paginator;
+        this.dataSource().sort = this.sort;
+      }
+      DoFindSanpham(event:any){
+        const value = event.target.value;
+        this.filterSanpham = this._SanphamService.ListSanpham().filter((v) => v.title.toLowerCase().includes(value.toLowerCase()));
       }
   }

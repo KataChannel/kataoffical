@@ -95,13 +95,7 @@ export class ListKhachhangComponent {
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   Listkhachhang:any = this._KhachhangService.ListKhachhang;
-  dataSource = computed(() => {
-    const ds = new MatTableDataSource(this.Listkhachhang());
-    ds.filterPredicate = this.createFilter();
-    ds.paginator = this.paginator;
-    ds.sort = this.sort;
-    return ds;
-  });
+  dataSource = new MatTableDataSource([]);
   khachhangId:any = this._KhachhangService.khachhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
@@ -124,10 +118,16 @@ export class ListKhachhangComponent {
     };
   }
   applyFilter() {
-    this.dataSource().filter = JSON.stringify(this.filterValues);
+    this.dataSource.filter = JSON.stringify(this.filterValues);
   }
   async ngOnInit(): Promise<void> {    
-    await this._KhachhangService.getAllKhachhang();
+  //  await this._KhachhangService.getAllKhachhang();
+    await this._KhachhangService.fetchKhachhangs();
+    this._KhachhangService.listenKhachhangUpdates();
+    this.dataSource = new MatTableDataSource(this.Listkhachhang());
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.filterPredicate = this.createFilter();
     this.CountItem = this.Listkhachhang().length;
     this.initializeColumns();
     this.setupDrawer();

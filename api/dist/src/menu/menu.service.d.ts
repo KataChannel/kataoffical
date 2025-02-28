@@ -4,58 +4,58 @@ export declare class MenuService {
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        order: number | null;
-        parentId: string | null;
         title: string;
         icon: string | null;
         slug: string | null;
+        parentId: string | null;
+        order: number | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     reorderMenus(menuIds: string[]): Promise<void>;
     findAll(): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        order: number | null;
-        parentId: string | null;
         title: string;
         icon: string | null;
         slug: string | null;
+        parentId: string | null;
+        order: number | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        order: number | null;
-        parentId: string | null;
         title: string;
         icon: string | null;
         slug: string | null;
+        parentId: string | null;
+        order: number | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        order: number | null;
-        parentId: string | null;
         title: string;
         icon: string | null;
         slug: string | null;
+        parentId: string | null;
+        order: number | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        order: number | null;
-        parentId: string | null;
         title: string;
         icon: string | null;
         slug: string | null;
+        parentId: string | null;
+        order: number | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }

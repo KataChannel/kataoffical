@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Donhang" ALTER COLUMN "type" DROP NOT NULL,
-ALTER COLUMN "ngaygiao" DROP NOT NULL;

@@ -56,6 +56,7 @@ export class MenuService {
     }
   }
   async findAll() {
+    try{
     return this.prisma.menu.findMany({
         orderBy: [
         {
@@ -63,6 +64,10 @@ export class MenuService {
         },
       ],
       });
+    } catch (error) {
+      console.error("Error finding menus:", error);
+      throw error;
+    }
   }
 
   async findOne(id: string) {

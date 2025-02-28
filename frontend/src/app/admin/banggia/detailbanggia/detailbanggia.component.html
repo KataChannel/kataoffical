@@ -73,17 +73,29 @@
     </div> 
     @defer () {
       <div class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
-        <div class="flex flex-row space-x-2 items-center">
-            <!-- <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(,'Banggia')" color="primary" mat-icon-button>
-                <mat-icon>file_download</mat-icon>
-            </button>
-            <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
-                <mat-icon>file_upload</mat-icon>
-            </button>
-            <input class="hidden" (change)="ImporExcel($event)" type="file" #uploadfile> -->
+        <div class="flex flex-row space-x-2 items-center">            
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-label>Khách Hàng</mat-label>
+              <mat-select (selectionChange)="SelectSanpham($event)">
+                <div class="w-full flex flex-col">
+                  <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
+                    <input matInput (input)="DoFindSanpham($event)" placeholder="Tìm Kiếm" />
+                  </mat-form-field>
+                  <div class="overflow-y-auto max-h-44">
+                    @for (item of filterSanpham; track item.id) {
+                    <mat-option [value]="item.id">{{item.title}}</mat-option>
+                    }
+                    @empty {
+                    <mat-option disabled>Không có dữ liệu</mat-option>
+                    }
+                  </div>
+                </div>
+              </mat-select>
+            </mat-form-field>
+            
             <button [disabled]="!isEdit()" matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
-                <mat-icon>cloud_download</mat-icon>
-            </button>
+              <mat-icon>cloud_download</mat-icon>
+          </button>
             <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                 {{CountItem()}} Sản Phẩm
             </span>
@@ -101,8 +113,9 @@
                 <td mat-cell *matCellDef="let row; let idx = index">
                     @switch (column) {
                     @case ('STT') {
-                    <span class="max-w-20 line-clamp-4">
-                        {{ idx + 1 }}
+                    <span class="max-w-20 line-clamp-4 flex flex-row items-center">
+                       <span>{{ idx + 1 }} </span>
+                        <button mat-icon-button color="warn" (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
                     </span>
                     }
                     @case ('giaban') {

@@ -1,7 +1,7 @@
 npx bun add @nestjs/config @nestjs/jwt @nestjs/passport passport passport-jwt bcryptjs
 npx bun add @prisma/client
 npx bun add -d prisma
-npx bun prisma migrate dev --name rau1.1.6
+npx bun prisma migrate dev --name rau2.1.1
 npx prisma db push
 npx bun prisma generate
 

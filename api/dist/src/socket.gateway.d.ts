@@ -1,5 +1,6 @@
 import { Server } from 'socket.io';
-export declare class SanphamGateway {
+export declare class SocketGateway {
     server: Server;
     sendSanphamUpdate(): void;
+    sendKhachangUpdate(): void;
 }

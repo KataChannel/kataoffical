@@ -6,11 +6,14 @@ import { Server } from 'socket.io';
     origin: '*',
   },
 })
-export class SanphamGateway {
+export class SocketGateway {
   @WebSocketServer() server: Server;
 
   // Gửi sự kiện cập nhật sản phẩm đến tất cả client
   sendSanphamUpdate() {
     this.server.emit('sanpham-updated'); // FE sẽ nhận sự kiện này
+  }
+  sendKhachangUpdate() {
+    this.server.emit('khachhang-updated'); // FE sẽ nhận sự kiện này
   }
 }

@@ -99,9 +99,8 @@ export class SanphamService {
         localStorage.setItem('lastUpdated', updatedAtServer.toString());
         localStorage.setItem('sanphams', JSON.stringify(data));
       }
-  
+      this.ListSanpham.set(data);
       return cachedData.length > 0 ? cachedData : data;    
-      // this.ListSanpham.set(data)
       // localStorage.setItem('sanphams', JSON.stringify(data)); // Cache vào LocalStorage
     } catch (error) {
       return console.error(error);

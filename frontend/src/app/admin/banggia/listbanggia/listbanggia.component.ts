@@ -45,8 +45,10 @@ export class ListBanggiaComponent {
   displayedColumns: string[] = [
     'STT',
     'title',
-    'masp',
-    'parent',
+    'type',
+    'sanpham',
+    'batdau',
+    'ketthuc',
     'order',
     'isActive',
     'createdAt',
@@ -55,8 +57,10 @@ export class ListBanggiaComponent {
   ColumnName: any = {
     STT: 'STT',
     title: 'Tiêu Đề',
-    masp: 'Mã SP',
-    slug: 'Đường Dẫn',
+    type: 'Loại',
+    sanpham: 'Sản Phẩm',
+    batdau: 'Bắt Đầu',
+    ketthuc: 'Kết Thúc',
     order: 'Thứ Tự',
     isActive: 'Trạng Thái',
     createdAt:'Ngày Tạo',
@@ -107,21 +111,6 @@ export class ListBanggiaComponent {
   applyFilter() {
     this.dataSource().filter = JSON.stringify(this.filterValues);
   }
-
-  displayedColumns1: string[] = ['name', 'price'];
-  dataSource1: any[] = [
-    { id: '1', name: 'Sản phẩm A', price: 100 },
-    { id: '2', name: 'Sản phẩm B', price: 200 },
-    { id: '3', name: 'Sản phẩm C', price: 300 }
-  ];
-
-  updateValue(event: Event, element: any, field: keyof any) {
-    const newValue = (event.target as HTMLElement).innerText.trim();
-    element[field] = field === 'price' ? Number(newValue) : newValue;
-    console.log('Dữ liệu đã cập nhật:', this.dataSource);
-  }
-
-
 
   async ngOnInit(): Promise<void> {    
     await this._BanggiaService.getAllBanggia();

@@ -110,7 +110,7 @@ export class ListSanphamComponent {
     this.dataSource.paginator = this.paginator;
   }
   async ngOnInit(): Promise<void> {    
-    await this._SanphamService.getAllSanpham();
+    // await this._SanphamService.getAllSanpham();
     await this._SanphamService.fetchSanphams();
     this._SanphamService.listenSanphamUpdates();
     this.dataSource = new MatTableDataSource(this.Listsanpham());

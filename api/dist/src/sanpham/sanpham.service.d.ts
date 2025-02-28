@@ -1,9 +1,9 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { SanphamGateway } from './sanpham.gateway';
+import { SocketGateway } from 'src/socket.gateway';
 export declare class SanphamService {
     private readonly prisma;
-    private sanphamGateway;
-    constructor(prisma: PrismaService, sanphamGateway: SanphamGateway);
+    private _SocketGateway;
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
     create(data: any): Promise<{
         id: string;
         createdAt: Date;

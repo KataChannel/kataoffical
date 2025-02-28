@@ -9,24 +9,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SanphamGateway = void 0;
+exports.SocketGateway = void 0;
 const websockets_1 = require("@nestjs/websockets");
 const socket_io_1 = require("socket.io");
-let SanphamGateway = class SanphamGateway {
+let SocketGateway = class SocketGateway {
     sendSanphamUpdate() {
         this.server.emit('sanpham-updated');
     }
+    sendKhachangUpdate() {
+        this.server.emit('khachhang-updated');
+    }
 };
-exports.SanphamGateway = SanphamGateway;
+exports.SocketGateway = SocketGateway;
 __decorate([
     (0, websockets_1.WebSocketServer)(),
     __metadata("design:type", socket_io_1.Server)
-], SanphamGateway.prototype, "server", void 0);
-exports.SanphamGateway = SanphamGateway = __decorate([
+], SocketGateway.prototype, "server", void 0);
+exports.SocketGateway = SocketGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({
         cors: {
             origin: '*',
         },
     })
-], SanphamGateway);
-//# sourceMappingURL=sanpham.gateway.js.map
+], SocketGateway);
+//# sourceMappingURL=socket.gateway.js.map

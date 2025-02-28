@@ -1,4 +1,0 @@
--- AlterTable
-ALTER TABLE "Banggia" ALTER COLUMN "batdau" DROP NOT NULL,
-ALTER COLUMN "ketthuc" DROP NOT NULL,
-ALTER COLUMN "order" DROP NOT NULL;

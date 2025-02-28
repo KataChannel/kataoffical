@@ -68,6 +68,21 @@
                             {{ idx + 1 }}
                         </span>
                         }
+                        @case ('sanpham') {
+                        <span class="max-w-40 line-clamp-4">
+                           {{ row[column].length }}
+                        </span>
+                        }
+                        @case ('batdau') {
+                        <span class="max-w-40 line-clamp-4">
+                            {{ row[column]|date:'dd/MM/yyyy'}}
+                        </span>
+                        }
+                        @case ('ketthuc') {
+                        <span class="max-w-40 line-clamp-4">
+                            {{ row[column]|date:'dd/MM/yyyy'}}
+                        </span>
+                        }
                         @case ('createdAt') {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column]|date:'dd/MM/yyyy'}}
