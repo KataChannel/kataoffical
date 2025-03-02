@@ -11,6 +11,12 @@
   </div>
   <div class="flex flex-row space-x-2 items-center">
     <mat-slide-toggle [(ngModel)]="DetailDonhang().isActive" [disabled]="!isEdit()">{{DetailDonhang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+    <button mat-icon-button color="primary" (click)="CoppyDon()">
+      <mat-icon>content_copy</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" (click)="printContent()">
+      <mat-icon>print</mat-icon>
+    </button>
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleDonhangAction()">
       <mat-icon>save</mat-icon>
     </button>
@@ -47,8 +53,8 @@
           </div>
         </div>
         <div class="font-bold text-[18px] uppercase">Bảng Sao Kê Hàng Ngày</div>
-      <div class="font-bold text-[18px] uppercase {{DetailDonhang()?.Khachhang?.TenKH?'':'text-red-700 italic'}}">{{DetailDonhang()?.khachhangId||"Chưa Chọn Khách Hàng"}}</div>
-      <div *ngIf="isEdit() && DetailDonhang()?.khachhang?.khachhang" class="p-2 rounded-lg border text-red-600" [innerHTML]="DetailDonhang().khachhang.ghichu"></div>
+      <div class="font-bold text-[18px] uppercase {{DetailDonhang()?.khachhangId?'':'text-red-700 italic'}}">{{getName(DetailDonhang()?.khachhangId)?.name||"Chưa Chọn Khách Hàng"}}</div>
+      <div *ngIf="isEdit() && DetailDonhang()?.khachhang?.ghichu" class="p-2 rounded-lg border text-red-600" [innerHTML]="DetailDonhang().khachhang.ghichu"></div>
       <div *ngIf="isEdit()" class="grid lg:grid-cols-3 grid-cols-1 gap-4">
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Khách Hàng</mat-label>
@@ -106,22 +112,37 @@
         @defer () {
           <div class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
             <div class="flex flex-row space-x-2 items-center">
-                <button matTooltip="Thêm" color="primary" mat-icon-button>
-                    <mat-icon>add_circle</mat-icon>
-                </button>
-                <button [disabled]="!isEdit()" matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
-                    <mat-icon>cloud_download</mat-icon>
-                </button>
-                <button [disabled]="!isEdit()" matTooltip="Tải dữ liệu từ drive" (click)="EmptyCart()" color="warn" mat-icon-button>
-                  <mat-icon>delete</mat-icon>
-              </button>
-                <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
-                    {{CountItem()}} Sản Phẩm
-                </span>
+                <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
+                  <mat-label>Sản Phẩm</mat-label>
+                  <mat-select (selectionChange)="SelectSanpham($event)">
+                    <div class="w-full flex flex-col">
+                      <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
+                        <input matInput (input)="DoFindSanpham($event)" placeholder="Tìm Kiếm" />
+                      </mat-form-field>
+                      <div class="overflow-y-auto max-h-44">
+                        @for (item of filterSanpham; track item.id) {
+                        <mat-option [value]="item.id">{{item.title}}</mat-option>
+                        }
+                        @empty {
+                        <mat-option disabled>Không có dữ liệu</mat-option>
+                        }
+                      </div>
+                    </div>
+                  </mat-select>
+                </mat-form-field>
+
+
                 <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
                     <mat-label>Tìm Kiếm</mat-label>
                     <input matInput (keyup)="applyFilter($event)" placeholder="Tìm Kiếm" />
                 </mat-form-field>
+                <button [disabled]="!isEdit()" matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
+                  <mat-icon>cloud_download</mat-icon>
+              </button>
+                   <button [disabled]="!isEdit()" matTooltip="Làm Trống Giỏ Hàng" (click)="EmptyCart()" color="warn" mat-icon-button>
+                     <mat-icon>delete</mat-icon>
+                 </button>
+
             </div>
         </div>
           <div class="w-full overflow-auto">
@@ -135,11 +156,12 @@
                     </th>
                     <td mat-cell *matCellDef="let row; let idx = index">
                         @switch (column) {
-                        @case ('STT') {
-                        <span class="max-w-20 line-clamp-4">
-                            {{ idx + 1 }}
-                        </span>
-                        }
+                          @case ('STT') {
+                            <span class="max-w-20 line-clamp-4 flex flex-row items-center">
+                               <span>{{ idx + 1 }} </span>
+                                <button mat-icon-button color="warn" (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
+                            </span>
+                            }
                         @case ('sldat') {
                       <div
                           [contentEditable]="true"

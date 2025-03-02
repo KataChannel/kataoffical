@@ -73,6 +73,11 @@
                            {{ row[column].length }}
                         </span>
                         }
+                        @case ('status') {
+                        <span class="max-w-40 line-clamp-4">
+                           {{ getName(ListStatus,'value',row[column])?.title }}
+                        </span>
+                        }
                         @case ('batdau') {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column]|date:'dd/MM/yyyy'}}

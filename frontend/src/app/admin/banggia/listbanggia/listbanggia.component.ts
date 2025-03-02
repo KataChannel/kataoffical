@@ -50,6 +50,7 @@ export class ListBanggiaComponent {
     'batdau',
     'ketthuc',
     'order',
+    'status',
     'isActive',
     'createdAt',
     'updatedAt',
@@ -62,6 +63,7 @@ export class ListBanggiaComponent {
     batdau: 'Bắt Đầu',
     ketthuc: 'Kết Thúc',
     order: 'Thứ Tự',
+    status: 'Tình Trạng',
     isActive: 'Trạng Thái',
     createdAt:'Ngày Tạo',
     updatedAt:'Ngày Cập Nhật'
@@ -71,6 +73,11 @@ export class ListBanggiaComponent {
   );
   Columns: any[] = [];
   isFilter: boolean = false;
+  ListStatus: any[] = [
+    { value: 'baogia', title: 'Báo Giá' },
+    { value: 'dangban', title: 'Đang Bán' },
+    { value: 'ngungban', title: 'Ngừng Bán' },
+  ];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
@@ -111,7 +118,9 @@ export class ListBanggiaComponent {
   applyFilter() {
     this.dataSource().filter = JSON.stringify(this.filterValues);
   }
-
+  getName(list:any,field:any,value:any){    
+    return list.find((v:any)=>v[field]===value);
+  }
   async ngOnInit(): Promise<void> {    
     await this._BanggiaService.getAllBanggia();
     this.CountItem = this.Listbanggia().length;

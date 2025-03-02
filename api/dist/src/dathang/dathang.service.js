@@ -25,24 +25,62 @@ let DathangService = class DathangService {
         }
     }
     async findAll() {
-        return this.prisma.dathang.findMany({ include: {
-                sanpham: true,
-                nhacungcap: true
-            } });
+        const dathangs = await this.prisma.dathang.findMany({
+            include: {
+                sanpham: {
+                    include: {
+                        sanpham: true,
+                    },
+                },
+                nhacungcap: true,
+            },
+        });
+        return dathangs.map((dathang) => ({
+            ...dathang,
+            sanpham: dathang.sanpham.map((item) => ({
+                ...item.sanpham,
+                idSP: item.idSP,
+                sldat: item.sldat || 0,
+                slgiao: item.slgiao || 0,
+                slnhan: item.slnhan || 0,
+                ttdat: item.ttdat || 0,
+                ttgiao: item.ttgiao || 0,
+                ttnhan: item.ttnhan || 0,
+                ghichu: item.ghichu,
+            })),
+        }));
     }
     async findOne(id) {
         const dathang = await this.prisma.dathang.findUnique({
             where: { id },
             include: {
-                sanpham: true,
-                nhacungcap: true
+                sanpham: {
+                    include: {
+                        sanpham: true,
+                    },
+                },
+                nhacungcap: true,
             },
         });
         if (!dathang)
             throw new common_1.NotFoundException('Dathang not found');
-        return dathang;
+        return {
+            ...dathang,
+            sanpham: dathang.sanpham.map((item) => ({
+                ...item.sanpham,
+                idSP: item.idSP,
+                sldat: item.sldat || 0,
+                slgiao: item.slgiao || 0,
+                slnhan: item.slnhan || 0,
+                ttdat: item.ttdat || 0,
+                ttgiao: item.ttgiao || 0,
+                ttnhan: item.ttnhan || 0,
+                ghichu: item.ghichu,
+            })),
+        };
     }
     async create(data) {
+        console.error(data);
         return this.prisma.$transaction(async (prisma) => {
             const newDathang = await prisma.dathang.create({
                 data: {
@@ -56,13 +94,13 @@ let DathangService = class DathangService {
                     isActive: data.isActive,
                     sanpham: {
                         create: data.sanpham.map(sp => ({
-                            idSP: sp.idSP,
+                            idSP: sp.id,
                             sldat: sp.sldat,
                             slgiao: sp.slgiao,
                             slnhan: sp.slnhan,
-                            ttdat: sp.ttdat,
-                            ttgiao: sp.ttgiao,
-                            ttnhan: sp.ttnhan,
+                            ttdat: sp.ttdat || 0,
+                            ttgiao: sp.ttgiao || 0,
+                            ttnhan: sp.ttnhan || 0,
                             ghichu: sp.ghichu,
                             order: sp.order,
                             isActive: sp.isActive,
@@ -73,10 +111,10 @@ let DathangService = class DathangService {
             });
             for (const sp of data.sanpham) {
                 await prisma.sanpham.update({
-                    where: { id: sp.idSP },
+                    where: { id: sp.id },
                     data: {
                         soluong: {
-                            increment: sp.slnhan ?? 0,
+                            increment: sp.sldat || 0,
                         },
                     },
                 });
@@ -93,14 +131,22 @@ let DathangService = class DathangService {
             if (!oldDathang)
                 throw new common_1.NotFoundException('Đơn hàng không tồn tại');
             for (const oldSP of oldDathang.sanpham) {
-                await prisma.sanpham.update({
+                const existingSP = await prisma.sanpham.findUnique({
                     where: { id: oldSP.idSP },
-                    data: {
-                        soluong: {
-                            decrement: oldSP.slnhan ?? 0,
-                        },
-                    },
                 });
+                if (existingSP) {
+                    await prisma.sanpham.update({
+                        where: { id: oldSP.idSP },
+                        data: {
+                            soluong: {
+                                decrement: oldSP.sldat || 0,
+                            },
+                        },
+                    });
+                }
+                else {
+                    console.warn(`Skipping update: Product with id ${oldSP.idSP} not found.`);
+                }
             }
             const updatedDathang = await prisma.dathang.update({
                 where: { id },
@@ -115,13 +161,13 @@ let DathangService = class DathangService {
                     sanpham: {
                         deleteMany: {},
                         create: data.sanpham.map((sp) => ({
-                            idSP: sp.idSP,
+                            idSP: sp.id,
                             sldat: sp.sldat,
                             slgiao: sp.slgiao,
                             slnhan: sp.slnhan,
-                            ttdat: sp.ttdat,
-                            ttgiao: sp.ttgiao,
-                            ttnhan: sp.ttnhan,
+                            ttdat: sp.ttdat || 0,
+                            ttgiao: sp.ttgiao || 0,
+                            ttnhan: sp.ttnhan || 0,
                             ghichu: sp.ghichu,
                             order: sp.order,
                             isActive: sp.isActive,
@@ -132,10 +178,10 @@ let DathangService = class DathangService {
             });
             for (const newSP of data.sanpham) {
                 await prisma.sanpham.update({
-                    where: { id: newSP.idSP },
+                    where: { id: newSP.id },
                     data: {
                         soluong: {
-                            increment: newSP.slnhan ?? 0,
+                            increment: newSP.sldat || 0,
                         },
                     },
                 });

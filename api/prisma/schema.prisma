@@ -89,7 +89,7 @@ model Donhangsanpham {
   ttnhan    Float?
   ghichu    String?
   sanpham   Sanpham  @relation(fields: [idSP], references: [id])
-  donhang   Donhang  @relation(fields: [donhangId], references: [id])
+  donhang   Donhang  @relation(fields: [donhangId], references: [id],onDelete: Cascade)
   donhangId String
   order     Int?
   isActive  Boolean?  @default(false)
@@ -121,6 +121,7 @@ model Banggia {
   ketthuc   DateTime?
   order     Int?     @default(1)
   ghichu   String?
+  status   String?
   isActive Boolean    @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -180,7 +181,7 @@ model Dathangsanpham {
   ttnhan    Float?
   ghichu    String?
   sanpham   Sanpham  @relation(fields: [idSP], references: [id])
-  dathang   Dathang  @relation(fields: [dathangId], references: [id])
+  dathang   Dathang  @relation(fields: [dathangId], references: [id],onDelete: Cascade)
   dathangId String
   order     Int?
   isActive  Boolean  @default(false)

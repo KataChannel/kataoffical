@@ -49,6 +49,7 @@ let PhieukhoService = class PhieukhoService {
                     sanpham: {
                         create: data.sanpham.map((sp) => ({
                             sanphamId: sp.sanphamId,
+                            sldat: sp.sldat,
                             soluong: sp.soluong,
                             ghichu: sp.ghichu,
                         })),
@@ -101,6 +102,7 @@ let PhieukhoService = class PhieukhoService {
                         create: data.sanpham.map((sp) => ({
                             sanphamId: sp.sanphamId,
                             soluong: sp.soluong,
+                            sldat: sp.sldat,
                             ghichu: sp.ghichu,
                         })),
                     },

@@ -45,6 +45,7 @@ export class PhieukhoService {
           sanpham: {
             create: data.sanpham.map((sp: any) => ({
               sanphamId: sp.sanphamId,
+              sldat: sp.sldat,
               soluong: sp.soluong,
               ghichu: sp.ghichu,
             })),
@@ -106,6 +107,7 @@ export class PhieukhoService {
             create: data.sanpham.map((sp: any) => ({
               sanphamId: sp.sanphamId,
               soluong: sp.soluong,
+              sldat: sp.sldat,
               ghichu: sp.ghichu,
             })),
           },

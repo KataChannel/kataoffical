@@ -35,6 +35,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { SanphamService } from '../../sanpham/sanpham.service';
+import html2canvas from 'html2canvas';
 @Component({
   selector: 'app-detaildonhang',
   imports: [
@@ -75,6 +76,7 @@ export class DetailDonhangComponent {
       await this._BanggiaService.getAllBanggia();
       this.filterBanggia = this._BanggiaService.ListBanggia();
       await this._SanphamService.getAllSanpham();
+      this.filterSanpham = this._SanphamService.ListSanpham();
       this.dataSource().data = this.DetailDonhang().sanpham;
       this.dataSource().paginator = this.paginator;
       this.dataSource().sort = this.sort;
@@ -108,6 +110,7 @@ export class DetailDonhangComponent {
   isDelete = signal(false);
   filterKhachhang: any = [];
   filterBanggia: any[] = [];
+  filterSanpham: any[] = [];
   donhangId: any = this._DonhangService.donhangId;
   async ngOnInit() {}
   async handleDonhangAction() {
@@ -364,6 +367,7 @@ export class DetailDonhangComponent {
     this.dataSource().data = this.DetailDonhang().sanpham;
     this.dataSource().paginator = this.paginator;
     this.dataSource().sort = this.sort;
+    this.reloadfilter();
   }
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -372,8 +376,142 @@ export class DetailDonhangComponent {
   EmptyCart()
   {
     this.DetailDonhang.update((v:any)=>{
-      v.giohang.sanpham = []
+      v.sanpham = []
       return v;
     })
+    this.dataSource().data = this.DetailDonhang().sanpham;
+    this.dataSource().paginator = this.paginator;
+    this.dataSource().sort = this.sort;
+    this.reloadfilter();
+  }
+  getName(id:any)
+  {
+    return this.ListKhachhang().find((v:any)=>v.id===id);
+  }
+
+
+  reloadfilter(){
+    this.filterSanpham = this._SanphamService.ListSanpham().filter((v:any) => !this.DetailDonhang().sanpham.some((v2:any) => v2.id === v.id));
+  }
+  // RemoveSanpham(item:any){
+  //   this.DetailBanggia.update((v:any)=>{
+  //     v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
+  //     this.reloadfilter();
+  //     return v;
+  //   })
+  //   this.dataSource().data = this.DetailBanggia().sanpham;
+  //   this.dataSource().paginator = this.paginator;
+  //   this.dataSource().sort = this.sort;
+  // }
+  DoFindSanpham(event:any){
+    const value = event.target.value;
+    console.log(value);
+    
+    this.filterSanpham = this._SanphamService.ListSanpham().filter((v) => v.title.toLowerCase().includes(value.toLowerCase()));
+  }
+  SelectSanpham(event:any){
+    const value = event.value;
+    const item = this._SanphamService.ListSanpham().find((v) => v.id === value);
+    this.DetailDonhang.update((v:any)=>{
+      if(!v.sanpham){
+        v.sanpham = [];
+        item.sldat = item.slgiao = 1;
+        v.sanpham.push(item);
+      }
+      else{
+          item.sldat = item.slgiao = 1;
+          v.sanpham.push(item);
+      }
+      this.reloadfilter();
+      return v;
+    })
+    this.dataSource().data = this.DetailDonhang().sanpham;
+    this.dataSource().paginator = this.paginator;
+    this.dataSource().sort = this.sort;    
+  }
+  RemoveSanpham(item:any){
+    this.DetailDonhang.update((v:any)=>{
+      v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
+      this.reloadfilter();
+      return v;
+    })
+    this.dataSource().data = this.DetailDonhang().sanpham;
+    this.dataSource().paginator = this.paginator;
+    this.dataSource().sort = this.sort;
+  }
+
+  CoppyDon()
+  {
+    this._snackBar.open('Đang Coppy Đơn Hàng', '', {
+      duration: 1000,
+      horizontalPosition: "end",
+      verticalPosition: "top",
+      panelClass: ['snackbar-warning'],
+    });
+      this.DetailDonhang.update((v:any)=>{
+        delete v.id;
+        v.title = `${v.title} - Coppy`;
+        v.madonhang = GenId(8, false);
+        return v;
+      })
+      console.log(this.DetailDonhang());
+      
+      this._DonhangService.CreateDonhang(this.DetailDonhang()).then((data:any)=>{  
+        if(data)
+          {
+            this._snackBar.open('Coppy Đơn Hàng Thành Công', '', {
+              duration: 1000,
+              horizontalPosition: "end",
+              verticalPosition: "top",
+              panelClass: ['snackbar-success'],
+            });
+            this._router.navigate(['/admin/donhang',data.id]);
+          }    
+          else{
+            this._snackBar.open('Coppy Đơn Hàng Thất Bại', '', {
+              duration: 1000,
+              horizontalPosition: "end",
+              verticalPosition: "top",
+              panelClass: ['snackbar-error'],
+            });
+          }
+      //  setTimeout(() => {
+      //   window.location.href = `admin/donhang/donsi/${data.id}`;
+      //  }, 1000);
+  
+      })
+  }
+
+  printContent()
+  {
+    const element = document.getElementById('printContent');
+    if (!element) return;
+
+    html2canvas(element, { scale: 2 }).then(canvas => {
+      const imageData = canvas.toDataURL('image/png');
+
+      // Mở cửa sổ mới và in ảnh
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) return;
+
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>${this.DetailDonhang()?.title}</title>
+          </head>
+          <body style="text-align: center;">
+            <img src="${imageData}" style="max-width: 100%;"/>
+            <script>
+              window.onload = function() {
+                window.print();
+                window.onafterprint = function() { window.close(); };
+              };
+            </script>
+          </body>
+        </html>
+      `);
+
+      printWindow.document.close();
+    });
   }
 }

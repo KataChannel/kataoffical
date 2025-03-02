@@ -84,9 +84,9 @@ async function main() {
       },
       {
         id: '6a0eb8f8-ba03-4f31-9504-50d126ed39dc',
-        title: 'Xuất Nhập Tồn',
+        title: 'Phiếu Kho',
         icon: null,
-        slug: '/admin/xuatnhapton',
+        slug: '/admin/phieukho',
         parentId: null,
         order: 8,
         isActive: true,
@@ -95,9 +95,9 @@ async function main() {
       },
       {
         id: 'd8019643-a950-4cb2-9b2e-db988d37e663',
-        title: 'Quản Lý Kho',
+        title: 'Kho',
         icon: null,
-        slug: '/admin/quanlykho',
+        slug: '/admin/kho',
         parentId: null,
         order: 9,
         isActive: true,

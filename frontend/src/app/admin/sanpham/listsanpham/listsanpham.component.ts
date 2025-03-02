@@ -75,6 +75,7 @@ export class ListSanphamComponent {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
+  filterValues1: { [key: string]: any[] } = {};
   private _SanphamService: SanphamService = inject(SanphamService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
@@ -87,7 +88,12 @@ export class ListSanphamComponent {
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
+      this.filterValues1[column] = [];
     });
+    console.log(this.filterValues);
+    console.log(this.filterValues1);
+    
+    
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -103,12 +109,36 @@ export class ListSanphamComponent {
     };
   }
   applyFilter() {
+    console.log(this.filterValues);
+    
     this.dataSource.filter = JSON.stringify(this.filterValues);
     this.CountItem = this.dataSource.filteredData.length;
     this.dataSource.paginator?.firstPage();
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+    console.log(this.dataSource.filteredData);
   }
+  getValueFilter(column: any) {
+    const result = this.dataSource.filteredData.map((v) => v[column]);
+    return result.filter((v, i) => result.indexOf(v) === i);
+  }
+  filterValueColumn(column: any, event: any) {
+    console.log(event.target.value);
+    this.dataSource.filteredData = this.dataSource.data.filter((v:any) => v[column].includes(event.target.value));
+    console.log(this.dataSource.filteredData);
+  }
+  // getValueFilterColumn(column: any) {
+  //   const result = this.dataSource.filteredData.map((v) => v[column]);
+  //   return result.filter((v, i) => result.indexOf(v) === i);
+  // }
+  ChosenItem(item: any, column: any) {    
+    if (!this.filterValues1[column].includes(item)) {
+      this.filterValues1[column].push(item);
+    }
+    console.log(this.filterValues1);
+  }
+
+
   async ngOnInit(): Promise<void> {    
     // await this._SanphamService.getAllSanpham();
     await this._SanphamService.fetchSanphams();
@@ -117,6 +147,8 @@ export class ListSanphamComponent {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
     this.dataSource.filterPredicate = this.createFilter();
+    console.log(this.dataSource);
+    
     this.CountItem = this.Listsanpham().length;
     this.initializeColumns();
     this.setupDrawer();

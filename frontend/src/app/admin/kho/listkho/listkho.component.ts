@@ -193,60 +193,36 @@ export class ListKhoComponent {
   async LoadDrive() {
     const DriveInfo = {
       IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'SPImport',
+      SheetName: 'KhoImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
    const data = ConvertDriveData(result.values);
    console.log(data);
    this.DoImportData(data);
-    // const updatePromises = data.map(async (v: any) => {
-    //   const item = this._KhachhangsService
-    //     .ListKhachhang()
-    //     .find((v1) => v1.MaKH === v.MaKH);
-    //   if (item) {
-    //     const item1 = { ...item, ...v };
-    //     console.log(item1);
-
-    //     await this._KhachhangsService.updateOneKhachhang(item1);
-    //   }
-    // });
-    // Promise.all(updatePromises).then(() => {
-    //   this._snackBar.open('Cập Nhật Thành Công', '', {
-    //     duration: 1000,
-    //     horizontalPosition: 'end',
-    //     verticalPosition: 'top',
-    //     panelClass: ['snackbar-success'],
-    //   });
-    //   //  window.location.reload();
-    // });
   }
   DoImportData(data:any)
   {
     console.log(data);
     
     const transformedData = data.map((v: any) => ({
-      title: v.title?.trim()||'',
-      masp: v.masp?.trim()||'',
-      slug:`${convertToSlug(v?.title?.trim()||'')}_${GenId(5,false)}`,
-      giagoc: Number(v.giagoc)||0,
-      dvt: v.dvt||'',
-      soluong: Number(v.soluong)||0,
-      soluongkho: Number(v.soluongkho)||0,
+      name: v.name?.trim()||'',
+      makho: v.makho?.trim()||'',
+      diachi: v.diachi?.trim()||'',
+      sdt: v.sdt?.trim()||'',
       ghichu: v.ghichu||'',
-      order: Number(v.order)||0,
    }));
-   // Filter out duplicate masp values
+   // Filter out duplicate makho values
    const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
       index === self.findIndex((t:any) => (
-        t.masp === value.masp
+        t.makho === value.makho
       ))
    )
-    const listId2 = uniqueData.map((v: any) => v.masp);
-    const listId1 = this._KhoService.ListKho().map((v: any) => v.masp);
+    const listId2 = uniqueData.map((v: any) => v.makho);
+    const listId1 = this._KhoService.ListKho().map((v: any) => v.makho);
     const listId3 = listId2.filter((item:any) => !listId1.includes(item));
     const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._KhoService.ListKho().find((v1) => v1.masp === v.masp);
+        const item = this._KhoService.ListKho().find((v1) => v1.makho === v.makho);
         if (item) {
           const item1 = { ...item, ...v };
           await this._KhoService.updateKho(item1);
@@ -256,7 +232,7 @@ export class ListKhoComponent {
         }
       });
      const disableItem = listId3.map(async (v: any) => {
-        const item = this._KhoService.ListKho().find((v1) => v1.masp === v);
+        const item = this._KhoService.ListKho().find((v1) => v1.makho === v);
         item.isActive = false;
         await this._KhoService.updateKho(item);
       });

@@ -29,12 +29,13 @@ export class BanggiaService {
       data: {
         title: data.title,
         type: data.type,
+        status: data.status||'baogia',
         batdau: data.batdau ? new Date(data.batdau) : null,
         ketthuc: data.ketthuc ? new Date(data.ketthuc) : null,
         isActive: data.isActive ?? false,
         sanpham: {
           create: data.sanpham?.map((sp:any) => ({
-            sanphamId: sp.sanphamId,
+            sanphamId: sp.idSP,
             giaban: sp.giaban,
           })),
         },
@@ -95,6 +96,7 @@ export class BanggiaService {
         title: data.title,
         isActive: data.isActive,
         type: data.type,
+        status: data.status||'baogia',
         batdau: data.batdau ? new Date(data.batdau) : null,
         ketthuc: data.ketthuc ? new Date(data.ketthuc) : null,
         sanpham: {

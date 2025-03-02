@@ -50,6 +50,7 @@ export class DonhangService {
         }
         this.getAllDonhang()
         this.donhangId.set(data.id)
+        return data;
     } catch (error) {
         return console.error(error);
     }

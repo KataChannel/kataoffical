@@ -236,9 +236,25 @@ export class ListDonhangComponent {
     this._router.navigate(['admin/donhang', 0]);
   }
   goToDetail(item: any): void {
-     this._DonhangService.setDonhangId(item.id);
+    this._DonhangService.setDonhangId(item.id);
     this.drawer.open();
     this._router.navigate(['admin/donhang', item.id]);
+  }
+  editDonhang:any[]=[];
+  toggleDonhang(item: any): void {
+    const index = this.editDonhang.findIndex((v) => v.id === item.id);
+    if (index !== -1) {
+      this.editDonhang.splice(index, 1);
+    } else {
+      this.editDonhang.push(item);
+    }
+    console.log(this.editDonhang);  
+  }
+  CheckItemInDonhang(item: any): boolean {
+    return this.editDonhang.findIndex((v) => v.id === item.id) !== -1;
+  }
+  DeleteDonhang(): void {
+    
   }
   async LoadDrive() {
     const DriveInfo = {

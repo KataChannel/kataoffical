@@ -22,6 +22,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import html2canvas from 'html2canvas';
   @Component({
     selector: 'app-detailbanggia',
     imports: [
@@ -72,6 +73,11 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
     dataSource = signal(new MatTableDataSource<any>([]));
     CountItem = computed(() => this.dataSource().data.length);
     filterSanpham:any[]=[];
+    ListStatus: any[] = [
+      { value: 'baogia', title: 'Báo Giá' },
+      { value: 'dangban', title: 'Đang Bán' },
+      { value: 'ngungban', title: 'Ngừng Bán' },
+    ];
     constructor(){
       this._route.paramMap.subscribe(async (params) => {
         const id = params.get('id');
@@ -89,6 +95,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
         if(id === '0'){
           this.DetailBanggia.set({ 
             title: GenId(8, false),   
+            status: 'baogia',
             type:'bansi',   
             batdau: moment().startOf('month').toDate(),
             ketthuc: moment().endOf('month').toDate()
@@ -250,11 +257,17 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
     
       }
       reloadfilter(){
+        console.log(this.DetailBanggia().sanpham);
+        console.log(this._SanphamService.ListSanpham());
+        
         this.filterSanpham = this._SanphamService.ListSanpham().filter((v:any) => !this.DetailBanggia().sanpham.some((v2:any) => v2.id === v.id));
+        console.log(this.filterSanpham);
       }
       SelectSanpham(event:any){
         const value = event.value;
         const item = this._SanphamService.ListSanpham().find((v) => v.id === value);
+        console.log(item);
+        
         this.DetailBanggia.update((v:any)=>{
           if(!v.sanpham){
             v.sanpham = [];
@@ -283,5 +296,64 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
       DoFindSanpham(event:any){
         const value = event.target.value;
         this.filterSanpham = this._SanphamService.ListSanpham().filter((v) => v.title.toLowerCase().includes(value.toLowerCase()));
+      }
+      CoppyDon()
+      {
+        this._snackBar.open('Đang Coppy Đơn Hàng', '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-warning'],
+        });
+          this.DetailBanggia.update((v:any)=>{
+            delete v.id;
+            v.title = `${v.title} - Coppy`;
+            return v;
+          })
+          this._BanggiaService.CreateBanggia(this.DetailBanggia()).then((data:any)=>{
+            this._snackBar.open('Coppy Đơn Hàng Thành Công', '', {
+              duration: 1000,
+              horizontalPosition: "end",
+              verticalPosition: "top",
+              panelClass: ['snackbar-success'],
+            });
+            this._router.navigate(['/admin/banggia',this.banggiaId()]);
+          //  setTimeout(() => {
+          //   window.location.href = `admin/donhang/donsi/${data.id}`;
+          //  }, 1000);
+      
+          })
+      }
+      printContent()
+      {
+        const element = document.getElementById('printContent');
+        if (!element) return;
+    
+        html2canvas(element, { scale: 2 }).then(canvas => {
+          const imageData = canvas.toDataURL('image/png');
+    
+          // Mở cửa sổ mới và in ảnh
+          const printWindow = window.open('', '_blank');
+          if (!printWindow) return;
+    
+          printWindow.document.write(`
+            <html>
+              <head>
+                <title>${this.DetailBanggia()?.title}</title>
+              </head>
+              <body style="text-align: center;">
+                <img src="${imageData}" style="max-width: 100%;"/>
+                <script>
+                  window.onload = function() {
+                    window.print();
+                    window.onafterprint = function() { window.close(); };
+                  };
+                </script>
+              </body>
+            </html>
+          `);
+    
+          printWindow.document.close();
+        });
       }
   }

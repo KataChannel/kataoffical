@@ -116,8 +116,8 @@ export const ListMenus= [
     },
     {
       "id": 14,
-      "Title": "Về quanlytimona",
-      "Slug": "ve-quanlytimona",
+      "Title": "Về Rau Sạch Trần Gia",
+      "Slug": "ve-Rau Sạch Trần Gia",
       "Type":"gioithieu",
       "View":"v5",
       "Level": 1,

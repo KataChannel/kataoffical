@@ -13,12 +13,16 @@ export declare class BanggiaController {
         }[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         isActive: boolean;
+        ghichu: string | null;
         type: string;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
     }>;
     findAll(): Promise<({
         sanpham: {
@@ -31,12 +35,16 @@ export declare class BanggiaController {
         }[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         isActive: boolean;
+        ghichu: string | null;
         type: string;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
     })[]>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -57,12 +65,16 @@ export declare class BanggiaController {
             giaban: number;
         }[];
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         isActive: boolean;
+        ghichu: string | null;
         type: string;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
     }>;
     update(id: string, updateBanggiaDto: any): Promise<{
         sanpham: {
@@ -75,21 +87,29 @@ export declare class BanggiaController {
         }[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         isActive: boolean;
+        ghichu: string | null;
         type: string;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         isActive: boolean;
+        ghichu: string | null;
         type: string;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
     }>;
     reorder(body: {
         banggiaIds: string[];

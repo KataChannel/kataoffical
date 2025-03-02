@@ -16,6 +16,23 @@ let DonhangService = class DonhangService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    async generateOrderCode() {
+        const lastOrder = await this.prisma.donhang.findFirst({
+            orderBy: { madonhang: 'desc' },
+            select: { madonhang: true },
+        });
+        let newCode = 'DH0000001';
+        if (lastOrder?.madonhang) {
+            const lastNumber = parseInt(lastOrder.madonhang.replace('DH', ''), 10);
+            if (lastNumber < 9999999) {
+                newCode = `DH${(lastNumber + 1).toString().padStart(7, '0')}`;
+            }
+            else {
+                throw new Error('Đã đạt giới hạn số lượng mã đơn hàng!');
+            }
+        }
+        return newCode;
+    }
     async reorderDonHangs(donhangIds) {
         for (let i = 0; i < donhangIds.length; i++) {
             await this.prisma.donhang.update({
@@ -96,12 +113,13 @@ let DonhangService = class DonhangService {
         };
     }
     async create(dto) {
+        const madonhang = await this.generateOrderCode();
         return this.prisma.$transaction(async (prisma) => {
             const newDonhang = await prisma.donhang.create({
                 data: {
                     title: dto.title,
                     type: dto.type,
-                    madonhang: dto.madonhang,
+                    madonhang: madonhang,
                     ngaygiao: new Date(dto.ngaygiao),
                     khachhangId: dto.khachhangId,
                     isActive: dto.isActive,

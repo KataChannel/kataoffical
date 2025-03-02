@@ -4,12 +4,16 @@ export declare class BanggiaService {
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         isActive: boolean;
+        ghichu: string | null;
         type: string;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
     }>;
     createBanggia(data: any): Promise<{
         sanpham: {
@@ -22,12 +26,16 @@ export declare class BanggiaService {
         }[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         isActive: boolean;
+        ghichu: string | null;
         type: string;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
     }>;
     reorderBanggias(banggiaIds: string[]): Promise<void>;
     findAll(): Promise<({
@@ -41,12 +49,16 @@ export declare class BanggiaService {
         }[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         isActive: boolean;
+        ghichu: string | null;
         type: string;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
     })[]>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -67,12 +79,16 @@ export declare class BanggiaService {
             giaban: number;
         }[];
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         isActive: boolean;
+        ghichu: string | null;
         type: string;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
     }>;
     update(id: string, data: any): Promise<{
         sanpham: {
@@ -85,20 +101,28 @@ export declare class BanggiaService {
         }[];
     } & {
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         isActive: boolean;
+        ghichu: string | null;
         type: string;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         order: number | null;
         title: string;
         isActive: boolean;
+        ghichu: string | null;
         type: string;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
     }>;
 }

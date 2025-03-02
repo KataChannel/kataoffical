@@ -88,6 +88,10 @@
               <mat-datepicker #pickerKetthuc></mat-datepicker>
             </mat-form-field>
           </div>
+          <div class="flex flex-row space-x-2">
+            <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button>
+            <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="DeleteDonhang()">Phiếu Chia</button>
+          </div>
         <div class="w-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource()" matSort>
                 @for (column of displayedColumns; track column) {
@@ -100,8 +104,14 @@
                     <td mat-cell *matCellDef="let row; let idx = index">
                         @switch (column) {
                         @case ('STT') {
-                        <span class="max-w-40 line-clamp-4">
+                        <span class="max-w-40 line-clamp-4 flex items-center" (click)="toggleDonhang(row)">
                             {{ idx + 1 }}
+                            <span *ngIf="CheckItemInDonhang(row)" class="material-symbols-outlined">check_box</span>
+                        </span>
+                        }
+                        @case ('madonhang') {
+                        <span  (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-700">
+                            {{ row[column] }}
                         </span>
                         }
                         @case ('createdAt') {
@@ -149,7 +159,7 @@
                 </ng-container>
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{donhangId()==row.id?'!bg-slate-200':''}}" (click)="goToDetail(row);"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{CheckItemInDonhang(row)?'!bg-slate-200':''}}"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>

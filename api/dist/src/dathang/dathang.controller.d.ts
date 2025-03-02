@@ -28,7 +28,8 @@ export declare class DathangController {
         ngaynhan: Date | null;
         nhacungcapId: string;
     }>;
-    findAll(): Promise<({
+    findAll(): Promise<{
+        sanpham: any[];
         nhacungcap: {
             id: string;
             email: string | null;
@@ -41,21 +42,6 @@ export declare class DathangController {
             sdt: string | null;
             mancc: string;
         };
-        sanpham: {
-            id: string;
-            order: number | null;
-            isActive: boolean;
-            ghichu: string | null;
-            idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
-            dathangId: string;
-        }[];
-    } & {
         id: string;
         order: number | null;
         title: string | null;
@@ -65,8 +51,31 @@ export declare class DathangController {
         madncc: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string;
-    })[]>;
+    }[]>;
     findOne(id: string): Promise<{
+        sanpham: {
+            idSP: string;
+            sldat: number;
+            slgiao: number;
+            slnhan: number;
+            ttdat: number;
+            ttgiao: number;
+            ttnhan: number;
+            ghichu: string | null;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            order: number | null;
+            title: string;
+            slug: string | null;
+            isActive: boolean;
+            masp: string;
+            giagoc: number;
+            dvt: string | null;
+            hinhanh: string | null;
+            soluong: number;
+            soluongkho: number;
+        }[];
         nhacungcap: {
             id: string;
             email: string | null;
@@ -79,21 +88,6 @@ export declare class DathangController {
             sdt: string | null;
             mancc: string;
         };
-        sanpham: {
-            id: string;
-            order: number | null;
-            isActive: boolean;
-            ghichu: string | null;
-            idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
-            dathangId: string;
-        }[];
-    } & {
         id: string;
         order: number | null;
         title: string | null;

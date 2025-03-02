@@ -2,6 +2,7 @@ import { PrismaService } from 'prisma/prisma.service';
 export declare class DonhangService {
     private readonly prisma;
     constructor(prisma: PrismaService);
+    generateOrderCode(): Promise<string>;
     reorderDonHangs(donhangIds: string[]): Promise<void>;
     search(params: any): Promise<{
         id: string;
