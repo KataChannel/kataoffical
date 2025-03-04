@@ -43,7 +43,6 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 export class ListNhacungcapComponent {
   Detail: any = {};
   displayedColumns: string[] = [
-    'STT',
     'name',
     'mancc',
     'diachi',
@@ -55,7 +54,6 @@ export class ListNhacungcapComponent {
     'updatedAt',
   ];
   ColumnName: any = {
-    STT: 'STT',
     name: 'Tên Nhà Cung Cấp',
     mancc: 'Mã Nhà Cung Cấp',
     diachi: 'Địa Chỉ',
@@ -80,13 +78,7 @@ export class ListNhacungcapComponent {
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   Listnhacungcap:any = this._NhacungcapService.ListNhacungcap;
-  dataSource = computed(() => {
-    const ds = new MatTableDataSource(this.Listnhacungcap());
-    ds.filterPredicate = this.createFilter();
-    ds.paginator = this.paginator;
-    ds.sort = this.sort;
-    return ds;
-  });
+  dataSource = new MatTableDataSource([]);
   nhacungcapId:any = this._NhacungcapService.nhacungcapId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
@@ -109,11 +101,15 @@ export class ListNhacungcapComponent {
     };
   }
   applyFilter() {
-    this.dataSource().filter = JSON.stringify(this.filterValues);
+    this.dataSource.filter = JSON.stringify(this.filterValues);
   }
   async ngOnInit(): Promise<void> {    
     await this._NhacungcapService.getAllNhacungcap();
     this.CountItem = this.Listnhacungcap().length;
+    this.dataSource = new MatTableDataSource(this.Listnhacungcap());
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.dataSource.filterPredicate = this.createFilter();
     this.initializeColumns();
     this.setupDrawer();
     this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
@@ -164,6 +160,68 @@ export class ListNhacungcapComponent {
       column.isShow = !column.isShow;
       this.updateDisplayedColumns();
     }
+  }
+  FilterHederColumn(list:any,column:any)
+  {
+    const uniqueList = list.filter((obj: any, index: number, self: any) => 
+      index === self.findIndex((t: any) => t[column] === obj[column])
+    );
+    return uniqueList
+  }
+  doFilterHederColumn(event: any, column: any): void {
+    this.dataSource.filteredData = this.Listnhacungcap().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    const query = event.target.value.toLowerCase();
+    console.log(query,column);
+    console.log(this.dataSource.filteredData);   
+  }
+  ListFilter:any[] =[]
+  ChosenItem(item:any)
+  {
+    if(this.ListFilter.includes(item.id))
+    {
+      this.ListFilter = this.ListFilter.filter((v) => v !== item.id);
+    }
+    else{
+      this.ListFilter.push(item.id);
+    }
+    console.log(this.ListFilter);
+    
+  }
+  ChosenAll(list:any)
+  {
+    list.forEach((v:any) => {
+      if(this.ListFilter.includes(v.id))
+        {
+          this.ListFilter = this.ListFilter.filter((v) => v !== v.id);
+        }
+        else{
+          this.ListFilter.push(v.id);
+        }
+    });
+  }
+  ResetFilter()
+  {
+    this.ListFilter = this.Listnhacungcap().map((v:any) => v.id);
+    this.dataSource.data = this.Listnhacungcap();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+  EmptyFiter()
+  {
+    this.ListFilter = [];
+  }
+  CheckItem(item:any)
+  {
+    return this.ListFilter.includes(item.id);
+  }
+  ApplyFilterColum(menu:any)
+  {    
+    this.dataSource.data = this.Listnhacungcap().filter((v: any) => this.ListFilter.includes(v.id));
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    console.log(this.dataSource.data);
+    menu.closeMenu();
+    
   }
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(

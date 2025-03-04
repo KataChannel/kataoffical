@@ -17,13 +17,28 @@ let KhachhangService = class KhachhangService {
         this.prisma = prisma;
     }
     async create(data) {
-        let pricelist = await this.prisma.banggia.findUnique({
-            where: { id: data.banggia }
+        const prefix = data.loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
+        const lastCustomer = await this.prisma.khachhang.findFirst({
+            where: { makh: { startsWith: prefix } },
+            orderBy: { makh: 'desc' },
+            select: { makh: true },
         });
-        if (!pricelist) {
-            delete data.banggia;
+        let nextNumber = 1;
+        if (lastCustomer) {
+            const lastNumber = parseInt(lastCustomer.makh.slice(-5), 10);
+            nextNumber = lastNumber + 1;
         }
-        return this.prisma.khachhang.create({ data });
+        const newMakh = `${prefix}${String(nextNumber).padStart(5, '0')}`;
+        return this.prisma.khachhang.create({
+            data: {
+                makh: newMakh,
+                loaikh: data.loaikh,
+                name: data.name,
+                diachi: data.diachi,
+                sdt: data.sdt,
+                email: data.email,
+            },
+        });
     }
     async findAll() {
         return this.prisma.khachhang.findMany();

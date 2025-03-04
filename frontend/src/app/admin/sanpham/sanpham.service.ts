@@ -58,11 +58,11 @@ export class SanphamService {
     }
   }
 
-  async fetchSanphams() {
+  async getAllSanpham() {
     const db = await this.initDB();
     const cachedData = await db.getAll('sanphams');
     const updatedAtCache = parseInt(localStorage.getItem('updatedAt') || '0');
-
+    
     // 1️⃣ Gọi API lấy lastUpdated từ server
     try {
       const options = {
@@ -111,7 +111,7 @@ export class SanphamService {
   listenSanphamUpdates() {
     this.socket.on('sanpham-updated', async () => {
       console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-      await this.fetchSanphams();
+      await this.getAllSanpham();
     });
   }
   // Khởi tạo IndexedDB
@@ -133,47 +133,6 @@ export class SanphamService {
     await tx.done;
   }
 
-  async getAllSanpham() {
-    if (this.ListSanpham().length > 0) return; // Nếu đã có cache, không gọi API
-    const cachedData = localStorage.getItem('sanphams');
-    if (cachedData) {
-      const data = JSON.parse(cachedData);
-      this.ListSanpham.set(data);
-      return;
-    }
-    try {
-      const options = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer '+this._StorageService.getItem('token')
-        },
-      };
-      const response = await fetch(`${environment.APIURL}/sanpham`, options);
-      if (!response.ok) {
-        if (response.status === 401) {
-          const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          // this.Dangxuat()
-        } else if (response.status === 403) {
-          const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          // this.Dangxuat()
-        } else if (response.status === 500) {
-          const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-        } else {
-          const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-        }
-      }
-      const data = await response.json();           
-      this.ListSanpham.set(data)
-      localStorage.setItem('sanphams', JSON.stringify(data)); // Cache vào LocalStorage
-    } catch (error) {
-      return console.error(error);
-    }
-  }
   async getSanphamByid(id: any) {
     try {
       const options = {

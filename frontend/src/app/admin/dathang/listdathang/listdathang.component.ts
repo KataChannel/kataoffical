@@ -44,13 +44,13 @@ export class ListDathangComponent {
   Detail: any = {};
   displayedColumns: string[] = [
     'STT',
-    'title',
-    'madncc',
+   // 'title',
+   // 'madncc',
     'nhacungcap',
     'sanpham',
     'ngaynhan',
     'ghichu',
-    'order',
+   // 'order',
     'isActive',
     'createdAt',
     'updatedAt',
@@ -58,13 +58,13 @@ export class ListDathangComponent {
 
   ColumnName: any = {
     STT: 'STT',
-    title: 'Tiêu Đề',
-    madncc: 'Mã Đơn Nhập',
+  //  title: 'Tiêu Đề',
+  //  madncc: 'Mã Đơn Nhập',
     nhacungcap: 'Nhà Cung Cấp',
     sanpham: 'Sản Phẩm',
     ngaynhan: 'Ngày Nhận',
     ghichu: 'Ghi Chú',
-    order: 'Thứ Tự',
+  //  order: 'Thứ Tự',
     isActive: 'Trạng Thái',
     createdAt:'Ngày Tạo',
     updatedAt:'Ngày Cập Nhật'

@@ -5,8 +5,8 @@ export declare class BanggiaController {
     create(createBanggiaDto: any): Promise<{
         sanpham: {
             id: string;
-            order: number | null;
             isActive: boolean;
+            order: number | null;
             giaban: number;
             sanphamId: string;
             banggiaId: string;
@@ -15,9 +15,9 @@ export declare class BanggiaController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string;
         batdau: Date | null;
@@ -27,8 +27,8 @@ export declare class BanggiaController {
     findAll(): Promise<({
         sanpham: {
             id: string;
-            order: number | null;
             isActive: boolean;
+            order: number | null;
             giaban: number;
             sanphamId: string;
             banggiaId: string;
@@ -37,9 +37,9 @@ export declare class BanggiaController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string;
         batdau: Date | null;
@@ -51,10 +51,10 @@ export declare class BanggiaController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            order: number | null;
+            isActive: boolean;
             title: string;
             slug: string | null;
-            isActive: boolean;
+            order: number | null;
             masp: string;
             giagoc: number;
             dvt: string | null;
@@ -67,9 +67,9 @@ export declare class BanggiaController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string;
         batdau: Date | null;
@@ -79,8 +79,8 @@ export declare class BanggiaController {
     update(id: string, updateBanggiaDto: any): Promise<{
         sanpham: {
             id: string;
-            order: number | null;
             isActive: boolean;
+            order: number | null;
             giaban: number;
             sanphamId: string;
             banggiaId: string;
@@ -89,9 +89,9 @@ export declare class BanggiaController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string;
         batdau: Date | null;
@@ -102,9 +102,9 @@ export declare class BanggiaController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string;
         batdau: Date | null;

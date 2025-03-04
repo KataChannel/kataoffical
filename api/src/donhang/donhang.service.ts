@@ -4,25 +4,58 @@ import { PrismaService } from 'prisma/prisma.service';
 @Injectable()
 export class DonhangService {
   constructor(private readonly prisma: PrismaService) {}
-  async generateOrderCode(): Promise<string> {
-    // Tìm đơn hàng có mã lớn nhất
+
+  async generateNextOrderCode(): Promise<string> {
+    // Lấy mã đơn hàng gần nhất
     const lastOrder = await this.prisma.donhang.findFirst({
-      orderBy: { madonhang: 'desc' },
-      select: { madonhang: true },
+      orderBy: { createdAt: 'desc' },
     });
 
-    let newCode = 'DH0000001'; // Mã đầu tiên nếu chưa có đơn hàng nào
+    let nextCode = 'TG-AA00001'; // Mã đầu tiên
 
-    if (lastOrder?.madonhang) {
-      const lastNumber = parseInt(lastOrder.madonhang.replace('DH', ''), 10);
-      if (lastNumber < 9999999) {
-        newCode = `DH${(lastNumber + 1).toString().padStart(7, '0')}`;
-      } else {
-        throw new Error('Đã đạt giới hạn số lượng mã đơn hàng!');
-      }
+    if (lastOrder) {
+      nextCode = this.incrementOrderCode(lastOrder.madonhang);
     }
-    return newCode;
+    return nextCode;
   }
+
+  private incrementOrderCode(orderCode: string): string {
+    const prefix = 'TG-';
+    const letters = orderCode.slice(3, 5); // Lấy AA → ZZ
+    const numbers = parseInt(orderCode.slice(5), 10); // Lấy 00001 → 99999
+
+    let newLetters = letters;
+    let newNumbers = numbers + 1;
+
+    if (newNumbers > 99999) {
+      newNumbers = 1; // Reset về 00001
+      newLetters = this.incrementLetters(letters);
+    }
+
+    return `${prefix}${newLetters}${newNumbers.toString().padStart(5, '0')}`;
+  }
+
+  private incrementLetters(letters: string): string {
+    let firstChar = letters.charCodeAt(0);
+    let secondChar = letters.charCodeAt(1);
+
+    if (secondChar === 90) { // 'Z'
+      if (firstChar === 90) return 'ZZ'; // Giới hạn cuối cùng
+      firstChar++;
+      secondChar = 65; // Reset về 'A'
+    } else {
+      secondChar++;
+    }
+
+    return String.fromCharCode(firstChar) + String.fromCharCode(secondChar);
+  }
+
+
+
+
+
+
+
   async reorderDonHangs(donhangIds: string[]) {
     // Update the order of each donhang based on its position in the array
     for (let i = 0; i < donhangIds.length; i++) {
@@ -32,6 +65,7 @@ export class DonhangService {
       });
     }
   }
+
   async search(params: any) {
     const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;
     console.log(params);
@@ -109,7 +143,7 @@ export class DonhangService {
 
   
   async create(dto: any) {
-    const madonhang = await this.generateOrderCode();
+    const madonhang = await this.generateNextOrderCode();
     return this.prisma.$transaction(async (prisma) => {
       const newDonhang = await prisma.donhang.create({
         data: {

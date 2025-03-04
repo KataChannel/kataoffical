@@ -1,24 +1,73 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { SocketGateway } from 'src/socket.gateway';
 export declare class UserService {
     private prisma;
-    constructor(prisma: PrismaService);
-    createUser(dto: CreateUserDto): Promise<{
+    private _SocketGateway;
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
+    createUser(dto: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string | null;
+        SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
+        isActive: boolean;
     }>;
     getUsers(): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string | null;
+        SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
+        isActive: boolean;
+    }[]>;
+    findAll(): Promise<{
+        id: string;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
+        SDT: string | null;
+        password: string;
+        provider: string | null;
+        providerId: string | null;
+        isActive: boolean;
     }[]>;
+    findOne(id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string | null;
+        SDT: string | null;
+        password: string;
+        provider: string | null;
+        providerId: string | null;
+        isActive: boolean;
+    }>;
+    update(id: string, data: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string | null;
+        SDT: string | null;
+        password: string;
+        provider: string | null;
+        providerId: string | null;
+        isActive: boolean;
+    }>;
+    remove(id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        email: string | null;
+        SDT: string | null;
+        password: string;
+        provider: string | null;
+        providerId: string | null;
+        isActive: boolean;
+    }>;
 }

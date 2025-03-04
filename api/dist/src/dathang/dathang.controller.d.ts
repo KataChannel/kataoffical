@@ -5,8 +5,8 @@ export declare class DathangController {
     create(createDathangDto: any): Promise<{
         sanpham: {
             id: string;
-            order: number | null;
             isActive: boolean;
+            order: number | null;
             ghichu: string | null;
             idSP: string;
             sldat: number | null;
@@ -19,9 +19,9 @@ export declare class DathangController {
         }[];
     } & {
         id: string;
-        order: number | null;
-        title: string | null;
         isActive: boolean;
+        title: string | null;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madncc: string | null;
@@ -32,10 +32,10 @@ export declare class DathangController {
         sanpham: any[];
         nhacungcap: {
             id: string;
-            email: string | null;
+            name: string | null;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
+            email: string | null;
             isActive: boolean;
             ghichu: string | null;
             diachi: string | null;
@@ -43,9 +43,9 @@ export declare class DathangController {
             mancc: string;
         };
         id: string;
-        order: number | null;
-        title: string | null;
         isActive: boolean;
+        title: string | null;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madncc: string | null;
@@ -65,10 +65,10 @@ export declare class DathangController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            order: number | null;
+            isActive: boolean;
             title: string;
             slug: string | null;
-            isActive: boolean;
+            order: number | null;
             masp: string;
             giagoc: number;
             dvt: string | null;
@@ -78,10 +78,10 @@ export declare class DathangController {
         }[];
         nhacungcap: {
             id: string;
-            email: string | null;
+            name: string | null;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
+            email: string | null;
             isActive: boolean;
             ghichu: string | null;
             diachi: string | null;
@@ -89,9 +89,9 @@ export declare class DathangController {
             mancc: string;
         };
         id: string;
-        order: number | null;
-        title: string | null;
         isActive: boolean;
+        title: string | null;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madncc: string | null;
@@ -101,8 +101,8 @@ export declare class DathangController {
     update(id: string, updateDathangDto: any): Promise<{
         sanpham: {
             id: string;
-            order: number | null;
             isActive: boolean;
+            order: number | null;
             ghichu: string | null;
             idSP: string;
             sldat: number | null;
@@ -115,9 +115,9 @@ export declare class DathangController {
         }[];
     } & {
         id: string;
-        order: number | null;
-        title: string | null;
         isActive: boolean;
+        title: string | null;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madncc: string | null;
@@ -126,9 +126,9 @@ export declare class DathangController {
     }>;
     remove(id: string): Promise<{
         id: string;
-        order: number | null;
-        title: string | null;
         isActive: boolean;
+        title: string | null;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madncc: string | null;

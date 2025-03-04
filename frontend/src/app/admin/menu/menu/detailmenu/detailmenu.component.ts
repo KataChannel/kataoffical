@@ -35,10 +35,13 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
+    ListMenu:any[]= []
     constructor(){
-      this._route.paramMap.subscribe((params) => {
+      this._route.paramMap.subscribe(async (params) => {
         const id = params.get('id');
-        this._MenuService.setMenuId(id);
+         this._MenuService.setMenuId(id);
+         await this._MenuService.getAllMenu();
+         this.ListMenu = this._MenuService.ListMenu();
       });
   
       effect(async () => {
@@ -77,7 +80,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     }
     private async createMenu() {
       try {
-        await this._MenuService.CreateMenu({ title: GenId(8,false), slug: GenId(8,false) });
+        await this._MenuService.CreateMenu(this.DetailMenu());
         this._snackBar.open('Tạo Mới Thành Công', '', {
           duration: 1000,
           horizontalPosition: 'end',
@@ -92,6 +95,10 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
     private async updateMenu() {
       try {
+        this.DetailMenu.update((v: any) => {
+          delete v.children
+          return v
+        });
         await this._MenuService.updateMenu(this.DetailMenu());
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,
@@ -140,5 +147,11 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
         v.slug = convertToSlug(v.title);
         return v;
       })
+    }
+    DoFilterMenu(event: any): void {
+      const query = event.target.value.toLowerCase();
+      this.ListMenu = this._MenuService.ListMenu().filter((v) =>
+        v.title.toLowerCase().includes(query)
+      );  
     }
   }

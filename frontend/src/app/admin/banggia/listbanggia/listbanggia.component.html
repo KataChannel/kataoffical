@@ -51,7 +51,6 @@
                 <input matInput (keyup)="applyFilter()" [(ngModel)]="filterValues[column]" [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập {{ column }}" />
             </mat-form-field>
         </div>
-          
         <div class="w-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource()" matSort>
                 @for (column of displayedColumns; track column) {

@@ -17,70 +17,31 @@ let MenuService = class MenuService {
         this.prisma = prisma;
     }
     async create(data) {
-        let newOrder;
-        if (data.parentId) {
-            const maxOrder = await this.prisma.menu.aggregate({
-                _max: {
-                    order: true,
-                },
-                where: {
-                    parentId: data.parentId,
-                },
-            });
-            newOrder = (maxOrder._max.order || 0) + 1;
-        }
-        else {
-            const maxOrder = await this.prisma.menu.aggregate({
-                _max: {
-                    order: true,
-                },
-                where: {
-                    parentId: null,
-                },
-            });
-            newOrder = (maxOrder._max.order || 0) + 1;
-        }
-        return this.prisma.menu.create({
-            data: {
-                ...data,
-                order: newOrder,
-            },
-        });
-    }
-    async reorderMenus(menuIds) {
-        for (let i = 0; i < menuIds.length; i++) {
-            await this.prisma.menu.update({
-                where: { id: menuIds[i] },
-                data: { order: i + 1 },
-            });
-        }
+        return this.prisma.menu.create({ data });
     }
     async findAll() {
-        try {
-            return this.prisma.menu.findMany({
-                orderBy: [
-                    {
-                        order: 'asc',
-                    },
-                ],
-            });
-        }
-        catch (error) {
-            console.error("Error finding menus:", error);
-            throw error;
-        }
+        return this.prisma.menu.findMany({
+            include: { children: true },
+            orderBy: { order: 'asc' },
+        });
     }
     async findOne(id) {
-        const menu = await this.prisma.menu.findUnique({ where: { id } });
-        if (!menu)
-            throw new common_1.NotFoundException('Menu not found');
-        return menu;
+        return this.prisma.menu.findUnique({ where: { id }, include: { children: true } });
     }
     async update(id, data) {
         return this.prisma.menu.update({ where: { id }, data });
     }
     async remove(id) {
         return this.prisma.menu.delete({ where: { id } });
+    }
+    async getTree() {
+        const menus = await this.findAll();
+        return this.buildTree(menus);
+    }
+    buildTree(menus, parentId = null) {
+        return menus
+            .filter(menu => menu.parentId === parentId)
+            .map(menu => ({ ...menu, children: this.buildTree(menus, menu.id) }));
     }
 };
 exports.MenuService = MenuService;

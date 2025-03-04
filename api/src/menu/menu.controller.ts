@@ -14,11 +14,15 @@ export class MenuController {
   findAll() {
     return this.menuService.findAll();
   }
-
-  @Get('findid/:id')
+  @Get('/tree')
+  getTree() {
+    return this.menuService.getTree();
+  }
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.menuService.findOne(id);
   }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateMenuDto: any) {
     return this.menuService.update(id, updateMenuDto);
@@ -28,8 +32,5 @@ export class MenuController {
   remove(@Param('id') id: string) {
     return this.menuService.remove(id);
   }
-  @Post('reorder')
-  reorder(@Body() body: { menuIds: string[] }) {
-    return this.menuService.reorderMenus(body.menuIds);
-  }
+
 }

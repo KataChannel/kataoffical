@@ -1,4 +1,4 @@
-@if(ListMenu().length>0)
+@if(ListMenu.length>0)
 {
 <mat-tree class="!bg-white p-2" [dataSource]="dataSource" [treeControl]="treeControl">
   <mat-tree-node *matTreeNodeDef="let node">
@@ -6,8 +6,8 @@
       <!-- <button mat-icon-button [matMenuTriggerFor]="menu1">
         <span class="material-symbols-outlined">more_vert</span>
       </button> -->
-      <a [routerLink]="node.Item.Slug" routerLinkActive="bg-slate-200"
-        class="hover:bg-slate-200 rounded-lg p-2 truncate flex-grow">{{ node.Item.Title }}</a>
+      <a [routerLink]="node.Item.slug" routerLinkActive="bg-slate-200"
+        class="hover:bg-slate-200 rounded-lg p-2 truncate flex-grow">{{ node.Item.title }}</a>
       <!-- @if(node.node.TypeMenu == 'Task'){
               <a routerLinkActive="bg-slate-200" class="hover:bg-slate-200 rounded-lg p-2 truncate flex-grow">{{ node.Title }}</a>
             }@else{
@@ -30,13 +30,13 @@
     </div>
   </mat-tree-node>
 
-  <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodeToggle [cdkTreeNodeTypeaheadLabel]="node.Title">
+  <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodeToggle [cdkTreeNodeTypeaheadLabel]="node.title">
     <div class="w-full flex items-center justify-between">
       <!-- <button mat-icon-button [matMenuTriggerFor]="menu2">
         <span class="material-symbols-outlined">more_vert</span>
       </button> -->
-      <a [routerLink]="node.Slug" class="hover:bg-slate-200 rounded-lg p-2 truncate flex-grow">{{node.Title}}</a>
-      <a mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.Title">
+      <a [routerLink]="node.Slug" class="hover:bg-slate-200 rounded-lg p-2 truncate flex-grow">{{node.Item.title}}</a>
+      <a mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.Item.title">
         <span class="material-symbols-outlined">
           {{
           treeControl.isExpanded(node)

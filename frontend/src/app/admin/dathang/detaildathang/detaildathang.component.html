@@ -7,7 +7,7 @@
        (blur)="updateValue($event,null,DetailDathang(), 'title','string')"
        class="p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
      >
-     {{ DetailDathang()?.title || 'Không có dữ liệu' }}
+     <!-- {{ DetailDathang()?.title || 'Không có dữ liệu' }} -->
   </div>
   <div class="flex flex-row space-x-2 items-center">
     <mat-slide-toggle [(ngModel)]="DetailDathang().isActive" [disabled]="!isEdit()">{{DetailDathang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
@@ -81,10 +81,10 @@
         @defer () {
           <div class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
             <div class="flex flex-row space-x-2 items-center">
-              <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+              <!-- <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
                    <mat-label>Mã Đặt Hàng</mat-label>
                   <input matInput [(ngModel)]="DetailDathang().madncc"  [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Mã Đặt Hàng" />
-              </mat-form-field> 
+              </mat-form-field>  -->
 
               <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
                 <mat-label>Nhà Cung Cấp</mat-label>

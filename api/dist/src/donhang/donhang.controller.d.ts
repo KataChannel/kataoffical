@@ -5,8 +5,8 @@ export declare class DonhangController {
     create(createDonhangDto: any): Promise<{
         sanpham: {
             id: string;
-            order: number | null;
             isActive: boolean | null;
+            order: number | null;
             ghichu: string | null;
             idSP: string;
             sldat: number | null;
@@ -21,9 +21,9 @@ export declare class DonhangController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madonhang: string;
@@ -34,9 +34,9 @@ export declare class DonhangController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madonhang: string;
@@ -47,10 +47,10 @@ export declare class DonhangController {
         sanpham: any[];
         khachhang: {
             id: string;
-            email: string | null;
+            name: string | null;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
+            email: string | null;
             isActive: boolean;
             ghichu: string | null;
             namenn: string | null;
@@ -67,9 +67,9 @@ export declare class DonhangController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madonhang: string;
@@ -89,10 +89,10 @@ export declare class DonhangController {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            order: number | null;
+            isActive: boolean;
             title: string;
             slug: string | null;
-            isActive: boolean;
+            order: number | null;
             masp: string;
             giagoc: number;
             dvt: string | null;
@@ -102,10 +102,10 @@ export declare class DonhangController {
         }[];
         khachhang: {
             id: string;
-            email: string | null;
+            name: string | null;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
+            email: string | null;
             isActive: boolean;
             ghichu: string | null;
             namenn: string | null;
@@ -122,9 +122,9 @@ export declare class DonhangController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madonhang: string;
@@ -134,8 +134,8 @@ export declare class DonhangController {
     update(id: string, updateDonhangDto: any): Promise<{
         sanpham: {
             id: string;
-            order: number | null;
             isActive: boolean | null;
+            order: number | null;
             ghichu: string | null;
             idSP: string;
             sldat: number | null;
@@ -150,9 +150,9 @@ export declare class DonhangController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madonhang: string;
@@ -163,9 +163,9 @@ export declare class DonhangController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madonhang: string;

@@ -4,9 +4,9 @@ export declare class khoService {
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         isActive: boolean;
         ghichu: string | null;
         diachi: string | null;
@@ -16,9 +16,9 @@ export declare class khoService {
     }>;
     findAll(): Promise<{
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         isActive: boolean;
         ghichu: string | null;
         diachi: string | null;
@@ -28,9 +28,9 @@ export declare class khoService {
     }[]>;
     findOne(id: string): Promise<{
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         isActive: boolean;
         ghichu: string | null;
         diachi: string | null;
@@ -40,9 +40,9 @@ export declare class khoService {
     }>;
     update(id: string, data: any): Promise<{
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         isActive: boolean;
         ghichu: string | null;
         diachi: string | null;
@@ -52,9 +52,9 @@ export declare class khoService {
     }>;
     remove(id: string): Promise<{
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
         isActive: boolean;
         ghichu: string | null;
         diachi: string | null;

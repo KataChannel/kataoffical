@@ -55,8 +55,8 @@ export class ListDonhangComponent {
     'sanpham',
     'ngaygiao',
     'ghichu',
-    'order',
-    'isActive',
+    // 'order',
+    // 'isActive',
     'createdAt',
     'updatedAt',
   ];
@@ -68,8 +68,8 @@ export class ListDonhangComponent {
     sanpham: 'Sản Phẩm',
     ngaygiao: 'Ngày Giao',
     ghichu: 'Ghi Chú',
-    order: 'Thứ Tự',
-    isActive: 'Trạng Thái',
+    // order: 'Thứ Tự',
+    // isActive: 'Trạng Thái',
     createdAt:'Ngày Tạo',
     updatedAt:'Ngày Cập Nhật'
   };
@@ -87,13 +87,7 @@ export class ListDonhangComponent {
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   Listdonhang:any = this._DonhangService.ListDonhang;
-  dataSource = computed(() => {
-    const ds = new MatTableDataSource(this.Listdonhang());
-    ds.filterPredicate = this.createFilter();
-    ds.paginator = this.paginator;
-    ds.sort = this.sort;
-    return ds;
-  });
+  dataSource = new MatTableDataSource([]);
   donhangId:any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
@@ -158,18 +152,24 @@ export class ListDonhangComponent {
     };
   }
   applyFilter() {
-    this.dataSource().filter = JSON.stringify(this.filterValues);
+    this.dataSource.filter = JSON.stringify(this.filterValues);
   }
   async ngOnInit(): Promise<void> {    
     await this._DonhangService.getAllDonhang();
     this.CountItem = this.Listdonhang().length;
     this.initializeColumns();
     this.setupDrawer();
+    this.dataSource = new MatTableDataSource(this.Listdonhang());
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.dataSource.filterPredicate = this.createFilter();
     this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
     this.paginator._intl.nextPageLabel = 'Tiếp Theo';
     this.paginator._intl.previousPageLabel = 'Về Trước';
     this.paginator._intl.firstPageLabel = 'Trang Đầu';
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    console.log(this.displayedColumns);
+    
   }
   async refresh() {
    await this._DonhangService.getAllDonhang();

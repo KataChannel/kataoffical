@@ -2,15 +2,17 @@ import { PrismaService } from 'prisma/prisma.service';
 export declare class DonhangService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    generateOrderCode(): Promise<string>;
+    generateNextOrderCode(): Promise<string>;
+    private incrementOrderCode;
+    private incrementLetters;
     reorderDonHangs(donhangIds: string[]): Promise<void>;
     search(params: any): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madonhang: string;
@@ -21,10 +23,10 @@ export declare class DonhangService {
         sanpham: any[];
         khachhang: {
             id: string;
-            email: string | null;
+            name: string | null;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
+            email: string | null;
             isActive: boolean;
             ghichu: string | null;
             namenn: string | null;
@@ -41,9 +43,9 @@ export declare class DonhangService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madonhang: string;
@@ -63,10 +65,10 @@ export declare class DonhangService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            order: number | null;
+            isActive: boolean;
             title: string;
             slug: string | null;
-            isActive: boolean;
+            order: number | null;
             masp: string;
             giagoc: number;
             dvt: string | null;
@@ -76,10 +78,10 @@ export declare class DonhangService {
         }[];
         khachhang: {
             id: string;
-            email: string | null;
+            name: string | null;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
+            email: string | null;
             isActive: boolean;
             ghichu: string | null;
             namenn: string | null;
@@ -96,9 +98,9 @@ export declare class DonhangService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madonhang: string;
@@ -108,8 +110,8 @@ export declare class DonhangService {
     create(dto: any): Promise<{
         sanpham: {
             id: string;
-            order: number | null;
             isActive: boolean | null;
+            order: number | null;
             ghichu: string | null;
             idSP: string;
             sldat: number | null;
@@ -124,9 +126,9 @@ export declare class DonhangService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madonhang: string;
@@ -136,8 +138,8 @@ export declare class DonhangService {
     update(id: string, data: any): Promise<{
         sanpham: {
             id: string;
-            order: number | null;
             isActive: boolean | null;
+            order: number | null;
             ghichu: string | null;
             idSP: string;
             sldat: number | null;
@@ -152,9 +154,9 @@ export declare class DonhangService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madonhang: string;
@@ -165,9 +167,9 @@ export declare class DonhangService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
-        title: string;
         isActive: boolean;
+        title: string;
+        order: number | null;
         ghichu: string | null;
         type: string | null;
         madonhang: string;

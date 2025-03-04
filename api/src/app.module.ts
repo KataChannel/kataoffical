@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -14,6 +14,10 @@ import { NhacungcapModule } from './nhacungcap/nhacungcap.module';
 import { DathangModule } from './dathang/dathang.module';
 import { khoModule } from './kho/kho.module';
 import { PhieukhoModule } from './phieukho/phieukho.module';
+import { AuthMiddleware } from './middleware/auth.middleware';
+import { RoleModule } from './role/role.module';
+import { PermissionModule } from './permission/permission.module';
+import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
 
 @Module({
   imports: [
@@ -25,13 +29,20 @@ import { PhieukhoModule } from './phieukho/phieukho.module';
     BanggiaModule,
     DonhangModule,
     KhachhangModule,
+    NhomkhachhangModule,
     NhacungcapModule,
     DathangModule,
     khoModule,
-    PhieukhoModule
+    PhieukhoModule,
+    RoleModule,
+    PermissionModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  
   exports: [PrismaService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes('*');
+  }
+}

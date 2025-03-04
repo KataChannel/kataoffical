@@ -4,10 +4,10 @@ export declare class NhacungcapService {
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
         id: string;
-        email: string | null;
+        name: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string | null;
+        email: string | null;
         isActive: boolean;
         ghichu: string | null;
         diachi: string | null;
@@ -16,10 +16,10 @@ export declare class NhacungcapService {
     }>;
     findAll(): Promise<{
         id: string;
-        email: string | null;
+        name: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string | null;
+        email: string | null;
         isActive: boolean;
         ghichu: string | null;
         diachi: string | null;
@@ -28,10 +28,10 @@ export declare class NhacungcapService {
     }[]>;
     findOne(id: string): Promise<{
         id: string;
-        email: string | null;
+        name: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string | null;
+        email: string | null;
         isActive: boolean;
         ghichu: string | null;
         diachi: string | null;
@@ -40,10 +40,10 @@ export declare class NhacungcapService {
     }>;
     update(id: string, data: any): Promise<{
         id: string;
-        email: string | null;
+        name: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string | null;
+        email: string | null;
         isActive: boolean;
         ghichu: string | null;
         diachi: string | null;
@@ -52,10 +52,10 @@ export declare class NhacungcapService {
     }>;
     remove(id: string): Promise<{
         id: string;
-        email: string | null;
+        name: string | null;
         createdAt: Date;
         updatedAt: Date;
-        name: string | null;
+        email: string | null;
         isActive: boolean;
         ghichu: string | null;
         diachi: string | null;

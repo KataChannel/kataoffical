@@ -5,7 +5,8 @@
         <img [src]="Config.Logoimage" class="h-10 object-fill" alt="Logo">
       </div>
       <div class="relative h-full overflow-auto p-2">
-        <mat-tree class="cursor-pointer flex flex-col space-y-2" [dataSource]="dataSource" [treeControl]="treeControl">
+        <app-treemenu [ListMenu]="ListMenu"></app-treemenu>
+        <!-- <mat-tree class="cursor-pointer flex flex-col space-y-2" [dataSource]="dataSource" [treeControl]="treeControl">
           <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
             <a [routerLink]="[node.node.slug]"
               class="w-full flex flex-row space-x-2 items-center rounded-lg hover:bg-slate-300"
@@ -28,7 +29,7 @@
               <span [routerLink]="[node.node.slug]"> {{node.node.title}} </span>
             </a>
           </mat-tree-node>
-        </mat-tree>
+        </mat-tree> -->
       </div>
       <div class="relative w-full justify-between flex flex-row space-x-2 items-center p-2">
         <div class="flex flex-row space-x-2">

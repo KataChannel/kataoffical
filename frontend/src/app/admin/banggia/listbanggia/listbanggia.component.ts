@@ -37,7 +37,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
     MatSelectModule,
     CommonModule,
     FormsModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
 })
 export class ListBanggiaComponent {
@@ -49,9 +49,9 @@ export class ListBanggiaComponent {
     'sanpham',
     'batdau',
     'ketthuc',
-    'order',
+    //  'order',
     'status',
-    'isActive',
+    // 'isActive',
     'createdAt',
     'updatedAt',
   ];
@@ -62,9 +62,9 @@ export class ListBanggiaComponent {
     sanpham: 'Sản Phẩm',
     batdau: 'Bắt Đầu',
     ketthuc: 'Kết Thúc',
-    order: 'Thứ Tự',
+    // order: 'Thứ Tự',
     status: 'Tình Trạng',
-    isActive: 'Trạng Thái',
+    // isActive: 'Trạng Thái',
     createdAt:'Ngày Tạo',
     updatedAt:'Ngày Cập Nhật'
   };

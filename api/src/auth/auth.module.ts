@@ -19,5 +19,6 @@ import { PassportModule } from '@nestjs/passport';
       signOptions: { expiresIn: '30d' }, // Cấu hình thời gian hết hạn
     }),
   ],
+  exports: [AuthService]
 })
 export class AuthModule {}

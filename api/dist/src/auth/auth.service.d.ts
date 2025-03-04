@@ -6,24 +6,28 @@ export declare class AuthService {
     constructor(prisma: PrismaService, jwtService: JwtService);
     register(email: string, password: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string | null;
+        SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
+        isActive: boolean;
     }>;
     login(email: string, password: string): Promise<{
         token: string;
     }>;
     changePassword(userId: string, oldPassword: string, newPassword: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         email: string | null;
+        SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
+        isActive: boolean;
     }>;
     generateRandomPassword(userId: string): Promise<{
         newPassword: string;
@@ -32,12 +36,42 @@ export declare class AuthService {
         token: string;
         user: {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             email: string | null;
+            SDT: string | null;
             password: string;
             provider: string | null;
             providerId: string | null;
+            isActive: boolean;
+        };
+    }>;
+    getUserRoles(userId: string): Promise<({
+        role: {
+            permissions: ({
+                permission: {
+                    id: string;
+                    name: string;
+                    description: string | null;
+                    createdAt: Date;
+                    updatedAt: Date;
+                };
+            } & {
+                id: string;
+                roleId: string;
+                permissionId: string;
+            })[];
+        } & {
+            id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
         };
-    }>;
+    } & {
+        id: string;
+        userId: string;
+        roleId: string;
+    })[]>;
+    hasPermission(userId: string, permissionName: string): Promise<boolean>;
+    checkPermission(userId: string, permissionName: string): Promise<void>;
 }

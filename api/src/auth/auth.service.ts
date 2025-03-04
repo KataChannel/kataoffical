@@ -58,5 +58,24 @@ export class AuthService {
     const token = this.jwtService.sign({ id: user.id, provider: user.provider });
     return { token, user };
   }
+  async getUserRoles(userId: string) {
+    return this.prisma.userRole.findMany({
+      where: { userId },
+      include: { role: { include: { permissions: { include: { permission: true } } } } },
+    });
+  }
 
+  async hasPermission(userId: string, permissionName: string): Promise<boolean> {
+    const roles = await this.getUserRoles(userId);
+    return roles.some((userRole) =>
+      userRole.role.permissions.some((rp) => rp.permission.name === permissionName),
+    );
+  }
+
+  async checkPermission(userId: string, permissionName: string) {
+    const hasPerm = await this.hasPermission(userId, permissionName);
+    if (!hasPerm) {
+      throw new UnauthorizedException('Bạn không có quyền thực hiện thao tác này');
+    }
+  }
 }

@@ -14,6 +14,9 @@ import { CommonModule } from '@angular/common';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { UsersService } from './listuser/listuser.services';
 import { MenuService } from '../menu/menu/menu.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { TreemenuComponent } from '../../shared/common/treemenu/treemenu.component';
+import { ListMenu } from '../menu/menu/menu';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -28,7 +31,8 @@ import { MenuService } from '../menu/menu/menu.service';
     MatListModule,
     CommonModule,
     RouterLink,
-    RouterLinkActive,
+    // RouterLinkActive,
+    TreemenuComponent,
   ],
   templateUrl: './adminmain.component.html',
   styleUrl: './adminmain.component.scss'
@@ -69,8 +73,12 @@ export class AdminmainComponent {
   hasChild = (_: number, node: any) => node.expandable;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   @ViewChild('drawer1', { static: true }) drawer1!: MatDrawer;
+  _snackBar:MatSnackBar = inject(MatSnackBar)
+  ListMenu:any[] = []
   async ngOnInit() {
-    await this._MenuService.getAllMenu()
+    //await this._MenuService.getAllMenu()
+    await this._MenuService.getTreeMenu()
+    this.ListMenu = this._MenuService.ListMenu()    
     this.dataSource.data = this._MenuService.ListMenu().filter((item:any)=>item.isActive==true);    
     this._breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       if (result.matches) {
@@ -97,5 +105,11 @@ export class AdminmainComponent {
     if (token) {
       localStorage.setItem('token', token);
     }
+    this._snackBar.open('Xoá Cache Thành Công', '', {
+      duration: 1000,
+      horizontalPosition: "end",
+      verticalPosition: "top",
+      panelClass: ['snackbar-success'],
+    });
   }
 }

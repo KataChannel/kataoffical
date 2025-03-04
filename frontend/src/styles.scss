@@ -71,6 +71,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import 'ag-grid-community/styles/ag-grid.css';
+@import 'ag-grid-community/styles/ag-theme-quartz.css';
 /* Các style tùy chỉnh của bạn */
 // .swiper {
 //   width: 600px;
@@ -102,13 +104,15 @@ body {
   height: 100%;
   --mat-sidenav-content-background-color: white;
   // --mat-table-header-headline-font: 'Quicksand', sans-serif !important;
-  --mat-table-row-item-label-text-font: 'Quicksand', sans-serif !important;
-  --mat-table-footer-supporting-text-font: 'Quicksand', sans-serif !important;
+  // --mat-table-row-item-label-text-font: 'Quicksand', sans-serif !important;
+  // --mat-table-footer-supporting-text-font: 'Quicksand', sans-serif !important;
+  --mat-table-row-item-label-text-font: 'Roboto', sans-serif !important;
+  --mat-table-footer-supporting-text-font: 'Roboto', sans-serif !important;
 }
 body {
   margin: 0;
-  font-family: 'Quicksand', sans-serif !important;
-//  font-family: 'Roboto', sans-serif;
+  // font-family: 'Quicksand', sans-serif !important;
+  font-family: 'Roboto', sans-serif;
   // font-family: 'Poppins', sans-serif !important;
   // font-family: 'Poppins', sans-serif !important;
 }
@@ -140,8 +144,8 @@ body {
 
 .text-primary
 {
-  font-family: 'Quicksand', sans-serif !important;
-  // font-family: 'Roboto', sans-serif;
+  // font-family: 'Quicksand', sans-serif !important;
+  font-family: 'Roboto', sans-serif;
   // font-family: 'Poppins', sans-serif !important;
 }
 

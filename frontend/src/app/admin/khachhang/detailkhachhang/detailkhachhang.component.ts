@@ -49,7 +49,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           this._ListkhachhangComponent.drawer.close();
         }
         if(id === '0'){
-          this.DetailKhachhang.set({ title: GenId(8, false), slug: GenId(8, false) });
+          this.DetailKhachhang.set({loaikh:'khachsi'});
           this._ListkhachhangComponent.drawer.open();
           this.isEdit.update(value => !value);
           this._router.navigate(['/admin/khachhang', "0"]);

@@ -94,6 +94,38 @@ export class MenuService {
       return console.error(error);
     }
   }
+  async getTreeMenu() {
+    try {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      };
+      const response = await fetch(`${environment.APIURL}/menu/tree`, options);
+      if (!response.ok) {
+        if (response.status === 401) {
+          const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          // this.Dangxuat()
+        } else if (response.status === 403) {
+          const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          // this.Dangxuat()
+        } else if (response.status === 500) {
+          const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+        } else {
+          const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+        }
+      }
+      const data = await response.json();           
+      this.ListMenu.set(data)
+    } catch (error) {
+      return console.error(error);
+    }
+  }
   async getMenuByid(id: any) {
     try {
       const options = {
@@ -102,7 +134,7 @@ export class MenuService {
           'Content-Type': 'application/json',
         },
       };
-      const response = await fetch(`${environment.APIURL}/menu/findid/${id}`, options);      
+      const response = await fetch(`${environment.APIURL}/menu/${id}`, options);      
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })

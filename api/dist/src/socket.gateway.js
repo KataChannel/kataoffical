@@ -19,6 +19,9 @@ let SocketGateway = class SocketGateway {
     sendKhachangUpdate() {
         this.server.emit('khachhang-updated');
     }
+    senduserUpdate() {
+        this.server.emit('user-updated');
+    }
 };
 exports.SocketGateway = SocketGateway;
 __decorate([

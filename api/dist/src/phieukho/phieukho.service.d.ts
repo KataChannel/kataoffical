@@ -5,9 +5,9 @@ export declare class PhieukhoService {
     findAll(): Promise<({
         kho: {
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             isActive: boolean;
             ghichu: string | null;
             diachi: string | null;
@@ -39,9 +39,9 @@ export declare class PhieukhoService {
     findOne(id: string): Promise<{
         kho: {
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             isActive: boolean;
             ghichu: string | null;
             diachi: string | null;

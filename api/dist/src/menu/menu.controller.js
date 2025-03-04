@@ -25,6 +25,9 @@ let MenuController = class MenuController {
     findAll() {
         return this.menuService.findAll();
     }
+    getTree() {
+        return this.menuService.getTree();
+    }
     findOne(id) {
         return this.menuService.findOne(id);
     }
@@ -33,9 +36,6 @@ let MenuController = class MenuController {
     }
     remove(id) {
         return this.menuService.remove(id);
-    }
-    reorder(body) {
-        return this.menuService.reorderMenus(body.menuIds);
     }
 };
 exports.MenuController = MenuController;
@@ -53,7 +53,13 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], MenuController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('findid/:id'),
+    (0, common_1.Get)('/tree'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], MenuController.prototype, "getTree", null);
+__decorate([
+    (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -74,13 +80,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], MenuController.prototype, "remove", null);
-__decorate([
-    (0, common_1.Post)('reorder'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], MenuController.prototype, "reorder", null);
 exports.MenuController = MenuController = __decorate([
     (0, common_1.Controller)('menu'),
     __metadata("design:paramtypes", [menu_service_1.MenuService])

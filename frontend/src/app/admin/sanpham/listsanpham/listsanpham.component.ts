@@ -43,28 +43,24 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 export class ListSanphamComponent {
   Detail: any = {};
   displayedColumns: string[] = [
-    'STT',
     'title',
     'masp',
+    'giagoc',
     'dvt',
     'soluong',
     'soluongkho',
     'ghichu',
-    'isActive',
     'createdAt',
-    'updatedAt',
   ];
   ColumnName: any = {
-    STT: 'STT',
     title: 'Tên Sản Phẩm',
     masp: 'Mã Sản Phẩm',
+    giagoc: 'Giá Gốc',
     dvt: 'Đơn Vị Tính',
-    soluong: 'Số Lượng',
-    soluongkho: 'Số Lượng Kho',
+    soluong: 'SL',
+    soluongkho: 'SL Kho',
     ghichu: 'Ghi Chú',
-    isActive: 'Trạng Thái',
-    createdAt:'Ngày Tạo',
-    updatedAt:'Ngày Cập Nhật'
+    createdAt: 'Ngày Tạo'
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('SanphamColFilter') || '[]'
@@ -75,25 +71,19 @@ export class ListSanphamComponent {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
-  filterValues1: { [key: string]: any[] } = {};
   private _SanphamService: SanphamService = inject(SanphamService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   Listsanpham:any = this._SanphamService.ListSanpham;
-  dataSource = new MatTableDataSource([])
+  dataSource = new MatTableDataSource([]);
   sanphamId:any = this._SanphamService.sanphamId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
-      this.filterValues1[column] = [];
     });
-    console.log(this.filterValues);
-    console.log(this.filterValues1);
-    
-    
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -109,47 +99,15 @@ export class ListSanphamComponent {
     };
   }
   applyFilter() {
-    console.log(this.filterValues);
-    
     this.dataSource.filter = JSON.stringify(this.filterValues);
-    this.CountItem = this.dataSource.filteredData.length;
-    this.dataSource.paginator?.firstPage();
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
-    console.log(this.dataSource.filteredData);
   }
-  getValueFilter(column: any) {
-    const result = this.dataSource.filteredData.map((v) => v[column]);
-    return result.filter((v, i) => result.indexOf(v) === i);
-  }
-  filterValueColumn(column: any, event: any) {
-    console.log(event.target.value);
-    this.dataSource.filteredData = this.dataSource.data.filter((v:any) => v[column].includes(event.target.value));
-    console.log(this.dataSource.filteredData);
-  }
-  // getValueFilterColumn(column: any) {
-  //   const result = this.dataSource.filteredData.map((v) => v[column]);
-  //   return result.filter((v, i) => result.indexOf(v) === i);
-  // }
-  ChosenItem(item: any, column: any) {    
-    if (!this.filterValues1[column].includes(item)) {
-      this.filterValues1[column].push(item);
-    }
-    console.log(this.filterValues1);
-  }
-
-
   async ngOnInit(): Promise<void> {    
-    // await this._SanphamService.getAllSanpham();
-    await this._SanphamService.fetchSanphams();
-    this._SanphamService.listenSanphamUpdates();
-    this.dataSource = new MatTableDataSource(this.Listsanpham());
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.filterPredicate = this.createFilter();
-    console.log(this.dataSource);
-    
+    await this._SanphamService.getAllSanpham();
     this.CountItem = this.Listsanpham().length;
+    this.dataSource = new MatTableDataSource(this.Listsanpham());
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.dataSource.filterPredicate = this.createFilter();
     this.initializeColumns();
     this.setupDrawer();
     this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
@@ -201,6 +159,68 @@ export class ListSanphamComponent {
       this.updateDisplayedColumns();
     }
   }
+  FilterHederColumn(list:any,column:any)
+  {
+    const uniqueList = list.filter((obj: any, index: number, self: any) => 
+      index === self.findIndex((t: any) => t[column] === obj[column])
+    );
+    return uniqueList
+  }
+  doFilterHederColumn(event: any, column: any): void {
+    this.dataSource.filteredData = this.Listsanpham().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    const query = event.target.value.toLowerCase();
+    console.log(query,column);
+    console.log(this.dataSource.filteredData);   
+  }
+  ListFilter:any[] =[]
+  ChosenItem(item:any)
+  {
+    if(this.ListFilter.includes(item.id))
+    {
+      this.ListFilter = this.ListFilter.filter((v) => v !== item.id);
+    }
+    else{
+      this.ListFilter.push(item.id);
+    }
+    console.log(this.ListFilter);
+    
+  }
+  ChosenAll(list:any)
+  {
+    list.forEach((v:any) => {
+      if(this.ListFilter.includes(v.id))
+        {
+          this.ListFilter = this.ListFilter.filter((v) => v !== v.id);
+        }
+        else{
+          this.ListFilter.push(v.id);
+        }
+    });
+  }
+  ResetFilter()
+  {
+    this.ListFilter = this.Listsanpham().map((v:any) => v.id);
+    this.dataSource.data = this.Listsanpham();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+  EmptyFiter()
+  {
+    this.ListFilter = [];
+  }
+  CheckItem(item:any)
+  {
+    return this.ListFilter.includes(item.id);
+  }
+  ApplyFilterColum(menu:any)
+  {    
+    this.dataSource.data = this.Listsanpham().filter((v: any) => this.ListFilter.includes(v.id));
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    console.log(this.dataSource.data);
+    menu.closeMenu();
+    
+  }
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -230,7 +250,7 @@ export class ListSanphamComponent {
   async LoadDrive() {
     const DriveInfo = {
       IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'SPImport',
+      SheetName: 'NCCImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
@@ -263,27 +283,23 @@ export class ListSanphamComponent {
     console.log(data);
     
     const transformedData = data.map((v: any) => ({
-      title: v.title?.trim()||'',
-      masp: v.masp?.trim()||'',
-      slug:`${convertToSlug(v?.title?.trim()||'')}_${GenId(5,false)}`,
-      giagoc: Number(v.giagoc)||0,
-      dvt: v.dvt||'',
-      soluong: Number(v.soluong)||0,
-      soluongkho: Number(v.soluongkho)||0,
-      ghichu: v.ghichu||'',
-      order: Number(v.order)||0,
+      name: v.name?.trim()||'',
+      mancc: v.mancc?.trim()||'',
+      sdt: v.sdt?.trim()||'',
+      diachi: v.diachi?.trim()||'',
+      ghichu: v.ghichu?.trim()||'',
    }));
-   // Filter out duplicate masp values
+   // Filter out duplicate mancc values
    const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
       index === self.findIndex((t:any) => (
-        t.masp === value.masp
+        t.mancc === value.mancc
       ))
    )
-    const listId2 = uniqueData.map((v: any) => v.masp);
-    const listId1 = this._SanphamService.ListSanpham().map((v: any) => v.masp);
+    const listId2 = uniqueData.map((v: any) => v.mancc);
+    const listId1 = this._SanphamService.ListSanpham().map((v: any) => v.mancc);
     const listId3 = listId2.filter((item:any) => !listId1.includes(item));
     const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._SanphamService.ListSanpham().find((v1) => v1.masp === v.masp);
+        const item = this._SanphamService.ListSanpham().find((v1) => v1.mancc === v.mancc);
         if (item) {
           const item1 = { ...item, ...v };
           await this._SanphamService.updateSanpham(item1);
@@ -293,7 +309,7 @@ export class ListSanphamComponent {
         }
       });
      const disableItem = listId3.map(async (v: any) => {
-        const item = this._SanphamService.ListSanpham().find((v1) => v1.masp === v);
+        const item = this._SanphamService.ListSanpham().find((v1) => v1.mancc === v);
         item.isActive = false;
         await this._SanphamService.updateSanpham(item);
       });

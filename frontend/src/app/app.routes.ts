@@ -42,8 +42,40 @@ export const routes: Routes = [
           loadComponent: () => import('./admin/adminmain/listuser/listuser.component').then((c) => c.ListuserComponent),
           children: [
             {
+              path: '',
+              loadComponent: () => import('./admin/adminmain/listuser/listuser.component').then((c) => c.ListuserComponent),
+            },
+            {
               path: ':id',
               loadComponent: () => import('./admin/adminmain/listuser/detailuser/detailuser.component').then((c) => c.DetailUserComponent),
+            },
+          ],
+        },
+        {
+          path: 'nhomuser',
+          loadComponent: () => import('./admin/role/listrole/listrole.component').then((c) => c.ListRoleComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/role/listrole/listrole.component').then((c) => c.ListRoleComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/role/detailrole/detailrole.component').then((c) => c.DetailRoleComponent),
+            },
+          ],
+        },
+        {
+          path: 'permission',
+          loadComponent: () => import('./admin/permission/listpermission/listpermission.component').then((c) => c.ListPermissionComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/permission/listpermission/listpermission.component').then((c) => c.ListPermissionComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/permission/detailpermission/detailpermission.component').then((c) => c.DetailPermissionComponent),
             },
           ],
         },
@@ -110,6 +142,34 @@ export const routes: Routes = [
             {
               path: ':id',
               loadComponent: () => import('./admin/khachhang/detailkhachhang/detailkhachhang.component').then((c) => c.DetailKhachhangComponent),
+            },
+          ],
+        },
+        {
+          path: 'khachhang',
+          loadComponent: () => import('./admin/khachhang/listkhachhang/listkhachhang.component').then((c) => c.ListKhachhangComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/khachhang/listkhachhang/listkhachhang.component').then((c) => c.ListKhachhangComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/khachhang/detailkhachhang/detailkhachhang.component').then((c) => c.DetailKhachhangComponent),
+            },
+          ],
+        },
+        {
+          path: 'nhomkhachhang',
+          loadComponent: () => import('./admin/nhomkhachhang/listnhomkhachhang/listnhomkhachhang.component').then((c) => c.ListNhomkhachhangComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/nhomkhachhang/listnhomkhachhang/listnhomkhachhang.component').then((c) => c.ListNhomkhachhangComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/nhomkhachhang/detailnhomkhachhang/detailnhomkhachhang.component').then((c) => c.DetailNhomkhachhangComponent),
             },
           ],
         },
@@ -184,6 +244,20 @@ export const routes: Routes = [
             {
               path: ':id',
               loadComponent: () => import('./admin/phieukho/detailphieukho/detailphieukho.component').then((c) => c.DetailPhieukhoComponent),
+            },
+          ],
+        },
+        {
+          path: 'user',
+          loadComponent: () => import('./admin/user/listuser/listuser.component').then((c) => c.ListUserComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/user/listuser/listuser.component').then((c) => c.ListUserComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/user/detailuser/detailuser.component').then((c) => c.DetailUserComponent),
             },
           ],
         },

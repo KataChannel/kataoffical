@@ -1,7 +1,7 @@
 npx bun add @nestjs/config @nestjs/jwt @nestjs/passport passport passport-jwt bcryptjs
 npx bun add @prisma/client
 npx bun add -d prisma
-npx bun prisma migrate dev --name rau2.1.1
+npx bun prisma migrate dev --name rau2.2.5
 npx prisma db push
 npx bun prisma generate
 
@@ -17,6 +17,9 @@ npx katacreate --type nestjs --name nhacungcap --outputDir nhacungcap
 npx katacreate --type nestjs --name dathang --outputDir dathang
 npx katacreate --type nestjs --name kho --outputDir kho
 npx katacreate --type nestjs --name phieukho --outputDir phieukho
+npx katacreate --type nestjs --name role --outputDir role
+npx katacreate --type nestjs --name permission --outputDir permission
+npx katacreate --type nestjs --name nhomkhachhang --outputDir nhomkhachhang
 
 
 Tình huống	Lệnh cần chạy

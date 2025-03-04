@@ -15,7 +15,7 @@ export class KhachhangController {
     return this.khachhangService.findAll();
   }
 
-  @Get('findid/:id')
+  @Get(':id')
   findOne(@Param('id') id: string) {
     return this.khachhangService.findOne(id);
   }

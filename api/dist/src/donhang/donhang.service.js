@@ -16,22 +16,41 @@ let DonhangService = class DonhangService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async generateOrderCode() {
+    async generateNextOrderCode() {
         const lastOrder = await this.prisma.donhang.findFirst({
-            orderBy: { madonhang: 'desc' },
-            select: { madonhang: true },
+            orderBy: { createdAt: 'desc' },
         });
-        let newCode = 'DH0000001';
-        if (lastOrder?.madonhang) {
-            const lastNumber = parseInt(lastOrder.madonhang.replace('DH', ''), 10);
-            if (lastNumber < 9999999) {
-                newCode = `DH${(lastNumber + 1).toString().padStart(7, '0')}`;
-            }
-            else {
-                throw new Error('Đã đạt giới hạn số lượng mã đơn hàng!');
-            }
+        let nextCode = 'TG-AA00001';
+        if (lastOrder) {
+            nextCode = this.incrementOrderCode(lastOrder.madonhang);
         }
-        return newCode;
+        return nextCode;
+    }
+    incrementOrderCode(orderCode) {
+        const prefix = 'TG-';
+        const letters = orderCode.slice(3, 5);
+        const numbers = parseInt(orderCode.slice(5), 10);
+        let newLetters = letters;
+        let newNumbers = numbers + 1;
+        if (newNumbers > 99999) {
+            newNumbers = 1;
+            newLetters = this.incrementLetters(letters);
+        }
+        return `${prefix}${newLetters}${newNumbers.toString().padStart(5, '0')}`;
+    }
+    incrementLetters(letters) {
+        let firstChar = letters.charCodeAt(0);
+        let secondChar = letters.charCodeAt(1);
+        if (secondChar === 90) {
+            if (firstChar === 90)
+                return 'ZZ';
+            firstChar++;
+            secondChar = 65;
+        }
+        else {
+            secondChar++;
+        }
+        return String.fromCharCode(firstChar) + String.fromCharCode(secondChar);
     }
     async reorderDonHangs(donhangIds) {
         for (let i = 0; i < donhangIds.length; i++) {
@@ -113,7 +132,7 @@ let DonhangService = class DonhangService {
         };
     }
     async create(dto) {
-        const madonhang = await this.generateOrderCode();
+        const madonhang = await this.generateNextOrderCode();
         return this.prisma.$transaction(async (prisma) => {
             const newDonhang = await prisma.donhang.create({
                 data: {

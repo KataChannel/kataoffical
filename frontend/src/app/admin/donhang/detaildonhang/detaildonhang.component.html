@@ -7,7 +7,7 @@
        (blur)="updateValue($event,null,DetailDonhang(), 'title','string')"
        class="p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
      >
-     {{ DetailDonhang()?.title || 'Không có dữ liệu' }}
+     {{ DetailDonhang()?.madonhang || 'Không có dữ liệu' }}
   </div>
   <div class="flex flex-row space-x-2 items-center">
     <mat-slide-toggle [(ngModel)]="DetailDonhang().isActive" [disabled]="!isEdit()">{{DetailDonhang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>

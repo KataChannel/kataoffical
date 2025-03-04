@@ -16,4 +16,7 @@ export class SocketGateway {
   sendKhachangUpdate() {
     this.server.emit('khachhang-updated'); // FE sẽ nhận sự kiện này
   }
+  senduserUpdate() {
+    this.server.emit('user-updated'); // FE sẽ nhận sự kiện này
+  }
 }
