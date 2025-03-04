@@ -61,7 +61,7 @@ async function generateFile(filePath, content) {
                     <mat-icon>cloud_download</mat-icon>
                 </button>
                 <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
-                    {{CountItem}} Sản Phẩm
+                    {{CountItem}} Nhà Cung Cấp
                 </span>
             </div>
         </div>
@@ -72,13 +72,48 @@ async function generateFile(filePath, content) {
             </mat-form-field>
         </div>
         <div class="w-full overflow-auto">
-            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource()" matSort>
+            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
                     <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
                         <span class="max-w-40 line-clamp-4 me-4">
                             {{ ColumnName[column] }}
                         </span>
+                             <span class="z-10 material-symbols-outlined text-gray-500" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
+                                 filter_alt
+                             </span>
+                                    <mat-menu  #menu="matMenu">
+                                        <div (click)="$event.stopPropagation()"  class="cursor-pointer flex flex-col space-y-4 p-3">                                        
+                                        <div class="relative w-full">
+                                            <input type="text"
+                                                placeholder="Tìm Kiếm..." (keyup)="doFilterHederColumn($event,column)"
+                                                class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <span class="material-symbols-outlined text-gray-500">search</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex flex-row space-x-2 items-center justify-between">
+                                            <div class="flex flex-row space-x-2 items-center">
+                                                <span class="text-xs text-blue-600 underline" (click)="ChosenAll(FilterHederColumn(dataSource.filteredData,column))">Chọn Tất Cả {{FilterHederColumn(dataSource.filteredData,column).length||0}}</span>
+                                                <span class="text-xs text-blue-600 underline" (click)="EmptyFiter()">Xoá</span>
+                                            </div>
+   
+                                            <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
+                                        </div>
+                                        <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
+                                            @for (item of FilterHederColumn(dataSource.filteredData,column); track $index) {
+                                                <div (click)="ChosenItem(item)" class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
+                                                   <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>
+                                                    {{item[column]||'Trống'}}
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="flex flex-row space-x-2 items-end justify-end">
+                                            <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
+                                            <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)" >Áp Dụng</button>
+                                        </div>
+                                        </div>
+                                    </mat-menu>
                     </th>
                     <td mat-cell *matCellDef="let row; let idx = index">
                         @switch (column) {
@@ -127,7 +162,8 @@ async function generateFile(filePath, content) {
     </div>
 </mat-drawer-container>`;
     
-const componentListContent = `import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+const componentListContent = 
+`import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -172,21 +208,23 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 export class ListSanphamComponent {
   Detail: any = {};
   displayedColumns: string[] = [
-    'STT',
-    'title',
-    'masp',
-    'parent',
-    'order',
+    'name',
+    'mancc',
+    'diachi',
+    'email',
+    'sdt',
+    'ghichu',
     'isActive',
     'createdAt',
     'updatedAt',
   ];
   ColumnName: any = {
-    STT: 'STT',
-    title: 'Tiêu Đề',
-    masp: 'Mã SP',
-    slug: 'Đường Dẫn',
-    order: 'Thứ Tự',
+    name: 'Tên Nhà Cung Cấp',
+    mancc: 'Mã Nhà Cung Cấp',
+    diachi: 'Địa Chỉ',
+    email: 'Email',
+    sdt: 'Số Điện Thoại',
+    ghichu: 'Ghi Chú',
     isActive: 'Trạng Thái',
     createdAt:'Ngày Tạo',
     updatedAt:'Ngày Cập Nhật'
@@ -205,13 +243,7 @@ export class ListSanphamComponent {
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   Listsanpham:any = this._SanphamService.ListSanpham;
-  dataSource = computed(() => {
-    const ds = new MatTableDataSource(this.Listsanpham());
-    ds.filterPredicate = this.createFilter();
-    ds.paginator = this.paginator;
-    ds.sort = this.sort;
-    return ds;
-  });
+  dataSource = new MatTableDataSource([]);
   sanphamId:any = this._SanphamService.sanphamId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
@@ -234,11 +266,15 @@ export class ListSanphamComponent {
     };
   }
   applyFilter() {
-    this.dataSource().filter = JSON.stringify(this.filterValues);
+    this.dataSource.filter = JSON.stringify(this.filterValues);
   }
   async ngOnInit(): Promise<void> {    
     await this._SanphamService.getAllSanpham();
     this.CountItem = this.Listsanpham().length;
+    this.dataSource = new MatTableDataSource(this.Listsanpham());
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.dataSource.filterPredicate = this.createFilter();
     this.initializeColumns();
     this.setupDrawer();
     this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
@@ -290,6 +326,68 @@ export class ListSanphamComponent {
       this.updateDisplayedColumns();
     }
   }
+  FilterHederColumn(list:any,column:any)
+  {
+    const uniqueList = list.filter((obj: any, index: number, self: any) => 
+      index === self.findIndex((t: any) => t[column] === obj[column])
+    );
+    return uniqueList
+  }
+  doFilterHederColumn(event: any, column: any): void {
+    this.dataSource.filteredData = this.Listsanpham().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    const query = event.target.value.toLowerCase();
+    console.log(query,column);
+    console.log(this.dataSource.filteredData);   
+  }
+  ListFilter:any[] =[]
+  ChosenItem(item:any)
+  {
+    if(this.ListFilter.includes(item.id))
+    {
+      this.ListFilter = this.ListFilter.filter((v) => v !== item.id);
+    }
+    else{
+      this.ListFilter.push(item.id);
+    }
+    console.log(this.ListFilter);
+    
+  }
+  ChosenAll(list:any)
+  {
+    list.forEach((v:any) => {
+      if(this.ListFilter.includes(v.id))
+        {
+          this.ListFilter = this.ListFilter.filter((v) => v !== v.id);
+        }
+        else{
+          this.ListFilter.push(v.id);
+        }
+    });
+  }
+  ResetFilter()
+  {
+    this.ListFilter = this.Listsanpham().map((v:any) => v.id);
+    this.dataSource.data = this.Listsanpham();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+  EmptyFiter()
+  {
+    this.ListFilter = [];
+  }
+  CheckItem(item:any)
+  {
+    return this.ListFilter.includes(item.id);
+  }
+  ApplyFilterColum(menu:any)
+  {    
+    this.dataSource.data = this.Listsanpham().filter((v: any) => this.ListFilter.includes(v.id));
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    console.log(this.dataSource.data);
+    menu.closeMenu();
+    
+  }
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -319,7 +417,7 @@ export class ListSanphamComponent {
   async LoadDrive() {
     const DriveInfo = {
       IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'SPImport',
+      SheetName: 'NCCImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
@@ -352,27 +450,23 @@ export class ListSanphamComponent {
     console.log(data);
     
     const transformedData = data.map((v: any) => ({
-      title: v.title?.trim()||'',
-      masp: v.masp?.trim()||'',
-      slug:\`\${convertToSlug(v?.title?.trim()||'')}_\${GenId(5,false)}\`,
-      giagoc: Number(v.giagoc)||0,
-      dvt: v.dvt||'',
-      soluong: Number(v.soluong)||0,
-      soluongkho: Number(v.soluongkho)||0,
-      ghichu: v.ghichu||'',
-      order: Number(v.order)||0,
+      name: v.name?.trim()||'',
+      mancc: v.mancc?.trim()||'',
+      sdt: v.sdt?.trim()||'',
+      diachi: v.diachi?.trim()||'',
+      ghichu: v.ghichu?.trim()||'',
    }));
-   // Filter out duplicate masp values
+   // Filter out duplicate mancc values
    const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
       index === self.findIndex((t:any) => (
-        t.masp === value.masp
+        t.mancc === value.mancc
       ))
    )
-    const listId2 = uniqueData.map((v: any) => v.masp);
-    const listId1 = this._SanphamService.ListSanpham().map((v: any) => v.masp);
+    const listId2 = uniqueData.map((v: any) => v.mancc);
+    const listId1 = this._SanphamService.ListSanpham().map((v: any) => v.mancc);
     const listId3 = listId2.filter((item:any) => !listId1.includes(item));
     const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._SanphamService.ListSanpham().find((v1) => v1.masp === v.masp);
+        const item = this._SanphamService.ListSanpham().find((v1) => v1.mancc === v.mancc);
         if (item) {
           const item1 = { ...item, ...v };
           await this._SanphamService.updateSanpham(item1);
@@ -382,7 +476,7 @@ export class ListSanphamComponent {
         }
       });
      const disableItem = listId3.map(async (v: any) => {
-        const item = this._SanphamService.ListSanpham().find((v1) => v1.masp === v);
+        const item = this._SanphamService.ListSanpham().find((v1) => v1.mancc === v);
         item.isActive = false;
         await this._SanphamService.updateSanpham(item);
       });
