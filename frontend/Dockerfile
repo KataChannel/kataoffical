@@ -5,8 +5,8 @@ WORKDIR /app
 
 # Copy build có sẵn từ local vào Docker image
 COPY ./dist/frontend /app/dist/frontend
-COPY ./node_modules /app/node_modules
-COPY ./package.json /app/package.json
+# COPY ./node_modules /app/node_modules
+# COPY ./package.json /app/package.json
 
 # Chạy ứng dụng SSR
 EXPOSE 4301
