@@ -4,37 +4,37 @@ export declare class PermissionController {
     constructor(permissionService: PermissionService);
     create(createPermissionDto: any): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
     findAll(): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
     update(id: string, updatePermissionDto: any): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
 }

@@ -44,8 +44,10 @@ export class AuthController {
   }
 
   @Post('login')
-  login(@Body() body: { email: string; password: string }) {
-    return this.authService.login(body.email, body.password);
+  login(@Body() body: {SDT:string; email: string; password: string }) {
+    console.log(body);
+    
+    return this.authService.login(body.SDT, body.email, body.password);
   }
 
   @UseGuards(JwtAuthGuard)

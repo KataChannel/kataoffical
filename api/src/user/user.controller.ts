@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { Permissions } from '../decorators/permissions.decorator';
 import { PermissionsGuard } from '../guards/permissions.guard';
 import { AuthService } from '../auth/auth.service';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('users')
 export class UserController {
@@ -21,10 +22,10 @@ export class UserController {
     return this.userService.findAll();
   }
   @Get('profile')
-  @UseGuards(PermissionsGuard)
-  @Permissions('view_profile')
+  @UseGuards(JwtAuthGuard)
+  // @Permissions('view_profile')
   async getProfile(@Req() req) {
-    return this.authService.getUserRoles(req.user.id);
+    return this.userService.findOne(req.user.sub);
   }
   @Get('findid/:id')
   findOne(@Param('id') id: string) {
@@ -39,4 +40,14 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }  
+  @Post('assign')
+  async assignRoleToUser(@Body() data: any) {
+    return this.userService.assignRoleToUser(data);
+  }
+
+  @Delete('remove')
+  async removeRoleFromUser(@Body() data: any) {
+    return this.userService.removeRoleFromUser(data);
+  }
+
 }

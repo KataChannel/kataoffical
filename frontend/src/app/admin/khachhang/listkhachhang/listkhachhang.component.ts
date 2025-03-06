@@ -19,38 +19,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { AgGridAngular } from 'ag-grid-angular';
-import { ModuleRegistry,ColDef, AllCommunityModule, ClientSideRowModelModule, ColumnAutoSizeModule, RowSelectionModule,
-} from 'ag-grid-community';
-ModuleRegistry.registerModules([
-  AllCommunityModule,
-  RowSelectionModule,
-  ClientSideRowModelModule,
-  ColumnAutoSizeModule,
-  ]);
-const vietnameseLocaleText = {
-  page: 'Trang',
-  to: 'đến',
-  of: 'của',
-  first: 'Đầu tiên',
-  previous: 'Trước',
-  next: 'Tiếp',
-  last: 'Cuối cùng',
-  filterOoo: 'Lọc...',
-  equals: 'Bằng',
-  notEqual: 'Không bằng',
-  lessThan: 'Nhỏ hơn',
-  greaterThan: 'Lớn hơn',
-  contains: 'Chứa',
-  startsWith: 'Bắt đầu bằng',
-  endsWith: 'Kết thúc bằng',
-  applyFilter: 'Áp dụng',
-  resetFilter: 'Đặt lại',
-  clearFilter: 'Xóa bộ lọc',
-  noRowsToShow: 'Không có hàng để hiển thị',
-  loadingOoo: 'Đang tải...',
-  pagesize:'Số Lượng'
-};
 @Component({
   selector: 'app-listkhachhang',
   templateUrl: './listkhachhang.component.html',
@@ -69,15 +37,13 @@ const vietnameseLocaleText = {
     MatSelectModule,
     CommonModule,
     FormsModule,
-    MatTooltipModule,
-    AgGridAngular,
+    MatTooltipModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListKhachhangComponent {
   Detail: any = {};
   displayedColumns: string[] = [
-    'STT',
     'name',
     'makh',
     'namenn',
@@ -87,38 +53,31 @@ export class ListKhachhangComponent {
     'sdt',
     'mst',
     'gionhanhang',
-    'banggia',
     'loaikh',
-    // 'order',
+    'ghichu',
     'isActive',
     'createdAt',
-    'updatedAt',
   ];
-  
+
   ColumnName: any = {
-    STT: 'STT',
-    name: 'Tên',
-    makh: 'Mã KH',
-    namenn: 'Tên NN',
+    name: 'Tên Khách Hàng',
+    makh: 'Mã Khách Hàng',
+    namenn: 'Người Liên Hệ',
     diachi: 'Địa Chỉ',
     quan: 'Quận',
     email: 'Email',
-    sdt: 'SĐT',
-    mst: 'MST',
+    sdt: 'Số Điện Thoại',
+    mst: 'Mã Số Thuế',
     gionhanhang: 'Giờ Nhận Hàng',
-    banggia: 'Bảng Giá',
-    loaikh: 'Loại KH',
-   // order: 'Thứ Tự',
+    loaikh: 'Loại Khách Hàng',
+    ghichu: 'Ghi Chú',
     isActive: 'Trạng Thái',
-    createdAt:'Ngày Tạo',
-    updatedAt:'Ngày Cập Nhật'
+    createdAt: 'Ngày Tạo',
   };
-
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('KhachhangColFilter') || '[]'
   );
   Columns: any[] = [];
-  isFilter: boolean = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
@@ -132,113 +91,32 @@ export class ListKhachhangComponent {
   khachhangId:any = this._KhachhangService.khachhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
+  isSearch: boolean = false;
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
     });
   }
-  
-
-
-  @ViewChild('agGrid') agGrid!: AgGridAngular;
-  // Column Definitions: Define the structure of the grid columns
-  columnDefs: ColDef[] = 
-  [
-    { headerName: 'Name', field: 'name', sortable: true, filter: true},
-    { headerName: 'Mã KH', field: 'makh', sortable: true, filter: true },
-    { headerName: 'Tên NN', field: 'namenn', sortable: true, filter: true },
-    { headerName: 'Địa Chỉ', field: 'diachi', sortable: true, filter: true },
-    { headerName: 'Quận', field: 'quan', sortable: true, filter: true },
-    { headerName: 'Email', field: 'email', sortable: true, filter: true },
-    { headerName: 'SĐT', field: 'sdt', sortable: true, filter: true },
-    { headerName: 'MST', field: 'mst', sortable: true, filter: true },
-    { headerName: 'Giờ Nhận Hàng', field: 'gionhanhang', sortable: true, filter: true },
-    { headerName: 'Bảng Giá', field: 'banggia', sortable: true, filter: true },
-    { headerName: 'Loại KH', field: 'loaikh', sortable: true, filter: true },
-    { headerName: 'Order', field: 'order', sortable: true, filter: true },
-    { headerName: 'Trạng Thái', field: 'isActive', sortable: true, filter: true },
-    { headerName: 'Ngày Tạo', field: 'createdAt', sortable: true, filter: true },
-    { headerName: 'Ngày Cập Nhật', field: 'updatedAt', sortable: true, filter: true }
-  ];
-  // Row Data: Sample data to display in the grid
-  rowData = []
-  
-  // [
-  //   { make: 'Toyota', model: 'Celica', price: 35000 },
-  //   { make: 'Ford', model: 'Mondeo', price: 32000 },
-  //   { make: 'Porsche', model: 'Boxster', price: 72000 }
-  // ];
-
-  // Default Column Settings (applied to all columns unless overridden)
-  defaultColDef: ColDef = {
-    editable: true,
-    flex: 1,
-    minWidth: 100,
-    resizable: true
-  };
-
-  // Grid Options
-  gridOptions = {
-    pagination: true,
-    paginationPageSize: 20,
-    localeText: vietnameseLocaleText,
-    rowSelection: 'single' as const, // Change this to 'single' or 'multiple'
-    onGridReady: (params: any) => {
-      params.api.sizeColumnsToFit();
-      console.log('Grid is ready!');
-      if (params.api) {
-        console.log('Total Rows:', params.api.getDisplayedRowCount());
-        console.log('Pagination Total Items:', params.api.paginationGetRowCount());
-        console.log('Current Page:', params.api.paginationGetCurrentPage());
-        params.api.sizeColumnsToFit();
-        setTimeout(() => {
-          if (this.agGrid && this.agGrid.api) {
-            console.log('Rows via ViewChild:', this.agGrid.api.getDisplayedRowCount());
-          }
-        }, 100);
-      } else {
-        console.log('Grid API is not available');
-      }
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
-  };
-
-  createFilter(): (data: any, filter: string) => boolean {
-    return (data, filter) => {
-      const filterObject = JSON.parse(filter);
-      let isMatch = true;
-      this.displayedColumns.forEach(column => {
-        if (filterObject[column]) {
-          const value = data[column] ? data[column].toString().toLowerCase() : '';
-          isMatch = isMatch && value.includes(filterObject[column].toLowerCase());
-        }
-      });
-      return isMatch;
-    };
-  }
-  applyFilter() {
-    this.dataSource.filter = JSON.stringify(this.filterValues);
-    console.log(this.dataSource.filter);
-    
   }
   async ngOnInit(): Promise<void> {    
-  //  await this._KhachhangService.getAllKhachhang();
-    await this._KhachhangService.fetchKhachhangs();
-    this._KhachhangService.listenKhachhangUpdates();
-    this.dataSource = new MatTableDataSource(this.Listkhachhang());
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.filterPredicate = this.createFilter();
+    await this._KhachhangService.getAllKhachhang();
     this.CountItem = this.Listkhachhang().length;
+    this.dataSource = new MatTableDataSource(this.Listkhachhang());
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
     this.initializeColumns();
     this.setupDrawer();
-    this.rowData =this.Listkhachhang()
-    console.log(this.rowData);
-    
-    // this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    // this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    // this.paginator._intl.previousPageLabel = 'Về Trước';
-    // this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    // this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+    this.paginator._intl.previousPageLabel = 'Về Trước';
+    this.paginator._intl.firstPageLabel = 'Trang Đầu';
+    this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
   async refresh() {
    await this._KhachhangService.getAllKhachhang();
@@ -282,16 +160,68 @@ export class ListKhachhangComponent {
       column.isShow = !column.isShow;
       this.updateDisplayedColumns();
     }
-    console.log(item);
-    this.columnDefs = this.columnDefs.map(colDef => {
-      if (colDef.field === item.key) {
-        return { ...colDef, hide: !item.isShow };
-      }
-      return colDef;
+  }
+  @memoize()
+  FilterHederColumn(list:any,column:any)
+  {
+    const uniqueList = list.filter((obj: any, index: number, self: any) => 
+      index === self.findIndex((t: any) => t[column] === obj[column])
+    );
+    return uniqueList
+  }
+  @Debounce(300)
+  doFilterHederColumn(event: any, column: any): void {
+    this.dataSource.filteredData = this.Listkhachhang().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    const query = event.target.value.toLowerCase();  
+  }
+  ListFilter:any[] =[]
+  ChosenItem(item:any,column:any)
+  {
+    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
+    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
+    if(CheckItem1.length>0)
+    {
+      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
+    }
+    else{
+      this.ListFilter = [...this.ListFilter,...CheckItem];
+    }
+  }
+  ChosenAll(list:any)
+  {
+    list.forEach((v:any) => {
+      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
+      if(CheckItem)
+        {
+          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
+        }
+        else{
+          this.ListFilter.push(v);
+        }
     });
-    // this.agGrid.api.setColumnDefs(this.columnDefs);
-    console.log(this.columnDefs);
-    
+  }
+  ResetFilter()
+  {
+    this.ListFilter = this.Listkhachhang();
+    this.dataSource.data = this.Listkhachhang();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+  EmptyFiter()
+  {
+    this.ListFilter = [];
+  }
+  CheckItem(item:any)
+  {
+    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  }
+  ApplyFilterColum(menu:any)
+  {    
+
+    this.dataSource.data = this.Listkhachhang().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    menu.closeMenu();
   }
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -332,34 +262,26 @@ export class ListKhachhangComponent {
   }
   DoImportData(data:any)
   {
+    console.log(data);
+    
     const transformedData = data.map((v: any) => ({
-      makh: v.makh?.trim()||'',
       name: v.name?.trim()||'',
-      namenn: v.namenn?.trim()||'',
-      diachi: v.diachi?.trim()||'',
-      quan: v.quan?.trim()||'',
-      email: v.email?.trim()||'',
+      mancc: v.mancc?.trim()||'',
       sdt: v.sdt?.trim()||'',
-      mst: v.mst?.trim()||'',
-      gionhanhang: v.gionhanhang?.trim()||'',
-      banggia: v.banggia?.trim()||'',
-      loaikh: v.loaikh?.trim()||'',
+      diachi: v.diachi?.trim()||'',
+      ghichu: v.ghichu?.trim()||'',
    }));
-
-
-
-
-   // Filter out duplicate makh values
+   // Filter out duplicate mancc values
    const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
       index === self.findIndex((t:any) => (
-        t.makh === value.makh
+        t.mancc === value.mancc
       ))
    )
-    const listId2 = uniqueData.map((v: any) => v.makh);
-    const listId1 = this._KhachhangService.ListKhachhang().map((v: any) => v.makh);
+    const listId2 = uniqueData.map((v: any) => v.mancc);
+    const listId1 = this._KhachhangService.ListKhachhang().map((v: any) => v.mancc);
     const listId3 = listId2.filter((item:any) => !listId1.includes(item));
     const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.makh === v.makh);
+        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.mancc === v.mancc);
         if (item) {
           const item1 = { ...item, ...v };
           await this._KhachhangService.updateKhachhang(item1);
@@ -369,7 +291,7 @@ export class ListKhachhangComponent {
         }
       });
      const disableItem = listId3.map(async (v: any) => {
-        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.makh === v);
+        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.mancc === v);
         item.isActive = false;
         await this._KhachhangService.updateKhachhang(item);
       });
@@ -390,4 +312,53 @@ export class ListKhachhangComponent {
   ExportExcel(data:any,title:any) {
     writeExcelFile(data,title);
   }
+  trackByFn(index: number, item: any): any {
+    return item.id; // Use a unique identifier
+  }
+}
+
+
+
+
+function memoize() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    const cache = new Map();
+
+    descriptor.value = function (...args: any[]) {
+      const key = JSON.stringify(args);
+      if (cache.has(key)) {
+        return cache.get(key);
+      }
+      const result = originalMethod.apply(this, args);
+      cache.set(key, result);
+      return result;
+    };
+
+    return descriptor;
+  };
+}
+
+function Debounce(delay: number = 300) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    let timeoutId: any;
+
+    descriptor.value = function (...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        originalMethod.apply(this, args);
+      }, delay);
+    };
+
+    return descriptor;
+  };
 }

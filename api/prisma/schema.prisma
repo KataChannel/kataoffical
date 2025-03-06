@@ -148,6 +148,13 @@ model Donhangsanpham {
   order     Int?
   isActive  Boolean?  @default(false)
 }
+
+enum StatusDonhang {
+  dadat     // Đã xác nhận
+  dagiao       // Đã giao hàng
+  danhan     // Đã nhận hàng
+  huy     // Đã hủy
+}
 model Donhang {
   id          String  @id @default(uuid())
   title       String
@@ -155,6 +162,7 @@ model Donhang {
   madonhang   String  @unique
   ngaygiao    DateTime?
   ghichu      String?
+  status      StatusDonhang @default(dadat) // Dùng Enum
   khachhangId String
   khachhang   Khachhang @relation(fields: [khachhangId], references: [id])
   sanpham     Donhangsanpham[]
@@ -163,9 +171,6 @@ model Donhang {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
-
-
-
 
 model Banggia {
   id        String   @id @default(uuid())
@@ -317,6 +322,7 @@ model Sanpham {
   hinhanh   String?
   soluong   Float @default(0)
   soluongkho Float @default(0)
+  haohut    Float @default(0)
   ghichu    String?
   order     Int? @default(1)
   isActive  Boolean  @default(false)

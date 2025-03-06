@@ -9,14 +9,14 @@ import {
   UrlTree,
 } from '@angular/router';
 import { Observable, of, switchMap, finalize } from 'rxjs';
-import { UsersService } from '../../../admin/adminmain/listuser/listuser.services';
+import { UserService } from '../../../../admin/user/user.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
   constructor(
-    private _UsersService: UsersService,
+    private _UserService: UserService,
     private _router: Router,
   //  private _spinner: NgxSpinnerService
   ) {}
@@ -50,7 +50,7 @@ export class AuthGuard implements CanActivate {
 
   private _check(redirectURL: string): Observable<boolean> {
    // this._spinner.show();
-    return this._UsersService.checkDangnhap().pipe(
+    return this._UserService.checkDangnhap().pipe(
       switchMap((authenticated) => {
         if (!authenticated) {
           this._router.navigate(['/login'], { queryParams: { redirectURL } });

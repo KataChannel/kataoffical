@@ -1,10 +1,9 @@
-import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatMenuModule } from '@angular/material/menu';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
@@ -12,12 +11,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
-import * as XLSX from 'xlsx';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MenuService } from '../menu.service';
-import moment from 'moment';
+import { MatMenuModule } from '@angular/material/menu';
+import { GoogleSheetService } from '../../../../shared/googlesheets/googlesheets.service';
+import { readExcelFile, writeExcelFile } from '../../../../shared/utils/exceldrive.utils';
+import { ConvertDriveData } from '../../../../shared/utils/shared.utils';
 @Component({
   selector: 'app-listmenu',
   templateUrl: './listmenu.component.html',
@@ -38,11 +39,11 @@ import moment from 'moment';
     FormsModule,
     MatTooltipModule
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListMenuComponent {
   Detail: any = {};
   displayedColumns: string[] = [
-    'STT',
     'title',
     'slug',
     'parent',
@@ -52,7 +53,6 @@ export class ListMenuComponent {
     'updatedAt',
   ];
   ColumnName: any = {
-    STT: 'STT',
     title: 'Tiêu Đề',
     slug: 'Đường Dẫn',
     parent: 'Menu Cha',
@@ -65,49 +65,38 @@ export class ListMenuComponent {
     localStorage.getItem('MenuColFilter') || '[]'
   );
   Columns: any[] = [];
-  isFilter: boolean = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
   private _MenuService: MenuService = inject(MenuService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
+  private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   Listmenu:any = this._MenuService.ListMenu;
-  dataSource = computed(() => {
-    const ds = new MatTableDataSource(this.Listmenu());
-    ds.filterPredicate = this.createFilter();
-    ds.paginator = this.paginator;
-    ds.sort = this.sort;
-    return ds;
-  });
+  dataSource = new MatTableDataSource([]);
   menuId:any = this._MenuService.menuId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
+  isSearch: boolean = false;
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
     });
   }
-  createFilter(): (data: any, filter: string) => boolean {
-    return (data, filter) => {
-      const filterObject = JSON.parse(filter);
-      let isMatch = true;
-      this.displayedColumns.forEach(column => {
-        if (filterObject[column]) {
-          const value = data[column] ? data[column].toString().toLowerCase() : '';
-          isMatch = isMatch && value.includes(filterObject[column].toLowerCase());
-        }
-      });
-      return isMatch;
-    };
-  }
-  applyFilter() {
-    this.dataSource().filter = JSON.stringify(this.filterValues);
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
   async ngOnInit(): Promise<void> {    
     await this._MenuService.getAllMenu();
     this.CountItem = this.Listmenu().length;
+    this.dataSource = new MatTableDataSource(this.Listmenu());
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
     this.initializeColumns();
     this.setupDrawer();
     this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
@@ -159,6 +148,68 @@ export class ListMenuComponent {
       this.updateDisplayedColumns();
     }
   }
+  @memoize()
+  FilterHederColumn(list:any,column:any)
+  {
+    const uniqueList = list.filter((obj: any, index: number, self: any) => 
+      index === self.findIndex((t: any) => t[column] === obj[column])
+    );
+    return uniqueList
+  }
+  @Debounce(300)
+  doFilterHederColumn(event: any, column: any): void {
+    this.dataSource.filteredData = this.Listmenu().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    const query = event.target.value.toLowerCase();  
+  }
+  ListFilter:any[] =[]
+  ChosenItem(item:any,column:any)
+  {
+    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
+    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
+    if(CheckItem1.length>0)
+    {
+      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
+    }
+    else{
+      this.ListFilter = [...this.ListFilter,...CheckItem];
+    }
+  }
+  ChosenAll(list:any)
+  {
+    list.forEach((v:any) => {
+      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
+      if(CheckItem)
+        {
+          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
+        }
+        else{
+          this.ListFilter.push(v);
+        }
+    });
+  }
+  ResetFilter()
+  {
+    this.ListFilter = this.Listmenu();
+    this.dataSource.data = this.Listmenu();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+  EmptyFiter()
+  {
+    this.ListFilter = [];
+  }
+  CheckItem(item:any)
+  {
+    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  }
+  ApplyFilterColum(menu:any)
+  {    
+
+    this.dataSource.data = this.Listmenu().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    menu.closeMenu();
+  }
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -188,97 +239,113 @@ export class ListMenuComponent {
   async LoadDrive() {
     const DriveInfo = {
       IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'Khachhangimport',
+      SheetName: 'SPImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
-    // const result: any = await this._DonhangsService.getDrive(DriveInfo);
-    // const data = ConvertDriveData(result.values);
-    // console.log(data);
-    // const updatePromises = data.map(async (v: any) => {
-    //   const item = this._KhachhangsService
-    //     .ListKhachhang()
-    //     .find((v1) => v1.MaKH === v.MaKH);
-    //   if (item) {
-    //     const item1 = { ...item, ...v };
-    //     console.log(item1);
-
-    //     await this._KhachhangsService.updateOneKhachhang(item1);
-    //   }
-    // });
-    // Promise.all(updatePromises).then(() => {
-    //   this._snackBar.open('Cập Nhật Thành Công', '', {
-    //     duration: 1000,
-    //     horizontalPosition: 'end',
-    //     verticalPosition: 'top',
-    //     panelClass: ['snackbar-success'],
-    //   });
-    //   //  window.location.reload();
-    // });
+   const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
+   const data = ConvertDriveData(result.values);
+   console.log(data);
+   this.DoImportData(data);
   }
-  readExcelFile(event: any) {
-    const file = event.target.files[0];
-    const fileReader = new FileReader();
-    fileReader.onload = (e) => {
-      const data = new Uint8Array((e.target as any).result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-      console.log(jsonData);
-      // const transformedData = jsonData.map((v: any) => ({
-      //   Title: v.Title.trim(),
-      //   MaSP: v.MaSP.trim(),
-      //   giagoc: Number(v.giagoc),
-      //   dvt: v.dvt,
-      // }));
-      // const updatePromises = jsonData.map(async (v: any) => {
-      //   const item = this._KhachhangsService
-      //     .ListKhachhang()
-      //     .find((v1) => v1.MaKH === v.MaKH);
-      //   if (item) {
-      //     const item1 = { ...item, ...v };
-      //     //await this._KhachhangsService.updateOneKhachhang(item1);
-      //   }
-      // });
-    //   Promise.all(updatePromises).then(() => {
-    //     this._snackBar.open('Cập Nhật Thành Công', '', {
-    //       duration: 1000,
-    //       horizontalPosition: 'end',
-    //       verticalPosition: 'top',
-    //       panelClass: ['snackbar-success'],
-    //     });
-    //     window.location.reload();
-    //   });
-    // };
-    // fileReader.readAsArrayBuffer(file);
+  DoImportData(data:any)
+  {
+    console.log(data);
+    
+    const transformedData = data.map((v: any) => ({
+      name: v.name?.trim()||'',
+      mancc: v.mancc?.trim()||'',
+      sdt: v.sdt?.trim()||'',
+      diachi: v.diachi?.trim()||'',
+      ghichu: v.ghichu?.trim()||'',
+   }));
+   // Filter out duplicate mancc values
+   const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
+      index === self.findIndex((t:any) => (
+        t.mancc === value.mancc
+      ))
+   )
+    const listId2 = uniqueData.map((v: any) => v.mancc);
+    const listId1 = this._MenuService.ListMenu().map((v: any) => v.mancc);
+    const listId3 = listId2.filter((item:any) => !listId1.includes(item));
+    const createuppdateitem = uniqueData.map(async (v: any) => {
+        const item = this._MenuService.ListMenu().find((v1) => v1.mancc === v.mancc);
+        if (item) {
+          const item1 = { ...item, ...v };
+          await this._MenuService.updateMenu(item1);
+        }
+        else{
+          await this._MenuService.CreateMenu(v);
+        }
+      });
+     const disableItem = listId3.map(async (v: any) => {
+        const item = this._MenuService.ListMenu().find((v1) => v1.mancc === v);
+        item.isActive = false;
+        await this._MenuService.updateMenu(item);
+      });
+      Promise.all([...createuppdateitem, ...disableItem]).then(() => {
+        this._snackBar.open('Cập Nhật Thành Công', '', {
+          duration: 1000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+       // window.location.reload();
+      });
   }
+  async ImporExcel(event: any) {
+  const data = await readExcelFile(event)
+  this.DoImportData(data);
   }   
-  writeExcelFile() {
-    // this._KhachhangsService.ListKhachhang();
-    // const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(
-    //   this._KhachhangsService.ListKhachhang()
-    // );
-    // const workbook: XLSX.WorkBook = {
-    //   Sheets: { Sheet1: worksheet },
-    //   SheetNames: ['Sheet1'],
-    // };
-    // const excelBuffer: any = XLSX.write(workbook, {
-    //   bookType: 'xlsx',
-    //   type: 'array',
-    // });
-    // this.saveAsExcelFile(
-    //   excelBuffer,
-    //   'danhsachkhachhang_' + moment().format('DD_MM_YYYY')
-    // );
+  ExportExcel(data:any,title:any) {
+    writeExcelFile(data,title);
   }
-  saveAsExcelFile(buffer: any, fileName: string) {
-    // const data: Blob = new Blob([buffer], { type: 'application/octet-stream' });
-    // const url: string = window.URL.createObjectURL(data);
-    // const link: HTMLAnchorElement = document.createElement('a');
-    // link.href = url;
-    // link.download = `${fileName}.xlsx`;
-    // link.click();
-    // window.URL.revokeObjectURL(url);
-    // link.remove();
+  trackByFn(index: number, item: any): any {
+    return item.id; // Use a unique identifier
   }
+}
+
+
+
+
+function memoize() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    const cache = new Map();
+
+    descriptor.value = function (...args: any[]) {
+      const key = JSON.stringify(args);
+      if (cache.has(key)) {
+        return cache.get(key);
+      }
+      const result = originalMethod.apply(this, args);
+      cache.set(key, result);
+      return result;
+    };
+
+    return descriptor;
+  };
+}
+
+function Debounce(delay: number = 300) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    let timeoutId: any;
+
+    descriptor.value = function (...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        originalMethod.apply(this, args);
+      }, delay);
+    };
+
+    return descriptor;
+  };
 }

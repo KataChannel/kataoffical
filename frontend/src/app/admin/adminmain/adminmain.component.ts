@@ -12,11 +12,10 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import { CommonModule } from '@angular/common';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { UsersService } from './listuser/listuser.services';
 import { MenuService } from '../menu/menu/menu.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TreemenuComponent } from '../../shared/common/treemenu/treemenu.component';
-import { ListMenu } from '../menu/menu/menu';
+import { UserService } from '../user/user.service';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -41,7 +40,7 @@ export class AdminmainComponent {
   isFullscreen:boolean=false
   showFiller = false;
   Config:any =Config
-  User:any =User
+  User:any ={}
   private _transformer = (node: any, level: number) => {
     return {
       expandable: !!node?.children && node?.children.length > 0,
@@ -67,7 +66,7 @@ export class AdminmainComponent {
   _MenuService:MenuService = inject(MenuService)
   constructor(
     private _breakpointObserver:BreakpointObserver,
-    private _UsersService:UsersService,
+    private _UserService:UserService,
   ) {}
 
   hasChild = (_: number, node: any) => node.expandable;
@@ -76,7 +75,11 @@ export class AdminmainComponent {
   _snackBar:MatSnackBar = inject(MatSnackBar)
   ListMenu:any[] = []
   async ngOnInit() {
-    //await this._MenuService.getAllMenu()
+    await this._UserService.getProfile().then((res: any) => {
+      if(res){
+        this.User = res; 
+      } 
+    });
     await this._MenuService.getTreeMenu()
     this.ListMenu = this._MenuService.ListMenu()    
     this.dataSource.data = this._MenuService.ListMenu().filter((item:any)=>item.isActive==true);    
@@ -91,11 +94,11 @@ export class AdminmainComponent {
     });
   }
   logout() {    
-    this._UsersService.Dangxuat().subscribe((res: any) => {
+    this._UserService.logout().then((res: any) => {
       if (res) {
         setTimeout(() => {
-          location.reload();
-        }, 0);
+          window.location.reload();
+        }, 100);
       }
     });
   }

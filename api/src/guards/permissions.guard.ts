@@ -14,7 +14,7 @@ export class PermissionsGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const user = request.user;
+    const user = request.user;    
     if (!user) {
       throw new UnauthorizedException('Bạn chưa đăng nhập');
     }

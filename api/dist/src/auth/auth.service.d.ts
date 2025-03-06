@@ -6,28 +6,34 @@ export declare class AuthService {
     constructor(prisma: PrismaService, jwtService: JwtService);
     register(email: string, password: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
-    login(email: string, password: string): Promise<{
-        token: string;
+    login(SDT: string, email: string, password: string): Promise<{
+        access_token: string;
+        user: {
+            id: any;
+            email: any;
+            role: any;
+            permissions: any;
+        };
     }>;
     changePassword(userId: string, oldPassword: string, newPassword: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     generateRandomPassword(userId: string): Promise<{
         newPassword: string;
@@ -36,14 +42,14 @@ export declare class AuthService {
         token: string;
         user: {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
             email: string | null;
             SDT: string | null;
             password: string;
             provider: string | null;
             providerId: string | null;
             isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
         };
     }>;
     getUserRoles(userId: string): Promise<({
@@ -51,10 +57,10 @@ export declare class AuthService {
             permissions: ({
                 permission: {
                     id: string;
-                    name: string;
-                    description: string | null;
                     createdAt: Date;
                     updatedAt: Date;
+                    name: string;
+                    description: string | null;
                 };
             } & {
                 id: string;
@@ -63,9 +69,9 @@ export declare class AuthService {
             })[];
         } & {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
         };
     } & {
         id: string;

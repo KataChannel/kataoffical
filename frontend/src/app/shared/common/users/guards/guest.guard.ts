@@ -9,13 +9,13 @@ import {
   UrlTree,
 } from '@angular/router';
 import { Observable, of,switchMap } from 'rxjs';
-import { UsersService } from '../../../admin/adminmain/listuser/listuser.services';
+import { UserService } from '../../../../admin/user/user.service';
 @Injectable({
   providedIn: 'root',
 })
 export class GuestGuard implements CanActivate {
   constructor(
-    private _usersService: UsersService,
+    private _UserService: UserService,
     private _router: Router,
     ) {}
   canActivate(
@@ -42,7 +42,7 @@ export class GuestGuard implements CanActivate {
    return this._check();
   }
   private _check(): Observable<boolean> {
-    return this._usersService.checkDangnhap().pipe(
+    return this._UserService.checkDangnhap().pipe(
       switchMap((authenticated) => {
         console.log(authenticated);
         if (authenticated) {

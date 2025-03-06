@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { NgxFileDropEntry, NgxFileDropModule } from 'ngx-file-drop';
-import { UsersService } from '../../../../admin/adminmain/listuser/listuser.services';
-import { UploadService } from '../../../uploadfile/uploadfile.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
-import { DynamicformComponent } from '../../../common/dynamicform/dynamicform.component';
+import { UserService } from '../../../../../admin/user/user.service';
+import { UploadService } from '../../../../uploadfile/uploadfile.service';
+import { DynamicformComponent } from '../../../dynamicform/dynamicform.component';
 
 @Component({
   selector: 'app-general',
@@ -25,7 +25,7 @@ export class GeneralComponent {
   account: any = {};
   isEditAvatar:boolean=false
   public files: NgxFileDropEntry[] = [];
-  _UsersService:UsersService = inject(UsersService)
+  _UserService:UserService = inject(UserService)
   _uploadService:UploadService = inject(UploadService)
   Detail:any={}
   constructor(
@@ -95,7 +95,7 @@ export class GeneralComponent {
               this.account.Avatar = res.fileId
               this.isLoading = false;
               this.isEditAvatar =false
-              this._UsersService.updateOneUser(this.account)
+              this._UserService.updateUser(this.account)
             });
           }
         }
@@ -116,7 +116,7 @@ export class GeneralComponent {
             this.account.Avatar = res.fileId
             this.isLoading = false;
             this.isEditAvatar =false
-            this._UsersService.updateOneUser(this.account)
+            this._UserService.updateUser(this.account)
           });
         });
       }

@@ -90,7 +90,7 @@
           </div>
           <div class="flex flex-row space-x-2">
             <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button>
-            <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="DeleteDonhang()">Phiếu Chia</button>
+            <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Phiếu Chia</button>
           </div>
         <div class="w-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
@@ -159,7 +159,7 @@
                 </ng-container>
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{CheckItemInDonhang(row)?'!bg-slate-200':''}}"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="toggleDonhang(row)" class="hover:bg-slate-100 {{CheckItemInDonhang(row)?'!bg-slate-200':''}}"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
@@ -168,3 +168,50 @@
         </div>
     </div>
 </mat-drawer-container>
+
+
+
+<ng-template #dialogCreateTemplate>
+    <h2 mat-dialog-title>Phiếu Chia Hàng     
+        <button mat-icon-button color="primary" (click)="printContent()">
+        <mat-icon>print</mat-icon>
+      </button></h2>
+    <mat-dialog-content>
+     <div class="lg:min-w-[400px] w-full h-full flex flex-col space-y-8 items-center p-4">
+        <div class="relative overflow-x-auto sm:rounded-lg">
+            <table id="printContent" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="border text-xs text-gray-700 uppercase dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="border px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                            Mô tả
+                        </th>
+                        <th scope="col" class="border px-6 py-3">
+                            Đơn vị
+                        </th>
+                        <th *ngFor="let kh of Phieuchia" scope="col" class="border px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                            {{ kh.name }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let product of getUniqueProducts()" class="border border-gray-200 dark:border-gray-700">
+                        <th scope="row" class="border px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800">
+                            {{ product }}
+                        </th>
+                        <td class="border px-6 py-4">
+                            {{ getDvtForProduct(product) }}
+                        </td>
+                        <td class="border px-6 py-4 bg-gray-50 dark:bg-gray-800" *ngFor="let kh of Phieuchia">
+                            {{ getProductQuantity(product, kh.makh)||0 }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>            
+     </div>
+    </mat-dialog-content>
+    <mat-dialog-actions [align]="'end'">
+      <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
+      <button mat-flat-button color="primary" (click)="create()">Tạo</button>
+    </mat-dialog-actions>
+  </ng-template>

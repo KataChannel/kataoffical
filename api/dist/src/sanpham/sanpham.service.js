@@ -18,6 +18,27 @@ let SanphamService = class SanphamService {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
     }
+    async getLastUpdatedSanpham() {
+        const lastUpdated = await this.prisma.sanpham.aggregate({
+            _max: {
+                updatedAt: true,
+            },
+        });
+        return { updatedAt: lastUpdated._max.updatedAt || 0 };
+    }
+    async generateMaSP() {
+        const latest = await this.prisma.sanpham.findFirst({
+            orderBy: { masp: 'desc' },
+        });
+        let nextNumber = 1;
+        if (latest) {
+            const match = latest.masp.match(/I1(\d+)/);
+            if (match) {
+                nextNumber = parseInt(match[1]) + 1;
+            }
+        }
+        return `I1${nextNumber.toString().padStart(5, '0')}`;
+    }
     async create(data) {
         let newOrder;
         const maxOrder = await this.prisma.sanpham.aggregate({
@@ -25,10 +46,12 @@ let SanphamService = class SanphamService {
         });
         newOrder = (maxOrder._max?.order || 0) + 1;
         this._SocketGateway.sendSanphamUpdate();
+        const masp = await this.generateMaSP();
         return this.prisma.sanpham.create({
             data: {
                 ...data,
                 order: newOrder,
+                masp: masp,
             },
         });
     }

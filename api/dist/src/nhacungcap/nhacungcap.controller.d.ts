@@ -4,11 +4,11 @@ export declare class NhacungcapController {
     constructor(nhacungcapService: NhacungcapService);
     create(createNhacungcapDto: any): Promise<{
         id: string;
-        name: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string | null;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;
@@ -16,11 +16,11 @@ export declare class NhacungcapController {
     }>;
     findAll(): Promise<{
         id: string;
-        name: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string | null;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;
@@ -28,11 +28,11 @@ export declare class NhacungcapController {
     }[]>;
     findOne(id: string): Promise<{
         id: string;
-        name: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string | null;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;
@@ -40,11 +40,11 @@ export declare class NhacungcapController {
     }>;
     update(id: string, updateNhacungcapDto: any): Promise<{
         id: string;
-        name: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string | null;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;
@@ -52,11 +52,11 @@ export declare class NhacungcapController {
     }>;
     remove(id: string): Promise<{
         id: string;
-        name: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string | null;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;

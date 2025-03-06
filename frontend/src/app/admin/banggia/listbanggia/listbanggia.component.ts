@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -37,13 +37,13 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
     MatSelectModule,
     CommonModule,
     FormsModule,
-    MatTooltipModule,
+    MatTooltipModule
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListBanggiaComponent {
   Detail: any = {};
   displayedColumns: string[] = [
-    'STT',
     'title',
     'type',
     'sanpham',
@@ -53,31 +53,20 @@ export class ListBanggiaComponent {
     'status',
     // 'isActive',
     'createdAt',
-    'updatedAt',
   ];
   ColumnName: any = {
-    STT: 'STT',
     title: 'Tiêu Đề',
     type: 'Loại',
     sanpham: 'Sản Phẩm',
     batdau: 'Bắt Đầu',
     ketthuc: 'Kết Thúc',
-    // order: 'Thứ Tự',
     status: 'Tình Trạng',
-    // isActive: 'Trạng Thái',
     createdAt:'Ngày Tạo',
-    updatedAt:'Ngày Cập Nhật'
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('BanggiaColFilter') || '[]'
   );
   Columns: any[] = [];
-  isFilter: boolean = false;
-  ListStatus: any[] = [
-    { value: 'baogia', title: 'Báo Giá' },
-    { value: 'dangban', title: 'Đang Bán' },
-    { value: 'ngungban', title: 'Ngừng Bán' },
-  ];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
@@ -87,43 +76,29 @@ export class ListBanggiaComponent {
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   Listbanggia:any = this._BanggiaService.ListBanggia;
-  dataSource = computed(() => {
-    const ds = new MatTableDataSource(this.Listbanggia());
-    ds.filterPredicate = this.createFilter();
-    ds.paginator = this.paginator;
-    ds.sort = this.sort;
-    return ds;
-  });
+  dataSource = new MatTableDataSource([]);
   banggiaId:any = this._BanggiaService.banggiaId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
+  isSearch: boolean = false;
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
     });
   }
-  createFilter(): (data: any, filter: string) => boolean {
-    return (data, filter) => {
-      const filterObject = JSON.parse(filter);
-      let isMatch = true;
-      this.displayedColumns.forEach(column => {
-        if (filterObject[column]) {
-          const value = data[column] ? data[column].toString().toLowerCase() : '';
-          isMatch = isMatch && value.includes(filterObject[column].toLowerCase());
-        }
-      });
-      return isMatch;
-    };
-  }
-  applyFilter() {
-    this.dataSource().filter = JSON.stringify(this.filterValues);
-  }
-  getName(list:any,field:any,value:any){    
-    return list.find((v:any)=>v[field]===value);
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
   async ngOnInit(): Promise<void> {    
     await this._BanggiaService.getAllBanggia();
     this.CountItem = this.Listbanggia().length;
+    this.dataSource = new MatTableDataSource(this.Listbanggia());
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
     this.initializeColumns();
     this.setupDrawer();
     this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
@@ -175,6 +150,68 @@ export class ListBanggiaComponent {
       this.updateDisplayedColumns();
     }
   }
+  @memoize()
+  FilterHederColumn(list:any,column:any)
+  {
+    const uniqueList = list.filter((obj: any, index: number, self: any) => 
+      index === self.findIndex((t: any) => t[column] === obj[column])
+    );
+    return uniqueList
+  }
+  @Debounce(300)
+  doFilterHederColumn(event: any, column: any): void {
+    this.dataSource.filteredData = this.Listbanggia().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    const query = event.target.value.toLowerCase();  
+  }
+  ListFilter:any[] =[]
+  ChosenItem(item:any,column:any)
+  {
+    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
+    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
+    if(CheckItem1.length>0)
+    {
+      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
+    }
+    else{
+      this.ListFilter = [...this.ListFilter,...CheckItem];
+    }
+  }
+  ChosenAll(list:any)
+  {
+    list.forEach((v:any) => {
+      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
+      if(CheckItem)
+        {
+          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
+        }
+        else{
+          this.ListFilter.push(v);
+        }
+    });
+  }
+  ResetFilter()
+  {
+    this.ListFilter = this.Listbanggia();
+    this.dataSource.data = this.Listbanggia();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+  EmptyFiter()
+  {
+    this.ListFilter = [];
+  }
+  CheckItem(item:any)
+  {
+    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  }
+  ApplyFilterColum(menu:any)
+  {    
+
+    this.dataSource.data = this.Listbanggia().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    menu.closeMenu();
+  }
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -210,54 +247,30 @@ export class ListBanggiaComponent {
    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
    const data = ConvertDriveData(result.values);
    console.log(data);
-  //  this.DoImportData(data);
-    // const updatePromises = data.map(async (v: any) => {
-    //   const item = this._KhachhangsService
-    //     .ListKhachhang()
-    //     .find((v1) => v1.MaKH === v.MaKH);
-    //   if (item) {
-    //     const item1 = { ...item, ...v };
-    //     console.log(item1);
-
-    //     await this._KhachhangsService.updateOneKhachhang(item1);
-    //   }
-    // });
-    // Promise.all(updatePromises).then(() => {
-    //   this._snackBar.open('Cập Nhật Thành Công', '', {
-    //     duration: 1000,
-    //     horizontalPosition: 'end',
-    //     verticalPosition: 'top',
-    //     panelClass: ['snackbar-success'],
-    //   });
-    //   //  window.location.reload();
-    // });
+   this.DoImportData(data);
   }
   DoImportData(data:any)
   {
     console.log(data);
     
     const transformedData = data.map((v: any) => ({
-      title: v.title?.trim()||'',
-      masp: v.masp?.trim()||'',
-      slug:`${convertToSlug(v?.title?.trim()||'')}_${GenId(5,false)}`,
-      giagoc: Number(v.giagoc)||0,
-      dvt: v.dvt||'',
-      soluong: Number(v.soluong)||0,
-      soluongkho: Number(v.soluongkho)||0,
-      ghichu: v.ghichu||'',
-      order: Number(v.order)||0,
+      name: v.name?.trim()||'',
+      mancc: v.mancc?.trim()||'',
+      sdt: v.sdt?.trim()||'',
+      diachi: v.diachi?.trim()||'',
+      ghichu: v.ghichu?.trim()||'',
    }));
-   // Filter out duplicate masp values
+   // Filter out duplicate mancc values
    const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
       index === self.findIndex((t:any) => (
-        t.masp === value.masp
+        t.mancc === value.mancc
       ))
    )
-    const listId2 = uniqueData.map((v: any) => v.masp);
-    const listId1 = this._BanggiaService.ListBanggia().map((v: any) => v.masp);
+    const listId2 = uniqueData.map((v: any) => v.mancc);
+    const listId1 = this._BanggiaService.ListBanggia().map((v: any) => v.mancc);
     const listId3 = listId2.filter((item:any) => !listId1.includes(item));
     const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._BanggiaService.ListBanggia().find((v1) => v1.masp === v.masp);
+        const item = this._BanggiaService.ListBanggia().find((v1) => v1.mancc === v.mancc);
         if (item) {
           const item1 = { ...item, ...v };
           await this._BanggiaService.updateBanggia(item1);
@@ -267,10 +280,8 @@ export class ListBanggiaComponent {
         }
       });
      const disableItem = listId3.map(async (v: any) => {
-        const item = this._BanggiaService.ListBanggia().find((v1) => v1.masp === v);
-        if (item) {
-          item.isActive = false;
-        }
+        const item = this._BanggiaService.ListBanggia().find((v1) => v1.mancc === v);
+        item.isActive = false;
         await this._BanggiaService.updateBanggia(item);
       });
       Promise.all([...createuppdateitem, ...disableItem]).then(() => {
@@ -290,4 +301,61 @@ export class ListBanggiaComponent {
   ExportExcel(data:any,title:any) {
     writeExcelFile(data,title);
   }
+  trackByFn(index: number, item: any): any {
+    return item.id; // Use a unique identifier
+  }
+    ListStatus: any[] = [
+    { value: 'baogia', title: 'Báo Giá' },
+    { value: 'dangban', title: 'Đang Bán' },
+    { value: 'ngungban', title: 'Ngừng Bán' },
+  ];
+  getName(list:any,field:any,value:any){    
+    return list.find((v:any)=>v[field]===value);
+  }
+}
+
+
+
+
+function memoize() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    const cache = new Map();
+
+    descriptor.value = function (...args: any[]) {
+      const key = JSON.stringify(args);
+      if (cache.has(key)) {
+        return cache.get(key);
+      }
+      const result = originalMethod.apply(this, args);
+      cache.set(key, result);
+      return result;
+    };
+
+    return descriptor;
+  };
+}
+
+function Debounce(delay: number = 300) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    let timeoutId: any;
+
+    descriptor.value = function (...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        originalMethod.apply(this, args);
+      }, delay);
+    };
+
+    return descriptor;
+  };
 }

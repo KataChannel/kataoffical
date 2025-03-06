@@ -6,83 +6,116 @@ export declare class UserController {
     constructor(userService: UserService, authService: AuthService);
     create(dto: any): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     findAll(): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }[]>;
-    getProfile(req: any): Promise<({
-        role: {
-            permissions: ({
-                permission: {
-                    id: string;
-                    name: string;
-                    description: string | null;
-                    createdAt: Date;
-                    updatedAt: Date;
-                };
-            } & {
-                id: string;
-                roleId: string;
-                permissionId: string;
-            })[];
-        } & {
-            id: string;
-            name: string;
-            createdAt: Date;
-            updatedAt: Date;
-        };
-    } & {
+    getProfile(req: any): Promise<{
         id: string;
-        userId: string;
-        roleId: string;
-    })[]>;
+        email: string | null;
+        SDT: string | null;
+        password: string;
+        provider: string | null;
+        providerId: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
     findOne(id: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    assignRoleToUser(data: any): Promise<{
+        roles: ({
+            role: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+            };
+        } & {
+            id: string;
+            userId: string;
+            roleId: string;
+        })[];
+    } & {
+        id: string;
+        email: string | null;
+        SDT: string | null;
+        password: string;
+        provider: string | null;
+        providerId: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    removeRoleFromUser(data: any): Promise<{
+        roles: ({
+            role: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+            };
+        } & {
+            id: string;
+            userId: string;
+            roleId: string;
+        })[];
+    } & {
+        id: string;
+        email: string | null;
+        SDT: string | null;
+        password: string;
+        provider: string | null;
+        providerId: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }

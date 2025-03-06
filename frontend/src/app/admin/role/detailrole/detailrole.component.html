@@ -2,9 +2,9 @@
   <button mat-icon-button color="primary" (click)="goBack()">
     <mat-icon>arrow_back</mat-icon>
   </button>
-  <div class="font-bold">{{ DetailRole()?.name || 'Không có dữ liệu' }}</div>
+  <div class="font-bold">{{ DetailRole?.name || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
-    <mat-slide-toggle [(ngModel)]="DetailRole().isActive" [disabled]="!isEdit()">{{DetailRole().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+    <mat-slide-toggle [(ngModel)]="DetailRole.isActive" [disabled]="!isEdit()">{{DetailRole.isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleRoleAction()">
       <mat-icon>save</mat-icon>
     </button>
@@ -34,8 +34,15 @@
       <div class="w-full flex flex-col space-y-2">
         <mat-form-field appearance="outline">
           <mat-label>Tên Nhóm</mat-label>
-          <input matInput [(ngModel)]="DetailRole().name" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên Nhóm"/>
+          <input matInput [(ngModel)]="DetailRole.name" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên Nhóm"/>
         </mat-form-field>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        @for (item of filterPermission; track $index) {
+          <mat-slide-toggle  [checked]="item.hasPermission"  (change)="togglePermission(item)">
+            {{ item.description }}
+          </mat-slide-toggle>
+        }
       </div>
   </ng-container>
 </div>

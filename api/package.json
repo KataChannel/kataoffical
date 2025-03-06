@@ -21,7 +21,7 @@
     "seed": "npx prisma db seed"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed1.ts"
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@katachanneloffical/kata-snippets": "^1.0.10",

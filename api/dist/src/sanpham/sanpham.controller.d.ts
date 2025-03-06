@@ -4,9 +4,9 @@ export declare class SanphamController {
     constructor(sanphamService: SanphamService);
     create(createSanphamDto: any): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         slug: string | null;
         order: number | null;
@@ -16,13 +16,14 @@ export declare class SanphamController {
         hinhanh: string | null;
         soluong: number;
         soluongkho: number;
+        haohut: number;
         ghichu: string | null;
     }>;
     findAll(): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         slug: string | null;
         order: number | null;
@@ -32,13 +33,17 @@ export declare class SanphamController {
         hinhanh: string | null;
         soluong: number;
         soluongkho: number;
+        haohut: number;
         ghichu: string | null;
     }[]>;
+    getLastUpdatedSanpham(): Promise<{
+        updatedAt: number | Date;
+    }>;
     findOne(id: string): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         slug: string | null;
         order: number | null;
@@ -48,13 +53,14 @@ export declare class SanphamController {
         hinhanh: string | null;
         soluong: number;
         soluongkho: number;
+        haohut: number;
         ghichu: string | null;
     }>;
     update(id: string, updateSanphamDto: any): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         slug: string | null;
         order: number | null;
@@ -64,13 +70,14 @@ export declare class SanphamController {
         hinhanh: string | null;
         soluong: number;
         soluongkho: number;
+        haohut: number;
         ghichu: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         slug: string | null;
         order: number | null;
@@ -80,6 +87,7 @@ export declare class SanphamController {
         hinhanh: string | null;
         soluong: number;
         soluongkho: number;
+        haohut: number;
         ghichu: string | null;
     }>;
     reorder(body: {

@@ -83,8 +83,8 @@ export class BanggiaService {
     return {
       ...banggia,
       sanpham: banggia.sanpham.map((item) => ({
-        giaban: item.giaban,
         ...item.sanpham, // Gộp thông tin sản phẩm vào cùng object
+        giaban: item.giaban,
       })),
     };
   }

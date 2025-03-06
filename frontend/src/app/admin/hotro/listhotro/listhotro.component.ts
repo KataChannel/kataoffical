@@ -19,8 +19,8 @@ import { FormsModule } from '@angular/forms';
 import { AdminmainComponent } from '../../adminmain/adminmain.component';
 import { MatSnackBar} from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { UsersService } from '../../adminmain/listuser/listuser.services';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { UserService } from '../../user/user.service';
 @Component({
   selector: 'app-listhotro',
   templateUrl: './listhotro.component.html',
@@ -75,11 +75,11 @@ export class ListHotroComponent {
     this._AdminmainComponent.drawer.mode = 'over';
   }
   private _hotrosService: HotrosService = inject(HotrosService);
-  private _UsersService: UsersService = inject(UsersService);
+  private _UserService: UserService = inject(UserService);
   private _AdminmainComponent: AdminmainComponent = inject(AdminmainComponent);
   private _snackBar: MatSnackBar = inject(MatSnackBar);
   async ngOnInit(): Promise<void> {
-    this.profile = await this._UsersService.getProfile();    
+    this.profile = await this._UserService.getProfile();    
     await this._hotrosService.getAllHotro();
     this.ListHotro = this._hotrosService.ListHotro;
     this.InitHotro = this.ListHotro();

@@ -4,11 +4,15 @@ export declare class SanphamService {
     private readonly prisma;
     private _SocketGateway;
     constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
+    getLastUpdatedSanpham(): Promise<{
+        updatedAt: number | Date;
+    }>;
+    generateMaSP(): Promise<string>;
     create(data: any): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         slug: string | null;
         order: number | null;
@@ -18,14 +22,15 @@ export declare class SanphamService {
         hinhanh: string | null;
         soluong: number;
         soluongkho: number;
+        haohut: number;
         ghichu: string | null;
     }>;
     reorderSanphams(sanphamIds: string[]): Promise<void>;
     findAll(): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         slug: string | null;
         order: number | null;
@@ -35,13 +40,14 @@ export declare class SanphamService {
         hinhanh: string | null;
         soluong: number;
         soluongkho: number;
+        haohut: number;
         ghichu: string | null;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         slug: string | null;
         order: number | null;
@@ -51,13 +57,14 @@ export declare class SanphamService {
         hinhanh: string | null;
         soluong: number;
         soluongkho: number;
+        haohut: number;
         ghichu: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         slug: string | null;
         order: number | null;
@@ -67,13 +74,14 @@ export declare class SanphamService {
         hinhanh: string | null;
         soluong: number;
         soluongkho: number;
+        haohut: number;
         ghichu: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         slug: string | null;
         order: number | null;
@@ -83,6 +91,7 @@ export declare class SanphamService {
         hinhanh: string | null;
         soluong: number;
         soluongkho: number;
+        haohut: number;
         ghichu: string | null;
     }>;
 }

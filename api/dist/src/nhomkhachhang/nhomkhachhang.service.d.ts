@@ -4,37 +4,37 @@ export declare class NhomkhachhangService {
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
     findAll(): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
-        name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        description: string | null;
     }>;
 }

@@ -22,6 +22,12 @@ let RoleController = class RoleController {
     create(createRoleDto) {
         return this.rolesService.create(createRoleDto);
     }
+    async assignPermissionToRole(data) {
+        return this.rolesService.assignPermissionToRole(data);
+    }
+    async removePermissionFromRole(data) {
+        return this.rolesService.removePermissionFromRole(data);
+    }
     findAll() {
         return this.rolesService.findAll();
     }
@@ -43,6 +49,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], RoleController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('assign'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], RoleController.prototype, "assignPermissionToRole", null);
+__decorate([
+    (0, common_1.Delete)('remove'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], RoleController.prototype, "removePermissionFromRole", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

@@ -9,13 +9,13 @@ import {
   UrlTree,
 } from '@angular/router';
 import { Observable, map, of, switchMap, take } from 'rxjs';
-import { UsersService } from '../../../admin/adminmain/listuser/listuser.services';
+import { UserService } from '../../../../admin/user/user.service';
 @Injectable({
   providedIn: 'root',
 })
 export class AdminGuard implements CanActivate {
   constructor(
-    private _usersService: UsersService,
+    private _UserService: UserService,
     private _router: Router
     ) {}
   canActivate(
@@ -29,7 +29,7 @@ export class AdminGuard implements CanActivate {
     if(checkLogin)
     {
       return true
-      // return this._usersService.getProfile().pipe(
+      // return this._UserService.getProfile().pipe(
       //   take(1),
       //   map((user:any) => {
       //     if (user && user.Role === 'admin') {
@@ -67,7 +67,7 @@ export class AdminGuard implements CanActivate {
     return this._check('/');
   }
   private _check(redirectURL: string): Observable<boolean> {
-    return this._usersService.checkDangnhap().pipe(
+    return this._UserService.checkDangnhap().pipe(
       switchMap((authenticated) => {
         if (!authenticated) {
           return of(false);

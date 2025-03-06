@@ -25,13 +25,20 @@ let AuthService = class AuthService {
             data: { email, password: hashedPassword },
         });
     }
-    async login(email, password) {
-        const user = await this.prisma.user.findUnique({ where: { email } });
+    async login(SDT, email, password) {
+        const user = await this.prisma.user.findFirst({
+            where: { OR: [{ email }, { SDT }] },
+            include: { roles: { include: { role: { include: { permissions: true } } } } },
+        });
         if (!user || !(await bcrypt.compare(password, user.password))) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
-        const token = this.jwtService.sign({ id: user.id, email: user.email });
-        return { token };
+        const payload = { sub: user.id, role: user.role, permissions: user.permissions };
+        const result = {
+            access_token: this.jwtService.sign(payload),
+            user: { id: user.id, email: user.email, role: user.role || [], permissions: user.permissions || [] },
+        };
+        return result;
     }
     async changePassword(userId, oldPassword, newPassword) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });

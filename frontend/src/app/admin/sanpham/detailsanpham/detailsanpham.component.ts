@@ -49,7 +49,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           this._ListsanphamComponent.drawer.close();
         }
         if(id === '0'){
-          this.DetailSanpham.set({ title: GenId(8, false), slug: GenId(8, false) });
+          this.DetailSanpham.set({});
           this._ListsanphamComponent.drawer.open();
           this.isEdit.update(value => !value);
           this._router.navigate(['/admin/sanpham', "0"]);

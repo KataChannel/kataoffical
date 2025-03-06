@@ -7,9 +7,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { UsersService } from '../../../admin/adminmain/listuser/listuser.services';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { UserService } from '../../../../admin/user/user.service';
 @Component({
   selector: 'app-account',
   standalone: true,
@@ -35,16 +35,16 @@ export class AccountComponent implements OnInit {
 
   constructor() { }
    profile = signal<any>({});
-  _UsersService:UsersService = inject(UsersService)
+  _UserService:UserService = inject(UserService)
   async ngOnInit() {
-   await this._UsersService.getProfile()
-   this.profile = this._UsersService.profile
+   await this._UserService.getProfile()
+   this.profile = this._UserService.profile
    console.log( this.profile);
    
   }
   Update()
   {
-    this._UsersService.updateOneUser(this.profile()).then(()=>{
+    this._UserService.updateUser(this.profile()).then(()=>{
      // this._NotifierService.notify('success',"Cập nhật thành công")
     })
   }

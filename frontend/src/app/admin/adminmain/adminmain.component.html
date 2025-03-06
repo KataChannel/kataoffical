@@ -33,10 +33,11 @@
       </div>
       <div class="relative w-full justify-between flex flex-row space-x-2 items-center p-2">
         <div class="flex flex-row space-x-2">
-          <img [src]="User.Avatar" alt="Avatar" class="max-w-14 max-h-14 object-cover rounded-full">
+          <img [src]="User?.Avatar" alt="Avatar" class="max-w-14 max-h-14 object-cover rounded-full">
           <div class="flex flex-col">
-            <div class="font-bold">{{User.Hoten}}</div>
-            <div class="italic text-xs">{{User.Vitri}}</div>
+            <div class="font-bold">{{User?.Hoten}}</div>
+            <div class="italic text-xs">{{User?.Vitri}}</div>
+            <div class="italic text-xs">{{User?.email}}</div>    
           </div>
         </div>
         <button mat-icon-button [matMenuTriggerFor]="menu">
@@ -98,11 +99,11 @@
         </button>
         <mat-menu #menu1="matMenu">
           <div class="flex flex-row space-x-2 items-center p-4">
-            <img [src]="User.Avatar" alt="Avatar" class="max-w-14 max-h-14 object-cover rounded-full">
+            <img [src]="User?.Avatar" alt="Avatar" class="max-w-14 max-h-14 object-cover rounded-full">
             <div class="flex flex-col">
-              <div class="font-bold">{{User.Hoten}}</div>
-              <div class="italic text-xs">{{User.Vitri}}</div>
-              <div class="italic text-xs">{{User.email}}</div>
+              <div class="font-bold">{{User?.Hoten}}</div>
+              <div class="italic text-xs">{{User?.Vitri}}</div>
+              <div class="italic text-xs">{{User?.email}}</div>
             </div>
           </div>
           <a [href]="'/admin/profile'" mat-menu-item>Thông Tin</a>

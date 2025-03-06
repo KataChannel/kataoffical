@@ -13,9 +13,9 @@ export declare class BanggiaController {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         order: number | null;
         ghichu: string | null;
@@ -35,9 +35,9 @@ export declare class BanggiaController {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         order: number | null;
         ghichu: string | null;
@@ -48,10 +48,11 @@ export declare class BanggiaController {
     })[]>;
     findOne(id: string): Promise<{
         sanpham: {
+            giaban: number;
             id: string;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isActive: boolean;
             title: string;
             slug: string | null;
             order: number | null;
@@ -61,13 +62,13 @@ export declare class BanggiaController {
             hinhanh: string | null;
             soluong: number;
             soluongkho: number;
+            haohut: number;
             ghichu: string | null;
-            giaban: number;
         }[];
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         order: number | null;
         ghichu: string | null;
@@ -87,9 +88,9 @@ export declare class BanggiaController {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         order: number | null;
         ghichu: string | null;
@@ -100,9 +101,9 @@ export declare class BanggiaController {
     }>;
     remove(id: string): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         order: number | null;
         ghichu: string | null;

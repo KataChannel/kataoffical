@@ -86,7 +86,10 @@
           </mat-select>
         </mat-form-field>
       }
-
+      <mat-form-field appearance="outline">
+        <mat-label>Vị Trí</mat-label>
+        <input matInput type="number" [(ngModel)]="DetailMenu().order" [disabled]="!isEdit()" placeholder="Vui lòng nhập Slug"/>
+      </mat-form-field>
       <mat-slide-toggle [(ngModel)]="DetailMenu().isActive" [disabled]="!isEdit()">{{DetailMenu().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
         
     </div>

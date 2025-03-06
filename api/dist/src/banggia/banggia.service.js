@@ -86,8 +86,8 @@ let BanggiaService = class BanggiaService {
         return {
             ...banggia,
             sanpham: banggia.sanpham.map((item) => ({
-                giaban: item.giaban,
                 ...item.sanpham,
+                giaban: item.giaban,
             })),
         };
     }

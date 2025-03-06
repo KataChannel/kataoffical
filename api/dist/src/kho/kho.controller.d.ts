@@ -4,10 +4,10 @@ export declare class khoController {
     constructor(khoService: khoService);
     create(createkhoDto: any): Promise<{
         id: string;
-        name: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
+        name: string;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;
@@ -16,10 +16,10 @@ export declare class khoController {
     }>;
     findAll(): Promise<{
         id: string;
-        name: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
+        name: string;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;
@@ -28,10 +28,10 @@ export declare class khoController {
     }[]>;
     findOne(id: string): Promise<{
         id: string;
-        name: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
+        name: string;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;
@@ -40,10 +40,10 @@ export declare class khoController {
     }>;
     update(id: string, updatekhoDto: any): Promise<{
         id: string;
-        name: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
+        name: string;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;
@@ -52,10 +52,10 @@ export declare class khoController {
     }>;
     remove(id: string): Promise<{
         id: string;
-        name: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
+        name: string;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;

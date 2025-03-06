@@ -60,51 +60,71 @@ export class SanphamService {
 
   async getAllSanpham() {
     const db = await this.initDB();
-    const cachedData = await db.getAll('sanphams');
-    const updatedAtCache = parseInt(localStorage.getItem('updatedAt') || '0');
     
-    // 1️⃣ Gọi API lấy lastUpdated từ server
+    // 🛑 Kiểm tra cache từ IndexedDB trước
+    const cachedData = await db.getAll('sanphams');
+    const updatedAtCache = this._StorageService.getItem('sanphams_updatedAt') || '0';
+    
+    // ✅ Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
+    if (cachedData.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) { // 5 phút cache TTL
+      this.ListSanpham.set(cachedData);
+      return cachedData;
+    }
+  
     try {
+      // ✅ Gọi API chỉ để lấy `updatedAt` mới nhất
       const options = {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer '+this._StorageService.getItem('token')
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
+      
+      const lastUpdatedResponse = await fetch(`${environment.APIURL}/sanpham/last-updated`, options);
+      if (!lastUpdatedResponse.ok) {
+        this.handleError(lastUpdatedResponse.status);
+        return cachedData;
+      }    
+      const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
+      // ✅ Nếu cache vẫn mới, không cần tải lại dữ liệu
+      if (updatedAtServer <= updatedAtCache) {
+        this.ListSanpham.set(cachedData);
+        return cachedData;
+      }
+      console.log(updatedAtServer, updatedAtCache); 
+      // ✅ Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
       const response = await fetch(`${environment.APIURL}/sanpham`, options);
       if (!response.ok) {
-        if (response.status === 401) {
-          const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          // this.Dangxuat()
-        } else if (response.status === 403) {
-          const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          // this.Dangxuat()
-        } else if (response.status === 500) {
-          const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-        } else {
-          const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-        }
+        this.handleError(response.status);
+        return cachedData;
       }
-      const data = await response.json();       
-      const updatedAtServer = data.reduce((max:any, p:any) => Math.max(max, new Date(p.updatedAt).getTime()), 0);
-
-      // 2️⃣ Nếu dữ liệu trên server mới hơn, cập nhật IndexedDB + LocalStorage
-      if (updatedAtServer > updatedAtCache) {
-        await this.saveSanphams(data);
-        localStorage.setItem('lastUpdated', updatedAtServer.toString());
-        localStorage.setItem('sanphams', JSON.stringify(data));
-      }
+      const data = await response.json();
+      await this.saveSanphams(data);
+      this._StorageService.setItem('sanphams_updatedAt', updatedAtServer.toString());
       this.ListSanpham.set(data);
-      return cachedData.length > 0 ? cachedData : data;    
-      // localStorage.setItem('sanphams', JSON.stringify(data)); // Cache vào LocalStorage
+      return data;
     } catch (error) {
-      return console.error(error);
+      console.error(error);
+      return cachedData;
     }
+  }
+
+  private handleError(status: number) {
+    let message = 'Lỗi không xác định';
+    switch (status) {
+      case 401:
+        message = 'Vui lòng đăng nhập lại';
+        break;
+      case 403:
+        message = 'Bạn không có quyền truy cập';
+        break;
+      case 500:
+        message = 'Lỗi máy chủ, vui lòng thử lại sau';
+        break;
+    }
+    const result = JSON.stringify({ code: status, title: message });
+    this.router.navigate(['/errorserver'], { queryParams: { data: result } });
   }
 
   // 3️⃣ Lắng nghe cập nhật từ WebSocket

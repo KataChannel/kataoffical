@@ -15,9 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const user_service_1 = require("./user.service");
-const permissions_decorator_1 = require("../decorators/permissions.decorator");
-const permissions_guard_1 = require("../guards/permissions.guard");
 const auth_service_1 = require("../auth/auth.service");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let UserController = class UserController {
     constructor(userService, authService) {
         this.userService = userService;
@@ -30,7 +29,7 @@ let UserController = class UserController {
         return this.userService.findAll();
     }
     async getProfile(req) {
-        return this.authService.getUserRoles(req.user.id);
+        return this.userService.findOne(req.user.sub);
     }
     findOne(id) {
         return this.userService.findOne(id);
@@ -40,6 +39,12 @@ let UserController = class UserController {
     }
     remove(id) {
         return this.userService.remove(id);
+    }
+    async assignRoleToUser(data) {
+        return this.userService.assignRoleToUser(data);
+    }
+    async removeRoleFromUser(data) {
+        return this.userService.removeRoleFromUser(data);
     }
 };
 exports.UserController = UserController;
@@ -58,8 +63,7 @@ __decorate([
 ], UserController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)('profile'),
-    (0, common_1.UseGuards)(permissions_guard_1.PermissionsGuard),
-    (0, permissions_decorator_1.Permissions)('view_profile'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -87,6 +91,20 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Post)('assign'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "assignRoleToUser", null);
+__decorate([
+    (0, common_1.Delete)('remove'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "removeRoleFromUser", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [user_service_1.UserService,

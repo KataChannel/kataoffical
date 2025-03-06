@@ -14,34 +14,41 @@ export declare class AuthController {
         name: string;
     }): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     login(body: {
+        SDT: string;
         email: string;
         password: string;
     }): Promise<{
-        token: string;
+        access_token: string;
+        user: {
+            id: any;
+            email: any;
+            role: any;
+            permissions: any;
+        };
     }>;
     changePassword(req: any, body: {
         oldPassword: string;
         newPassword: string;
     }): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
         email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
         isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     randomPassword(req: any): Promise<{
         newPassword: string;

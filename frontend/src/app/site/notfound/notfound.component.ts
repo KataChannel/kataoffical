@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-notfound',
@@ -7,5 +8,13 @@ import { Component } from '@angular/core';
   styleUrl: './notfound.component.scss'
 })
 export class NotfoundComponent {
-
+  constructor(
+    private route: ActivatedRoute
+  ) { }
+  message:any={};
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.message = JSON.parse(params['data']);
+    });
+  }
 }

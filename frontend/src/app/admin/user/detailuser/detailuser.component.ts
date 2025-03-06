@@ -13,6 +13,8 @@ import { ListUserComponent } from '../listuser/listuser.component';
 import { UserService } from '../user.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
+import { RoleService } from '../../role/role.service';
+import { MatMenuModule } from '@angular/material/menu';
   @Component({
     selector: 'app-detailuser',
     imports: [
@@ -24,7 +26,8 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       MatSelectModule,
       MatDialogModule,
       CommonModule,
-      MatSlideToggleModule
+      MatSlideToggleModule,
+      MatMenuModule
     ],
     templateUrl: './detailuser.component.html',
     styleUrl: './detailuser.component.scss'
@@ -32,6 +35,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   export class DetailUserComponent {
     _ListuserComponent:ListUserComponent = inject(ListUserComponent)
     _UserService:UserService = inject(UserService)
+    _RoleService:RoleService = inject(RoleService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
@@ -65,7 +69,10 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     isEdit = signal(false);
     isDelete = signal(false);  
     userId:any = this._UserService.userId
-    async ngOnInit() {       
+    ListRole:any = []
+    async ngOnInit() {    
+      await this._RoleService.getAllRole();
+      this.ListRole = this._RoleService.ListRole();
     }
     async handleUserAction() {
       if (this.userId() === '0') {
@@ -138,6 +145,26 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     FillSlug(){
       this.DetailUser.update((v:any)=>{
         v.slug = convertToSlug(v.title);
+        return v;
+      })
+    }
+    doFilterHederColumn(event:any){
+      this.ListRole = this._RoleService.ListRole().filter((v:any)=>v.name.toLowerCase().includes(event.target.value.toLowerCase()));
+    }
+    handleAddRole(item:any){
+      console.log(item);
+      this.ListRole = this.ListRole.filter((v:any)=>v.id !== item.id);
+      this.DetailUser.update((v:any)=>{
+        if(!v.role) v.role = [];
+        v.role.push(item);
+        return v;
+      })
+      console.log(this.DetailUser()); 
+    }
+    handleRemoveRole(item:any){
+      this.ListRole.push(item);
+      this.DetailUser.update((v:any)=>{
+        v.role = v.role.filter((v1:any)=>v1.id !== item.id);
         return v;
       })
     }

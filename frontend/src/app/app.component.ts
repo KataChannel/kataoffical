@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
+import { UserService } from './admin/user/user.service';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
@@ -9,8 +10,25 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'Rau Sạch Trần Gia';
-  constructor(private titleService: Title, private metaService: Meta) { }
+  constructor(
+    private titleService: Title, 
+    private metaService: Meta,
+    private _UserService: UserService,
+    
+  ) { }
   ngOnInit() {
+   this._UserService.loadPermissions();
+  //   this._UserService.getProfile().then((data)=>{
+  //     console.log(data);
+      
+  //   })
+  //  this._UserService.permissions$.subscribe((data)=>{
+  //     console.log(data);
+      
+  //   })
+  //   console.log("asdsajdhska");
+    
+    
     this.titleService.setTitle('My Dynamic Title'); 
     this.metaService.addTags([
       { name: 'description', content: 'Rau Sạch Trần Gia - Giải pháp chăm sóc da toàn diện với công nghệ tiên tiến, mang lại làn da khỏe mạnh, rạng rỡ.' },

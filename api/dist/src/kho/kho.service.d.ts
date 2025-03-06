@@ -4,10 +4,10 @@ export declare class khoService {
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
         id: string;
-        name: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
+        name: string;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;
@@ -16,10 +16,10 @@ export declare class khoService {
     }>;
     findAll(): Promise<{
         id: string;
-        name: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
+        name: string;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;
@@ -28,10 +28,10 @@ export declare class khoService {
     }[]>;
     findOne(id: string): Promise<{
         id: string;
-        name: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
+        name: string;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;
@@ -40,10 +40,10 @@ export declare class khoService {
     }>;
     update(id: string, data: any): Promise<{
         id: string;
-        name: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
+        name: string;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;
@@ -52,10 +52,10 @@ export declare class khoService {
     }>;
     remove(id: string): Promise<{
         id: string;
-        name: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
+        name: string;
         ghichu: string | null;
         diachi: string | null;
         sdt: string | null;

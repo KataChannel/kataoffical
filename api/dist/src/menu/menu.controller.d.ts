@@ -4,9 +4,9 @@ export declare class MenuController {
     constructor(menuService: MenuService);
     create(createMenuDto: any): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         icon: string | null;
         slug: string | null;
@@ -16,9 +16,9 @@ export declare class MenuController {
     findAll(): Promise<({
         children: {
             id: string;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isActive: boolean;
             title: string;
             icon: string | null;
             slug: string | null;
@@ -27,9 +27,9 @@ export declare class MenuController {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         icon: string | null;
         slug: string | null;
@@ -40,9 +40,9 @@ export declare class MenuController {
     findOne(id: string): Promise<({
         children: {
             id: string;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isActive: boolean;
             title: string;
             icon: string | null;
             slug: string | null;
@@ -51,9 +51,9 @@ export declare class MenuController {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         icon: string | null;
         slug: string | null;
@@ -62,9 +62,9 @@ export declare class MenuController {
     }) | null>;
     update(id: string, updateMenuDto: any): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         icon: string | null;
         slug: string | null;
@@ -73,9 +73,9 @@ export declare class MenuController {
     }>;
     remove(id: string): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         icon: string | null;
         slug: string | null;

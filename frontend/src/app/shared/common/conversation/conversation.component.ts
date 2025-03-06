@@ -12,9 +12,9 @@ import { ChatuserComponent } from './chatuser/chatuser.component';
 import { ChatboxdetailComponent } from './chatboxdetail/chatboxdetail.component';
 import { FormsModule } from '@angular/forms';
 import { ConversationService } from './conversation.service';
-import { UsersService } from '../../../admin/adminmain/listuser/listuser.services';
 import { flattenData } from '../../utils/shared.utils';
 import { AdminmainComponent } from '../../../admin/adminmain/adminmain.component';
+import { UserService } from '../../../admin/user/user.service';
 @Component({
   selector: 'app-conversation',
   standalone: true,
@@ -47,16 +47,16 @@ export class ConversationComponent {
   readonly dialog = inject(MatDialog);
   @ViewChild(ChatboxdetailComponent) chatContainer!: ChatboxdetailComponent;
   constructor(
-    private usersService: UsersService,
+    private userService: UserService,
     private sanitizer: DomSanitizer,
   ) { 
     
   }
   async ngOnInit() {    
-    [this.FilterListUser, this.ListUser, this.Profile] = await Promise.all([
-      this.usersService.getUsers(),
-      this.usersService.getUsers(),
-      this.usersService.getProfile(),
+    await Promise.all([
+      this.userService.getAllUser(),
+      this.userService.getAllUser(),
+      this.userService.getProfile(),
     ]);
    await this._ConversationService.SearchConversation({
       idSender: this.Profile.id,

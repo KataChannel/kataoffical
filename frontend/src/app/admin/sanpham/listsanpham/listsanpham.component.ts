@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -39,6 +39,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
     FormsModule,
     MatTooltipModule
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListSanphamComponent {
   Detail: any = {};
@@ -49,6 +50,7 @@ export class ListSanphamComponent {
     'dvt',
     'soluong',
     'soluongkho',
+    'haohut',
     'ghichu',
     'createdAt',
   ];
@@ -59,6 +61,7 @@ export class ListSanphamComponent {
     dvt: 'Đơn Vị Tính',
     soluong: 'SL',
     soluongkho: 'SL Kho',
+    haohut: 'Hao Hụt',
     ghichu: 'Ghi Chú',
     createdAt: 'Ngày Tạo'
   };
@@ -66,7 +69,6 @@ export class ListSanphamComponent {
     localStorage.getItem('SanphamColFilter') || '[]'
   );
   Columns: any[] = [];
-  isFilter: boolean = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
@@ -80,26 +82,18 @@ export class ListSanphamComponent {
   sanphamId:any = this._SanphamService.sanphamId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
+  isSearch: boolean = false;
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
     });
   }
-  createFilter(): (data: any, filter: string) => boolean {
-    return (data, filter) => {
-      const filterObject = JSON.parse(filter);
-      let isMatch = true;
-      this.displayedColumns.forEach(column => {
-        if (filterObject[column]) {
-          const value = data[column] ? data[column].toString().toLowerCase() : '';
-          isMatch = isMatch && value.includes(filterObject[column].toLowerCase());
-        }
-      });
-      return isMatch;
-    };
-  }
-  applyFilter() {
-    this.dataSource.filter = JSON.stringify(this.filterValues);
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
   async ngOnInit(): Promise<void> {    
     await this._SanphamService.getAllSanpham();
@@ -107,7 +101,6 @@ export class ListSanphamComponent {
     this.dataSource = new MatTableDataSource(this.Listsanpham());
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    this.dataSource.filterPredicate = this.createFilter();
     this.initializeColumns();
     this.setupDrawer();
     this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
@@ -159,6 +152,7 @@ export class ListSanphamComponent {
       this.updateDisplayedColumns();
     }
   }
+  @memoize()
   FilterHederColumn(list:any,column:any)
   {
     const uniqueList = list.filter((obj: any, index: number, self: any) => 
@@ -166,40 +160,40 @@ export class ListSanphamComponent {
     );
     return uniqueList
   }
+  @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
     this.dataSource.filteredData = this.Listsanpham().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();
-    console.log(query,column);
-    console.log(this.dataSource.filteredData);   
+    const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]
-  ChosenItem(item:any)
+  ChosenItem(item:any,column:any)
   {
-    if(this.ListFilter.includes(item.id))
+    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
+    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
+    if(CheckItem1.length>0)
     {
-      this.ListFilter = this.ListFilter.filter((v) => v !== item.id);
+      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
     }
     else{
-      this.ListFilter.push(item.id);
+      this.ListFilter = [...this.ListFilter,...CheckItem];
     }
-    console.log(this.ListFilter);
-    
   }
   ChosenAll(list:any)
   {
     list.forEach((v:any) => {
-      if(this.ListFilter.includes(v.id))
+      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
+      if(CheckItem)
         {
-          this.ListFilter = this.ListFilter.filter((v) => v !== v.id);
+          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
         }
         else{
-          this.ListFilter.push(v.id);
+          this.ListFilter.push(v);
         }
     });
   }
   ResetFilter()
   {
-    this.ListFilter = this.Listsanpham().map((v:any) => v.id);
+    this.ListFilter = this.Listsanpham();
     this.dataSource.data = this.Listsanpham();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -210,16 +204,15 @@ export class ListSanphamComponent {
   }
   CheckItem(item:any)
   {
-    return this.ListFilter.includes(item.id);
+    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
   }
   ApplyFilterColum(menu:any)
   {    
-    this.dataSource.data = this.Listsanpham().filter((v: any) => this.ListFilter.includes(v.id));
+
+    this.dataSource.data = this.Listsanpham().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    console.log(this.dataSource.data);
     menu.closeMenu();
-    
   }
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -250,33 +243,13 @@ export class ListSanphamComponent {
   async LoadDrive() {
     const DriveInfo = {
       IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'NCCImport',
+      SheetName: 'SPImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
    const data = ConvertDriveData(result.values);
    console.log(data);
    this.DoImportData(data);
-    // const updatePromises = data.map(async (v: any) => {
-    //   const item = this._KhachhangsService
-    //     .ListKhachhang()
-    //     .find((v1) => v1.MaKH === v.MaKH);
-    //   if (item) {
-    //     const item1 = { ...item, ...v };
-    //     console.log(item1);
-
-    //     await this._KhachhangsService.updateOneKhachhang(item1);
-    //   }
-    // });
-    // Promise.all(updatePromises).then(() => {
-    //   this._snackBar.open('Cập Nhật Thành Công', '', {
-    //     duration: 1000,
-    //     horizontalPosition: 'end',
-    //     verticalPosition: 'top',
-    //     panelClass: ['snackbar-success'],
-    //   });
-    //   //  window.location.reload();
-    // });
   }
   DoImportData(data:any)
   {
@@ -330,4 +303,53 @@ export class ListSanphamComponent {
   ExportExcel(data:any,title:any) {
     writeExcelFile(data,title);
   }
+  trackByFn(index: number, item: any): any {
+    return item.id; // Use a unique identifier
+  }
+}
+
+
+
+
+function memoize() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    const cache = new Map();
+
+    descriptor.value = function (...args: any[]) {
+      const key = JSON.stringify(args);
+      if (cache.has(key)) {
+        return cache.get(key);
+      }
+      const result = originalMethod.apply(this, args);
+      cache.set(key, result);
+      return result;
+    };
+
+    return descriptor;
+  };
+}
+
+function Debounce(delay: number = 300) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    let timeoutId: any;
+
+    descriptor.value = function (...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        originalMethod.apply(this, args);
+      }, delay);
+    };
+
+    return descriptor;
+  };
 }

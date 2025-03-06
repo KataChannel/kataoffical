@@ -9,8 +9,8 @@ import { RouterLinkActive, RouterModule } from '@angular/router';
 import { NgxFileDropEntry, NgxFileDropModule } from 'ngx-file-drop';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { UsersService } from '../../../admin/adminmain/listuser/listuser.services';
-import { UploadService } from '../../uploadfile/uploadfile.service';
+import { UserService } from '../../../../admin/user/user.service';
+import { UploadService } from '../../../uploadfile/uploadfile.service';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
@@ -38,7 +38,7 @@ export class ProfileComponent implements OnInit {
   profile = signal<any>({});
   isEditAvatar:boolean=false
   public files: NgxFileDropEntry[] = [];
-  _UsersService:UsersService = inject(UsersService)
+  _UserService:UserService = inject(UserService)
   _uploadService:UploadService = inject(UploadService)
   Menus:any[]=[
     {id:1,Title:'Cài đặt tài khoản',Slug:'./account'},
@@ -48,8 +48,8 @@ export class ProfileComponent implements OnInit {
     {id:5,Title:'Điều khoản & Điều kiện',Slug:'./terms'},
   ]
   async ngOnInit() {
-   await this._UsersService.getProfile()
-   this.profile = this._UsersService.profile
+   await this._UserService.getProfile()
+   this.profile = this._UserService.profile
   }
   getTrustUrl(url: string) {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
@@ -73,7 +73,7 @@ export class ProfileComponent implements OnInit {
               this.profile().Avatar = res.fileId
               this.isLoading = false;
               this.isEditAvatar =false
-              this._UsersService.updateOneUser(this.profile())
+              this._UserService.updateUser(this.profile())
             });
           }
         }
@@ -94,7 +94,7 @@ export class ProfileComponent implements OnInit {
             this.profile().Avatar = res.fileId
             this.isLoading = false;
             this.isEditAvatar =false
-            this._UsersService.updateOneUser(this.profile())
+            this._UserService.updateUser(this.profile())
           });
         });
       }

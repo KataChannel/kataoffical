@@ -4,6 +4,7 @@ npx bun add -d prisma
 npx bun prisma migrate dev --name rau2.2.5
 npx prisma db push
 npx bun prisma generate
+npx ts-node prisma/exportData.ts
 
 
 npx prisma db seed

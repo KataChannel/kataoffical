@@ -14,7 +14,10 @@ export class SanphamController {
   findAll() {
     return this.sanphamService.findAll();
   }
-
+  @Get('last-updated')
+    async getLastUpdatedSanpham() {
+      return this.sanphamService.getLastUpdatedSanpham();
+  }
   @Get('findid/:id')
   findOne(@Param('id') id: string) {
     return this.sanphamService.findOne(id);

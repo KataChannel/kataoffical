@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { UsersService } from '../../../../admin/adminmain/listuser/listuser.services';
+import { UserService } from '../../../../../admin/user/user.service';
 
 @Component({
   selector: 'app-password',
@@ -31,13 +31,13 @@ export class PasswordComponent implements OnInit {
   hideCurrentPassword = true;
   hideNewPassword = true;
   hideConfirmPassword = true;
-  _UsersService:UsersService = inject(UsersService)
+  _UserService:UserService = inject(UserService)
   constructor() { }
 
   async ngOnInit() {
 
-    await this._UsersService.getProfile()
-    console.log(this._UsersService.profile());
+    await this._UserService.getProfile()
+    console.log(this._UserService.profile());
     
   }
   ChangePass()
@@ -54,11 +54,11 @@ export class PasswordComponent implements OnInit {
     }
     else{
         const data = {
-          id:this._UsersService.profile().id,
+          id:this._UserService.profile().id,
           oldpass:this.user.oldpass,
           newpass:this.user.newpass,
         }
-        this._UsersService.changepass(data).then((data)=>{
+        this._UserService.changepass(data).then((data)=>{
           if(data[0]==200)
           {
           //  this._NotifierService.notify('success',data[1])

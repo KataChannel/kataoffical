@@ -4,7 +4,12 @@ export declare class KhachhangController {
     constructor(khachhangService: KhachhangService);
     create(createKhachhangDto: any): Promise<{
         id: string;
+        email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         name: string | null;
+        ghichu: string | null;
         namenn: string | null;
         makh: string;
         diachi: string | null;
@@ -12,18 +17,18 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
-        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
-        ghichu: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     findAll(): Promise<{
         id: string;
+        email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         name: string | null;
+        ghichu: string | null;
         namenn: string | null;
         makh: string;
         diachi: string | null;
@@ -31,18 +36,18 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
-        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
-        ghichu: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
+        email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         name: string | null;
+        ghichu: string | null;
         namenn: string | null;
         makh: string;
         diachi: string | null;
@@ -50,18 +55,18 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
-        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
-        ghichu: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     update(id: string, updateKhachhangDto: any): Promise<{
         id: string;
+        email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         name: string | null;
+        ghichu: string | null;
         namenn: string | null;
         makh: string;
         diachi: string | null;
@@ -69,18 +74,18 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
-        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
-        ghichu: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
+        email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         name: string | null;
+        ghichu: string | null;
         namenn: string | null;
         makh: string;
         diachi: string | null;
@@ -88,13 +93,8 @@ export declare class KhachhangController {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
-        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
-        ghichu: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
 }

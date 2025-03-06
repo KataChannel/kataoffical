@@ -3,7 +3,7 @@
         <router-outlet></router-outlet>
     </mat-drawer>
     <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
-        <div class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
+        <div *ngIf="!isSearch" class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
             <div class="flex flex-row space-x-2 items-center">
                 <button matTooltip="Thêm mới" (click)="create()" color="primary" mat-icon-button>
                     <mat-icon>add_circle</mat-icon>
@@ -27,8 +27,8 @@
                         }
                     </div>
                 </mat-menu>
-                <button matTooltip="Bộ Lọc" color="primary" class="{{isFilter ? '!bg-slate-200' : ''}}" (click)="isFilter = !isFilter" mat-icon-button>
-                    <mat-icon>filter_list</mat-icon>
+                <button matTooltip="Tìm Kiếm" color="primary" (click)="isSearch = !isSearch" mat-icon-button>
+                    <mat-icon>search</mat-icon>
                 </button>
                 <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(Listsanpham(),'Sanpham')" color="primary" mat-icon-button>
                     <mat-icon>file_download</mat-icon>
@@ -41,15 +41,16 @@
                     <mat-icon>cloud_download</mat-icon>
                 </button>
                 <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
-                    {{CountItem}} Nhà Cung Cấp
+                    {{CountItem}} Sản Phẩm
                 </span>
             </div>
         </div>
-        <div *ngIf="isFilter" class="w-full grid grid-cols-2 gap-2 lg:flex lg:flex-row lg:space-x-2 items-center">
-            <mat-form-field *ngFor="let column of displayedColumns" appearance="outline" subscriptSizing="dynamic">
-                <mat-label>{{ ColumnName[column] }}</mat-label>
-                <input matInput (keyup)="applyFilter()" [(ngModel)]="filterValues[column]" [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập {{ column }}" />
+        <div *ngIf="isSearch" class="py-2 w-full flex flex-row space-x-2 items-center">
+            <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                <mat-label>Tìm Kiếm</mat-label>
+                <input matInput (keyup)="applyFilter($event)"  placeholder="Vui lòng Tìm Kiếm" />
             </mat-form-field>
+            <button mat-icon-button color="warn" (click)="isSearch=!isSearch"><mat-icon>cancel</mat-icon></button>
         </div>
         <div class="w-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
@@ -81,12 +82,25 @@
                                             <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
                                         </div>
                                         <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
-                                            @for (item of FilterHederColumn(dataSource.filteredData,column); track $index) {
-                                                <div (click)="ChosenItem(item)" class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
+                                                <div *ngFor="let item of FilterHederColumn(dataSource.filteredData,column); trackBy:trackByFn" (click)="ChosenItem(item,column)" class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
                                                    <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>
-                                                    {{item[column]||'Trống'}}
+                                                   @switch (column) {
+                                                       @case ('createdAt') {
+                                                        <span>{{item[column]|date:'dd/MM/yyyy'}}</span> 
+                                                       }
+                                                       @case ('updatedAt') {
+                                                        <span>{{item[column]|date:'dd/MM/yyyy'}}</span> 
+                                                       }
+                                                       @case ('haohut') {
+                                                        <span>{{item[column]}}%</span> 
+                                                       }
+                                                       @default {
+                                                       <span> {{item[column]||'Trống'}}</span>
+                                                       }
+                                                     }
+                                               
+ 
                                                 </div>
-                                            }
                                         </div>
                                         <div class="flex flex-row space-x-2 items-end justify-end">
                                             <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
@@ -105,6 +119,11 @@
                         @case ('createdAt') {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column]|date:'dd/MM/yyyy'}}
+                        </span>
+                        }
+                        @case ('haohut') {
+                        <span class="max-w-40 line-clamp-4">
+                            {{ row[column]}}%
                         </span>
                         }
                         @case ('isActive') {

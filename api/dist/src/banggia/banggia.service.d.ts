@@ -4,9 +4,9 @@ export declare class BanggiaService {
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         order: number | null;
         ghichu: string | null;
@@ -26,9 +26,9 @@ export declare class BanggiaService {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         order: number | null;
         ghichu: string | null;
@@ -49,9 +49,9 @@ export declare class BanggiaService {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         order: number | null;
         ghichu: string | null;
@@ -62,10 +62,11 @@ export declare class BanggiaService {
     })[]>;
     findOne(id: string): Promise<{
         sanpham: {
+            giaban: number;
             id: string;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isActive: boolean;
             title: string;
             slug: string | null;
             order: number | null;
@@ -75,13 +76,13 @@ export declare class BanggiaService {
             hinhanh: string | null;
             soluong: number;
             soluongkho: number;
+            haohut: number;
             ghichu: string | null;
-            giaban: number;
         }[];
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         order: number | null;
         ghichu: string | null;
@@ -101,9 +102,9 @@ export declare class BanggiaService {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         order: number | null;
         ghichu: string | null;
@@ -114,9 +115,9 @@ export declare class BanggiaService {
     }>;
     remove(id: string): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         order: number | null;
         ghichu: string | null;

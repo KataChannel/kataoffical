@@ -51,11 +51,6 @@ export class DonhangService {
   }
 
 
-
-
-
-
-
   async reorderDonHangs(donhangIds: string[]) {
     // Update the order of each donhang based on its position in the array
     for (let i = 0; i < donhangIds.length; i++) {
@@ -120,7 +115,7 @@ export class DonhangService {
             sanpham: true,
           },
         },
-        khachhang: true,
+        khachhang: {include: {banggia: {include: {sanpham: true}}},},
       },
     });
     if (!donhang) throw new NotFoundException('DonHang not found');
@@ -129,6 +124,7 @@ export class DonhangService {
       sanpham: donhang.sanpham.map((item) => ({
         ...item.sanpham,
         idSP: item.idSP,
+        giaban: donhang.khachhang.banggia.find((bg) => donhang.ngaygiao && bg.batdau && bg.ketthuc && donhang.ngaygiao >= bg.batdau && donhang.ngaygiao <= bg.ketthuc)?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
         sldat: item.sldat,
         slgiao: item.slgiao,
         slnhan: item.slnhan,
@@ -222,6 +218,7 @@ export class DonhangService {
           ngaygiao: new Date(data.ngaygiao),
           khachhangId: data.khachhangId,
           isActive: data.isActive,
+          status: data.status,
           order: data.order,
           ghichu: data.ghichu,
           sanpham: {

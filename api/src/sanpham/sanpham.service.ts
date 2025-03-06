@@ -12,6 +12,32 @@ export class SanphamService {
   // async create(data: any) {
   //   return this.prisma.sanpham.create({ data });
   // }
+  async getLastUpdatedSanpham() {
+    const lastUpdated = await this.prisma.sanpham.aggregate({
+      _max: {
+        updatedAt: true,
+      },
+    });
+    return { updatedAt: lastUpdated._max.updatedAt || 0 };
+  }
+  async generateMaSP(): Promise<string> {
+    // Lấy NCC mới nhất
+    const latest = await this.prisma.sanpham.findFirst({
+      orderBy: { masp: 'desc' },
+    });
+
+    // Nếu chưa có NCC nào, bắt đầu từ 1
+    let nextNumber = 1;
+    if (latest) {
+      const match = latest.masp.match(/I1(\d+)/);
+      if (match) {
+        nextNumber = parseInt(match[1]) + 1;
+      }
+    }
+
+    // Tạo mã mới dạng TG-NCC00001
+    return `I1${nextNumber.toString().padStart(5, '0')}`;
+  }
   async create(data: any) {
     let newOrder: number;
     const maxOrder = await this.prisma.sanpham.aggregate({
@@ -20,10 +46,12 @@ export class SanphamService {
     newOrder = (maxOrder._max?.order || 0) + 1;
     // Create the new sanpham entry
     this._SocketGateway.sendSanphamUpdate();
+    const masp = await this.generateMaSP();
     return this.prisma.sanpham.create({
       data: {
         ...data,
         order: newOrder,
+        masp:masp,
       },
     });
   }

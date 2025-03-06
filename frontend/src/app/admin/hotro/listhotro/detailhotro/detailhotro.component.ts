@@ -37,11 +37,9 @@ import { FormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { toVietnameseWords } from '../../../../shared/utils/tiente.utils';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TiptapComponent } from '../../../../shared/common/tiptap/tiptap.component';
 import { UploadService } from '../../../../shared/uploadfile/uploadfile.service';
-import { UploadfileComponent } from '../../../../shared/uploadfile/uploadfile.component';
-import { NgxFileDropEntry, NgxFileDropModule } from 'ngx-file-drop';
-import { UsersService } from '../../../adminmain/listuser/listuser.services';
+import {  NgxFileDropModule } from 'ngx-file-drop';
+import { UserService } from '../../../user/user.service';
 @Component({
   selector: 'app-detailhotro',
   templateUrl: './detailhotro.component.html',
@@ -110,7 +108,7 @@ export class DetailHotroComponent {
   _route: Router = inject(Router);
   _ListHotroComponent: ListHotroComponent = inject(ListHotroComponent);
   _UploadService: UploadService = inject(UploadService);
-  _UsersService: UsersService = inject(UsersService);
+  _UserService: UserService = inject(UserService);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   @ViewChild('editable') editable!: ElementRef;
   @ViewChildren('viewChat') viewChat!: QueryList<ElementRef>;
@@ -148,7 +146,7 @@ export class DetailHotroComponent {
               'Kiểm tra lại số tiền';
             this.Detail.Chat = this.Detail.idChat || [];
             console.log(this.Detail);
-            this._UsersService.getProfile().then((data) => {
+            this._UserService.getProfile().then((data) => {
               this.profile = data;
             });
             this._ListHotroComponent.drawer.open();

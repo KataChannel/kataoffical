@@ -9,8 +9,8 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import { Config } from './login';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { UsersService } from '../../../admin/adminmain/listuser/listuser.services';
-import { StorageService } from '../../utils/storage.service';
+import { UserService } from '../../../../admin/user/user.service';
+import { StorageService } from '../../../utils/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -29,7 +29,7 @@ import { StorageService } from '../../utils/storage.service';
 export class LoginComponent implements OnInit {
   token: any;
   gotonew:any="translate-x-0"
-  _UsersService: UsersService = inject(UsersService);
+  _UserService: UserService = inject(UserService);
   _StorageService: StorageService = inject(StorageService);
   Config:any=Config
   order1:any='order-1'
@@ -102,26 +102,28 @@ export class LoginComponent implements OnInit {
     {
       this.User.email = this.User.SDT
       try {
-      //   this._spinner.show();
-      //   this._UsersService.Dangnhap(this.User).then((data:any) => {
-      //     console.log(data);
-      //     if (data[0]=="200") {
-      //       this._spinner.hide();
-      //     //  console.log(data);
-      //       this.postMessage(data[1]);
-      //       if (isPlatformBrowser(this.platformId)) {
-      //         this.postMessage(data[1]);
-      //         setTimeout(() => {
-      //           window.location.reload();
-      //         }, 100);    
-      //       }
-      //     }
-      //     else {
-      //       this._NotifierService.notify('error',data[1])
-      //    //   console.log(data);
-      //       this._spinner.hide();
-      //     }
-      //   });
+        this._UserService.login(this.User).then((data:any) => {
+          console.log(data);
+          
+          if (data[0]) {
+            setTimeout(() => {
+                window.location.reload();
+              }, 100); 
+          //  console.log(data);
+            // this.postMessage(data[1]);
+            // if (isPlatformBrowser(this.platformId)) {
+            //   this.postMessage(data[1]);
+            //   setTimeout(() => {
+            //     window.location.reload();
+            //   }, 100);    
+            // }
+          }
+          else {
+        //     this._NotifierService.notify('error',data[1])
+        //  //   console.log(data);
+        //     this._spinner.hide();
+          }
+        });
       } catch (error) {
         console.error('Login error:', error);
       }
@@ -143,7 +145,7 @@ export class LoginComponent implements OnInit {
       
       console.log('Logged in:', result.user);
       console.log('Logged in:', result.user?.providerData[0]);
-      this._UsersService.LoginByGoogle(result.user?.providerData[0]).then((data:any) => {
+      this._UserService.LoginByGoogle(result.user?.providerData[0]).then((data:any) => {
         if (data[0]) {
         //  console.log(data);
           //this.postMessage(data[1]);
@@ -164,15 +166,15 @@ export class LoginComponent implements OnInit {
 
 
   loginGoogle() {
-    this._UsersService.loginWithGoogle();
+    this._UserService.loginWithGoogle();
   }
 
   loginFacebook() {
-    this._UsersService.loginWithFacebook();
+    this._UserService.loginWithFacebook();
   }
 
   loginZalo() {
-    this._UsersService.loginWithZalo();
+    this._UserService.loginWithZalo();
   }
 
 

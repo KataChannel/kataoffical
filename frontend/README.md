@@ -11,5 +11,7 @@ npx katacreate --type angular --name user --outputDir .
 npx katacreate --type angular --name role --outputDir .
 npx katacreate --type angular --name permission --outputDir .
 npx katacreate --type angular --name nhomkhachhang --outputDir .
+npx katacreate --type angular --name phieugiaohang --outputDir .
+npx katacreate --type angular --name phieuchiahang --outputDir .
 
 npx ng g c aggrid --skip-tests --standalone

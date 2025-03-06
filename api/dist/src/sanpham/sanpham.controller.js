@@ -25,6 +25,9 @@ let SanphamController = class SanphamController {
     findAll() {
         return this.sanphamService.findAll();
     }
+    async getLastUpdatedSanpham() {
+        return this.sanphamService.getLastUpdatedSanpham();
+    }
     findOne(id) {
         return this.sanphamService.findOne(id);
     }
@@ -52,6 +55,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], SanphamController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('last-updated'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SanphamController.prototype, "getLastUpdatedSanpham", null);
 __decorate([
     (0, common_1.Get)('findid/:id'),
     __param(0, (0, common_1.Param)('id')),

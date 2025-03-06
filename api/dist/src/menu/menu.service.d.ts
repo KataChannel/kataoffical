@@ -4,9 +4,9 @@ export declare class MenuService {
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         icon: string | null;
         slug: string | null;
@@ -16,9 +16,9 @@ export declare class MenuService {
     findAll(): Promise<({
         children: {
             id: string;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isActive: boolean;
             title: string;
             icon: string | null;
             slug: string | null;
@@ -27,9 +27,9 @@ export declare class MenuService {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         icon: string | null;
         slug: string | null;
@@ -39,9 +39,9 @@ export declare class MenuService {
     findOne(id: string): Promise<({
         children: {
             id: string;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isActive: boolean;
             title: string;
             icon: string | null;
             slug: string | null;
@@ -50,9 +50,9 @@ export declare class MenuService {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         icon: string | null;
         slug: string | null;
@@ -61,9 +61,9 @@ export declare class MenuService {
     }) | null>;
     update(id: string, data: any): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         icon: string | null;
         slug: string | null;
@@ -72,9 +72,9 @@ export declare class MenuService {
     }>;
     remove(id: string): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         title: string;
         icon: string | null;
         slug: string | null;

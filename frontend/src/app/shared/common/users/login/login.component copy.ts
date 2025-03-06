@@ -4,7 +4,7 @@
 // import * as Auth from 'firebase/auth';
 // import { isPlatformBrowser } from '@angular/common';
 // import { FormsModule } from '@angular/forms';
-// import { UsersService } from '../users.service';
+// import { UserService } from '../users.service';
 // import {MatInputModule} from '@angular/material/input';
 // import {MatCheckboxModule} from '@angular/material/checkbox';
 // import {MatButtonModule} from '@angular/material/button';
@@ -29,7 +29,7 @@
 // export class LoginComponent implements OnInit {
 //   token: any;
 //   gotonew:any="translate-x-0"
-//   _UsersService: UsersService = inject(UsersService);
+//   _UserService: UserService = inject(UserService);
 //   Config:any=Config
 //   order1:any='order-1'
 //   order2:any='order-2'
@@ -55,7 +55,7 @@
 //     this.order2=='order-1'?this.order2='order-2':this.order2='order-1'
 //   }
 //   ngOnInit(): void {
-//     // this._UsersService.getProfile().then((data) => {
+//     // this._UserService.getProfile().then((data) => {
 //     //  // console.log(data);
 //     // });
 //   }
@@ -67,7 +67,7 @@
 //       this.User.email = this.User.SDT
 //       try {
 //       //   this._spinner.show();
-//       //   this._UsersService.Dangnhap(this.User).then((data:any) => {
+//       //   this._UserService.Dangnhap(this.User).then((data:any) => {
 //       //     console.log(data);
 //       //     if (data[0]=="200") {
 //       //       this._spinner.hide();
@@ -103,7 +103,7 @@
 //       const result = await this.auth.signInWithPopup(GoogleAuthProvider);
 //       console.log('Logged in:', result.user);
 //       console.log('Logged in:', result.user?.providerData[0]);
-//       // this._UsersService.LoginByGoogle(result.user?.providerData[0]).then((data:any) => {
+//       // this._UserService.LoginByGoogle(result.user?.providerData[0]).then((data:any) => {
 //       //   if (data[0]) {
 //       //   //  console.log(data);
 //       //     //this.postMessage(data[1]);

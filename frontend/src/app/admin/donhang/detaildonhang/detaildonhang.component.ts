@@ -122,6 +122,11 @@ export class DetailDonhangComponent {
   }
   private async createDonhang() {
     try {
+      console.log(this.DetailDonhang());
+      this.DetailDonhang().sanpham = this.DetailDonhang().sanpham.map((v:any)=>{
+        v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
+        return v;
+      })
       await this._DonhangService.CreateDonhang(this.DetailDonhang());
       this._snackBar.open('Tạo Mới Thành Công', '', {
         duration: 1000,
@@ -137,6 +142,10 @@ export class DetailDonhangComponent {
 
   private async updateDonhang() {
     try {
+      this.DetailDonhang().sanpham = this.DetailDonhang().sanpham.map((v:any)=>{
+        v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
+        return v;
+      })
       await this._DonhangService.updateDonhang(this.DetailDonhang());
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,
@@ -189,9 +198,9 @@ export class DetailDonhangComponent {
     const query = event.target.value.toLowerCase();
     this.filterKhachhang = this.ListKhachhang().filter(
       (v: any) =>
-        v.name.toLowerCase().includes(query) ||
-        v.namenn.toLowerCase().includes(query) ||
-        v.sdt.toLowerCase().includes(query)
+        v.name?.toLowerCase().includes(query) ||
+        v.namenn?.toLowerCase().includes(query) ||
+        v.sdt?.toLowerCase().includes(query)
     );
   }
   DoFindBanggia(event: any) {

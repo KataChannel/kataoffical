@@ -8,7 +8,15 @@ export class RoleController {
   create(@Body() createRoleDto: any) {
     return this.rolesService.create(createRoleDto);
   }
+  @Post('assign')
+  async assignPermissionToRole(@Body() data: any) {
+    return this.rolesService.assignPermissionToRole(data);
+  }
 
+  @Delete('remove')
+  async removePermissionFromRole(@Body() data: any) {
+    return this.rolesService.removePermissionFromRole(data);
+  }
   @Get()
   findAll() {
     return this.rolesService.findAll();

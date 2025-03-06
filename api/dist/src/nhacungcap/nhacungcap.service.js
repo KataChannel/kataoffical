@@ -16,8 +16,27 @@ let NhacungcapService = class NhacungcapService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    async generateMancc() {
+        const latest = await this.prisma.nhacungcap.findFirst({
+            orderBy: { mancc: 'desc' },
+        });
+        let nextNumber = 1;
+        if (latest) {
+            const match = latest.mancc.match(/TG-NCC(\d+)/);
+            if (match) {
+                nextNumber = parseInt(match[1]) + 1;
+            }
+        }
+        return `TG-NCC${nextNumber.toString().padStart(5, '0')}`;
+    }
     async create(data) {
-        return this.prisma.nhacungcap.create({ data });
+        const mancc = await this.generateMancc();
+        return this.prisma.nhacungcap.create({
+            data: {
+                mancc,
+                ...data,
+            },
+        });
     }
     async findAll() {
         return this.prisma.nhacungcap.findMany();

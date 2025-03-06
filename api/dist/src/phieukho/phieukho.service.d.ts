@@ -5,10 +5,10 @@ export declare class PhieukhoService {
     findAll(): Promise<({
         kho: {
             id: string;
-            name: string;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isActive: boolean;
+            name: string;
             ghichu: string | null;
             diachi: string | null;
             sdt: string | null;
@@ -27,9 +27,9 @@ export declare class PhieukhoService {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         ghichu: string | null;
         type: string;
         maphieu: string;
@@ -39,10 +39,10 @@ export declare class PhieukhoService {
     findOne(id: string): Promise<{
         kho: {
             id: string;
-            name: string;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isActive: boolean;
+            name: string;
             ghichu: string | null;
             diachi: string | null;
             sdt: string | null;
@@ -61,9 +61,9 @@ export declare class PhieukhoService {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         ghichu: string | null;
         type: string;
         maphieu: string;
@@ -83,9 +83,9 @@ export declare class PhieukhoService {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         ghichu: string | null;
         type: string;
         maphieu: string;
@@ -105,9 +105,9 @@ export declare class PhieukhoService {
         }[];
     } & {
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         ghichu: string | null;
         type: string;
         maphieu: string;
@@ -116,9 +116,9 @@ export declare class PhieukhoService {
     }>;
     remove(id: string): Promise<{
         id: string;
+        isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        isActive: boolean;
         ghichu: string | null;
         type: string;
         maphieu: string;

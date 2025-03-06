@@ -96,8 +96,8 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     private async updateMenu() {
       try {
         this.DetailMenu.update((v: any) => {
-          delete v.children
-          return v
+          const { children, ...rest } = v;
+          return rest;
         });
         await this._MenuService.updateMenu(this.DetailMenu());
         this._snackBar.open('Cập Nhật Thành Công', '', {

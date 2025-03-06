@@ -1,7 +1,7 @@
 import { Routes,Router } from '@angular/router';
-import { GuestGuard } from './shared/users/guards/guest.guard';
-import { AuthGuard } from './shared/users/guards/auth.guard';
 import { DynamicComponentResolver } from './dynamic-component.resolver';
+import { AuthGuard } from './shared/common/users/guards/auth.guard';
+import { GuestGuard } from './shared/common/users/guards/guest.guard';
 export const routes: Routes = [
     { path: '', redirectTo: 'admin/menu', pathMatch: 'full' },
     {
@@ -39,15 +39,15 @@ export const routes: Routes = [
         },
         {
           path: 'users',
-          loadComponent: () => import('./admin/adminmain/listuser/listuser.component').then((c) => c.ListuserComponent),
+          loadComponent: () => import('./admin/user/listuser/listuser.component').then((c) => c.ListUserComponent),
           children: [
             {
               path: '',
-              loadComponent: () => import('./admin/adminmain/listuser/listuser.component').then((c) => c.ListuserComponent),
+              loadComponent: () => import('./admin/user/listuser/listuser.component').then((c) => c.ListUserComponent),
             },
             {
               path: ':id',
-              loadComponent: () => import('./admin/adminmain/listuser/detailuser/detailuser.component').then((c) => c.DetailUserComponent),
+              loadComponent: () => import('./admin/user/detailuser/detailuser.component').then((c) => c.DetailUserComponent),
             },
           ],
         },
@@ -234,6 +234,34 @@ export const routes: Routes = [
           ],
         },
         {
+          path: 'phieugiaohang',
+          loadComponent: () => import('./admin/phieugiaohang/listphieugiaohang/listphieugiaohang.component').then((c) => c.ListPhieugiaohangComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/phieugiaohang/listphieugiaohang/listphieugiaohang.component').then((c) => c.ListPhieugiaohangComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/phieugiaohang/detailphieugiaohang/detailphieugiaohang.component').then((c) => c.DetailPhieugiaohangComponent),
+            },
+          ],
+        },
+        {
+          path: 'phieuchiahang',
+          loadComponent: () => import('./admin/phieuchiahang/listphieuchiahang/listphieuchiahang.component').then((c) => c.ListPhieuchiahangComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/phieuchiahang/listphieuchiahang/listphieuchiahang.component').then((c) => c.ListPhieuchiahangComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/phieuchiahang/detailphieuchiahang/detailphieuchiahang.component').then((c) => c.DetailPhieuchiahangComponent),
+            },
+          ],
+        },
+        {
           path: 'phieukho',
           loadComponent: () => import('./admin/phieukho/listphieukho/listphieukho.component').then((c) => c.ListPhieukhoComponent),
           children: [
@@ -272,11 +300,11 @@ export const routes: Routes = [
           },
         {
           path: 'profile',
-          loadComponent: () => import('./shared/users/profile/profile.component').then((c) => c.ProfileComponent),
+          loadComponent: () => import('./shared/common/users/profile/profile.component').then((c) => c.ProfileComponent),
           children:[
             {
               path: 'socialpage',
-              loadComponent: () => import('./shared/users/profile/social/social.component').then((c) => c.SocialComponent),
+              loadComponent: () => import('./shared/common/users/profile/social/social.component').then((c) => c.SocialComponent),
             },
           ]
         },
@@ -287,15 +315,15 @@ export const routes: Routes = [
         },
         {
           path: 'account',
-          loadComponent: () => import('./shared/users/account/account.component').then((c) => c.AccountComponent),
+          loadComponent: () => import('./shared/common/users/account/account.component').then((c) => c.AccountComponent),
           children:[
             {
               path: 'password',
-              loadComponent: () => import('./shared/users/account/password/password.component').then((c) => c.PasswordComponent),
+              loadComponent: () => import('./shared/common/users/account/password/password.component').then((c) => c.PasswordComponent),
             },
             {
               path:'general',
-              loadComponent: () => import('./shared/users/account/general/general.component').then((c) => c.GeneralComponent),
+              loadComponent: () => import('./shared/common/users/account/general/general.component').then((c) => c.GeneralComponent),
             }
           ]
         },
@@ -305,13 +333,13 @@ export const routes: Routes = [
       path: 'login',
       canActivate: [GuestGuard],
       canActivateChild: [GuestGuard],
-      loadComponent: () => import('./shared/users/login/login.component').then((c) => c.LoginComponent),
+      loadComponent: () => import('./shared/common/users/login/login.component').then((c) => c.LoginComponent),
     },
     {
       path: 'register',
       canActivate: [GuestGuard],
       canActivateChild: [GuestGuard],
-      loadComponent: () => import('./shared/users/register/register.component').then((c) => c.RegisterComponent),
+      loadComponent: () => import('./shared/common/users/register/register.component').then((c) => c.RegisterComponent),
     },
     {
       path: '',

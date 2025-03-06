@@ -32,11 +32,11 @@ export declare class DathangController {
         sanpham: any[];
         nhacungcap: {
             id: string;
-            name: string | null;
-            createdAt: Date;
-            updatedAt: Date;
             email: string | null;
             isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string | null;
             ghichu: string | null;
             diachi: string | null;
             sdt: string | null;
@@ -63,9 +63,9 @@ export declare class DathangController {
             ttnhan: number;
             ghichu: string | null;
             id: string;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            isActive: boolean;
             title: string;
             slug: string | null;
             order: number | null;
@@ -75,14 +75,15 @@ export declare class DathangController {
             hinhanh: string | null;
             soluong: number;
             soluongkho: number;
+            haohut: number;
         }[];
         nhacungcap: {
             id: string;
-            name: string | null;
-            createdAt: Date;
-            updatedAt: Date;
             email: string | null;
             isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string | null;
             ghichu: string | null;
             diachi: string | null;
             sdt: string | null;

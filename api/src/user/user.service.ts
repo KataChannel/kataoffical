@@ -39,4 +39,28 @@ export class UserService {
     async remove(id: string) {
       return this.prisma.user.delete({ where: { id } });
     }
+    async assignRoleToUser(data: { userId: string; role: any }) {
+      return this.prisma.user.update({
+        where: { id: data.userId },
+        data: {
+          roles: {
+            connect: data.role.map((roleId:any) => ({ id: roleId }))
+          }
+        },
+        include: { roles: { include: { role: true } } }
+      });
+    }
+    async removeRoleFromUser(data: { userId: string; roleIds: any }) {
+      return this.prisma.user.update({
+        where: { id: data.userId },
+        data: {
+          roles: {
+            disconnect: data.roleIds.map((roleId:any) => ({ roleId }))
+          }
+        },
+        include: { roles: { include: { role: true } } }
+      });
+    }
+    
+    
 }

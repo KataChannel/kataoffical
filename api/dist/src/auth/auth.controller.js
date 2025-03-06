@@ -42,7 +42,8 @@ let AuthController = class AuthController {
         return this.authService.register(body.email, body.password);
     }
     login(body) {
-        return this.authService.login(body.email, body.password);
+        console.log(body);
+        return this.authService.login(body.SDT, body.email, body.password);
     }
     changePassword(req, body) {
         return this.authService.changePassword(req.user.id, body.oldPassword, body.newPassword);
