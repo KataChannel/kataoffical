@@ -344,10 +344,15 @@ export class UserService {
       }
       const data = await response.json();
       const permissions = data.permissions.map((p: any) => p.name);
-      
-      this._StorageService.setItem('permissions', JSON.stringify(permissions));
-     this.profile.set(data)
-      return data;
+      if(permissions.length>0)
+      {
+        this._StorageService.setItem('permissions', JSON.stringify(permissions));
+        this.profile.set(data)
+        return true
+      }
+      else {
+        return false
+      }
     } catch (error) {
       return console.error(error);
     }

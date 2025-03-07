@@ -98,6 +98,9 @@ export class LoginComponent implements OnInit {
           console.log(res);
           window.location.reload(); // Reload the page
         }
+        else {
+          this.router.navigate(['/404',{ queryParams: {data:{ code:403,title:'Bạn không có quyền truy cập liên hệ admin' }}}]);
+        }
        }) 
       }
     } catch (error) {
