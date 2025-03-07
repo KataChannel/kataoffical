@@ -81,6 +81,6 @@ export declare class MenuService {
         parentId: string | null;
         order: number | null;
     }>;
-    getTree(): Promise<any>;
+    getTree(data: any): Promise<any>;
     private buildTree;
 }

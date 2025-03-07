@@ -221,8 +221,7 @@ export class UserService {
             this.router.navigate(['/errorserver'], { queryParams: {data:result}});
           }
         }
-        this.getAllUser()
-        this.getUserByid(dulieu.id)
+        this.getUserByid(dulieu.userId)
     } catch (error) {
         return console.error(error);
     }
@@ -252,7 +251,7 @@ export class UserService {
               this.router.navigate(['/errorserver'], { queryParams: {data:result}});
             }
           }
-          this.getAllUser()
+          this.getUserByid(dulieu.userId)
       } catch (error) {
           return console.error(error);
       }
@@ -344,6 +343,9 @@ export class UserService {
         this.handleError(response.status);
       }
       const data = await response.json();
+      const permissions = data.permissions.map((p: any) => p.name);
+      this._StorageService.setItem('permissions', JSON.stringify(permissions||[]));
+      this.permissionsSubject.next(permissions);
       this.profile.set(data)
       return data;
     } catch (error) {
@@ -395,13 +397,12 @@ export class UserService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log(data);
       if(data)
       {
         this._authenticated = true;
         this.accessToken = data.access_token;
-        this._StorageService.setItem('permissions', JSON.stringify(data.permissions||[]));
-        this.permissionsSubject.next(data.permissions);
+        this._StorageService.setItem('permissions', JSON.stringify(data?.user?.permissions||[]));
+        this.permissionsSubject.next(data?.user?.permissions);
         return [true,data]
       }
       return  [false, 'Đăng Nhập Thất Bại']
@@ -410,13 +411,12 @@ export class UserService {
     }
   }
   loadPermissions() {
-    const permissions = this._StorageService.getItem('permissions') || '[]';
+    const permissions = this._StorageService.getItem('permissions');
     this.permissionsSubject.next(permissions);
-    console.log(this.permissionsSubject.getValue());
-    
   }
 
   hasPermission(permission: string): boolean {
+    if(!this.permissionsSubject.getValue()){this.logout()}
     return this.permissionsSubject.getValue().includes(permission);
   }
   async register(user: any) {
@@ -473,8 +473,6 @@ export class UserService {
       const data = await response.json();
       this._authenticated = true;
       this.accessToken = data[1].access_token;
-      this._StorageService.setItem('permissions', JSON.stringify(data[1].permissions));
-      this.permissionsSubject.next(data[1].permissions);
       console.log(data);
       return [true,this.accessToken]
     } catch (error) {

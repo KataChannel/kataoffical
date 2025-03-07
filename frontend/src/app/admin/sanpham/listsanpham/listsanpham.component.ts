@@ -37,7 +37,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
     MatSelectModule,
     CommonModule,
     FormsModule,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

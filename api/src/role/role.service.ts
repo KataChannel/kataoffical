@@ -24,9 +24,6 @@ export class RoleService {
       where: { id },
       data: {
         name: data.name,
-        permissions: {
-          set: data.permissionIds?.map(permissionId => ({ id:permissionId })) || []
-        }
       },
       include: { permissions: { include: { permission: true } } }
     });
@@ -63,6 +60,7 @@ export class RoleService {
         permissionId,
       },
     });
+    
   }
 
   async removePermissionFromRole(data: any) {

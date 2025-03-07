@@ -80,9 +80,10 @@ export class AdminmainComponent {
         this.User = res; 
       } 
     });
-    await this._MenuService.getTreeMenu()
+    const permissions = this.User.permissions.map((v:any)=>v.name);
+    await this._MenuService.getTreeMenu(permissions)
     this.ListMenu = this._MenuService.ListMenu()    
-    this.dataSource.data = this._MenuService.ListMenu().filter((item:any)=>item.isActive==true);    
+    this.dataSource.data = this._MenuService.ListMenu();    
     this._breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       if (result.matches) {
         this.drawer.mode = 'over';

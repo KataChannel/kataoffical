@@ -36,7 +36,7 @@ export declare class MenuController {
         parentId: string | null;
         order: number | null;
     })[]>;
-    getTree(): Promise<any>;
+    getTree(data: any): Promise<any>;
     findOne(id: string): Promise<({
         children: {
             id: string;

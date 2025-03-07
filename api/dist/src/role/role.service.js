@@ -31,9 +31,6 @@ let RoleService = class RoleService {
             where: { id },
             data: {
                 name: data.name,
-                permissions: {
-                    set: data.permissionIds?.map(permissionId => ({ id: permissionId })) || []
-                }
             },
             include: { permissions: { include: { permission: true } } }
         });

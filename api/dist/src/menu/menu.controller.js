@@ -25,8 +25,8 @@ let MenuController = class MenuController {
     findAll() {
         return this.menuService.findAll();
     }
-    getTree() {
-        return this.menuService.getTree();
+    getTree(data) {
+        return this.menuService.getTree(data);
     }
     findOne(id) {
         return this.menuService.findOne(id);
@@ -53,9 +53,10 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], MenuController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('/tree'),
+    (0, common_1.Post)('/tree'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], MenuController.prototype, "getTree", null);
 __decorate([

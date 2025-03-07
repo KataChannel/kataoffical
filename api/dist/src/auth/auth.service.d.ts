@@ -17,12 +17,7 @@ export declare class AuthService {
     }>;
     login(SDT: string, email: string, password: string): Promise<{
         access_token: string;
-        user: {
-            id: any;
-            email: any;
-            role: any;
-            permissions: any;
-        };
+        user: any;
     }>;
     changePassword(userId: string, oldPassword: string, newPassword: string): Promise<{
         id: string;

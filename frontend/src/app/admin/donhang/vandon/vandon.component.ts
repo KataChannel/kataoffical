@@ -48,7 +48,6 @@ import moment from 'moment';
 export class VandonComponent {
   Detail: any = {};
   displayedColumns: string[] = [
-    'STT',
     'madonhang',
     'khachhang',
     'diachi',
@@ -65,7 +64,6 @@ export class VandonComponent {
     'updatedAt',
   ];
   ColumnName: any = {
-    STT: 'STT',
     madonhang: 'Mã Đơn Hàng',
     khachhang: 'Khách Hàng',
     diachi: 'Địa Chỉ',
@@ -132,6 +130,7 @@ export class VandonComponent {
     { id: 4, Title: '1 Năm', value: 'year' },
   ];
   Chonthoigian: any = 'day';
+  isSearch: boolean = false;
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
@@ -178,8 +177,12 @@ export class VandonComponent {
       return isMatch;
     };
   }
-  applyFilter() {
-    this.dataSource().filter = JSON.stringify(this.filterValues);
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource().filter = filterValue.trim().toLowerCase();
+    if (this.dataSource().paginator) {
+      this.dataSource()?.paginator?.firstPage();
+    }
   }
   async ngOnInit(): Promise<void> {    
     await this._DonhangService.getAllDonhang();
@@ -339,4 +342,120 @@ export class VandonComponent {
   ExportExcel(data:any,title:any) {
     writeExcelFile(data,title);
   }
+
+
+
+
+
+
+  @memoize()
+  FilterHederColumn(list:any,column:any)
+  {
+    const uniqueList = list.filter((obj: any, index: number, self: any) => 
+      index === self.findIndex((t: any) => t[column] === obj[column])
+    );
+    return uniqueList
+  }
+  @Debounce(300)
+  doFilterHederColumn(event: any, column: any): void {
+    this.dataSource().filteredData = this.Vandon().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    const query = event.target.value.toLowerCase();  
+  }
+  trackByFn(index: number, item: any): any {
+    return item.id; // Use a unique identifier
+  }
+  ListFilter:any[] =[]
+  ChosenItem(item:any,column:any)
+  {
+    const CheckItem = this.dataSource().filteredData.filter((v:any)=>v[column]===item[column]);
+    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
+    if(CheckItem1.length>0)
+    {
+      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
+    }
+    else{
+      this.ListFilter = [...this.ListFilter,...CheckItem];
+    }
+  }
+  ChosenAll(list:any)
+  {
+    list.forEach((v:any) => {
+      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
+      if(CheckItem)
+        {
+          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
+        }
+        else{
+          this.ListFilter.push(v);
+        }
+    });
+  }
+  ResetFilter()
+  {
+    this.ListFilter = this.Vandon();
+    this.dataSource().data = this.Vandon();
+    this.dataSource().paginator = this.paginator;
+    this.dataSource().sort = this.sort;
+  }
+  EmptyFiter()
+  {
+    this.ListFilter = [];
+  }
+  CheckItem(item:any)
+  {
+    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  }
+  ApplyFilterColum(menu:any)
+  {    
+
+    this.dataSource().data = this.Vandon().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    this.dataSource().paginator = this.paginator;
+    this.dataSource().sort = this.sort;
+    menu.closeMenu();
+  }
+}
+
+
+
+function memoize() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    const cache = new Map();
+
+    descriptor.value = function (...args: any[]) {
+      const key = JSON.stringify(args);
+      if (cache.has(key)) {
+        return cache.get(key);
+      }
+      const result = originalMethod.apply(this, args);
+      cache.set(key, result);
+      return result;
+    };
+
+    return descriptor;
+  };
+}
+
+function Debounce(delay: number = 300) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    let timeoutId: any;
+
+    descriptor.value = function (...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        originalMethod.apply(this, args);
+      }, delay);
+    };
+
+    return descriptor;
+  };
 }

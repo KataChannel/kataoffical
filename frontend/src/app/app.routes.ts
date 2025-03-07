@@ -2,8 +2,9 @@ import { Routes,Router } from '@angular/router';
 import { DynamicComponentResolver } from './dynamic-component.resolver';
 import { AuthGuard } from './shared/common/users/guards/auth.guard';
 import { GuestGuard } from './shared/common/users/guards/guest.guard';
+import { PermissionGuard } from './shared/common/users/guards/permission.guard';
 export const routes: Routes = [
-    { path: '', redirectTo: 'admin/menu', pathMatch: 'full' },
+    { path: '', redirectTo: 'admin/donhang', pathMatch: 'full' },
     {
       path: '404',
       loadComponent: () => import('./site/notfound/notfound.component').then((c) => c.NotfoundComponent),
@@ -15,6 +16,8 @@ export const routes: Routes = [
       children: [
         {
           path: 'menu',
+          canActivate: [PermissionGuard],
+          data: { permission: 'menu.view' },
           loadComponent: () => import('./admin/menu/menu/listmenu/listmenu.component').then((c) => c.ListMenuComponent),
           children: [
             {
@@ -29,6 +32,8 @@ export const routes: Routes = [
         },
         {
           path: 'hotro',
+          canActivate: [PermissionGuard],
+          data: { permission: 'hotro.view' },
           loadComponent: () => import('./admin/hotro/listhotro/listhotro.component').then((c) => c.ListHotroComponent),
           children: [
             {
@@ -38,21 +43,9 @@ export const routes: Routes = [
           ],
         },
         {
-          path: 'users',
-          loadComponent: () => import('./admin/user/listuser/listuser.component').then((c) => c.ListUserComponent),
-          children: [
-            {
-              path: '',
-              loadComponent: () => import('./admin/user/listuser/listuser.component').then((c) => c.ListUserComponent),
-            },
-            {
-              path: ':id',
-              loadComponent: () => import('./admin/user/detailuser/detailuser.component').then((c) => c.DetailUserComponent),
-            },
-          ],
-        },
-        {
           path: 'nhomuser',
+          canActivate: [PermissionGuard],
+          data: { permission: 'nhomuser.view' },
           loadComponent: () => import('./admin/role/listrole/listrole.component').then((c) => c.ListRoleComponent),
           children: [
             {
@@ -67,6 +60,8 @@ export const routes: Routes = [
         },
         {
           path: 'permission',
+          canActivate: [PermissionGuard],
+          data: { permission: 'permission.view' },
           loadComponent: () => import('./admin/permission/listpermission/listpermission.component').then((c) => c.ListPermissionComponent),
           children: [
             {
@@ -105,6 +100,8 @@ export const routes: Routes = [
         },
         {
           path: 'sanpham',
+          canActivate: [PermissionGuard],
+          data: { permission: 'sanpham.view' },
           loadComponent: () => import('./admin/sanpham/listsanpham/listsanpham.component').then((c) => c.ListSanphamComponent),
           children: [
             {
@@ -119,6 +116,8 @@ export const routes: Routes = [
         },
         {
           path: 'banggia',
+          canActivate: [PermissionGuard],
+          data: { permission: 'banggia.view' },
           loadComponent: () => import('./admin/banggia/listbanggia/listbanggia.component').then((c) => c.ListBanggiaComponent),
           children: [
             {
@@ -133,20 +132,8 @@ export const routes: Routes = [
         },
         {
           path: 'khachhang',
-          loadComponent: () => import('./admin/khachhang/listkhachhang/listkhachhang.component').then((c) => c.ListKhachhangComponent),
-          children: [
-            {
-              path: '',
-              loadComponent: () => import('./admin/khachhang/listkhachhang/listkhachhang.component').then((c) => c.ListKhachhangComponent),
-            },
-            {
-              path: ':id',
-              loadComponent: () => import('./admin/khachhang/detailkhachhang/detailkhachhang.component').then((c) => c.DetailKhachhangComponent),
-            },
-          ],
-        },
-        {
-          path: 'khachhang',
+          canActivate: [PermissionGuard],
+          data: { permission: 'khachhang.view' },
           loadComponent: () => import('./admin/khachhang/listkhachhang/listkhachhang.component').then((c) => c.ListKhachhangComponent),
           children: [
             {
@@ -161,6 +148,8 @@ export const routes: Routes = [
         },
         {
           path: 'nhomkhachhang',
+          canActivate: [PermissionGuard],
+          data: { permission: 'nhomkhachhang.view' },
           loadComponent: () => import('./admin/nhomkhachhang/listnhomkhachhang/listnhomkhachhang.component').then((c) => c.ListNhomkhachhangComponent),
           children: [
             {
@@ -175,6 +164,8 @@ export const routes: Routes = [
         },
         {
           path: 'nhacungcap',
+          canActivate: [PermissionGuard],
+          data: { permission: 'nhacungcap.view' },
           loadComponent: () => import('./admin/nhacungcap/listnhacungcap/listnhacungcap.component').then((c) => c.ListNhacungcapComponent),
           children: [
             {
@@ -189,6 +180,8 @@ export const routes: Routes = [
         },
         {
           path: 'dathang',
+          canActivate: [PermissionGuard],
+          data: { permission: 'dathang.view' },
           loadComponent: () => import('./admin/dathang/listdathang/listdathang.component').then((c) => c.ListDathangComponent),
           children: [
             {
@@ -203,6 +196,8 @@ export const routes: Routes = [
         },
         {
           path: 'donhang',
+          canActivate: [PermissionGuard],
+          data: { permission: 'donhang.view' },
           loadComponent: () => import('./admin/donhang/listdonhang/listdonhang.component').then((c) => c.ListDonhangComponent),
           children: [
             {
@@ -217,6 +212,8 @@ export const routes: Routes = [
         },
         {
           path: 'vandon',
+          canActivate: [PermissionGuard],
+          data: { permission: 'vandon.view' },
           loadComponent: () => import('./admin/donhang/vandon/vandon.component').then((c) => c.VandonComponent),
         },
         {
@@ -235,6 +232,8 @@ export const routes: Routes = [
         },
         {
           path: 'phieugiaohang',
+          canActivate: [PermissionGuard],
+          data: { permission: 'phieugiaohang.view' },
           loadComponent: () => import('./admin/phieugiaohang/listphieugiaohang/listphieugiaohang.component').then((c) => c.ListPhieugiaohangComponent),
           children: [
             {
@@ -248,21 +247,9 @@ export const routes: Routes = [
           ],
         },
         {
-          path: 'phieuchiahang',
-          loadComponent: () => import('./admin/phieuchiahang/listphieuchiahang/listphieuchiahang.component').then((c) => c.ListPhieuchiahangComponent),
-          children: [
-            {
-              path: '',
-              loadComponent: () => import('./admin/phieuchiahang/listphieuchiahang/listphieuchiahang.component').then((c) => c.ListPhieuchiahangComponent),
-            },
-            {
-              path: ':id',
-              loadComponent: () => import('./admin/phieuchiahang/detailphieuchiahang/detailphieuchiahang.component').then((c) => c.DetailPhieuchiahangComponent),
-            },
-          ],
-        },
-        {
           path: 'phieukho',
+          canActivate: [PermissionGuard],
+          data: { permission: 'phieukho.view' },
           loadComponent: () => import('./admin/phieukho/listphieukho/listphieukho.component').then((c) => c.ListPhieukhoComponent),
           children: [
             {
@@ -277,6 +264,8 @@ export const routes: Routes = [
         },
         {
           path: 'user',
+          canActivate: [PermissionGuard],
+          data: { permission: 'user.view' },
           loadComponent: () => import('./admin/user/listuser/listuser.component').then((c) => c.ListUserComponent),
           children: [
             {
@@ -291,6 +280,8 @@ export const routes: Routes = [
         },
         {
           path: 'quanlyfile',
+          canActivate: [PermissionGuard],
+          data: { permission: 'quanlyfile.view' },
           loadComponent: () => import('./admin/listquanlyfile/listquanlyfile.component').then((c) => c.ListquanlyfileComponent),
           children: [
             {
@@ -300,6 +291,8 @@ export const routes: Routes = [
           },
         {
           path: 'profile',
+          canActivate: [PermissionGuard],
+          data: { permission: 'profile.view' },
           loadComponent: () => import('./shared/common/users/profile/profile.component').then((c) => c.ProfileComponent),
           children:[
             {

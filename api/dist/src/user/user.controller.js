@@ -29,7 +29,13 @@ let UserController = class UserController {
         return this.userService.findAll();
     }
     async getProfile(req) {
-        return this.userService.findOne(req.user.sub);
+        return this.userService.findOne(req.user.id);
+    }
+    async assignRoleToUser(data) {
+        return this.userService.assignRoleToUser(data);
+    }
+    async removeRoleFromUser(data) {
+        return this.userService.removeRoleFromUser(data);
     }
     findOne(id) {
         return this.userService.findOne(id);
@@ -39,12 +45,6 @@ let UserController = class UserController {
     }
     remove(id) {
         return this.userService.remove(id);
-    }
-    async assignRoleToUser(data) {
-        return this.userService.assignRoleToUser(data);
-    }
-    async removeRoleFromUser(data) {
-        return this.userService.removeRoleFromUser(data);
     }
 };
 exports.UserController = UserController;
@@ -70,6 +70,20 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getProfile", null);
 __decorate([
+    (0, common_1.Post)('assign'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "assignRoleToUser", null);
+__decorate([
+    (0, common_1.Delete)('remove'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "removeRoleFromUser", null);
+__decorate([
     (0, common_1.Get)('findid/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -91,20 +105,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "remove", null);
-__decorate([
-    (0, common_1.Post)('assign'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "assignRoleToUser", null);
-__decorate([
-    (0, common_1.Delete)('remove'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "removeRoleFromUser", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [user_service_1.UserService,

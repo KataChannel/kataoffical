@@ -25,7 +25,16 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   // @Permissions('view_profile')
   async getProfile(@Req() req) {
-    return this.userService.findOne(req.user.sub);
+    return this.userService.findOne(req.user.id);
+  }
+  @Post('assign')
+  async assignRoleToUser(@Body() data: any) {
+    return this.userService.assignRoleToUser(data);
+  }
+
+  @Delete('remove')
+  async removeRoleFromUser(@Body() data: any) {
+    return this.userService.removeRoleFromUser(data);
   }
   @Get('findid/:id')
   findOne(@Param('id') id: string) {
@@ -40,14 +49,4 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }  
-  @Post('assign')
-  async assignRoleToUser(@Body() data: any) {
-    return this.userService.assignRoleToUser(data);
-  }
-
-  @Delete('remove')
-  async removeRoleFromUser(@Body() data: any) {
-    return this.userService.removeRoleFromUser(data);
-  }
-
 }

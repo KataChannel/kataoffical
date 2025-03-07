@@ -14,9 +14,9 @@ export class MenuController {
   findAll() {
     return this.menuService.findAll();
   }
-  @Get('/tree')
-  getTree() {
-    return this.menuService.getTree();
+  @Post('/tree')
+  getTree(@Body() data: any) {
+    return this.menuService.getTree(data);
   }
   @Get(':id')
   findOne(@Param('id') id: string) {

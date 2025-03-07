@@ -28,8 +28,20 @@ export class MenuService {
     return this.prisma.menu.delete({ where: { id } });
   }
 
-  async getTree(){
-    const menus = await this.findAll();    
+  async getTree(data:any){
+    console.error(data);    
+    const menus = await this.findAll();  
+    const filteredMenus = menus.filter(v => {
+      const path = v.slug;
+      const result = `${path?.split("/").pop()}.view`;
+      v.isActive = data.includes(result);
+      return v.isActive;
+    });
+    const parentIds = new Set(filteredMenus.map(v => v.parentId).filter(id => id));
+    const parents = menus.filter(v => parentIds.has(v.id));
+    filteredMenus.push(...parents);
+    menus.length = 0;
+    menus.push(...filteredMenus);    
     return this.buildTree(menus);
   }
 

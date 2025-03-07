@@ -17,15 +17,25 @@ export class AuthService {
   async login(SDT:string,email: string, password: string) {   
     const user:any = await this.prisma.user.findFirst({ 
       where: { OR: [{ email }, { SDT }] },
-      include: { roles: { include: { role: { include: { permissions: true } } } } },
+      include: {
+      roles: { include: { role: { include: { permissions: {include:{permission:true}} } } } },
+      },
      });    
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    const payload = { sub: user.id, role: user.role, permissions: user.permissions };
+    const resultUser = {
+      ...user,
+      roles: user.roles.map((role) => {
+        const { permissions, ...rest } = role.role;
+        return rest;
+      }),
+      permissions: Array.from(new Set(user.roles.flatMap((role) => role.role.permissions.map((p) => p.permission)))),
+    };
+    const payload = { id: user.id, role: user.role, permissions: user.permissions };
     const result = {
       access_token: this.jwtService.sign(payload),
-      user: { id: user.id, email: user.email, role: user.role||[], permissions: user.permissions||[] },
+      user: resultUser,
     };
     return result
   }

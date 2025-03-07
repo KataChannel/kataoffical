@@ -67,4 +67,20 @@ export class AuthUtils {
         date.setUTCSeconds(decodedToken.exp);
         return date;
     }
+
+
+     static removeDuplicatePermissions(user: any) {
+        const uniquePermissions = new Map();
+        user.roles.forEach((role:any) => {
+            role.role.permissions.forEach((permission:any) => {
+                if (!uniquePermissions.has(permission.permissionId)) {
+                    uniquePermissions.set(permission.permissionId, permission);
+                }
+            });
+        });
+    
+        // Chuyển Map thành mảng và gán lại vào user
+        user.permissions = Array.from(uniquePermissions.values());
+        return user;
+    }
 }

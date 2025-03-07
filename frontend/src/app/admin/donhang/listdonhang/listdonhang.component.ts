@@ -68,7 +68,7 @@ export class ListDonhangComponent {
   displayedColumns: string[] = [
     'madonhang',
     'khachhang',
-    'sanpham',
+    'donhang',
     'ngaygiao',
     'ghichu',
     'status',
@@ -78,7 +78,7 @@ export class ListDonhangComponent {
   ColumnName: any = {
     madonhang: 'Mã Đơn Hàng',
     khachhang: 'Khách Hàng',
-    sanpham: 'Sản Phẩm',
+    donhang: 'Sản Phẩm',
     ngaygiao: 'Ngày Giao',
     ghichu: 'Ghi Chú',
     status: 'Trạng Thái',
@@ -117,6 +117,7 @@ export class ListDonhangComponent {
     { id: 4, Title: '1 Năm', value: 'year' },
   ];
   Chonthoigian: any = 'day';
+  isSearch: boolean = false;
   constructor() {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
@@ -177,8 +178,12 @@ export class ListDonhangComponent {
       return isMatch;
     };
   }
-  applyFilter() {
-    this.dataSource.filter = JSON.stringify(this.filterValues);
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
   async ngOnInit(): Promise<void> {
     await this._DonhangService.getAllDonhang();
@@ -233,13 +238,7 @@ export class ListDonhangComponent {
         }
       });
   }
-  toggleColumn(item: any): void {
-    const column = this.FilterColumns.find((v) => v.key === item.key);
-    if (column) {
-      column.isShow = !column.isShow;
-      this.updateDisplayedColumns();
-    }
-  }
+
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
       (item) => item.key
@@ -259,6 +258,80 @@ export class ListDonhangComponent {
       v.value.toLowerCase().includes(query)
     );
   }
+
+
+
+  toggleColumn(item: any): void {
+    const column = this.FilterColumns.find((v) => v.key === item.key);
+    if (column) {
+      column.isShow = !column.isShow;
+      this.updateDisplayedColumns();
+    }
+  }
+  @memoize()
+  FilterHederColumn(list:any,column:any)
+  {
+    const uniqueList = list.filter((obj: any, index: number, self: any) => 
+      index === self.findIndex((t: any) => t[column] === obj[column])
+    );
+    return uniqueList
+  }
+  @Debounce(300)
+  doFilterHederColumn(event: any, column: any): void {
+    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    const query = event.target.value.toLowerCase();  
+  }
+  ListFilter:any[] =[]
+  ChosenItem(item:any,column:any)
+  {
+    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
+    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
+    if(CheckItem1.length>0)
+    {
+      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
+    }
+    else{
+      this.ListFilter = [...this.ListFilter,...CheckItem];
+    }
+  }
+  ChosenAll(list:any)
+  {
+    list.forEach((v:any) => {
+      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
+      if(CheckItem)
+        {
+          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
+        }
+        else{
+          this.ListFilter.push(v);
+        }
+    });
+  }
+  ResetFilter()
+  {
+    this.ListFilter = this.Listdonhang();
+    this.dataSource.data = this.Listdonhang();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+  EmptyFiter()
+  {
+    this.ListFilter = [];
+  }
+  CheckItem(item:any)
+  {
+    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  }
+  ApplyFilterColum(menu:any)
+  {    
+
+    this.dataSource.data = this.Listdonhang().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    menu.closeMenu();
+  }
+
+
   create(): void {
     this.drawer.open();
     this._router.navigate(['admin/donhang', 0]);
@@ -286,7 +359,7 @@ export class ListDonhangComponent {
     this.Phieuchia = this.editDonhang.map((v: any) => ({
       makh: v.khachhang?.makh,
       name: v.khachhang?.name,
-      sanpham: v.sanpham.map((v1: any) => ({
+      donhang: v.donhang.map((v1: any) => ({
         title: v1.title,
         dvt: v1.dvt,
         slgiao: v1.slgiao,
@@ -301,18 +374,18 @@ export class ListDonhangComponent {
 
   getUniqueProducts(): string[] {
     const products = new Set<string>();
-    this.Phieuchia.forEach(kh => kh.sanpham.forEach((sp:any) => products.add(sp.title)));
+    this.Phieuchia.forEach(kh => kh.donhang.forEach((sp:any) => products.add(sp.title)));
     return Array.from(products);
   }
 
   getProductQuantity(product: string, makh: string): number | string {
     const customer = this.Phieuchia.find(kh => kh.makh === makh);
-    const item = customer?.sanpham.find((sp:any) => sp.title === product);
+    const item = customer?.donhang.find((sp:any) => sp.title === product);
     return item ? item.slgiao : '';
   }
   getDvtForProduct(product: string) {
     const uniqueProducts = Array.from(
-      new Map(this.Phieuchia.flatMap(c => c.sanpham.map((sp:any) => ({ ...sp, makh: c.makh, name: c.name })))
+      new Map(this.Phieuchia.flatMap(c => c.donhang.map((sp:any) => ({ ...sp, makh: c.makh, name: c.name })))
           .map(p => [p.title, p])
       ).values()
   );
@@ -446,5 +519,51 @@ export class ListDonhangComponent {
       printWindow.document.close();
     });
   }
+  trackByFn(index: number, item: any): any {
+    return item.id; // Use a unique identifier
+  }
+}
 
+
+function memoize() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    const cache = new Map();
+
+    descriptor.value = function (...args: any[]) {
+      const key = JSON.stringify(args);
+      if (cache.has(key)) {
+        return cache.get(key);
+      }
+      const result = originalMethod.apply(this, args);
+      cache.set(key, result);
+      return result;
+    };
+
+    return descriptor;
+  };
+}
+
+function Debounce(delay: number = 300) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    let timeoutId: any;
+
+    descriptor.value = function (...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        originalMethod.apply(this, args);
+      }, delay);
+    };
+
+    return descriptor;
+  };
 }

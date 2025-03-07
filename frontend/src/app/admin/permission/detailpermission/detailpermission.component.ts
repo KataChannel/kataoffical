@@ -135,9 +135,6 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       this.isDelete.update(value => !value);
     }
     FillSlug(){
-      this.DetailPermission.update((v:any)=>{
-        v.slug = convertToSlug(v.title);
-        return v;
-      })
+
     }
   }

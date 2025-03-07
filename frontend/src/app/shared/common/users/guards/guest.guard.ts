@@ -44,7 +44,6 @@ export class GuestGuard implements CanActivate {
   private _check(): Observable<boolean> {
     return this._UserService.checkDangnhap().pipe(
       switchMap((authenticated) => {
-        console.log(authenticated);
         if (authenticated) {
          this._router.navigate(['']);
           return of(false);

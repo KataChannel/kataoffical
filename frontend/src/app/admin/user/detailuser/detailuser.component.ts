@@ -153,19 +153,11 @@ import { MatMenuModule } from '@angular/material/menu';
     }
     handleAddRole(item:any){
       console.log(item);
-      this.ListRole = this.ListRole.filter((v:any)=>v.id !== item.id);
-      this.DetailUser.update((v:any)=>{
-        if(!v.role) v.role = [];
-        v.role.push(item);
-        return v;
-      })
-      console.log(this.DetailUser()); 
+      this.ListRole.push(item);
+      this._UserService.assignRoleToUser({userId:this.DetailUser().id,roleId:item.id});
     }
     handleRemoveRole(item:any){
-      this.ListRole.push(item);
-      this.DetailUser.update((v:any)=>{
-        v.role = v.role.filter((v1:any)=>v1.id !== item.id);
-        return v;
-      })
+      this.ListRole = this.ListRole.filter((v:any)=>v.id !== item.id);
+      this._UserService.removeRoleFromUser({userId:item.userId,roleId:item.roleId});
     }
   }

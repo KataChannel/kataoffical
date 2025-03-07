@@ -22,7 +22,9 @@
               "moment",
               "color-convert",
               "@mixmark-io/domino",
-              "color-name"
+              "color-name",
+              "debug",
+              "xmlhttprequest-ssl"
              ],
             "outputPath": "dist/frontend",
             "index": "src/index.html",

@@ -33,38 +33,68 @@ let UserService = class UserService {
         return this.prisma.user.findMany();
     }
     async findOne(id) {
-        const user = await this.prisma.user.findUnique({ where: { id } });
+        const user = await this.prisma.user.findUnique({
+            where: { id },
+            include: {
+                roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } },
+            },
+        });
         if (!user)
             throw new common_1.NotFoundException('user not found');
-        return user;
+        return {
+            ...user,
+            roles: user.roles.map((role) => {
+                const { permissions, ...rest } = role.role;
+                return rest;
+            }),
+            permissions: Array.from(new Set(user.roles.flatMap((role) => role.role.permissions.map((p) => p.permission)))),
+        };
     }
     async update(id, data) {
         this._SocketGateway.senduserUpdate();
+        delete data.roles;
         return this.prisma.user.update({ where: { id }, data });
     }
     async remove(id) {
         return this.prisma.user.delete({ where: { id } });
     }
     async assignRoleToUser(data) {
-        return this.prisma.user.update({
-            where: { id: data.userId },
+        const { userId, roleId } = data;
+        console.log(data);
+        const role = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+        if (!role) {
+            throw new common_1.NotFoundException(`Role with ID ${userId} not found`);
+        }
+        const permission = await this.prisma.role.findUnique({
+            where: { id: roleId },
+        });
+        if (!permission) {
+            throw new common_1.NotFoundException(`Permission with ID ${roleId} not found`);
+        }
+        return this.prisma.userRole.create({
             data: {
-                roles: {
-                    connect: data.role.map((roleId) => ({ id: roleId }))
-                }
+                userId,
+                roleId,
             },
-            include: { roles: { include: { role: true } } }
         });
     }
     async removeRoleFromUser(data) {
-        return this.prisma.user.update({
-            where: { id: data.userId },
-            data: {
-                roles: {
-                    disconnect: data.roleIds.map((roleId) => ({ roleId }))
-                }
+        const { userId, roleId } = data;
+        const rolePermission = await this.prisma.userRole.findFirst({
+            where: {
+                userId,
+                roleId,
             },
-            include: { roles: { include: { role: true } } }
+        });
+        if (!rolePermission) {
+            throw new common_1.NotFoundException(`Permission with ID ${roleId} is not assigned to Role with ID ${userId}`);
+        }
+        return this.prisma.userRole.delete({
+            where: {
+                id: rolePermission.id,
+            },
         });
     }
 };

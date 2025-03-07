@@ -39,8 +39,8 @@
       </div>
       <div class="grid grid-cols-3 gap-2">
         @for (item of filterPermission; track $index) {
-          <mat-slide-toggle  [checked]="item.hasPermission"  (change)="togglePermission(item)">
-            {{ item.description }}
+          <mat-slide-toggle [disabled]="!isEdit()"  [checked]="item.hasPermission"  (change)="togglePermission(item)">
+            {{ item.name }} - ({{ item.description||'Chưa Mô Tả' }})
           </mat-slide-toggle>
         }
       </div>

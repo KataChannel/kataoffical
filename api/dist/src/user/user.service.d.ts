@@ -38,6 +38,19 @@ export declare class UserService {
         updatedAt: Date;
     }[]>;
     findOne(id: string): Promise<{
+        roles: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+        }[];
+        permissions: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            description: string | null;
+        }[];
         id: string;
         email: string | null;
         SDT: string | null;
@@ -72,56 +85,18 @@ export declare class UserService {
     }>;
     assignRoleToUser(data: {
         userId: string;
-        role: any;
+        roleId: any;
     }): Promise<{
-        roles: ({
-            role: {
-                id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
-            };
-        } & {
-            id: string;
-            userId: string;
-            roleId: string;
-        })[];
-    } & {
         id: string;
-        email: string | null;
-        SDT: string | null;
-        password: string;
-        provider: string | null;
-        providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
+        userId: string;
+        roleId: string;
     }>;
     removeRoleFromUser(data: {
         userId: string;
-        roleIds: any;
+        roleId: any;
     }): Promise<{
-        roles: ({
-            role: {
-                id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
-            };
-        } & {
-            id: string;
-            userId: string;
-            roleId: string;
-        })[];
-    } & {
         id: string;
-        email: string | null;
-        SDT: string | null;
-        password: string;
-        provider: string | null;
-        providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
+        userId: string;
+        roleId: string;
     }>;
 }
