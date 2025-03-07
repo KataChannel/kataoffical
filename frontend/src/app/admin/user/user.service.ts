@@ -344,15 +344,12 @@ export class UserService {
       }
       const data = await response.json();
       const permissions = data.permissions.map((p: any) => p.name);
+      this.profile.set(data)
       if(permissions.length>0)
       {
         this._StorageService.setItem('permissions', JSON.stringify(permissions));
-        this.profile.set(data)
-        return true
       }
-      else {
-        return false
-      }
+      return data;
     } catch (error) {
       return console.error(error);
     }
@@ -418,6 +415,7 @@ export class UserService {
   loadPermissions() {
     const permissions = this._StorageService.getItem('permissions');
     this.permissionsSubject.next(permissions);
+    return permissions;
   }
 
   hasPermission(permission: string): boolean {

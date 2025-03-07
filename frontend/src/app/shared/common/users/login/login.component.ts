@@ -95,11 +95,14 @@ export class LoginComponent implements OnInit {
        this._StorageService.setItem('token', token); // Store the token
        this._UserService.getProfile().then((res: any) => {
         if(res){
-          console.log(res);
-          window.location.reload(); // Reload the page
-        }
-        else {
-          this.router.navigate(['/404',{ queryParams: {data:{ code:403,title:'Bạn không có quyền truy cập liên hệ admin' }}}]);
+          if(res.permissions>0){
+            console.log(res);
+            window.location.reload(); // Reload the page
+          }
+          else {
+            this.router.navigate(['/404',{ queryParams: {data:{ code:403,title:'Bạn không có quyền truy cập liên hệ admin' }}}]);
+          }
+
         }
        }) 
       }
