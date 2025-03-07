@@ -71,7 +71,7 @@ export class DetailDathangComponent {
       const id = params.get('id');
       this._DathangService.setDathangId(id);
       await this._NhacungcapService.getAllNhacungcap();
-      this.filterNhacungcap = this.ListNhacungcap();
+      this.filterNhacungcap = this.ListNhacungcap().filter((v: any) => v.isActive);
       await this._BanggiaService.getAllBanggia();
       this.filterBanggia = this._BanggiaService.ListBanggia();
       await this._SanphamService.getAllSanpham();
@@ -193,6 +193,7 @@ export class DetailDathangComponent {
     const query = event.target.value.toLowerCase();
     this.filterNhacungcap = this.ListNhacungcap().filter(
       (v: any) =>
+        v.isActive &&
         v.name.toLowerCase().includes(query) ||
         v.namenn.toLowerCase().includes(query) ||
         v.sdt.toLowerCase().includes(query)

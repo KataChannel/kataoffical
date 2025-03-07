@@ -166,6 +166,7 @@ export class ListNhacungcapComponent {
       this.updateDisplayedColumns();
     }
   }
+  @memoize()
   FilterHederColumn(list:any,column:any)
   {
     const uniqueList = list.filter((obj: any, index: number, self: any) => 
@@ -173,40 +174,40 @@ export class ListNhacungcapComponent {
     );
     return uniqueList
   }
+  @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
     this.dataSource.filteredData = this.Listnhacungcap().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();
-    console.log(query,column);
-    console.log(this.dataSource.filteredData);   
+    const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]
-  ChosenItem(item:any)
+  ChosenItem(item:any,column:any)
   {
-    if(this.ListFilter.includes(item.id))
+    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
+    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
+    if(CheckItem1.length>0)
     {
-      this.ListFilter = this.ListFilter.filter((v) => v !== item.id);
+      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
     }
     else{
-      this.ListFilter.push(item.id);
+      this.ListFilter = [...this.ListFilter,...CheckItem];
     }
-    console.log(this.ListFilter);
-    
   }
   ChosenAll(list:any)
   {
     list.forEach((v:any) => {
-      if(this.ListFilter.includes(v.id))
+      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
+      if(CheckItem)
         {
-          this.ListFilter = this.ListFilter.filter((v) => v !== v.id);
+          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
         }
         else{
-          this.ListFilter.push(v.id);
+          this.ListFilter.push(v);
         }
     });
   }
   ResetFilter()
   {
-    this.ListFilter = this.Listnhacungcap().map((v:any) => v.id);
+    this.ListFilter = this.Listnhacungcap();
     this.dataSource.data = this.Listnhacungcap();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -217,16 +218,15 @@ export class ListNhacungcapComponent {
   }
   CheckItem(item:any)
   {
-    return this.ListFilter.includes(item.id);
+    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
   }
   ApplyFilterColum(menu:any)
   {    
-    this.dataSource.data = this.Listnhacungcap().filter((v: any) => this.ListFilter.includes(v.id));
+
+    this.dataSource.data = this.Listnhacungcap().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    console.log(this.dataSource.data);
     menu.closeMenu();
-    
   }
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -337,4 +337,50 @@ export class ListNhacungcapComponent {
   ExportExcel(data:any,title:any) {
     writeExcelFile(data,title);
   }
+  trackByFn(index: number, item: any): any {
+    return item.id; // Use a unique identifier
+  }
+}
+
+function memoize() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    const cache = new Map();
+
+    descriptor.value = function (...args: any[]) {
+      const key = JSON.stringify(args);
+      if (cache.has(key)) {
+        return cache.get(key);
+      }
+      const result = originalMethod.apply(this, args);
+      cache.set(key, result);
+      return result;
+    };
+
+    return descriptor;
+  };
+}
+
+function Debounce(delay: number = 300) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    let timeoutId: any;
+
+    descriptor.value = function (...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        originalMethod.apply(this, args);
+      }, delay);
+    };
+
+    return descriptor;
+  };
 }

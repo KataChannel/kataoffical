@@ -102,6 +102,7 @@ export class DonhangService {
         ttnhan: item.ttnhan,
         ghichu: item.ghichu,
       })),
+      name: donhang.khachhang.name,
     }));
   }
 

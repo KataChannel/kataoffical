@@ -47,6 +47,7 @@ export declare class DonhangController {
     }[]>;
     findAll(): Promise<{
         sanpham: any[];
+        name: string | null;
         khachhang: {
             id: string;
             email: string | null;

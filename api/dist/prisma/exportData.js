@@ -40,7 +40,7 @@ async function exportData() {
             console.error(`⚠️ Lỗi khi lấy dữ liệu từ bảng ${model}:`, error.message);
         }
     }
-    (0, fs_1.writeFileSync)('prisma_seed.json', JSON.stringify(data, null, 2));
+    (0, fs_1.writeFileSync)(`prisma_seed_${(new Date()).getTime()}.json`, JSON.stringify(data, null, 2));
     console.log('✅ Dữ liệu đã được xuất ra file prisma_seed.json');
     await prisma.$disconnect();
 }

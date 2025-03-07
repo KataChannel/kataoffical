@@ -72,7 +72,7 @@ export class DetailDonhangComponent {
       const id = params.get('id');
       this._DonhangService.setDonhangId(id);
       await this._KhachhangService.getAllKhachhang();
-      this.filterKhachhang = this.ListKhachhang();
+      this.filterKhachhang = this.ListKhachhang().filter((v:any) => v.isActive);
       await this._BanggiaService.getAllBanggia();
       this.filterBanggia = this._BanggiaService.ListBanggia();
       await this._SanphamService.getAllSanpham();
@@ -198,6 +198,7 @@ export class DetailDonhangComponent {
     const query = event.target.value.toLowerCase();
     this.filterKhachhang = this.ListKhachhang().filter(
       (v: any) =>
+        v.isActive &&
         v.name?.toLowerCase().includes(query) ||
         v.namenn?.toLowerCase().includes(query) ||
         v.sdt?.toLowerCase().includes(query)

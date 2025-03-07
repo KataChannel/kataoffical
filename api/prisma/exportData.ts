@@ -1,6 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 import { writeFileSync } from 'fs';
-
 const prisma = new PrismaClient();
 
 async function exportData() {
@@ -43,7 +42,7 @@ async function exportData() {
   }
 
   // Ghi dữ liệu vào file JSON
-  writeFileSync('prisma_seed.json', JSON.stringify(data, null, 2));
+  writeFileSync(`prisma_seed_${(new Date()).getTime()}.json`, JSON.stringify(data, null, 2));
   console.log('✅ Dữ liệu đã được xuất ra file prisma_seed.json');
 
   await prisma.$disconnect();
