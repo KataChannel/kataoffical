@@ -29,11 +29,15 @@ export class MenuService {
   }
 
   async getTree(data:any){   
+    console.log(data);
+    if(Object.entries(data).length === 0){
+      data =['donhang.view'];
+    }
     const menus = await this.findAll();  
     const filteredMenus = menus.filter(v => {
       const path = v.slug;
       const result = `${path?.split("/").pop()}.view`;
-      v.isActive = data.includes(result);
+      v.isActive = data?.includes(result);
       return v.isActive;
     });
     const parentIds = new Set(filteredMenus.map(v => v.parentId).filter(id => id));

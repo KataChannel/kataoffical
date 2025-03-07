@@ -75,15 +75,17 @@ export class AdminmainComponent {
   _snackBar:MatSnackBar = inject(MatSnackBar)
   ListMenu:any[] = []
   async ngOnInit() {
-    await this._UserService.getProfile().then((res: any) => {
+    await this._UserService.getProfile().then(async (res: any) => {
       if(res){
         this.User = res; 
+        const permissions = this.User?.permissions?.map((v:any)=>v.name);
+        await this._MenuService.getTreeMenu(permissions)
+        this.ListMenu = this._MenuService.ListMenu()    
+        this.dataSource.data = this._MenuService.ListMenu();   
       } 
     });
-    const permissions = this.User.permissions.map((v:any)=>v.name);
-    await this._MenuService.getTreeMenu(permissions)
-    this.ListMenu = this._MenuService.ListMenu()    
-    this.dataSource.data = this._MenuService.ListMenu();    
+   
+ 
     this._breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       if (result.matches) {
         this.drawer.mode = 'over';
