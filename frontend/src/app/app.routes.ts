@@ -4,7 +4,7 @@ import { AuthGuard } from './shared/common/users/guards/auth.guard';
 import { GuestGuard } from './shared/common/users/guards/guest.guard';
 import { PermissionGuard } from './shared/common/users/guards/permission.guard';
 export const routes: Routes = [
-    { path: '', redirectTo: '404', pathMatch: 'full' },
+    { path: '', redirectTo: 'admin/donhang', pathMatch: 'full' },
     {
       path: '404',
       loadComponent: () => import('./site/notfound/notfound.component').then((c) => c.NotfoundComponent),

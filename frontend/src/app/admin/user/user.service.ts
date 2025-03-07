@@ -418,8 +418,10 @@ export class UserService {
   }
 
   hasPermission(permission: string): boolean {
-    if(!this.permissionsSubject.getValue()){this.logout()}
-    return this.permissionsSubject.getValue().includes(permission);
+    if (!this.permissionsSubject?.getValue()) {
+     this.logout()
+    }
+    return this.permissionsSubject?.getValue()?.includes(permission);
   }
   async register(user: any) {
     try {

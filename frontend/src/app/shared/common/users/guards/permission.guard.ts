@@ -17,11 +17,11 @@ export class PermissionGuard implements CanActivate {
         horizontalPosition: "end",
         verticalPosition: "top",
         panelClass: ['snackbar-warning'],
-      });
-      
+      }); 
       this.router.navigate(['/login']);
       return false;
+    }else {
+      return true;
     }
-    return true;
   }
 }

@@ -35,7 +35,6 @@ let MenuService = class MenuService {
         return this.prisma.menu.delete({ where: { id } });
     }
     async getTree(data) {
-        console.error(data);
         const menus = await this.findAll();
         const filteredMenus = menus.filter(v => {
             const path = v.slug;

@@ -79,6 +79,7 @@ export class LoginComponent implements OnInit {
         console.log('Token from URL:', token);
         this.validateToken(token); // Validate the token
       } else {
+        this.router.navigate(['/admin/donhang']);
         console.error('Token not found in URL');
       }
     });
@@ -90,8 +91,8 @@ export class LoginComponent implements OnInit {
       // Check if the token is expired (if it has an `exp` field)
       if (payload.exp && payload.exp < Date.now() / 1000) {
       } else {
-        this._StorageService.setItem('token', token); // Store the token
-        this.router.navigate(['/admin/hotro']); // Redirect to dashboard
+       this._StorageService.setItem('token', token); // Store the token
+       // this.router.navigate(['/admin/donhang']); // Redirect to dashboard
       }
     } catch (error) {
     }
@@ -136,9 +137,7 @@ export class LoginComponent implements OnInit {
 
   }
   async loginWithGoogle() {
-    const GoogleAuthProvider = new Auth.GoogleAuthProvider();
-    console.log(GoogleAuthProvider);
-    
+    const GoogleAuthProvider = new Auth.GoogleAuthProvider();    
     try {
       const result = await this.auth.signInWithPopup(GoogleAuthProvider);
       console.log('Logged in:', result);
@@ -151,9 +150,9 @@ export class LoginComponent implements OnInit {
           //this.postMessage(data[1]);
           if (isPlatformBrowser(this.platformId)) {
            // this.postMessage(data[1]);
-            setTimeout(() => {
-              window.location.reload();
-            }, 0);
+            // setTimeout(() => {
+            //   window.location.reload();
+            // }, 0);
             
           }
         }
