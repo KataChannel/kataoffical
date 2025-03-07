@@ -91,8 +91,14 @@ export class LoginComponent implements OnInit {
       // Check if the token is expired (if it has an `exp` field)
       if (payload.exp && payload.exp < Date.now() / 1000) {
       } else {
+        
        this._StorageService.setItem('token', token); // Store the token
-       // this.router.navigate(['/admin/donhang']); // Redirect to dashboard
+       this._UserService.getProfile().then((res: any) => {
+        if(res){
+          console.log(res);
+          window.location.reload(); // Reload the page
+        }
+       }) 
       }
     } catch (error) {
     }

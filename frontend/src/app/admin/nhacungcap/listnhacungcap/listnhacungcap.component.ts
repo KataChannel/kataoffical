@@ -82,6 +82,7 @@ export class ListNhacungcapComponent {
   nhacungcapId:any = this._NhacungcapService.nhacungcapId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
+  isSearch: boolean = false;
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
@@ -100,8 +101,12 @@ export class ListNhacungcapComponent {
       return isMatch;
     };
   }
-  applyFilter() {
-    this.dataSource.filter = JSON.stringify(this.filterValues);
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
   async ngOnInit(): Promise<void> {    
     await this._NhacungcapService.getAllNhacungcap();
