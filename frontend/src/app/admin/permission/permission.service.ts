@@ -97,11 +97,9 @@ export class PermissionService {
       if (updatedAtServer > updatedAtCache) {
         await this.savePermissions(data);
         localStorage.setItem('lastUpdated', updatedAtServer.toString());
-        localStorage.setItem('permissions', JSON.stringify(data));
       }
       this.ListPermission.set(data);
       return cachedData.length > 0 ? cachedData : data;    
-      // localStorage.setItem('permissions', JSON.stringify(data)); // Cache vào LocalStorage
     } catch (error) {
       return console.error(error);
     }

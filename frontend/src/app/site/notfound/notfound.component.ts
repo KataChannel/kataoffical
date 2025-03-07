@@ -14,7 +14,11 @@ export class NotfoundComponent {
   message:any={};
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
-      this.message = JSON.parse(params['data']);
+      if(params['data'])
+      {
+        this.message = JSON.parse(params['data']);
+      }
+
     });
   }
 }
