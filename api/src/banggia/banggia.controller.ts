@@ -15,6 +15,14 @@ export class BanggiaController {
     return this.banggiaService.findAll();
   }
 
+  @Post('addKHtoBG')
+  addMultipleKhachhangToBanggia(@Body() data:any) {
+    return this.banggiaService.addKHtoBG(data.banggiaId,data.khachhangIds);
+  }
+  @Post('removeKHfromBG')
+  removeKHfromBG(@Body() data:any) {
+    return this.banggiaService.removeKHfromBG(data.banggiaId,data.khachhangIds);
+  }
   @Get('findid/:id')
   findOne(@Param('id') id: string) {
     return this.banggiaService.findOne(id);

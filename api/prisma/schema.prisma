@@ -81,17 +81,21 @@ model Profile {
   bio    String?
 }
 
-
-model Banggiakhachhang {
-  banggiaId  String
-  khachhangId String
-  banggia    Banggia  @relation(fields: [banggiaId], references: [id])
-  khachhang  Khachhang @relation(fields: [khachhangId], references: [id])
-  order      Int
-  isActive   Boolean  @default(false)
-  @@id([banggiaId, khachhangId])
+model Banggia {
+  id        String   @id @default(uuid())
+  title     String
+  type      String
+  batdau    DateTime?
+  ketthuc   DateTime?
+  order     Int?     @default(1)
+  ghichu   String?
+  status   String?
+  isActive Boolean    @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  sanpham   Banggiasanpham[]
+  khachhang Khachhang[] @relation("Banggiakhachhang")
 }
-
 model Khachhang {
   id           String   @id @default(uuid())
   name         String?
@@ -112,7 +116,6 @@ model Khachhang {
   donhang      Donhang[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  Banggiakhachhang Banggiakhachhang[]
   KhachhangNhom KhachhangNhom[]
 }
 model Nhomkhachhang {
@@ -171,23 +174,6 @@ model Donhang {
   isActive    Boolean  @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-}
-
-model Banggia {
-  id        String   @id @default(uuid())
-  title     String
-  type      String
-  batdau    DateTime?
-  ketthuc   DateTime?
-  order     Int?     @default(1)
-  ghichu   String?
-  status   String?
-  isActive Boolean    @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  sanpham   Banggiasanpham[]
-  khachhang Khachhang[] @relation("Banggiakhachhang")
-  Banggiakhachhang Banggiakhachhang[]
 }
 
 model Banggiasanpham {

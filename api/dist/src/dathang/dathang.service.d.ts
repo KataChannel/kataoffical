@@ -7,21 +7,21 @@ export declare class DathangService {
         sanpham: any[];
         nhacungcap: {
             id: string;
+            name: string | null;
+            diachi: string | null;
+            sdt: string | null;
             email: string | null;
+            ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
-            ghichu: string | null;
-            diachi: string | null;
-            sdt: string | null;
             mancc: string;
         };
         id: string;
+        ghichu: string | null;
         isActive: boolean;
         title: string | null;
         order: number | null;
-        ghichu: string | null;
         type: string | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -54,21 +54,21 @@ export declare class DathangService {
         }[];
         nhacungcap: {
             id: string;
+            name: string | null;
+            diachi: string | null;
+            sdt: string | null;
             email: string | null;
+            ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
-            ghichu: string | null;
-            diachi: string | null;
-            sdt: string | null;
             mancc: string;
         };
         id: string;
+        ghichu: string | null;
         isActive: boolean;
         title: string | null;
         order: number | null;
-        ghichu: string | null;
         type: string | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -77,9 +77,9 @@ export declare class DathangService {
     create(data: any): Promise<{
         sanpham: {
             id: string;
+            ghichu: string | null;
             isActive: boolean;
             order: number | null;
-            ghichu: string | null;
             idSP: string;
             sldat: number | null;
             slgiao: number | null;
@@ -91,10 +91,10 @@ export declare class DathangService {
         }[];
     } & {
         id: string;
+        ghichu: string | null;
         isActive: boolean;
         title: string | null;
         order: number | null;
-        ghichu: string | null;
         type: string | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -103,9 +103,9 @@ export declare class DathangService {
     update(id: string, data: any): Promise<{
         sanpham: {
             id: string;
+            ghichu: string | null;
             isActive: boolean;
             order: number | null;
-            ghichu: string | null;
             idSP: string;
             sldat: number | null;
             slgiao: number | null;
@@ -117,10 +117,10 @@ export declare class DathangService {
         }[];
     } & {
         id: string;
+        ghichu: string | null;
         isActive: boolean;
         title: string | null;
         order: number | null;
-        ghichu: string | null;
         type: string | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -128,10 +128,10 @@ export declare class DathangService {
     }>;
     remove(id: string): Promise<{
         id: string;
+        ghichu: string | null;
         isActive: boolean;
         title: string | null;
         order: number | null;
-        ghichu: string | null;
         type: string | null;
         madncc: string | null;
         ngaynhan: Date | null;

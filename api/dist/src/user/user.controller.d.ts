@@ -7,48 +7,48 @@ export declare class UserController {
     create(dto: any): Promise<{
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     findAll(): Promise<{
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }[]>;
     getProfile(req: any): Promise<{
         roles: {
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
         }[];
         permissions: {
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             description: string | null;
         }[];
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     assignRoleToUser(data: any): Promise<{
         id: string;
@@ -63,47 +63,47 @@ export declare class UserController {
     findOne(id: string): Promise<{
         roles: {
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
         }[];
         permissions: {
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             description: string | null;
         }[];
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
 }

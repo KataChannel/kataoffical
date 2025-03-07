@@ -4,12 +4,7 @@ export declare class KhachhangService {
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
         id: string;
-        email: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         name: string | null;
-        ghichu: string | null;
         namenn: string | null;
         makh: string;
         diachi: string | null;
@@ -17,18 +12,32 @@ export declare class KhachhangService {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
+        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
-    findAll(): Promise<{
+    findAll(): Promise<({
+        banggia: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            title: string;
+            order: number | null;
+            type: string;
+            batdau: Date | null;
+            ketthuc: Date | null;
+            status: string | null;
+        }[];
+    } & {
         id: string;
-        email: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         name: string | null;
-        ghichu: string | null;
         namenn: string | null;
         makh: string;
         diachi: string | null;
@@ -36,18 +45,18 @@ export declare class KhachhangService {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
+        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
-    }[]>;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    })[]>;
     findOne(id: string): Promise<{
         id: string;
-        email: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         name: string | null;
-        ghichu: string | null;
         namenn: string | null;
         makh: string;
         diachi: string | null;
@@ -55,18 +64,18 @@ export declare class KhachhangService {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
+        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
-        email: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         name: string | null;
-        ghichu: string | null;
         namenn: string | null;
         makh: string;
         diachi: string | null;
@@ -74,18 +83,18 @@ export declare class KhachhangService {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
+        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
-        email: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         name: string | null;
-        ghichu: string | null;
         namenn: string | null;
         makh: string;
         diachi: string | null;
@@ -93,8 +102,13 @@ export declare class KhachhangService {
         mst: string | null;
         gionhanhang: string | null;
         quan: string | null;
+        email: string | null;
         phone: string | null;
         address: string | null;
         loaikh: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }

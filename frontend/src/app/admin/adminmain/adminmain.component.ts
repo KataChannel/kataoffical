@@ -77,11 +77,8 @@ export class AdminmainComponent {
   async ngOnInit() {
     await this._UserService.getProfile().then(async (res: any) => {
       if(res){
-        this.User = res; 
-        console.log(this.User.permissions);  
-        console.log(this.User);  
+        this.User = res;  
         const permissions = this.User?.permissions?.map((v:any)=>v.name);     
-        console.log(permissions);       
         await this._MenuService.getTreeMenu(permissions)
         this.ListMenu = this._MenuService.ListMenu()    
         this.dataSource.data = this._MenuService.ListMenu();   

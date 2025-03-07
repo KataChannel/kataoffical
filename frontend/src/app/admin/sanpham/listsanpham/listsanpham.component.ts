@@ -256,23 +256,27 @@ export class ListSanphamComponent {
     console.log(data);
     
     const transformedData = data.map((v: any) => ({
-      name: v.name?.trim()||'',
-      mancc: v.mancc?.trim()||'',
-      sdt: v.sdt?.trim()||'',
-      diachi: v.diachi?.trim()||'',
+      title: v.title?.trim()||'',
+      masp: v.masp?.trim()||'',
+      giagoc: Number(v.giagoc)||0,
+      dvt: v.dvt?.trim()||'',
+      soluong: Number(v.soluong)||0,
+      soluongkho: Number(v.soluongkho)||0,
+      haohut: Number(v.haohut)||0,
       ghichu: v.ghichu?.trim()||'',
    }));
-   // Filter out duplicate mancc values
+
+   // Filter out duplicate masp values
    const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
       index === self.findIndex((t:any) => (
-        t.mancc === value.mancc
+        t.masp === value.masp
       ))
    )
-    const listId2 = uniqueData.map((v: any) => v.mancc);
-    const listId1 = this._SanphamService.ListSanpham().map((v: any) => v.mancc);
+    const listId2 = uniqueData.map((v: any) => v.masp);
+    const listId1 = this._SanphamService.ListSanpham().map((v: any) => v.masp);
     const listId3 = listId2.filter((item:any) => !listId1.includes(item));
     const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._SanphamService.ListSanpham().find((v1) => v1.mancc === v.mancc);
+        const item = this._SanphamService.ListSanpham().find((v1) => v1.masp === v.masp);
         if (item) {
           const item1 = { ...item, ...v };
           await this._SanphamService.updateSanpham(item1);
@@ -282,7 +286,7 @@ export class ListSanphamComponent {
         }
       });
      const disableItem = listId3.map(async (v: any) => {
-        const item = this._SanphamService.ListSanpham().find((v1) => v1.mancc === v);
+        const item = this._SanphamService.ListSanpham().find((v1) => v1.masp === v);
         item.isActive = false;
         await this._SanphamService.updateSanpham(item);
       });
@@ -301,7 +305,17 @@ export class ListSanphamComponent {
   this.DoImportData(data);
   }   
   ExportExcel(data:any,title:any) {
-    writeExcelFile(data,title);
+    const dulieu = data.map((v: any) => ({
+      title: v.title,
+      masp: v.masp,
+      giagoc: v.giagoc,
+      dvt: v.dvt,
+      soluong: v.soluong,
+      soluongkho: v.soluongkho,
+      haohut: v.haohut,
+      ghichu: v.ghichu,
+    }));
+    writeExcelFile(dulieu,title);
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier

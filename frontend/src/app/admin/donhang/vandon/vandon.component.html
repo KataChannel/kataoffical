@@ -5,9 +5,6 @@
   <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
     <div *ngIf="!isSearch" class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
         <div class="flex flex-row space-x-2 items-center">
-            <button matTooltip="Thêm mới" color="primary" mat-icon-button>
-                <mat-icon>add_circle</mat-icon>
-            </button>
             <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
                 <mat-icon>tune</mat-icon>
             </button>

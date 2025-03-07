@@ -4,7 +4,7 @@ import { AuthGuard } from './shared/common/users/guards/auth.guard';
 import { GuestGuard } from './shared/common/users/guards/guest.guard';
 import { PermissionGuard } from './shared/common/users/guards/permission.guard';
 export const routes: Routes = [
-    { path: '', redirectTo: 'admin/donhang', pathMatch: 'full' },
+    { path: '', redirectTo: 'admin/dashboard', pathMatch: 'full' },
     {
       path: '404',
       loadComponent: () => import('./site/notfound/notfound.component').then((c) => c.NotfoundComponent),
@@ -14,6 +14,10 @@ export const routes: Routes = [
       canActivate: [AuthGuard],
       loadComponent: () => import('./admin/adminmain/adminmain.component').then((c) => c.AdminmainComponent),
       children: [
+        {
+          path: 'dashboard',
+          loadComponent: () => import('./admin/dashboard/dashboard.component').then((c) => c.DashboardComponent),
+        },
         {
           path: 'menu',
           canActivate: [PermissionGuard],
@@ -261,6 +265,12 @@ export const routes: Routes = [
               loadComponent: () => import('./admin/phieukho/detailphieukho/detailphieukho.component').then((c) => c.DetailPhieukhoComponent),
             },
           ],
+        },
+        {
+          path: 'xuatnhapton',
+          canActivate: [PermissionGuard],
+          data: { permission: 'xuatnhapton.view' },
+          loadComponent: () => import('./admin/xuatnhapton/xuatnhapton.component').then((c) => c.XuatnhaptonComponent),
         },
         {
           path: 'user',

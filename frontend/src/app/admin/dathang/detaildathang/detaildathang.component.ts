@@ -267,8 +267,6 @@ export class DetailDathangComponent {
       }
       return v;
     });
-    console.log(this.DetailDathang());
-    
   }
   Tongcong: any = 0;
   Tong: any = 0;
@@ -442,4 +440,12 @@ export class DetailDathangComponent {
     this.dataSource().paginator = this.paginator;
     this.dataSource().sort = this.sort;
   }
+  GetGoiy(item:any){
+    const result = parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
+    if(Number(result) < 0){
+      return 0;
+    }
+    return result;
+   }
 }
+

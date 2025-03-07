@@ -4,10 +4,9 @@
   </button>
   <div
        [contentEditable]="true"
-       (blur)="updateValue($event,null,DetailDathang(), 'title','string')"
+       (blur)="updateValue($event,null,DetailDathang(), 'madncc','string')"
        class="p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
-     >
-     <!-- {{ DetailDathang()?.title || 'Không có dữ liệu' }} -->
+     >{{DetailDathang().madncc||''}}
   </div>
   <div class="flex flex-row space-x-2 items-center">
     <mat-slide-toggle [(ngModel)]="DetailDathang().isActive" [disabled]="!isEdit()">{{DetailDathang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
@@ -161,6 +160,7 @@
                         >
                         {{ row[column]||0|number:'1.0-2' }}
                          </div>
+                         <div>(SL:{{row.soluong}})-(SLkho:{{row.soluongkho}})-(Hao hụt:{{row.haohut}}%)(Gợi ý: {{GetGoiy(row)}})</div>
                         }
                         @case ('slgiao') {
                       <div

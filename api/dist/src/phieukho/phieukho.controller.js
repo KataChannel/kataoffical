@@ -25,6 +25,9 @@ let PhieukhoController = class PhieukhoController {
     findAll() {
         return this.phieukhoService.findAll();
     }
+    xuatnhapton(query) {
+        return this.phieukhoService.xuatnhapton(query);
+    }
     findOne(id) {
         return this.phieukhoService.findOne(id);
     }
@@ -49,6 +52,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PhieukhoController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Post)('xuatnhapton'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], PhieukhoController.prototype, "xuatnhapton", null);
 __decorate([
     (0, common_1.Get)('findid/:id'),
     __param(0, (0, common_1.Param)('id')),

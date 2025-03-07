@@ -16,13 +16,47 @@ let PhieukhoService = class PhieukhoService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async findAll() {
-        return this.prisma.phieuKho.findMany({
+    async xuatnhapton(query) {
+        const { khoId, Batdau, Ketthuc } = query;
+        const phieuKhos = await this.prisma.phieuKho.findMany({
+            where: {
+                ...(khoId && { khoId }),
+                ngay: {
+                    gte: new Date(Batdau),
+                    lte: new Date(Ketthuc),
+                },
+            },
             include: {
-                sanpham: true,
+                sanpham: { include: { sanpham: true } },
                 kho: true,
             },
         });
+        return phieuKhos.map((phieuKho) => ({
+            khoname: phieuKho.kho.name,
+            maphieu: phieuKho.maphieu,
+            ngay: phieuKho.ngay,
+            type: phieuKho.type,
+            sanpham: phieuKho.sanpham.map((item) => ({
+                sldat: item.sldat,
+                soluong: item.soluong,
+                title: item.sanpham.title,
+            })),
+        }));
+    }
+    async findAll() {
+        const phieuKhos = await this.prisma.phieuKho.findMany({
+            include: {
+                sanpham: { include: { sanpham: true } },
+                kho: true,
+            },
+        });
+        return phieuKhos.map((phieuKho) => ({
+            ...phieuKho,
+            sanpham: phieuKho.sanpham.map((item) => ({
+                ...item,
+                sanpham: item.sanpham,
+            })),
+        }));
     }
     async findOne(id) {
         const phieuKho = await this.prisma.phieuKho.findUnique({

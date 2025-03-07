@@ -8,12 +8,12 @@ export declare class DonhangService {
     reorderDonHangs(donhangIds: string[]): Promise<void>;
     search(params: any): Promise<{
         id: string;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         title: string;
         order: number | null;
-        ghichu: string | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
@@ -25,12 +25,7 @@ export declare class DonhangService {
         name: string | null;
         khachhang: {
             id: string;
-            email: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
             name: string | null;
-            ghichu: string | null;
             namenn: string | null;
             makh: string;
             diachi: string | null;
@@ -38,17 +33,22 @@ export declare class DonhangService {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
+            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
         };
         id: string;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         title: string;
         order: number | null;
-        ghichu: string | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
@@ -93,12 +93,12 @@ export declare class DonhangService {
                 }[];
             } & {
                 id: string;
+                ghichu: string | null;
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
                 title: string;
                 order: number | null;
-                ghichu: string | null;
                 type: string;
                 batdau: Date | null;
                 ketthuc: Date | null;
@@ -106,12 +106,7 @@ export declare class DonhangService {
             })[];
         } & {
             id: string;
-            email: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
             name: string | null;
-            ghichu: string | null;
             namenn: string | null;
             makh: string;
             diachi: string | null;
@@ -119,17 +114,22 @@ export declare class DonhangService {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
+            email: string | null;
             phone: string | null;
             address: string | null;
             loaikh: string | null;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
         };
         id: string;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         title: string;
         order: number | null;
-        ghichu: string | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
@@ -139,9 +139,9 @@ export declare class DonhangService {
     create(dto: any): Promise<{
         sanpham: {
             id: string;
+            ghichu: string | null;
             isActive: boolean | null;
             order: number | null;
-            ghichu: string | null;
             idSP: string;
             sldat: number | null;
             slgiao: number | null;
@@ -153,12 +153,12 @@ export declare class DonhangService {
         }[];
     } & {
         id: string;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         title: string;
         order: number | null;
-        ghichu: string | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
@@ -168,9 +168,9 @@ export declare class DonhangService {
     update(id: string, data: any): Promise<{
         sanpham: {
             id: string;
+            ghichu: string | null;
             isActive: boolean | null;
             order: number | null;
-            ghichu: string | null;
             idSP: string;
             sldat: number | null;
             slgiao: number | null;
@@ -182,12 +182,12 @@ export declare class DonhangService {
         }[];
     } & {
         id: string;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         title: string;
         order: number | null;
-        ghichu: string | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
@@ -196,12 +196,12 @@ export declare class DonhangService {
     }>;
     remove(id: string): Promise<{
         id: string;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         title: string;
         order: number | null;
-        ghichu: string | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;

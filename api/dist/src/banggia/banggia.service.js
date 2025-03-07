@@ -78,6 +78,7 @@ let BanggiaService = class BanggiaService {
                         sanpham: true,
                     },
                 },
+                khachhang: true,
             },
         });
         if (!banggia) {
@@ -116,6 +117,26 @@ let BanggiaService = class BanggiaService {
     }
     async remove(id) {
         return this.prisma.banggia.delete({ where: { id } });
+    }
+    async addKHtoBG(banggiaId, khachhangIds) {
+        return this.prisma.banggia.update({
+            where: { id: banggiaId },
+            data: {
+                khachhang: {
+                    connect: khachhangIds.map(id => ({ id })),
+                },
+            },
+        });
+    }
+    async removeKHfromBG(banggiaId, khachhangIds) {
+        return this.prisma.banggia.update({
+            where: { id: banggiaId },
+            data: {
+                khachhang: {
+                    disconnect: khachhangIds.map(id => ({ id })),
+                },
+            },
+        });
     }
 };
 exports.BanggiaService = BanggiaService;

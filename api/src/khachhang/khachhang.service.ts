@@ -39,7 +39,9 @@ export class KhachhangService {
   }
 
   async findAll() {
-    return this.prisma.khachhang.findMany();
+    return this.prisma.khachhang.findMany({
+      include: {banggia: true}
+    });
   }
 
   async findOne(id: string) {

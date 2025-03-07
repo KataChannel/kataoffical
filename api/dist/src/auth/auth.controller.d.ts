@@ -15,13 +15,13 @@ export declare class AuthController {
     }): Promise<{
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     login(body: {
         SDT: string;
@@ -37,13 +37,13 @@ export declare class AuthController {
     }): Promise<{
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     randomPassword(req: any): Promise<{
         newPassword: string;

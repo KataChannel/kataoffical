@@ -75,6 +75,7 @@ export class BanggiaService {
             sanpham: true, // Lấy đầy đủ thông tin sản phẩm
           },
         },
+        khachhang: true,
       },
     });
     if (!banggia) {
@@ -86,7 +87,8 @@ export class BanggiaService {
         ...item.sanpham, // Gộp thông tin sản phẩm vào cùng object
         giaban: item.giaban,
       })),
-    };
+      
+    }
   }
 
   async update(id: string, data: any) {
@@ -115,5 +117,28 @@ export class BanggiaService {
 
   async remove(id: string) {
     return this.prisma.banggia.delete({ where: { id } });
+  }
+
+
+
+  async addKHtoBG(banggiaId: string, khachhangIds: any[]) {
+    return this.prisma.banggia.update({
+      where: { id: banggiaId },
+      data: {
+        khachhang: {
+          connect: khachhangIds.map(id => ({ id })),
+        },
+      },
+    });
+  }
+  async removeKHfromBG(banggiaId: string, khachhangIds: any[]) {
+    return this.prisma.banggia.update({
+      where: { id: banggiaId },
+      data: {
+        khachhang: {
+          disconnect: khachhangIds.map(id => ({ id })),
+        },
+      },
+    });
   }
 }

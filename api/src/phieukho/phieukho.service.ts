@@ -7,15 +7,47 @@ export class PhieukhoService {
 
 
 
-  async findAll() {
-    return this.prisma.phieuKho.findMany(
-      {
-        include: {
-          sanpham: true,
-          kho: true,
+  async xuatnhapton(query: any) {
+    const { khoId, Batdau,Ketthuc } = query;
+    const phieuKhos = await this.prisma.phieuKho.findMany({
+      where: {
+        ...(khoId && { khoId }),
+        ngay: {
+          gte: new Date(Batdau),
+          lte: new Date(Ketthuc),
         },
       },
-    );
+      include: {
+        sanpham: { include: { sanpham: true } },
+        kho: true,
+      },
+    });
+    return phieuKhos.map((phieuKho) => ({
+      khoname: phieuKho.kho.name,
+      maphieu: phieuKho.maphieu,
+      ngay: phieuKho.ngay,
+      type: phieuKho.type,
+      sanpham: phieuKho.sanpham.map((item) => ({
+        sldat: item.sldat,
+        soluong: item.soluong,
+        title: item.sanpham.title,
+      })),
+    }));
+  }
+  async findAll() {
+    const phieuKhos = await this.prisma.phieuKho.findMany({
+        include: {
+          sanpham: {include: {sanpham: true}},
+          kho: true,
+        },
+      });
+      return phieuKhos.map((phieuKho) => ({
+        ...phieuKho,
+        sanpham: phieuKho.sanpham.map((item) => ({
+          ...item,
+          sanpham: item.sanpham,
+        })),
+      }));
   }
 
   async findOne(id: string) {

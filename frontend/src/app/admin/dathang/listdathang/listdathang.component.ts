@@ -45,7 +45,7 @@ export class ListDathangComponent {
   displayedColumns: string[] = [
     'STT',
    // 'title',
-   // 'madncc',
+    'madncc',
     'nhacungcap',
     'sanpham',
     'ngaynhan',
@@ -59,7 +59,7 @@ export class ListDathangComponent {
   ColumnName: any = {
     STT: 'STT',
   //  title: 'Tiêu Đề',
-  //  madncc: 'Mã Đơn Nhập',
+    madncc: 'Mã Đơn Nhập',
     nhacungcap: 'Nhà Cung Cấp',
     sanpham: 'Sản Phẩm',
     ngaynhan: 'Ngày Nhận',

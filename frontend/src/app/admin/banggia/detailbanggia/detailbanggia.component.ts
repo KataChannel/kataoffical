@@ -23,6 +23,8 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import html2canvas from 'html2canvas';
+import { MatMenuModule } from '@angular/material/menu';
+import { KhachhangService } from '../../khachhang/khachhang.service';
   @Component({
     selector: 'app-detailbanggia',
     imports: [
@@ -38,7 +40,8 @@ import html2canvas from 'html2canvas';
       MatDatepickerModule,
       MatSortModule,
       MatPaginatorModule,
-      MatTableModule
+      MatTableModule,
+      MatMenuModule
     ],
     providers: [provideNativeDateAdapter()],
     templateUrl: './detailbanggia.component.html',
@@ -48,6 +51,7 @@ import html2canvas from 'html2canvas';
     _ListbanggiaComponent:ListBanggiaComponent = inject(ListBanggiaComponent)
     _BanggiaService:BanggiaService = inject(BanggiaService)
     _SanphamService:SanphamService = inject(SanphamService)
+    _KhachhangService:KhachhangService = inject(KhachhangService)
     _GoogleSheetService:GoogleSheetService = inject(GoogleSheetService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
@@ -78,14 +82,17 @@ import html2canvas from 'html2canvas';
       { value: 'dangban', title: 'Đang Bán' },
       { value: 'ngungban', title: 'Ngừng Bán' },
     ];
+    ListKhachhang: any[] = [];
+    CheckListKhachhang: any[] = [];
     constructor(){
       this._route.paramMap.subscribe(async (params) => {
         const id = params.get('id');
         this._BanggiaService.setBanggiaId(id);
         await this._SanphamService.getAllSanpham(); 
         this.filterSanpham = this._SanphamService.ListSanpham();
+        await this._KhachhangService.getAllKhachhang();
+        this.ListKhachhang = this._KhachhangService.ListKhachhang().filter(v=>v.isActive);
       });
-  
       effect(async () => {      
         const id = this._BanggiaService.banggiaId();
         if (!id){
@@ -107,6 +114,7 @@ import html2canvas from 'html2canvas';
         else{
             await this._BanggiaService.getBanggiaByid(id);
             this.dataSource().data = this.DetailBanggia().sanpham;
+            this.CheckListKhachhang = this.DetailBanggia().khachhang;
             this._ListbanggiaComponent.drawer.open();
             this._router.navigate(['/admin/banggia', id]);
         }
@@ -234,27 +242,18 @@ import html2canvas from 'html2canvas';
         };
        const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
        const data = ConvertDriveData(result.values);
-       this.DetailBanggia.update((v:any)=>{
-        const listdata = data.map((item:any) => {
-          item.masp = item.masp?.trim()||'';
-          item.giaban = Number(item.giaban)||0;
-          const item1 = this._SanphamService.ListSanpham().find((v1) => v1.masp === item.masp);
-          if (item1) {
-            return { ...item1, ...item };
-          }
-          return item;
-        });
-        v.sanpham = listdata
-        this.reloadfilter();
-        return v;
-      })       
-      this.dataSource().data = this.DetailBanggia().sanpham;
-      this.dataSource().paginator = this.paginator;
-      this.dataSource().sort = this.sort;
-
+      this.DoImportData(data);
       }
-      AddSanpham(){
-    
+      AddSanpham(){}
+      EmptyCart(){
+        this.DetailBanggia.update((v:any)=>{
+          v.sanpham = [];
+          return v;
+        })
+        this.dataSource().data = this.DetailBanggia().sanpham;
+        this.dataSource().paginator = this.paginator;
+        this.dataSource().sort = this.sort;
+        this.reloadfilter();
       }
       reloadfilter(){
         console.log(this.DetailBanggia().sanpham);
@@ -356,4 +355,83 @@ import html2canvas from 'html2canvas';
           printWindow.document.close();
         });
       }
+
+
+
+  
+      doFilterKhachhang(event:any){
+        const value = event.target.value;
+        this.ListKhachhang = this._KhachhangService.ListKhachhang().filter((v) => v.name.toLowerCase().includes(value.toLowerCase()));
+      }
+      ChosenKhachhang(item:any){
+        const checkitem = this.CheckListKhachhang.find((v) => v.id === item.id);            
+        if(!checkitem){
+          this.CheckListKhachhang.push(item);
+
+        }
+        else{
+          this.CheckListKhachhang = this.CheckListKhachhang.filter((v) => v.id !== item.id);
+        }
+      }
+      async ApplyKhachhang(menu:any){
+        const removeData = {
+          banggiaId: this.banggiaId(),
+          khachhangIds: this.DetailBanggia().khachhang.map((v:any) => v.id)
+        }
+        const removePromise = await this._BanggiaService.removeKHfromBG(removeData)
+        const addData = {
+          banggiaId: this.banggiaId(),
+          khachhangIds: this.CheckListKhachhang.map((v:any) => v.id)
+        }
+        const adddPromise = await this._BanggiaService.addKHtoBG(addData)
+        Promise.all([removePromise,adddPromise]).then(()=>{menu.closeMenu()});
+
+      }
+      CheckKhachhang(item:any)
+      {
+        return this.CheckListKhachhang.find((v:any) => v.id === item.id)?true:false;
+      }
+
+      async ImporExcel(event: any) {
+        const data = await readExcelFile(event)
+        this.DoImportData(data);
+        }   
+        ExportExcel(data:any,title:any) {
+          const transformedData = data.data.map((v: any) => ({
+            masp: v.masp?.trim()||'',
+            giaban: Number(v.giaban)||0,
+         }));
+          writeExcelFile(transformedData,title);
+        }
+        DoImportData(data:any)
+        {
+          const transformedData = data.map((v: any) => ({
+            masp: v.masp?.trim()||'',
+            giaban: Number(v.giaban)||0,
+         }));
+
+         this.DetailBanggia.update((v:any)=>{
+          const listdata = transformedData.map((item:any) => {
+            item.masp = item.masp?.trim()||'';
+            item.giaban = Number(item.giaban)||0;
+            const item1 = this._SanphamService.ListSanpham().find((v1) => v1.masp === item.masp);
+            if (item1) {
+              return { ...item1, ...item };
+            }
+            return item;
+          });
+          v.sanpham = listdata
+          this.reloadfilter();
+          return v;
+        })       
+        this.dataSource().data = this.DetailBanggia().sanpham;
+        this.dataSource().paginator = this.paginator;
+        this.dataSource().sort = this.sort;             
+         this._snackBar.open('Cập Nhật Thành Công', '', {
+                duration: 1000,
+                horizontalPosition: 'end',
+                verticalPosition: 'top',
+                panelClass: ['snackbar-success'],
+          });
+        }
   }

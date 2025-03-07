@@ -7,81 +7,81 @@ export declare class UserService {
     createUser(dto: any): Promise<{
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     getUsers(): Promise<{
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }[]>;
     findAll(): Promise<{
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }[]>;
     findOne(id: string): Promise<{
         roles: {
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
         }[];
         permissions: {
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             description: string | null;
         }[];
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
         email: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     assignRoleToUser(data: {
         userId: string;

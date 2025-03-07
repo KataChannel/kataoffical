@@ -5,124 +5,151 @@ export declare class PhieukhoController {
     create(createPhieukhoDto: any): Promise<{
         sanpham: {
             id: string;
+            ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            soluong: number;
-            ghichu: string | null;
+            phieuKhoId: string;
             sanphamId: string;
             sldat: number;
-            phieuKhoId: string;
+            soluong: number;
         }[];
     } & {
         id: string;
+        maphieu: string;
+        ngay: Date;
+        type: string;
+        khoId: string;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        ghichu: string | null;
-        type: string;
-        maphieu: string;
-        ngay: Date;
-        khoId: string;
     }>;
-    findAll(): Promise<({
+    findAll(): Promise<{
+        sanpham: {
+            sanpham: {
+                id: string;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                soluong: number;
+                title: string;
+                slug: string | null;
+                masp: string;
+                giagoc: number;
+                dvt: string | null;
+                hinhanh: string | null;
+                soluongkho: number;
+                haohut: number;
+                order: number | null;
+            };
+            id: string;
+            ghichu: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            phieuKhoId: string;
+            sanphamId: string;
+            sldat: number;
+            soluong: number;
+        }[];
         kho: {
             id: string;
+            ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string;
-            ghichu: string | null;
+            makho: string | null;
             diachi: string | null;
             sdt: string | null;
-            makho: string | null;
             congtyId: string | null;
         };
-        sanpham: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            soluong: number;
-            ghichu: string | null;
-            sanphamId: string;
-            sldat: number;
-            phieuKhoId: string;
-        }[];
-    } & {
         id: string;
+        maphieu: string;
+        ngay: Date;
+        type: string;
+        khoId: string;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        ghichu: string | null;
-        type: string;
+    }[]>;
+    xuatnhapton(query: any): Promise<{
+        khoname: string;
         maphieu: string;
         ngay: Date;
-        khoId: string;
-    })[]>;
+        type: string;
+        sanpham: {
+            sldat: number;
+            soluong: number;
+            title: string;
+        }[];
+    }[]>;
     findOne(id: string): Promise<{
         kho: {
             id: string;
+            ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string;
-            ghichu: string | null;
+            makho: string | null;
             diachi: string | null;
             sdt: string | null;
-            makho: string | null;
             congtyId: string | null;
         };
         sanpham: {
             id: string;
+            ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            soluong: number;
-            ghichu: string | null;
+            phieuKhoId: string;
             sanphamId: string;
             sldat: number;
-            phieuKhoId: string;
+            soluong: number;
         }[];
     } & {
         id: string;
+        maphieu: string;
+        ngay: Date;
+        type: string;
+        khoId: string;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        ghichu: string | null;
-        type: string;
-        maphieu: string;
-        ngay: Date;
-        khoId: string;
     }>;
     update(id: string, updatePhieukhoDto: any): Promise<{
         sanpham: {
             id: string;
+            ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            soluong: number;
-            ghichu: string | null;
+            phieuKhoId: string;
             sanphamId: string;
             sldat: number;
-            phieuKhoId: string;
+            soluong: number;
         }[];
     } & {
         id: string;
+        maphieu: string;
+        ngay: Date;
+        type: string;
+        khoId: string;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        ghichu: string | null;
-        type: string;
-        maphieu: string;
-        ngay: Date;
-        khoId: string;
     }>;
     remove(id: string): Promise<{
         id: string;
+        maphieu: string;
+        ngay: Date;
+        type: string;
+        khoId: string;
+        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        ghichu: string | null;
-        type: string;
-        maphieu: string;
-        ngay: Date;
-        khoId: string;
     }>;
 }

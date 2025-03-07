@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common';
 import { PhieukhoService } from './phieukho.service';
 
 @Controller('phieukho')
@@ -13,6 +13,10 @@ export class PhieukhoController {
   @Get()
   findAll() {
     return this.phieukhoService.findAll();
+  }
+  @Post('xuatnhapton')
+  xuatnhapton(@Body() query: any) {
+    return this.phieukhoService.xuatnhapton(query);
   }
 
   @Get('findid/:id')

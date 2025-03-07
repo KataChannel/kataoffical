@@ -25,6 +25,12 @@ let BanggiaController = class BanggiaController {
     findAll() {
         return this.banggiaService.findAll();
     }
+    addMultipleKhachhangToBanggia(data) {
+        return this.banggiaService.addKHtoBG(data.banggiaId, data.khachhangIds);
+    }
+    removeKHfromBG(data) {
+        return this.banggiaService.removeKHfromBG(data.banggiaId, data.khachhangIds);
+    }
     findOne(id) {
         return this.banggiaService.findOne(id);
     }
@@ -52,6 +58,20 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], BanggiaController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Post)('addKHtoBG'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], BanggiaController.prototype, "addMultipleKhachhangToBanggia", null);
+__decorate([
+    (0, common_1.Post)('removeKHfromBG'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], BanggiaController.prototype, "removeKHfromBG", null);
 __decorate([
     (0, common_1.Get)('findid/:id'),
     __param(0, (0, common_1.Param)('id')),

@@ -131,7 +131,6 @@ export class KhachhangService {
         return console.error(error);
     }
   }
-
   async getAllKhachhang() {
     try {
       const options = {

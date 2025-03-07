@@ -14,4 +14,4 @@ npx katacreate --type angular --name nhomkhachhang --outputDir .
 npx katacreate --type angular --name phieugiaohang --outputDir .
 npx katacreate --type angular --name phieuchiahang --outputDir .
 
-npx ng g c aggrid --skip-tests --standalone
+npx ng g c xuatnhapton --skip-tests --standalone

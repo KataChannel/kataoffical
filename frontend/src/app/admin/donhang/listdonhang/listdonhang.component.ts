@@ -359,7 +359,7 @@ export class ListDonhangComponent {
     this.Phieuchia = this.editDonhang.map((v: any) => ({
       makh: v.khachhang?.makh,
       name: v.khachhang?.name,
-      donhang: v.donhang.map((v1: any) => ({
+      sanpham: v.sanpham.map((v1: any) => ({
         title: v1.title,
         dvt: v1.dvt,
         slgiao: v1.slgiao,
@@ -374,18 +374,18 @@ export class ListDonhangComponent {
 
   getUniqueProducts(): string[] {
     const products = new Set<string>();
-    this.Phieuchia.forEach(kh => kh.donhang.forEach((sp:any) => products.add(sp.title)));
+    this.Phieuchia.forEach(kh => kh.sanpham.forEach((sp:any) => products.add(sp.title)));
     return Array.from(products);
   }
 
   getProductQuantity(product: string, makh: string): number | string {
     const customer = this.Phieuchia.find(kh => kh.makh === makh);
-    const item = customer?.donhang.find((sp:any) => sp.title === product);
+    const item = customer?.sanpham.find((sp:any) => sp.title === product);
     return item ? item.slgiao : '';
   }
   getDvtForProduct(product: string) {
     const uniqueProducts = Array.from(
-      new Map(this.Phieuchia.flatMap(c => c.donhang.map((sp:any) => ({ ...sp, makh: c.makh, name: c.name })))
+      new Map(this.Phieuchia.flatMap(c => c.sanpham.map((sp:any) => ({ ...sp, makh: c.makh, name: c.name })))
           .map(p => [p.title, p])
       ).values()
   );
