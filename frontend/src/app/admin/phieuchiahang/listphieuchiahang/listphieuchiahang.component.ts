@@ -1,4 +1,12 @@
-import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  computed,
+  effect,
+  inject,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -9,16 +17,28 @@ import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PhieuchiahangService } from '../phieuchiahang.service';
 import { MatMenuModule } from '@angular/material/menu';
-import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
-import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
+import {
+  readExcelFile,
+  writeExcelFile,
+} from '../../../shared/utils/exceldrive.utils';
+import {
+  ConvertDriveData,
+  convertToSlug,
+  GenId,
+} from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import moment from 'moment';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import html2canvas from 'html2canvas';
+import { DonhangService } from '../../donhang/donhang.service';
 @Component({
   selector: 'app-listphieuchiahang',
   templateUrl: './listphieuchiahang.component.html',
@@ -37,37 +57,36 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
     MatSelectModule,
     CommonModule,
     FormsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDatepickerModule,
+    MatDialogModule,
   ],
+  providers: [provideNativeDateAdapter()],
 })
 export class ListPhieuchiahangComponent {
   Detail: any = {};
   displayedColumns: string[] = [
+    'madonhang',
     'name',
-    'mancc',
-    'diachi',
-    'email',
-    'sdt',
-    'status',
+    'donhang',
+    'ngaygiao',
     'ghichu',
-    'isActive',
+    'status',
     'createdAt',
     'updatedAt',
   ];
   ColumnName: any = {
-    name: 'Tên Nhà Cung Cấp',
-    mancc: 'Mã Nhà Cung Cấp',
-    diachi: 'Địa Chỉ',
-    email: 'Email',
-    sdt: 'Số Điện Thoại',
-    status: 'Trạng Thái',
+    madonhang: 'Mã Đơn Hàng',
+    name: 'Khách Hàng',
+    donhang: 'Sản Phẩm',
+    ngaygiao: 'Ngày Giao',
     ghichu: 'Ghi Chú',
-    isActive: 'Trạng Thái',
-    createdAt:'Ngày Tạo',
-    updatedAt:'Ngày Cập Nhật'
+    status: 'Trạng Thái',
+    createdAt: 'Ngày Tạo',
+    updatedAt: 'Ngày Cập Nhật',
   };
   FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('PhieuchiahangColFilter') || '[]'
+    localStorage.getItem('DonhangColFilter') || '[]'
   );
   Columns: any[] = [];
   isFilter: boolean = false;
@@ -75,53 +94,111 @@ export class ListPhieuchiahangComponent {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
-  private _PhieuchiahangService: PhieuchiahangService = inject(PhieuchiahangService);
+  private _DonhangService: DonhangService = inject(DonhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
-  Listphieuchiahang:any = this._PhieuchiahangService.ListPhieuchiahang;
+  Listdonhang: any = this._DonhangService.ListDonhang;
   dataSource = new MatTableDataSource([]);
-  phieuchiahangId:any = this._PhieuchiahangService.phieuchiahangId;
+  donhangId: any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
+  SearchParams: any = {
+    Batdau: moment().format('YYYY-MM-DD'),
+    Ketthuc: moment().add(1, 'day').format('YYYY-MM-DD'),
+    Type: 'donsi',
+    pageSize: 9999,
+    pageNumber: 0,
+  };
+  ListDate: any[] = [
+    { id: 1, Title: '1 Ngày', value: 'day' },
+    { id: 2, Title: '1 Tuần', value: 'week' },
+    { id: 3, Title: '1 Tháng', value: 'month' },
+    { id: 4, Title: '1 Năm', value: 'year' },
+  ];
+  Chonthoigian: any = 'day';
+  isSearch: boolean = false;
   constructor() {
-    this.displayedColumns.forEach(column => {
+    this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
+  }
+  onSelectionChange(event: MatSelectChange): void {
+    const timeFrames: { [key: string]: () => void } = {
+      day: () => {
+        this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment()
+          .endOf('day')
+          .add(1, 'day')
+          .format('YYYY-MM-DD');
+      },
+      week: () => {
+        this.SearchParams.Batdau = moment()
+          .startOf('week')
+          .format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
+      },
+      month: () => {
+        this.SearchParams.Batdau = moment()
+          .startOf('month')
+          .format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment()
+          .endOf('month')
+          .format('YYYY-MM-DD');
+      },
+      year: () => {
+        this.SearchParams.Batdau = moment()
+          .startOf('year')
+          .format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
+      },
+    };
+
+    timeFrames[event.value]?.();
+    this.ngOnInit();
+  }
+  onDateChange(event: any): void {
+    console.log(event);
+    if (event.value) {
+    }
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
       const filterObject = JSON.parse(filter);
       let isMatch = true;
-      this.displayedColumns.forEach(column => {
+      this.displayedColumns.forEach((column) => {
         if (filterObject[column]) {
-          const value = data[column] ? data[column].toString().toLowerCase() : '';
-          isMatch = isMatch && value.includes(filterObject[column].toLowerCase());
+          const value = data[column]
+            ? data[column].toString().toLowerCase()
+            : '';
+          isMatch =
+            isMatch && value.includes(filterObject[column].toLowerCase());
         }
       });
       return isMatch;
     };
   }
-  applyFilter() {
-    this.dataSource.filter = JSON.stringify(this.filterValues);
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
-  async ngOnInit(): Promise<void> {    
-    await this._PhieuchiahangService.getAllPhieuchiahang();
-    this.CountItem = this.Listphieuchiahang().length;
-    this.dataSource = new MatTableDataSource(this.Listphieuchiahang());
+  async ngOnInit(): Promise<void> {
+    await this._DonhangService.searchDonhang(this.SearchParams);
+    this.CountItem = this.Listdonhang().length;
+    this.initializeColumns();
+    this.setupDrawer();
+    this.dataSource = new MatTableDataSource(this.Listdonhang());
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.createFilter();
-    this.initializeColumns();
-    this.setupDrawer();
     this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
     this.paginator._intl.nextPageLabel = 'Tiếp Theo';
     this.paginator._intl.previousPageLabel = 'Về Trước';
     this.paginator._intl.firstPageLabel = 'Trang Đầu';
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
-  }
-  async refresh() {
-   await this._PhieuchiahangService.getAllPhieuchiahang();
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -132,7 +209,9 @@ export class ListPhieuchiahangComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('PhieuchiahangColFilter',JSON.stringify(this.FilterColumns)
+      localStorage.setItem(
+        'DonhangColFilter',
+        JSON.stringify(this.FilterColumns)
       );
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -156,6 +235,29 @@ export class ListPhieuchiahangComponent {
         }
       });
   }
+
+  private updateDisplayedColumns(): void {
+    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
+      (item) => item.key
+    );
+    this.ColumnName = this.FilterColumns.reduce((obj, item) => {
+      if (item.isShow) obj[item.key] = item.value;
+      return obj;
+    }, {} as Record<string, string>);
+    localStorage.setItem(
+      'DonhangColFilter',
+      JSON.stringify(this.FilterColumns)
+    );
+  }
+  doFilterColumns(event: any): void {
+    const query = event.target.value.toLowerCase();
+    this.FilterColumns = this.Columns.filter((v) =>
+      v.value.toLowerCase().includes(query)
+    );
+  }
+
+
+
   toggleColumn(item: any): void {
     const column = this.FilterColumns.find((v) => v.key === item.key);
     if (column) {
@@ -163,6 +265,7 @@ export class ListPhieuchiahangComponent {
       this.updateDisplayedColumns();
     }
   }
+  @memoize()
   FilterHederColumn(list:any,column:any)
   {
     const uniqueList = list.filter((obj: any, index: number, self: any) => 
@@ -170,41 +273,41 @@ export class ListPhieuchiahangComponent {
     );
     return uniqueList
   }
+  @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listphieuchiahang().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();
-    console.log(query,column);
-    console.log(this.dataSource.filteredData);   
+    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]
-  ChosenItem(item:any)
+  ChosenItem(item:any,column:any)
   {
-    if(this.ListFilter.includes(item.id))
+    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
+    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
+    if(CheckItem1.length>0)
     {
-      this.ListFilter = this.ListFilter.filter((v) => v !== item.id);
+      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
     }
     else{
-      this.ListFilter.push(item.id);
+      this.ListFilter = [...this.ListFilter,...CheckItem];
     }
-    console.log(this.ListFilter);
-    
   }
   ChosenAll(list:any)
   {
     list.forEach((v:any) => {
-      if(this.ListFilter.includes(v.id))
+      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
+      if(CheckItem)
         {
-          this.ListFilter = this.ListFilter.filter((v) => v !== v.id);
+          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
         }
         else{
-          this.ListFilter.push(v.id);
+          this.ListFilter.push(v);
         }
     });
   }
   ResetFilter()
   {
-    this.ListFilter = this.Listphieuchiahang().map((v:any) => v.id);
-    this.dataSource.data = this.Listphieuchiahang();
+    this.ListFilter = this.Listdonhang();
+    this.dataSource.data = this.Listdonhang();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -214,53 +317,95 @@ export class ListPhieuchiahangComponent {
   }
   CheckItem(item:any)
   {
-    return this.ListFilter.includes(item.id);
+    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
   }
   ApplyFilterColum(menu:any)
   {    
-    this.dataSource.data = this.Listphieuchiahang().filter((v: any) => this.ListFilter.includes(v.id));
+
+    this.dataSource.data = this.Listdonhang().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    console.log(this.dataSource.data);
     menu.closeMenu();
-    
   }
-  private updateDisplayedColumns(): void {
-    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
-      (item) => item.key
-    );
-    this.ColumnName = this.FilterColumns.reduce((obj, item) => {
-      if (item.isShow) obj[item.key] = item.value;
-      return obj;
-    }, {} as Record<string, string>);
-    localStorage.setItem('PhieuchiahangColFilter',JSON.stringify(this.FilterColumns)
-    );
-  }
-  doFilterColumns(event: any): void {
-    const query = event.target.value.toLowerCase();
-    this.FilterColumns = this.Columns.filter((v) =>
-      v.value.toLowerCase().includes(query)
-    );
-  }
+
+
   create(): void {
     this.drawer.open();
-    this._router.navigate(['admin/phieuchiahang', 0]);
+    this._router.navigate(['admin/donhang', 0]);
   }
   goToDetail(item: any): void {
-     this._PhieuchiahangService.setPhieuchiahangId(item.id);
+    this._DonhangService.setDonhangId(item.id);
     this.drawer.open();
-    this._router.navigate(['admin/phieuchiahang', item.id]);
+    this._router.navigate(['admin/donhang', item.id]);
   }
+  editDonhang: any[] = [];
+  toggleDonhang(item: any): void {
+    const index = this.editDonhang.findIndex((v) => v.id === item.id);
+    if (index !== -1) {
+      this.editDonhang.splice(index, 1);
+    } else {
+      this.editDonhang.push(item);
+    }
+  }
+
+  dialog = inject(MatDialog);
+  dialogCreateRef: any;
+  Phieuchia:any[] = [];
+  openCreateDialog(teamplate: TemplateRef<any>) {
+    console.log(this.editDonhang);
+    this.Phieuchia = this.editDonhang.map((v: any) => ({
+      makh: v.khachhang?.makh,
+      name: v.khachhang?.name,
+      sanpham: v.sanpham.map((v1: any) => ({
+        title: v1.title,
+        dvt: v1.dvt,
+        slgiao: v1.slgiao,
+      })),
+    }));
+    console.log(this.Phieuchia);
+    this.dialogCreateRef = this.dialog.open(teamplate, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+  }
+
+  getUniqueProducts(): string[] {
+    const products = new Set<string>();
+    this.Phieuchia.forEach(kh => kh.sanpham.forEach((sp:any) => products.add(sp.title)));
+    return Array.from(products);
+  }
+
+  getProductQuantity(product: string, makh: string): number | string {
+    const customer = this.Phieuchia.find(kh => kh.makh === makh);
+    const item = customer?.sanpham.find((sp:any) => sp.title === product);
+    return item ? item.slgiao : '';
+  }
+  getDvtForProduct(product: string) {
+    const uniqueProducts = Array.from(
+      new Map(this.Phieuchia.flatMap(c => c.sanpham.map((sp:any) => ({ ...sp, makh: c.makh, name: c.name })))
+          .map(p => [p.title, p])
+      ).values()
+  );
+  console.log(uniqueProducts);
+  
+    const item = uniqueProducts.find((sp:any) => sp.title === product);
+    return item ? item.dvt : '';
+  }
+  
+  CheckItemInDonhang(item: any): boolean {
+    return this.editDonhang.findIndex((v) => v.id === item.id) !== -1;
+  }
+  DeleteDonhang(): void {}
   async LoadDrive() {
     const DriveInfo = {
       IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'NCCImport',
+      SheetName: 'SPImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
-   const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
-   const data = ConvertDriveData(result.values);
-   console.log(data);
-   this.DoImportData(data);
+    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
+    const data = ConvertDriveData(result.values);
+    console.log(data);
+    this.DoImportData(data);
     // const updatePromises = data.map(async (v: any) => {
     //   const item = this._KhachhangsService
     //     .ListKhachhang()
@@ -282,56 +427,140 @@ export class ListPhieuchiahangComponent {
     //   //  window.location.reload();
     // });
   }
-  DoImportData(data:any)
-  {
+  DoImportData(data: any) {
     console.log(data);
-    
+
     const transformedData = data.map((v: any) => ({
-      name: v.name?.trim()||'',
-      mancc: v.mancc?.trim()||'',
-      sdt: v.sdt?.trim()||'',
-      diachi: v.diachi?.trim()||'',
-      ghichu: v.ghichu?.trim()||'',
-   }));
-   // Filter out duplicate mancc values
-   const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
-      index === self.findIndex((t:any) => (
-        t.mancc === value.mancc
-      ))
-   )
-    const listId2 = uniqueData.map((v: any) => v.mancc);
-    const listId1 = this._PhieuchiahangService.ListPhieuchiahang().map((v: any) => v.mancc);
-    const listId3 = listId2.filter((item:any) => !listId1.includes(item));
+      title: v.title?.trim() || '',
+      masp: v.masp?.trim() || '',
+      slug: `${convertToSlug(v?.title?.trim() || '')}_${GenId(5, false)}`,
+      giagoc: Number(v.giagoc) || 0,
+      dvt: v.dvt || '',
+      soluong: Number(v.soluong) || 0,
+      soluongkho: Number(v.soluongkho) || 0,
+      ghichu: v.ghichu || '',
+      order: Number(v.order) || 0,
+    }));
+    // Filter out duplicate masp values
+    const uniqueData = transformedData.filter(
+      (value: any, index: any, self: any) =>
+        index === self.findIndex((t: any) => t.masp === value.masp)
+    );
+    const listId2 = uniqueData.map((v: any) => v.masp);
+    const listId1 = this._DonhangService.ListDonhang().map((v: any) => v.masp);
+    const listId3 = listId2.filter((item: any) => !listId1.includes(item));
     const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._PhieuchiahangService.ListPhieuchiahang().find((v1) => v1.mancc === v.mancc);
-        if (item) {
-          const item1 = { ...item, ...v };
-          await this._PhieuchiahangService.updatePhieuchiahang(item1);
-        }
-        else{
-          await this._PhieuchiahangService.CreatePhieuchiahang(v);
-        }
+      const item = this._DonhangService
+        .ListDonhang()
+        .find((v1) => v1.masp === v.masp);
+      if (item) {
+        const item1 = { ...item, ...v };
+        await this._DonhangService.updateDonhang(item1);
+      } else {
+        await this._DonhangService.CreateDonhang(v);
+      }
+    });
+    const disableItem = listId3.map(async (v: any) => {
+      const item = this._DonhangService
+        .ListDonhang()
+        .find((v1) => v1.masp === v);
+      item.isActive = false;
+      await this._DonhangService.updateDonhang(item);
+    });
+    Promise.all([...createuppdateitem, ...disableItem]).then(() => {
+      this._snackBar.open('Cập Nhật Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
       });
-     const disableItem = listId3.map(async (v: any) => {
-        const item = this._PhieuchiahangService.ListPhieuchiahang().find((v1) => v1.mancc === v);
-        item.isActive = false;
-        await this._PhieuchiahangService.updatePhieuchiahang(item);
-      });
-      Promise.all([...createuppdateitem, ...disableItem]).then(() => {
-        this._snackBar.open('Cập Nhật Thành Công', '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-       // window.location.reload();
-      });
+      // window.location.reload();
+    });
   }
   async ImporExcel(event: any) {
-  const data = await readExcelFile(event)
-  this.DoImportData(data);
-  }   
-  ExportExcel(data:any,title:any) {
-    writeExcelFile(data,title);
+    const data = await readExcelFile(event);
+    this.DoImportData(data);
   }
+  ExportExcel(data: any, title: any) {
+    writeExcelFile(data, title);
+  }
+  printContent()
+  {
+    const element = document.getElementById('printContent');
+    if (!element) return;
+
+    html2canvas(element, { scale: 2 }).then(canvas => {
+      const imageData = canvas.toDataURL('image/png');
+
+      // Mở cửa sổ mới và in ảnh
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) return;
+
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>Phiếu Chia Hàng ${moment().format("DD/MM/YYYY")}</title>
+          </head>
+          <body style="text-align: center;">
+            <img src="${imageData}" style="max-width: 100%;"/>
+            <script>
+              window.onload = function() {
+                window.print();
+                window.onafterprint = function() { window.close(); };
+              };
+            </script>
+          </body>
+        </html>
+      `);
+
+      printWindow.document.close();
+    });
+  }
+  trackByFn(index: number, item: any): any {
+    return item.id; // Use a unique identifier
+  }
+}
+
+
+function memoize() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    const cache = new Map();
+
+    descriptor.value = function (...args: any[]) {
+      const key = JSON.stringify(args);
+      if (cache.has(key)) {
+        return cache.get(key);
+      }
+      const result = originalMethod.apply(this, args);
+      cache.set(key, result);
+      return result;
+    };
+
+    return descriptor;
+  };
+}
+
+function Debounce(delay: number = 300) {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) {
+    const originalMethod = descriptor.value;
+    let timeoutId: any;
+
+    descriptor.value = function (...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        originalMethod.apply(this, args);
+      }, delay);
+    };
+
+    return descriptor;
+  };
 }

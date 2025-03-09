@@ -19,6 +19,82 @@ export class NhomkhachhangService {
     this.nhomkhachhangId.set(id);
   }
   private socket = io(`${environment.APIURL}`);
+
+  async addKHtoNhom(dulieu: any) {
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/nhomkhachhang/addKHtoNhom`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+          if (response.status === 401) {
+            const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            // this.Dangxuat()
+          } else if (response.status === 403) {
+            const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            // this.Dangxuat()
+          } else if (response.status === 500) {
+            const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            // this.Dangxuat()
+          } else {
+            const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          }
+        }
+       // this.getNhomkhachhangByid(dulieu.nhomkhachhangId)
+    } catch (error) {
+        return console.error(error);
+    }
+  }
+  async removeKHfromNhom(dulieu: any) {
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/nhomkhachhang/removeKHfromNhom`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+          if (response.status === 401) {
+            const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            // this.Dangxuat()
+          } else if (response.status === 403) {
+            const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            // this.Dangxuat()
+          } else if (response.status === 500) {
+            const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            // this.Dangxuat()
+          } else {
+            const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          }
+        }
+        //this.getNhomkhachhangByid(dulieu.nhomkhachhangId)
+    } catch (error) {
+        return console.error(error);
+    }
+  }
+
   async CreateNhomkhachhang(dulieu: any) {
     try {
       const options = {

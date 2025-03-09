@@ -251,6 +251,22 @@ export const routes: Routes = [
           ],
         },
         {
+          path: 'phieuchiahang',
+          canActivate: [PermissionGuard],
+          data: { permission: 'phieuchiahang.view' },
+          loadComponent: () => import('./admin/phieuchiahang/listphieuchiahang/listphieuchiahang.component').then((c) => c.ListPhieuchiahangComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/phieuchiahang/listphieuchiahang/listphieuchiahang.component').then((c) => c.ListPhieuchiahangComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/phieuchiahang/detailphieuchiahang/detailphieuchiahang.component').then((c) => c.DetailPhieuchiahangComponent),
+            },
+          ],
+        },
+        {
           path: 'phieukho',
           canActivate: [PermissionGuard],
           data: { permission: 'phieukho.view' },

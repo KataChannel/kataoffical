@@ -35,7 +35,7 @@ export class BanggiaService {
         isActive: data.isActive ?? false,
         sanpham: {
           create: data.sanpham?.map((sp:any) => ({
-            sanphamId: sp.idSP,
+            sanphamId: sp.id,
             giaban: sp.giaban,
           })),
         },

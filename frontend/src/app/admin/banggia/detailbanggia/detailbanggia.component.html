@@ -121,14 +121,13 @@
             <button [disabled]="!isEdit()" matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
               <mat-icon>cloud_download</mat-icon>
           </button>
-            <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
+            <!-- <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                 {{CountItem()}} Sản Phẩm
-            </span>
+            </span> -->
 
             <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
               {{CheckListKhachhang.length}} Khách Hàng
-          </span>
-
+            </span>
                <mat-menu  #menu="matMenu">
                    <div (click)="$event.stopPropagation()"  class="cursor-pointer flex flex-col space-y-4 p-3">                                        
                    <div class="relative w-full">

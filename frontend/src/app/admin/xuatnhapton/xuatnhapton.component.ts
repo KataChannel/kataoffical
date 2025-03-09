@@ -47,13 +47,18 @@ export class XuatnhaptonComponent {
   Detail: any = {};
   displayedColumns: string[] = [
     'khoname',
-    'maphieu',
-    'ngay',
+    'title',
+    'slnhap',
+    'slxuat',
+    'soluong',
   ];
+
   ColumnName: any = {
     khoname: 'Kho',
-    maphieu: 'Mã Phiếu',
-    ngay: 'Ngày',
+    title: 'Sản Phẩm',
+    slnhap: 'Nhập',
+    slxuat: 'Xuất',
+    soluong: 'Tồn',
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('DonhangColFilter') || '[]'
@@ -125,7 +130,7 @@ export class XuatnhaptonComponent {
     this.dataSource.data = this.Xuatnhapton();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-
+    console.log(this.dataSource.data);
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -153,8 +158,6 @@ export class XuatnhaptonComponent {
     await this._PhieukhoService.getxuatnhapton(this.SearchParams);
     this.CountItem = this.Xuatnhapton().length;
     this.dataSource.data = this.Xuatnhapton();
-    console.log(this.dataSource.data);
-    
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.initializeColumns();
@@ -284,10 +287,9 @@ export class XuatnhaptonComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-
     this.dataSource.data = this.Xuatnhapton().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.dataSource.sort = this.sort;    
     menu.closeMenu();
   }
 }

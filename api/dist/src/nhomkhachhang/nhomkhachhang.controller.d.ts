@@ -5,36 +5,90 @@ export declare class NhomkhachhangController {
     create(createNhomkhachhangDto: any): Promise<{
         id: string;
         name: string;
+        description: string | null;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
     }>;
-    findAll(): Promise<{
+    findAll(): Promise<({
+        khachhang: {
+            id: string;
+            name: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            namenn: string | null;
+            makh: string;
+            diachi: string | null;
+            sdt: string | null;
+            mst: string | null;
+            gionhanhang: string | null;
+            quan: string | null;
+            email: string | null;
+            phone: string | null;
+            address: string | null;
+            loaikh: string | null;
+            ghichu: string | null;
+            isActive: boolean;
+        }[];
+    } & {
         id: string;
         name: string;
+        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+    })[]>;
+    addMultipleKhachhangToBanggia(data: any): Promise<{
+        id: string;
+        name: string;
         description: string | null;
-    }[]>;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    removeKHfromBG(data: any): Promise<{
+        id: string;
+        name: string;
+        description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
     findOne(id: string): Promise<{
+        khachhang: {
+            id: string;
+            name: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            namenn: string | null;
+            makh: string;
+            diachi: string | null;
+            sdt: string | null;
+            mst: string | null;
+            gionhanhang: string | null;
+            quan: string | null;
+            email: string | null;
+            phone: string | null;
+            address: string | null;
+            loaikh: string | null;
+            ghichu: string | null;
+            isActive: boolean;
+        }[];
+    } & {
         id: string;
         name: string;
+        description: string | null;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
     }>;
     update(id: string, updateNhomkhachhangDto: any): Promise<{
         id: string;
         name: string;
+        description: string | null;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
         name: string;
+        description: string | null;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
     }>;
 }

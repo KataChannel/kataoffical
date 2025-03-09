@@ -9,11 +9,11 @@ export class NhomkhachhangService {
     return this.prisma.nhomkhachhang.create({ data });
   }
   async findAll() {
-    return this.prisma.nhomkhachhang.findMany();
+    return this.prisma.nhomkhachhang.findMany({include:{khachhang:true}});
   }
 
   async findOne(id: string) {
-    const nhomkhachhang = await this.prisma.nhomkhachhang.findUnique({ where: { id } });
+    const nhomkhachhang = await this.prisma.nhomkhachhang.findUnique({ where: { id },include:{khachhang:true} });
     if (!nhomkhachhang) throw new NotFoundException('Nhomkhachhang not found');
     return nhomkhachhang;
   }
@@ -24,5 +24,26 @@ export class NhomkhachhangService {
 
   async remove(id: string) {
     return this.prisma.nhomkhachhang.delete({ where: { id } });
+  }
+
+  async addKHtoNhom(nhomId: string, khachhangIds: any[]) {
+    return this.prisma.nhomkhachhang.update({
+      where: { id: nhomId },
+      data: {
+        khachhang: {
+          connect: khachhangIds.map(id => ({ id })),
+        },
+      },
+    });
+  }
+  async removeKHfromNhom(nhomId: string, khachhangIds: any[]) {
+    return this.prisma.nhomkhachhang.update({
+      where: { id: nhomId },
+      data: {
+        khachhang: {
+          disconnect: khachhangIds.map(id => ({ id })),
+        },
+      },
+    });
   }
 }

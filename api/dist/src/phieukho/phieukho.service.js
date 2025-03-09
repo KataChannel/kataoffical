@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PhieukhoService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const xuatnhapton_utils_1 = require("../shared/utils/xuatnhapton.utils");
 let PhieukhoService = class PhieukhoService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -31,17 +32,19 @@ let PhieukhoService = class PhieukhoService {
                 kho: true,
             },
         });
-        return phieuKhos.map((phieuKho) => ({
+        const tranData = phieuKhos.map((phieuKho) => ({
             khoname: phieuKho.kho.name,
             maphieu: phieuKho.maphieu,
             ngay: phieuKho.ngay,
             type: phieuKho.type,
             sanpham: phieuKho.sanpham.map((item) => ({
+                id: item.id,
                 sldat: item.sldat,
                 soluong: item.soluong,
                 title: item.sanpham.title,
             })),
         }));
+        return (0, xuatnhapton_utils_1.convertXuatnhapton)(tranData);
     }
     async findAll() {
         const phieuKhos = await this.prisma.phieuKho.findMany({

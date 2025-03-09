@@ -116,24 +116,15 @@ model Khachhang {
   donhang      Donhang[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  KhachhangNhom KhachhangNhom[]
+  nhomkhachhang Nhomkhachhang[] @relation("KhachhangNhom")
 }
 model Nhomkhachhang {
   id          String   @id @default(uuid())
   name        String   @unique
   description String?
-  customers   KhachhangNhom[]  // Quan hệ Many-to-Many với khách hàng
+  khachhang   Khachhang[]  @relation("KhachhangNhom")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-}
-
-model KhachhangNhom {
-  id            String   @id @default(uuid())
-  nhomId        String
-  khachhangId   String
-  khachhang     Khachhang      @relation(fields: [khachhangId], references: [id], onDelete: Cascade)
-  nhomKhachhang Nhomkhachhang  @relation(fields: [nhomId], references: [id], onDelete: Cascade)
-  createdAt     DateTime @default(now())
 }
 
 model Donhangsanpham {

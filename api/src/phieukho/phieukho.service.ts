@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { convertXuatnhapton } from 'src/shared/utils/xuatnhapton.utils';
 
 @Injectable()
 export class PhieukhoService {
@@ -22,17 +23,19 @@ export class PhieukhoService {
         kho: true,
       },
     });
-    return phieuKhos.map((phieuKho) => ({
+    const tranData = phieuKhos.map((phieuKho) => ({
       khoname: phieuKho.kho.name,
       maphieu: phieuKho.maphieu,
       ngay: phieuKho.ngay,
       type: phieuKho.type,
       sanpham: phieuKho.sanpham.map((item) => ({
+        id:item.id,
         sldat: item.sldat,
         soluong: item.soluong,
         title: item.sanpham.title,
       })),
     }));
+    return convertXuatnhapton(tranData);
   }
   async findAll() {
     const phieuKhos = await this.prisma.phieuKho.findMany({

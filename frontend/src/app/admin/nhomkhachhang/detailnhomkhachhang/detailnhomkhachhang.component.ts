@@ -13,6 +13,8 @@ import { ListNhomkhachhangComponent } from '../listnhomkhachhang/listnhomkhachha
 import { NhomkhachhangService } from '../nhomkhachhang.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
+import { MatMenuModule } from '@angular/material/menu';
+import { KhachhangService } from '../../khachhang/khachhang.service';
   @Component({
     selector: 'app-detailnhomkhachhang',
     imports: [
@@ -24,7 +26,8 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       MatSelectModule,
       MatDialogModule,
       CommonModule,
-      MatSlideToggleModule
+      MatSlideToggleModule,
+      MatMenuModule
     ],
     templateUrl: './detailnhomkhachhang.component.html',
     styleUrl: './detailnhomkhachhang.component.scss',
@@ -32,6 +35,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   export class DetailNhomkhachhangComponent {
     _ListnhomkhachhangComponent:ListNhomkhachhangComponent = inject(ListNhomkhachhangComponent)
     _NhomkhachhangService:NhomkhachhangService = inject(NhomkhachhangService)
+    _KhachhangService:KhachhangService = inject(KhachhangService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
@@ -56,6 +60,9 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
         }
         else{
             await this._NhomkhachhangService.getNhomkhachhangByid(id);
+            await this._KhachhangService.getAllKhachhang();   
+            this.ListKhachhang = this._KhachhangService.ListKhachhang();
+            this.CheckListKhachhang = this.DetailNhomkhachhang().khachhang;
             this._ListnhomkhachhangComponent.drawer.open();
             this._router.navigate(['/admin/nhomkhachhang', id]);
         }
@@ -65,7 +72,8 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     isEdit = signal(false);
     isDelete = signal(false);  
     nhomkhachhangId:any = this._NhomkhachhangService.nhomkhachhangId
-    async ngOnInit() {       
+    async ngOnInit() {    
+
     }
     async handleNhomkhachhangAction() {
       if (this.nhomkhachhangId() === '0') {
@@ -77,6 +85,10 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     }
     private async createNhomkhachhang() {
       try {
+        this.DetailNhomkhachhang.update((v:any)=>{
+          delete v.khachhang;
+          return v;
+        }) 
         await this._NhomkhachhangService.CreateNhomkhachhang(this.DetailNhomkhachhang());
         this._snackBar.open('Tạo Mới Thành Công', '', {
           duration: 1000,
@@ -92,6 +104,10 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 
     private async updateNhomkhachhang() {
       try {
+        this.DetailNhomkhachhang.update((v:any)=>{
+          delete v.khachhang;
+          return v;
+        })  
         await this._NhomkhachhangService.updateNhomkhachhang(this.DetailNhomkhachhang());
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,
@@ -140,5 +156,43 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
         v.slug = convertToSlug(v.title);
         return v;
       })
+    }
+
+    ListKhachhang: any[] = [];
+    CheckListKhachhang: any[] = [];
+    doFilterKhachhang(event:any){
+      const value = event.target.value;
+      this.ListKhachhang = this._KhachhangService.ListKhachhang().filter((v) => v.name.toLowerCase().includes(value.toLowerCase()));
+    }
+    ChosenKhachhang(item:any){
+      const checkitem = this.CheckListKhachhang.find((v) => v.id === item.id);            
+      if(!checkitem){
+        this.CheckListKhachhang.push(item);
+
+      }
+      else{
+        this.CheckListKhachhang = this.CheckListKhachhang.filter((v) => v.id !== item.id);
+      }
+    }
+    async ApplyKhachhang(menu:any){
+      console.log(this.DetailNhomkhachhang());
+      console.log( this.CheckListKhachhang);
+
+      const removeData = {
+        nhomId: this.nhomkhachhangId(),
+        khachhangIds: this.DetailNhomkhachhang().khachhang.map((v:any) => v.id)
+      }
+      const removePromise = await this._NhomkhachhangService.removeKHfromNhom(removeData)
+      const addData = {
+        nhomId: this.nhomkhachhangId(),
+        khachhangIds: this.CheckListKhachhang.map((v:any) => v.id)
+      }
+      const adddPromise = await this._NhomkhachhangService.addKHtoNhom(addData)
+      Promise.all([removePromise,adddPromise]).then(()=>{menu.closeMenu()});
+
+    }
+    CheckKhachhang(item:any)
+    {
+      return this.CheckListKhachhang.find((v:any) => v.id === item.id)?true:false;
     }
   }

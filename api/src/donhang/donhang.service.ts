@@ -63,19 +63,39 @@ export class DonhangService {
 
   async search(params: any) {
     const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;
-    console.log(params);
-    return this.prisma.donhang.findMany({
+    const result =await this.prisma.donhang.findMany({
       where: {
         ngaygiao: {
-          gte: new Date(Batdau) || new Date(),
-          lte: new Date(Ketthuc) || new Date(),
+          gte: Batdau ? new Date(Batdau) : undefined,
+          lte: Ketthuc ? new Date(Ketthuc) : undefined,
         },
         type: Type,
       },
-      take: pageSize,
-      skip: pageNumber * pageSize,
+      include: {
+        sanpham: {
+          include: {
+            sanpham: true,
+          },
+        },
+        khachhang: true,
+      },
       orderBy: { ngaygiao: 'desc' },
     });
+    return result.map((donhang) => ({
+      ...donhang,
+      sanpham: donhang.sanpham.map((item: any) => ({
+        ...item.sanpham,
+        idSP: item.idSP,
+        sldat: item.sldat,
+        slgiao: item.slgiao,
+        slnhan: item.slnhan,
+        ttdat: item.ttdat,
+        ttgiao: item.ttgiao,
+        ttnhan: item.ttnhan,
+        ghichu: item.ghichu,
+      })),
+      name: donhang.khachhang.name,
+    }));
   }
   
   async findAll() {

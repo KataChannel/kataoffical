@@ -155,7 +155,9 @@ export class ListDonhangComponent {
     };
 
     timeFrames[event.value]?.();
-    // this.loadData();
+    console.log(this.SearchParams);
+    
+     this.ngOnInit();
   }
   onDateChange(event: any): void {
     console.log(event);
@@ -186,7 +188,7 @@ export class ListDonhangComponent {
     }
   }
   async ngOnInit(): Promise<void> {
-    await this._DonhangService.getAllDonhang();
+    await this._DonhangService.searchDonhang(this.SearchParams);
     this.CountItem = this.Listdonhang().length;
     this.initializeColumns();
     this.setupDrawer();
@@ -199,9 +201,6 @@ export class ListDonhangComponent {
     this.paginator._intl.previousPageLabel = 'Về Trước';
     this.paginator._intl.firstPageLabel = 'Trang Đầu';
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
-  }
-  async refresh() {
-    await this._DonhangService.getAllDonhang();
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({

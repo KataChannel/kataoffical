@@ -20,10 +20,10 @@ let NhomkhachhangService = class NhomkhachhangService {
         return this.prisma.nhomkhachhang.create({ data });
     }
     async findAll() {
-        return this.prisma.nhomkhachhang.findMany();
+        return this.prisma.nhomkhachhang.findMany({ include: { khachhang: true } });
     }
     async findOne(id) {
-        const nhomkhachhang = await this.prisma.nhomkhachhang.findUnique({ where: { id } });
+        const nhomkhachhang = await this.prisma.nhomkhachhang.findUnique({ where: { id }, include: { khachhang: true } });
         if (!nhomkhachhang)
             throw new common_1.NotFoundException('Nhomkhachhang not found');
         return nhomkhachhang;
@@ -33,6 +33,26 @@ let NhomkhachhangService = class NhomkhachhangService {
     }
     async remove(id) {
         return this.prisma.nhomkhachhang.delete({ where: { id } });
+    }
+    async addKHtoNhom(nhomId, khachhangIds) {
+        return this.prisma.nhomkhachhang.update({
+            where: { id: nhomId },
+            data: {
+                khachhang: {
+                    connect: khachhangIds.map(id => ({ id })),
+                },
+            },
+        });
+    }
+    async removeKHfromNhom(nhomId, khachhangIds) {
+        return this.prisma.nhomkhachhang.update({
+            where: { id: nhomId },
+            data: {
+                khachhang: {
+                    disconnect: khachhangIds.map(id => ({ id })),
+                },
+            },
+        });
     }
 };
 exports.NhomkhachhangService = NhomkhachhangService;

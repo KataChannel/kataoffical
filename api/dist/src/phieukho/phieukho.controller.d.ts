@@ -8,21 +8,21 @@ export declare class PhieukhoController {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            phieuKhoId: string;
+            soluong: number;
             sanphamId: string;
             sldat: number;
-            soluong: number;
+            phieuKhoId: string;
         }[];
     } & {
         id: string;
-        maphieu: string;
-        ngay: Date;
-        type: string;
-        khoId: string;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
+        khoId: string;
+        maphieu: string;
+        ngay: Date;
     }>;
     findAll(): Promise<{
         sanpham: {
@@ -32,70 +32,68 @@ export declare class PhieukhoController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                soluong: number;
                 title: string;
                 slug: string | null;
+                order: number | null;
                 masp: string;
                 giagoc: number;
                 dvt: string | null;
                 hinhanh: string | null;
+                soluong: number;
                 soluongkho: number;
                 haohut: number;
-                order: number | null;
             };
             id: string;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            phieuKhoId: string;
+            soluong: number;
             sanphamId: string;
             sldat: number;
-            soluong: number;
+            phieuKhoId: string;
         }[];
         kho: {
             id: string;
+            name: string;
+            diachi: string | null;
+            sdt: string | null;
             ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             makho: string | null;
-            diachi: string | null;
-            sdt: string | null;
             congtyId: string | null;
         };
         id: string;
-        maphieu: string;
-        ngay: Date;
-        type: string;
-        khoId: string;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-    }[]>;
-    xuatnhapton(query: any): Promise<{
-        khoname: string;
+        type: string;
+        khoId: string;
         maphieu: string;
         ngay: Date;
-        type: string;
-        sanpham: {
-            sldat: number;
-            soluong: number;
-            title: string;
-        }[];
+    }[]>;
+    xuatnhapton(query: any): Promise<{
+        id: string;
+        khoname: string;
+        title: string;
+        slxuat: number;
+        slnhap: number;
+        soluong: number;
+        chitiet: any[];
     }[]>;
     findOne(id: string): Promise<{
         kho: {
             id: string;
+            name: string;
+            diachi: string | null;
+            sdt: string | null;
             ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            name: string;
             makho: string | null;
-            diachi: string | null;
-            sdt: string | null;
             congtyId: string | null;
         };
         sanpham: {
@@ -103,21 +101,21 @@ export declare class PhieukhoController {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            phieuKhoId: string;
+            soluong: number;
             sanphamId: string;
             sldat: number;
-            soluong: number;
+            phieuKhoId: string;
         }[];
     } & {
         id: string;
-        maphieu: string;
-        ngay: Date;
-        type: string;
-        khoId: string;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
+        khoId: string;
+        maphieu: string;
+        ngay: Date;
     }>;
     update(id: string, updatePhieukhoDto: any): Promise<{
         sanpham: {
@@ -125,31 +123,31 @@ export declare class PhieukhoController {
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            phieuKhoId: string;
+            soluong: number;
             sanphamId: string;
             sldat: number;
-            soluong: number;
+            phieuKhoId: string;
         }[];
     } & {
         id: string;
-        maphieu: string;
-        ngay: Date;
-        type: string;
-        khoId: string;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
+        khoId: string;
+        maphieu: string;
+        ngay: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
-        maphieu: string;
-        ngay: Date;
-        type: string;
-        khoId: string;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
+        khoId: string;
+        maphieu: string;
+        ngay: Date;
     }>;
 }

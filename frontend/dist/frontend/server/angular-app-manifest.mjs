@@ -575,6 +575,38 @@ export default {
       "chunk-3F7BKIWY.js",
       "chunk-72H44DAN.js"
     ],
+    "route": "/admin/phieuchiahang"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-AJLUXDKJ.js",
+      "chunk-L4L5YEF5.js",
+      "chunk-5DHHV6YT.js",
+      "chunk-M7GYQRQN.js",
+      "chunk-6HDA5FL5.js",
+      "chunk-O6GU2XPG.js",
+      "chunk-2I3TB2TD.js",
+      "chunk-4E3GGNR6.js",
+      "chunk-3F7BKIWY.js",
+      "chunk-72H44DAN.js"
+    ],
+    "route": "/admin/phieuchiahang/*"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-AJLUXDKJ.js",
+      "chunk-L4L5YEF5.js",
+      "chunk-5DHHV6YT.js",
+      "chunk-M7GYQRQN.js",
+      "chunk-6HDA5FL5.js",
+      "chunk-O6GU2XPG.js",
+      "chunk-2I3TB2TD.js",
+      "chunk-4E3GGNR6.js",
+      "chunk-3F7BKIWY.js",
+      "chunk-72H44DAN.js"
+    ],
     "route": "/admin/phieukho"
   },
   {
@@ -793,8 +825,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72816, hash: '352dd3423cddc69b76c33162aefe63580ee705062879ed5b9d894b5c2a466201', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24107, hash: '2ce998b66879f84b9323cc2fbbf1830110fb455cfa975d1d92aaaf61c494a9ec', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
-    'styles-ZHVJI65L.css': {size: 369552, hash: 'a6p0H3hnGUk', text: () => import('./assets-chunks/styles-ZHVJI65L_css.mjs').then(m => m.default)}
+    'index.csr.html': {size: 72816, hash: '0bf1f8ce5a7ef1bdace408fd153e3a760b47be67b135ca02b698daaf4c8f0837', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24107, hash: '1e0192c3c37c0f94c4ac2f583299e7f9790fe249cfd4e6f98079e52c1973e2bb', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'styles-3N6ENMH6.css': {size: 369731, hash: 'u6uKJ28DMSk', text: () => import('./assets-chunks/styles-3N6ENMH6_css.mjs').then(m => m.default)}
   },
 };

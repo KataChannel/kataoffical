@@ -25,6 +25,12 @@ let NhomkhachhangController = class NhomkhachhangController {
     findAll() {
         return this.nhomkhachhangService.findAll();
     }
+    addMultipleKhachhangToBanggia(data) {
+        return this.nhomkhachhangService.addKHtoNhom(data.nhomId, data.khachhangIds);
+    }
+    removeKHfromBG(data) {
+        return this.nhomkhachhangService.removeKHfromNhom(data.nhomId, data.khachhangIds);
+    }
     findOne(id) {
         return this.nhomkhachhangService.findOne(id);
     }
@@ -49,6 +55,20 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], NhomkhachhangController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Post)('addKHtoNhom'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], NhomkhachhangController.prototype, "addMultipleKhachhangToBanggia", null);
+__decorate([
+    (0, common_1.Post)('removeKHfromNhom'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], NhomkhachhangController.prototype, "removeKHfromBG", null);
 __decorate([
     (0, common_1.Get)('findid/:id'),
     __param(0, (0, common_1.Param)('id')),

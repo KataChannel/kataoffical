@@ -122,7 +122,10 @@ export class DetailDonhangComponent {
   }
   private async createDonhang() {
     try {
-      console.log(this.DetailDonhang());
+      this.DetailDonhang.update((v: any) => {
+        v.type = 'donsi';
+        return v;
+      });
       this.DetailDonhang().sanpham = this.DetailDonhang().sanpham.map((v:any)=>{
         v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
         return v;
@@ -302,6 +305,7 @@ export class DetailDonhangComponent {
         };
         v.khachhangId = selectedKhachhang.id;
         v.khachhang = khachhang;
+        v.banggiaId = selectedKhachhang.banggia.find((v: any) => moment() > moment(v.batdau) && moment() < moment(v.ketthuc))?.id;
         return v;
       });
     }

@@ -60,8 +60,7 @@ export class VandonComponent {
     'slgiao',
     'slnhan',
     'order',
-    'createdAt',
-    'updatedAt',
+    'ngaygiao'
   ];
   ColumnName: any = {
     madonhang: 'Mã Đơn Hàng',
@@ -76,11 +75,10 @@ export class VandonComponent {
     slgiao: 'SL Giao',
     slnhan: 'SL Nhận',
     order: 'Thứ Tự',
-    createdAt:'Ngày Tạo',
-    updatedAt:'Ngày Cập Nhật'
+    ngaygiao: 'Ngày Giao',
   };
   FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('DonhangColFilter') || '[]'
+    localStorage.getItem('VandonColFilter') || '[]'
   );
   Columns: any[] = [];
   isFilter: boolean = false;
@@ -94,14 +92,18 @@ export class VandonComponent {
   private _router: Router = inject(Router);
   Vandon:any = this._DonhangService.ListDonhang;
   dataSource = computed(() => {
-    const Listvandon = this.Vandon().flatMap((item: any) => {
+    console.log(this.Vandon());
+    
+    const Listvandon = this.Vandon()
+    .flatMap((item: any,k:any) => {
       const Info = {
       madonhang: item?.madonhang,
       khachhang: item?.khachhang?.name,
-      sdt: item?.khachhang?.sdt,
+      sdt: item?.khachhang?.sdt,  
       diachi: item?.khachhang?.diachi,
       createdAt: item.createdAt,
       isActive: item.isActive,
+      ngaygiao: item.ngaygiao,
       };
       return item.sanpham.map((v: any) => ({ ...v, ...Info }));
     }); 
@@ -121,7 +123,7 @@ export class VandonComponent {
     Ketthuc: moment().add(1,'day').format('YYYY-MM-DD'),
     Type: 'donsi',
     pageSize: 9999,
-    pageNumber: 0,
+    pageNumber: 1,
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -157,7 +159,7 @@ export class VandonComponent {
     };
 
     timeFrames[event.value]?.();
-    // this.loadData();
+    this.refresh();
   }
   onDateChange(event: any): void {
     console.log(event);
@@ -185,7 +187,7 @@ export class VandonComponent {
     }
   }
   async ngOnInit(): Promise<void> {    
-    await this._DonhangService.getAllDonhang();
+    await this._DonhangService.searchDonhang(this.SearchParams);
     this.CountItem = this.Vandon().length;
     this.initializeColumns();
     this.setupDrawer();
@@ -196,7 +198,7 @@ export class VandonComponent {
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
   async refresh() {
-   await this._DonhangService.getAllDonhang();
+    await this._DonhangService.searchDonhang(this.SearchParams);
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -207,7 +209,7 @@ export class VandonComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('DonhangColFilter',JSON.stringify(this.FilterColumns)
+      localStorage.setItem('VandonColFilter',JSON.stringify(this.FilterColumns)
       );
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -246,7 +248,7 @@ export class VandonComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('DonhangColFilter',JSON.stringify(this.FilterColumns)
+    localStorage.setItem('VandonColFilter',JSON.stringify(this.FilterColumns)
     );
   }
   doFilterColumns(event: any): void {

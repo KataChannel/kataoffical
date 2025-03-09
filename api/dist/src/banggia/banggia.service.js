@@ -41,7 +41,7 @@ let BanggiaService = class BanggiaService {
                 isActive: data.isActive ?? false,
                 sanpham: {
                     create: data.sanpham?.map((sp) => ({
-                        sanphamId: sp.idSP,
+                        sanphamId: sp.id,
                         giaban: sp.giaban,
                     })),
                 },

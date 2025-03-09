@@ -190,6 +190,15 @@
                         {{ row[column]||0|number:'1.0-2' }}
                          </div>
                         }
+                        @case ('slnhan') {
+                      <div
+                          [contentEditable]="true"
+                          (blur)="updateValue($event,idx, row, 'slnhan','number')"
+                          class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                        >
+                        {{ row[column]||0|number:'1.0-2' }}
+                         </div>
+                        }
                         @case ('ghichu') {
                       <div
                           [contentEditable]="true"

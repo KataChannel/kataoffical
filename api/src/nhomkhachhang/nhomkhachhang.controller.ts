@@ -14,7 +14,14 @@ export class NhomkhachhangController {
   findAll() {
     return this.nhomkhachhangService.findAll();
   }
-
+  @Post('addKHtoNhom')
+  addMultipleKhachhangToBanggia(@Body() data:any) {
+    return this.nhomkhachhangService.addKHtoNhom(data.nhomId,data.khachhangIds);
+  }
+  @Post('removeKHfromNhom')
+  removeKHfromBG(@Body() data:any) {
+    return this.nhomkhachhangService.removeKHfromNhom(data.nhomId,data.khachhangIds);
+  }
   @Get('findid/:id')
   findOne(@Param('id') id: string) {
     return this.nhomkhachhangService.findOne(id);
