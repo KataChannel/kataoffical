@@ -81,7 +81,7 @@ export class AdminmainComponent {
         const permissions = this.User?.permissions?.map((v:any)=>v.name);     
         await this._MenuService.getTreeMenu(permissions)
         this.ListMenu = this._MenuService.ListMenu()    
-        this.dataSource.data = this._MenuService.ListMenu();   
+        this.dataSource.data = this._MenuService.ListMenu()
       } 
     });
    

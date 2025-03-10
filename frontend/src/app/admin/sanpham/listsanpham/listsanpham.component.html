@@ -150,13 +150,13 @@
                     </td>
                 </ng-container>
                 }
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{sanphamId()==row.id?'!bg-slate-200':''}}" (click)="goToDetail(row);"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
             </table>
-            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
         </div>
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100,dataSource.data.length]" pageSize="25"></mat-paginator>
     </div>
 </mat-drawer-container>

@@ -91,25 +91,71 @@
                   }
             </mat-select>
           </mat-form-field>
+          <button mat-flat-button color="primary" [disabled]="!isEdit()" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
+            {{ListFilter.length}}  Sản Phẩm
+          </button>
+         <mat-menu  #menu="matMenu">
+                     <div (click)="$event.stopPropagation()"  class="cursor-pointer flex flex-col space-y-4 p-3">                                        
+                     <div class="relative w-full">
+                         <input type="text"
+                             placeholder="Tìm Kiếm..." (keyup)="doFilterSanpham($event)"
+                             class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                             <span class="material-symbols-outlined text-gray-500">search</span>
+                         </div>
+                     </div>
+                     <div class="flex flex-row space-x-2 items-center justify-between">
+                         <div class="flex flex-row space-x-2 items-center">
+                             <span class="text-xs text-blue-600 underline" (click)="ChosenAll(filterSanpham)">Chọn Tất Cả {{ListFilter.length}}</span>
+                             <span class="text-xs text-blue-600 underline" (click)="EmptyFiter()">Xoá</span>
+                         </div>
 
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-              <mat-label>Sản Phẩm</mat-label>
-              <mat-select [disabled]="!isEdit()" (selectionChange)="SelectSanpham($event)">
-                <div class="w-full flex flex-col">
-                  <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
-                    <input matInput (input)="DoFindSanpham($event)" placeholder="Tìm Kiếm" />
-                  </mat-form-field>
-                  <div class="overflow-y-auto max-h-44">
-                    @for (item of filterSanpham; track item.id) {
-                    <mat-option [value]="item.id">{{item.title}}</mat-option>
-                    }
-                    @empty {
-                    <mat-option disabled>Không có dữ liệu</mat-option>
-                    }
-                  </div>
-                </div>
-              </mat-select>
-            </mat-form-field>
+                         <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
+                     </div>
+                     <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
+                             <div *ngFor="let item of filterSanpham; trackBy:trackByFn" (click)="ChosenItem(item)" class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
+                                <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>   
+                                {{item.title}}                      
+                             </div>
+                     </div>
+                     <div class="flex flex-row space-x-2 items-end justify-end">
+                         <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
+                         <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)" >Áp Dụng</button>
+                     </div>
+                     </div>
+         </mat-menu>
+
+
+         <button mat-flat-button color="primary" [disabled]="!isEdit()" class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200" [matMenuTriggerFor]="menu1" #menuTrigger1="matMenuTrigger">
+          {{CheckListKhachhang.length}} Khách Hàng
+        </button>
+           <mat-menu  #menu1="matMenu">
+               <div (click)="$event.stopPropagation()"  class="cursor-pointer flex flex-col space-y-4 p-3">                                        
+               <div class="relative w-full">
+                   <input type="text"
+                       placeholder="Tìm Kiếm..." (keyup)="doFilterKhachhang($event)"
+                       class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                   <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                       <span class="material-symbols-outlined text-gray-500">search</span>
+                   </div>
+               </div>
+               <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
+                       <div *ngFor="let item of ListKhachhang; trackBy:trackByFn" (click)="ChosenKhachhang(item)" class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
+                          <span *ngIf="CheckKhachhang(item)" class="material-symbols-outlined text-blue-600">check</span>                        
+                          {{item.name}}
+                       </div>
+               </div>
+               <div class="flex flex-row space-x-2 items-end justify-end">
+                   <button mat-flat-button color="warn" (click)="menuTrigger1.closeMenu()">Đóng</button>
+                   <button mat-flat-button color="primary" (click)="ApplyKhachhang(menuTrigger1)">Áp Dụng</button>
+               </div>
+               </div>
+           </mat-menu>
+
+
+
+
+
             <button [disabled]="!isEdit()" matTooltip="Tải file excel Mẫu" (click)="ExportExcel(dataSource(),'Banggia')" color="primary" mat-icon-button>
               <mat-icon>file_download</mat-icon>
            </button>
@@ -125,31 +171,6 @@
                 {{CountItem()}} Sản Phẩm
             </span> -->
 
-            <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
-              {{CheckListKhachhang.length}} Khách Hàng
-            </span>
-               <mat-menu  #menu="matMenu">
-                   <div (click)="$event.stopPropagation()"  class="cursor-pointer flex flex-col space-y-4 p-3">                                        
-                   <div class="relative w-full">
-                       <input type="text"
-                           placeholder="Tìm Kiếm..." (keyup)="doFilterKhachhang($event)"
-                           class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
-                       <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                           <span class="material-symbols-outlined text-gray-500">search</span>
-                       </div>
-                   </div>
-                   <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
-                           <div *ngFor="let item of ListKhachhang; trackBy:trackByFn" (click)="ChosenKhachhang(item)" class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
-                              <span *ngIf="CheckKhachhang(item)" class="material-symbols-outlined text-blue-600">check</span>                        
-                              {{item.name}}
-                           </div>
-                   </div>
-                   <div class="flex flex-row space-x-2 items-end justify-end">
-                       <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
-                       <button mat-flat-button color="primary" (click)="ApplyKhachhang(menuTrigger)">Áp Dụng</button>
-                   </div>
-                   </div>
-               </mat-menu>
 
         </div>
     </div>
@@ -167,17 +188,20 @@
                     @case ('STT') {
                     <span class="max-w-20 line-clamp-4 flex flex-row items-center">
                        <span>{{ idx + 1 }} </span>
-                        <button mat-icon-button color="warn" (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
+                        <button [disabled]="!isEdit()" mat-icon-button color="warn" (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
                     </span>
                     }
                     @case ('giaban') {
-                  <div
+                  <div *ngIf="isEdit()"
                       [contentEditable]="true"
                       (blur)="updateValue($event,idx, row, 'giaban','number')"
                       class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                     >
                     {{ row[column]||0|number:'1.0-2' }}
                      </div>
+                     <span *ngIf="!isEdit()" class="max-w-20 line-clamp-4">
+                      {{ row[column]|number:'1.0-2' }}
+                    </span>
                     }
                     @case ('giagoc') {
                       <span class="max-w-20 line-clamp-4">
@@ -218,7 +242,7 @@
       <div class="grid grid-cols-3 gap-2">
         <ng-container *ngFor="let item of Detail?.Banggia; let idx = index; trackBy: trackByFn">
           <mat-form-field appearance="outline" subscriptsizing="dynamic">
-            <mat-label>Sản Phẩm</mat-label>
+            <mat-label></mat-label>
             <mat-select [(ngModel)]="item.idSP" (selectionChange)="SelectBanggia($event)">
               <mat-option *ngFor="let sp of FilterBanggia" [value]="sp.id">
                 {{ sp.Title }} [Tồn: {{ sp.Soluong }}{{ sp.dvt }}]
@@ -239,7 +263,7 @@
       </div>
 
       <button mat-flat-button color="primary" (click)="addBanggia()">
-        <mat-icon>add</mat-icon> Thêm Sản Phẩm
+        <mat-icon>add</mat-icon> Thêm 
       </button> -->
     </ng-container>
 

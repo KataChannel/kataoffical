@@ -115,6 +115,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
             await this._BanggiaService.getBanggiaByid(id);
             this.dataSource().data = this.DetailBanggia().sanpham;
             this.CheckListKhachhang = this.DetailBanggia().khachhang;
+            this.ListFilter = this.DetailBanggia().sanpham
             this._ListbanggiaComponent.drawer.open();
             this._router.navigate(['/admin/banggia', id]);
         }
@@ -434,4 +435,52 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
                 panelClass: ['snackbar-success'],
           });
         }
+
+        doFilterSanpham(event: any): void {
+          this.dataSource().filteredData = this.filterSanpham.filter((v: any) => v.title.toLowerCase().includes(event.target.value.toLowerCase()));  
+          const query = event.target.value.toLowerCase();  
+        }
+        ListFilter:any[] =[]
+        ChosenItem(item:any)
+        {
+          console.log(item);
+          
+          const CheckItem = this.filterSanpham.filter((v:any)=>v.id===item.id);
+          const CheckItem1 = this.ListFilter.filter((v:any)=>v.id===item.id);
+          if(CheckItem1.length>0)
+          {
+            this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
+          }
+          else{
+            this.ListFilter = [...this.ListFilter,...CheckItem];
+          }
+        }
+        ChosenAll(list:any)
+        {
+          this.ListFilter =list
+        }
+        ResetFilter()
+        {
+          this.ListFilter = this.filterSanpham;
+          this.dataSource().data = this.filterSanpham;
+          this.dataSource().paginator = this.paginator;
+          this.dataSource().sort = this.sort;
+        }
+        EmptyFiter()
+        {
+          this.ListFilter = [];
+        }
+        CheckItem(item:any)
+        {
+          return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+        }
+        ApplyFilterColum(menu:any)
+        {    
+      
+          this.dataSource().data = this.filterSanpham.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+          this.dataSource().paginator = this.paginator;
+          this.dataSource().sort = this.sort;
+          menu.closeMenu();
+        }
+
   }
