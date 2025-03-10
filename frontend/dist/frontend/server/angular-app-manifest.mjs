@@ -655,6 +655,54 @@ export default {
       "chunk-3F7BKIWY.js",
       "chunk-72H44DAN.js"
     ],
+    "route": "/admin/congnokhachhang"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-AJLUXDKJ.js",
+      "chunk-L4L5YEF5.js",
+      "chunk-5DHHV6YT.js",
+      "chunk-M7GYQRQN.js",
+      "chunk-6HDA5FL5.js",
+      "chunk-O6GU2XPG.js",
+      "chunk-2I3TB2TD.js",
+      "chunk-4E3GGNR6.js",
+      "chunk-3F7BKIWY.js",
+      "chunk-72H44DAN.js"
+    ],
+    "route": "/admin/congnokhachhang/*"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-AJLUXDKJ.js",
+      "chunk-L4L5YEF5.js",
+      "chunk-5DHHV6YT.js",
+      "chunk-M7GYQRQN.js",
+      "chunk-6HDA5FL5.js",
+      "chunk-O6GU2XPG.js",
+      "chunk-2I3TB2TD.js",
+      "chunk-4E3GGNR6.js",
+      "chunk-3F7BKIWY.js",
+      "chunk-72H44DAN.js"
+    ],
+    "route": "/admin/congnoncc"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-AJLUXDKJ.js",
+      "chunk-L4L5YEF5.js",
+      "chunk-5DHHV6YT.js",
+      "chunk-M7GYQRQN.js",
+      "chunk-6HDA5FL5.js",
+      "chunk-O6GU2XPG.js",
+      "chunk-2I3TB2TD.js",
+      "chunk-4E3GGNR6.js",
+      "chunk-3F7BKIWY.js",
+      "chunk-72H44DAN.js"
+    ],
     "route": "/admin/user"
   },
   {
@@ -825,8 +873,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72816, hash: 'aa4335e6f473afe9f33ad630bdd28da8d544b7df63f1ed9c45baa42c3f31f221', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24107, hash: 'a87632cde1b17f2fe36d0e52ad1ad73a463031d738d85cb5c64843d0eb2d1286', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
-    'styles-JRDMAWZ5.css': {size: 369977, hash: '9JjoW1UsOCM', text: () => import('./assets-chunks/styles-JRDMAWZ5_css.mjs').then(m => m.default)}
+    'index.csr.html': {size: 72816, hash: 'a78c4ee58a9629eb0519fd866828266fb93f7472446ff32d142ddbadad3391c4', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24107, hash: '1f2f44d7791066d39a63c32ad0a966735714a8044b00912c8a96183b89a92e33', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'styles-AMLGA332.css': {size: 369899, hash: '0d+Pb7WVXew', text: () => import('./assets-chunks/styles-AMLGA332_css.mjs').then(m => m.default)}
   },
 };

@@ -287,6 +287,28 @@ export const routes: Routes = [
           loadComponent: () => import('./admin/xuatnhapton/xuatnhapton.component').then((c) => c.XuatnhaptonComponent),
         },
         {
+          path: 'congnokhachhang',
+          canActivate: [PermissionGuard],
+          data: { permission: 'congnokhachhang.view' },
+          loadComponent: () => import('./admin/congnokhachhang/listcongnokhachhang/listcongnokhachhang.component').then((c) => c.ListcongnokhachhangComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/congnokhachhang/listcongnokhachhang/listcongnokhachhang.component').then((c) => c.ListcongnokhachhangComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/congnokhachhang/detailcongnokhachhang/detailcongnokhachhang.component').then((c) => c.DetailCongnokhachhangComponent),
+            },
+          ],
+        },
+        {
+          path: 'congnoncc',
+          canActivate: [PermissionGuard],
+          data: { permission: 'congnoncc.view' },
+          loadComponent: () => import('./admin/congnoncc/congnoncc.component').then((c) => c.CongnonccComponent),
+        },
+        {
           path: 'user',
           canActivate: [PermissionGuard],
           data: { permission: 'user.view' },

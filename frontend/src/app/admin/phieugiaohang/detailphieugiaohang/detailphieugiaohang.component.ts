@@ -236,32 +236,55 @@ export class DetailPhieugiaohangComponent {
   ) {
     const newValue =
       type === 'number'
-        ? Number(
-            (event.target as HTMLElement).innerText
-              .trim()
-              .replace(/[^0-9]/g, '')
-          ) || 0
+        ? Number((event.target as HTMLElement).innerText.trim()) || 0
         : (event.target as HTMLElement).innerText.trim();
-
+  
     this.DetailPhieugiaohang.update((v: any) => {
       if (index !== null) {
-        if(field=='slgiao'){
-          v.sanpham[index][field] = v.sanpham[index]['slgiao'] = newValue;
-          v.sanpham[index].ttgiao = computed(() => v.sanpham[index].sldat * v.sanpham[index].giaban);
-        }else{
+        if (field === 'sldat') {
+          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
+        } else if (field === 'slgiao') {
+          const newGiao = newValue
+          if (newGiao < v.sanpham[index]['sldat']) {
+            // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
+            v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
+            this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
+              duration: 1000,
+              horizontalPosition: "end",
+              verticalPosition: "top",
+              panelClass: ['snackbar-error'],
+            });
+          } else {
+            v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newGiao;
+            v.sanpham[index]['ttgiao']=v.sanpham[index]['slgiao']*v.sanpham[index]['giaban']
+          }
+        } else {
           v.sanpham[index][field] = newValue;
-          v.sanpham[index].ttgiao = computed(() => v.sanpham[index].sldat * v.sanpham[index].giaban);
         }
-       
       } else {
         v[field] = newValue;
       }
       return v;
     });
-
-    console.log(this.DetailPhieugiaohang());
+  
+    // CẬP NHẬT LẠI UI BẰNG CÁCH SET NỘI DUNG CHO `contentEditable`
+    setTimeout(() => {
+      if(index !== null){
+      (event.target as HTMLElement).innerText = this.DetailPhieugiaohang()?.sanpham[index]?.slgiao || '0';
+      }
+    }, 0);
     
+    console.log(this.DetailPhieugiaohang());
   }
+  GiaoDonhang()
+  {
+    this.DetailPhieugiaohang.update((v:any)=>{
+      v.status='dagiao'
+      return v
+    })
+    this._PhieugiaohangService.updateDonhang(this.DetailPhieugiaohang())
+  }
+
   Tongcong: any = 0;
   Tong: any = 0;
   Tinhtongcong(value: any) {

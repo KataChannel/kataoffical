@@ -12,6 +12,7 @@ npx katacreate --type angular --name role --outputDir .
 npx katacreate --type angular --name permission --outputDir .
 npx katacreate --type angular --name nhomkhachhang --outputDir .
 npx katacreate --type angular --name phieugiaohang --outputDir .
-npx katacreate --type angular --name phieuchiahang --outputDir .
+npx katacreate --type angular --name congnokhachhang --outputDir .
 
-npx ng g c xuatnhapton --skip-tests --standalone
+npx ng g c congnokhachhang --skip-tests --standalone
+npx ng g c congnoncc --skip-tests --standalone

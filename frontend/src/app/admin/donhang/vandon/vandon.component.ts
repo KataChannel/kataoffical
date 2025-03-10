@@ -92,8 +92,6 @@ export class VandonComponent {
   private _router: Router = inject(Router);
   Vandon:any = this._DonhangService.ListDonhang;
   dataSource = computed(() => {
-    console.log(this.Vandon());
-    
     const Listvandon = this.Vandon()
     .flatMap((item: any,k:any) => {
       const Info = {
@@ -107,6 +105,9 @@ export class VandonComponent {
       };
       return item.sanpham.map((v: any) => ({ ...v, ...Info }));
     }); 
+    Listvandon.forEach((v:any,k:any)=>{
+      v.id=k+1
+    })
     console.log(Listvandon);
     
     const ds = new MatTableDataSource(Listvandon);
@@ -409,7 +410,6 @@ export class VandonComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-
     this.dataSource().data = this.Vandon().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource().paginator = this.paginator;
     this.dataSource().sort = this.sort;

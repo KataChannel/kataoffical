@@ -167,31 +167,17 @@
                           [contentEditable]="true"
                           (blur)="updateValue($event,idx, row, 'sldat','number')"
                           (keydown.enter)="updateValue($event,idx, row, 'sldat','number')"
-                          class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                          class="p-2 min-w-28 text-end bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                         >
                         {{ row[column]||0|number:'1.0-2' }}
                          </div>
                          <!-- <div>(SL:{{row.soluong}})-(SLkho:{{row.soluongkho}})-(Hao hụt:{{row.haohut}}%)(Gợi ý: {{GetGoiy(row)}})</div> -->
                         }
                         @case ('slgiao') {
-                      <div
-                          [contentEditable]="true"
-                          (blur)="updateValue($event,idx, row, 'slgiao','number')"
-                          (keydown.enter)="updateValue($event,idx, row, 'slgiao','number')"
-                          class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
-                        >
-                        {{ row[column]||0|number:'1.0-2' }}
-                         </div>
+                      <div class="text-end">{{ row[column]||0|number:'1.0-2' }}</div>
                         }
                         @case ('slnhan') {
-                      <div
-                          [contentEditable]="true"
-                          (blur)="updateValue($event,idx, row, 'slnhan','number')"
-                          (keydown.enter)="updateValue($event,idx, row, 'slnhan','number')"
-                          class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
-                        >
-                        {{ row[column]||0|number:'1.0-2' }}
-                         </div>
+                          <div class="text-end">{{ row[column]||0|number:'1.0-2' }}</div>
                         }
                         @case ('ghichu') {
                       <div

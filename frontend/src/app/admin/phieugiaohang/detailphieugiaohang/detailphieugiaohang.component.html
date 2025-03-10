@@ -10,13 +10,7 @@
      {{ DetailPhieugiaohang()?.madonhang || 'Không có dữ liệu' }}
   </div>
   <div class="flex flex-row space-x-2 items-center">
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-    <mat-select [(ngModel)]="DetailPhieugiaohang().status" [disabled]="!isEdit()" [ngModelOptions]="{ standalone: true }">
-      <mat-option *ngFor="let item of Trangthai" [value]="item.value">
-        {{item.title}}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+    <button mat-flat-button color="primary" [disabled]="DetailPhieugiaohang().status=='dagiao'" (click)="GiaoDonhang()"> Đã Giao</button>
 
     <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>
@@ -172,38 +166,61 @@
                                 <button mat-icon-button color="warn" (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
                             </span>
                             }
-                        @case ('sldat') {
+                        <!-- @case ('sldat') {
                       <div
                           [contentEditable]="true"
                           (blur)="updateValue($event,idx, row, 'sldat','number')"
+                          (keydown.enter)="updateValue($event,idx, row, 'sldat','number')"
                           class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                         >
                         {{ row[column]||0|number:'1.0-2' }}
                          </div>
+                        } -->
+                        @case ('sldat') {
+                          <div class="text-end">
+                            {{ row[column]||0|number:'1.0-2' }}
+                          </div>                      
+                        }
+                        @case ('slnhan') {
+                          <div class="text-end">
+                            {{ row[column]||0|number:'1.0-2' }}
+                          </div>                      
+                        }
+                        @case ('giaban') {
+                          <div class="text-end">
+                            {{ row[column]||0|number:'1.0-2' }}
+                          </div>                      
+                        }
+                        @case ('ttgiao') {
+                          <div class="text-end">
+                            {{ row[column]||0|number:'1.0-2' }}
+                          </div>                      
                         }
                         @case ('slgiao') {
                       <div
                           [contentEditable]="true"
                           (blur)="updateValue($event,idx, row, 'slgiao','number')"
-                          class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                          (keydown.enter)="updateValue($event,idx, row, 'slgiao','number')"
+                          class="p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                         >
                         {{ row[column]||0|number:'1.0-2' }}
                          </div>
                         }
-                        @case ('slnhan') {
+                        <!-- @case ('slnhan') {
                       <div
                           [contentEditable]="true"
                           (blur)="updateValue($event,idx, row, 'slnhan','number')"
+                          (keydown.enter)="updateValue($event,idx, row, 'slnhan','number')"
                           class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                         >
                         {{ row[column]||0|number:'1.0-2' }}
                          </div>
-                        }
+                        } -->
                         @case ('ghichu') {
                       <div
                           [contentEditable]="true"
                           (blur)="updateValue($event,idx, row, 'ghichu','string')"
-                          class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                          class="p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                         >
                         {{ row[column]||'' }}
                          </div>
