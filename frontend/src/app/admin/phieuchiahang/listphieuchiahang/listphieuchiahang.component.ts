@@ -486,45 +486,77 @@ export class ListPhieuchiahangComponent {
   }
   printContent()
   {
-    const element = document.getElementById('printContent');
-    if (!element) return;
-    html2canvas(element, 
-      { 
-        scale: 1.5,
-        useCORS: true,
-        allowTaint: true,
-        scrollX: 0,
-        scrollY: 0,
-        y:10,
-        windowWidth: document.documentElement.offsetWidth,
-        windowHeight: document.documentElement.offsetHeight+100,
-       }
-    ).then(canvas => {
-      const imageData = canvas.toDataURL('image/png');
+  const printContent = document.getElementById('printContent');
+  if (printContent) {
+    const newWindow = window.open('', '_blank');
 
-      // Mở cửa sổ mới và in ảnh
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) return;
-
-      printWindow.document.write(`
+    if (newWindow) {
+      newWindow.document.write(`
         <html>
-          <head>
-            <title>Phiếu Chia Hàng ${moment().format("DD/MM/YYYY")}</title>
-          </head>
-          <body style="text-align: center;">
-            <img src="${imageData}" style="max-width: 100%;"/>
-            <script>
-              window.onload = function() {
-                window.print();
-                window.onafterprint = function() { window.close(); };
-              };
-            </script>
-          </body>
+        <head>
+          <title>In Bảng</title>
+          <style>
+            body { font-size: 12px; font-family: Arial, sans-serif; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #000; padding: 4px; text-align: left; }
+            @media print { body { margin: 0; } }
+          </style>
+        </head>
+        <body>
+          ${printContent.outerHTML}
+          <script>
+            window.onload = function() { window.print(); window.close(); }
+          </script>
+        </body>
         </html>
       `);
+      newWindow.document.close();
+    } else {
+      console.error('Không thể mở cửa sổ in');
+    }
+  } else {
+    console.error('Không tìm thấy phần tử printContent');
+  }
 
-      printWindow.document.close();
-    });
+
+
+    // html2canvas(element, 
+    //   { 
+    //     scale: 1.5,
+    //     useCORS: true,
+    //     allowTaint: true,
+    //     scrollX: 0,
+    //     scrollY: 0,
+    //     y:10,
+    //     windowWidth: document.documentElement.offsetWidth,
+    //     windowHeight: document.documentElement.offsetHeight+100,
+    //    }
+    // ).then(canvas => {
+    //   const imageData = canvas.toDataURL('image/png');
+
+    //   // Mở cửa sổ mới và in ảnh
+    //   const printWindow = window.open('', '_blank');
+    //   if (!printWindow) return;
+
+    //   printWindow.document.write(`
+    //     <html>
+    //       <head>
+    //         <title>Phiếu Chia Hàng ${moment().format("DD/MM/YYYY")}</title>
+    //       </head>
+    //       <body style="text-align: center;">
+    //         <img src="${imageData}" style="max-width: 100%;"/>
+    //         <script>
+    //           window.onload = function() {
+    //             window.print();
+    //             window.onafterprint = function() { window.close(); };
+    //           };
+    //         </script>
+    //       </body>
+    //     </html>
+    //   `);
+
+    //   printWindow.document.close();
+    // });
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier

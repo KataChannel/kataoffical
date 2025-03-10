@@ -16,8 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
-import { ListDonhangComponent } from '../listdonhang/listdonhang.component';
-import { DonhangService } from '../donhang.service';
+import { ListPhieugiaohangComponent } from '../listphieugiaohang/listphieugiaohang.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import {
   ConvertDriveData,
@@ -36,8 +35,9 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import html2canvas from 'html2canvas';
+import { DonhangService } from '../../donhang/donhang.service';
 @Component({
-  selector: 'app-detaildonhang',
+  selector: 'app-detailphieugiaohang',
   imports: [
     MatFormFieldModule,
     MatInputModule,
@@ -55,12 +55,12 @@ import html2canvas from 'html2canvas';
     MatPaginatorModule,
   ],
   providers: [provideNativeDateAdapter()],
-  templateUrl: './detaildonhang.component.html',
-  styleUrl: './detaildonhang.component.scss',
+  templateUrl: './detailphieugiaohang.component.html',
+  styleUrl: './detailphieugiaohang.component.scss',
 })
-export class DetailDonhangComponent {
-  _ListdonhangComponent: ListDonhangComponent = inject(ListDonhangComponent);
-  _DonhangService: DonhangService = inject(DonhangService);
+export class DetailPhieugiaohangComponent {
+  _ListphieugiaohangComponent: ListPhieugiaohangComponent = inject(ListPhieugiaohangComponent);
+  _PhieugiaohangService: DonhangService = inject(DonhangService);
   _KhachhangService: KhachhangService = inject(KhachhangService);
   _BanggiaService: BanggiaService = inject(BanggiaService);
   _SanphamService: SanphamService = inject(SanphamService);
@@ -70,92 +70,81 @@ export class DetailDonhangComponent {
   constructor() {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
-      this._DonhangService.setDonhangId(id);
+      this._PhieugiaohangService.setDonhangId(id);
       await this._KhachhangService.getAllKhachhang();
-      this.filterKhachhang = this.ListKhachhang().filter((v:any) => v.isActive);
+      this.filterKhachhang = this.ListKhachhang();
       await this._BanggiaService.getAllBanggia();
       this.filterBanggia = this._BanggiaService.ListBanggia();
+      this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang().sanpham.map((v:any)=>{
+        v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
+        return v;
+      })
       await this._SanphamService.getAllSanpham();
       this.filterSanpham = this._SanphamService.ListSanpham();
-      this.dataSource().data = this.DetailDonhang().sanpham;
+      this.dataSource().data = this.DetailPhieugiaohang().sanpham;
       this.dataSource().paginator = this.paginator;
       this.dataSource().sort = this.sort;
     });
 
     effect(async () => {
-      const id = this._DonhangService.donhangId();
+      const id = this._PhieugiaohangService.donhangId();
       if (!id) {
-        this._router.navigate(['/admin/donhang']);
-        this._ListdonhangComponent.drawer.close();
+        this._router.navigate(['/admin/phieugiaohang']);
+        this._ListphieugiaohangComponent.drawer.close();
       }
       if (id === '0') {
-        this.DetailDonhang.set({
+        this.DetailPhieugiaohang.set({
           title: GenId(8, false),
-          madonhang: GenId(8, false),
+          maphieugiaohang: GenId(8, false),
           ngaygiao: moment().add(1, 'days').format('YYYY-MM-DD'),
         });
-        this._ListdonhangComponent.drawer.open();
+        this._ListphieugiaohangComponent.drawer.open();
         this.isEdit.update((value) => !value);
-        this._router.navigate(['/admin/donhang', '0']);
+        this._router.navigate(['/admin/phieugiaohang', '0']);
       } else {
-        await this._DonhangService.getDonhangByid(id);
-        this._ListdonhangComponent.drawer.open();
-        this._router.navigate(['/admin/donhang', id]);
+        await this._PhieugiaohangService.getDonhangByid(id);
+        this._ListphieugiaohangComponent.drawer.open();
+        this._router.navigate(['/admin/phieugiaohang', id]);
       }
     });
   }
-  DetailDonhang: any = this._DonhangService.DetailDonhang;
+  DetailPhieugiaohang: any = this._PhieugiaohangService.DetailDonhang;
   ListKhachhang: any = this._KhachhangService.ListKhachhang;
   isEdit = signal(false);
   isDelete = signal(false);
   filterKhachhang: any = [];
   filterBanggia: any[] = [];
   filterSanpham: any[] = [];
-  donhangId: any = this._DonhangService.donhangId;
-  async ngOnInit() {
-    document.addEventListener('keydown', (e:any) => {
-      if (e.key === 'Enter' && document.activeElement?.getAttribute('contenteditable') === 'true') {
-        e.preventDefault();
-      }
-    });
+  phieugiaohangId: any = this._PhieugiaohangService.donhangId;
+  Trangthai: any = [
+    { value: 'dadat', title: 'Đã Đặt' },
+    { value: 'dagiao', title: 'Đã Giao' },
+    { value: 'danhan', title: 'Đã Nhận' },
+    { value: 'huy', title: 'Hủy' },
+  ];
+  getTitle(item: any) {
+    return this.Trangthai.find((v:any) => v.value === item)?.title;
+
   }
-  async handleDonhangAction() {
-    if (this.donhangId() === '0') {
-      await this.createDonhang();
+  async ngOnInit() {}
+  async handlePhieugiaohangAction() {
+    if (this.phieugiaohangId() === '0') {
+      await this.createPhieugiaohang();
     } else {
-      await this.updateDonhang();
+      await this.updatePhieugiaohang();
     }
   }
-  private async createDonhang() {
-    try {
-      this.DetailDonhang.update((v: any) => {
-        v.type = 'donsi';
-        return v;
-      });
-      this.DetailDonhang().sanpham = this.DetailDonhang().sanpham.map((v:any)=>{
-        v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
-        return v;
-      })
-      await this._DonhangService.CreateDonhang(this.DetailDonhang());
-      this._snackBar.open('Tạo Mới Thành Công', '', {
-        duration: 1000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
-      this.isEdit.update((value) => !value);
-    } catch (error) {
-      console.error('Lỗi khi tạo donhang:', error);
-    }
+  private async createPhieugiaohang() {
+
   }
 
-  private async updateDonhang() {
+  private async updatePhieugiaohang() {
     try {
-      this.DetailDonhang().sanpham = this.DetailDonhang().sanpham.map((v:any)=>{
+      this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang().sanpham.map((v:any)=>{
         v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
         return v;
       })
-      await this._DonhangService.updateDonhang(this.DetailDonhang());
+      await this._PhieugiaohangService.updateDonhang(this.DetailPhieugiaohang());
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,
         horizontalPosition: 'end',
@@ -164,28 +153,15 @@ export class DetailDonhangComponent {
       });
       this.isEdit.update((value) => !value);
     } catch (error) {
-      console.error('Lỗi khi cập nhật donhang:', error);
+      console.error('Lỗi khi cập nhật phieugiaohang:', error);
     }
   }
   async DeleteData() {
-    try {
-      await this._DonhangService.DeleteDonhang(this.DetailDonhang());
 
-      this._snackBar.open('Xóa Thành Công', '', {
-        duration: 1000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
-
-      this._router.navigate(['/admin/donhang']);
-    } catch (error) {
-      console.error('Lỗi khi xóa donhang:', error);
-    }
   }
   goBack() {
-    this._router.navigate(['/admin/donhang']);
-    this._ListdonhangComponent.drawer.close();
+    this._router.navigate(['/admin/phieugiaohang']);
+    this._ListphieugiaohangComponent.drawer.close();
   }
   trackByFn(index: number, item: any): any {
     return item.id;
@@ -198,7 +174,7 @@ export class DetailDonhangComponent {
     this.isDelete.update((value) => !value);
   }
   FillSlug() {
-    this.DetailDonhang.update((v: any) => {
+    this.DetailPhieugiaohang.update((v: any) => {
       v.slug = convertToSlug(v.title);
       return v;
     });
@@ -207,10 +183,9 @@ export class DetailDonhangComponent {
     const query = event.target.value.toLowerCase();
     this.filterKhachhang = this.ListKhachhang().filter(
       (v: any) =>
-        v.isActive &&
-        v.name?.toLowerCase().includes(query) ||
-        v.namenn?.toLowerCase().includes(query) ||
-        v.sdt?.toLowerCase().includes(query)
+        v.name.toLowerCase().includes(query) ||
+        v.namenn.toLowerCase().includes(query) ||
+        v.sdt.toLowerCase().includes(query)
     );
   }
   DoFindBanggia(event: any) {
@@ -246,7 +221,7 @@ export class DetailDonhangComponent {
     // console.log(this.Detail.Giohangs);
   }
   Chonkhachhang(item: any) {
-    this.DetailDonhang.update((v: any) => {
+    this.DetailPhieugiaohang.update((v: any) => {
       v.khachhangId = item.id;
       return v;
     });
@@ -268,23 +243,23 @@ export class DetailDonhangComponent {
           ) || 0
         : (event.target as HTMLElement).innerText.trim();
 
-    this.DetailDonhang.update((v: any) => {
+    this.DetailPhieugiaohang.update((v: any) => {
       if (index !== null) {
-        if(field=='sldat'){
+        if(field=='slgiao'){
           v.sanpham[index][field] = v.sanpham[index]['slgiao'] = newValue;
-        }
-        else if(field=='slgiao'){
-          v.sanpham[index][field] = v.sanpham[index]['slnhan'] = newValue;
-        }
-        else{
+          v.sanpham[index].ttgiao = computed(() => v.sanpham[index].sldat * v.sanpham[index].giaban);
+        }else{
           v.sanpham[index][field] = newValue;
-        }       
+          v.sanpham[index].ttgiao = computed(() => v.sanpham[index].sldat * v.sanpham[index].giaban);
+        }
+       
       } else {
         v[field] = newValue;
       }
       return v;
     });
-    console.log(this.DetailDonhang());
+
+    console.log(this.DetailPhieugiaohang());
     
   }
   Tongcong: any = 0;
@@ -305,7 +280,7 @@ export class DetailDonhangComponent {
     );
     console.log(selectedKhachhang);
     if (selectedKhachhang) {
-      this.DetailDonhang.update((v: any) => {
+      this.DetailPhieugiaohang.update((v: any) => {
         const khachhang = {
           name: selectedKhachhang.name,
           diachi: selectedKhachhang.diachi,
@@ -314,11 +289,10 @@ export class DetailDonhangComponent {
         };
         v.khachhangId = selectedKhachhang.id;
         v.khachhang = khachhang;
-        v.banggiaId = selectedKhachhang.banggia.find((v: any) => moment() > moment(v.batdau) && moment() < moment(v.ketthuc))?.id;
         return v;
       });
     }
-    console.log(this.DetailDonhang());
+    console.log(this.DetailPhieugiaohang());
   }
 
   displayedColumns: string[] = [
@@ -328,9 +302,12 @@ export class DetailDonhangComponent {
     'dvt',
     'sldat',
     'slgiao',
+    'giaban',
+    'ttgiao',
     'slnhan',
     'ghichu'
   ];
+  
   ColumnName: any = {
     STT: 'STT',
     title: 'Tiêu Đề',
@@ -338,6 +315,8 @@ export class DetailDonhangComponent {
     dvt: 'Đơn Vị Tính',
     sldat: 'SL Đặt',
     slgiao: 'SL Giao',
+    giaban: 'Giá Bán',
+    ttgiao: 'TT Giao',
     slnhan: 'SL Nhận',
     ghichu: 'Ghi Chú'
   };
@@ -355,7 +334,7 @@ export class DetailDonhangComponent {
     const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
     const data = ConvertDriveData(result.values);
     console.log(data);
-    this.DetailDonhang.update((v:any)=>{
+    this.DetailPhieugiaohang.update((v:any)=>{
       v.sanpham = data.map((v1:any) => {
         v1.sldat = Number(v1.sldat)||0;
         v1.slgiao = Number(v1.slgiao)||0;
@@ -372,7 +351,7 @@ export class DetailDonhangComponent {
       });
       return v;
     });
-    console.log(this.DetailDonhang());
+    console.log(this.DetailPhieugiaohang());
         
     //  this.DetailBanggia.update((v:any)=>{
     //   const listdata = data.map((item:any) => {
@@ -387,7 +366,7 @@ export class DetailDonhangComponent {
     //   v.sanpham = listdata
     //   return v;
     // })
-    this.dataSource().data = this.DetailDonhang().sanpham;
+    this.dataSource().data = this.DetailPhieugiaohang().sanpham;
     this.dataSource().paginator = this.paginator;
     this.dataSource().sort = this.sort;
     this.reloadfilter();
@@ -398,11 +377,11 @@ export class DetailDonhangComponent {
   }
   EmptyCart()
   {
-    this.DetailDonhang.update((v:any)=>{
+    this.DetailPhieugiaohang.update((v:any)=>{
       v.sanpham = []
       return v;
     })
-    this.dataSource().data = this.DetailDonhang().sanpham;
+    this.dataSource().data = this.DetailPhieugiaohang().sanpham;
     this.dataSource().paginator = this.paginator;
     this.dataSource().sort = this.sort;
     this.reloadfilter();
@@ -414,7 +393,7 @@ export class DetailDonhangComponent {
 
 
   reloadfilter(){
-    this.filterSanpham = this._SanphamService.ListSanpham().filter((v:any) => !this.DetailDonhang().sanpham.some((v2:any) => v2.id === v.id));
+    this.filterSanpham = this._SanphamService.ListSanpham().filter((v:any) => !this.DetailPhieugiaohang().sanpham.some((v2:any) => v2.id === v.id));
   }
   // RemoveSanpham(item:any){
   //   this.DetailBanggia.update((v:any)=>{
@@ -435,7 +414,7 @@ export class DetailDonhangComponent {
   SelectSanpham(event:any){
     const value = event.value;
     const item = this._SanphamService.ListSanpham().find((v) => v.id === value);
-    this.DetailDonhang.update((v:any)=>{
+    this.DetailPhieugiaohang.update((v:any)=>{
       if(!v.sanpham){
         v.sanpham = [];
         item.sldat = item.slgiao = 1;
@@ -448,139 +427,56 @@ export class DetailDonhangComponent {
       this.reloadfilter();
       return v;
     })
-    this.dataSource().data = this.DetailDonhang().sanpham;
+    this.dataSource().data = this.DetailPhieugiaohang().sanpham;
     this.dataSource().paginator = this.paginator;
     this.dataSource().sort = this.sort;    
   }
   RemoveSanpham(item:any){
-    this.DetailDonhang.update((v:any)=>{
+    this.DetailPhieugiaohang.update((v:any)=>{
       v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
       this.reloadfilter();
       return v;
     })
-    this.dataSource().data = this.DetailDonhang().sanpham;
+    this.dataSource().data = this.DetailPhieugiaohang().sanpham;
     this.dataSource().paginator = this.paginator;
     this.dataSource().sort = this.sort;
   }
 
   CoppyDon()
   {
-    this._snackBar.open('Đang Coppy Đơn Hàng', '', {
-      duration: 1000,
-      horizontalPosition: "end",
-      verticalPosition: "top",
-      panelClass: ['snackbar-warning'],
-    });
-      this.DetailDonhang.update((v:any)=>{
-        delete v.id;
-        v.title = `${v.title} - Coppy`;
-        v.madonhang = GenId(8, false);
-        return v;
-      })
-      console.log(this.DetailDonhang());
-      
-      this._DonhangService.CreateDonhang(this.DetailDonhang()).then((data:any)=>{  
-        if(data)
-          {
-            this._snackBar.open('Coppy Đơn Hàng Thành Công', '', {
-              duration: 1000,
-              horizontalPosition: "end",
-              verticalPosition: "top",
-              panelClass: ['snackbar-success'],
-            });
-            this._router.navigate(['/admin/donhang',data.id]);
-          }    
-          else{
-            this._snackBar.open('Coppy Đơn Hàng Thất Bại', '', {
-              duration: 1000,
-              horizontalPosition: "end",
-              verticalPosition: "top",
-              panelClass: ['snackbar-error'],
-            });
-          }
-      //  setTimeout(() => {
-      //   window.location.href = `admin/donhang/donsi/${data.id}`;
-      //  }, 1000);
-  
-      })
+
   }
 
   printContent()
   {
-    const printContent = document.getElementById('printContent');
-    if (printContent) {
-      const newWindow = window.open('', '_blank');
-    const tailwindCSS =  `
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: { extend: {} }
-      };
-    </script>
-  `
-      if (newWindow) {
-        newWindow.document.write(`
-          <html>
+    const element = document.getElementById('printContent');
+    if (!element) return;
+
+    html2canvas(element, { scale: 2 }).then(canvas => {
+      const imageData = canvas.toDataURL('image/png');
+
+      // Mở cửa sổ mới và in ảnh
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) return;
+
+      printWindow.document.write(`
+        <html>
           <head>
-            <title>In Bảng</title>
-             ${tailwindCSS}
-            <style>
-              body { font-size: 12px; font-family: Arial, sans-serif; }
-              table { width: 100%; border-collapse: collapse; }
-              th, td { border: 1px solid #000; padding: 4px; text-align: left; }
-              @media print { 
-              body { margin: 0; } 
-              img {height:80px}
-              }
-            </style>
+            <title>${this.DetailPhieugiaohang()?.title}</title>
           </head>
-          <body>
-            ${printContent.outerHTML}
+          <body style="text-align: center;">
+            <img src="${imageData}" style="max-width: 100%;"/>
             <script>
-              window.onload = function() { window.print(); window.close(); }
+              window.onload = function() {
+                window.print();
+                window.onafterprint = function() { window.close(); };
+              };
             </script>
           </body>
-          </html>
-        `);
-        newWindow.document.close();
-      } else {
-        console.error('Không thể mở cửa sổ in');
-      }
-    } else {
-      console.error('Không tìm thấy phần tử printContent');
-    }
-  
-    // const element = document.getElementById('printContent');
-    // if (!element) return;
+        </html>
+      `);
 
-    // html2canvas(element, { scale: 2 }).then(canvas => {
-    //   const imageData = canvas.toDataURL('image/png');
-
-    //   // Mở cửa sổ mới và in ảnh
-    //   const printWindow = window.open('', '_blank');
-    //   if (!printWindow) return;
-
-    //   printWindow.document.write(`
-    //     <html>
-    //       <head>
-    //         <title>${this.DetailDonhang()?.title}</title>
-    //       </head>
-    //       <body style="text-align: center;">
-    //         <img src="${imageData}" style="max-width: 100%;"/>
-    //         <script>
-    //           window.onload = function() {
-    //             window.print();
-    //             window.onafterprint = function() { window.close(); };
-    //           };
-    //         </script>
-    //       </body>
-    //     </html>
-    //   `);
-
-    //   printWindow.document.close();
-    // });
-  }
-  GetGoiy(item:any){
-   return parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
+      printWindow.document.close();
+    });
   }
 }

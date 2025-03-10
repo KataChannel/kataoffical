@@ -39,7 +39,9 @@ CREATE USER rausach WITH SUPERUSER PASSWORD 'rausach#2025';
 CREATE ROLE rausach WITH SUPERUSER CREATEDB CREATEROLE LOGIN PASSWORD 'rausach#2025';
 
 docker exec -it kataoffical-backend-1 /bin/bash
+docker exec -it pgadmin /bin/bash
 docker exec kataoffical-frontend-1 ls -l /bin/bash
+docker exec pgadmin -l /bin/bash
 docker --version
 docker-compose --version
 docker-compose logs -f kataoffical-backend-1

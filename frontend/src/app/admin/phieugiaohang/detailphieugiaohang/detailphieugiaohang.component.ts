@@ -452,31 +452,94 @@ export class DetailPhieugiaohangComponent {
     const element = document.getElementById('printContent');
     if (!element) return;
 
-    html2canvas(element, { scale: 2 }).then(canvas => {
-      const imageData = canvas.toDataURL('image/png');
+    element.innerHTML = `
+    <div style="font-family: Arial, sans-serif; width: 100%;">
+      <div style="display: flex; align-items: center;">
+        <div style="width: 150px;">
+          <img src="logo_trangia.png" alt="Logo Trần Gia" style="max-width: 100%;">
+        </div>
+        <div style="flex: 1; margin-left: 20px;">
+          <h2 style="margin: 0; font-size: 16px; text-align: center;">CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA</h2>
+          <p style="margin: 5px 0; font-size: 12px;">Hợp tác xã: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An</p>
+          <p style="margin: 5px 0; font-size: 12px;">Văn phòng: Tòa nhà An Phú Plaza, 117-119 Lý Chính Thắng, P.7, Q.3, TP.HCM</p>
+          <p style="margin: 5px 0; font-size: 12px;">Kho sơ chế: 30 Kha Vạn Cân, P. Hiệp Bình Chánh, TP. Thủ Đức, TP.HCM</p>
+          <p style="margin: 5px 0; font-size: 12px;">Website: http://rausachtrangia.com - Hotline: 090.245.8081</p>
+        </div>
+      </div>
+      
+      <h1 style="text-align: center; font-size: 18px; margin-top: 20px;">BẢNG SAO KÊ HÀNG NGÀY</h1>
+      <h2 style="text-align: center; font-size: 16px; margin-top: 10px;">VIỆT PHỐ</h2>
+      
+      <div style="margin-top: 20px;">
+        <p><strong>Địa Chỉ :</strong> 45 Lê Quý Đôn, quận 3</p>
+        <p><strong>Ghi Chú :</strong> </p>
+        <p><strong>Số Điện Thoại :</strong> 0941737447, 0911065445</p>
+        <p><strong>Tổng khối lượng :</strong> 11</p>
+      </div>
+      
+      <!-- Bảng dữ liệu có thể được thêm vào đây -->
+    </div>
+  `;
+  
+  // Mở cửa sổ in
+  const printWindow = window.open('', '_blank');
+  if (!printWindow) return;
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Bảng Sao Kê - Công ty TNHH Nông Sản Thực Phẩm Trần Gia</title>
+        <style>
+          @media print {
+            body { margin: 0; padding: 15px; }
+          }
+        </style>
+      </head>
+      <body>
+        ${element.innerHTML}
+      </body>
+    </html>
+  `);
+  
+  // Đóng document để hoàn tất tải
+  printWindow.document.close();
+  
+  // Đợi tài nguyên tải xong và in
+  printWindow.onload = function() {
+    printWindow.focus();
+    printWindow.print();
+    // Tùy chọn: đóng cửa sổ sau khi in
+    // printWindow.close();
+  };
 
-      // Mở cửa sổ mới và in ảnh
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) return;
 
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>${this.DetailPhieugiaohang()?.title}</title>
-          </head>
-          <body style="text-align: center;">
-            <img src="${imageData}" style="max-width: 100%;"/>
-            <script>
-              window.onload = function() {
-                window.print();
-                window.onafterprint = function() { window.close(); };
-              };
-            </script>
-          </body>
-        </html>
-      `);
 
-      printWindow.document.close();
-    });
+
+
+    // html2canvas(element, { scale: 2 }).then(canvas => {
+    //   const imageData = canvas.toDataURL('image/png');
+
+    //   // Mở cửa sổ mới và in ảnh
+    //   const printWindow = window.open('', '_blank');
+    //   if (!printWindow) return;
+
+    //   printWindow.document.write(`
+    //     <html>
+    //       <head>
+    //         <title>${this.DetailPhieugiaohang()?.title}</title>
+    //       </head>
+    //       <body style="text-align: center;">
+    //         <img src="${imageData}" style="max-width: 100%;"/>
+    //         <script>
+    //           window.onload = function() {
+    //             window.print();
+    //             window.onafterprint = function() { window.close(); };
+    //           };
+    //         </script>
+    //       </body>
+    //     </html>
+    //   `);
+
+    //   printWindow.document.close();
+    // });
   }
 }
