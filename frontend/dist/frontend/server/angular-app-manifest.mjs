@@ -873,8 +873,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72816, hash: 'a78c4ee58a9629eb0519fd866828266fb93f7472446ff32d142ddbadad3391c4', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24107, hash: '1f2f44d7791066d39a63c32ad0a966735714a8044b00912c8a96183b89a92e33', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 72816, hash: '7c45bce4c21efcc5d0547fa0b073c6831185c4232ed8d56253214e20777ed96e', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24107, hash: '672d12832aea3257e52064f4bcd3a718da6b31e09990fb4e2a7d2825bea5b272', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-AMLGA332.css': {size: 369899, hash: '0d+Pb7WVXew', text: () => import('./assets-chunks/styles-AMLGA332_css.mjs').then(m => m.default)}
   },
 };

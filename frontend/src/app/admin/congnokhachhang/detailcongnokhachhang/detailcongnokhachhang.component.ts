@@ -281,17 +281,16 @@ import { ListcongnokhachhangComponent } from '../listcongnokhachhang/listcongnok
         if (index !== null) {
         if (field === 'slnhan') {
             const newNhan = newValue
-            if (newNhan < v.sanpham[index]['slgiao']) {
+            if (Number(newNhan) < 0) {
               // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
-              v.sanpham[index]['slnhan'] = v.sanpham[index]['slgiao'];
-              this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
+              this._snackBar.open('Số lượng giao phải lớn hơn hoặc bằng 0', '', {
                 duration: 1000,
                 horizontalPosition: "end",
                 verticalPosition: "top",
                 panelClass: ['snackbar-error'],
               });
             } else {
-              v.sanpham[index]['slnhan'] = v.sanpham[index]['slgiao'] = newNhan;
+              v.sanpham[index]['slnhan'] = newNhan;
               v.sanpham[index]['ttnhan'] = v.sanpham[index]['slnhan']* v.sanpham[index]['giaban'];
             }
           } else {
