@@ -159,7 +159,7 @@
                         </span>
                         }
                         @case ('madonhang') {
-                        <span  (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-700">
+                        <span  class="max-w-40 line-clamp-4 font-bold text-blue-700">
                             {{ row[column] }}
                         </span>
                         }
@@ -208,7 +208,7 @@
                 </ng-container>
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="goToDetail(row);"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
