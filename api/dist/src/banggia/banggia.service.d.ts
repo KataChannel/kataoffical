@@ -94,6 +94,7 @@ export declare class BanggiaService {
             address: string | null;
             loaikh: string | null;
             ghichu: string | null;
+            hiengia: boolean;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;

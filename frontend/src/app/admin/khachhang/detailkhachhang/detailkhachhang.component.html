@@ -68,6 +68,7 @@
         <mat-label>Quận</mat-label>
         <input matInput [(ngModel)]="DetailKhachhang().quan" [disabled]="!isEdit()" placeholder="Vui lòng nhập Quận"/>
       </mat-form-field>
+      <mat-slide-toggle color="primary" [(ngModel)]="DetailKhachhang().hiengia" [disabled]="!isEdit()">Hiện Giá</mat-slide-toggle>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Ghi Chú</mat-label>
         <textarea matInput [(ngModel)]="DetailKhachhang().ghichu" [disabled]="!isEdit()" placeholder="Vui lòng nhập Ghi Chú"></textarea>

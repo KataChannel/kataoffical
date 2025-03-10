@@ -36,8 +36,6 @@ export const routes: Routes = [
         },
         {
           path: 'hotro',
-          canActivate: [PermissionGuard],
-          data: { permission: 'hotro.view' },
           loadComponent: () => import('./admin/hotro/listhotro/listhotro.component').then((c) => c.ListHotroComponent),
           children: [
             {

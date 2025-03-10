@@ -488,8 +488,18 @@ export class ListPhieuchiahangComponent {
   {
     const element = document.getElementById('printContent');
     if (!element) return;
-
-    html2canvas(element, { scale: 2 }).then(canvas => {
+    html2canvas(element, 
+      { 
+        scale: 1.5,
+        useCORS: true,
+        allowTaint: true,
+        scrollX: 0,
+        scrollY: 0,
+        y:10,
+        windowWidth: document.documentElement.offsetWidth,
+        windowHeight: document.documentElement.offsetHeight+100,
+       }
+    ).then(canvas => {
       const imageData = canvas.toDataURL('image/png');
 
       // Mở cửa sổ mới và in ảnh

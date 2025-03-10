@@ -112,7 +112,13 @@ export class DetailDonhangComponent {
   filterBanggia: any[] = [];
   filterSanpham: any[] = [];
   donhangId: any = this._DonhangService.donhangId;
-  async ngOnInit() {}
+  async ngOnInit() {
+    document.addEventListener('keydown', (e:any) => {
+      if (e.key === 'Enter' && document.activeElement?.getAttribute('contenteditable') === 'true') {
+        e.preventDefault();
+      }
+    });
+  }
   async handleDonhangAction() {
     if (this.donhangId() === '0') {
       await this.createDonhang();
@@ -266,10 +272,13 @@ export class DetailDonhangComponent {
       if (index !== null) {
         if(field=='sldat'){
           v.sanpham[index][field] = v.sanpham[index]['slgiao'] = newValue;
-        }else{
-          v.sanpham[index][field] = newValue;
         }
-       
+        else if(field=='slgiao'){
+          v.sanpham[index][field] = v.sanpham[index]['slnhan'] = newValue;
+        }
+        else{
+          v.sanpham[index][field] = newValue;
+        }       
       } else {
         v[field] = newValue;
       }

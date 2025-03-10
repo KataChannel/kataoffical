@@ -111,6 +111,7 @@ model Khachhang {
   address      String?
   loaikh       String?
   ghichu       String?
+  hiengia     Boolean  @default(false)
   isActive     Boolean  @default(false)
   banggia      Banggia[] @relation("Banggiakhachhang")
   donhang      Donhang[]

@@ -330,8 +330,19 @@ button.active {
   }
   /* Add your additional print styles here */
   #printArea {
-    font-size: 12px; /* Example print style */
+    font-size: 8px !important; /* Example print style */
   }
+ table td, table th {
+      vertical-align: middle !important;
+      line-height: 1 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+      text-decoration: none !important;
+      font-family: 'Roboto', sans-serif;
+ }
+ table td, table th {
+  transform: translateY(-10px) !important; /* điều chỉnh giá trị phù hợp */
+}
 }
 router-outlet+* {
   position: relative;

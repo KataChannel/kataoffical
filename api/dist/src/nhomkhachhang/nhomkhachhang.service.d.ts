@@ -5,16 +5,14 @@ export declare class NhomkhachhangService {
     create(data: any): Promise<{
         id: string;
         name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
     }>;
     findAll(): Promise<({
         khachhang: {
             id: string;
             name: string | null;
-            createdAt: Date;
-            updatedAt: Date;
             namenn: string | null;
             makh: string;
             diachi: string | null;
@@ -27,21 +25,22 @@ export declare class NhomkhachhangService {
             address: string | null;
             loaikh: string | null;
             ghichu: string | null;
+            hiengia: boolean;
             isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
         }[];
     } & {
         id: string;
         name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
     })[]>;
     findOne(id: string): Promise<{
         khachhang: {
             id: string;
             name: string | null;
-            createdAt: Date;
-            updatedAt: Date;
             namenn: string | null;
             makh: string;
             diachi: string | null;
@@ -54,41 +53,44 @@ export declare class NhomkhachhangService {
             address: string | null;
             loaikh: string | null;
             ghichu: string | null;
+            hiengia: boolean;
             isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
         }[];
     } & {
         id: string;
         name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
         name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
         name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
     }>;
     addKHtoNhom(nhomId: string, khachhangIds: any[]): Promise<{
         id: string;
         name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
     }>;
     removeKHfromNhom(nhomId: string, khachhangIds: any[]): Promise<{
         id: string;
         name: string;
-        description: string | null;
         createdAt: Date;
         updatedAt: Date;
+        description: string | null;
     }>;
 }

@@ -307,6 +307,7 @@ export class DetailPhieugiaohangComponent {
     'slnhan',
     'ghichu'
   ];
+  
   ColumnName: any = {
     STT: 'STT',
     title: 'Tiêu Đề',

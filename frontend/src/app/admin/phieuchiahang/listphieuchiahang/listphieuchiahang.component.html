@@ -159,7 +159,7 @@
                         </span>
                         }
                         @case ('madonhang') {
-                        <span  (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-700">
+                        <span  class="max-w-40 line-clamp-4 font-bold">
                             {{ row[column] }}
                         </span>
                         }
@@ -221,36 +221,38 @@
 
 
 <ng-template #dialogCreateTemplate>
+    <div class="!w-screen !h-screen">
     <h2 mat-dialog-title>Phiếu Chia Hàng     
         <button mat-icon-button color="primary" (click)="printContent()">
         <mat-icon>print</mat-icon>
-      </button></h2>
+      </button>
+    </h2>
     <mat-dialog-content>
-     <div class="lg:min-w-[400px] w-full h-full flex flex-col space-y-8 items-center p-4">
+     <div class="w-full h-full flex flex-col space-y-8 items-center p-4">
         <div class="relative overflow-x-auto sm:rounded-lg">
-            <table id="printContent" class="w-full !text-xs text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="border !text-xs text-gray-700 uppercase dark:text-gray-400">
+            <table id="printContent" class="w-full !text-[8px] text-left rtl:text-right leading-none">
+                <thead class="!pb-4 border !text-[8px] uppercase text-center">
                     <tr>
-                        <th scope="col" class="!text-xs p-2 border bg-gray-50 dark:bg-gray-800">
+                        <th scope="col" class="!text-[8px] !pb-4 border">
                             Mô tả
                         </th>
-                        <th scope="col" class="!text-xs p-2 border">
+                        <th scope="col" class="!text-[8px] !pb-4 border">
                             Đơn vị
                         </th>
-                        <th *ngFor="let kh of Phieuchia" scope="col" class="!text-xs !w-4 text-end p-2 border bg-gray-50 dark:bg-gray-800">
+                        <th *ngFor="let kh of Phieuchia" scope="col" class="!text-[8px] !pb-4 border">
                             {{ kh.name }}
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let product of getUniqueProducts()" class="p-2 border border-gray-200 dark:border-gray-700">
-                        <th scope="row" class="border font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800">
+                    <tr *ngFor="let product of getUniqueProducts()" class="!pb-4 border">
+                        <th scope="row" class="!text-[8px] !pb-4 border font-medium text-gray-900 whitespace-nowrap">
                             {{ product }}
                         </th>
-                        <td class="p-2 border">
+                        <td class="!pb-4 border !text-[8px] text-start">
                             {{ getDvtForProduct(product) }}
                         </td>
-                        <td class="!w-4 text-end p-2 border bg-gray-50 dark:bg-gray-800" *ngFor="let kh of Phieuchia">
+                        <td class="text-end !pb-4 border !text-[8px]" *ngFor="let kh of Phieuchia">
                             {{ getProductQuantity(product, kh.makh)||'' }}
                         </td>
                     </tr>
@@ -262,4 +264,6 @@
     <mat-dialog-actions [align]="'end'">
       <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
     </mat-dialog-actions>
+
+    </div>
   </ng-template>
