@@ -228,29 +228,29 @@
             </button>
             </div>
             <div class="w-full h-full flex flex-col space-y-8 items-center p-4 relative overflow-x-auto ">
-                    <table id="printContent" class="w-full text-left rtl:text-right leading-none p-4">
+                    <table id="printContent" class="text-left rtl:text-right leading-none p-4">
                         <thead class="p-2 border uppercase text-center">
                             <tr>
-                                <th scope="col" class="p-2 border">
+                                <th scope="col" class="w-20 p-2 border">
                                     Mô tả
                                 </th>
-                                <th scope="col" class="p-2 border">
+                                <th scope="col" class="w-20 p-2 border">
                                     Đơn vị
                                 </th>
-                                <th *ngFor="let kh of Phieuchia" scope="col" class="p-2 border">
+                                <th *ngFor="let kh of Phieuchia" scope="col" class="w-10 p-2 border">
                                     {{ kh.name }}
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let product of getUniqueProducts()" class="p-2 border">
-                                <th scope="row" class="p-2 border font-medium text-gray-900 whitespace-nowrap">
+                                <th scope="row" class="w-20 p-2 border font-medium text-gray-900 whitespace-nowrap">
                                     {{ product }}
                                 </th>
-                                <td class="p-2 border text-start">
+                                <td class="w-20 p-2 border text-start">
                                     {{ getDvtForProduct(product) }}
                                 </td>
-                                <td class="text-end p-2 border" *ngFor="let kh of Phieuchia">
+                                <td class="w-10 text-end p-2 border" *ngFor="let kh of Phieuchia">
                                     {{ getProductQuantity(product, kh.makh)||'' }}
                                 </td>
                             </tr>

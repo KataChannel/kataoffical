@@ -121,9 +121,7 @@ export class XuatnhaptonComponent {
     // this.loadData();
   }
   onDateChange(event: any): void {
-    console.log(event);
-    if(event.value){
-    }
+    this.ngOnInit()
   }
   async LoadXNT(): Promise<void> {
     await this._PhieukhoService.getxuatnhapton(this.SearchParams);

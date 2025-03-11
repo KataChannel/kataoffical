@@ -153,16 +153,10 @@ export class ListDonhangComponent {
         this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
       },
     };
-
-    timeFrames[event.value]?.();
-    console.log(this.SearchParams);
-    
      this.ngOnInit();
   }
   onDateChange(event: any): void {
-    console.log(event);
-    if (event.value) {
-    }
+    this.ngOnInit();
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {

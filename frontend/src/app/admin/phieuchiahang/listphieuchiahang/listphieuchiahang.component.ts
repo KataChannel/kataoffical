@@ -158,9 +158,7 @@ export class ListPhieuchiahangComponent {
     this.ngOnInit();
   }
   onDateChange(event: any): void {
-    console.log(event);
-    if (event.value) {
-    }
+    this.ngOnInit()
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {

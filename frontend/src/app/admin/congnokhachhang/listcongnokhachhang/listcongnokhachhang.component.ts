@@ -160,9 +160,7 @@ export class ListcongnokhachhangComponent {
      this.ngOnInit();
   }
   onDateChange(event: any): void {
-    console.log(event);
-    if (event.value) {
-    }
+    this.ngOnInit()
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -388,8 +386,6 @@ export class ListcongnokhachhangComponent {
           .map(p => [p.title, p])
       ).values()
   );
-  console.log(uniqueProducts);
-  
     const item = uniqueProducts.find((sp:any) => sp.title === product);
     return item ? item.dvt : '';
   }

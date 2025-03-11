@@ -77,6 +77,10 @@
             <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button>
             <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Phiếu Chia</button>
           </div> -->
+          <div class="flex flex-row space-x-2">
+            <!-- <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button> -->
+            <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Công Nợ</button>
+          </div>
         <div class="w-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {
@@ -192,7 +196,7 @@
                 </ng-container>
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="goToDetail(row);"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="toggleDonhang(row)" class="hover:bg-slate-100 {{CheckItemInDonhang(row)?'!bg-slate-200':''}}"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
@@ -205,7 +209,7 @@
 
 
 <ng-template #dialogCreateTemplate>
-    <h2 mat-dialog-title>Phiếu Chia Hàng     
+    <h2 mat-dialog-title>Công Nợ     
         <button mat-icon-button color="primary" (click)="printContent()">
         <mat-icon>print</mat-icon>
       </button></h2>

@@ -163,9 +163,7 @@ export class VandonComponent {
     this.refresh();
   }
   onDateChange(event: any): void {
-    console.log(event);
-    if(event.value){
-    }
+    this.ngOnInit()
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -379,6 +377,9 @@ export class VandonComponent {
     else{
       this.ListFilter = [...this.ListFilter,...CheckItem];
     }
+    console.log(CheckItem);
+    console.log(CheckItem1);
+    
   }
   ChosenAll(list:any)
   {
@@ -410,9 +411,11 @@ export class VandonComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-    this.dataSource().data = this.Vandon().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;
+    const listItem = this.Vandon().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    console.log(listItem);
+    // this.dataSource().data = this.Vandon().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    // this.dataSource().paginator = this.paginator;
+    // this.dataSource().sort = this.sort;
     menu.closeMenu();
   }
 }
