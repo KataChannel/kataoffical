@@ -4,8 +4,10 @@ import {
   effect,
   ElementRef,
   inject,
+  QueryList,
   signal,
   ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -70,6 +72,7 @@ export class DetailDonhangComponent {
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   @ViewChild('searchInput') searchInput!: ElementRef;
+  @ViewChildren('sldatInput') sldatInputs!: QueryList<ElementRef>;
   constructor() {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
@@ -81,6 +84,8 @@ export class DetailDonhangComponent {
       await this._SanphamService.getAllSanpham();
       this.filterSanpham = this._SanphamService.ListSanpham();
       this.dataSource().data = this.DetailDonhang().sanpham;
+      this.dataSource().data.sort((a, b) => a.order - b.order);
+      
     });
 
     effect(async () => {
@@ -307,8 +312,22 @@ export class DetailDonhangComponent {
       (event.target as HTMLElement).innerText = this.DetailDonhang()?.sanpham[index]?.slgiao || '0';
       }
     }, 0);
-    
-    console.log(this.DetailDonhang());
+
+    event.preventDefault();
+    // Find the next input to focus on
+    const inputs = this.sldatInputs.toArray();
+    console.log(inputs);
+  
+    if(index !== null)
+    {
+      if (index < this.dataSource().filteredData.length - 1) {
+        // Focus the next input
+       setTimeout(() => {
+        const inputElement = inputs[index + 1].nativeElement as HTMLInputElement;
+        inputElement.focus();
+      });
+      }
+  }
   }
 
   
@@ -428,7 +447,7 @@ export class DetailDonhangComponent {
       return v;
     })
     this.dataSource().data = this.DetailDonhang().sanpham;
-
+    this.ListFilter = [];
     this.reloadfilter();
   }
   getName(id:any)
@@ -630,8 +649,6 @@ export class DetailDonhangComponent {
   ListFilter:any[] =[]
   ChosenItem(item:any)
   {
-    console.log(item);
-    
     const CheckItem = this.filterSanpham.find((v:any)=>v.id===item.id);
     const CheckItem1 = this.ListFilter.find((v:any)=>v.id===item.id);
     if(CheckItem1)
@@ -639,6 +656,8 @@ export class DetailDonhangComponent {
       this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
     }
     else{
+      CheckItem.order = this.ListFilter.length+1
+      console.log(CheckItem);
       this.ListFilter.push(CheckItem)
     }
   }
@@ -661,16 +680,15 @@ export class DetailDonhangComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-    const listSanpham = this._SanphamService.ListSanpham().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
-    listSanpham.forEach((v)=>{
+    this.ListFilter.forEach((v)=>{
       v.sldat = v.slgiao = 1;
     })
-    this.dataSource().data = listSanpham
+    this.dataSource().data = this.ListFilter
     this.DetailDonhang.update((v:any)=>{
-      v.sanpham = listSanpham
+      v.sanpham =  this.ListFilter
       return v
     })  
-    
+    this.dataSource().data.sort((a, b) => a.order - b.order);
     menu.closeMenu();
   }
 

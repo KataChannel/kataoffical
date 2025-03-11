@@ -207,7 +207,8 @@
                           (blur)="updateValue($event,idx, row, 'sldat','number')"
                           (keydown.enter)="updateValue($event,idx, row, 'sldat','number')"
                           class="p-2 min-w-28 text-end bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
-                        >
+                          #sldatInput
+                          >
                         {{ row[column]||0|number:'1.0-2' }}
                          </div>
                          <!-- <div>(SL:{{row.soluong}})-(SLkho:{{row.soluongkho}})-(Hao hụt:{{row.haohut}}%)(Gợi ý: {{GetGoiy(row)}})</div> -->
