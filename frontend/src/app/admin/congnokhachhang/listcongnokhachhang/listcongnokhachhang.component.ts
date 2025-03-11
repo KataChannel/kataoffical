@@ -356,10 +356,15 @@ export class ListcongnokhachhangComponent {
     this.Phieuchia = this.editDonhang.map((v: any) => ({
       makh: v.khachhang?.makh,
       name: v.khachhang?.name,
+      madonhang:v.madonhang,
+      ngaygiao:v.ngaygiao,
       sanpham: v.sanpham.map((v1: any) => ({
+        masp:v1.masp,
         title: v1.title,
         dvt: v1.dvt,
         slgiao: v1.slgiao,
+        giaban: v1.giaban,
+        ttgiao: v1.ttgiao,
       })),
     }));
     console.log(this.Phieuchia);

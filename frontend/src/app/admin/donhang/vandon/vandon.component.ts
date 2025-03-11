@@ -91,26 +91,8 @@ export class VandonComponent {
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   Vandon:any = this._DonhangService.ListDonhang;
-  dataSource = computed(() => {
-    const Listvandon = this.Vandon()
-    .flatMap((item: any,k:any) => {
-      const Info = {
-      madonhang: item?.madonhang,
-      khachhang: item?.khachhang?.name,
-      sdt: item?.khachhang?.sdt,  
-      diachi: item?.khachhang?.diachi,
-      createdAt: item.createdAt,
-      isActive: item.isActive,
-      ngaygiao: item.ngaygiao,
-      };
-      return item.sanpham.map((v: any) => ({ ...v, ...Info }));
-    }); 
-    Listvandon.forEach((v:any,k:any)=>{
-      v.id=k+1
-    })
-    console.log(Listvandon);
-    
-    const ds = new MatTableDataSource(Listvandon);
+  dataSource = computed(() => {   
+    const ds = new MatTableDataSource(this.Listvandon);
     ds.filterPredicate = this.createFilter();
     ds.paginator = this.paginator;
     ds.sort = this.sort;
@@ -185,9 +167,24 @@ export class VandonComponent {
       this.dataSource()?.paginator?.firstPage();
     }
   }
+  Listvandon:any[]=[]
   async ngOnInit(): Promise<void> {    
     await this._DonhangService.searchDonhang(this.SearchParams);
     this.CountItem = this.Vandon().length;
+    this.Listvandon = this.Vandon().flatMap((item:any, index:any) =>
+      item.sanpham.map((v:any) => ({
+        ...v,
+        madonhang: item.madonhang,
+        khachhang: item.khachhang?.name,
+        sdt: item.khachhang?.sdt,
+        diachi: item.khachhang?.diachi,
+        createdAt: item.createdAt,
+        isActive: item.isActive,
+        ngaygiao: item.ngaygiao
+      }))
+    ).map((v:any, i:any) => ({ ...v, id: i + 1 }));
+    this.dataSource().data = this.Listvandon;
+    this.dataSource().paginator = this.paginator
     this.initializeColumns();
     this.setupDrawer();
     this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
@@ -359,7 +356,7 @@ export class VandonComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource().filteredData = this.Vandon().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    this.dataSource().filteredData = this.Listvandon.filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   trackByFn(index: number, item: any): any {
@@ -370,16 +367,17 @@ export class VandonComponent {
   {
     const CheckItem = this.dataSource().filteredData.filter((v:any)=>v[column]===item[column]);
     const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
+    console.log(this.ListFilter);
+    console.log(item);
+    console.log(column);
+    
     if(CheckItem1.length>0)
     {
       this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
     }
     else{
       this.ListFilter = [...this.ListFilter,...CheckItem];
-    }
-    console.log(CheckItem);
-    console.log(CheckItem1);
-    
+    }    
   }
   ChosenAll(list:any)
   {
@@ -396,8 +394,8 @@ export class VandonComponent {
   }
   ResetFilter()
   {
-    this.ListFilter = this.Vandon();
-    this.dataSource().data = this.Vandon();
+    this.ListFilter = this.Listvandon;
+    this.dataSource().data = this.Listvandon;
     this.dataSource().paginator = this.paginator;
     this.dataSource().sort = this.sort;
   }
@@ -411,11 +409,9 @@ export class VandonComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-    const listItem = this.Vandon().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
-    console.log(listItem);
-    // this.dataSource().data = this.Vandon().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
-    // this.dataSource().paginator = this.paginator;
-    // this.dataSource().sort = this.sort;
+    this.dataSource().data = this.Listvandon.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    this.dataSource().paginator = this.paginator;
+    this.dataSource().sort = this.sort;
     menu.closeMenu();
   }
 }

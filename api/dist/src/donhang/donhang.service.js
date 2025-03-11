@@ -76,15 +76,17 @@ let DonhangService = class DonhangService {
                         sanpham: true,
                     },
                 },
-                khachhang: true,
+                khachhang: { include: { banggia: { include: { sanpham: true } } }, },
             },
             orderBy: { ngaygiao: 'desc' },
         });
-        return result.map((donhang) => ({
+        return result.map(({ khachhang, sanpham, ...donhang }) => ({
             ...donhang,
-            sanpham: donhang.sanpham.map((item) => ({
+            sanpham: sanpham.map((item) => ({
                 ...item.sanpham,
                 idSP: item.idSP,
+                giaban: khachhang.banggia.find((bg) => donhang.ngaygiao && bg.batdau && bg.ketthuc &&
+                    donhang.ngaygiao >= bg.batdau && donhang.ngaygiao <= bg.ketthuc)?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
                 sldat: item.sldat,
                 slgiao: item.slgiao,
                 slnhan: item.slnhan,
@@ -93,7 +95,8 @@ let DonhangService = class DonhangService {
                 ttnhan: item.ttnhan,
                 ghichu: item.ghichu,
             })),
-            name: donhang.khachhang.name,
+            khachhang: (({ banggia, ...rest }) => rest)(khachhang),
+            name: khachhang.name
         }));
     }
     async findAll() {
@@ -104,7 +107,7 @@ let DonhangService = class DonhangService {
                         sanpham: true,
                     },
                 },
-                khachhang: true,
+                khachhang: { include: { banggia: { include: { sanpham: true } } }, },
             },
         });
         return donhangs.map((donhang) => ({
@@ -112,6 +115,7 @@ let DonhangService = class DonhangService {
             sanpham: donhang.sanpham.map((item) => ({
                 ...item.sanpham,
                 idSP: item.idSP,
+                giaban: donhang.khachhang.banggia.find((bg) => donhang.ngaygiao && bg.batdau && bg.ketthuc && donhang.ngaygiao >= bg.batdau && donhang.ngaygiao <= bg.ketthuc)?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
                 sldat: item.sldat,
                 slgiao: item.slgiao,
                 slnhan: item.slnhan,

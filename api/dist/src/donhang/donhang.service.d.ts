@@ -8,7 +8,6 @@ export declare class DonhangService {
     reorderDonHangs(donhangIds: string[]): Promise<void>;
     search(params: any): Promise<{
         sanpham: any[];
-        name: string | null;
         khachhang: {
             id: string;
             ghichu: string | null;
@@ -29,6 +28,7 @@ export declare class DonhangService {
             loaikh: string | null;
             hiengia: boolean;
         };
+        name: string | null;
         id: string;
         title: string;
         type: string | null;
@@ -46,6 +46,29 @@ export declare class DonhangService {
         sanpham: any[];
         name: string | null;
         khachhang: {
+            banggia: ({
+                sanpham: {
+                    id: string;
+                    order: number | null;
+                    isActive: boolean;
+                    giaban: number;
+                    sanphamId: string;
+                    banggiaId: string;
+                }[];
+            } & {
+                id: string;
+                title: string;
+                type: string;
+                ghichu: string | null;
+                status: string | null;
+                order: number | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                batdau: Date | null;
+                ketthuc: Date | null;
+            })[];
+        } & {
             id: string;
             ghichu: string | null;
             isActive: boolean;

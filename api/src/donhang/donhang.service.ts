@@ -77,15 +77,19 @@ export class DonhangService {
             sanpham: true,
           },
         },
-        khachhang: true,
+        khachhang: {include: {banggia: {include: {sanpham: true}}},},
       },
       orderBy: { ngaygiao: 'desc' },
     });
-    return result.map((donhang) => ({
+    return result.map(({ khachhang, sanpham, ...donhang }) => ({
       ...donhang,
-      sanpham: donhang.sanpham.map((item: any) => ({
+      sanpham: sanpham.map((item: any) => ({
         ...item.sanpham,
         idSP: item.idSP,
+        giaban: khachhang.banggia.find((bg) => 
+          donhang.ngaygiao && bg.batdau && bg.ketthuc &&
+          donhang.ngaygiao >= bg.batdau && donhang.ngaygiao <= bg.ketthuc
+        )?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
         sldat: item.sldat,
         slgiao: item.slgiao,
         slnhan: item.slnhan,
@@ -94,8 +98,10 @@ export class DonhangService {
         ttnhan: item.ttnhan,
         ghichu: item.ghichu,
       })),
-      name: donhang.khachhang.name,
+      khachhang: (({ banggia, ...rest }) => rest)(khachhang), // Xóa banggia
+      name: khachhang.name
     }));
+    
   }
   
   async findAll() {
@@ -106,7 +112,7 @@ export class DonhangService {
             sanpham: true,
           },
         },
-        khachhang: true,
+        khachhang: {include: {banggia: {include: {sanpham: true}}},},
       },
     });
     return donhangs.map((donhang) => ({
@@ -114,6 +120,7 @@ export class DonhangService {
       sanpham: donhang.sanpham.map((item: any) => ({
         ...item.sanpham,
         idSP: item.idSP,
+        giaban: donhang.khachhang.banggia.find((bg) => donhang.ngaygiao && bg.batdau && bg.ketthuc && donhang.ngaygiao >= bg.batdau && donhang.ngaygiao <= bg.ketthuc)?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
         sldat: item.sldat,
         slgiao: item.slgiao,
         slnhan: item.slnhan,
