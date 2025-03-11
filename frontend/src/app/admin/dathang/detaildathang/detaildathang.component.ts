@@ -99,6 +99,7 @@ export class DetailDathangComponent {
         this._router.navigate(['/admin/dathang', '0']);
       } else {
         await this._DathangService.getDathangByid(id);
+        this.ListFilter = this.DetailDathang().sanpham
         this._ListdathangComponent.drawer.open();
         this._router.navigate(['/admin/dathang', id]);
       }
@@ -123,6 +124,7 @@ export class DetailDathangComponent {
   private async createDathang() {
     try {
       this.DetailDathang.update((v: any) => {
+        v.sanpham = this.dataSource().data
         v.ngaynhan = moment(v.ngaygiao).format('YYYY-MM-DD');
         return v;
       });
@@ -141,6 +143,11 @@ export class DetailDathangComponent {
 
   private async updateDathang() {
     try {
+      console.log(this.DetailDathang());
+      this.DetailDathang.update((v:any)=>{
+        v.sanpham = this.dataSource().data
+        return v
+      })
       await this._DathangService.updateDathang(this.DetailDathang());
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,
@@ -184,10 +191,10 @@ export class DetailDathangComponent {
     this.isDelete.update((value) => !value);
   }
   FillSlug() {
-    this.DetailDathang.update((v: any) => {
-      v.slug = convertToSlug(v.title);
-      return v;
-    });
+    // this.DetailDathang.update((v: any) => {
+    //   v.slug = convertToSlug(v.title);
+    //   return v;
+    // });
   }
   DoFindNhacungcap(event: any) {
     const query = event.target.value.toLowerCase();
@@ -447,5 +454,51 @@ export class DetailDathangComponent {
     }
     return result;
    }
+   doFilterSanpham(event: any): void {
+    this.dataSource().filteredData = this.filterSanpham.filter((v: any) => v.title.toLowerCase().includes(event.target.value.toLowerCase()));  
+    const query = event.target.value.toLowerCase();  
+  }
+  ListFilter:any[] =[]
+  ChosenItem(item:any)
+  {
+    console.log(item);
+    
+    const CheckItem = this.filterSanpham.filter((v:any)=>v.id===item.id);
+    const CheckItem1 = this.ListFilter.filter((v:any)=>v.id===item.id);
+    if(CheckItem1.length>0)
+    {
+      this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
+    }
+    else{
+      this.ListFilter = [...this.ListFilter,...CheckItem];
+    }
+  }
+  ChosenAll(list:any)
+  {
+    this.ListFilter =list
+  }
+  ResetFilter()
+  {
+    this.ListFilter = this.filterSanpham;
+    this.dataSource().data = this.filterSanpham;
+    this.dataSource().paginator = this.paginator;
+    this.dataSource().sort = this.sort;
+  }
+  EmptyFiter()
+  {
+    this.ListFilter = [];
+  }
+  CheckItem(item:any)
+  {
+    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  }
+  ApplyFilterColum(menu:any)
+  {    
+ 
+    this.dataSource().data = this.filterSanpham.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    this.dataSource().paginator = this.paginator;
+    this.dataSource().sort = this.sort;
+    menu.closeMenu();
+  }
 }
 

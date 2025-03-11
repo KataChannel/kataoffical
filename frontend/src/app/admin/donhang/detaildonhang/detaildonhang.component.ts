@@ -36,6 +36,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import html2canvas from 'html2canvas';
+import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 @Component({
   selector: 'app-detaildonhang',
   imports: [
@@ -78,8 +79,6 @@ export class DetailDonhangComponent {
       await this._SanphamService.getAllSanpham();
       this.filterSanpham = this._SanphamService.ListSanpham();
       this.dataSource().data = this.DetailDonhang().sanpham;
-      this.dataSource().paginator = this.paginator;
-      this.dataSource().sort = this.sort;
     });
 
     effect(async () => {
@@ -99,6 +98,11 @@ export class DetailDonhangComponent {
         this._router.navigate(['/admin/donhang', '0']);
       } else {
         await this._DonhangService.getDonhangByid(id);
+        this.ListFilter = this.DetailDonhang().sanpham
+        this.DetailDonhang.update((v:any)=>{
+          v.banggiaId = v?.khachhang?.banggia.find((v: any) => moment() > moment(v.batdau) && moment() < moment(v.ketthuc))?.id;
+          return v
+        })        
         this._ListdonhangComponent.drawer.open();
         this._router.navigate(['/admin/donhang', id]);
       }
@@ -136,7 +140,9 @@ export class DetailDonhangComponent {
         v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
         return v;
       })
-      await this._DonhangService.CreateDonhang(this.DetailDonhang());
+      await this._DonhangService.CreateDonhang(this.DetailDonhang()).then((data)=>{
+        console.log(data);  
+      })
       this._snackBar.open('Tạo Mới Thành Công', '', {
         duration: 1000,
         horizontalPosition: 'end',
@@ -155,7 +161,9 @@ export class DetailDonhangComponent {
         v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
         return v;
       })
-      await this._DonhangService.updateDonhang(this.DetailDonhang());
+      await this._DonhangService.updateDonhang(this.DetailDonhang()).then((data)=>{
+        console.log(data);  
+      })
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,
         horizontalPosition: 'end',
@@ -404,8 +412,7 @@ export class DetailDonhangComponent {
     //   return v;
     // })
     this.dataSource().data = this.DetailDonhang().sanpham;
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;
+
     this.reloadfilter();
   }
   applyFilter(event: Event) {
@@ -419,8 +426,7 @@ export class DetailDonhangComponent {
       return v;
     })
     this.dataSource().data = this.DetailDonhang().sanpham;
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;
+
     this.reloadfilter();
   }
   getName(id:any)
@@ -439,7 +445,7 @@ export class DetailDonhangComponent {
   //     return v;
   //   })
   //   this.dataSource().data = this.DetailBanggia().sanpham;
-  //   this.dataSource().paginator = this.paginator;
+  //   
   //   this.dataSource().sort = this.sort;
   // }
   DoFindSanpham(event:any){
@@ -465,8 +471,8 @@ export class DetailDonhangComponent {
       return v;
     })
     this.dataSource().data = this.DetailDonhang().sanpham;
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;    
+    
+    
   }
   RemoveSanpham(item:any){
     this.DetailDonhang.update((v:any)=>{
@@ -475,8 +481,8 @@ export class DetailDonhangComponent {
       return v;
     })
     this.dataSource().data = this.DetailDonhang().sanpham;
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;
+    
+
   }
 
   CoppyDon()
@@ -599,4 +605,111 @@ export class DetailDonhangComponent {
   GetGoiy(item:any){
    return parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
   }
+
+  doFilterSanpham(event: any): void {
+    this.dataSource().filteredData = this.filterSanpham.filter((v: any) => v.title.toLowerCase().includes(event.target.value.toLowerCase()));  
+    const query = event.target.value.toLowerCase();  
+  }
+  ListFilter:any[] =[]
+  ChosenItem(item:any)
+  {
+    console.log(item);
+    
+    const CheckItem = this.filterSanpham.filter((v:any)=>v.id===item.id);
+    const CheckItem1 = this.ListFilter.filter((v:any)=>v.id===item.id);
+    if(CheckItem1.length>0)
+    {
+      this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
+    }
+    else{
+      this.ListFilter = [...this.ListFilter,...CheckItem];
+    }
+  }
+  ChosenAll(list:any)
+  {
+    this.ListFilter =list
+  }
+  ResetFilter()
+  {
+    this.ListFilter = this.filterSanpham;
+    this.dataSource().data = this.filterSanpham;
+    
+
+  }
+  EmptyFiter()
+  {
+    this.ListFilter = [];
+  }
+  CheckItem(item:any)
+  {
+    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  }
+  ApplyFilterColum(menu:any)
+  {    
+    const listSanpham = this.filterSanpham.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    listSanpham.forEach((v)=>{
+      v.sldat = v.slgiao = 1;
+    })
+    this.dataSource().data = listSanpham
+    this.DetailDonhang.update((v:any)=>{
+      v.sanpham = listSanpham
+      return v
+    })  
+    
+    menu.closeMenu();
+  }
+
+
+
+        async ImporExcel(event: any) {
+          const data = await readExcelFile(event)
+          this.DoImportData(data);
+         }   
+        ExportExcel(data:any,title:any) {
+            const transformedData = data.map((v: any) => ({
+              masp: v.masp?.trim()||'',
+              giaban: Number(v.giaban)||0,
+              sldat: Number(v.sldat)||0,
+              slgiao: Number(v.slgiao)||0,
+              slnhan: Number(v.slnhan)||0,
+              ttdat: Number(v.ttdat)||0,
+              ttgiao: Number(v.ttgiao)||0,
+              ttnhan: Number(v.ttnhan)||0,
+              ghichu: v.ghichu?.trim()||'',
+           }));
+            writeExcelFile(transformedData,title);
+          }
+          DoImportData(data:any)
+          {
+            const transformedData = data.map((v: any) => ({
+              masp: v.masp?.trim()||'',
+              giaban: Number(v.giaban)||0,
+              sldat: Number(v.sldat)||0,
+              slgiao: Number(v.slgiao)||0,
+              slnhan: Number(v.slnhan)||0,
+              ttdat: Number(v.ttdat)||0,
+              ttgiao: Number(v.ttgiao)||0,
+              ttnhan: Number(v.ttnhan)||0,
+              ghichu: v.ghichu?.trim()||'',
+           }));
+           this.ListFilter = transformedData.map((item:any) => {
+            const item1 = this._SanphamService.ListSanpham().find((v1) => v1.masp === item.masp);
+            if (item1) {
+              return { ...item1, ...item };
+            }
+            return item;
+          });
+           this.dataSource().data = this.ListFilter
+           this.DetailDonhang.update((v:any)=>{
+             v.sanpham = this.ListFilter
+             return v
+           })  
+           
+           this._snackBar.open('Cập Nhật Thành Công', '', {
+                  duration: 1000,
+                  horizontalPosition: 'end',
+                  verticalPosition: 'top',
+                  panelClass: ['snackbar-success'],
+            });
+        }
 }

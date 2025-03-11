@@ -396,8 +396,8 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
       async ImporExcel(event: any) {
         const data = await readExcelFile(event)
         this.DoImportData(data);
-        }   
-        ExportExcel(data:any,title:any) {
+       }   
+      ExportExcel(data:any,title:any) {
           const transformedData = data.data.map((v: any) => ({
             masp: v.masp?.trim()||'',
             giaban: Number(v.giaban)||0,
@@ -434,7 +434,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
                 verticalPosition: 'top',
                 panelClass: ['snackbar-success'],
           });
-        }
+      }
 
         doFilterSanpham(event: any): void {
           this.dataSource().filteredData = this.filterSanpham.filter((v: any) => v.title.toLowerCase().includes(event.target.value.toLowerCase()));  

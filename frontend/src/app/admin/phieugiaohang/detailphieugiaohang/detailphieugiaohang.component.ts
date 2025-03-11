@@ -245,19 +245,19 @@ export class DetailPhieugiaohangComponent {
           v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
         } else if (field === 'slgiao') {
           const newGiao = newValue
-          if (newGiao < v.sanpham[index]['sldat']) {
-            // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
-            v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
-            this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
-              duration: 1000,
-              horizontalPosition: "end",
-              verticalPosition: "top",
-              panelClass: ['snackbar-error'],
-            });
-          } else {
+          // if (newGiao < v.sanpham[index]['sldat']) {
+          //   // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
+          //   v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
+          //   this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
+          //     duration: 1000,
+          //     horizontalPosition: "end",
+          //     verticalPosition: "top",
+          //     panelClass: ['snackbar-error'],
+          //   });
+          // } else {
             v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newGiao;
             v.sanpham[index]['ttgiao']=v.sanpham[index]['slgiao']*v.sanpham[index]['giaban']
-          }
+          // }
         } else {
           v.sanpham[index][field] = newValue;
         }

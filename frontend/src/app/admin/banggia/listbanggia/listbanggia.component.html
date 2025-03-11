@@ -63,7 +63,7 @@
                              <span class="z-10 material-symbols-outlined text-gray-500" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
                                  filter_alt
                              </span>
-                                    <mat-menu  #menu="matMenu">
+                            <mat-menu  #menu="matMenu">
                                         <div (click)="$event.stopPropagation()"  class="cursor-pointer flex flex-col space-y-4 p-3">                                        
                                         <div class="relative w-full">
                                             <input type="text"
@@ -107,7 +107,7 @@
                                             <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)" >Áp Dụng</button>
                                         </div>
                                         </div>
-                                    </mat-menu>
+                            </mat-menu>
                     </th>
                     <td mat-cell *matCellDef="let row; let idx = index">
                         @switch (column) {
