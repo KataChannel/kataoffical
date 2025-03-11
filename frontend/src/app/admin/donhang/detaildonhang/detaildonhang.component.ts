@@ -643,7 +643,7 @@ export class DetailDonhangComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-    const listSanpham = this.filterSanpham.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    const listSanpham = this._SanphamService.ListSanpham().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     listSanpham.forEach((v)=>{
       v.sldat = v.slgiao = 1;
     })
