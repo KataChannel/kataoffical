@@ -126,7 +126,7 @@ export class ListDonhangComponent {
   onSelectionChange(event: MatSelectChange): void {
     const timeFrames: { [key: string]: () => void } = {
       day: () => {
-        this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
+        this.SearchParams.Batdau = moment()
         this.SearchParams.Ketthuc = moment()
           .endOf('day')
           .add(1, 'day')

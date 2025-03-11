@@ -2,9 +2,20 @@ import{a as ht}from"./chunk-C7S6DKUP.js";import{a as lt,b as st}from"./chunk-SXR
         <html>
         <head>
           <title>In B\u1EA3ng</title>
+                 
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <script>
+      tailwind.config = {
+        theme: { extend: {} }
+      };
+    <\/script>
+  
           <style>
             body { font-size: 12px; font-family: Arial, sans-serif; }
-            table { width: 100%; border-collapse: collapse; }
+            table { width: auto;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto; }
             th, td { border: 1px solid #000; padding: 4px; text-align: left; }
             @media print { body { margin: 0; } }
           </style>

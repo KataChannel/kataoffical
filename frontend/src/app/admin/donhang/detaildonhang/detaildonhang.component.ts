@@ -2,6 +2,7 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
   signal,
   ViewChild,
@@ -68,6 +69,7 @@ export class DetailDonhangComponent {
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
+  @ViewChild('searchInput') searchInput!: ElementRef;
   constructor() {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
@@ -605,23 +607,39 @@ export class DetailDonhangComponent {
   GetGoiy(item:any){
    return parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
   }
-
   doFilterSanpham(event: any): void {
-    this.filterSanpham =this._SanphamService.ListSanpham().filter((v: any) => v.title.toLowerCase().includes(event.target.value.toLowerCase()));  
+    const searchTerm = event.target.value.toLowerCase();
+    if (!searchTerm) {
+      this.filterSanpham = [...this._SanphamService.ListSanpham()]; // Reset to original list if search is empty
+      return;
+    }
+    this.filterSanpham = this._SanphamService.ListSanpham().filter((item: any) =>
+      item.title.toLowerCase().includes(searchTerm)
+    );
+
+    if (event.key === 'Enter') {      
+      if (this.filterSanpham.length > 0) {
+        this.ChosenItem(this.filterSanpham[0]);
+        this.filterSanpham = [...this._SanphamService.ListSanpham()];
+        if (this.searchInput) {
+          this.searchInput.nativeElement.value = ''; // Xóa giá trị input
+        }
+      }
+    }
   }
   ListFilter:any[] =[]
   ChosenItem(item:any)
   {
     console.log(item);
     
-    const CheckItem = this.filterSanpham.filter((v:any)=>v.id===item.id);
-    const CheckItem1 = this.ListFilter.filter((v:any)=>v.id===item.id);
-    if(CheckItem1.length>0)
+    const CheckItem = this.filterSanpham.find((v:any)=>v.id===item.id);
+    const CheckItem1 = this.ListFilter.find((v:any)=>v.id===item.id);
+    if(CheckItem1)
     {
       this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
     }
     else{
-      this.ListFilter = [...this.ListFilter,...CheckItem];
+      this.ListFilter.push(CheckItem)
     }
   }
   ChosenAll(list:any)

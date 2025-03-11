@@ -45,6 +45,7 @@ export declare class DathangService {
             slug: string | null;
             order: number | null;
             masp: string;
+            subtitle: string | null;
             giagoc: number;
             dvt: string | null;
             hinhanh: string | null;

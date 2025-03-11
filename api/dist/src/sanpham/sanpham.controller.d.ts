@@ -12,6 +12,7 @@ export declare class SanphamController {
         slug: string | null;
         order: number | null;
         masp: string;
+        subtitle: string | null;
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
@@ -29,6 +30,7 @@ export declare class SanphamController {
         slug: string | null;
         order: number | null;
         masp: string;
+        subtitle: string | null;
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
@@ -49,6 +51,7 @@ export declare class SanphamController {
         slug: string | null;
         order: number | null;
         masp: string;
+        subtitle: string | null;
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
@@ -66,6 +69,7 @@ export declare class SanphamController {
         slug: string | null;
         order: number | null;
         masp: string;
+        subtitle: string | null;
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
@@ -83,6 +87,7 @@ export declare class SanphamController {
         slug: string | null;
         order: number | null;
         masp: string;
+        subtitle: string | null;
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;

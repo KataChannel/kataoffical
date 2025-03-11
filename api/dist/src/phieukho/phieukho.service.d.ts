@@ -23,6 +23,7 @@ export declare class PhieukhoService {
                 slug: string | null;
                 order: number | null;
                 masp: string;
+                subtitle: string | null;
                 giagoc: number;
                 dvt: string | null;
                 hinhanh: string | null;

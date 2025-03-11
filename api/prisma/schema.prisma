@@ -296,6 +296,7 @@ model Sanpham {
   title     String
   slug      String?   @unique
   masp      String   @unique
+  subtitle  String? 
   giagoc    Float @default(0)
   dvt       String?
   hinhanh   String?
