@@ -607,8 +607,7 @@ export class DetailDonhangComponent {
   }
 
   doFilterSanpham(event: any): void {
-    this.dataSource().filteredData = this.filterSanpham.filter((v: any) => v.title.toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();  
+    this.filterSanpham =this._SanphamService.ListSanpham().filter((v: any) => v.title.toLowerCase().includes(event.target.value.toLowerCase()));  
   }
   ListFilter:any[] =[]
   ChosenItem(item:any)
@@ -631,10 +630,8 @@ export class DetailDonhangComponent {
   }
   ResetFilter()
   {
-    this.ListFilter = this.filterSanpham;
+    this.ListFilter = this._SanphamService.ListSanpham();
     this.dataSource().data = this.filterSanpham;
-    
-
   }
   EmptyFiter()
   {
