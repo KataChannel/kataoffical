@@ -18,6 +18,7 @@ import { AuthMiddleware } from './middleware/auth.middleware';
 import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
 import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
+import { GoogledriveModule } from './shared/googledrive/googledrive.module';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
     khoModule,
     PhieukhoModule,
     RoleModule,
-    PermissionModule
+    PermissionModule,
+    GoogledriveModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  
