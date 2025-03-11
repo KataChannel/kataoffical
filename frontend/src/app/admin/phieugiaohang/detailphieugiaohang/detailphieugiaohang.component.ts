@@ -321,6 +321,7 @@ export class DetailPhieugiaohangComponent {
   displayedColumns: string[] = [
     'STT',
     'title',
+    'title2',
     'masp',
     'dvt',
     'sldat',
@@ -334,6 +335,7 @@ export class DetailPhieugiaohangComponent {
   ColumnName: any = {
     STT: 'STT',
     title: 'Tiêu Đề',
+    title2: 'Tiêu Đề',
     masp: 'Mã SP',
     dvt: 'Đơn Vị Tính',
     sldat: 'SL Đặt',
@@ -343,6 +345,7 @@ export class DetailPhieugiaohangComponent {
     slnhan: 'SL Nhận',
     ghichu: 'Ghi Chú'
   };
+
   dataSource = signal(new MatTableDataSource<any>([]));
   CountItem = computed(() => this.dataSource().data.length);
   @ViewChild(MatPaginator) paginator!: MatPaginator;

@@ -110,6 +110,7 @@ export declare class BanggiaController {
             ghichu: string | null;
             hiengia: boolean;
             isActive: boolean;
+            istitle2: boolean;
             createdAt: Date;
             updatedAt: Date;
         }[];

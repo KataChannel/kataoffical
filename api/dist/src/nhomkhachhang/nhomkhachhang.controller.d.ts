@@ -27,6 +27,7 @@ export declare class NhomkhachhangController {
             ghichu: string | null;
             hiengia: boolean;
             isActive: boolean;
+            istitle2: boolean;
             createdAt: Date;
             updatedAt: Date;
         }[];
@@ -69,6 +70,7 @@ export declare class NhomkhachhangController {
             ghichu: string | null;
             hiengia: boolean;
             isActive: boolean;
+            istitle2: boolean;
             createdAt: Date;
             updatedAt: Date;
         }[];

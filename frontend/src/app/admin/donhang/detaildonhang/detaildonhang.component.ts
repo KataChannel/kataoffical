@@ -278,11 +278,24 @@ export class DetailDonhangComponent {
       type === 'number'
         ? Number((event.target as HTMLElement).innerText.trim()) || 0
         : (event.target as HTMLElement).innerText.trim();
-  
     this.DetailDonhang.update((v: any) => {
       if (index !== null) {
         if (field === 'sldat') {
           v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
+          // Find the next input to focus on
+          const inputs = this.sldatInputs.toArray();
+          console.log(inputs);
+        
+          if(index !== null)
+          {
+            if (index < this.dataSource().filteredData.length - 1) {
+              // Focus the next input
+             setTimeout(() => {
+              const inputElement = inputs[index + 1].nativeElement as HTMLInputElement;
+              inputElement.focus();
+            });
+            }
+         }
         } else if (field === 'slgiao') {
           const newGiao = newValue
           if (newGiao < v.sanpham[index]['sldat']) {
@@ -312,22 +325,6 @@ export class DetailDonhangComponent {
       (event.target as HTMLElement).innerText = this.DetailDonhang()?.sanpham[index]?.slgiao || '0';
       }
     }, 0);
-
-    event.preventDefault();
-    // Find the next input to focus on
-    const inputs = this.sldatInputs.toArray();
-    console.log(inputs);
-  
-    if(index !== null)
-    {
-      if (index < this.dataSource().filteredData.length - 1) {
-        // Focus the next input
-       setTimeout(() => {
-        const inputElement = inputs[index + 1].nativeElement as HTMLInputElement;
-        inputElement.focus();
-      });
-      }
-  }
   }
 
   

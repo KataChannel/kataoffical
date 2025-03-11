@@ -98,6 +98,7 @@ export declare class BanggiaService {
             ghichu: string | null;
             hiengia: boolean;
             isActive: boolean;
+            istitle2: boolean;
             createdAt: Date;
             updatedAt: Date;
         }[];

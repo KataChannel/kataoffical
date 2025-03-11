@@ -154,9 +154,32 @@
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
                     <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
-                        <span class="line-clamp-4 me-4">
+                      @switch (column) {
+                        @case ('title') {
+                          @if(DetailPhieugiaohang().istitle2){
+
+                          }@else{
+                            <span class="max-w-40 line-clamp-4">
+                              {{ ColumnName[column] }}
+                            </span>
+                          }
+                        }
+                        @case ('title2') {
+                          @if(DetailPhieugiaohang().istitle2){
+                            <span class="max-w-40 line-clamp-4">
+                              {{ ColumnName[column] }}
+                            </span>
+                          }@else{
+                          }
+                        }
+
+                        @default {
+                          <span class="max-w-40 line-clamp-4">
                             {{ ColumnName[column] }}
-                        </span>
+                          </span>
+                          }
+                      }
+
                     </th>
                     <td mat-cell *matCellDef="let row; let idx = index">
                         @switch (column) {

@@ -19,6 +19,7 @@ export declare class KhachhangController {
         ghichu: string | null;
         hiengia: boolean;
         isActive: boolean;
+        istitle2: boolean;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -53,6 +54,7 @@ export declare class KhachhangController {
         ghichu: string | null;
         hiengia: boolean;
         isActive: boolean;
+        istitle2: boolean;
         createdAt: Date;
         updatedAt: Date;
     })[]>;
@@ -73,6 +75,7 @@ export declare class KhachhangController {
         ghichu: string | null;
         hiengia: boolean;
         isActive: boolean;
+        istitle2: boolean;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -93,6 +96,7 @@ export declare class KhachhangController {
         ghichu: string | null;
         hiengia: boolean;
         isActive: boolean;
+        istitle2: boolean;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -113,6 +117,7 @@ export declare class KhachhangController {
         ghichu: string | null;
         hiengia: boolean;
         isActive: boolean;
+        istitle2: boolean;
         createdAt: Date;
         updatedAt: Date;
     }>;

@@ -120,7 +120,7 @@ export class ListPhieugiaohangComponent {
     };
   }
   async ngOnInit(): Promise<void> {    
-    await this._DonhangService.getAllDonhang();
+    await this._DonhangService.searchDonhang(this.SearchParams);
     this.CountItem = this.Listphieugiaohang().length;
     this.dataSource = new MatTableDataSource(this.Listphieugiaohang());
     this.dataSource.paginator = this.paginator;
@@ -133,9 +133,6 @@ export class ListPhieugiaohangComponent {
     this.paginator._intl.previousPageLabel = 'Về Trước';
     this.paginator._intl.firstPageLabel = 'Trang Đầu';
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
-  }
-  async refresh() {
-   await this._DonhangService.getAllDonhang();
   }
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;

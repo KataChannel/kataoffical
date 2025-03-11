@@ -111,8 +111,9 @@ model Khachhang {
   address      String?
   loaikh       String?
   ghichu       String?
-  hiengia     Boolean  @default(false)
+  hiengia      Boolean  @default(false)
   isActive     Boolean  @default(false)
+  istitle2     Boolean  @default(false)
   banggia      Banggia[] @relation("Banggiakhachhang")
   donhang      Donhang[]
   createdAt    DateTime @default(now())
