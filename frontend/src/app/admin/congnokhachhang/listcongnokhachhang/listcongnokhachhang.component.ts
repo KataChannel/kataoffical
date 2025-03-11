@@ -347,7 +347,9 @@ export class ListcongnokhachhangComponent {
       this.editDonhang.push(item);
     }
   }
-
+  TinhTong(items: any, fieldTong: any) {
+    return (items?.reduce((sum: any, item: any) => sum + (item[fieldTong] || 0), 0) ||0);
+  }
   dialog = inject(MatDialog);
   dialogCreateRef: any;
   Phieuchia:any[] = [];

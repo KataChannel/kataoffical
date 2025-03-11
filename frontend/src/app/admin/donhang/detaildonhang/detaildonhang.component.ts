@@ -614,7 +614,7 @@ export class DetailDonhangComponent {
       return;
     }
     this.filterSanpham = this._SanphamService.ListSanpham().filter((item: any) =>
-      item.title.toLowerCase().includes(searchTerm)
+      item?.title?.toLowerCase().includes(searchTerm)||item?.subtitle?.toLowerCase().includes(searchTerm)
     );
 
     if (event.key === 'Enter') {      

@@ -68,7 +68,7 @@ export class ListDonhangComponent {
   displayedColumns: string[] = [
     'madonhang',
     'name',
-    'donhang',
+    'sanpham',
     'ngaygiao',
     'ghichu',
     'status',
@@ -78,7 +78,7 @@ export class ListDonhangComponent {
   ColumnName: any = {
     madonhang: 'Mã Đơn Hàng',
     name: 'Khách Hàng',
-    donhang: 'Sản Phẩm',
+    sanpham: 'Sản Phẩm',
     ngaygiao: 'Ngày Giao',
     ghichu: 'Ghi Chú',
     status: 'Trạng Thái',

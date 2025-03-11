@@ -57,9 +57,9 @@
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
                     <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
-                        <span class="max-w-40 line-clamp-4 me-4">
-                            {{ ColumnName[column] }}
-                        </span>
+                            <span class="max-w-40 line-clamp-4 me-4">
+                                {{ ColumnName[column] }}
+                            </span>
                              <span class="z-10 material-symbols-outlined text-gray-500" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
                                  filter_alt
                              </span>

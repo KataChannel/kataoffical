@@ -68,7 +68,7 @@ export class ListPhieuchiahangComponent {
   displayedColumns: string[] = [
     'madonhang',
     'name',
-    'donhang',
+    'sanpham',
     'ngaygiao',
     'ghichu',
     'status',
@@ -78,7 +78,7 @@ export class ListPhieuchiahangComponent {
   ColumnName: any = {
     madonhang: 'Mã Đơn Hàng',
     name: 'Khách Hàng',
-    donhang: 'Sản Phẩm',
+    sanpham: 'Sản Phẩm',
     ngaygiao: 'Ngày Giao',
     ghichu: 'Ghi Chú',
     status: 'Trạng Thái',
@@ -189,6 +189,8 @@ export class ListPhieuchiahangComponent {
     this.initializeColumns();
     this.setupDrawer();
     this.dataSource = new MatTableDataSource(this.Listdonhang());
+    console.log(this.dataSource.data);
+    
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.createFilter();

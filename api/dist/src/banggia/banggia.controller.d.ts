@@ -83,6 +83,7 @@ export declare class BanggiaController {
             title: string;
             slug: string | null;
             order: number | null;
+            title2: string | null;
             masp: string;
             subtitle: string | null;
             giagoc: number;

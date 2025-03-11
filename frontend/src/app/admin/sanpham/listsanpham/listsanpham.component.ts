@@ -45,23 +45,27 @@ export class ListSanphamComponent {
   Detail: any = {};
   displayedColumns: string[] = [
     'title',
+    'title2',
     'masp',
     'giagoc',
     'dvt',
     'soluong',
     'soluongkho',
     'haohut',
+    'subtitle',
     'ghichu',
     'createdAt',
   ];
   ColumnName: any = {
     title: 'Tên Sản Phẩm',
+    title2: 'Tên Sản Phẩm 2',
     masp: 'Mã Sản Phẩm',
     giagoc: 'Giá Gốc',
     dvt: 'Đơn Vị Tính',
     soluong: 'SL',
     soluongkho: 'SL Kho',
     haohut: 'Hao Hụt',
+    subtitle: 'Gợi ý',
     ghichu: 'Ghi Chú',
     createdAt: 'Ngày Tạo'
   };
@@ -257,6 +261,8 @@ export class ListSanphamComponent {
     
     const transformedData = data.map((v: any) => ({
       title: v.title?.trim()||'',
+      title2: v.title2?.trim()||'',
+      subtitle: v.subtitle?.trim()||'',
       masp: v.masp?.trim()||'',
       giagoc: Number(v.giagoc)||0,
       dvt: v.dvt?.trim()||'',
@@ -307,6 +313,8 @@ export class ListSanphamComponent {
   ExportExcel(data:any,title:any) {
     const dulieu = data.map((v: any) => ({
       title: v.title,
+      title2: v.title2,
+      subtitle: v.subtitle,
       masp: v.masp,
       giagoc: v.giagoc,
       dvt: v.dvt,

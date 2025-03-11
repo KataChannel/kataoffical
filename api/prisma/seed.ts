@@ -1,20 +1,27 @@
 import { PrismaClient } from '@prisma/client';
+import * as fs from 'fs';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  const updateCustomers = await prisma.khachhang.updateMany({
-    data: { isActive: true }, // Hoặc true tùy vào nhu cầu
-  });
+async function importData() {
+  const data = JSON.parse(fs.readFileSync('prisma_seed_1741673763846.json', 'utf-8'));
 
-  console.log(`✅ Đã cập nhật ${updateCustomers.count} khách hàng!`);
+  for (const [model, records] of Object.entries(data)) {
+    if (Array.isArray(records) && records.length > 0) {
+      try {
+        await prisma[model.toLowerCase()].createMany({
+          data: records,
+          skipDuplicates: true, // Bỏ qua nếu trùng
+        });
+        console.log(`✅ Đã nhập dữ liệu vào bảng ${model}`);
+      } catch (error) {
+        console.error(`⚠️ Lỗi khi nhập dữ liệu vào bảng ${model}:`, error.message);
+      }
+    }
+  }
+
+  console.log('✅ Hoàn tất nhập dữ liệu!');
+  await prisma.$disconnect();
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Lỗi khi seed dữ liệu:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+importData();

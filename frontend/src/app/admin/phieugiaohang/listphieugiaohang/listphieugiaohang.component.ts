@@ -9,7 +9,7 @@ import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +19,9 @@ import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { DonhangService } from '../../donhang/donhang.service';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import moment from 'moment';
 @Component({
   selector: 'app-listphieugiaohang',
   templateUrl: './listphieugiaohang.component.html',
@@ -37,8 +40,10 @@ import { DonhangService } from '../../donhang/donhang.service';
     MatSelectModule,
     CommonModule,
     FormsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDatepickerModule,
   ],
+  providers: [provideNativeDateAdapter()],
 })
 export class ListPhieugiaohangComponent {
   Detail: any = {};
@@ -82,11 +87,25 @@ export class ListPhieugiaohangComponent {
   _snackBar: MatSnackBar = inject(MatSnackBar);
   isSearch: boolean = false;
   CountItem: any = 0;
-  constructor() {
-    this.displayedColumns.forEach(column => {
-      this.filterValues[column] = '';
-    });
-  }
+  SearchParams: any = {
+      Batdau: moment().format('YYYY-MM-DD'),
+      Ketthuc: moment().add(1, 'day').format('YYYY-MM-DD'),
+      Type: 'donsi',
+      pageSize: 9999,
+      pageNumber: 0,
+    };
+    ListDate: any[] = [
+      { id: 1, Title: '1 Ngày', value: 'day' },
+      { id: 2, Title: '1 Tuần', value: 'week' },
+      { id: 3, Title: '1 Tháng', value: 'month' },
+      { id: 4, Title: '1 Năm', value: 'year' },
+    ];
+    Chonthoigian: any = 'day';
+    constructor() {
+      this.displayedColumns.forEach((column) => {
+        this.filterValues[column] = '';
+      });
+    }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
       const filterObject = JSON.parse(filter);
@@ -125,6 +144,43 @@ export class ListPhieugiaohangComponent {
       this.dataSource.paginator.firstPage();
     }
   }
+    onSelectionChange(event: MatSelectChange): void {
+      const timeFrames: { [key: string]: () => void } = {
+        day: () => {
+          this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
+          this.SearchParams.Ketthuc = moment()
+            .endOf('day')
+            .add(1, 'day')
+            .format('YYYY-MM-DD');
+        },
+        week: () => {
+          this.SearchParams.Batdau = moment()
+            .startOf('week')
+            .format('YYYY-MM-DD');
+          this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
+        },
+        month: () => {
+          this.SearchParams.Batdau = moment()
+            .startOf('month')
+            .format('YYYY-MM-DD');
+          this.SearchParams.Ketthuc = moment()
+            .endOf('month')
+            .format('YYYY-MM-DD');
+        },
+        year: () => {
+          this.SearchParams.Batdau = moment()
+            .startOf('year')
+            .format('YYYY-MM-DD');
+          this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
+        },
+      };
+  
+      timeFrames[event.value]?.();
+      this.ngOnInit();
+    }
+    onDateChange(event: any): void {
+      this.ngOnInit()
+    }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
       key,

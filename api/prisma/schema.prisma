@@ -294,6 +294,7 @@ model PhieuKhoSanpham {
 model Sanpham {
   id        String   @id @default(uuid())
   title     String
+  title2     String?
   slug      String?   @unique
   masp      String   @unique
   subtitle  String? 
