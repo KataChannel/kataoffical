@@ -4,7 +4,7 @@ const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 async function main() {
     const updateCustomers = await prisma.khachhang.updateMany({
-        data: { isActive: true },
+        data: { hiengia: true },
     });
     console.log(`✅ Đã cập nhật ${updateCustomers.count} khách hàng!`);
 }

@@ -154,32 +154,9 @@
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
                     <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
-                      @switch (column) {
-                        @case ('title') {
-                          @if(DetailPhieugiaohang().istitle2){
-
-                          }@else{
-                            <span class="max-w-40 line-clamp-4">
-                              {{ ColumnName[column] }}
-                            </span>
-                          }
-                        }
-                        @case ('title2') {
-                          @if(DetailPhieugiaohang().istitle2){
-                            <span class="max-w-40 line-clamp-4">
-                              {{ ColumnName[column] }}
-                            </span>
-                          }@else{
-                          }
-                        }
-
-                        @default {
-                          <span class="max-w-40 line-clamp-4">
-                            {{ ColumnName[column] }}
-                          </span>
-                          }
-                      }
-
+                      <span class="max-w-40 line-clamp-4">
+                        {{ ColumnName[column] }}
+                      </span>
                     </th>
                     <td mat-cell *matCellDef="let row; let idx = index">
                         @switch (column) {
@@ -285,7 +262,7 @@
           @for (item of DetailPhieugiaohang().sanpham; track item.id; let idx = $index) {
             <tr class="border">
               <td class="border p-2 text-center">{{idx+1}}</td>
-              <td class="border p-2">{{item.title}}</td>
+              <td class="border p-2">{{DetailPhieugiaohang()?.khachhang?.istitle2?item.title2:item.title}}</td>
               <td class="border p-2 text-center">{{item.dvt}}</td>
               <td class="border p-2 text-end max-w-10">{{item.slgiao|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-10">{{item.giaban|number:'1.0-2'}}</td>
