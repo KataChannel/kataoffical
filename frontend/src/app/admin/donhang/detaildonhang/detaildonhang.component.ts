@@ -139,14 +139,19 @@ export class DetailDonhangComponent {
   }
   private async createDonhang() {
     try {
-      this.DetailDonhang.update((v: any) => {
-        v.type = 'donsi';
-        return v;
-      });
-      this.DetailDonhang().sanpham = this.DetailDonhang().sanpham.map((v:any)=>{
-        v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
-        return v;
-      })
+      this.DetailDonhang.update((v: any) => ({
+        ...v,
+        type: 'donsi',
+        status: 'dadat',
+      }));
+      
+      this.DetailDonhang.update((v: any) => ({
+        ...v,
+        sanpham: v.sanpham.map((sp: any) => ({
+          ...sp,
+          ttgiao: Number(sp.slgiao) * Number(sp.giaban) || 0,
+        })),
+      }));
       await this._DonhangService.CreateDonhang(this.DetailDonhang()).then((data)=>{
         console.log(data);  
       })
@@ -164,10 +169,19 @@ export class DetailDonhangComponent {
 
   private async updateDonhang() {
     try {
-      this.DetailDonhang().sanpham = this.DetailDonhang().sanpham.map((v:any)=>{
-        v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
-        return v;
-      })
+      this.DetailDonhang.update((v: any) => ({
+        ...v,
+        type: 'donsi',
+        status: 'dadat',
+      }));
+      
+      this.DetailDonhang.update((v: any) => ({
+        ...v,
+        sanpham: v.sanpham.map((sp: any) => ({
+          ...sp,
+          ttgiao: Number(sp.slgiao) * Number(sp.giaban) || 0,
+        })),
+      }));
       await this._DonhangService.updateDonhang(this.DetailDonhang()).then((data)=>{
         console.log(data);  
       })

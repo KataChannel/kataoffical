@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+const moment = require('moment');
 import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
@@ -62,14 +63,15 @@ export class DonhangService {
   }
 
   async search(params: any) {
-    const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;
+    const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;    
     const result =await this.prisma.donhang.findMany({
       where: {
         ngaygiao: {
-          gte: Batdau ? new Date(Batdau) : undefined,
-          lte: Ketthuc ? new Date(Ketthuc) : undefined,
+          gte: Batdau ? moment(Batdau).startOf('day').toDate() : undefined,
+          lte: Ketthuc ? moment(Ketthuc).endOf('day').toDate() : undefined,
         },
         type: Type,
+        status: Array.isArray(params.Status) ? { in: params.Status } : params.Status,
       },
       include: {
         sanpham: {

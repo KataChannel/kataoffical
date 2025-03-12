@@ -88,11 +88,10 @@ export class ListPhieugiaohangComponent {
   isSearch: boolean = false;
   CountItem: any = 0;
   SearchParams: any = {
-      Batdau: moment().format('YYYY-MM-DD'),
-      Ketthuc: moment().add(1, 'day').format('YYYY-MM-DD'),
+      Batdau: moment().toDate(),
+      Ketthuc: moment().toDate(),
       Type: 'donsi',
-      pageSize: 9999,
-      pageNumber: 0,
+      Status:'dadat'
     };
     ListDate: any[] = [
       { id: 1, Title: '1 Ngày', value: 'day' },
@@ -142,37 +141,37 @@ export class ListPhieugiaohangComponent {
     }
   }
     onSelectionChange(event: MatSelectChange): void {
-      const timeFrames: { [key: string]: () => void } = {
-        day: () => {
-          this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
-          this.SearchParams.Ketthuc = moment()
-            .endOf('day')
-            .add(1, 'day')
-            .format('YYYY-MM-DD');
-        },
-        week: () => {
-          this.SearchParams.Batdau = moment()
-            .startOf('week')
-            .format('YYYY-MM-DD');
-          this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
-        },
-        month: () => {
-          this.SearchParams.Batdau = moment()
-            .startOf('month')
-            .format('YYYY-MM-DD');
-          this.SearchParams.Ketthuc = moment()
-            .endOf('month')
-            .format('YYYY-MM-DD');
-        },
-        year: () => {
-          this.SearchParams.Batdau = moment()
-            .startOf('year')
-            .format('YYYY-MM-DD');
-          this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
-        },
-      };
+      // const timeFrames: { [key: string]: () => void } = {
+      //   day: () => {
+      //     this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
+      //     this.SearchParams.Ketthuc = moment()
+      //       .endOf('day')
+      //       .add(1, 'day')
+      //       .format('YYYY-MM-DD');
+      //   },
+      //   week: () => {
+      //     this.SearchParams.Batdau = moment()
+      //       .startOf('week')
+      //       .format('YYYY-MM-DD');
+      //     this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
+      //   },
+      //   month: () => {
+      //     this.SearchParams.Batdau = moment()
+      //       .startOf('month')
+      //       .format('YYYY-MM-DD');
+      //     this.SearchParams.Ketthuc = moment()
+      //       .endOf('month')
+      //       .format('YYYY-MM-DD');
+      //   },
+      //   year: () => {
+      //     this.SearchParams.Batdau = moment()
+      //       .startOf('year')
+      //       .format('YYYY-MM-DD');
+      //     this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
+      //   },
+      // };
   
-      timeFrames[event.value]?.();
+      // timeFrames[event.value]?.();
       this.ngOnInit();
     }
     onDateChange(event: any): void {

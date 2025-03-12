@@ -54,7 +54,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+          <!-- <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
             <mat-label>Chọn Thời Gian</mat-label>
             <mat-select [(ngModel)]="Chonthoigian" [ngModelOptions]="{standalone: true}"
               (selectionChange)="onSelectionChange($event)">
@@ -62,7 +62,8 @@
               <mat-option [value]="item.value">{{item.Title}}</mat-option>
               }
             </mat-select>
-          </mat-form-field>
+          </mat-form-field> -->
+
           <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
             <mat-label>Bắt Đầu</mat-label>
             <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau" [(ngModel)]="SearchParams.Batdau" [ngModelOptions]="{standalone: true}">

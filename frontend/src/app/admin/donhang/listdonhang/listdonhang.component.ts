@@ -104,8 +104,8 @@ export class ListDonhangComponent {
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   SearchParams: any = {
-    Batdau: moment().format('YYYY-MM-DD'),
-    Ketthuc: moment().add(1, 'day').format('YYYY-MM-DD'),
+    Batdau: moment().toDate(),
+    Ketthuc: moment().toDate(),
     Type: 'donsi',
     pageSize: 9999,
     pageNumber: 0,
@@ -184,6 +184,8 @@ export class ListDonhangComponent {
   async ngOnInit(): Promise<void> {
     await this._DonhangService.searchDonhang(this.SearchParams);
     this.CountItem = this.Listdonhang().length;
+    console.log(this.SearchParams);
+    
     this.initializeColumns();
     this.setupDrawer();
     this.dataSource = new MatTableDataSource(this.Listdonhang());

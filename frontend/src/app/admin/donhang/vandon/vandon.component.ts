@@ -90,7 +90,6 @@ export class VandonComponent {
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
-  Vandon:any = this._DonhangService.ListDonhang;
   dataSource = computed(() => {   
     const ds = new MatTableDataSource(this.Listvandon);
     ds.filterPredicate = this.createFilter();
@@ -102,11 +101,10 @@ export class VandonComponent {
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   SearchParams: any = {
-    Batdau: moment().format('YYYY-MM-DD'),
-    Ketthuc: moment().add(1,'day').format('YYYY-MM-DD'),
+    Batdau: moment().toDate(),
+    Ketthuc: moment().toDate(),
     Type: 'donsi',
-    pageSize: 9999,
-    pageNumber: 1,
+    Status:'dadat'
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -122,27 +120,28 @@ export class VandonComponent {
     });
   }
   onSelectionChange(event: MatSelectChange): void {
-    const timeFrames: { [key: string]: () => void } = {
-      day: () => {
-        this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment().endOf('day').add(1,'day').format('YYYY-MM-DD');
-      },
-      week: () => {
-        this.SearchParams.Batdau = moment().startOf('week').format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
-      },
-      month: () => {
-        this.SearchParams.Batdau = moment().startOf('month').format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment().endOf('month').format('YYYY-MM-DD');
-      },
-      year: () => {
-        this.SearchParams.Batdau = moment().startOf('year').format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
-      },
-    };
+    // const timeFrames: { [key: string]: () => void } = {
+    //   day: () => {
+    //     this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
+    //     this.SearchParams.Ketthuc = moment().endOf('day').add(1,'day').format('YYYY-MM-DD');
+    //   },
+    //   week: () => {
+    //     this.SearchParams.Batdau = moment().startOf('week').format('YYYY-MM-DD');
+    //     this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
+    //   },
+    //   month: () => {
+    //     this.SearchParams.Batdau = moment().startOf('month').format('YYYY-MM-DD');
+    //     this.SearchParams.Ketthuc = moment().endOf('month').format('YYYY-MM-DD');
+    //   },
+    //   year: () => {
+    //     this.SearchParams.Batdau = moment().startOf('year').format('YYYY-MM-DD');
+    //     this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
+    //   },
+    // };
 
-    timeFrames[event.value]?.();
-    this.refresh();
+    // timeFrames[event.value]?.();
+    // this.refresh();
+    this.ngOnInit()
   }
   onDateChange(event: any): void {
     this.ngOnInit()
@@ -170,8 +169,8 @@ export class VandonComponent {
   Listvandon:any[]=[]
   async ngOnInit(): Promise<void> {    
     await this._DonhangService.searchDonhang(this.SearchParams);
-    this.CountItem = this.Vandon().length;
-    this.Listvandon = this.Vandon().flatMap((item:any, index:any) =>
+    this.CountItem = this._DonhangService.ListDonhang().length;
+    this.Listvandon = this._DonhangService.ListDonhang().flatMap((item:any, index:any) =>
       item.sanpham.map((v:any) => ({
         ...v,
         madonhang: item.madonhang,
@@ -182,7 +181,7 @@ export class VandonComponent {
         isActive: item.isActive,
         ngaygiao: item.ngaygiao
       }))
-    ).map((v:any, i:any) => ({ ...v, id: i + 1 }));
+    ).map((v:any, i:any) => ({ ...v, id: i + 1 }));   
     this.dataSource().data = this.Listvandon;
     this.dataSource().paginator = this.paginator
     this.initializeColumns();
