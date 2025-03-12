@@ -199,9 +199,8 @@
                         @case ('slgiao') {
                       <div
                           [contentEditable]="true"
-                          (blur)="updateValue($event,idx, row, 'slgiao','number')"
                           (keydown.enter)="updateValue($event,idx, row, 'slgiao','number')"
-                          class="p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                          class="slgiao-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                         >
                         {{ row[column]||0|number:'1.0-2' }}
                          </div>
@@ -219,8 +218,8 @@
                         @case ('ghichu') {
                       <div
                           [contentEditable]="true"
-                          (blur)="updateValue($event,idx, row, 'ghichu','string')"
-                          class="p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                          (keydown.enter)="updateValue($event,idx, row, 'ghichu','string')"
+                          class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                         >
                         {{ row[column]||'' }}
                          </div>

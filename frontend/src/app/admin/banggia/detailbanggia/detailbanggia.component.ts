@@ -128,7 +128,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
     ngAfterViewInit() {
       setTimeout(() => {
         if (this.paginator) {
-          this.dataSource().paginator = this.paginator;
+          //this.dataSource().paginator = this.paginator;
           this.dataSource().sort = this.sort;
         }
       }, 300);
@@ -220,15 +220,51 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
       const newValue = type === 'number' 
       ? Number((event.target as HTMLElement).innerText.trim().replace(/[^0-9]/g, '')) || 0 
       : (event.target as HTMLElement).innerText.trim();
-
+      const keyboardEvent = event as KeyboardEvent;
+      if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
+        event.preventDefault();
+      }
+      if (type === "number") {
+        const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+        
+        // Chặn nếu không phải số và không thuộc danh sách phím cho phép
+        if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
+          event.preventDefault();
+        }
+      } 
       this.DetailBanggia.update((v: any) => {
       if (index !== null) {
+        if (field === 'giaban') {
         v.sanpham[index][field] = newValue;
+        const inputs = document.querySelectorAll('.giaban-input')as NodeListOf<HTMLInputElement>;
+          if (index < this.dataSource().filteredData.length - 1) {
+            const nextInput = inputs[index + 1]as HTMLInputElement
+            if (nextInput) {
+              if (nextInput instanceof HTMLInputElement) {
+                nextInput.focus();
+                nextInput.select();
+              }
+              // Then select text using a different method that works on more element types
+              setTimeout(() => {
+                if (document.createRange && window.getSelection) {
+                  const range = document.createRange();
+                  range.selectNodeContents(nextInput);
+                  const selection = window.getSelection();
+                  selection?.removeAllRanges();
+                  selection?.addRange(range);
+                }
+              }, 10);
+            }
+          }
+        }
       } else {
         v[field] = newValue;
       }
       return v;
       });
+
+
+
 
       console.log(element, field, newValue);
       console.log('Dữ liệu đã cập nhật:', this.DetailBanggia());
@@ -252,7 +288,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
           return v;
         })
         this.dataSource().data = this.DetailBanggia().sanpham;
-        this.dataSource().paginator = this.paginator;
+        //this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;
         this.reloadfilter();
       }
@@ -280,7 +316,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
           return v;
         })
         this.dataSource().data = this.DetailBanggia().sanpham;
-        this.dataSource().paginator = this.paginator;
+        //this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;
       }
       RemoveSanpham(item:any){
@@ -290,7 +326,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
           return v;
         })
         this.dataSource().data = this.DetailBanggia().sanpham;
-        this.dataSource().paginator = this.paginator;
+        //this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;
       }
       DoFindSanpham(event:any){
@@ -426,7 +462,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
           return v;
         })       
         this.dataSource().data = this.DetailBanggia().sanpham;
-        this.dataSource().paginator = this.paginator;
+        //this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;             
          this._snackBar.open('Cập Nhật Thành Công', '', {
                 duration: 1000,
@@ -463,7 +499,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         {
           this.ListFilter = this.filterSanpham;
           this.dataSource().data = this.filterSanpham;
-          this.dataSource().paginator = this.paginator;
+          //this.dataSource().paginator = this.paginator;
           this.dataSource().sort = this.sort;
         }
         EmptyFiter()
@@ -478,7 +514,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         {    
       
           this.dataSource().data = this.filterSanpham.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
-          this.dataSource().paginator = this.paginator;
+          //this.dataSource().paginator = this.paginator;
           this.dataSource().sort = this.sort;
           menu.closeMenu();
         }

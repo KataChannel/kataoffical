@@ -238,12 +238,53 @@ export class DetailPhieugiaohangComponent {
       type === 'number'
         ? Number((event.target as HTMLElement).innerText.trim()) || 0
         : (event.target as HTMLElement).innerText.trim();
-  
-    this.DetailPhieugiaohang.update((v: any) => {
+        const keyboardEvent = event as KeyboardEvent;
+        if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
+          event.preventDefault();
+        }
+        if (type === "number") {
+          const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+          
+          // Chặn nếu không phải số và không thuộc danh sách phím cho phép
+          if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
+            event.preventDefault();
+          }
+        }
+        console.log(type);
+        
+
+        this.DetailPhieugiaohang.update((v: any) => {
       if (index !== null) {
         if (field === 'sldat') {
           v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
-        } else if (field === 'slgiao') {
+        }   
+        else if (field === 'ghichu') {
+          console.log(index,field,newValue);
+          
+          v.sanpham[index]['ghichu'] = newValue;
+          const inputs = document.querySelectorAll('.ghichu-input')as NodeListOf<HTMLInputElement>;
+              if (index < this.dataSource().filteredData.length - 1) {
+                const nextInput = inputs[index + 1]as HTMLInputElement
+                if (nextInput) {
+                  if (nextInput instanceof HTMLInputElement) {
+                    nextInput.focus();
+                    nextInput.select();
+                  }
+                  // Then select text using a different method that works on more element types
+                  setTimeout(() => {
+                    if (document.createRange && window.getSelection) {
+                      const range = document.createRange();
+                      range.selectNodeContents(nextInput);
+                      const selection = window.getSelection();
+                      selection?.removeAllRanges();
+                      selection?.addRange(range);
+                    }
+                  }, 10);
+                }
+           }
+        } 
+        
+        else if (field === 'slgiao') {
           const newGiao = newValue
           // if (newGiao < v.sanpham[index]['sldat']) {
           //   // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
@@ -257,6 +298,26 @@ export class DetailPhieugiaohangComponent {
           // } else {
             v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newGiao;
             v.sanpham[index]['ttgiao']=v.sanpham[index]['slgiao']*v.sanpham[index]['giaban']
+            const inputs = document.querySelectorAll('.slgiao-input')as NodeListOf<HTMLInputElement>;
+            if (index < this.dataSource().filteredData.length - 1) {
+              const nextInput = inputs[index + 1]as HTMLInputElement
+              if (nextInput) {
+                if (nextInput instanceof HTMLInputElement) {
+                  nextInput.focus();
+                  nextInput.select();
+                }
+                // Then select text using a different method that works on more element types
+                setTimeout(() => {
+                  if (document.createRange && window.getSelection) {
+                    const range = document.createRange();
+                    range.selectNodeContents(nextInput);
+                    const selection = window.getSelection();
+                    selection?.removeAllRanges();
+                    selection?.addRange(range);
+                  }
+                }, 10);
+              }
+            }
           // }
         } else {
           v.sanpham[index][field] = newValue;
@@ -265,16 +326,7 @@ export class DetailPhieugiaohangComponent {
         v[field] = newValue;
       }
       return v;
-    });
-  
-    // CẬP NHẬT LẠI UI BẰNG CÁCH SET NỘI DUNG CHO `contentEditable`
-    setTimeout(() => {
-      if(index !== null){
-      (event.target as HTMLElement).innerText = this.DetailPhieugiaohang()?.sanpham[index]?.slgiao || '0';
-      }
-    }, 0);
-    
-    console.log(this.DetailPhieugiaohang());
+    });    
   }
   GiaoDonhang()
   {

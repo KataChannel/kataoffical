@@ -194,9 +194,9 @@
                     @case ('giaban') {
                   <div *ngIf="isEdit()"
                       [contentEditable]="true"
-                      (blur)="updateValue($event,idx, row, 'giaban','number')"
-                      class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
-                    >
+                      (keydown.enter)="updateValue($event,idx, row, 'giaban','number')"
+                      class="giaban-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                      >
                     {{ row[column]||0|number:'1.0-2' }}
                      </div>
                      <span *ngIf="!isEdit()" class="max-w-20 line-clamp-4">
@@ -223,7 +223,7 @@
                 <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
             </tr>
         </table>
-        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+        <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
     </div>
     }
 

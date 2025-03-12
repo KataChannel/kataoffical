@@ -72,7 +72,6 @@ export class DetailDonhangComponent {
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   @ViewChild('searchInput') searchInput!: ElementRef;
-  @ViewChildren('sldatInput') sldatInputs!: QueryList<ElementRef>;
   constructor() {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
@@ -286,24 +285,71 @@ export class DetailDonhangComponent {
       type === 'number'
         ? Number((event.target as HTMLElement).innerText.trim()) || 0
         : (event.target as HTMLElement).innerText.trim();
+        const keyboardEvent = event as KeyboardEvent;
+        if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
+          event.preventDefault();
+        }
+        if (type === "number") {
+          const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+          
+          // Chặn nếu không phải số và không thuộc danh sách phím cho phép
+          if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
+            event.preventDefault();
+          }
+        } 
     this.DetailDonhang.update((v: any) => {
       if (index !== null) {
         if (field === 'sldat') {
           v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
           // Find the next input to focus on
-          const inputs = this.sldatInputs.toArray();
-          console.log(inputs);
-          if(index !== null)
-          {
-            if (index < this.dataSource().filteredData.length - 1) {
-             setTimeout(() => {
-              const inputElement = inputs[index + 1].nativeElement as HTMLInputElement;
-              inputElement.focus();
-            });
-            }
-          }
+          const inputs = document.querySelectorAll('.sldat-input')as NodeListOf<HTMLInputElement>;
+              if (index < this.dataSource().filteredData.length - 1) {
+                const nextInput = inputs[index + 1]as HTMLInputElement
+                if (nextInput) {
+                  if (nextInput instanceof HTMLInputElement) {
+                    nextInput.focus();
+                    nextInput.select();
+                  }
+                  // Then select text using a different method that works on more element types
+                  setTimeout(() => {
+                    if (document.createRange && window.getSelection) {
+                      const range = document.createRange();
+                      range.selectNodeContents(nextInput);
+                      const selection = window.getSelection();
+                      selection?.removeAllRanges();
+                      selection?.addRange(range);
+                    }
+                  }, 10);
+                }
+              }
 
-        } else if (field === 'slgiao') {
+        } 
+        else if (field === 'ghichu') {
+          v.sanpham[index][field] = newValue;
+          // Find the next input to focus on
+          const inputs = document.querySelectorAll('.ghichu-input')as NodeListOf<HTMLInputElement>;
+              if (index < this.dataSource().filteredData.length - 1) {
+                const nextInput = inputs[index + 1]as HTMLInputElement
+                if (nextInput) {
+                  if (nextInput instanceof HTMLInputElement) {
+                    nextInput.focus();
+                    nextInput.select();
+                  }
+                  // Then select text using a different method that works on more element types
+                  setTimeout(() => {
+                    if (document.createRange && window.getSelection) {
+                      const range = document.createRange();
+                      range.selectNodeContents(nextInput);
+                      const selection = window.getSelection();
+                      selection?.removeAllRanges();
+                      selection?.addRange(range);
+                    }
+                  }, 10);
+                }
+              }
+        } 
+        
+        else if (field === 'slgiao') {
           const newGiao = newValue
           if (newGiao < v.sanpham[index]['sldat']) {
             // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
