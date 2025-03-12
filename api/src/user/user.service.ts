@@ -24,33 +24,72 @@ export class UserService {
     return this.prisma.user.findMany();
   }
   async findAll() {
-    return this.prisma.user.findMany();
-  }
-
-
-
+    const users = await this.prisma.user.findMany({
+      include: {
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: { include: { permission: true } },
+              },
+            },
+          },
+        },
+      },
+    });
   
+    return users.map(({ password, roles, ...userWithoutPassword }) => ({
+      ...userWithoutPassword,
+      roles: roles.map(({ role }) => {
+        const { permissions, ...roleWithoutPermissions } = role;
+        return roleWithoutPermissions;
+      }),
+      permissions: Array.from(
+        new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission)))
+      ),
+    }));
+  }
+   
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
-        roles: { include: { role: { include: { permissions: {include:{permission:true}} } } } },
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: { include: { permission: true } },
+              },
+            },
+          },
+        },
       },
+    }); 
+    if (!user) throw new NotFoundException('User not found');
+    // Loại bỏ password một cách an toàn bằng destructuring
+    const { password, roles, ...userWithoutPassword } = user; 
+    // Lấy danh sách role nhưng bỏ đi permissions
+    const formattedRoles = roles.map(({ role }) => {
+      const { permissions, ...roleWithoutPermissions } = role;
+      return roleWithoutPermissions;
     });
-    if (!user) throw new NotFoundException('user not found');
+    // Lấy danh sách permissions duy nhất
+    const permissions = Array.from(
+      new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission)))
+    ); 
     return {
-      ...user,
-      roles: user.roles.map((role) => {
-        const { permissions, ...rest } = role.role;
-        return rest;
-      }),
-      permissions: Array.from(new Set(user.roles.flatMap((role) => role.role.permissions.map((p) => p.permission)))),
+      ...userWithoutPassword,
+      roles: formattedRoles,
+      permissions,
     };
   }
+  
+  
 
   async update(id: string, data: any) {
     this._SocketGateway.senduserUpdate();
     delete data.roles;
+    delete data.permissions;
     return this.prisma.user.update({ where: { id }, data });
   }
 

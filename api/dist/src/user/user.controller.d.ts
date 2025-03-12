@@ -16,13 +16,25 @@ export declare class UserController {
         providerId: string | null;
     }>;
     findAll(): Promise<{
+        roles: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
+        permissions: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+        }[];
         id: string;
         email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         SDT: string | null;
-        password: string;
         provider: string | null;
         providerId: string | null;
     }[]>;
@@ -46,7 +58,6 @@ export declare class UserController {
         createdAt: Date;
         updatedAt: Date;
         SDT: string | null;
-        password: string;
         provider: string | null;
         providerId: string | null;
     }>;
@@ -80,7 +91,6 @@ export declare class UserController {
         createdAt: Date;
         updatedAt: Date;
         SDT: string | null;
-        password: string;
         provider: string | null;
         providerId: string | null;
     }>;
