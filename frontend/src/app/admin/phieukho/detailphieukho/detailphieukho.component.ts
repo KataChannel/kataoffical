@@ -33,7 +33,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
       MatSlideToggleModule,
       MatDatepickerModule
     ],
-    providers:[provideNativeDateAdapter()],
+    // providers:[provideNativeDateAdapter()],
     templateUrl: './detailphieukho.component.html',
     styleUrl: './detailphieukho.component.scss'
   })

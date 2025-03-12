@@ -20,6 +20,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
 import { PhieukhoService } from '../phieukho/phieukho.service';
 import { KhoService } from '../kho/kho.service';
+import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
 @Component({
   selector: 'app-xuatnhapton',
   templateUrl: './xuatnhapton.component.html',
@@ -41,7 +42,7 @@ import { KhoService } from '../kho/kho.service';
     MatTooltipModule,
     MatDatepickerModule
   ],
-  providers:[provideNativeDateAdapter()]
+  // providers:[provideNativeDateAdapter()]
 })
 export class XuatnhaptonComponent {
   Detail: any = {};
@@ -236,7 +237,7 @@ export class XuatnhaptonComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Xuatnhapton().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    this.dataSource.filteredData = this.Xuatnhapton().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   trackByFn(index: number, item: any): any {

@@ -173,7 +173,7 @@
 //     return uniqueList
 //   }
 //   doFilterHederColumn(event: any, column: any): void {
-//     this.dataSource.filteredData = this.Listphieugiaohang().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+//     this.dataSource.filteredData = this.Listphieugiaohang().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
 //     const query = event.target.value.toLowerCase();
 //     console.log(query,column);
 //     console.log(this.dataSource.filteredData);   

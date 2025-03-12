@@ -58,7 +58,7 @@ import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.
     MatSortModule,
     MatPaginatorModule,
   ],
-  providers: [provideNativeDateAdapter()],
+  // providers: [provideNativeDateAdapter()],
   templateUrl: './detaildonhang.component.html',
   styleUrl: './detaildonhang.component.scss',
 })

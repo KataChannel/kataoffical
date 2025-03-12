@@ -52,7 +52,7 @@ import { ListcongnokhachhangComponent } from '../listcongnokhachhang/listcongnok
       MatSortModule,
       MatPaginatorModule,
     ],
-    providers: [provideNativeDateAdapter()],
+    // providers: [provideNativeDateAdapter()],
     selector: 'app-detailcongnokhachhang',
     templateUrl: './detailcongnokhachhang.component.html',
     styleUrl: './detailcongnokhachhang.component.scss'

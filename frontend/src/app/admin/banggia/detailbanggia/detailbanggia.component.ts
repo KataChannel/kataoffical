@@ -43,7 +43,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
       MatTableModule,
       MatMenuModule
     ],
-    providers: [provideNativeDateAdapter()],
+    // providers: [provideNativeDateAdapter()],
     templateUrl: './detailbanggia.component.html',
     styleUrl: './detailbanggia.component.scss',
   })

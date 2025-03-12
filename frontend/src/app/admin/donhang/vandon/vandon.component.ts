@@ -22,6 +22,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 @Component({
   selector: 'app-vandon',
   templateUrl: './vandon.component.html',
@@ -43,7 +44,7 @@ import moment from 'moment';
     MatTooltipModule,
     MatDatepickerModule
   ],
-  providers:[provideNativeDateAdapter()]
+  // providers:[provideNativeDateAdapter()]
 })
 export class VandonComponent {
   Detail: any = {};
@@ -93,7 +94,7 @@ export class VandonComponent {
   dataSource = computed(() => {   
     const ds = new MatTableDataSource(this.Listvandon);
     ds.filterPredicate = this.createFilter();
-    ds.paginator = this.paginator;
+    //ds.paginator = this.paginator;
     ds.sort = this.sort;
     return ds;
   });
@@ -355,7 +356,7 @@ export class VandonComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource().filteredData = this.Listvandon.filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    this.dataSource().filteredData = this.Listvandon.filter((v: any) => removeVietnameseAccents(v[column]).toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   trackByFn(index: number, item: any): any {
@@ -395,7 +396,7 @@ export class VandonComponent {
   {
     this.ListFilter = this.Listvandon;
     this.dataSource().data = this.Listvandon;
-    this.dataSource().paginator = this.paginator;
+    //this.dataSource().paginator = this.paginator;
     this.dataSource().sort = this.sort;
   }
   EmptyFiter()
@@ -409,7 +410,7 @@ export class VandonComponent {
   ApplyFilterColum(menu:any)
   {    
     this.dataSource().data = this.Listvandon.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
-    this.dataSource().paginator = this.paginator;
+    //this.dataSource().paginator = this.paginator;
     this.dataSource().sort = this.sort;
     menu.closeMenu();
   }

@@ -39,6 +39,7 @@ import moment from 'moment';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
 import { DonhangService } from '../../donhang/donhang.service';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 @Component({
   selector: 'app-listcongnokhachhang',
   templateUrl: './listcongnokhachhang.component.html',
@@ -61,7 +62,7 @@ import { DonhangService } from '../../donhang/donhang.service';
     MatDatepickerModule,
     MatDialogModule,
   ],
-  providers: [provideNativeDateAdapter()],
+  // providers: [provideNativeDateAdapter()],
 })
 export class ListcongnokhachhangComponent {
   Detail: any = {};
@@ -273,7 +274,7 @@ export class ListcongnokhachhangComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]

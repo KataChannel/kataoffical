@@ -54,7 +54,7 @@ import { DonhangService } from '../../donhang/donhang.service';
     MatSortModule,
     MatPaginatorModule,
   ],
-  providers: [provideNativeDateAdapter()],
+  // providers: [provideNativeDateAdapter()],
   templateUrl: './detailphieugiaohang.component.html',
   styleUrl: './detailphieugiaohang.component.scss',
 })
@@ -249,9 +249,7 @@ export class DetailPhieugiaohangComponent {
           if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
             event.preventDefault();
           }
-        }
-        console.log(type);
-        
+        } 
 
         this.DetailPhieugiaohang.update((v: any) => {
       if (index !== null) {

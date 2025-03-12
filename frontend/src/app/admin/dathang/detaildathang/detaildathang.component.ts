@@ -53,7 +53,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
     MatSortModule,
     MatPaginatorModule,
   ],
-  providers: [provideNativeDateAdapter()],
+  // providers: [provideNativeDateAdapter()],
   templateUrl: './detaildathang.component.html',
   styleUrl: './detaildathang.component.scss',
 })

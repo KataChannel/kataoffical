@@ -60,7 +60,7 @@ import { UserService } from '../../../user/user.service';
     MatDatepickerModule,
     NgxFileDropModule,
   ],
-  providers: [provideNativeDateAdapter()],
+  // providers: [provideNativeDateAdapter()],
 })
 export class DetailHotroComponent {
   Detail: any = {};
