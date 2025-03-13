@@ -52,7 +52,7 @@ exports.AppModule = AppModule = __decorate([
             phieukho_module_1.PhieukhoModule,
             role_module_1.RoleModule,
             permission_module_1.PermissionModule,
-            googledrive_module_1.GoogledriveModule
+            googledrive_module_1.GoogledriveModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

@@ -31,11 +31,11 @@ export declare class KhachhangService {
             createdAt: Date;
             updatedAt: Date;
             title: string | null;
-            order: number | null;
             mabanggia: string | null;
             type: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
+            order: number | null;
             status: string | null;
         }[];
     } & {

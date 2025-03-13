@@ -317,3 +317,17 @@ model Sanpham {
   SanphamKho SanphamKho[]
   PhieuKhoSanpham PhieuKhoSanpham[]
 }
+model ChatAIMessage {
+  id        String  @id @default(uuid())
+  userId    String
+  message   String
+  reply     String
+  createdAt DateTime @default(now())
+}
+model ChatAIHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  message   String
+  sender    String   // 'user' hoặc 'bot'
+  createdAt DateTime @default(now())
+}

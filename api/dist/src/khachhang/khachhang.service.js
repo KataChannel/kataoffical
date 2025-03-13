@@ -17,18 +17,27 @@ let KhachhangService = class KhachhangService {
         this.prisma = prisma;
     }
     async create(data) {
-        const prefix = data.loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
-        const lastCustomer = await this.prisma.khachhang.findFirst({
-            where: { makh: { startsWith: prefix } },
-            orderBy: { makh: 'desc' },
-            select: { makh: true },
+        const existingCustomer = await this.prisma.khachhang.findUnique({
+            where: { makh: data.makh },
         });
-        let nextNumber = 1;
-        if (lastCustomer) {
-            const lastNumber = parseInt(lastCustomer.makh.slice(-5), 10);
-            nextNumber = lastNumber + 1;
+        if (existingCustomer) {
+            return existingCustomer;
         }
-        const newMakh = `${prefix}${String(nextNumber).padStart(5, '0')}`;
+        let newMakh = data.makh;
+        if (!newMakh) {
+            const prefix = data.loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
+            const lastCustomer = await this.prisma.khachhang.findFirst({
+                where: { makh: { startsWith: prefix } },
+                orderBy: { makh: 'desc' },
+                select: { makh: true },
+            });
+            let nextNumber = 1;
+            if (lastCustomer) {
+                const lastNumber = parseInt(lastCustomer.makh.slice(-5), 10);
+                nextNumber = lastNumber + 1;
+            }
+            newMakh = `${prefix}${String(nextNumber).padStart(5, '0')}`;
+        }
         return this.prisma.khachhang.create({
             data: {
                 makh: newMakh,

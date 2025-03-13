@@ -19,6 +19,7 @@ import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
 import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
 import { GoogledriveModule } from './shared/googledrive/googledrive.module';
+import { ChatbotModule } from './chatbot/chatbot.module';
 
 @Module({
   imports: [
@@ -37,7 +38,8 @@ import { GoogledriveModule } from './shared/googledrive/googledrive.module';
     PhieukhoModule,
     RoleModule,
     PermissionModule,
-    GoogledriveModule
+    GoogledriveModule,
+    // ChatbotModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

@@ -21,8 +21,8 @@ export declare class DathangService {
         ghichu: string | null;
         isActive: boolean;
         title: string | null;
-        order: number | null;
         type: string | null;
+        order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string;
@@ -42,8 +42,8 @@ export declare class DathangService {
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            slug: string | null;
             order: number | null;
+            slug: string | null;
             title2: string | null;
             masp: string;
             subtitle: string | null;
@@ -70,8 +70,8 @@ export declare class DathangService {
         ghichu: string | null;
         isActive: boolean;
         title: string | null;
-        order: number | null;
         type: string | null;
+        order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string;
@@ -96,8 +96,8 @@ export declare class DathangService {
         ghichu: string | null;
         isActive: boolean;
         title: string | null;
-        order: number | null;
         type: string | null;
+        order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string;
@@ -122,8 +122,8 @@ export declare class DathangService {
         ghichu: string | null;
         isActive: boolean;
         title: string | null;
-        order: number | null;
         type: string | null;
+        order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string;
@@ -133,8 +133,8 @@ export declare class DathangService {
         ghichu: string | null;
         isActive: boolean;
         title: string | null;
-        order: number | null;
         type: string | null;
+        order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string;

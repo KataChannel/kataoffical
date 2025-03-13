@@ -267,33 +267,33 @@ export class ListKhachhangComponent {
     
     const transformedData = data.map((v: any) => ({
       name: v.name?.trim()||'',
-      mancc: v.mancc?.trim()||'',
+      makh: v.makh?.trim()||'',
       sdt: v.sdt?.trim()||'',
       diachi: v.diachi?.trim()||'',
       ghichu: v.ghichu?.trim()||'',
    }));
-   // Filter out duplicate mancc values
+   // Filter out duplicate makh values
    const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
       index === self.findIndex((t:any) => (
-        t.mancc === value.mancc
+        t.makh === value.makh
       ))
    )
-    const listId2 = uniqueData.map((v: any) => v.mancc);
-    const listId1 = this._KhachhangService.ListKhachhang().map((v: any) => v.mancc);
+    const listId2 = uniqueData.map((v: any) => v.makh);
+    const listId1 = this._KhachhangService.ListKhachhang().map((v: any) => v.makh);
     const listId3 = listId2.filter((item:any) => !listId1.includes(item));
     const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.mancc === v.mancc);
+        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.makh === v.makh);
         if (item) {
           const item1 = { ...item, ...v };
-          await this._KhachhangService.updateKhachhang(item1);
+          // await this._KhachhangService.updateKhachhang(item1);
         }
         else{
           await this._KhachhangService.CreateKhachhang(v);
         }
       });
      const disableItem = listId3.map(async (v: any) => {
-        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.mancc === v);
-        item.isActive = false;
+        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.makh === v);
+        // item.isActive = false;
         await this._KhachhangService.updateKhachhang(item);
       });
       Promise.all([...createuppdateitem, ...disableItem]).then(() => {
