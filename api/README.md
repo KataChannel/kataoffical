@@ -5,6 +5,7 @@ npx bun prisma migrate dev --name rau2.2.5
 npx prisma db push
 npx bun prisma generate
 npx ts-node prisma/exportData.ts
+npx ts-node prisma/backup.ts
 
 
 npx prisma db seed
@@ -20,7 +21,7 @@ npx katacreate --type nestjs --name kho --outputDir kho
 npx katacreate --type nestjs --name phieukho --outputDir phieukho
 npx katacreate --type nestjs --name role --outputDir role
 npx katacreate --type nestjs --name permission --outputDir permission
-npx katacreate --type nestjs --name nhomkhachhang --outputDir nhomkhachhang
+npx katacreate --type nestjs --name googledrive --outputDir googledrive
 
 
 Tình huống	Lệnh cần chạy

@@ -27,7 +27,27 @@ let UserService = class UserService {
         });
     }
     async getUsers() {
-        return this.prisma.user.findMany();
+        const users = await this.prisma.user.findMany({
+            include: {
+                roles: {
+                    include: {
+                        role: {
+                            include: {
+                                permissions: { include: { permission: true } },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        return users.map(({ password, roles, ...userWithoutPassword }) => ({
+            ...userWithoutPassword,
+            roles: roles.map(({ role }) => {
+                const { permissions, ...roleWithoutPermissions } = role;
+                return roleWithoutPermissions;
+            }),
+            permissions: Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission)))),
+        }));
     }
     async findAll() {
         const users = await this.prisma.user.findMany({
@@ -92,7 +112,6 @@ let UserService = class UserService {
     }
     async assignRoleToUser(data) {
         const { userId, roleId } = data;
-        console.log(data);
         const role = await this.prisma.user.findUnique({
             where: { id: userId },
         });

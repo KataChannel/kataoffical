@@ -39,19 +39,29 @@ export class SanphamService {
     return `I1${nextNumber.toString().padStart(5, '0')}`;
   }
   async create(data: any) {
+    // Check if the masp already exists in the database
+    const existingSanpham = await this.prisma.sanpham.findUnique({
+      where: { masp: data.masp },
+    });
+
+    if (existingSanpham) {
+      // If masp already exists, return the existing entry
+      return existingSanpham;
+    }
+
     let newOrder: number;
     const maxOrder = await this.prisma.sanpham.aggregate({
       _max: { order: true },
     });
     newOrder = (maxOrder._max?.order || 0) + 1;
+
     // Create the new sanpham entry
     this._SocketGateway.sendSanphamUpdate();
-    const masp = await this.generateMaSP();
+    data.masp = data.masp ? data.masp : await this.generateMaSP();
     return this.prisma.sanpham.create({
       data: {
         ...data,
         order: newOrder,
-        masp:masp,
       },
     });
   }

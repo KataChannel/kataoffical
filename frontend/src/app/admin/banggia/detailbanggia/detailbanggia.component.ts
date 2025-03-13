@@ -279,7 +279,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         };
        const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
        const data = ConvertDriveData(result.values);
-      this.DoImportData(data);
+       this.DoImportData(data);
       }
       AddSanpham(){}
       EmptyCart(){

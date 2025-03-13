@@ -40,18 +40,23 @@ let SanphamService = class SanphamService {
         return `I1${nextNumber.toString().padStart(5, '0')}`;
     }
     async create(data) {
+        const existingSanpham = await this.prisma.sanpham.findUnique({
+            where: { masp: data.masp },
+        });
+        if (existingSanpham) {
+            return existingSanpham;
+        }
         let newOrder;
         const maxOrder = await this.prisma.sanpham.aggregate({
             _max: { order: true },
         });
         newOrder = (maxOrder._max?.order || 0) + 1;
         this._SocketGateway.sendSanphamUpdate();
-        const masp = await this.generateMaSP();
+        data.masp = data.masp ? data.masp : await this.generateMaSP();
         return this.prisma.sanpham.create({
             data: {
                 ...data,
                 order: newOrder,
-                masp: masp,
             },
         });
     }

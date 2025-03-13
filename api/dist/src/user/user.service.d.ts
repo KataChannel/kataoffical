@@ -16,13 +16,25 @@ export declare class UserService {
         providerId: string | null;
     }>;
     getUsers(): Promise<{
+        roles: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
+        permissions: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+        }[];
         id: string;
         email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         SDT: string | null;
-        password: string;
         provider: string | null;
         providerId: string | null;
     }[]>;
