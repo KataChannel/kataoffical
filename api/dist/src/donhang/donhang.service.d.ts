@@ -62,9 +62,10 @@ export declare class DonhangService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                title: string;
+                title: string | null;
                 order: number | null;
-                type: string;
+                mabanggia: string | null;
+                type: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
                 status: string | null;
@@ -147,9 +148,10 @@ export declare class DonhangService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                title: string;
+                title: string | null;
                 order: number | null;
-                type: string;
+                mabanggia: string | null;
+                type: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
                 status: string | null;

@@ -20,6 +20,7 @@ import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import moment from 'moment';
 @Component({
   selector: 'app-listbanggia',
   templateUrl: './listbanggia.component.html',
@@ -242,47 +243,49 @@ export class ListBanggiaComponent {
   async LoadDrive() {
     const DriveInfo = {
       IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'BGImport',
+      SheetName: 'DSBanggiaImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
    const data = ConvertDriveData(result.values);
-   console.log(data);
-   this.DoImportData(data);
+  this.DoImportData(data);
   }
   DoImportData(data:any)
   {
     console.log(data);
     
     const transformedData = data.map((v: any) => ({
-      name: v.name?.trim()||'',
-      mancc: v.mancc?.trim()||'',
-      sdt: v.sdt?.trim()||'',
-      diachi: v.diachi?.trim()||'',
+      mabanggia: v.mabanggia?.trim()||'',
+      title: v.title?.trim()||'',
+      batdau: moment(v.batdau,"DD/MM/YYYY").toDate()||moment().toDate(),
+      ketthuc: moment(v.ketthuc,"DD/MM/YYYY").toDate()||moment().toDate(),
       ghichu: v.ghichu?.trim()||'',
+      status: v.status?.trim()||'',
    }));
-   // Filter out duplicate mancc values
+   console.log(transformedData);
+   
+   // Filter out duplicate mabanggia values
    const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
       index === self.findIndex((t:any) => (
-        t.mancc === value.mancc
+        t.mabanggia === value.mabanggia
       ))
    )
-    const listId2 = uniqueData.map((v: any) => v.mancc);
-    const listId1 = this._BanggiaService.ListBanggia().map((v: any) => v.mancc);
+    const listId2 = uniqueData.map((v: any) => v.mabanggia);
+    const listId1 = this._BanggiaService.ListBanggia().map((v: any) => v.mabanggia);
     const listId3 = listId2.filter((item:any) => !listId1.includes(item));
     const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._BanggiaService.ListBanggia().find((v1) => v1.mancc === v.mancc);
+        const item = this._BanggiaService.ListBanggia().find((v1) => v1.mabanggia === v.mabanggia);
         if (item) {
           const item1 = { ...item, ...v };
-          await this._BanggiaService.updateBanggia(item1);
+          // await this._BanggiaService.updateBanggia(item1);
         }
         else{
           await this._BanggiaService.CreateBanggia(v);
         }
       });
      const disableItem = listId3.map(async (v: any) => {
-        const item = this._BanggiaService.ListBanggia().find((v1) => v1.mancc === v);
-        item.isActive = false;
+        const item = this._BanggiaService.ListBanggia().find((v1) => v1.mabanggia === v);
+        // item.isActive = false;
         await this._BanggiaService.updateBanggia(item);
       });
       Promise.all([...createuppdateitem, ...disableItem]).then(() => {
