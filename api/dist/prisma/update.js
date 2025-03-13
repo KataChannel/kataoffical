@@ -16,4 +16,4 @@ main()
     .finally(async () => {
     await prisma.$disconnect();
 });
-//# sourceMappingURL=UpdateDb.js.map
+//# sourceMappingURL=update.js.map

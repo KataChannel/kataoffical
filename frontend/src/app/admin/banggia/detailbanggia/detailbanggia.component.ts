@@ -63,7 +63,6 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
       'title',
       'masp',
       'dvt',
-      'giagoc',
       'giaban',
     ];
     ColumnName: any = {
@@ -71,7 +70,6 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
       title: 'Tiêu Đề',
       masp: 'Mã SP',
       dvt: 'Đơn Vị Tính',
-      giagoc: 'Giá Gốc',
       giaban: 'Giá Bán',
     };
     dataSource = signal(new MatTableDataSource<any>([]));
