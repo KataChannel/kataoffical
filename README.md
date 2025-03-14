@@ -22,12 +22,14 @@ docker compose up --no-recreate -d
 docker compose down
 docker exec -it 718c1476fbfa5c668913f7fa553aed3bb5fad70995f90e6f70a3e806bf61e502 sh
 
-docker exec -it berausach-1 sh
+docker exec -it rausach-berausach-1 sh
+docker exec -it rausach-berausach-1 /bin/bash
 
 docker exec -it fullstack-postgres-1 psql -U postgres -d mydb
 
 docker exec -it rausach-postgres-1 psql -U postgres
 docker inspect rausach-postgres-1 | grep POSTGRES
+docker inspect rausach-berausach-1 | grep POSTGRES
 docker inspect rausach-berausach-1 | grep POSTGRES
 docker exec -it rausach-postgres-1 cat /var/lib/postgresql/data/pg_hba.conf
 docker cp rausach-postgres-1:/var/lib/postgresql/data/pg_hba.conf .
