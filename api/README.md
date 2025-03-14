@@ -62,3 +62,42 @@ model Giohang {
   isActive  Boolean  @default(false)
   sanpham   Giohangsanpham[]
 }
+
+Tạo Index Full-Text Search
+ALTER TABLE Khachhang ADD COLUMN search_vector tsvector;
+UPDATE Khachhang 
+SET search_vector = to_tsvector('simple', name || ' ' || namenn || ' ' || diachi || ' ' || makh || ' ' || sdt  );
+CREATE INDEX search_vector_idx ON Khachhang USING gin(search_vector);
+
+
+
+{
+  "model": "users",
+  "filters": {
+    "OR": [
+      { "name": { "value": "John", "type": "contains" } },
+      { "email": { "value": "john@example.com", "type": "equals" } }
+    ],
+    "age": { "value": 30, "type": "gte" },
+    "profile": {
+      "bio": { "value": "developer", "type": "contains" }
+    }
+  },
+  "relations": {
+    "profile": {
+      "include": true,
+      "filters": {
+        "bio": { "value": "developer", "type": "contains" }
+      }
+    },
+    "posts": {
+      "include": true,
+      "filters": {
+        "title": { "value": "NestJS", "type": "contains" }
+      }
+    }
+  },
+  "orderBy": { "field": "id", "direction": "desc" },
+  "skip": 0,
+  "take": 10
+}

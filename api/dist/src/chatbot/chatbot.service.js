@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChatbotService = void 0;
+const generative_ai_1 = require("@google/generative-ai");
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 let ChatbotService = class ChatbotService {
@@ -17,6 +18,13 @@ let ChatbotService = class ChatbotService {
         this.prisma = prisma;
         this.apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
         this.apiKey = process.env.GOOGLE_API_KEY;
+        const apiKey = process.env.GOOGLE_API_KEY;
+        if (!this.apiKey) {
+            throw new Error('Google API key is not defined');
+        }
+        this.genAI = new generative_ai_1.GoogleGenerativeAI(this.apiKey);
+    }
+    async analyzeImage(imageUrl) {
     }
     async chatWithAI(userId, message) {
         const requestBody = {

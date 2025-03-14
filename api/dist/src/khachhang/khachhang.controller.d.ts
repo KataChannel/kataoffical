@@ -2,10 +2,12 @@ import { KhachhangService } from './khachhang.service';
 export declare class KhachhangController {
     private readonly khachhangService;
     constructor(khachhangService: KhachhangService);
+    searchCustomers(query: string): Promise<unknown>;
     create(createKhachhangDto: any): Promise<{
         id: string;
         name: string | null;
         namenn: string | null;
+        subtile: string | null;
         makh: string;
         diachi: string | null;
         sdt: string | null;
@@ -30,18 +32,19 @@ export declare class KhachhangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            title: string | null;
-            mabanggia: string | null;
             type: string | null;
+            title: string | null;
+            order: number | null;
+            mabanggia: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
-            order: number | null;
             status: string | null;
         }[];
     } & {
         id: string;
         name: string | null;
         namenn: string | null;
+        subtile: string | null;
         makh: string;
         diachi: string | null;
         sdt: string | null;
@@ -63,6 +66,7 @@ export declare class KhachhangController {
         id: string;
         name: string | null;
         namenn: string | null;
+        subtile: string | null;
         makh: string;
         diachi: string | null;
         sdt: string | null;
@@ -84,6 +88,7 @@ export declare class KhachhangController {
         id: string;
         name: string | null;
         namenn: string | null;
+        subtile: string | null;
         makh: string;
         diachi: string | null;
         sdt: string | null;
@@ -105,6 +110,7 @@ export declare class KhachhangController {
         id: string;
         name: string | null;
         namenn: string | null;
+        subtile: string | null;
         makh: string;
         diachi: string | null;
         sdt: string | null;

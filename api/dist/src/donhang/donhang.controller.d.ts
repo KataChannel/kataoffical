@@ -23,8 +23,8 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
         type: string | null;
+        title: string;
         order: number | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
@@ -37,6 +37,7 @@ export declare class DonhangController {
             id: string;
             name: string | null;
             namenn: string | null;
+            subtile: string | null;
             makh: string;
             diachi: string | null;
             sdt: string | null;
@@ -60,8 +61,8 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
         type: string | null;
+        title: string;
         order: number | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
@@ -87,18 +88,19 @@ export declare class DonhangController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                title: string | null;
-                mabanggia: string | null;
                 type: string | null;
+                title: string | null;
+                order: number | null;
+                mabanggia: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
-                order: number | null;
                 status: string | null;
             })[];
         } & {
             id: string;
             name: string | null;
             namenn: string | null;
+            subtile: string | null;
             makh: string;
             diachi: string | null;
             sdt: string | null;
@@ -121,8 +123,8 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
         type: string | null;
+        title: string;
         order: number | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
@@ -145,8 +147,8 @@ export declare class DonhangController {
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            order: number | null;
             slug: string | null;
+            order: number | null;
             title2: string | null;
             masp: string;
             subtitle: string | null;
@@ -173,18 +175,19 @@ export declare class DonhangController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                title: string | null;
-                mabanggia: string | null;
                 type: string | null;
+                title: string | null;
+                order: number | null;
+                mabanggia: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
-                order: number | null;
                 status: string | null;
             })[];
         } & {
             id: string;
             name: string | null;
             namenn: string | null;
+            subtile: string | null;
             makh: string;
             diachi: string | null;
             sdt: string | null;
@@ -207,8 +210,8 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
         type: string | null;
+        title: string;
         order: number | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
@@ -236,8 +239,8 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
         type: string | null;
+        title: string;
         order: number | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
@@ -250,8 +253,8 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
         type: string | null;
+        title: string;
         order: number | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;

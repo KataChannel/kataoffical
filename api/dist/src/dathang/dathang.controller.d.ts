@@ -21,8 +21,8 @@ export declare class DathangController {
         id: string;
         ghichu: string | null;
         isActive: boolean;
-        title: string | null;
         type: string | null;
+        title: string | null;
         order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -45,8 +45,8 @@ export declare class DathangController {
         id: string;
         ghichu: string | null;
         isActive: boolean;
-        title: string | null;
         type: string | null;
+        title: string | null;
         order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -67,8 +67,8 @@ export declare class DathangController {
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            order: number | null;
             slug: string | null;
+            order: number | null;
             title2: string | null;
             masp: string;
             subtitle: string | null;
@@ -94,8 +94,8 @@ export declare class DathangController {
         id: string;
         ghichu: string | null;
         isActive: boolean;
-        title: string | null;
         type: string | null;
+        title: string | null;
         order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -120,8 +120,8 @@ export declare class DathangController {
         id: string;
         ghichu: string | null;
         isActive: boolean;
-        title: string | null;
         type: string | null;
+        title: string | null;
         order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -131,8 +131,8 @@ export declare class DathangController {
         id: string;
         ghichu: string | null;
         isActive: boolean;
-        title: string | null;
         type: string | null;
+        title: string | null;
         order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;

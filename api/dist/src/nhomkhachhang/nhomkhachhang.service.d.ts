@@ -14,6 +14,7 @@ export declare class NhomkhachhangService {
             id: string;
             name: string | null;
             namenn: string | null;
+            subtile: string | null;
             makh: string;
             diachi: string | null;
             sdt: string | null;
@@ -43,6 +44,7 @@ export declare class NhomkhachhangService {
             id: string;
             name: string | null;
             namenn: string | null;
+            subtile: string | null;
             makh: string;
             diachi: string | null;
             sdt: string | null;

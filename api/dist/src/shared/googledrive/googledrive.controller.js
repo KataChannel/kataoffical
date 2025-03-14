@@ -15,9 +15,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GoogleDriveController = void 0;
 const common_1 = require("@nestjs/common");
 const googledrive_service_1 = require("./googledrive.service");
+const platform_express_1 = require("@nestjs/platform-express");
+const chatbot_service_1 = require("../../chatbot/chatbot.service");
+const prisma_service_1 = require("../../../prisma/prisma.service");
 let GoogleDriveController = class GoogleDriveController {
-    constructor(googleDriveService) {
+    constructor(googleDriveService, _ChatbotService, prisma) {
         this.googleDriveService = googleDriveService;
+        this._ChatbotService = _ChatbotService;
+        this.prisma = prisma;
+    }
+    async uploadFile(file) {
+        const fileUrl = await this.googleDriveService.uploadFile(file);
+        const jsonData = await this._ChatbotService.analyzeImage(fileUrl);
+        const savedFile = await this.prisma.file.create({
+            data: { fileName: file.originalname, fileUrl, jsonData },
+        });
+        return savedFile;
     }
     async queryFolders(query) {
         return this.googleDriveService.queryFolders(query);
@@ -39,6 +52,14 @@ let GoogleDriveController = class GoogleDriveController {
     }
 };
 exports.GoogleDriveController = GoogleDriveController;
+__decorate([
+    (0, common_1.Post)('upload'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], GoogleDriveController.prototype, "uploadFile", null);
 __decorate([
     (0, common_1.Get)('queryfolder'),
     __param(0, (0, common_1.Query)('query')),
@@ -81,6 +102,8 @@ __decorate([
 ], GoogleDriveController.prototype, "removeUser", null);
 exports.GoogleDriveController = GoogleDriveController = __decorate([
     (0, common_1.Controller)('googledrive'),
-    __metadata("design:paramtypes", [googledrive_service_1.GoogleDriveService])
+    __metadata("design:paramtypes", [googledrive_service_1.GoogleDriveService,
+        chatbot_service_1.ChatbotService,
+        prisma_service_1.PrismaService])
 ], GoogleDriveController);
 //# sourceMappingURL=googledrive.controller.js.map

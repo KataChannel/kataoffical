@@ -68,6 +68,9 @@
                 @for (item of filterKhachhang; track item.id) {
                 <mat-option [value]="item.id">{{item.name}}</mat-option>
                 }
+                @empty {
+                <mat-option disabled>Không có dữ liệu</mat-option>
+                }
               </div>
             </div>
           </mat-select>

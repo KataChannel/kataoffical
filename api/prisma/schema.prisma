@@ -101,6 +101,7 @@ model Khachhang {
   id           String   @id @default(uuid())
   name         String?
   namenn       String?
+  subtile      String?
   makh         String   @unique
   diachi       String?
   sdt          String?
@@ -329,5 +330,12 @@ model ChatAIHistory {
   userId    String
   message   String
   sender    String   // 'user' hoặc 'bot'
+  createdAt DateTime @default(now())
+}
+model File {
+  id        String  @id @default(uuid())
+  fileName  String?
+  fileUrl   String?
+  jsonData  Json?
   createdAt DateTime @default(now())
 }

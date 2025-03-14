@@ -19,6 +19,9 @@ let KhachhangController = class KhachhangController {
     constructor(khachhangService) {
         this.khachhangService = khachhangService;
     }
+    async searchCustomers(query) {
+        return this.khachhangService.timkiemkhachhang(query);
+    }
     create(createKhachhangDto) {
         return this.khachhangService.create(createKhachhangDto);
     }
@@ -36,6 +39,13 @@ let KhachhangController = class KhachhangController {
     }
 };
 exports.KhachhangController = KhachhangController;
+__decorate([
+    (0, common_1.Get)('search'),
+    __param(0, (0, common_1.Query)('q')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], KhachhangController.prototype, "searchCustomers", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

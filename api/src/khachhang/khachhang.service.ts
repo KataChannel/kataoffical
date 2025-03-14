@@ -5,6 +5,12 @@ import { PrismaService } from 'prisma/prisma.service';
 export class KhachhangService {
   constructor(private readonly prisma: PrismaService) {}
 
+  async timkiemkhachhang(query: string) {
+    return this.prisma.$queryRaw`
+      SELECT * FROM "Khachhang" 
+      WHERE search_vector @@ to_tsquery('simple', ${query})
+    `;
+  }
   async create(data: any) {
     // Kiểm tra xem data.makh gửi lên từ client có trong database chưa
     const existingCustomer = await this.prisma.khachhang.findUnique({
@@ -44,14 +50,9 @@ export class KhachhangService {
     return this.prisma.khachhang.create({
       data: {
       makh: newMakh,
-      loaikh: data.loaikh,
-      name: data.name,
-      diachi: data.diachi,
-      sdt: data.sdt,
-      email: data.email,
+      ...data,
       },
     });
-
   }
 
   async findAll() {

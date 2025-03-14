@@ -11,12 +11,13 @@ const common_1 = require("@nestjs/common");
 const prisma_module_1 = require("../../../prisma/prisma.module");
 const googledrive_controller_1 = require("./googledrive.controller");
 const googledrive_service_1 = require("./googledrive.service");
+const chatbot_module_1 = require("../../chatbot/chatbot.module");
 let GoogledriveModule = class GoogledriveModule {
 };
 exports.GoogledriveModule = GoogledriveModule;
 exports.GoogledriveModule = GoogledriveModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, chatbot_module_1.ChatbotModule],
         controllers: [googledrive_controller_1.GoogleDriveController],
         providers: [googledrive_service_1.GoogleDriveService],
         exports: [googledrive_service_1.GoogleDriveService]

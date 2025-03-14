@@ -33,8 +33,8 @@ export declare class PhieukhoController {
                 createdAt: Date;
                 updatedAt: Date;
                 title: string;
-                order: number | null;
                 slug: string | null;
+                order: number | null;
                 title2: string | null;
                 masp: string;
                 subtitle: string | null;

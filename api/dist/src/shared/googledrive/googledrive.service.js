@@ -12,15 +12,35 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GoogleDriveService = void 0;
 const common_1 = require("@nestjs/common");
 const googleapis_1 = require("googleapis");
+const stream_1 = require("stream");
 let GoogleDriveService = class GoogleDriveService {
     constructor() {
         this.driveId = process.env.SHARED_DRIVE_ID;
+        this.uploaddriveId = process.env.SHARED_UPLOAD_DRIVE_ID;
         const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON || '{}');
         const auth = new googleapis_1.google.auth.GoogleAuth({
             credentials: serviceAccount,
             scopes: ['https://www.googleapis.com/auth/drive'],
         });
         this.drive = googleapis_1.google.drive({ version: 'v3', auth });
+    }
+    async uploadFile(file) {
+        const response = await this.drive.files.create({
+            requestBody: {
+                name: file.originalname,
+                parents: [this.uploaddriveId],
+            },
+            media: {
+                mimeType: file.mimetype,
+                body: stream_1.Readable.from(file.buffer),
+            },
+        });
+        await this.drive.permissions.create({
+            fileId: response.data.id,
+            requestBody: { role: 'reader', type: 'anyone' },
+        });
+        const fileUrl = `https://i.ibb.co/ynR7dC9L/bill.jpg`;
+        return fileUrl;
     }
     async queryFolders(driveId) {
         console.log(driveId);

@@ -268,9 +268,16 @@ export class ListKhachhangComponent {
     const transformedData = data.map((v: any) => ({
       name: v.name?.trim()||'',
       makh: v.makh?.trim()||'',
-      sdt: v.sdt?.trim()||'',
+      namenn: v.namenn?.trim()||'',
       diachi: v.diachi?.trim()||'',
-      ghichu: v.ghichu?.trim()||'',
+      quan: v.quan?.trim()||'',
+      email: v.email?.trim()||'',
+      sdt: v.sdt?.trim()||'',
+      mst: v.mst?.trim()||'',
+      gionhanhang: v.gionhanhang?.trim()||'',
+      loaikh: v.loaikh?.trim()||'',
+      hiengia:true,
+      ghichu: v.ghichu?.trim()||'', 
    }));
    // Filter out duplicate makh values
    const uniqueData = transformedData.filter((value:any, index:any, self:any) => 

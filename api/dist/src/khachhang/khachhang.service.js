@@ -16,6 +16,12 @@ let KhachhangService = class KhachhangService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    async timkiemkhachhang(query) {
+        return this.prisma.$queryRaw `
+      SELECT * FROM "Khachhang" 
+      WHERE search_vector @@ to_tsquery('simple', ${query})
+    `;
+    }
     async create(data) {
         const existingCustomer = await this.prisma.khachhang.findUnique({
             where: { makh: data.makh },
@@ -41,11 +47,7 @@ let KhachhangService = class KhachhangService {
         return this.prisma.khachhang.create({
             data: {
                 makh: newMakh,
-                loaikh: data.loaikh,
-                name: data.name,
-                diachi: data.diachi,
-                sdt: data.sdt,
-                email: data.email,
+                ...data,
             },
         });
     }

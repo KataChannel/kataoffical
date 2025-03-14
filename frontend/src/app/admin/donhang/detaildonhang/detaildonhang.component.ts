@@ -40,6 +40,8 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import html2canvas from 'html2canvas';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
+import { SearchService } from '../../../shared/services/search.service';
+import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 @Component({
   selector: 'app-detaildonhang',
   imports: [
@@ -68,6 +70,7 @@ export class DetailDonhangComponent {
   _KhachhangService: KhachhangService = inject(KhachhangService);
   _BanggiaService: BanggiaService = inject(BanggiaService);
   _SanphamService: SanphamService = inject(SanphamService);
+  _SearchService: SearchService = inject(SearchService);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -76,8 +79,10 @@ export class DetailDonhangComponent {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
       this._DonhangService.setDonhangId(id);
-      await this._KhachhangService.getAllKhachhang();
-      this.filterKhachhang = this.ListKhachhang().filter((v:any) => v.isActive);
+      // await this._KhachhangService.getAllKhachhang();
+      // this.filterKhachhang = this.ListKhachhang().filter((v:any) => v.isActive);
+      // console.log( this.filterKhachhang);
+      
       await this._BanggiaService.getAllBanggia();
       this.filterBanggia = this._BanggiaService.ListBanggia();
       await this._SanphamService.getAllSanpham();
@@ -127,6 +132,15 @@ export class DetailDonhangComponent {
       if (e.key === 'Enter' && document.activeElement?.getAttribute('contenteditable') === 'true') {
         e.preventDefault();
       }
+    });
+    this.searchInput$
+    .pipe(
+      debounceTime(300), // Chờ 300ms sau khi nhập mới gọi API
+      distinctUntilChanged(), // Chỉ gọi API khi giá trị thực sự thay đổi
+      switchMap(value => this.DoFindKhachhang(value)) // Gọi API tìm kiếm
+    )
+    .subscribe(data => {
+      this.filterKhachhang = data;
     });
   }
   async handleDonhangAction() {
@@ -231,15 +245,30 @@ export class DetailDonhangComponent {
       return v;
     });
   }
-  DoFindKhachhang(event: any) {
-    const query = event.target.value.toLowerCase();
-    this.filterKhachhang = this.ListKhachhang().filter(
-      (v: any) =>
-        v.isActive &&
-        v.name?.toLowerCase().includes(query) ||
-        v.namenn?.toLowerCase().includes(query) ||
-        v.sdt?.toLowerCase().includes(query)
-    );
+  searchInput$ = new Subject<string>();
+  async DoFindKhachhang(event: any) {
+    const value = event.target.value.trim().toLowerCase();
+    this.searchInput$.next(value);
+    if (!value) {
+      this.filterKhachhang = []; // Reset to original list if search is empty
+      return;
+    }
+    const query = {
+      "model": "khachhang",
+      "filters": {
+        "subtile": { "value": value, "type": "contains" }
+      },
+      "relations": {
+        "banggia": {
+          "include": true
+        }
+      },
+      "orderBy": { "field": "createdAt", "direction": "desc" },
+      "take": 10
+    };
+    await this._SearchService.Search(query).then((data) => {
+      this.filterKhachhang = data;
+    });
   }
   DoFindBanggia(event: any) {
     const query = event.target.value.toLowerCase();
@@ -743,9 +772,7 @@ export class DetailDonhangComponent {
     menu.closeMenu();
   }
 
-
-
-        async ImporExcel(event: any) {
+async ImporExcel(event: any) {
           const data = await readExcelFile(event)
           this.DoImportData(data);
          }   

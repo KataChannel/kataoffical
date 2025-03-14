@@ -1,9 +1,26 @@
-import { Controller, Get, Post, Delete, Param, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { GoogleDriveService } from './googledrive.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ChatbotService } from 'src/chatbot/chatbot.service';
+import { PrismaService } from 'prisma/prisma.service';
 @Controller('googledrive')
 export class GoogleDriveController {
-  constructor(private readonly googleDriveService: GoogleDriveService) {}
+  constructor(
+    private readonly googleDriveService: GoogleDriveService,
+    private readonly _ChatbotService: ChatbotService,
+    private readonly prisma: PrismaService,
+  ) {}
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    const fileUrl = await this.googleDriveService.uploadFile(file);
+    const jsonData = await this._ChatbotService.analyzeImage(fileUrl);
+    const savedFile = await this.prisma.file.create({
+      data: { fileName: file.originalname, fileUrl, jsonData },
+    });
 
+    return savedFile;
+  }
   @Get('queryfolder')
   async queryFolders(@Query('query') query:any) {    
     return this.googleDriveService.queryFolders(query);
