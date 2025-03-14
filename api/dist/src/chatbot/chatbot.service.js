@@ -18,7 +18,6 @@ let ChatbotService = class ChatbotService {
         this.prisma = prisma;
         this.apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
         this.apiKey = process.env.GOOGLE_API_KEY;
-        const apiKey = process.env.GOOGLE_API_KEY;
         if (!this.apiKey) {
             throw new Error('Google API key is not defined');
         }
