@@ -425,7 +425,7 @@ export class DetailDonhangComponent {
     );
   }
   SelectKhachhang(event: any) {
-    const selectedKhachhang = this.ListKhachhang().find(
+    const selectedKhachhang = this.filterKhachhang.find(
       (v: any) => v.id === event.value
     );
     console.log(selectedKhachhang);
