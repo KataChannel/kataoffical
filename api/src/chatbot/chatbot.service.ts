@@ -15,70 +15,78 @@ export class ChatbotService {
     this.genAI = new GoogleGenerativeAI(this.apiKey);
   }
 
-  async analyzeImage(imageUrl: string): Promise<any> {
-    // const jsonData = {
-    //   role: 'user',
-    //   parts: [
-    //     { fileData: { mimeType: 'image/jpeg', fileUri: "blob:https://aistudio.google.com/59bc5656-848b-4b8d-9056-d363c7ccb023" } },
-    //     { text: 'xuất dữ liệu json' },
-    //   ],
-    // };
-    //   const { parts } = jsonData;
-    //   let prompt = "";
-    //   for (const part of parts) {
-    //     if (part.fileData) {
-    //       // Giả sử bạn đã xử lý fileUri và có dữ liệu hình ảnh (ví dụ: base64 hoặc đường dẫn tệp)
-    //       // Trong thực tế, bạn sẽ cần thêm logic xử lý hình ảnh ở đây.
-    //       // Ví dụ:
-    //       // const imageData = await processImage(part.fileData.fileUri);
-    //       prompt += "Hình ảnh được cung cấp. "; // Hoặc bạn có thể thêm mô tả nếu có
-    //     }
-    //     if (part.text) {
-    //       prompt += part.text + " ";
-    //     }
-    //   }
+  // async analyzeImage(): Promise<any> {
+  //   const jsonData = {
+  //     role: 'user',
+  //     parts: [
+  //       { fileData: { mimeType: 'image/jpeg', fileUri: "https://raovat.sgp1.cdn.digitaloceanspaces.com/2022/09/12/7916347_5dd1e532d3591c6282444bba495d3403.jpg" } },
+  //       { text: 'xuất dữ liệu json' },
+  //     ],
+  //   };
+  //     const { parts } = jsonData;
+  //     let prompt = "";
+  //     for (const part of parts) {
+  //       if (part.fileData) {
+  //         // Giả sử bạn đã xử lý fileUri và có dữ liệu hình ảnh (ví dụ: base64 hoặc đường dẫn tệp)
+  //         // Trong thực tế, bạn sẽ cần thêm logic xử lý hình ảnh ở đây.
+  //         // Ví dụ:
+  //         // const imageData = await processImage(part.fileData.fileUri);
+  //         prompt += "Hình ảnh được cung cấp. "; // Hoặc bạn có thể thêm mô tả nếu có
+  //       }
+  //       if (part.text) {
+  //         prompt += part.text + " ";
+  //       }
+  //     }
     
-    //   // Loại bỏ khoảng trắng thừa ở cuối prompt
-    //   prompt = prompt.trim();
-    //   console.log("Prompt:", prompt);
+  //     // Loại bỏ khoảng trắng thừa ở cuối prompt
+  //     prompt = prompt.trim();
+  //     console.log("Prompt:", prompt);
       
-    //   const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-    //   const result = await model.generateContent([{ text: prompt }]);
+  //     const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  //     const result = await model.generateContent([{ text: prompt }]);
     
-    //   return result;
-    }
+  //     return result;
+  //   }
     
     // Giả sử jsonData là dữ liệu JSON bạn cung cấp
-//   async analyzeImage(imageUrl: string): Promise<any> {
-//     try {
-//         const response = await fetch(imageUrl);
-//         if (!response.ok) throw new Error(`Lỗi tải ảnh: ${response.statusText}`);
+  async analyzeImage(fileUrl:any): Promise<any> {
+    try {
 
-//         const arrayBuffer = await response.arrayBuffer();
-//         const base64Image = Buffer.from(arrayBuffer).toString('base64');
-//         const mimeType = "image/jpeg"; // Thay thế bằng loại MIME của hình ảnh (ví dụ: image/jpeg)
-//         const blob = this.base64ToBlob(base64Image, mimeType);
-//         const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-//         const prompt = `Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON. Trả về 1 mảng JSON, mỗi phần tử là 1 object chứa item và quantity. Dữ liệu hình ảnh: ${base64Image}`;
-//         const result = await model.generateContent([{ text: prompt }]);
-//         const responseText = result.response.text();
+        const response = await fetch(fileUrl);
+        if (!response.ok) throw new Error(`Lỗi tải ảnh: ${response.statusText}`);
 
-//         // Xử lý kết quả JSON
-//         try {
-//             const jsonData = JSON.parse(responseText);
-//             return jsonData; // Trả về object JSON
-//         } catch (jsonError) {
-//             console.error("Lỗi parse JSON:", jsonError);
-//             console.log("Chuỗi trả về lỗi", responseText)
-//             //Trả về nguyên chuỗi nếu không parse được, và log lại, để debug.
-//             return responseText
-//         }
+        const arrayBuffer = await response.arrayBuffer();
+        const imageBuffer = Buffer.from(arrayBuffer);
 
-//     } catch (error) {
-//         console.error("Lỗi phân tích hình ảnh:", error);
-//         throw error;
-//     }
-// }
+        const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" }); // Sử dụng model hỗ trợ hình ảnh
+
+        const prompt = "Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON thuần túy, Trả về 1 mảng JSON";
+
+        const result = await model.generateContent([
+            { text: prompt },
+            { inlineData: { mimeType: "image/jpeg", data: imageBuffer.toString("base64") } }
+        ]);
+
+        const responseText = result.response.text();
+        console.log(responseText);
+        // Làm sạch chuỗi JSON
+        const cleanedJson = responseText.substring(responseText.indexOf('['), responseText.lastIndexOf(']') + 1)
+        console.log("Chuỗi JSON sau khi làm sạch:", cleanedJson);
+
+        try {
+            const jsonData = JSON.parse(cleanedJson);
+            return jsonData;
+        } catch (jsonError) {
+            console.error("Lỗi parse JSON:", jsonError);
+            console.log("Chuỗi trả về lỗi sau khi làm sạch:", cleanedJson)
+            return responseText
+        }
+
+    } catch (error) {
+        console.error("Lỗi phân tích hình ảnh:", error);
+        throw error;
+    }
+}
 
   async chatWithAI(userId: string, message: string) {
     const requestBody = {

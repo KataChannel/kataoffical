@@ -5,7 +5,7 @@ export declare class ChatbotService {
     private readonly apiKey;
     private genAI;
     constructor(prisma: PrismaService);
-    analyzeImage(imageUrl: string): Promise<any>;
+    analyzeImage(fileUrl: any): Promise<any>;
     chatWithAI(userId: string, message: string): Promise<{
         id: string;
         createdAt: Date;

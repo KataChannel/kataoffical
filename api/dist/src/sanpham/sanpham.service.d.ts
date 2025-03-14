@@ -10,16 +10,16 @@ export declare class SanphamService {
     generateMaSP(): Promise<string>;
     create(data: any): Promise<{
         id: string;
+        subtitle: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        slug: string | null;
         order: number | null;
+        slug: string | null;
         title2: string | null;
         masp: string;
-        subtitle: string | null;
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
@@ -30,16 +30,16 @@ export declare class SanphamService {
     reorderSanphams(sanphamIds: string[]): Promise<void>;
     findAll(): Promise<{
         id: string;
+        subtitle: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        slug: string | null;
         order: number | null;
+        slug: string | null;
         title2: string | null;
         masp: string;
-        subtitle: string | null;
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
@@ -49,16 +49,16 @@ export declare class SanphamService {
     }[]>;
     findOne(id: string): Promise<{
         id: string;
+        subtitle: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        slug: string | null;
         order: number | null;
+        slug: string | null;
         title2: string | null;
         masp: string;
-        subtitle: string | null;
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
@@ -68,16 +68,16 @@ export declare class SanphamService {
     }>;
     update(id: string, data: any): Promise<{
         id: string;
+        subtitle: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        slug: string | null;
         order: number | null;
+        slug: string | null;
         title2: string | null;
         masp: string;
-        subtitle: string | null;
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
@@ -87,16 +87,16 @@ export declare class SanphamService {
     }>;
     remove(id: string): Promise<{
         id: string;
+        subtitle: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        slug: string | null;
         order: number | null;
+        slug: string | null;
         title2: string | null;
         masp: string;
-        subtitle: string | null;
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;

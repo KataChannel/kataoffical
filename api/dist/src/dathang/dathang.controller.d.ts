@@ -21,8 +21,8 @@ export declare class DathangController {
         id: string;
         ghichu: string | null;
         isActive: boolean;
-        type: string | null;
         title: string | null;
+        type: string | null;
         order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -45,8 +45,8 @@ export declare class DathangController {
         id: string;
         ghichu: string | null;
         isActive: boolean;
-        type: string | null;
         title: string | null;
+        type: string | null;
         order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -63,15 +63,15 @@ export declare class DathangController {
             ttnhan: number;
             ghichu: string | null;
             id: string;
+            subtitle: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            slug: string | null;
             order: number | null;
+            slug: string | null;
             title2: string | null;
             masp: string;
-            subtitle: string | null;
             giagoc: number;
             dvt: string | null;
             hinhanh: string | null;
@@ -94,8 +94,8 @@ export declare class DathangController {
         id: string;
         ghichu: string | null;
         isActive: boolean;
-        type: string | null;
         title: string | null;
+        type: string | null;
         order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -120,8 +120,8 @@ export declare class DathangController {
         id: string;
         ghichu: string | null;
         isActive: boolean;
-        type: string | null;
         title: string | null;
+        type: string | null;
         order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -131,8 +131,8 @@ export declare class DathangController {
         id: string;
         ghichu: string | null;
         isActive: boolean;
-        type: string | null;
         title: string | null;
+        type: string | null;
         order: number | null;
         madncc: string | null;
         ngaynhan: Date | null;

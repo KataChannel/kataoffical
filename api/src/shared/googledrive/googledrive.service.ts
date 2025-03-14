@@ -13,7 +13,7 @@ export class GoogleDriveService {
       credentials: serviceAccount,
       scopes: ['https://www.googleapis.com/auth/drive'],
     });
-    this.drive = google.drive({ version: 'v3', auth });
+    this.drive = google.drive({ version: 'v3', auth });    
   }
 
 
@@ -36,8 +36,8 @@ export class GoogleDriveService {
     });
 
     // const fileUrl = `https://drive.google.com/uc?id=${response.data.id}`;
-    const fileUrl = `https://i.ibb.co/ynR7dC9L/bill.jpg`;
-    // const fileUrl = `https://drive.google.com/uc?export=view&id=${response.data.id}`;
+    // const fileUrl = `https://i.ibb.co/ynR7dC9L/bill.jpg`;
+    const fileUrl = `https://drive.google.com/uc?export=view&id=${response.data.id}`;
     // const fileUrl = `https://drive.usercontent.google.com/download?id=${response.data.id}&authuser=0`;
     
     return fileUrl;

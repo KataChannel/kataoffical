@@ -295,6 +295,7 @@ export class ListKhachhangComponent {
           // await this._KhachhangService.updateKhachhang(item1);
         }
         else{
+          v.subtitle = removeVietnameseAccents(v.name);
           await this._KhachhangService.CreateKhachhang(v);
         }
       });

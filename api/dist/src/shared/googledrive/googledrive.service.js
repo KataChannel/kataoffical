@@ -39,7 +39,7 @@ let GoogleDriveService = class GoogleDriveService {
             fileId: response.data.id,
             requestBody: { role: 'reader', type: 'anyone' },
         });
-        const fileUrl = `https://i.ibb.co/ynR7dC9L/bill.jpg`;
+        const fileUrl = `https://drive.google.com/uc?export=view&id=${response.data.id}`;
         return fileUrl;
     }
     async queryFolders(driveId) {

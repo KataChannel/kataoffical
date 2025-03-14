@@ -7,7 +7,7 @@ export declare class KhachhangController {
         id: string;
         name: string | null;
         namenn: string | null;
-        subtile: string | null;
+        subtitle: string | null;
         makh: string;
         diachi: string | null;
         sdt: string | null;
@@ -32,19 +32,19 @@ export declare class KhachhangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            type: string | null;
             title: string | null;
-            order: number | null;
             mabanggia: string | null;
+            type: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
+            order: number | null;
             status: string | null;
         }[];
     } & {
         id: string;
         name: string | null;
         namenn: string | null;
-        subtile: string | null;
+        subtitle: string | null;
         makh: string;
         diachi: string | null;
         sdt: string | null;
@@ -66,7 +66,7 @@ export declare class KhachhangController {
         id: string;
         name: string | null;
         namenn: string | null;
-        subtile: string | null;
+        subtitle: string | null;
         makh: string;
         diachi: string | null;
         sdt: string | null;
@@ -88,7 +88,7 @@ export declare class KhachhangController {
         id: string;
         name: string | null;
         namenn: string | null;
-        subtile: string | null;
+        subtitle: string | null;
         makh: string;
         diachi: string | null;
         sdt: string | null;
@@ -110,7 +110,7 @@ export declare class KhachhangController {
         id: string;
         name: string | null;
         namenn: string | null;
-        subtile: string | null;
+        subtitle: string | null;
         makh: string;
         diachi: string | null;
         sdt: string | null;

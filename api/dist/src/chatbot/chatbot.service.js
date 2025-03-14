@@ -24,7 +24,37 @@ let ChatbotService = class ChatbotService {
         }
         this.genAI = new generative_ai_1.GoogleGenerativeAI(this.apiKey);
     }
-    async analyzeImage(imageUrl) {
+    async analyzeImage(fileUrl) {
+        try {
+            const response = await fetch(fileUrl);
+            if (!response.ok)
+                throw new Error(`Lỗi tải ảnh: ${response.statusText}`);
+            const arrayBuffer = await response.arrayBuffer();
+            const imageBuffer = Buffer.from(arrayBuffer);
+            const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+            const prompt = "Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON thuần túy, Trả về 1 mảng JSON";
+            const result = await model.generateContent([
+                { text: prompt },
+                { inlineData: { mimeType: "image/jpeg", data: imageBuffer.toString("base64") } }
+            ]);
+            const responseText = result.response.text();
+            console.log(responseText);
+            const cleanedJson = responseText.substring(responseText.indexOf('['), responseText.lastIndexOf(']') + 1);
+            console.log("Chuỗi JSON sau khi làm sạch:", cleanedJson);
+            try {
+                const jsonData = JSON.parse(cleanedJson);
+                return jsonData;
+            }
+            catch (jsonError) {
+                console.error("Lỗi parse JSON:", jsonError);
+                console.log("Chuỗi trả về lỗi sau khi làm sạch:", cleanedJson);
+                return responseText;
+            }
+        }
+        catch (error) {
+            console.error("Lỗi phân tích hình ảnh:", error);
+            throw error;
+        }
     }
     async chatWithAI(userId, message) {
         const requestBody = {

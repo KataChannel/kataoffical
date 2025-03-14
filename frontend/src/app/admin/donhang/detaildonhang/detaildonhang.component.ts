@@ -256,7 +256,7 @@ export class DetailDonhangComponent {
     const query = {
       "model": "khachhang",
       "filters": {
-        "subtile": { "value": value, "type": "contains" }
+        "subtitle": { "value": value, "type": "contains" }
       },
       "relations": {
         "banggia": {

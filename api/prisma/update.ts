@@ -1,24 +1,63 @@
 import { PrismaClient } from '@prisma/client';
+import { bangiakhachahng } from './migrations/dulieu';
 
 const prisma = new PrismaClient();
-
+const dulieus = bangiakhachahng
 async function main() {
-  // Lấy tất cả khách hàng
-  const customers = await prisma.khachhang.findMany({
-    select: { id: true, name: true, namenn: true },
+  const khachangs = await prisma.khachhang.findMany({
+    select: { id: true,makh: true},
   });
+  const banggias = await prisma.banggia.findMany({
+    select: { id: true, mabanggia: true,title: true},
+  });
+  // console.log(khachangs);
+  // console.log(banggias);
+  console.log(dulieus);
+  const newData = dulieus.map((dulieu) => {
+    const makh = dulieu.makh;
+    const mabanggia = dulieu.mabanggia;
+    const khachhangId = khachangs.find((khachang) => khachang.makh === makh)?.id;
+    const banggiaId = banggias.find((banggia) => banggia.mabanggia === mabanggia)?.id;
+    return { khachhangId, banggiaId,makh,mabanggia };
+  })
+  console.log(newData);
+  const dataxulys = convertData(newData)
+  console.log(convertData(newData));
+  console.log(dataxulys[1].kh.map(id => ({ id })),);
+  
+  // // Cập nhật từng khách hàng
 
-  // Cập nhật từng khách hàng
-  for (const customer of customers) {
-    await prisma.khachhang.update({
-      where: { id: customer.id },
+  for (const dataxuly of dataxulys) {
+    const banggiaId = dataxuly.bg;
+    const khachhangIds = dataxuly.kh;
+    return await prisma.banggia.update({
+      where: { id: banggiaId },
       data: {
-        subtile: customer.name ? removeVietnameseAccents(customer.name) : null,
+        khachhang: {
+          connect: khachhangIds.map(id => ({ id })),
+        },
       },
     });
   }
 
-  console.log(`✅ Đã cập nhật ${customers.length} khách hàng!`);
+
+  // for (const banggia of dulieu) {
+  //   await prisma.banggia.update({
+  //     where: { id: banggia.id },
+  //     data: {
+  //       mabanggia: banggia.title
+  //     },
+  //   });
+  // }
+
+  // return this.prisma.banggia.update({
+  //   where: { id: banggiaId },
+  //   data: {
+  //     khachhang: {
+  //       connect: khachhangIds.map(id => ({ id })),
+  //     },
+  //   },
+  // });
 }
 
 main()
@@ -31,6 +70,23 @@ main()
 });
 
 
+export function convertData(data1) {
+  const result = {};
+
+  data1.forEach(item => {
+    if (item.banggiaId) {
+      if (!result[item.banggiaId]) {
+        result[item.banggiaId] = [];
+      }
+      result[item.banggiaId].push(item.khachhangId);
+    }
+  });
+
+  return Object.keys(result).map(key => ({
+    bg: key,
+    kh: result[key]
+  }));
+}
 
 export function removeVietnameseAccents(text:any) {
   if (!text) {

@@ -101,7 +101,7 @@ model Khachhang {
   id           String   @id @default(uuid())
   name         String?
   namenn       String?
-  subtile      String?
+  subtitle      String?
   makh         String   @unique
   diachi       String?
   sdt          String?

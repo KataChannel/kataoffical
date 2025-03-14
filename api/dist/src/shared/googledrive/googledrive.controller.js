@@ -28,7 +28,7 @@ let GoogleDriveController = class GoogleDriveController {
         const fileUrl = await this.googleDriveService.uploadFile(file);
         const jsonData = await this._ChatbotService.analyzeImage(fileUrl);
         const savedFile = await this.prisma.file.create({
-            data: { fileName: file.originalname, fileUrl, jsonData },
+            data: { fileName: file.originalname, jsonData },
         });
         return savedFile;
     }

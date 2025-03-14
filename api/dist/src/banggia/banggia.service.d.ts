@@ -8,12 +8,12 @@ export declare class BanggiaService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         title: string | null;
-        order: number | null;
         mabanggia: string | null;
+        type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         status: string | null;
     }>;
     createBanggia(data: any): Promise<{
@@ -31,12 +31,12 @@ export declare class BanggiaService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         title: string | null;
-        order: number | null;
         mabanggia: string | null;
+        type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         status: string | null;
     }>;
     reorderBanggias(banggiaIds: string[]): Promise<void>;
@@ -55,28 +55,28 @@ export declare class BanggiaService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         title: string | null;
-        order: number | null;
         mabanggia: string | null;
+        type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         status: string | null;
     })[]>;
     findOne(id: string): Promise<{
         sanpham: {
             giaban: number;
             id: string;
+            subtitle: string | null;
             ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            slug: string | null;
             order: number | null;
+            slug: string | null;
             title2: string | null;
             masp: string;
-            subtitle: string | null;
             giagoc: number;
             dvt: string | null;
             hinhanh: string | null;
@@ -88,7 +88,7 @@ export declare class BanggiaService {
             id: string;
             name: string | null;
             namenn: string | null;
-            subtile: string | null;
+            subtitle: string | null;
             makh: string;
             diachi: string | null;
             sdt: string | null;
@@ -111,12 +111,12 @@ export declare class BanggiaService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         title: string | null;
-        order: number | null;
         mabanggia: string | null;
+        type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         status: string | null;
     }>;
     update(id: string, data: any): Promise<{
@@ -134,12 +134,12 @@ export declare class BanggiaService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         title: string | null;
-        order: number | null;
         mabanggia: string | null;
+        type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         status: string | null;
     }>;
     remove(id: string): Promise<{
@@ -148,12 +148,12 @@ export declare class BanggiaService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         title: string | null;
-        order: number | null;
         mabanggia: string | null;
+        type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         status: string | null;
     }>;
     addKHtoBG(banggiaId: string, khachhangIds: any[]): Promise<{
@@ -162,12 +162,12 @@ export declare class BanggiaService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         title: string | null;
-        order: number | null;
         mabanggia: string | null;
+        type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         status: string | null;
     }>;
     removeKHfromBG(banggiaId: string, khachhangIds: any[]): Promise<{
@@ -176,12 +176,12 @@ export declare class BanggiaService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         title: string | null;
-        order: number | null;
         mabanggia: string | null;
+        type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        order: number | null;
         status: string | null;
     }>;
 }
