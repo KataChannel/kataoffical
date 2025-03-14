@@ -32,7 +32,7 @@ let ChatbotService = class ChatbotService {
             const arrayBuffer = await response.arrayBuffer();
             const imageBuffer = Buffer.from(arrayBuffer);
             const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-            const prompt = "Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON thuần túy, Trả về 1 mảng JSON";
+            const prompt = "Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON thuần túy, Trả về 1 mảng JSON object có chưa key name, description, price,quantity";
             const result = await model.generateContent([
                 { text: prompt },
                 { inlineData: { mimeType: "image/jpeg", data: imageBuffer.toString("base64") } }

@@ -51,7 +51,6 @@ export class ChatbotService {
     // Giả sử jsonData là dữ liệu JSON bạn cung cấp
   async analyzeImage(fileUrl:any): Promise<any> {
     try {
-
         const response = await fetch(fileUrl);
         if (!response.ok) throw new Error(`Lỗi tải ảnh: ${response.statusText}`);
 
@@ -60,7 +59,7 @@ export class ChatbotService {
 
         const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" }); // Sử dụng model hỗ trợ hình ảnh
 
-        const prompt = "Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON thuần túy, Trả về 1 mảng JSON";
+        const prompt = "Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON thuần túy, Trả về 1 mảng JSON object có chưa key name, description, price,quantity";
 
         const result = await model.generateContent([
             { text: prompt },

@@ -1,4 +1,16 @@
 <div class="container w-full h-full mx-auto py-8 justify-center items-center text-center">
     <h1>Dashboard</h1>
-    <div>Coming Soon</div>
+
+    <input type="file" (change)="onFileSelected($event)">
+    <button (click)="uploadFile()">Upload</button>
+
+    <div class="flex flex-col space-y-2" *ngIf="ketqua?.length > 0"> 
+        <div class="flex flex-row space-x-2 items-center" *ngFor="let file of ketqua">
+            <div>{{file.name}} - </div>
+            <div>{{file.description}} - </div>
+            <div>{{file.price}} - </div>
+            <div>{{file.quantity}}</div>
+        </div>
+    </div>
+
 </div>
