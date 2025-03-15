@@ -17,9 +17,9 @@ let GoogleDriveService = class GoogleDriveService {
     constructor() {
         this.driveId = process.env.SHARED_DRIVE_ID;
         this.uploaddriveId = process.env.SHARED_UPLOAD_DRIVE_ID;
-        const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON || '{}');
+        const serviceAccount = 'dist/credentials.json';
         const auth = new googleapis_1.google.auth.GoogleAuth({
-            credentials: serviceAccount,
+            keyFile: serviceAccount,
             scopes: ['https://www.googleapis.com/auth/drive'],
         });
         this.drive = googleapis_1.google.drive({ version: 'v3', auth });

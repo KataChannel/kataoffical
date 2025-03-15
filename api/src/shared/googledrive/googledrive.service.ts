@@ -8,9 +8,10 @@ export class GoogleDriveService {
   private driveId = process.env.SHARED_DRIVE_ID;
   private uploaddriveId = process.env.SHARED_UPLOAD_DRIVE_ID;
   constructor() {
-    const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON || '{}');
+    // const serviceAccount = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON || '{}');
+    const serviceAccount = 'dist/credentials.json';
     const auth = new google.auth.GoogleAuth({
-      credentials: serviceAccount,
+      keyFile: serviceAccount,
       scopes: ['https://www.googleapis.com/auth/drive'],
     });
     this.drive = google.drive({ version: 'v3', auth });    
