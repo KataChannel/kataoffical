@@ -58,7 +58,7 @@ export class AppService {
         console.log(value, type);
         
         if (value !== undefined && type) {
-          where[key] = { [type]: isNaN(value) ? value : Number(value) };
+          where[key] = { [type]: isNaN(value) ? value : value };
         }
       }
     });
