@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { DonhangService } from '../donhang/donhang.service';
+import { SearchService } from '../../shared/services/search.service';
 @Component({
   selector: 'app-dashboard',
   imports: [
@@ -18,6 +20,8 @@ import { MatButtonModule } from '@angular/material/button';
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent {
+   _PhieugiaohangService: DonhangService = inject(DonhangService);
+   _SearchService: SearchService = inject(SearchService);
   selectedFile!: File;
   ketqua:any = [];
   isLoading = false; // Biến để kiểm tra trạng thái loading
@@ -25,6 +29,7 @@ export class DashboardComponent {
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0]; // Lấy file từ input
     this.uploadMessage = ''; // Reset thông báo cũ
+    this.uploadFile()
   }
 
   async uploadFile() {
@@ -50,6 +55,22 @@ export class DashboardComponent {
 
       const data = await response.json();
       this.ketqua  = data.jsonData;
+      // const query = {
+      //   "model": "donhang",
+      //   "filters": {
+      //     "madonhang": { "value": value, "type": "contains" }
+      //   },
+      //   "relations": {
+      //     "banggia": {
+      //       "include": true
+      //     }
+      //   },
+      //   "orderBy": { "field": "createdAt", "direction": "desc" },
+      //   "take": 10
+      // };
+      // await this._SearchService.Search(query).then((data) => {
+      //   this.filterKhachhang = data;
+      // });
       this.uploadMessage = 'Upload thành công!';
       console.log('Upload thành công', data);
     } catch (error) {

@@ -31,7 +31,7 @@ let ChatbotService = class ChatbotService {
             const arrayBuffer = await response.arrayBuffer();
             const imageBuffer = Buffer.from(arrayBuffer);
             const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-            const prompt = "Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON, định dạng mẫu [{\"title\":\"Trứng bắc thảo\",\"dvt\":\"Quả\",\"khachhang\":[{\"madonhang\":\"TG-AA00002\",\"name\":\"99 SOUL\",\"data\":{\"SLDAT\":1,\"SLTT\":\"1,2\"}},{\"name\":\"NHÀ HÀNG DOOKKI\",\"madonhang\":\"TG-AA00001\",\"data\":{\"SLDAT\":1,\"SLTT\":\"1,2\"}}]},{\"title\":\"Bún gạo\",\"dvt\":\"Kg\",\"khachhang\":[{\"name\":\"99 SOUL\",\"madonhang\":\"TG-AA00002\",\"data\":{\"SLDAT\":1,\"SLTT\":\"1,2\"}},{\"name\":\"NHÀ HÀNG DOOKKI\",\"madonhang\":\"TG-AA00001\",\"data\":{\"SLDAT\":\"\",\"SLTT\":\"1,2\"}}]}]";
+            const prompt = "Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON, định dạng mẫu [{\"makh\":\"KS00213\",\"name\":\"NHÀ HÀNG DOOKKI\",\"madonhang\":\"TG-AA00001\",\"sanpham\":[{\"title\":\"Khoai Tây TQ\",\"masp\":\"I100129\",\"dvt\":\"Kg\",\"sld\":1,\"sltt\":1},{\"title\":\"Đậu đỏ\",\"masp\":\"I100820\",\"dvt\":\"Kg\",\"sld\":1,\"sltt\":1}]},{\"makh\":\"KS00001\",\"name\":\"99 Soul\",\"madonhang\":\"TG-AA00003\",\"sanpham\":[{\"title\":\"Chanh ĐaLat\",\"masp\":\"I100058\",\"dvt\":\"Kg\",\"sld\":1,\"sltt\":1},{\"title\":\"Chanh giấy\",\"masp\":\"I100059\",\"dvt\":\"Kg\",\"sld\":1,\"sltt\":1}]}]";
             const result = await model.generateContent([
                 { text: prompt },
                 { inlineData: { mimeType: "image/jpeg", data: imageBuffer.toString("base64") } }

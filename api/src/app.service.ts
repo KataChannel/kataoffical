@@ -9,7 +9,7 @@ export class AppService {
     return 'Hello World!';
   }
   // Chỉ cho phép tìm kiếm trên các bảng này
-  private allowedModels = ['users', 'posts', 'profiles','khachhang'];
+  private allowedModels = ['sanpham','banggia','khachhang','donhang','nhacungcap','dathang','kho','phieukho','role','permission','nhomkhachhang'];
 
   async search(searchDto: SearchDto) {
     const { model, filters = {}, relations = {}, orderBy, skip = 0, take } = searchDto;

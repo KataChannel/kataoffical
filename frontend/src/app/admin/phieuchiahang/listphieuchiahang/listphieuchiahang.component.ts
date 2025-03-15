@@ -40,6 +40,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
 import { DonhangService } from '../../donhang/donhang.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { environment } from '../../../../environments/environment.development';
+import { SearchService } from '../../../shared/services/search.service';
+import { StorageService } from '../../../shared/utils/storage.service';
 @Component({
   selector: 'app-listphieuchiahang',
   templateUrl: './listphieuchiahang.component.html',
@@ -98,6 +101,8 @@ export class ListPhieuchiahangComponent {
   private _DonhangService: DonhangService = inject(DonhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
+  private _SearchService: SearchService = inject(SearchService);
+  private _StorageService: StorageService = inject(StorageService);
   private _router: Router = inject(Router);
   Listdonhang: any = this._DonhangService.ListDonhang;
   dataSource = new MatTableDataSource([]);
@@ -360,6 +365,7 @@ export class ListPhieuchiahangComponent {
       madonhang: v.madonhang,
       sanpham: v.sanpham.map((v1: any) => ({
         title: v1.title,
+        masp: v1.masp,
         dvt: v1.dvt,
         slgiao: v1.slgiao,
       })),
@@ -370,28 +376,41 @@ export class ListPhieuchiahangComponent {
       disableClose: true,
     });
   }
+  ListBillXuly:any[] = [];
+  openXembillDialog(teamplate: TemplateRef<any>) {
+    this.ListBillXuly = this.ListBill
+    this.ListBillXuly.forEach((v:any) => {
+      v.sanpham.forEach((v1:any) => {
+          v1.slgiao = v1.sltt?v1.sltt:v1.sld;
+      });
+    });
+    console.log(this.ListBillXuly);
+    this.dialogCreateRef = this.dialog.open(teamplate, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+  }
 
-  getUniqueProducts(): string[] {
+  getUniqueProducts(list:any[]): string[] {
     const products = new Set<string>();
-    this.Phieuchia.forEach(kh => kh.sanpham.forEach((sp:any) => products.add(sp.title)));
+    list.forEach(kh => kh.sanpham.forEach((sp: { title: string; masp: string }) => 
+      products.add(sp.title)));
     return Array.from(products);
   }
 
-  getProductQuantity(product: string, makh: string): number | string {
-    const customer = this.Phieuchia.find(kh => kh.makh === makh);
+  getProductQuantity(list:any[],product: string, makh: string) {
+    const customer = list.find(kh => kh.makh === makh);
     const item = customer?.sanpham.find((sp:any) => sp.title === product);
-    return item ? item.slgiao : '';
+    return item ? item : '';
   }
-  getDvtForProduct(product: string) {
+  getDvtForProduct(list:any[],product: string) {
     const uniqueProducts = Array.from(
-      new Map(this.Phieuchia.flatMap(c => c.sanpham.map((sp:any) => ({ ...sp, makh: c.makh, name: c.name })))
+      new Map(list.flatMap(c => c.sanpham.map((sp:any) => ({ ...sp, makh: c.makh, name: c.name })))
           .map(p => [p.title, p])
       ).values()
   );
-  console.log(uniqueProducts);
-  
     const item = uniqueProducts.find((sp:any) => sp.title === product);
-    return item ? item.dvt : '';
+    return item ? item : '';
   }
   
   CheckItemInDonhang(item: any): boolean {
@@ -574,7 +593,117 @@ export class ListPhieuchiahangComponent {
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
+
+
+
+  selectedFile!: File;
+  ListBill:any =this._StorageService.getItem('ListBill') || [];
+  isLoading = false; // Biến để kiểm tra trạng thái loading
+  uploadMessage = ''; // Hiển thị thông báo sau khi upload
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0]; // Lấy file từ input
+    this.uploadMessage = ''; // Reset thông báo cũ
+    this.uploadFile()
+  }
+
+  async uploadFile() {
+    if (!this.selectedFile) {
+      alert('Chọn file trước khi upload!');
+      return;
+    }
+    this.isLoading = true; // Bắt đầu loading
+    this.uploadMessage = '';
+
+    const formData = new FormData();
+    formData.append('file', this.selectedFile); // 'file' phải khớp với tên bên NestJS
+  
+    try {
+      const response = await fetch(`${environment.APIURL}/googledrive/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Lỗi upload: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+
+      this.ListBill = data.jsonData;
+      this._StorageService.setItem('ListBill', this.ListBill);
+    //  const uniqueMadonhang = Array.from(new Set(data.jsonData.map((item:any) => item.madonhang)));
+    //  this.ListBill = await this.GetDonhang(uniqueMadonhang);
+     console.log(this.ListBill);
+      this.uploadMessage = 'Upload thành công!';
+      console.log('Upload thành công', data);
+    } catch (error) {
+      this.uploadMessage = 'Lỗi khi upload file!';
+      console.error('Lỗi upload file', error);
+    } finally {
+      this.isLoading = false; // Dừng loading dù có lỗi hay không
+    }
+  }
+  async GetDonhang(items: any) {
+    const query = {
+      "model": "donhang",
+      "filters": {
+        "madonhang": { "value": items, "type": "in" }
+      },
+      "relations": {
+        "sanpham": {"include":{"sanpham": true}},
+        "khachhang": {
+          "include": true
+        }
+      },
+      "orderBy": { "field": "createdAt", "direction": "desc" },
+      "take": 10
+    };
+    return await this._SearchService.Search(query)
+  }
+
+updateValue(event: Event,j: any,i: any,field: keyof any,type: 'number' | 'string') {
+  const newValue = type === 'number'? Number((event.target as HTMLElement).innerText.trim()) || 0
+      : (event.target as HTMLElement).innerText.trim();
+      const keyboardEvent = event as KeyboardEvent;
+      if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
+        event.preventDefault();
+      }
+      if (type === "number") {
+        const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+        // Chặn nếu không phải số và không thuộc danh sách phím cho phép
+        if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
+          event.preventDefault();
+        }
+      } 
+      this.ListBillXuly[j].sanpham[i][field] = newValue; 
+      const inputs = document.querySelectorAll('.slgiao-input-'+j)as NodeListOf<HTMLInputElement>;
+      console.log(inputs);
+      
+      if (i < this.getUniqueProducts(this.ListBillXuly).length - 1) {
+        const nextInput = inputs[i + 1]as HTMLInputElement
+        if (nextInput) {
+          if (nextInput instanceof HTMLInputElement) {
+            nextInput.focus();
+            nextInput.select();
+          }
+          // Then select text using a different method that works on more element types
+          setTimeout(() => {
+            if (document.createRange && window.getSelection) {
+              const range = document.createRange();
+              range.selectNodeContents(nextInput);
+              const selection = window.getSelection();
+              selection?.removeAllRanges();
+              selection?.addRange(range);
+            }
+          }, 10);
+        }
+      }    
+  }
+  UpdateListBill(){
+    console.log(this.ListBillXuly);
+  }
 }
+
 
 
 function memoize() {
@@ -618,4 +747,5 @@ function Debounce(delay: number = 300) {
 
     return descriptor;
   };
+  
 }

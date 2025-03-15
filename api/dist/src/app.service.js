@@ -15,7 +15,7 @@ const prisma_service_1 = require("../prisma/prisma.service");
 let AppService = class AppService {
     constructor(prisma) {
         this.prisma = prisma;
-        this.allowedModels = ['users', 'posts', 'profiles', 'khachhang'];
+        this.allowedModels = ['sanpham', 'banggia', 'khachhang', 'donhang', 'nhacungcap', 'dathang', 'kho', 'phieukho', 'role', 'permission', 'nhomkhachhang'];
     }
     getHello() {
         return 'Hello World!';
