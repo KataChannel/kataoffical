@@ -222,7 +222,7 @@
 
 <ng-template #dialogCreateTemplate>
     <div class="relative flex flex-col !w-screen !h-screen">
-            <div class="relative flex flex-row space-x-2 items-center font-bold">Phiếu Chia Hàng     
+            <div class="relative flex flex-row space-x-2 items-center font-bold p-4">Phiếu Chia Hàng     
                 <button mat-icon-button color="primary" (click)="printContent()">
                 <mat-icon>print</mat-icon>
             </button>
@@ -237,21 +237,32 @@
                                 <th scope="col" class="w-20 p-2 border">
                                     Đơn vị
                                 </th>
-                                <th *ngFor="let kh of Phieuchia" scope="col" class="w-10 p-2 border">
-                                    {{ kh.name }}
+                                <th *ngFor="let kh of Phieuchia" scope="col" class="w-20 p-2 border">
+                                   <div class="w-full flex flex-col space-y-1 justify-between">
+                                    <span>{{ kh.name }}</span>
+                                    <span>{{ kh.madonhang }}</span>
+                                    <div class="flex justify-between items-center w-full">
+                                        <span class="w-1/2 text-center p-2 border rounded-lg">SLDAT</span>
+                                        <span class="w-1/2 text-center p-2 border rounded-lg">SLTT</span>
+                                      </div>
+                                   </div>
+
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr *ngFor="let product of getUniqueProducts()" class="p-2 border">
-                                <th scope="row" class="w-20 p-2 border font-medium text-gray-900 whitespace-nowrap">
+                                <td scope="row" class="w-20 p-2 border font-medium text-gray-900 whitespace-nowrap">
                                     {{ product }}
-                                </th>
+                                </td>
                                 <td class="w-20 p-2 border text-start">
                                     {{ getDvtForProduct(product) }}
                                 </td>
-                                <td class="w-10 text-end p-2 border" *ngFor="let kh of Phieuchia">
-                                    {{ getProductQuantity(product, kh.makh)||'' }}
+                                <td class="w-20 text-end p-2 border" *ngFor="let kh of Phieuchia">
+                                    <div class="flex justify-between items-center w-full">
+                                        <span class="w-1/2 text-center border rounded-lg p-2">{{ getProductQuantity(product, kh.makh) || '' }}</span>
+                                        <span class="w-1/2 border rounded-lg p-2">1,2</span>
+                                      </div>
                                 </td>
                             </tr>
                         </tbody>

@@ -72,6 +72,16 @@ let AppService = class AppService {
         console.log(include);
         return include;
     }
+    async getLastUpdated(table) {
+        const validTables = ['sanpham', 'banggia', 'donhang', 'khachhang', 'nhacungcap', 'dathang', 'kho', 'phieukho', 'role', 'permission', 'nhomkhachhang'];
+        if (!validTables.includes(table)) {
+            throw new common_1.BadRequestException(`Invalid table name: ${table}`);
+        }
+        const lastUpdated = await this.prisma[table].aggregate({
+            _max: { updatedAt: true },
+        });
+        return { table, updatedAt: lastUpdated._max.updatedAt || 0 };
+    }
 };
 exports.AppService = AppService;
 exports.AppService = AppService = __decorate([

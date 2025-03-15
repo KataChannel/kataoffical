@@ -357,6 +357,7 @@ export class ListPhieuchiahangComponent {
     this.Phieuchia = this.editDonhang.map((v: any) => ({
       makh: v.khachhang?.makh,
       name: v.khachhang?.name,
+      madonhang: v.madonhang,
       sanpham: v.sanpham.map((v1: any) => ({
         title: v1.title,
         dvt: v1.dvt,

@@ -101,3 +101,6 @@ CREATE INDEX search_vector_idx ON Khachhang USING gin(search_vector);
   "skip": 0,
   "take": 10
 }
+
+
+[{"title":"Trứng bắc thảo","dvt":"Quả","khachhang":[{"name":"99 SOUL","data":{"SLDAT":1,"SLTT":"1,2"}},{"name":"NHÀ HÀNG DOOKKI","data":{"SLDAT":1,"SLTT":"1,2"}}]},{"title":"Bún gạo","dvt":"Kg","khachhang":[{"name":"99 SOUL","data":{"SLDAT":1,"SLTT":"1,2"}},{"name":"NHÀ HÀNG DOOKKI","data":{"SLDAT":"","SLTT":"1,2"}}]}]

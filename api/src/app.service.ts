@@ -83,4 +83,20 @@ export class AppService {
     
     return include;
   }
+
+
+  async getLastUpdated(table: string) {
+    // Kiểm tra xem bảng có hợp lệ không
+    const validTables = ['sanpham', 'banggia', 'donhang', 'khachhang', 'nhacungcap', 'dathang', 'kho', 'phieukho', 'role', 'permission', 'nhomkhachhang'];
+    if (!validTables.includes(table)) {
+      throw new BadRequestException(`Invalid table name: ${table}`);
+    }
+
+    // Truy vấn bảng tương ứng
+    const lastUpdated = await this.prisma[table].aggregate({
+      _max: { updatedAt: true },
+    });
+    return { table, updatedAt: lastUpdated._max.updatedAt || 0 };
+  }
+
 }

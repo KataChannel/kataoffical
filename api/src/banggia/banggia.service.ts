@@ -56,7 +56,7 @@ export class BanggiaService {
     }
   }
   async findAll() {
-    return this.prisma.banggia.findMany({
+    const banggias = await this.prisma.banggia.findMany({
       include: {
         sanpham: true,
       },
@@ -64,6 +64,10 @@ export class BanggiaService {
         order: 'asc',
       },
     });
+    return banggias.map((bg) => ({
+      ...bg,
+      sanpham: bg.sanpham.length
+    }));
   }
 
   async findOne(id: string) {

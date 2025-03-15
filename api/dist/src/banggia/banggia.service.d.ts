@@ -40,16 +40,8 @@ export declare class BanggiaService {
         status: string | null;
     }>;
     reorderBanggias(banggiaIds: string[]): Promise<void>;
-    findAll(): Promise<({
-        sanpham: {
-            id: string;
-            isActive: boolean;
-            order: number | null;
-            giaban: number;
-            sanphamId: string;
-            banggiaId: string;
-        }[];
-    } & {
+    findAll(): Promise<{
+        sanpham: number;
         id: string;
         ghichu: string | null;
         isActive: boolean;
@@ -62,7 +54,7 @@ export declare class BanggiaService {
         ketthuc: Date | null;
         order: number | null;
         status: string | null;
-    })[]>;
+    }[]>;
     findOne(id: string): Promise<{
         sanpham: {
             giaban: number;

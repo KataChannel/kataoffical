@@ -29,6 +29,9 @@ let AppController = class AppController {
         }
         return this.appService.search(searchDto);
     }
+    async getLastUpdated(table) {
+        return this.appService.getLastUpdated(table);
+    }
 };
 exports.AppController = AppController;
 __decorate([
@@ -44,6 +47,13 @@ __decorate([
     __metadata("design:paramtypes", [app_dto_1.SearchDto]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "search", null);
+__decorate([
+    (0, common_1.Get)('last-updated'),
+    __param(0, (0, common_1.Query)('table')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "getLastUpdated", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService])

@@ -25,16 +25,8 @@ export declare class BanggiaController {
         order: number | null;
         status: string | null;
     }>;
-    findAll(): Promise<({
-        sanpham: {
-            id: string;
-            isActive: boolean;
-            order: number | null;
-            giaban: number;
-            sanphamId: string;
-            banggiaId: string;
-        }[];
-    } & {
+    findAll(): Promise<{
+        sanpham: number;
         id: string;
         ghichu: string | null;
         isActive: boolean;
@@ -47,7 +39,7 @@ export declare class BanggiaController {
         ketthuc: Date | null;
         order: number | null;
         status: string | null;
-    })[]>;
+    }[]>;
     addMultipleKhachhangToBanggia(data: any): Promise<{
         id: string;
         ghichu: string | null;

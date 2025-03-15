@@ -58,7 +58,8 @@ export class ChatbotService {
 
         const model = this.genAI.getGenerativeModel({ model: "gemini-2.0-flash" }); // Sử dụng model hỗ trợ hình ảnh
 
-        const prompt = "Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON thuần túy, Trả về 1 mảng JSON object có chưa key name, description, price,quantity";
+        const prompt = "Phân tích hình ảnh sau và xuất thông tin dưới dạng JSON, định dạng mẫu [{\"title\":\"Trứng bắc thảo\",\"dvt\":\"Quả\",\"khachhang\":[{\"madonhang\":\"TG-AA00002\",\"name\":\"99 SOUL\",\"data\":{\"SLDAT\":1,\"SLTT\":\"1,2\"}},{\"name\":\"NHÀ HÀNG DOOKKI\",\"madonhang\":\"TG-AA00001\",\"data\":{\"SLDAT\":1,\"SLTT\":\"1,2\"}}]},{\"title\":\"Bún gạo\",\"dvt\":\"Kg\",\"khachhang\":[{\"name\":\"99 SOUL\",\"madonhang\":\"TG-AA00002\",\"data\":{\"SLDAT\":1,\"SLTT\":\"1,2\"}},{\"name\":\"NHÀ HÀNG DOOKKI\",\"madonhang\":\"TG-AA00001\",\"data\":{\"SLDAT\":\"\",\"SLTT\":\"1,2\"}}]}]";
+        
 
         const result = await model.generateContent([
             { text: prompt },
@@ -66,7 +67,6 @@ export class ChatbotService {
         ]);
 
         const responseText = result.response.text();
-        console.log(responseText);
         // Làm sạch chuỗi JSON
         const cleanedJson = responseText.substring(responseText.indexOf('['), responseText.lastIndexOf(']') + 1)
         console.log("Chuỗi JSON sau khi làm sạch:", cleanedJson);

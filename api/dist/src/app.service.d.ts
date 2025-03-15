@@ -8,4 +8,8 @@ export declare class AppService {
     search(searchDto: SearchDto): Promise<any>;
     private buildWhereClause;
     private buildIncludeClause;
+    getLastUpdated(table: string): Promise<{
+        table: string;
+        updatedAt: any;
+    }>;
 }
