@@ -66,7 +66,7 @@ export class SanphamService {
         },
       };
       
-      const lastUpdatedResponse = await fetch(`${environment.APIURL}/sanpham/last-updated`, options);
+      const lastUpdatedResponse = await fetch(`${environment.APIURL}/last-updated?table=sanpham`, options);
       if (!lastUpdatedResponse.ok) {
         this.handleError(lastUpdatedResponse.status);
         return cachedData;

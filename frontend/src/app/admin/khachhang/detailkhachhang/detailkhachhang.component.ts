@@ -55,7 +55,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           this._router.navigate(['/admin/khachhang', "0"]);
         }
         else{
-            await this._KhachhangService.getKhachhangByid(id);
+            await this._KhachhangService.searchfield({id:id});
             this._ListkhachhangComponent.drawer.open();
             this._router.navigate(['/admin/khachhang', id]);
         }

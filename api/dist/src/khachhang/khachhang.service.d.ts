@@ -84,6 +84,28 @@ export declare class KhachhangService {
         createdAt: Date;
         updatedAt: Date;
     }>;
+    searchfield(searchParams: Record<string, any>): Promise<{
+        id: string;
+        name: string | null;
+        namenn: string | null;
+        subtitle: string | null;
+        makh: string;
+        diachi: string | null;
+        sdt: string | null;
+        mst: string | null;
+        gionhanhang: string | null;
+        quan: string | null;
+        email: string | null;
+        phone: string | null;
+        address: string | null;
+        loaikh: string | null;
+        ghichu: string | null;
+        hiengia: boolean;
+        isActive: boolean;
+        istitle2: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
     update(id: string, data: any): Promise<{
         id: string;
         name: string | null;

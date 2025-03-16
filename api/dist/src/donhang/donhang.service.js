@@ -129,6 +129,60 @@ let DonhangService = class DonhangService {
             name: donhang.khachhang.name,
         }));
     }
+    async searchfield(searchParams) {
+        const where = {};
+        for (const [key, value] of Object.entries(searchParams)) {
+            if (!value)
+                continue;
+            if (key === 'id') {
+                where[key] = value;
+            }
+            else if (typeof value === 'number' || typeof value === 'boolean') {
+                where[key] = value;
+            }
+            else {
+                where[key] = { contains: value, mode: 'insensitive' };
+            }
+        }
+        const donhang = await this.prisma.donhang.findFirst({
+            where,
+            include: {
+                sanpham: {
+                    include: {
+                        sanpham: true,
+                    },
+                },
+                khachhang: {
+                    include: {
+                        banggia: {
+                            include: { sanpham: true },
+                        },
+                    },
+                },
+            },
+        });
+        if (!donhang)
+            throw new common_1.NotFoundException('DonHang not found');
+        return {
+            ...donhang,
+            sanpham: donhang.sanpham.map((item) => ({
+                ...item.sanpham,
+                idSP: item.idSP,
+                giaban: donhang.khachhang.banggia.find((bg) => donhang.ngaygiao &&
+                    bg.batdau &&
+                    bg.ketthuc &&
+                    donhang.ngaygiao >= bg.batdau &&
+                    donhang.ngaygiao <= bg.ketthuc)?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
+                sldat: item.sldat,
+                slgiao: item.slgiao,
+                slnhan: item.slnhan,
+                ttdat: item.ttdat,
+                ttgiao: item.ttgiao,
+                ttnhan: item.ttnhan,
+                ghichu: item.ghichu,
+            })),
+        };
+    }
     async findOne(id) {
         const donhang = await this.prisma.donhang.findUnique({
             where: { id },

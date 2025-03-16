@@ -42,6 +42,7 @@ import html2canvas from 'html2canvas';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { SearchService } from '../../../shared/services/search.service';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 @Component({
   selector: 'app-detaildonhang',
   imports: [
@@ -74,15 +75,10 @@ export class DetailDonhangComponent {
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
-  @ViewChild('searchInput') searchInput!: ElementRef;
   constructor() {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
       this._DonhangService.setDonhangId(id);
-      // await this._KhachhangService.getAllKhachhang();
-      // this.filterKhachhang = this.ListKhachhang().filter((v:any) => v.isActive);
-      // console.log( this.filterKhachhang);
-      
       await this._BanggiaService.getAllBanggia();
       this.filterBanggia = this._BanggiaService.ListBanggia();
       await this._SanphamService.getAllSanpham();
@@ -117,6 +113,9 @@ export class DetailDonhangComponent {
         this._ListdonhangComponent.drawer.open();
         this._router.navigate(['/admin/donhang', id]);
       }
+      await this._KhachhangService.getAllKhachhang();
+      this.filterKhachhang = this.ListKhachhang()
+      console.log(this.filterKhachhang);
     });
   }
   DetailDonhang: any = this._DonhangService.DetailDonhang;
@@ -128,20 +127,7 @@ export class DetailDonhangComponent {
   filterSanpham: any[] = [];
   donhangId: any = this._DonhangService.donhangId;
   async ngOnInit() {
-    document.addEventListener('keydown', (e:any) => {
-      if (e.key === 'Enter' && document.activeElement?.getAttribute('contenteditable') === 'true') {
-        e.preventDefault();
-      }
-    });
-    this.searchInput$
-    .pipe(
-      debounceTime(300), // Chờ 300ms sau khi nhập mới gọi API
-      distinctUntilChanged(), // Chỉ gọi API khi giá trị thực sự thay đổi
-      switchMap(value => this.DoFindKhachhang(value)) // Gọi API tìm kiếm
-    )
-    .subscribe(data => {
-      this.filterKhachhang = data;
-    });
+
   }
   async handleDonhangAction() {
     if (this.donhangId() === '0') {
@@ -248,27 +234,9 @@ export class DetailDonhangComponent {
   searchInput$ = new Subject<string>();
   async DoFindKhachhang(event: any) {
     const value = event.target.value.trim().toLowerCase();
-    this.searchInput$.next(value);
-    if (!value) {
-      this.filterKhachhang = []; // Reset to original list if search is empty
-      return;
-    }
-    const query = {
-      "model": "khachhang",
-      "filters": {
-        "subtitle": { "value": value, "type": "contains" }
-      },
-      "relations": {
-        "banggia": {
-          "include": true
-        }
-      },
-      "orderBy": { "field": "createdAt", "direction": "desc" },
-      "take": 10
-    };
-    await this._SearchService.Search(query).then((data) => {
-      this.filterKhachhang = data;
-    });
+    this.filterKhachhang = this.ListKhachhang().filter((v: any) =>
+     removeVietnameseAccents(v.name).toLowerCase().includes(value)
+    );
   }
   DoFindBanggia(event: any) {
     const query = event.target.value.toLowerCase();
@@ -720,9 +688,6 @@ export class DetailDonhangComponent {
       if (this.filterSanpham.length > 0) {
         this.ChosenItem(this.filterSanpham[0]);
         this.filterSanpham = [...this._SanphamService.ListSanpham()];
-        if (this.searchInput) {
-          this.searchInput.nativeElement.value = ''; // Xóa giá trị input
-        }
       }
     }
   }

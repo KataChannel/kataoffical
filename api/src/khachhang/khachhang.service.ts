@@ -66,7 +66,26 @@ export class KhachhangService {
     if (!khachhang) throw new NotFoundException('Khachhang not found');
     return khachhang;
   }
+  async searchfield(searchParams: Record<string, any>) {
+    const where: any = {};
 
+    // Xây dựng điều kiện tìm kiếm linh hoạt
+    for (const [key, value] of Object.entries(searchParams)) {
+      if (!value) continue;
+
+      if (key === 'id') {
+        where[key] = value; // Tìm chính xác theo ID
+      } else if (typeof value === 'number' || typeof value === 'boolean') {
+        where[key] = value; // Tìm theo số hoặc boolean
+      } else {
+        where[key] = { contains: value, mode: 'insensitive' }; // Tìm gần đúng với string
+      }
+    }
+
+    const khachhang = await this.prisma.khachhang.findUnique({ where});
+    if (!khachhang) throw new NotFoundException('Khachhang not found');
+    return khachhang;
+  }
   async update(id: string, data: any) {
     return this.prisma.khachhang.update({ where: { id }, data });
   }

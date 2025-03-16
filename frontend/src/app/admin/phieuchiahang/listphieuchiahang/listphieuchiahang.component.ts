@@ -701,6 +701,26 @@ updateValue(event: Event,j: any,i: any,field: keyof any,type: 'number' | 'string
   }
   UpdateListBill(){
     console.log(this.ListBillXuly);
+    const updatePromises = this.ListBillXuly.map(async (v) => {
+      const v1 = await this._DonhangService.SearchField({ madonhang: v.madonhang });
+      v1.sanpham.forEach((v2: any) => {
+        const item = v.sanpham.find((v3: any) => v3.masp === v2.masp);
+        if (item) {
+          v2.slgiao = item.slgiao;
+        }
+      });
+      console.log(v1);
+      await this._DonhangService.updateDonhang(v1);
+    });
+
+    Promise.all(updatePromises).then(() => {
+      this._snackBar.open('Cập Nhật Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    });
   }
 }
 

@@ -134,7 +134,65 @@ export class DonhangService {
       name: donhang.khachhang.name,
     }));
   }
+  async searchfield(searchParams: Record<string, any>) {
+    const where: any = {};
 
+    // Xây dựng điều kiện tìm kiếm linh hoạt
+    for (const [key, value] of Object.entries(searchParams)) {
+      if (!value) continue;
+
+      if (key === 'id') {
+        where[key] = value; // Tìm chính xác theo ID
+      } else if (typeof value === 'number' || typeof value === 'boolean') {
+        where[key] = value; // Tìm theo số hoặc boolean
+      } else {
+        where[key] = { contains: value, mode: 'insensitive' }; // Tìm gần đúng với string
+      }
+    }
+
+    const donhang = await this.prisma.donhang.findFirst({
+      where,
+      include: {
+        sanpham: {
+          include: {
+            sanpham: true,
+          },
+        },
+        khachhang: {
+          include: {
+            banggia: {
+              include: { sanpham: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!donhang) throw new NotFoundException('DonHang not found');
+
+    return {
+      ...donhang,
+      sanpham: donhang.sanpham.map((item) => ({
+        ...item.sanpham,
+        idSP: item.idSP,
+        giaban: donhang.khachhang.banggia.find(
+          (bg) =>
+            donhang.ngaygiao &&
+            bg.batdau &&
+            bg.ketthuc &&
+            donhang.ngaygiao >= bg.batdau &&
+            donhang.ngaygiao <= bg.ketthuc
+        )?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
+        sldat: item.sldat,
+        slgiao: item.slgiao,
+        slnhan: item.slnhan,
+        ttdat: item.ttdat,
+        ttgiao: item.ttgiao,
+        ttnhan: item.ttnhan,
+        ghichu: item.ghichu,
+      })),
+    };
+  }
   async findOne(id: string) {
     // const donhang = await this.prisma.donhang.findUnique({ where: { id } });
     const donhang = await this.prisma.donhang.findUnique({
