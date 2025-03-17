@@ -63,6 +63,21 @@ export declare class KhachhangService {
         updatedAt: Date;
     })[]>;
     findOne(id: string): Promise<{
+        banggia: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            title: string | null;
+            mabanggia: string | null;
+            type: string | null;
+            batdau: Date | null;
+            ketthuc: Date | null;
+            order: number | null;
+            status: string | null;
+        }[];
+    } & {
         id: string;
         name: string | null;
         namenn: string | null;
@@ -85,6 +100,21 @@ export declare class KhachhangService {
         updatedAt: Date;
     }>;
     searchfield(searchParams: Record<string, any>): Promise<{
+        banggia: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            title: string | null;
+            mabanggia: string | null;
+            type: string | null;
+            batdau: Date | null;
+            ketthuc: Date | null;
+            order: number | null;
+            status: string | null;
+        }[];
+    } & {
         id: string;
         name: string | null;
         namenn: string | null;

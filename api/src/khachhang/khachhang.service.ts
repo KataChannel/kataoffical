@@ -62,13 +62,15 @@ export class KhachhangService {
   }
 
   async findOne(id: string) {
-    const khachhang = await this.prisma.khachhang.findUnique({ where: { id } });
+    const khachhang = await this.prisma.khachhang.findUnique({ where: { id },    
+      include:{
+      banggia: true
+    } });
     if (!khachhang) throw new NotFoundException('Khachhang not found');
     return khachhang;
   }
   async searchfield(searchParams: Record<string, any>) {
     const where: any = {};
-
     // Xây dựng điều kiện tìm kiếm linh hoạt
     for (const [key, value] of Object.entries(searchParams)) {
       if (!value) continue;
@@ -81,11 +83,15 @@ export class KhachhangService {
         where[key] = { contains: value, mode: 'insensitive' }; // Tìm gần đúng với string
       }
     }
-
-    const khachhang = await this.prisma.khachhang.findUnique({ where});
+    const khachhang = await this.prisma.khachhang.findUnique({ where,
+      include:{
+        banggia: true
+      }
+    });
     if (!khachhang) throw new NotFoundException('Khachhang not found');
     return khachhang;
   }
+
   async update(id: string, data: any) {
     return this.prisma.khachhang.update({ where: { id }, data });
   }

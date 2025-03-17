@@ -57,7 +57,10 @@ let KhachhangService = class KhachhangService {
         });
     }
     async findOne(id) {
-        const khachhang = await this.prisma.khachhang.findUnique({ where: { id } });
+        const khachhang = await this.prisma.khachhang.findUnique({ where: { id },
+            include: {
+                banggia: true
+            } });
         if (!khachhang)
             throw new common_1.NotFoundException('Khachhang not found');
         return khachhang;
@@ -77,7 +80,11 @@ let KhachhangService = class KhachhangService {
                 where[key] = { contains: value, mode: 'insensitive' };
             }
         }
-        const khachhang = await this.prisma.khachhang.findUnique({ where });
+        const khachhang = await this.prisma.khachhang.findUnique({ where,
+            include: {
+                banggia: true
+            }
+        });
         if (!khachhang)
             throw new common_1.NotFoundException('Khachhang not found');
         return khachhang;
