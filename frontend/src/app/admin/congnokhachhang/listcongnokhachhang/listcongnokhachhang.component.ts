@@ -374,7 +374,13 @@ export class ListcongnokhachhangComponent {
       disableClose: true,
     });
   }
-
+  BackStatus()
+  {
+    this.editDonhang.forEach((v:any) => {
+        v.status = 'dadat';
+        this._DonhangService.updateDonhang(v);
+    });
+  }
   getUniqueProducts(): string[] {
     const products = new Set<string>();
     this.Phieuchia.forEach(kh => kh.sanpham.forEach((sp:any) => products.add(sp.title)));

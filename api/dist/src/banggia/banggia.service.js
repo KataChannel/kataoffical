@@ -63,6 +63,7 @@ let BanggiaService = class BanggiaService {
         const banggias = await this.prisma.banggia.findMany({
             include: {
                 sanpham: true,
+                khachhang: true,
             },
             orderBy: {
                 order: 'asc',
@@ -70,7 +71,8 @@ let BanggiaService = class BanggiaService {
         });
         return banggias.map((bg) => ({
             ...bg,
-            sanpham: bg.sanpham.length
+            sanpham: bg.sanpham.length,
+            khachhang: bg.khachhang.length,
         }));
     }
     async findOne(id) {

@@ -42,6 +42,7 @@ export declare class BanggiaService {
     reorderBanggias(banggiaIds: string[]): Promise<void>;
     findAll(): Promise<{
         sanpham: number;
+        khachhang: number;
         id: string;
         ghichu: string | null;
         isActive: boolean;

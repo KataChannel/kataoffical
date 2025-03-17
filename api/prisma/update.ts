@@ -20,24 +20,28 @@ async function main() {
     const banggiaId = banggias.find((banggia) => banggia.mabanggia === mabanggia)?.id;
     return { khachhangId, banggiaId,makh,mabanggia };
   })
-  console.log(newData);
+  //console.log(newData);
   const dataxulys = convertData(newData)
-  console.log(convertData(newData));
-  console.log(dataxulys[1].kh.map(id => ({ id })),);
+  //console.log(convertData(newData));
+//  console.log(dataxulys[1].khachhangIds.map(id => ({ id })),);
   
   // // Cập nhật từng khách hàng
 
   for (const dataxuly of dataxulys) {
-    const banggiaId = dataxuly.bg;
-    const khachhangIds = dataxuly.kh;
-    return await prisma.banggia.update({
-      where: { id: banggiaId },
-      data: {
-        khachhang: {
-          connect: khachhangIds.map(id => ({ id })),
+    const banggiaId = dataxuly.banggiaId;
+    const khachhangIds = dataxuly.khachhangIds;
+    console.log(banggiaId, khachhangIds);
+
+    setTimeout(async () => {
+      await prisma.banggia.update({
+        where: { id: banggiaId },
+        data: {
+          khachhang: {
+            connect: khachhangIds.map(id => ({ id })),
+          },
         },
-      },
-    });
+      });
+    }, 1000); // Adjust the timeout duration as needed
   }
 
 
@@ -83,8 +87,8 @@ export function convertData(data1) {
   });
 
   return Object.keys(result).map(key => ({
-    bg: key,
-    kh: result[key]
+    banggiaId: key,
+    khachhangIds: result[key]
   }));
 }
 

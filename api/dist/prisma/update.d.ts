@@ -1,5 +1,5 @@
 export declare function convertData(data1: any): {
-    bg: string;
-    kh: any;
+    banggiaId: string;
+    khachhangIds: any;
 }[];
 export declare function removeVietnameseAccents(text: any): any;

@@ -27,6 +27,7 @@ export declare class BanggiaController {
     }>;
     findAll(): Promise<{
         sanpham: number;
+        khachhang: number;
         id: string;
         ghichu: string | null;
         isActive: boolean;
