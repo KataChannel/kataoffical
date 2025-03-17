@@ -132,10 +132,7 @@ export class ListPhieuchiahangComponent {
     const timeFrames: { [key: string]: () => void } = {
       day: () => {
         this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment()
-          .endOf('day')
-          .add(1, 'day')
-          .format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment().endOf('day').add(1, 'day').format('YYYY-MM-DD');
       },
       week: () => {
         this.SearchParams.Batdau = moment()
