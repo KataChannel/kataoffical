@@ -2,6 +2,7 @@ import { Inject, Injectable, signal,Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
+import moment from 'moment';
 @Injectable({
   providedIn: 'root'
 })
@@ -57,6 +58,9 @@ export class DonhangService {
   }
 
   async searchDonhang(SearchParams: any) {
+    const payload = {...SearchParams}
+    payload.Batdau = moment(payload.Batdau).utc().startOf('day')
+    payload.Ketthuc = moment(payload.Ketthuc).utc().endOf('day')
     try {
       const options = {
         method: 'POST',
@@ -64,7 +68,7 @@ export class DonhangService {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer '+this._StorageService.getItem('token')
         },
-        body: JSON.stringify(SearchParams),
+        body: JSON.stringify(payload),
       };
       const response = await fetch(`${environment.APIURL}/donhang/search`, options);
       if (!response.ok) {
