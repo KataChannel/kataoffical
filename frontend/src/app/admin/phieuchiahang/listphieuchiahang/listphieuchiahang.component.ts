@@ -110,11 +110,10 @@ export class ListPhieuchiahangComponent {
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   SearchParams: any = {
-    Batdau: moment().format('YYYY-MM-DD'),
-    Ketthuc: moment().add(1, 'day').format('YYYY-MM-DD'),
+    Batdau: moment().toDate(),
+    Ketthuc: moment().toDate(),
     Type: 'donsi',
-    pageSize: 9999,
-    pageNumber: 0,
+    Status:'dadat',
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
