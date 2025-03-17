@@ -64,6 +64,9 @@ export class DonhangService {
 
   async search(params: any) {
     const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;    
+    console.log(moment(Batdau).startOf('day').toDate());
+    console.log(moment(Ketthuc).endOf('day').toDate());
+    
     const result =await this.prisma.donhang.findMany({
       where: {
         ngaygiao: {
