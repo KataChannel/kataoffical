@@ -102,7 +102,7 @@ export class DetailPhieugiaohangComponent {
         this.isEdit.update((value) => !value);
         this._router.navigate(['/admin/phieugiaohang', '0']);
       } else {
-        await this._PhieugiaohangService.getDonhangByid(id);
+        await this._PhieugiaohangService.SearchField({id:id});
         this._ListphieugiaohangComponent.drawer.open();
         this._router.navigate(['/admin/phieugiaohang', id]);
       }

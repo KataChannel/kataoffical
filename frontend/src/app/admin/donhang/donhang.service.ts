@@ -249,9 +249,7 @@ export class DonhangService {
           return console.error(error);
       }
   }
-  async SearchField(SearchParams:any) {
-    console.log(SearchParams);
-    
+  async SearchField(SearchParams:any) {   
     try {
       const options = {
         method:'POST',
@@ -264,6 +262,7 @@ export class DonhangService {
           if (!response.ok) {
           }
           const data = await response.json();   
+          this.DetailDonhang.set(data)
           return data;
       } catch (error) {
           return console.error(error);

@@ -63,10 +63,7 @@ export class DonhangService {
   }
 
   async search(params: any) {
-    const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;    
-    console.log(moment(Batdau).startOf('day').toDate());
-    console.log(moment(Ketthuc).endOf('day').toDate());
-    
+    const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;        
     const result =await this.prisma.donhang.findMany({
       where: {
         ngaygiao: {
@@ -137,6 +134,7 @@ export class DonhangService {
       name: donhang.khachhang.name,
     }));
   }
+
   async searchfield(searchParams: Record<string, any>) {
     const where: any = {};
 
@@ -194,6 +192,7 @@ export class DonhangService {
         ttnhan: item.ttnhan,
         ghichu: item.ghichu,
       })),
+      khachhang: (({ banggia, ...rest }) => rest)(donhang.khachhang) // Xóa banggia
     };
   }
   async findOne(id: string) {

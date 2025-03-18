@@ -135,30 +135,6 @@ export declare class DonhangService {
             haohut: number;
         }[];
         khachhang: {
-            banggia: ({
-                sanpham: {
-                    id: string;
-                    isActive: boolean;
-                    order: number | null;
-                    giaban: number;
-                    sanphamId: string;
-                    banggiaId: string;
-                }[];
-            } & {
-                id: string;
-                ghichu: string | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                title: string | null;
-                mabanggia: string | null;
-                type: string | null;
-                batdau: Date | null;
-                ketthuc: Date | null;
-                order: number | null;
-                status: string | null;
-            })[];
-        } & {
             id: string;
             name: string | null;
             namenn: string | null;

@@ -105,16 +105,20 @@ export class AdminmainComponent {
       }
     });
   }
-  ClearCache(){
+  ClearCache(): void {
     const token = localStorage.getItem('token');
+    const permissions = localStorage.getItem('permissions');
     localStorage.clear();
     if (token) {
       localStorage.setItem('token', token);
     }
-    this._snackBar.open('Xoá Cache Thành Công', '', {
+    if (permissions) {
+      localStorage.setItem('permissions', permissions);
+    }
+    this._snackBar.open('Xóa Cache Thành Công', '', {
       duration: 1000,
-      horizontalPosition: "end",
-      verticalPosition: "top",
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
       panelClass: ['snackbar-success'],
     });
   }

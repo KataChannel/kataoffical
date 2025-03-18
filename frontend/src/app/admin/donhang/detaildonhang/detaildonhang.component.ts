@@ -97,7 +97,7 @@ export class DetailDonhangComponent {
       if (id === '0') {
         this.DetailDonhang.set({
           title: GenId(8, false),
-          madonhang: GenId(8, false),
+          // madonhang: GenId(8, false),
           ngaygiao: moment().add(1, 'days').format('YYYY-MM-DD'),
         });
         this._ListdonhangComponent.drawer.open();
@@ -146,10 +146,10 @@ export class DetailDonhangComponent {
       
       this.DetailDonhang.update((v: any) => ({
         ...v,
-        sanpham: v.sanpham.map((sp: any) => ({
+        sanpham: v.sanpham?.map((sp: any) => ({
           ...sp,
           ttgiao: Number(sp.slgiao) * Number(sp.giaban) || 0,
-        })),
+        }))||[],
       }));
       await this._DonhangService.CreateDonhang(this.DetailDonhang()).then((data)=>{
         console.log(data);  
@@ -529,11 +529,11 @@ export class DetailDonhangComponent {
     this.DetailDonhang.update((v:any)=>{
       if(!v.sanpham){
         v.sanpham = [];
-        item.sldat = item.slgiao = 1;
+        item.sldat = item.slgiao = item.slnhan = 1;
         v.sanpham.push(item);
       }
       else{
-          item.sldat = item.slgiao = 1;
+          item.sldat = item.slgiao = item.slnhan = 1;
           v.sanpham.push(item);
       }
       this.reloadfilter();
@@ -726,7 +726,7 @@ export class DetailDonhangComponent {
   ApplyFilterColum(menu:any)
   {    
     this.ListFilter.forEach((v)=>{
-      v.sldat = v.slgiao = 1;
+      v.sldat = v.slgiao = v.slnhan=1;
     })
     this.dataSource().data = this.ListFilter
     this.DetailDonhang.update((v:any)=>{

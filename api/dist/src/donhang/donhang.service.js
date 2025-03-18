@@ -63,8 +63,6 @@ let DonhangService = class DonhangService {
     }
     async search(params) {
         const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;
-        console.log(moment(Batdau).startOf('day').toDate());
-        console.log(moment(Ketthuc).endOf('day').toDate());
         const result = await this.prisma.donhang.findMany({
             where: {
                 ngaygiao: {
@@ -183,6 +181,7 @@ let DonhangService = class DonhangService {
                 ttnhan: item.ttnhan,
                 ghichu: item.ghichu,
             })),
+            khachhang: (({ banggia, ...rest }) => rest)(donhang.khachhang)
         };
     }
     async findOne(id) {

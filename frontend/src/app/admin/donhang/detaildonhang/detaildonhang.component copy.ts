@@ -742,7 +742,7 @@ export class DetailDonhangComponent {
   }
   ChosenAll(list:any)
   {
-    this.ListFilter =list
+    this.ListFilter = list
   }
   ResetFilter()
   {
@@ -760,7 +760,7 @@ export class DetailDonhangComponent {
   ApplyFilterColum(menu:any)
   {    
     this.ListFilter.forEach((v)=>{
-      v.sldat = v.slgiao = 1;
+      v.sldat = v.slgiao = v.slnhan = 1;
     })
     this.dataSource().data = this.ListFilter
     this.DetailDonhang.update((v:any)=>{
