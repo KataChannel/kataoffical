@@ -30,6 +30,7 @@ export declare class DonhangController {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }>;
     search(params: any): Promise<{
         sanpham: any[];
@@ -68,6 +69,7 @@ export declare class DonhangController {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }[]>;
     searchfield(searchParams: Record<string, any>): Promise<{
         sanpham: {
@@ -131,6 +133,7 @@ export declare class DonhangController {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }>;
     findAll(): Promise<{
         sanpham: any[];
@@ -193,6 +196,7 @@ export declare class DonhangController {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }[]>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -280,6 +284,7 @@ export declare class DonhangController {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }>;
     update(id: string, updateDonhangDto: any): Promise<{
         sanpham: {
@@ -309,6 +314,7 @@ export declare class DonhangController {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -323,6 +329,7 @@ export declare class DonhangController {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }>;
     reorder(body: {
         donhangIds: string[];

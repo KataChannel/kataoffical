@@ -312,6 +312,7 @@ export class DonhangService {
           status: data.status,
           order: data.order,
           ghichu: data.ghichu,
+          printCount: data.printCount,
           sanpham: {
             deleteMany: {}, // Xóa tất cả sản phẩm cũ trước khi thêm mới
             create: data?.sanpham?.map((sp: any) => ({

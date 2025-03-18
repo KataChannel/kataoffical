@@ -115,7 +115,6 @@ export class DetailDonhangComponent {
       }
       await this._KhachhangService.getAllKhachhang();
       this.filterKhachhang = this.ListKhachhang()
-      console.log(this.filterKhachhang);
     });
   }
   DetailDonhang: any = this._DonhangService.DetailDonhang;
@@ -634,42 +633,19 @@ export class DetailDonhangComponent {
           </html>
         `);
         newWindow.document.close();
+          this.DetailDonhang.update((v:any)=>{
+            v.printCount= v.printCount+1;
+            return v;
+          })
+          console.log(this.DetailDonhang());
+          
+          this._DonhangService.updateDonhang(this.DetailDonhang());
       } else {
         console.error('Không thể mở cửa sổ in');
       }
     } else {
       console.error('Không tìm thấy phần tử printContent');
     }
-  
-    // const element = document.getElementById('printContent');
-    // if (!element) return;
-
-    // html2canvas(element, { scale: 2 }).then(canvas => {
-    //   const imageData = canvas.toDataURL('image/png');
-
-    //   // Mở cửa sổ mới và in ảnh
-    //   const printWindow = window.open('', '_blank');
-    //   if (!printWindow) return;
-
-    //   printWindow.document.write(`
-    //     <html>
-    //       <head>
-    //         <title>${this.DetailDonhang()?.title}</title>
-    //       </head>
-    //       <body style="text-align: center;">
-    //         <img src="${imageData}" style="max-width: 100%;"/>
-    //         <script>
-    //           window.onload = function() {
-    //             window.print();
-    //             window.onafterprint = function() { window.close(); };
-    //           };
-    //         </script>
-    //       </body>
-    //     </html>
-    //   `);
-
-    //   printWindow.document.close();
-    // });
   }
   GetGoiy(item:any){
    return parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);

@@ -288,6 +288,7 @@ let DonhangService = class DonhangService {
                     status: data.status,
                     order: data.order,
                     ghichu: data.ghichu,
+                    printCount: data.printCount,
                     sanpham: {
                         deleteMany: {},
                         create: data?.sanpham?.map((sp) => ({

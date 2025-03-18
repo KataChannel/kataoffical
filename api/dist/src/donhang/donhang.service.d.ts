@@ -43,6 +43,7 @@ export declare class DonhangService {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }[]>;
     findAll(): Promise<{
         sanpham: any[];
@@ -105,6 +106,7 @@ export declare class DonhangService {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }[]>;
     searchfield(searchParams: Record<string, any>): Promise<{
         sanpham: {
@@ -168,6 +170,7 @@ export declare class DonhangService {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -255,6 +258,7 @@ export declare class DonhangService {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }>;
     create(dto: any): Promise<{
         sanpham: {
@@ -284,6 +288,7 @@ export declare class DonhangService {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }>;
     update(id: string, data: any): Promise<{
         sanpham: {
@@ -313,6 +318,7 @@ export declare class DonhangService {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -327,5 +333,6 @@ export declare class DonhangService {
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
+        printCount: number | null;
     }>;
 }

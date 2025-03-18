@@ -165,6 +165,7 @@ model Donhang {
   khachhangId String
   khachhang   Khachhang @relation(fields: [khachhangId], references: [id])
   sanpham     Donhangsanpham[]
+  printCount  Int? @default(0)
   order       Int?
   isActive    Boolean  @default(false)
   createdAt    DateTime @default(now())
