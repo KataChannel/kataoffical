@@ -92,7 +92,7 @@
             </mat-select>
           </mat-form-field>
           <button mat-flat-button color="primary" [disabled]="!isEdit()" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
-            {{ListFilter.length}}  Sản Phẩm
+            {{dataSource().filteredData.length}}  Sản Phẩm
           </button>
          <mat-menu  #menu="matMenu">
                      <div (click)="$event.stopPropagation()"  class="cursor-pointer flex flex-col space-y-4 p-3">                                        

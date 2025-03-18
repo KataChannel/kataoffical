@@ -440,10 +440,11 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         }
         DoImportData(data:any)
         {
-          const transformedData = data.map((v: any) => ({
-            masp: v.masp?.trim()||'',
-            giaban: Number(v.giaban)||0,
-         }));
+            const transformedData = data.map((v: any) => ({
+              masp: v.masp?.trim() || '',
+              giaban: Number(v.giaban) || 0,
+            }))
+            .filter((v: any) => v.masp); // Loại bỏ các mục có masp trống
 
          this.DetailBanggia.update((v:any)=>{
           const listdata = transformedData.map((item:any) => {
