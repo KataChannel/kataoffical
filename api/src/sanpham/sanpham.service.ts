@@ -38,7 +38,11 @@ export class SanphamService {
     // Tạo mã mới dạng TG-NCC00001
     return `I1${nextNumber.toString().padStart(5, '0')}`;
   }
+
   async create(data: any) {
+    // Check if the masp is provided, if not generate a new one
+    data.masp = data.masp ? data.masp : await this.generateMaSP();
+
     // Check if the masp already exists in the database
     const existingSanpham = await this.prisma.sanpham.findUnique({
       where: { masp: data.masp },
@@ -57,7 +61,6 @@ export class SanphamService {
 
     // Create the new sanpham entry
     this._SocketGateway.sendSanphamUpdate();
-    data.masp = data.masp ? data.masp : await this.generateMaSP();
     return this.prisma.sanpham.create({
       data: {
         ...data,

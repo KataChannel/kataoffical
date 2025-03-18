@@ -159,9 +159,15 @@
                         </span>
                         }
                         @case ('madonhang') {
-                        <span  class="max-w-40 line-clamp-4 font-bold text-blue-700">
-                            {{ row[column] }}
-                        </span>
+                            <div class="relative">
+                                <span  class="max-w-40 line-clamp-4 font-bold text-blue-700">
+                                    {{ row[column] }}
+                                </span>
+                                <div class="absolute top-2 left-[-30px] bg-red-500 text-white text-xs font-bold px-10 py-1 rotate-[-45deg] shadow">
+                                    Giảm giá
+                                  </div>
+                            </div>
+
                         }
                         @case ('createdAt') {
                         <span class="max-w-40 line-clamp-4">
@@ -208,7 +214,7 @@
                 </ng-container>
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="goToDetail(row);" class="{{row.printCount>0?'bg-gray-100':''}}"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="goToDetail(row);" class="{{row.printCount>0?'!bg-gray-100':''}}"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>

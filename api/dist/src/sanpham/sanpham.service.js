@@ -40,6 +40,7 @@ let SanphamService = class SanphamService {
         return `I1${nextNumber.toString().padStart(5, '0')}`;
     }
     async create(data) {
+        data.masp = data.masp ? data.masp : await this.generateMaSP();
         const existingSanpham = await this.prisma.sanpham.findUnique({
             where: { masp: data.masp },
         });
@@ -52,7 +53,6 @@ let SanphamService = class SanphamService {
         });
         newOrder = (maxOrder._max?.order || 0) + 1;
         this._SocketGateway.sendSanphamUpdate();
-        data.masp = data.masp ? data.masp : await this.generateMaSP();
         return this.prisma.sanpham.create({
             data: {
                 ...data,
