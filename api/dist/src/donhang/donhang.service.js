@@ -11,8 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DonhangService = void 0;
 const common_1 = require("@nestjs/common");
-const moment = require('moment');
 const prisma_service_1 = require("../../prisma/prisma.service");
+const moment = require("moment-timezone");
 let DonhangService = class DonhangService {
     constructor(prisma) {
         this.prisma = prisma;
@@ -68,8 +68,8 @@ let DonhangService = class DonhangService {
         const result = await this.prisma.donhang.findMany({
             where: {
                 ngaygiao: {
-                    gte: Batdau ? moment(Batdau).startOf('day').toDate() : undefined,
-                    lte: Ketthuc ? moment(Ketthuc).endOf('day').toDate() : undefined,
+                    gte: Batdau ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate() : undefined,
+                    lte: Ketthuc ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate() : undefined,
                 },
                 type: Type,
                 status: Array.isArray(params.Status) ? { in: params.Status } : params.Status,

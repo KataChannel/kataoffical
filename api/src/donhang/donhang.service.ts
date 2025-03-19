@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-const moment = require('moment');
 import { PrismaService } from 'prisma/prisma.service';
+import * as moment from 'moment-timezone';
 
 @Injectable()
 export class DonhangService {
@@ -70,8 +70,8 @@ export class DonhangService {
     const result =await this.prisma.donhang.findMany({
       where: {
         ngaygiao: {
-          gte: Batdau ? moment(Batdau).startOf('day').toDate() : undefined,
-          lte: Ketthuc ? moment(Ketthuc).endOf('day').toDate() : undefined,
+          gte: Batdau ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate() : undefined,
+          lte: Ketthuc ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate() : undefined,
         },
         type: Type,
         status: Array.isArray(params.Status) ? { in: params.Status } : params.Status,
