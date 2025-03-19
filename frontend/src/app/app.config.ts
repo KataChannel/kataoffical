@@ -7,7 +7,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { FIREBASE_OPTIONS } from '@angular/fire/compat';
 import { environment } from '../environments/environment.development';
 import { provideServiceWorker } from '@angular/service-worker';
-import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
+import { DynamicDateAdapter } from './dynamic-date-adapter';
 export const MY_DATE_FORMATS = {
   parse: {
     dateInput: 'DD/MM/YYYY',
@@ -24,6 +25,7 @@ export const appConfig: ApplicationConfig = {
     { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig },
     { provide: MAT_DATE_LOCALE, useValue: 'vi-VN' }, // Ngôn ngữ tiếng Việt
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    { provide: DateAdapter, useClass: DynamicDateAdapter },
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes), 
     provideClientHydration(withEventReplay()),

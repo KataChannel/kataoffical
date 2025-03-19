@@ -22,6 +22,7 @@ npx katacreate --type nestjs --name phieukho --outputDir phieukho
 npx katacreate --type nestjs --name role --outputDir role
 npx katacreate --type nestjs --name permission --outputDir permission
 npx katacreate --type nestjs --name googledrive --outputDir googledrive
+npx katacreate --type nestjs --name errorlogs --outputDir errorlogs
 
 
 Tình huống	Lệnh cần chạy

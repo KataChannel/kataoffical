@@ -59,8 +59,6 @@ export class DonhangService {
 
   async searchDonhang(SearchParams: any) {
     const payload = {...SearchParams}
-    payload.Batdau = moment(payload.Batdau).utc().add(1, 'day').startOf('day')
-    payload.Ketthuc = moment(payload.Ketthuc).utc().add(1, 'day').startOf('day')
     try {
       const options = {
         method: 'POST',
