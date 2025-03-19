@@ -78,7 +78,6 @@ export class DetailDathangComponent {
       this.filterSanpham = this._SanphamService.ListSanpham();
       this.dataSource().data = this.DetailDathang().sanpham;
       this.dataSource().paginator = this.paginator;
-      this.dataSource().sort = this.sort;
     });
 
     effect(async () => {
@@ -245,36 +244,142 @@ export class DetailDathangComponent {
     });
   }
 
-  updateValue(
-    event: Event,
-    index: number | null,
-    element: any,
-    field: keyof any,
-    type: 'number' | 'string'
-  ) {
+  // updateValue(
+  //   event: Event,
+  //   index: number | null,
+  //   element: any,
+  //   field: keyof any,
+  //   type: 'number' | 'string'
+  // ) {
+  //   const newValue =
+  //     type === 'number'
+  //       ? Number(
+  //           (event.target as HTMLElement).innerText
+  //             .trim()
+  //             .replace(/[^0-9]/g, '')
+  //         ) || 0
+  //       : (event.target as HTMLElement).innerText.trim();
+
+  //   this.DetailDathang.update((v: any) => {
+  //     if (index !== null) {
+  //       if(field=='sldat'){
+  //         v.sanpham[index][field] = v.sanpham[index]['slgiao'] = newValue;
+  //       }else{
+  //         v.sanpham[index][field] = newValue;
+  //       }
+       
+  //     } else {
+  //       v[field] = newValue;
+  //     }
+  //     return v;
+  //   });
+  // }
+  EnterUpdateValue(event: Event,index: number | null,element: any,field: keyof any,type: 'number' | 'string') {
     const newValue =
       type === 'number'
-        ? Number(
-            (event.target as HTMLElement).innerText
-              .trim()
-              .replace(/[^0-9]/g, '')
-          ) || 0
+        ? Number((event.target as HTMLElement).innerText.trim()) || 0
         : (event.target as HTMLElement).innerText.trim();
-
+        const keyboardEvent = event as KeyboardEvent;
+        if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
+          event.preventDefault();
+        }
+        if (type === "number") {
+          const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+          
+          // Chặn nếu không phải số và không thuộc danh sách phím cho phép
+          if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
+            event.preventDefault();
+          }
+        } 
+        console.log(this.DetailDathang());
+        
     this.DetailDathang.update((v: any) => {
       if (index !== null) {
-        if(field=='sldat'){
-          v.sanpham[index][field] = v.sanpham[index]['slgiao'] = newValue;
-        }else{
+        console.log(index);
+        
+        console.log(v.sanpham[index]);
+        
+        if (field === 'sldat') {
+          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
+          // Find the next input to focus on
+          const inputs = document.querySelectorAll('.sldat-input')as NodeListOf<HTMLInputElement>;
+              if (index < this.dataSource().filteredData.length - 1) {
+                const nextInput = inputs[index + 1]as HTMLInputElement
+                if (nextInput) {
+                  if (nextInput instanceof HTMLInputElement) {
+                    nextInput.focus();
+                    nextInput.select();
+                  }
+                  // Then select text using a different method that works on more element types
+                  setTimeout(() => {
+                    if (document.createRange && window.getSelection) {
+                      const range = document.createRange();
+                      range.selectNodeContents(nextInput);
+                      const selection = window.getSelection();
+                      selection?.removeAllRanges();
+                      selection?.addRange(range);
+                    }
+                  }, 10);
+                }
+              }
+
+        } 
+        else if (field === 'ghichu') {
+          v.sanpham[index][field] = newValue;
+          // Find the next input to focus on
+          const inputs = document.querySelectorAll('.ghichu-input')as NodeListOf<HTMLInputElement>;
+              if (index < this.dataSource().filteredData.length - 1) {
+                const nextInput = inputs[index + 1]as HTMLInputElement
+                if (nextInput) {
+                  if (nextInput instanceof HTMLInputElement) {
+                    nextInput.focus();
+                    nextInput.select();
+                  }
+                  // Then select text using a different method that works on more element types
+                  setTimeout(() => {
+                    if (document.createRange && window.getSelection) {
+                      const range = document.createRange();
+                      range.selectNodeContents(nextInput);
+                      const selection = window.getSelection();
+                      selection?.removeAllRanges();
+                      selection?.addRange(range);
+                    }
+                  }, 10);
+                }
+              }
+        } 
+        
+        else if (field === 'slgiao') {
+          const newGiao = newValue
+          if (newGiao < v.sanpham[index]['sldat']) {
+            // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
+            v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
+            this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
+              duration: 1000,
+              horizontalPosition: "end",
+              verticalPosition: "top",
+              panelClass: ['snackbar-error'],
+            });
+          } else {
+            v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newGiao;
+          }
+        } else {
           v.sanpham[index][field] = newValue;
         }
-       
       } else {
         v[field] = newValue;
       }
       return v;
     });
   }
+
+
+
+
+
+
+
+
   Tongcong: any = 0;
   Tong: any = 0;
   Tinhtongcong(value: any) {
@@ -373,8 +478,6 @@ export class DetailDathangComponent {
     //   return v;
     // })
     this.dataSource().data = this.DetailDathang().sanpham;
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;
     this.reloadfilter();
   }
   applyFilter(event: Event) {
@@ -388,8 +491,6 @@ export class DetailDathangComponent {
       return v;
     })
     this.dataSource().data = this.DetailDathang().sanpham;
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;
     this.reloadfilter();
   }
   getName(id:any)
@@ -433,9 +534,7 @@ export class DetailDathangComponent {
       this.reloadfilter();
       return v;
     })
-    this.dataSource().data = this.DetailDathang().sanpham;
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;    
+    this.dataSource().data = this.DetailDathang().sanpham;   
   }
   RemoveSanpham(item:any){
     this.DetailDathang.update((v:any)=>{
@@ -444,8 +543,6 @@ export class DetailDathangComponent {
       return v;
     })
     this.dataSource().data = this.DetailDathang().sanpham;
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;
   }
   GetGoiy(item:any){
     const result = parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
@@ -481,8 +578,6 @@ export class DetailDathangComponent {
   {
     this.ListFilter = this.filterSanpham;
     this.dataSource().data = this.filterSanpham;
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;
   }
   EmptyFiter()
   {
@@ -494,10 +589,15 @@ export class DetailDathangComponent {
   }
   ApplyFilterColum(menu:any)
   {    
- 
-    this.dataSource().data = this.filterSanpham.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;
+    this.ListFilter.forEach((v)=>{
+      v.sldat = v.slgiao = v.slnhan=1;
+    })
+    this.dataSource().data = this.ListFilter
+    this.DetailDathang.update((v:any)=>{
+      v.sanpham =  this.ListFilter
+      return v
+    })  
+    this.dataSource().data.sort((a, b) => a.order - b.order);
     menu.closeMenu();
   }
 }

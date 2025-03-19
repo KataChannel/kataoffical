@@ -20,6 +20,7 @@ import { PermissionModule } from './permission/permission.module';
 import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
 import { GoogledriveModule } from './shared/googledrive/googledrive.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
+import { ErrorlogsModule } from './errorlogs/errorlogs.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ChatbotModule } from './chatbot/chatbot.module';
     RoleModule,
     PermissionModule,
     GoogledriveModule,
+    ErrorlogsModule
     // ChatbotModule
   ],
   controllers: [AppController],

@@ -28,6 +28,7 @@ const role_module_1 = require("./role/role.module");
 const permission_module_1 = require("./permission/permission.module");
 const nhomkhachhang_module_1 = require("./nhomkhachhang/nhomkhachhang.module");
 const googledrive_module_1 = require("./shared/googledrive/googledrive.module");
+const errorlogs_module_1 = require("./errorlogs/errorlogs.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -53,6 +54,7 @@ exports.AppModule = AppModule = __decorate([
             role_module_1.RoleModule,
             permission_module_1.PermissionModule,
             googledrive_module_1.GoogledriveModule,
+            errorlogs_module_1.ErrorlogsModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

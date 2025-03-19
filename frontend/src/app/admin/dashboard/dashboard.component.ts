@@ -80,5 +80,21 @@ export class DashboardComponent {
       this.isLoading = false; // Dừng loading dù có lỗi hay không
     }
   }
- 
+  async ngOnInit(): Promise<void> {
+      // const query = {
+      //   "model": "donhang",
+      //   "filters": {
+      //     "madonhang": { "value": value, "type": "contains" }
+      //   },
+      //   "relations": {
+      //     "banggia": {
+      //       "include": true
+      //     }
+      //   },
+      //   "orderBy": { "field": "createdAt", "direction": "desc" },
+      //   "take": 10
+      // };
+      // await this._SearchService.Search(query)
+    
+  }
 }

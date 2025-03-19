@@ -1,9 +1,11 @@
 import { PrismaService } from 'prisma/prisma.service';
+import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
 import { SocketGateway } from 'src/socket.gateway';
 export declare class SanphamService {
     private readonly prisma;
     private _SocketGateway;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
+    private _ErrorlogsService;
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogsService: ErrorlogsService);
     getLastUpdatedSanpham(): Promise<{
         updatedAt: number | Date;
     }>;

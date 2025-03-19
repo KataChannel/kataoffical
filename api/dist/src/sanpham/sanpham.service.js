@@ -12,11 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SanphamService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const errorlogs_service_1 = require("../errorlogs/errorlogs.service");
 const socket_gateway_1 = require("../socket.gateway");
 let SanphamService = class SanphamService {
-    constructor(prisma, _SocketGateway) {
+    constructor(prisma, _SocketGateway, _ErrorlogsService) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
+        this._ErrorlogsService = _ErrorlogsService;
     }
     async getLastUpdatedSanpham() {
         const lastUpdated = await this.prisma.sanpham.aggregate({
@@ -69,7 +71,13 @@ let SanphamService = class SanphamService {
         }
     }
     async findAll() {
-        return this.prisma.sanpham.findMany();
+        try {
+            return await this.prisma.sanpham.findMany();
+        }
+        catch (error) {
+            this._ErrorlogsService.logError('Lỗi lấy tất cả sản phẩm', { error: error.message });
+            throw error;
+        }
     }
     async findOne(id) {
         const sanpham = await this.prisma.sanpham.findUnique({ where: { id } });
@@ -94,6 +102,7 @@ exports.SanphamService = SanphamService;
 exports.SanphamService = SanphamService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway])
+        socket_gateway_1.SocketGateway,
+        errorlogs_service_1.ErrorlogsService])
 ], SanphamService);
 //# sourceMappingURL=sanpham.service.js.map

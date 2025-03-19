@@ -340,3 +340,11 @@ model File {
   jsonData  Json?
   createdAt DateTime @default(now())
 }
+model ErrorLog {
+  id        String   @id @default(uuid())
+  timestamp DateTime
+  message   String
+  details   Json?    // Lưu thông tin bổ sung dưới dạng JSON
+  source    String   // "client" hoặc "server" để phân biệt nguồn lỗi
+  createdAt DateTime @default(now())
+}

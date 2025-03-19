@@ -460,6 +460,8 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
           this.reloadfilter();
           return v;
         })       
+        console.log(this.DetailBanggia().sanpham);
+        
         this.dataSource().data = this.DetailBanggia().sanpham;
         //this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;             
@@ -478,8 +480,6 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         ListFilter:any[] =[]
         ChosenItem(item:any)
         {
-          console.log(item);
-          
           const CheckItem = this.filterSanpham.filter((v:any)=>v.id===item.id);
           const CheckItem1 = this.ListFilter.filter((v:any)=>v.id===item.id);
           if(CheckItem1.length>0)
@@ -511,11 +511,19 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         }
         ApplyFilterColum(menu:any)
         {    
-      
-          this.dataSource().data = this.filterSanpham.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
-          //this.dataSource().paginator = this.paginator;
-          this.dataSource().sort = this.sort;
+          this.dataSource().data = this.ListFilter
+          this.DetailBanggia.update((v:any)=>{
+            v.sanpham =  this.ListFilter
+            return v
+          })  
+          this.dataSource().data.sort((a, b) => a.order - b.order);
           menu.closeMenu();
+
+
+          // this.dataSource().data = this.filterSanpham.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+          // //this.dataSource().paginator = this.paginator;
+          // this.dataSource().sort = this.sort;
+          // menu.closeMenu();
         }
 
   }

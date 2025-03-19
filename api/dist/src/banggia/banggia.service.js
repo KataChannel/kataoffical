@@ -99,6 +99,12 @@ let BanggiaService = class BanggiaService {
         };
     }
     async update(id, data) {
+        const existingBanggia = await this.prisma.banggia.findUnique({
+            where: { id },
+        });
+        if (!existingBanggia) {
+            throw new common_1.NotFoundException(`Banggia with ID "${id}" not found`);
+        }
         return this.prisma.banggia.update({
             where: { id },
             data: {
@@ -108,13 +114,15 @@ let BanggiaService = class BanggiaService {
                 status: data.status || 'baogia',
                 batdau: data.batdau ? new Date(data.batdau) : null,
                 ketthuc: data.ketthuc ? new Date(data.ketthuc) : null,
-                sanpham: {
+                sanpham: data.sanpham && Array.isArray(data.sanpham) ? {
                     deleteMany: {},
-                    create: data.sanpham?.map((sp) => ({
-                        sanphamId: sp.sanphamId,
-                        giaban: sp.giaban,
+                    create: data.sanpham
+                        .filter((sp) => sp?.sanphamId || sp?.id)
+                        .map((sp) => ({
+                        sanphamId: sp.sanphamId || sp.id,
+                        giaban: sp.giaban || 0,
                     })),
-                },
+                } : undefined,
             },
             include: {
                 sanpham: true,

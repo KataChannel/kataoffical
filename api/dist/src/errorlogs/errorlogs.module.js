@@ -6,22 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SanphamModule = void 0;
+exports.ErrorlogsModule = void 0;
 const common_1 = require("@nestjs/common");
-const sanpham_service_1 = require("./sanpham.service");
-const sanpham_controller_1 = require("./sanpham.controller");
+const errorlogs_service_1 = require("./errorlogs.service");
+const errorlogs_controller_1 = require("./errorlogs.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
-const socket_gateway_1 = require("../socket.gateway");
-const errorlogs_module_1 = require("../errorlogs/errorlogs.module");
-let SanphamModule = class SanphamModule {
+let ErrorlogsModule = class ErrorlogsModule {
 };
-exports.SanphamModule = SanphamModule;
-exports.SanphamModule = SanphamModule = __decorate([
+exports.ErrorlogsModule = ErrorlogsModule;
+exports.ErrorlogsModule = ErrorlogsModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlogs_module_1.ErrorlogsModule],
-        controllers: [sanpham_controller_1.SanphamController],
-        providers: [sanpham_service_1.SanphamService, socket_gateway_1.SocketGateway],
-        exports: [sanpham_service_1.SanphamService]
+        imports: [prisma_module_1.PrismaModule],
+        controllers: [errorlogs_controller_1.ErrorlogsController],
+        providers: [errorlogs_service_1.ErrorlogsService],
+        exports: [errorlogs_service_1.ErrorlogsService]
     })
-], SanphamModule);
-//# sourceMappingURL=sanpham.module.js.map
+], ErrorlogsModule);
+//# sourceMappingURL=errorlogs.module.js.map

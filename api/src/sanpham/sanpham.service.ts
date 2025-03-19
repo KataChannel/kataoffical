@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
 import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
@@ -7,6 +8,7 @@ export class SanphamService {
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
+    private _ErrorlogsService: ErrorlogsService,
   ) {}
 
   // async create(data: any) {
@@ -78,8 +80,13 @@ export class SanphamService {
       });
     }
   }
-  async findAll() {
-    return this.prisma.sanpham.findMany();
+  async findAll() {  
+    try {
+      return await this.prisma.sanpham.findMany();
+    } catch (error) {
+      this._ErrorlogsService.logError('Lỗi lấy tất cả sản phẩm', { error: error.message });
+      throw error;
+    }
   }
 
   async findOne(id: string) {
