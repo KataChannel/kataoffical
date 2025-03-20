@@ -35,6 +35,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { SanphamService } from '../../sanpham/sanpham.service';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 @Component({
   selector: 'app-detaildathang',
   imports: [
@@ -76,8 +77,8 @@ export class DetailDathangComponent {
       this.filterBanggia = this._BanggiaService.ListBanggia();
       await this._SanphamService.getAllSanpham();
       this.filterSanpham = this._SanphamService.ListSanpham();
-      this.dataSource().data = this.DetailDathang().sanpham;
-      this.dataSource().paginator = this.paginator;
+      this.dataSource.data = this.DetailDathang().sanpham;
+      // this.dataSource.paginator = this.paginator;
     });
 
     effect(async () => {
@@ -123,7 +124,7 @@ export class DetailDathangComponent {
   private async createDathang() {
     try {
       this.DetailDathang.update((v: any) => {
-        v.sanpham = this.dataSource().data
+        v.sanpham = this.dataSource.data
         v.ngaynhan = moment(v.ngaygiao).format('YYYY-MM-DD');
         return v;
       });
@@ -144,7 +145,7 @@ export class DetailDathangComponent {
     try {
       console.log(this.DetailDathang());
       this.DetailDathang.update((v:any)=>{
-        v.sanpham = this.dataSource().data
+        v.sanpham = this.dataSource.data
         return v
       })
       await this._DathangService.updateDathang(this.DetailDathang());
@@ -303,7 +304,7 @@ export class DetailDathangComponent {
           v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
           // Find the next input to focus on
           const inputs = document.querySelectorAll('.sldat-input')as NodeListOf<HTMLInputElement>;
-              if (index < this.dataSource().filteredData.length - 1) {
+              if (index < this.dataSource.filteredData.length - 1) {
                 const nextInput = inputs[index + 1]as HTMLInputElement
                 if (nextInput) {
                   if (nextInput instanceof HTMLInputElement) {
@@ -328,7 +329,7 @@ export class DetailDathangComponent {
           v.sanpham[index][field] = newValue;
           // Find the next input to focus on
           const inputs = document.querySelectorAll('.ghichu-input')as NodeListOf<HTMLInputElement>;
-              if (index < this.dataSource().filteredData.length - 1) {
+              if (index < this.dataSource.filteredData.length - 1) {
                 const nextInput = inputs[index + 1]as HTMLInputElement
                 if (nextInput) {
                   if (nextInput instanceof HTMLInputElement) {
@@ -431,8 +432,8 @@ export class DetailDathangComponent {
     slnhan: 'SL Nhận',
     ghichu: 'Ghi Chú'
   };
-  dataSource = signal(new MatTableDataSource<any>([]));
-  CountItem = computed(() => this.dataSource().data.length);
+  dataSource = new MatTableDataSource<any>([]);
+  CountItem = this.dataSource.data.length;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
@@ -477,12 +478,12 @@ export class DetailDathangComponent {
     //   v.sanpham = listdata
     //   return v;
     // })
-    this.dataSource().data = this.DetailDathang().sanpham;
+    this.dataSource.data = this.DetailDathang().sanpham;
     this.reloadfilter();
   }
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource().filter = filterValue.trim().toLowerCase();
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
   EmptyCart()
   {
@@ -490,7 +491,7 @@ export class DetailDathangComponent {
       v.sanpham = []
       return v;
     })
-    this.dataSource().data = this.DetailDathang().sanpham;
+    this.dataSource.data = this.DetailDathang().sanpham;
     this.reloadfilter();
   }
   getName(id:any)
@@ -534,7 +535,7 @@ export class DetailDathangComponent {
       this.reloadfilter();
       return v;
     })
-    this.dataSource().data = this.DetailDathang().sanpham;   
+    this.dataSource.data = this.DetailDathang().sanpham;   
   }
   RemoveSanpham(item:any){
     this.DetailDathang.update((v:any)=>{
@@ -542,7 +543,7 @@ export class DetailDathangComponent {
       this.reloadfilter();
       return v;
     })
-    this.dataSource().data = this.DetailDathang().sanpham;
+    this.dataSource.data = this.DetailDathang().sanpham;
   }
   GetGoiy(item:any){
     const result = parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
@@ -551,8 +552,8 @@ export class DetailDathangComponent {
     }
     return result;
    }
-   doFilterSanpham(event: any): void {
-    this.dataSource().filteredData = this.filterSanpham.filter((v: any) => v.title.toLowerCase().includes(event.target.value.toLowerCase()));  
+   doFilterSanpham(event: any): void {    
+    this.filterSanpham = this._SanphamService.ListSanpham().filter((v: any) => removeVietnameseAccents(v.title).includes(event.target.value.toLowerCase())|| v.title.toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]
@@ -577,7 +578,7 @@ export class DetailDathangComponent {
   ResetFilter()
   {
     this.ListFilter = this.filterSanpham;
-    this.dataSource().data = this.filterSanpham;
+    this.dataSource.data = this.filterSanpham;
   }
   EmptyFiter()
   {
@@ -589,15 +590,17 @@ export class DetailDathangComponent {
   }
   ApplyFilterColum(menu:any)
   {    
+    console.log(this.ListFilter);
+    
     this.ListFilter.forEach((v)=>{
       v.sldat = v.slgiao = v.slnhan=1;
     })
-    this.dataSource().data = this.ListFilter
+    this.dataSource.data = this.ListFilter
     this.DetailDathang.update((v:any)=>{
       v.sanpham =  this.ListFilter
       return v
     })  
-    this.dataSource().data.sort((a, b) => a.order - b.order);
+    this.dataSource.data.sort((a, b) => a.order - b.order);
     menu.closeMenu();
   }
 }

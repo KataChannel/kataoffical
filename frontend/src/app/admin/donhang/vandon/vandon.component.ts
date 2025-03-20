@@ -356,7 +356,9 @@ export class VandonComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource().filteredData = this.Listvandon.filter((v: any) => removeVietnameseAccents(v[column]).toLowerCase().includes(event.target.value.toLowerCase()));  
+    this.dataSource().filteredData = this.Listvandon.filter((v: any) => 
+      removeVietnameseAccents(v[column]).toLowerCase().includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase())
+  );  
     const query = event.target.value.toLowerCase();  
   }
   trackByFn(index: number, item: any): any {
