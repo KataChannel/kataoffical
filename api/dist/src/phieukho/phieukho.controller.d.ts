@@ -9,8 +9,8 @@ export declare class PhieukhoController {
             createdAt: Date;
             updatedAt: Date;
             soluong: number;
-            sanphamId: string;
             sldat: number;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {
@@ -50,8 +50,8 @@ export declare class PhieukhoController {
             createdAt: Date;
             updatedAt: Date;
             soluong: number;
-            sanphamId: string;
             sldat: number;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
         kho: {
@@ -104,8 +104,8 @@ export declare class PhieukhoController {
             createdAt: Date;
             updatedAt: Date;
             soluong: number;
-            sanphamId: string;
             sldat: number;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {
@@ -126,8 +126,8 @@ export declare class PhieukhoController {
             createdAt: Date;
             updatedAt: Date;
             soluong: number;
-            sanphamId: string;
             sldat: number;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {

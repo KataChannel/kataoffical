@@ -37,8 +37,8 @@ export declare class PhieukhoService {
             createdAt: Date;
             updatedAt: Date;
             soluong: number;
-            sanphamId: string;
             sldat: number;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
         kho: {
@@ -82,8 +82,8 @@ export declare class PhieukhoService {
             createdAt: Date;
             updatedAt: Date;
             soluong: number;
-            sanphamId: string;
             sldat: number;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {
@@ -104,8 +104,8 @@ export declare class PhieukhoService {
             createdAt: Date;
             updatedAt: Date;
             soluong: number;
-            sanphamId: string;
             sldat: number;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {
@@ -126,8 +126,8 @@ export declare class PhieukhoService {
             createdAt: Date;
             updatedAt: Date;
             soluong: number;
-            sanphamId: string;
             sldat: number;
+            sanphamId: string;
             phieuKhoId: string;
         }[];
     } & {

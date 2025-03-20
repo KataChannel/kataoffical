@@ -64,6 +64,23 @@
           <input matInput type="number" [(ngModel)]="DetailSanpham().haohut" [disabled]="!isEdit()" placeholder="Vui lòng nhập haohut"/>
         </mat-form-field>
       </div>
+      <div class="flex flex-col space-y-2 p-4">
+        <div class="grid grid-cols-3 gap-2 font-bold">
+          <span>Mã Đơn</span>
+          <span>Số Lượng</span>
+          <span>Ngày Tạo</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-red-600" *ngFor="let item of DetailSanpham().Donhang; let i=index">
+          <span>{{item.madonhang}}</span>
+          <span>- {{item.sldat}}</span>
+          <span>{{item.createdAt|date:'dd/MM/yyyy'}}</span>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-green-600" *ngFor="let item of DetailSanpham().Dathang; let i=index">
+          <span>{{item.madncc}}</span>
+          <span>+ {{item.sldat}}</span>
+          <span>{{item.createdAt|date:'dd/MM/yyyy'}}</span>
+        </div>
+      </div>
     </div>
   </ng-container>
 </div>

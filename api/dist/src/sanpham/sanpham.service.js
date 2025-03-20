@@ -75,12 +75,64 @@ let SanphamService = class SanphamService {
             return await this.prisma.sanpham.findMany();
         }
         catch (error) {
-            this._ErrorlogsService.logError('Lỗi lấy tất cả sản phẩm', { error: error.message });
+            this._ErrorlogsService.logError('Lỗi lấy tất cả sản phẩm', {
+                error: error.message,
+            });
             throw error;
         }
     }
     async findOne(id) {
-        const sanpham = await this.prisma.sanpham.findUnique({ where: { id } });
+        const sanpham = await this.prisma.sanpham.findUnique({
+            where: { id },
+            include: {
+                Donhangsanpham: {
+                    include: {
+                        donhang: true,
+                    },
+                },
+                Dathangsanpham: {
+                    include: {
+                        dathang: true,
+                    },
+                },
+            },
+        });
+        if (!sanpham)
+            throw new common_1.NotFoundException('Sanpham not found');
+        return {
+            ...sanpham,
+            Donhang: sanpham.Donhangsanpham.map((item) => ({
+                createdAt: item.donhang.createdAt || null,
+                madonhang: item.donhang.madonhang,
+                sldat: item.sldat || 0,
+                slgiao: item.slgiao || 0,
+                slnhan: item.slnhan || 0,
+            })),
+            Dathang: sanpham.Dathangsanpham.map((item) => ({
+                createdAt: item.dathang.createdAt || null,
+                madncc: item.dathang.madncc,
+                sldat: item.sldat || 0,
+                slgiao: item.slgiao || 0,
+                slnhan: item.slnhan || 0,
+            })),
+        };
+    }
+    async finby(id) {
+        const sanpham = await this.prisma.sanpham.findUnique({
+            where: { id },
+            include: {
+                Donhangsanpham: {
+                    include: {
+                        donhang: true,
+                    },
+                },
+                Dathangsanpham: {
+                    include: {
+                        dathang: true,
+                    },
+                },
+            },
+        });
         if (!sanpham)
             throw new common_1.NotFoundException('Sanpham not found');
         return sanpham;
