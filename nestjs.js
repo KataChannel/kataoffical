@@ -18,133 +18,157 @@ async function generateFile(filePath, content) {
     const TenThuong = name.toLowerCase().replace(/\s+/g, '-');
     
     // Define file content
-    const componentContent = `
-    import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
-import { MenuService } from './menu.service';
-
-@Controller('menu')
-export class MenuController {
-  constructor(private readonly menuService: MenuService) {}
-
+    const componentContent = `import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { SanphamService } from './sanpham.service';
+@Controller('sanpham')
+export class SanphamController {
+  constructor(private readonly sanphamService: SanphamService) {}
   @Post()
-  create(@Body() createMenuDto: any) {
-    return this.menuService.create(createMenuDto);
+  create(@Body() createSanphamDto: any) {
+    return this.sanphamService.create(createSanphamDto);
   }
-
+  @Post('findby')
+  findby(@Body() param: any) {
+    return this.sanphamService.findby(param);
+  }
   @Get()
   findAll() {
-    return this.menuService.findAll();
+    return this.sanphamService.findAll();
   }
-
+  @Get('last-updated')
+    async getLastUpdatedSanpham() {
+      return this.sanphamService.getLastUpdatedSanpham();
+  }
   @Get('findid/:id')
   findOne(@Param('id') id: string) {
-    return this.menuService.findOne(id);
+    return this.sanphamService.findOne(id);
   }
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMenuDto: any) {
-    return this.menuService.update(id, updateMenuDto);
+  update(@Param('id') id: string, @Body() data: any) {
+    return this.sanphamService.update(id, data);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.menuService.remove(id);
+    return this.sanphamService.remove(id);
   }
   @Post('reorder')
-  reorder(@Body() body: { menuIds: string[] }) {
-    return this.menuService.reorderMenus(body.menuIds);
+  reorder(@Body() body: { sanphamIds: string[] }) {
+    return this.sanphamService.reorderSanphams(body.sanphamIds);
   }
-}
-`;
+}`;
 
   const moduleContent = `
 import { Module } from '@nestjs/common';
-  import { MenuService } from './menu.service';
-  import { MenuController } from './menu.controller';
+import { SanphamService } from './sanpham.service';
+import { SanphamController } from './sanpham.controller';
 import { PrismaModule } from 'prisma/prisma.module';
+import { SocketGateway } from 'src/socket.gateway';
   @Module({
     imports: [PrismaModule],
-    controllers: [MenuController],
-    providers: [MenuService],
-    exports:[MenuService]
+    controllers: [SanphamController],
+    providers: [SanphamService,SocketGateway],
+    exports:[SanphamService]
   })
-  export class MenuModule {}
+  export class SanphamModule {}
   `;
   
   
-    const serviceContent = `
-    import { Injectable, NotFoundException } from '@nestjs/common';
+    const serviceContent = `import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
-export class MenuService {
-  constructor(private readonly prisma: PrismaService) {}
+export class SanphamService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private _SocketGateway: SocketGateway,
+  ) {}
 
   // async create(data: any) {
-  //   return this.prisma.menu.create({ data });
+  //   return this.prisma.sanpham.create({ data });
   // }
-  async create(data: any) {
-    let newOrder: number;
+  async getLastUpdatedSanpham() {
+    const lastUpdated = await this.prisma.sanpham.aggregate({
+      _max: {
+        updatedAt: true,
+      },
+    });
+    return { updatedAt: lastUpdated._max.updatedAt || 0 };
+  }
+  async generateMaSP(): Promise<string> {
+    // Lấy NCC mới nhất
+    const latest = await this.prisma.sanpham.findFirst({
+      orderBy: { masp: 'desc' },
+    });
 
-    if (data.parentId) {
-      // If the menu has a parent, find the maximum order value for its children
-      const maxOrder = await this.prisma.menu.aggregate({
-        _max: {
-          order: true,
-        },
-        where: {
-          parentId: data.parentId,
-        },
-      });
-
-      newOrder = (maxOrder._max.order || 0) + 1;
-    } else {
-      // If the menu is a root menu, find the maximum order value for all root menus
-      const maxOrder = await this.prisma.menu.aggregate({
-        _max: {
-          order: true,
-        },
-        where: {
-          parentId: null,
-        },
-      });
-
-      newOrder = (maxOrder._max.order || 0) + 1;
+    // Nếu chưa có NCC nào, bắt đầu từ 1
+    let nextNumber = 1;
+    if (latest) {
+      const match = latest.masp.match(/I1(\d+)/);
+      if (match) {
+        nextNumber = parseInt(match[1]) + 1;
+      }
     }
 
-    // Create the new menu entry
-    return this.prisma.menu.create({
+    // Tạo mã mới dạng TG-NCC00001
+    return \`I1\${nextNumber.toString().padStart(5, '0')}\`;
+  }
+  async create(data: any) {
+    let newOrder: number;
+    const maxOrder = await this.prisma.sanpham.aggregate({
+      _max: { order: true },
+    });
+    newOrder = (maxOrder._max?.order || 0) + 1;
+    // Create the new sanpham entry
+    this._SocketGateway.sendSanphamUpdate();
+    const masp = await this.generateMaSP();
+    return this.prisma.sanpham.create({
       data: {
         ...data,
         order: newOrder,
+        masp:masp,
       },
     });
   }
 
-  async reorderMenus(menuIds: string[]) {
-    // Update the order of each menu based on its position in the array
-    for (let i = 0; i < menuIds.length; i++) {
-      await this.prisma.menu.update({
-        where: { id: menuIds[i] },
+  async reorderSanphams(sanphamIds: string[]) {
+    // Update the order of each sanpham based on its position in the array
+    for (let i = 0; i < sanphamIds.length; i++) {
+      await this.prisma.sanpham.update({
+        where: { id: sanphamIds[i] },
         data: { order: i + 1 },
       });
     }
   }
   async findAll() {
-    return this.prisma.menu.findMany();
+    return this.prisma.sanpham.findMany();
   }
 
+  async findby(param: any) {
+    const sanpham = await this.prisma.sanpham.findUnique({ where: param });
+    if (!sanpham) throw new NotFoundException('Sanpham not found');
+    return sanpham;
+  }
   async findOne(id: string) {
-    const menu = await this.prisma.menu.findUnique({ where: { id } });
-    if (!menu) throw new NotFoundException('Menu not found');
-    return menu;
+    const sanpham = await this.prisma.sanpham.findUnique({ where: { id } });
+    if (!sanpham) throw new NotFoundException('Sanpham not found');
+    return sanpham;
   }
 
   async update(id: string, data: any) {
-    return this.prisma.menu.update({ where: { id }, data });
+    if(data.order){
+      const { order, ...rest } = data;
+      await this.prisma.sanpham.update({ where: { id }, data: rest });
+      await this.prisma.sanpham.update({ where: { id }, data: { order } });
+    }
+    this._SocketGateway.sendSanphamUpdate();
+    return this.prisma.sanpham.update({ where: { id }, data });
   }
 
   async remove(id: string) {
-    return this.prisma.menu.delete({ where: { id } });
+    this._SocketGateway.sendSanphamUpdate();
+    return this.prisma.sanpham.delete({ where: { id } });
   }
 }
 `;

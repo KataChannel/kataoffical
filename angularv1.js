@@ -22,9 +22,9 @@ async function generateFile(filePath, content) {
     <mat-drawer #drawer class="flex flex-col lg:!w-1/2 !w-full h-full" [position]="'end'" mode="over">
         <router-outlet></router-outlet>
     </mat-drawer>
-    <div class="flex flex-col space-y-2 h-screen-16 w-full p-2">
-        <div *ngIf="!isSearch" class="border p-1 cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center bg-white rounded-lg">
-            <div class="w-full flex flex-row space-x-2 items-center">
+    <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
+        <div class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
+            <div class="flex flex-row space-x-2 items-center">
                 <button matTooltip="Thêm mới" (click)="create()" color="primary" mat-icon-button>
                     <mat-icon>add_circle</mat-icon>
                 </button>
@@ -47,8 +47,8 @@ async function generateFile(filePath, content) {
                         }
                     </div>
                 </mat-menu>
-                <button matTooltip="Tìm Kiếm" color="primary" (click)="isSearch = !isSearch" mat-icon-button>
-                    <mat-icon>search</mat-icon>
+                <button matTooltip="Bộ Lọc" color="primary" class="{{isFilter ? '!bg-slate-200' : ''}}" (click)="isFilter = !isFilter" mat-icon-button>
+                    <mat-icon>filter_list</mat-icon>
                 </button>
                 <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(Listsanpham(),'Sanpham')" color="primary" mat-icon-button>
                     <mat-icon>file_download</mat-icon>
@@ -61,21 +61,17 @@ async function generateFile(filePath, content) {
                     <mat-icon>cloud_download</mat-icon>
                 </button>
                 <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
-                    {{this.Listsanpham().length}} Sản Phẩm
+                    {{CountItem}} Nhà Cung Cấp
                 </span>
-                <button *ngIf="EditList.length > 0" matTooltip="Xoá" (click)="openDeleteDialog(DeleteDialog)" color="warn" mat-icon-button>
-                    <mat-icon>delete</mat-icon>
-                </button>
             </div>
         </div>
-        <div *ngIf="isSearch" class="border p-1 py-2 w-full flex flex-row space-x-2 items-center">
-            <mat-form-field appearance="outline" class="lg:w-auto w-full" subscriptSizing="dynamic">
-                <mat-label>Tìm Kiếm</mat-label>
-                <input matInput (keyup)="applyFilter($event)"  placeholder="Vui lòng Tìm Kiếm" />
+        <div *ngIf="isFilter" class="w-full grid grid-cols-2 gap-2 lg:flex lg:flex-row lg:space-x-2 items-center">
+            <mat-form-field *ngFor="let column of displayedColumns" appearance="outline" subscriptSizing="dynamic">
+                <mat-label>{{ ColumnName[column] }}</mat-label>
+                <input matInput (keyup)="applyFilter()" [(ngModel)]="filterValues[column]" [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập {{ column }}" />
             </mat-form-field>
-            <button mat-icon-button color="warn" (click)="isSearch=!isSearch"><mat-icon>cancel</mat-icon></button>
         </div>
-        <div class="border rounded-lg w-full h-full overflow-auto">
+        <div class="w-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
@@ -105,25 +101,12 @@ async function generateFile(filePath, content) {
                                             <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
                                         </div>
                                         <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
-                                                <div *ngFor="let item of FilterHederColumn(dataSource.filteredData,column); trackBy:trackByFn" (click)="ChosenItem(item,column)" class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
+                                            @for (item of FilterHederColumn(dataSource.filteredData,column); track $index) {
+                                                <div (click)="ChosenItem(item)" class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
                                                    <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>
-                                                   @switch (column) {
-                                                       @case ('createdAt') {
-                                                        <span>{{item[column]|date:'dd/MM/yyyy'}}</span> 
-                                                       }
-                                                       @case ('updatedAt') {
-                                                        <span>{{item[column]|date:'dd/MM/yyyy'}}</span> 
-                                                       }
-                                                       @case ('haohut') {
-                                                        <span>{{item[column]}}%</span> 
-                                                       }
-                                                       @default {
-                                                       <span> {{item[column]||'Trống'}}</span>
-                                                       }
-                                                     }
-                                               
- 
+                                                    {{item[column]||'Trống'}}
                                                 </div>
+                                            }
                                         </div>
                                         <div class="flex flex-row space-x-2 items-end justify-end">
                                             <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
@@ -134,11 +117,6 @@ async function generateFile(filePath, content) {
                     </th>
                     <td mat-cell *matCellDef="let row; let idx = index">
                         @switch (column) {
-                        @case ('masp') {
-                        <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
-                            {{ row[column] }}
-                        </span>
-                        }
                         @case ('STT') {
                         <span class="max-w-40 line-clamp-4">
                             {{ idx + 1 }}
@@ -147,11 +125,6 @@ async function generateFile(filePath, content) {
                         @case ('createdAt') {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column]|date:'dd/MM/yyyy'}}
-                        </span>
-                        }
-                        @case ('haohut') {
-                        <span class="max-w-40 line-clamp-4">
-                            {{ row[column]}}%
                         </span>
                         }
                         @case ('isActive') {
@@ -178,56 +151,19 @@ async function generateFile(filePath, content) {
                     </td>
                 </ng-container>
                 }
-                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{CheckItemInEdit(row)?'!bg-slate-200':''}}" (click)="AddToEdit(row);"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{sanphamId()==row.id?'!bg-slate-200':''}}" (click)="goToDetail(row);"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
             </table>
-        </div>
-        <div class="cursor-pointer border rounded-lg px-3 p-1 flex flex-row space-x-2 items-center justify-between">
-            <div class="w-full flex lg:p-0 p-2 lg:flex-row lg:space-x-2 lg:items-center lg:justify-between flex-col justify-center">
-                <span class="w-full text-center">Đang Xem <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> - <strong>{{ currentPage * pageSize > totalItems ? totalItems : currentPage * pageSize }}</strong> trong số {{ totalItems }} mục, {{ currentPage }}/{{totalPages}} Trang</span>                 
-               <div class="w-full flex flex-row space-x-2 items-center lg:justify-end justify-center">             
-                <span class="font-bold text-blue-600" [matMenuTriggerFor]="menu" #menuHienthi="matMenuTrigger">Hiện Thị : {{pageSize}} mục</span>  
-                    <mat-menu #menu="matMenu" >
-                         <div class="w-full flex flex-col space-y-2 p-4" (click)="$event.stopPropagation()">
-                            <span>Số Lượng</span>
-                            <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                                <input matInput [(ngModel)]="pageSize"  [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Số Lượng" />
-                            </mat-form-field>
-                            <button mat-flat-button color="primary" (click)="onPageSizeChange(pageSize,menuHienthi)">Áp Dụng</button> 
-                         </div>   
-                    </mat-menu>          
-                <div class="pagination-controls">
-                  <button mat-icon-button color="primary" [disabled]="currentPage === 1" (click)="onPreviousPage()">
-                    <mat-icon>keyboard_arrow_left</mat-icon>
-                  </button>
-                  <button mat-icon-button color="primary" [disabled]="currentPage === totalPages" (click)="onNextPage()">
-                    <mat-icon>keyboard_arrow_right</mat-icon>
-                  </button>
-                </div>
-             </div>
-            </div>
+            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
         </div>
     </div>
-</mat-drawer-container>
-
-<ng-template #DeleteDialog>
-    <mat-dialog-content>
-        <div class="flex flex-col space-y-8 items-center justify-center">
-            <div class="font-bold">Xác Nhận</div>
-            <div>Bạn chắc chắn muốn xoá không?</div>
-            <div class="flex flex-row space-x-2 items-center justify-center">
-                <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
-                <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
-            </div>
-        </div>
-    </mat-dialog-content>
-  </ng-template>`;
+</mat-drawer-container>`;
     
 const componentListContent = 
-`import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, TemplateRef, ViewChild } from '@angular/core';
+`import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -248,7 +184,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 @Component({
   selector: 'app-listsanpham',
   templateUrl: './listsanpham.component.html',
@@ -267,43 +202,38 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
     MatSelectModule,
     CommonModule,
     FormsModule,
-    MatTooltipModule,
-    MatDialogModule
+    MatTooltipModule
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListSanphamComponent {
+  Detail: any = {};
   displayedColumns: string[] = [
-    'title',
-    'masp',
-    'giagoc',
-    'dvt',
-    'soluong',
-    'soluongkho',
-    'haohut',
+    'name',
+    'mancc',
+    'diachi',
+    'email',
+    'sdt',
     'ghichu',
+    'isActive',
     'createdAt',
+    'updatedAt',
   ];
   ColumnName: any = {
-    title: 'Tên Sản Phẩm',
-    masp: 'Mã Sản Phẩm',
-    giagoc: 'Giá Gốc',
-    dvt: 'Đơn Vị Tính',
-    soluong: 'SL',
-    soluongkho: 'SL Kho',
-    haohut: 'Hao Hụt',
+    name: 'Tên Nhà Cung Cấp',
+    mancc: 'Mã Nhà Cung Cấp',
+    diachi: 'Địa Chỉ',
+    email: 'Email',
+    sdt: 'Số Điện Thoại',
     ghichu: 'Ghi Chú',
-    createdAt: 'Ngày Tạo'
+    isActive: 'Trạng Thái',
+    createdAt:'Ngày Tạo',
+    updatedAt:'Ngày Cập Nhật'
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('SanphamColFilter') || '[]'
   );
   Columns: any[] = [];
-  //pagination
-  totalItems = 0;
-  pageSize = 10;
-  currentPage = 1;
-  totalPages = 1;
+  isFilter: boolean = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
@@ -312,40 +242,46 @@ export class ListSanphamComponent {
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
-  private _dialog: MatDialog = inject(MatDialog);
   Listsanpham:any = this._SanphamService.ListSanpham;
-  EditList:any=[];
   dataSource = new MatTableDataSource([]);
   sanphamId:any = this._SanphamService.sanphamId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
-  isSearch: boolean = false;
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
     });
-    effect(() => {
-      this.dataSource.data = this.Listsanpham();
-      this.totalItems = this.Listsanpham().length;
-      this.calculateTotalPages();
-    });
   }
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+  createFilter(): (data: any, filter: string) => boolean {
+    return (data, filter) => {
+      const filterObject = JSON.parse(filter);
+      let isMatch = true;
+      this.displayedColumns.forEach(column => {
+        if (filterObject[column]) {
+          const value = data[column] ? data[column].toString().toLowerCase() : '';
+          isMatch = isMatch && value.includes(filterObject[column].toLowerCase());
+        }
+      });
+      return isMatch;
+    };
+  }
+  applyFilter() {
+    this.dataSource.filter = JSON.stringify(this.filterValues);
   }
   async ngOnInit(): Promise<void> {    
-    this.updateDisplayData();
-    this._SanphamService.listenSanphamUpdates();
     await this._SanphamService.getAllSanpham();
+    this.CountItem = this.Listsanpham().length;
     this.dataSource = new MatTableDataSource(this.Listsanpham());
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    this.dataSource.filterPredicate = this.createFilter();
     this.initializeColumns();
     this.setupDrawer();
+    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+    this.paginator._intl.previousPageLabel = 'Về Trước';
+    this.paginator._intl.firstPageLabel = 'Trang Đầu';
+    this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
   async refresh() {
    await this._SanphamService.getAllSanpham();
@@ -377,6 +313,7 @@ export class ListSanphamComponent {
       .subscribe((result) => {
         if (result.matches) {
           this.drawer.mode = 'over';
+          this.paginator.hidePageSize = true;
         } else {
           this.drawer.mode = 'side';
         }
@@ -389,7 +326,6 @@ export class ListSanphamComponent {
       this.updateDisplayedColumns();
     }
   }
-  @memoize()
   FilterHederColumn(list:any,column:any)
   {
     const uniqueList = list.filter((obj: any, index: number, self: any) => 
@@ -397,40 +333,40 @@ export class ListSanphamComponent {
     );
     return uniqueList
   }
-  @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
     this.dataSource.filteredData = this.Listsanpham().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();  
+    const query = event.target.value.toLowerCase();
+    console.log(query,column);
+    console.log(this.dataSource.filteredData);   
   }
   ListFilter:any[] =[]
-  ChosenItem(item:any,column:any)
+  ChosenItem(item:any)
   {
-    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
-    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
-    if(CheckItem1.length>0)
+    if(this.ListFilter.includes(item.id))
     {
-      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
+      this.ListFilter = this.ListFilter.filter((v) => v !== item.id);
     }
     else{
-      this.ListFilter = [...this.ListFilter,...CheckItem];
+      this.ListFilter.push(item.id);
     }
+    console.log(this.ListFilter);
+    
   }
   ChosenAll(list:any)
   {
     list.forEach((v:any) => {
-      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
-      if(CheckItem)
+      if(this.ListFilter.includes(v.id))
         {
-          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
+          this.ListFilter = this.ListFilter.filter((v) => v !== v.id);
         }
         else{
-          this.ListFilter.push(v);
+          this.ListFilter.push(v.id);
         }
     });
   }
   ResetFilter()
   {
-    this.ListFilter = this.Listsanpham();
+    this.ListFilter = this.Listsanpham().map((v:any) => v.id);
     this.dataSource.data = this.Listsanpham();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -441,14 +377,16 @@ export class ListSanphamComponent {
   }
   CheckItem(item:any)
   {
-    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+    return this.ListFilter.includes(item.id);
   }
   ApplyFilterColum(menu:any)
   {    
-    this.dataSource.data = this.Listsanpham().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    this.dataSource.data = this.Listsanpham().filter((v: any) => this.ListFilter.includes(v.id));
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    console.log(this.dataSource.data);
     menu.closeMenu();
+    
   }
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -469,217 +407,100 @@ export class ListSanphamComponent {
   }
   create(): void {
     this.drawer.open();
-    this._router.navigate(['admin/sanpham', 'new']);
-  }
-  openDeleteDialog(teamplate: TemplateRef<any>) {
-      const dialogDeleteRef = this._dialog.open(teamplate, {
-        hasBackdrop: true,
-        disableClose: true,
-      });
-      dialogDeleteRef.afterClosed().subscribe((result) => {
-        if (result=="true") {
-          this.DeleteListItem();
-        }
-      });
-  }
-  DeleteListItem(): void {
-    this.EditList.forEach((item: any) => {
-      this._SanphamService.DeleteSanpham(item);
-    });
-    this.EditList = [];
-    this._snackBar.open('Xóa Thành Công', '', {
-      duration: 1000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-success'],
-    });
-
-
-  }
-  AddToEdit(item: any): void {
-    const existingItem = this.EditList.find((v: any) => v.id === item.id);
-    if (existingItem) {
-      this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
-    } else {
-      this.EditList.push(item);
-    }
-  }
-  CheckItemInEdit(item: any): boolean {
-    return this.EditList.some((v: any) => v.id === item.id);
+    this._router.navigate(['admin/sanpham', 0]);
   }
   goToDetail(item: any): void {
+     this._SanphamService.setSanphamId(item.id);
     this.drawer.open();
-    this._SanphamService.setSanphamId(item.id);
     this._router.navigate(['admin/sanpham', item.id]);
   }
   async LoadDrive() {
     const DriveInfo = {
       IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'SPImport',
+      SheetName: 'NCCImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
    const data = ConvertDriveData(result.values);
+   console.log(data);
    this.DoImportData(data);
+    // const updatePromises = data.map(async (v: any) => {
+    //   const item = this._KhachhangsService
+    //     .ListKhachhang()
+    //     .find((v1) => v1.MaKH === v.MaKH);
+    //   if (item) {
+    //     const item1 = { ...item, ...v };
+    //     console.log(item1);
+
+    //     await this._KhachhangsService.updateOneKhachhang(item1);
+    //   }
+    // });
+    // Promise.all(updatePromises).then(() => {
+    //   this._snackBar.open('Cập Nhật Thành Công', '', {
+    //     duration: 1000,
+    //     horizontalPosition: 'end',
+    //     verticalPosition: 'top',
+    //     panelClass: ['snackbar-success'],
+    //   });
+    //   //  window.location.reload();
+    // });
   }
-  async DoImportData(data: any) {
+  DoImportData(data:any)
+  {
+    console.log(data);
+    
     const transformedData = data.map((v: any) => ({
-      title: v.title?.trim() || '',
-      masp: v.masp?.trim() || '',
-      giagoc: Number(v.giagoc) || 0,
-      dvt: v.dvt?.trim() || '',
-      soluong: Number(v.soluong) || 0,
-      soluongkho: Number(v.soluongkho) || 0,
-      haohut: Number(v.haohut) || 0,
-      ghichu: v.ghichu?.trim() || '',
-    }));
-
-    // Filter out duplicate masp values
-    const uniqueData = Array.from(new Map(transformedData.map((item:any) => [item.masp, item])).values());
-    const existingSanpham = this._SanphamService.ListSanpham();
-    const existingMasp  = existingSanpham.map((v: any) => v.masp);
-    const newMasp = uniqueData.map((v: any) => v.masp).filter((item: any) => !existingMasp.includes(item));
-
-    await Promise.all(uniqueData.map(async (v: any) => {
-      const existingItem = existingSanpham.find((v1: any) => v1.masp === v.masp);
-      if (existingItem) {
-        const updatedItem = { ...existingItem, ...v };
-        await this._SanphamService.updateSanpham(updatedItem);
-      } else {
-        await this._SanphamService.CreateSanpham(v);
-      }
-    }));
-    await Promise.all(existingSanpham
-      .filter(sp => !uniqueData.some((item:any) => item.masp === sp.masp))
-      .map(sp => this._SanphamService.updateSanpham({ ...sp, isActive: false }))
-    );
-
-    this._snackBar.open('Cập Nhật Thành Công', '', {
-      duration: 1000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-success'],
-    });
+      name: v.name?.trim()||'',
+      mancc: v.mancc?.trim()||'',
+      sdt: v.sdt?.trim()||'',
+      diachi: v.diachi?.trim()||'',
+      ghichu: v.ghichu?.trim()||'',
+   }));
+   // Filter out duplicate mancc values
+   const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
+      index === self.findIndex((t:any) => (
+        t.mancc === value.mancc
+      ))
+   )
+    const listId2 = uniqueData.map((v: any) => v.mancc);
+    const listId1 = this._SanphamService.ListSanpham().map((v: any) => v.mancc);
+    const listId3 = listId2.filter((item:any) => !listId1.includes(item));
+    const createuppdateitem = uniqueData.map(async (v: any) => {
+        const item = this._SanphamService.ListSanpham().find((v1) => v1.mancc === v.mancc);
+        if (item) {
+          const item1 = { ...item, ...v };
+          await this._SanphamService.updateSanpham(item1);
+        }
+        else{
+          await this._SanphamService.CreateSanpham(v);
+        }
+      });
+     const disableItem = listId3.map(async (v: any) => {
+        const item = this._SanphamService.ListSanpham().find((v1) => v1.mancc === v);
+        item.isActive = false;
+        await this._SanphamService.updateSanpham(item);
+      });
+      Promise.all([...createuppdateitem, ...disableItem]).then(() => {
+        this._snackBar.open('Cập Nhật Thành Công', '', {
+          duration: 1000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+       // window.location.reload();
+      });
   }
-  
   async ImporExcel(event: any) {
   const data = await readExcelFile(event)
   this.DoImportData(data);
   }   
   ExportExcel(data:any,title:any) {
-    const dulieu = data.map((v: any) => ({
-      title: v.title,
-      masp: v.masp,
-      giagoc: v.giagoc,
-      dvt: v.dvt,
-      soluong: v.soluong,
-      soluongkho: v.soluongkho,
-      haohut: v.haohut,
-      ghichu: v.ghichu,
-    }));
-    writeExcelFile(dulieu,title);
+    writeExcelFile(data,title);
   }
-  trackByFn(index: number, item: any): any {
-    return item.id; // Use a unique identifier
-  }
-
-
-
-
-
-
-calculateTotalPages() {
-  this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-}
-
-onPageSizeChange(size: number,menuHienthi:any) {
-  if(size>this.Listsanpham().length){
-    this.pageSize = this.Listsanpham().length;
-    this._snackBar.open(\`Số lượng tối đa \${this.Listsanpham().length}\`, '', {
-      duration: 1000,
-      horizontalPosition: "end",
-      verticalPosition: "top",
-      panelClass: ['snackbar-success'],
-    });
-  }
-  else {
-    this.pageSize = size;
-  }
-  this.currentPage = 1; // Reset to first page when changing page size
-  this.calculateTotalPages();
-  this.updateDisplayData();
-  menuHienthi.closeMenu();
-}
-
-onPreviousPage() {
-  if (this.currentPage > 1) {
-    this.currentPage--;
-    this.updateDisplayData();
-  }
-}
-
-onNextPage() {
-  if (this.currentPage < this.totalPages) {
-    this.currentPage++;
-    this.updateDisplayData();
-  }
-}
-
-updateDisplayData() {
-  const startIndex = (this.currentPage - 1) * this.pageSize;
-  const endIndex = startIndex + this.pageSize;
-  const pageData = this.Listsanpham().slice(startIndex, endIndex);
-  this.dataSource.data = pageData;
-  }
-}
-
-
-
-
-function memoize() {
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
-    const originalMethod = descriptor.value;
-    const cache = new Map();
-
-    descriptor.value = function (...args: any[]) {
-      const key = JSON.stringify(args);
-      if (cache.has(key)) {
-        return cache.get(key);
-      }
-      const result = originalMethod.apply(this, args);
-      cache.set(key, result);
-      return result;
-    };
-
-    return descriptor;
-  };
-}
-
-function Debounce(delay: number = 300) {
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
-    const originalMethod = descriptor.value;
-    let timeoutId: any;
-
-    descriptor.value = function (...args: any[]) {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        originalMethod.apply(this, args);
-      }, delay);
-    };
-
-    return descriptor;
-  };
 }`;
 const componentListCssContent = ``;
-const componentDetailHTMLContent = `<div class="flex flex-row justify-between items-center space-x-2 p-2">
+const componentDetailHTMLContent = `
+<div class="flex flex-row justify-between items-center space-x-2 p-2">
   <button mat-icon-button color="primary" (click)="goBack()">
     <mat-icon>arrow_back</mat-icon>
   </button>
@@ -692,13 +513,14 @@ const componentDetailHTMLContent = `<div class="flex flex-row justify-between it
     <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
-    <!-- <button mat-icon-button color="warn" (click)="toggleDelete()">
+    <button mat-icon-button color="warn" (click)="toggleDelete()">
       <mat-icon>delete</mat-icon>
-    </button> -->
+    </button>
   </div>
 </div>
 
 <div class="relative flex flex-col w-full p-4 overflow-auto">
+  <!-- Xác nhận Xóa -->
   <ng-container *ngIf="isDelete()">
     <div class="flex flex-col space-y-4 items-center justify-center">
       <div class="font-bold text-2xl">Bạn chắc chắn muốn xoá không?</div>
@@ -709,15 +531,42 @@ const componentDetailHTMLContent = `<div class="flex flex-row justify-between it
     </div>
   </ng-container>
 
+  <!-- Chi tiết Sanpham -->
   <ng-container *ngIf="!isDelete()">
-    <div class="w-full flex flex-col space-y-2">
+    <!-- <div *ngIf="!isEdit()" class="flex flex-col space-y-2 justify-center items-center border p-4 rounded-lg">
+      <div class="font-bold p-2 rounded-lg border">{{ DetailSanpham()?.Nhacungcap?.Title }}</div>
+      <div>{{ DetailSanpham()?.CreateAt | date: 'dd/MM/yyyy' }}</div>
+      <table class="min-w-full divide-y divide-gray-200 border">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">STT</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sản Phẩm</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Số Lượng</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ghi Chú</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let item of DetailSanpham()?.Sanpham; let i = index; trackBy: trackByFn">
+            <td class="px-6 py-4 text-sm text-gray-500">{{ i + 1 }}</td>
+            <td class="px-6 py-4 text-sm text-gray-500">{{ GetInfoSanpham(item.idSP)?.Title }}</td>
+            <td class="px-6 py-4 text-sm text-gray-500">
+              {{ item.Soluong }} {{ GetInfoSanpham(item.idSP)?.dvt }}
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-500">{{ item.Ghichu }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+ -->
+    <ng-container>
+
       <mat-form-field appearance="outline">
         <mat-label>Tiêu Đề</mat-label>
-        <input matInput [(ngModel)]="DetailSanpham().title" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
+        <input matInput [(ngModel)]="DetailSanpham().title" (input)="FillSlug()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Mã Sản Phẩm</mat-label>
-        <input matInput [(ngModel)]="DetailSanpham().masp" [disabled]="true" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+        <input matInput [(ngModel)]="DetailSanpham().masp" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Giá Gốc</mat-label>
@@ -736,12 +585,47 @@ const componentDetailHTMLContent = `<div class="flex flex-row justify-between it
           <mat-label>Số Lượng Kho</mat-label>
           <input matInput type="number" [(ngModel)]="DetailSanpham().soluongkho" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
         </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Hao Hụt %</mat-label>
-          <input matInput type="number" [(ngModel)]="DetailSanpham().haohut" [disabled]="!isEdit()" placeholder="Vui lòng nhập haohut"/>
-        </mat-form-field>
       </div>
-    </div>
+ 
+
+<!--       
+      <mat-form-field appearance="outline">
+        <mat-label>Nhà Cung Cấp</mat-label>
+        <mat-select [(ngModel)]="Detail.idNCC" (selectionChange)="SelectNhacungcap($event)">
+          <mat-option *ngFor="let item of FilterNhacungcap" [value]="item.id">
+            {{ item.MaNCC }} - {{ item.Title }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="grid grid-cols-3 gap-2">
+        <ng-container *ngFor="let item of Detail?.Sanpham; let idx = index; trackBy: trackByFn">
+          <mat-form-field appearance="outline">
+            <mat-label>Sản Phẩm</mat-label>
+            <mat-select [(ngModel)]="item.idSP" (selectionChange)="SelectSanpham($event)">
+              <mat-option *ngFor="let sp of FilterSanpham" [value]="sp.id">
+                {{ sp.Title }} [Tồn: {{ sp.Soluong }}{{ sp.dvt }}]
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Số Lượng</mat-label>
+            <input matInput [(ngModel)]="item.Soluong" (change)="onChangeSoluong(item, $event)" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Ghi Chú</mat-label>
+            <input matInput [(ngModel)]="item.Ghichu" placeholder="Nhập ghi chú" />
+          </mat-form-field>
+        </ng-container>
+      </div>
+
+      <button mat-flat-button color="primary" (click)="addSanpham()">
+        <mat-icon>add</mat-icon> Thêm Sản Phẩm
+      </button> -->
+    </ng-container>
+
   </ng-container>
 </div>`;
 const componentDetailContent = `import { Component, effect, inject, signal } from '@angular/core';
@@ -789,18 +673,19 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   
       effect(async () => {
         const id = this._SanphamService.sanphamId();
+      
         if (!id){
           this._router.navigate(['/admin/sanpham']);
           this._ListsanphamComponent.drawer.close();
         }
-        if(id === 'new'){
-          this.DetailSanpham.set({});
+        if(id === '0'){
+          this.DetailSanpham.set({ title: GenId(8, false), slug: GenId(8, false) });
           this._ListsanphamComponent.drawer.open();
           this.isEdit.update(value => !value);
-          this._router.navigate(['/admin/sanpham', "new"]);
+          this._router.navigate(['/admin/sanpham', "0"]);
         }
         else{
-            await this._SanphamService.getSanphamBy({id:id});
+            await this._SanphamService.getSanphamByid(id);
             this._ListsanphamComponent.drawer.open();
             this._router.navigate(['/admin/sanpham', id]);
         }
@@ -813,7 +698,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     async ngOnInit() {       
     }
     async handleSanphamAction() {
-      if (this.sanphamId() === 'new') {
+      if (this.sanphamId() === '0') {
         await this.createSanpham();
       }
       else {
@@ -888,13 +773,12 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     }
   }`;
 const componentDetailCssContent = ``;
-const componentServiceContent = `import { Inject, Injectable, signal,Signal } from '@angular/core';
+const componentServiceContent = `import {  Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
 import { io } from 'socket.io-client';
 import { openDB } from 'idb';
-import { ErrorLogService } from '../../shared/services/errorlog.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -902,7 +786,6 @@ export class SanphamService {
   constructor(
     private _StorageService: StorageService,
     private router: Router,
-    private _ErrorLogService: ErrorLogService,
   ) { }
   ListSanpham = signal<any[]>([]);
   DetailSanpham = signal<any>({});
@@ -931,22 +814,25 @@ export class SanphamService {
         this.getAllSanpham()
         this.sanphamId.set(data.id)
     } catch (error) {
-        this._ErrorLogService.logError('Failed to CreateSanpham', error);
         return console.error(error);
     }
   }
 
   async getAllSanpham() {
     const db = await this.initDB();
+    
+    // 🛑 Kiểm tra cache từ IndexedDB trước
     const cachedData = await db.getAll('sanphams');
     const updatedAtCache = this._StorageService.getItem('sanphams_updatedAt') || '0';
-    // Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
-    if (cachedData.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) { // 5 phút cache TTL
+    
+    // ✅ Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
+    if (cachedData.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) { // 5 phút cache TTL
       this.ListSanpham.set(cachedData);
       return cachedData;
     }
+  
     try {
-      // Gọi API chỉ để lấy \`updatedAt\` mới nhất
+      // ✅ Gọi API chỉ để lấy \`updatedAt\` mới nhất
       const options = {
         method: 'GET',
         headers: {
@@ -954,19 +840,20 @@ export class SanphamService {
           'Authorization': \`Bearer \${this._StorageService.getItem('token')}\`
         },
       };
+      
       const lastUpdatedResponse = await fetch(\`\${environment.APIURL}/sanpham/last-updated\`, options);
       if (!lastUpdatedResponse.ok) {
         this.handleError(lastUpdatedResponse.status);
         return cachedData;
       }    
       const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-      //Nếu cache vẫn mới, không cần tải lại dữ liệu
+      // ✅ Nếu cache vẫn mới, không cần tải lại dữ liệu
       if (updatedAtServer <= updatedAtCache) {
         this.ListSanpham.set(cachedData);
         return cachedData;
       }
       console.log(updatedAtServer, updatedAtCache); 
-      //Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
+      // ✅ Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
       const response = await fetch(\`\${environment.APIURL}/sanpham\`, options);
       if (!response.ok) {
         this.handleError(response.status);
@@ -978,22 +865,36 @@ export class SanphamService {
       this.ListSanpham.set(data);
       return data;
     } catch (error) {
-      this._ErrorLogService.logError('Failed to create getAllSanpham', error);
       console.error(error);
       return cachedData;
     }
   }
 
+  private handleError(status: number) {
+    let message = 'Lỗi không xác định';
+    switch (status) {
+      case 401:
+        message = 'Vui lòng đăng nhập lại';
+        break;
+      case 403:
+        message = 'Bạn không có quyền truy cập';
+        break;
+      case 500:
+        message = 'Lỗi máy chủ, vui lòng thử lại sau';
+        break;
+    }
+    const result = JSON.stringify({ code: status, title: message });
+    this.router.navigate(['/errorserver'], { queryParams: { data: result } });
+  }
 
-  //Lắng nghe cập nhật từ WebSocket
+  // 3️⃣ Lắng nghe cập nhật từ WebSocket
   listenSanphamUpdates() {
     this.socket.on('sanpham-updated', async () => {
       console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-      this._StorageService.removeItem('sanphams_updatedAt');
       await this.getAllSanpham();
     });
   }
-  //Khởi tạo IndexedDB
+  // Khởi tạo IndexedDB
   private async initDB() {
     return await openDB('SanphamDB', 1, {
       upgrade(db) {
@@ -1001,6 +902,7 @@ export class SanphamService {
       },
     });
   }
+
   // Lưu vào IndexedDB
   private async saveSanphams(data: any[]) {
     const db = await this.initDB();
@@ -1011,24 +913,21 @@ export class SanphamService {
     await tx.done;
   }
 
-  async getSanphamBy(param: any) {
+  async getSanphamByid(id: any) {
     try {
       const options = {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': \`Bearer \${this._StorageService.getItem('token')}\`
         },
-        body: JSON.stringify(param),
       };
-      const response = await fetch(\`\${environment.APIURL}/sanpham/findby\`, options);      
+      const response = await fetch(\`\${environment.APIURL}/sanpham/findid/\${id}\`, options);      
       if (!response.ok) {
         this.handleError(response.status);
       }
       const data = await response.json();      
       this.DetailSanpham.set(data)
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getSanphamBy', error);
       return console.error(error);
     }
   }
@@ -1050,9 +949,8 @@ export class SanphamService {
           this.handleError(response.status);
         }
         this.getAllSanpham()
-        this.getSanphamBy({id:data.id})
+        this.getSanphamByid(dulieu.id)
     } catch (error) {
-      this._ErrorLogService.logError('Failed to updateSanpham', error);
         return console.error(error);
     }
   }
@@ -1070,27 +968,9 @@ export class SanphamService {
           }
           this.getAllSanpham()
       } catch (error) {
-        this._ErrorLogService.logError('Failed to DeleteSanpham', error);
           return console.error(error);
       }
   }
-  private handleError(status: number) {
-    let message = 'Lỗi không xác định';
-    switch (status) {
-      case 401:
-        message = 'Vui lòng đăng nhập lại';
-        break;
-      case 403:
-        message = 'Bạn không có quyền truy cập';
-        break;
-      case 500:
-        message = 'Lỗi máy chủ, vui lòng thử lại sau';
-        break;
-    }
-    const result = JSON.stringify({ code: status, title: message });
-    this.router.navigate(['/errorserver'], { queryParams: { data: result } });
-  }
-
 }`;
 const componentTypeContent = ``;
 const componentMockdataContent = `export const List${Viethoa}:any[]=[]`;
