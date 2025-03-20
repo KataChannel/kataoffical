@@ -123,7 +123,7 @@ export class ListPhieugiaohangComponent {
     await this._DonhangService.searchDonhang(this.SearchParams);
     this.CountItem = this.Listphieugiaohang().length;
     this.dataSource = new MatTableDataSource(this.Listphieugiaohang());
-    this.dataSource.paginator = this.paginator;
+    // this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.createFilter();
     this.initializeColumns();
@@ -260,7 +260,7 @@ export class ListPhieugiaohangComponent {
   {
     this.ListFilter = this.Listphieugiaohang().map((v:any) => v.id);
     this.dataSource.data = this.Listphieugiaohang();
-    this.dataSource.paginator = this.paginator;
+    // this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
   EmptyFiter()
@@ -274,7 +274,7 @@ export class ListPhieugiaohangComponent {
   ApplyFilterColum(menu:any)
   {    
     this.dataSource.data = this.Listphieugiaohang().filter((v: any) => this.ListFilter.includes(v.id));
-    this.dataSource.paginator = this.paginator;
+    // this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     console.log(this.dataSource.data);
     menu.closeMenu();
@@ -303,8 +303,9 @@ export class ListPhieugiaohangComponent {
   }
   goToDetail(item: any): void {
      this._DonhangService.setDonhangId(item.id);
-    this.drawer.open();
-    this._router.navigate(['admin/phieugiaohang', item.id]);
+    // this.drawer.open();
+    // this._router.navigate(['admin/phieugiaohang', item.id], { queryParams: { openInNewTab: true } });
+    window.open(this._router.serializeUrl(this._router.createUrlTree(['admin/phieugiaohang', item.id])), '_blank');
   }
   async LoadDrive() {
     const DriveInfo = {

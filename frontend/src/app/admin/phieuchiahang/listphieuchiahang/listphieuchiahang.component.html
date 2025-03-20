@@ -233,7 +233,7 @@
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
             </table>
-            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="dataSource.data.length"></mat-paginator>
         </div>
     </div>
 </mat-drawer-container>
@@ -295,7 +295,7 @@
                     </table>          
             </div>
             <mat-dialog-actions class="relative" [align]="'end'">
-            <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
+            <button mat-flat-button color="warn" mat-dialog-close="false" (click)="editDonhang = []">Đóng</button>
             </mat-dialog-actions>
 
     </div>

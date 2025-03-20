@@ -251,9 +251,9 @@
             <th class="border p-2">Tên sản phẩm</th>
             <th class="border p-2">ĐVT</th>
             <th class="border p-2 max-w-10">Số Lượng</th>
-            <th class="border p-2 max-w-10">Đơn giá</th>
-            <th class="border p-2 max-w-10" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
-            <!-- <th class="border p-2 max-w-10">Số Lượng Nhận</th> -->
+            <th class="border p-2 max-w-20">Đơn giá</th>
+            <th class="border p-2 max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
+            <th class="border p-2 max-w-10">Số Lượng Nhận</th>
             <th class="border p-2">Ghi chú</th>
           </tr>
         </thead>
@@ -264,9 +264,9 @@
               <td class="border p-2">{{DetailPhieugiaohang()?.khachhang?.istitle2?item.title2:item.title}}</td>
               <td class="border p-2 text-center">{{item.dvt}}</td>
               <td class="border p-2 text-end max-w-10">{{item.slgiao|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-10">{{item.giaban|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-10" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{item.ttgiao|number:'1.0-2'}}</td>
-              <!-- <td class="border p-2 text-end max-w-10">{{item.slnhan|number:'1.0-2'}}</td> -->
+              <td class="border p-2 text-end max-w-20">{{item.giaban|number:'1.0-2'}}</td>
+              <td class="border p-2 text-end max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{item.ttgiao|number:'1.0-2'}}</td>
+              <td class="border p-2 text-end max-w-10">{{item.slnhan|number:'1.0-2'}}</td>
               <td class="border p-2">{{item.ghichu}}</td>
             </tr>
           }
@@ -275,7 +275,7 @@
             <td class="border p-2 text-end font-bold">{{TinhTong(DetailPhieugiaohang().sanpham,'slgiao')|number:'1.0-2'}}</td>
             <td class="border p-2 text-end font-bold"></td>
             <td class="border p-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{TinhTong(DetailPhieugiaohang().sanpham,'ttgiao')|number:'1.0-2'}}</td>
-            <!-- <td class="border p-2 text-end"></td> -->
+            <td class="border p-2 text-end"></td>
             <td class="border p-2 text-end"></td>
           </tr>
         </tbody>
