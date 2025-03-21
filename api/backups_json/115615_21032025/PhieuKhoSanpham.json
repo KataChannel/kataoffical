@@ -1,0 +1,52 @@
+[
+  {
+    "id": "e966634a-2aa0-4d7e-9695-b0ef7eb265c9",
+    "phieuKhoId": "f063c90f-715a-4a76-a65b-a97a8348c6ef",
+    "sanphamId": "0004d7f5-efd2-4fbe-b3e9-b403e852c0cc",
+    "sldat": 0,
+    "soluong": 20,
+    "ghichu": "",
+    "createdAt": "2025-03-16T08:44:51.985Z",
+    "updatedAt": "2025-03-16T08:44:51.985Z"
+  },
+  {
+    "id": "932fabca-8e07-4355-bf03-89e0c1520884",
+    "phieuKhoId": "f063c90f-715a-4a76-a65b-a97a8348c6ef",
+    "sanphamId": "01180cbd-4229-4e16-9ffa-c09f2313584e",
+    "sldat": 0,
+    "soluong": 50,
+    "ghichu": "",
+    "createdAt": "2025-03-16T08:44:51.985Z",
+    "updatedAt": "2025-03-16T08:44:51.985Z"
+  },
+  {
+    "id": "39c45b20-1de6-4b76-be47-21290822282d",
+    "phieuKhoId": "24c39d9b-b517-499a-82cd-2f779829bad8",
+    "sanphamId": "bb002166-0a75-4849-afad-15aef42ab1dc",
+    "sldat": 0,
+    "soluong": 15,
+    "ghichu": "",
+    "createdAt": "2025-03-20T06:48:20.576Z",
+    "updatedAt": "2025-03-20T06:48:20.576Z"
+  },
+  {
+    "id": "ad461248-7a53-4c7d-ad49-f5a87818181a",
+    "phieuKhoId": "24c39d9b-b517-499a-82cd-2f779829bad8",
+    "sanphamId": "0903cfb3-8861-4525-af09-c768fa308866",
+    "sldat": 0,
+    "soluong": 10,
+    "ghichu": "",
+    "createdAt": "2025-03-20T06:48:20.576Z",
+    "updatedAt": "2025-03-20T06:48:20.576Z"
+  },
+  {
+    "id": "5c4d72a2-219d-421e-9fb2-9383e33bf6d6",
+    "phieuKhoId": "0f703cd6-885d-4adb-a3e6-a5b769cd07e0",
+    "sanphamId": "0004d7f5-efd2-4fbe-b3e9-b403e852c0cc",
+    "sldat": 0,
+    "soluong": 50,
+    "ghichu": "",
+    "createdAt": "2025-03-20T06:50:27.308Z",
+    "updatedAt": "2025-03-20T06:50:27.308Z"
+  }
+]

@@ -111,12 +111,12 @@
             <span>Số Lượng</span>
             <span>Ngày Tạo</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 text-red-600" *ngFor="let item of DetailSanpham().Donhang; let i=index">
+          <div class="grid grid-cols-3 gap-2 text-red-600" *ngFor="let item of DetailSanpham().Donhangsanpham; let i=index">
             <span>{{item.madonhang}}</span>
             <span>- {{item.sldat}}</span>
             <span>{{item.createdAt|date:'dd/MM/yyyy'}}</span>
           </div>
-          <div class="grid grid-cols-3 gap-2 text-green-600" *ngFor="let item of DetailSanpham().Dathang; let i=index">
+          <div class="grid grid-cols-3 gap-2 text-green-600" *ngFor="let item of DetailSanpham().Dathangsanpham; let i=index">
             <span>{{item.madncc}}</span>
             <span>+ {{item.sldat}}</span>
             <span>{{item.createdAt|date:'dd/MM/yyyy'}}</span>

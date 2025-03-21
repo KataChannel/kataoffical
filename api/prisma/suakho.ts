@@ -1,15 +1,19 @@
 import { PrismaClient } from '@prisma/client';
 import { bangiakhachahng } from './migrations/dulieu';
-
 const prisma = new PrismaClient();
-const dulieus = bangiakhachahng
 async function main() {
-  const sanphams = await prisma.sanpham.findMany({
-    select: { id: true,makh: true},
-  });
-  console.error(sanphams);
+  const sanphams = await prisma.sanpham.findMany({include: { Donhangsanpham: true, Dathangsanpham: true }});
+  console.error(sanphams[0]);
+  // sanphams.forEach(async v => {
+  //   v.soluong = v.Dathangsanpham.reduce((acc, item:any) => acc + item.sldat, 0) - v.Donhangsanpham.reduce((acc, item:any) => acc + item.sldat, 0);
+  //   await prisma.sanpham.update({
+  //     where: { id: v.id },
+  //     data: {
+  //       soluong: v.soluong,
+  //     },
+  //   });
+  // })
 }
-
 main()
   .catch((e) => {
     console.error('❌ Lỗi khi seed dữ liệu:', e);

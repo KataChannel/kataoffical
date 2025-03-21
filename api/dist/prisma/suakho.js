@@ -3,14 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertData = convertData;
 exports.removeVietnameseAccents = removeVietnameseAccents;
 const client_1 = require("@prisma/client");
-const dulieu_1 = require("./migrations/dulieu");
 const prisma = new client_1.PrismaClient();
-const dulieus = dulieu_1.bangiakhachahng;
 async function main() {
-    const sanphams = await prisma.sanpham.findMany({
-        select: { id: true, makh: true },
-    });
-    console.error(sanphams);
+    const sanphams = await prisma.sanpham.findMany({ include: { Donhangsanpham: true, Dathangsanpham: true } });
+    console.error(sanphams[0]);
 }
 main()
     .catch((e) => {
