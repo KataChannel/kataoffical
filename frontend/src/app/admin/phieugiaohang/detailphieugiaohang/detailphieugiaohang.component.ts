@@ -110,7 +110,7 @@ export class DetailPhieugiaohangComponent {
   }
   DetailPhieugiaohang: any = this._PhieugiaohangService.DetailDonhang;
   ListKhachhang: any = this._KhachhangService.ListKhachhang;
-  isEdit = signal(false);
+  isEdit = signal(true);
   isDelete = signal(false);
   filterKhachhang: any = [];
   filterBanggia: any[] = [];
