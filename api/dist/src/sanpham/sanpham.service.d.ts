@@ -25,6 +25,7 @@ export declare class SanphamService {
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
+        loadpoint: number | null;
         soluong: number;
         soluongkho: number;
         haohut: number;
@@ -45,84 +46,38 @@ export declare class SanphamService {
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
+        loadpoint: number | null;
         soluong: number;
         soluongkho: number;
         haohut: number;
     }[]>;
     findOne(id: string): Promise<{
-        Donhang: {
+        Donhangsanpham: {
             createdAt: Date;
             madonhang: string;
             sldat: number;
             slgiao: number;
             slnhan: number;
         }[];
-        Dathang: {
+        Dathangsanpham: {
             createdAt: Date;
             madncc: string | null;
             sldat: number;
             slgiao: number;
             slnhan: number;
         }[];
-        Dathangsanpham: ({
-            dathang: {
-                id: string;
-                ghichu: string | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date | null;
-                title: string | null;
-                type: string | null;
-                order: number | null;
-                printCount: number | null;
-                madncc: string | null;
-                ngaynhan: Date | null;
-                nhacungcapId: string;
-            };
-        } & {
+        Nhacungcap: {
             id: string;
+            name: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            email: string | null;
             ghichu: string | null;
             isActive: boolean;
-            order: number | null;
-            idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
-            dathangId: string;
-        })[];
-        Donhangsanpham: ({
-            donhang: {
-                id: string;
-                ghichu: string | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                title: string;
-                type: string | null;
-                order: number | null;
-                status: import(".prisma/client").$Enums.StatusDonhang;
-                madonhang: string;
-                ngaygiao: Date | null;
-                khachhangId: string;
-                printCount: number | null;
-            };
-        } & {
-            id: string;
-            ghichu: string | null;
-            isActive: boolean | null;
-            order: number | null;
-            idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
-            donhangId: string;
-        })[];
+            createdAt: Date;
+            updatedAt: Date;
+            mancc: string;
+        }[];
         id: string;
         subtitle: string | null;
         ghichu: string | null;
@@ -137,71 +92,26 @@ export declare class SanphamService {
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
+        loadpoint: number | null;
         soluong: number;
         soluongkho: number;
         haohut: number;
     }>;
     finby(id: string): Promise<{
-        Dathangsanpham: ({
-            dathang: {
-                id: string;
-                ghichu: string | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date | null;
-                title: string | null;
-                type: string | null;
-                order: number | null;
-                printCount: number | null;
-                madncc: string | null;
-                ngaynhan: Date | null;
-                nhacungcapId: string;
-            };
-        } & {
-            id: string;
-            ghichu: string | null;
-            isActive: boolean;
-            order: number | null;
-            idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
-            dathangId: string;
-        })[];
-        Donhangsanpham: ({
-            donhang: {
-                id: string;
-                ghichu: string | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                title: string;
-                type: string | null;
-                order: number | null;
-                status: import(".prisma/client").$Enums.StatusDonhang;
-                madonhang: string;
-                ngaygiao: Date | null;
-                khachhangId: string;
-                printCount: number | null;
-            };
-        } & {
-            id: string;
-            ghichu: string | null;
-            isActive: boolean | null;
-            order: number | null;
-            idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
-            donhangId: string;
-        })[];
-    } & {
+        Donhangsanpham: {
+            createdAt: Date;
+            madonhang: string;
+            sldat: number;
+            slgiao: number;
+            slnhan: number;
+        }[];
+        Dathangsanpham: {
+            createdAt: Date;
+            madncc: string | null;
+            sldat: number;
+            slgiao: number;
+            slnhan: number;
+        }[];
         id: string;
         subtitle: string | null;
         ghichu: string | null;
@@ -216,6 +126,7 @@ export declare class SanphamService {
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
+        loadpoint: number | null;
         soluong: number;
         soluongkho: number;
         haohut: number;
@@ -235,6 +146,7 @@ export declare class SanphamService {
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
+        loadpoint: number | null;
         soluong: number;
         soluongkho: number;
         haohut: number;
@@ -254,6 +166,7 @@ export declare class SanphamService {
         giagoc: number;
         dvt: string | null;
         hinhanh: string | null;
+        loadpoint: number | null;
         soluong: number;
         soluongkho: number;
         haohut: number;

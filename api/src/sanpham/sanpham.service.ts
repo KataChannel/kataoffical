@@ -95,6 +95,7 @@ export class SanphamService {
     const sanpham = await this.prisma.sanpham.findUnique({
       where: { id },
       include: {
+        Nhacungcap: true,
         Donhangsanpham: {
           include: {
             donhang: true,
@@ -110,14 +111,14 @@ export class SanphamService {
     if (!sanpham) throw new NotFoundException('Sanpham not found');
     return {
       ...sanpham,
-      Donhang: sanpham.Donhangsanpham.map((item) => ({
+      Donhangsanpham: sanpham.Donhangsanpham.map((item) => ({
         createdAt: item.donhang.createdAt || null,
         madonhang: item.donhang.madonhang,
         sldat: item.sldat || 0,
         slgiao: item.slgiao || 0,
         slnhan: item.slnhan || 0,
       })),
-      Dathang: sanpham.Dathangsanpham.map((item) => ({
+      Dathangsanpham: sanpham.Dathangsanpham.map((item) => ({
         createdAt: item.dathang.createdAt || null,
         madncc: item.dathang.madncc,
         sldat: item.sldat || 0,
@@ -143,17 +144,39 @@ export class SanphamService {
       },
     });
     if (!sanpham) throw new NotFoundException('Sanpham not found');
-    return sanpham;
+    return {
+      ...sanpham,
+      Donhangsanpham: sanpham.Donhangsanpham.map((item) => ({
+        createdAt: item.donhang.createdAt || null,
+        madonhang: item.donhang.madonhang,
+        sldat: item.sldat || 0,
+        slgiao: item.slgiao || 0,
+        slnhan: item.slnhan || 0,
+      })),
+      Dathangsanpham: sanpham.Dathangsanpham.map((item) => ({
+        createdAt: item.dathang.createdAt || null,
+        madncc: item.dathang.madncc,
+        sldat: item.sldat || 0,
+        slgiao: item.slgiao || 0,
+        slnhan: item.slnhan || 0,
+      })),
+    };
   }
 
   async update(id: string, data: any) {
-    if (data.order) {
-      const { order, ...rest } = data;
-      await this.prisma.sanpham.update({ where: { id }, data: rest });
-      await this.prisma.sanpham.update({ where: { id }, data: { order } });
-    }
+    const { Donhangsanpham, Dathangsanpham, Nhacungcap, ...rest } = data;
+    const updatedSanpham = await this.prisma.sanpham.update({
+      where: { id },
+      data: {
+        ...rest,
+        Nhacungcap: {
+          set: Nhacungcap.map((nc:any) => ({ id: nc.id })), // Gán lại danh sách nhà cung cấp
+        },
+      },
+    });
+    // Send update notification
     this._SocketGateway.sendSanphamUpdate();
-    return this.prisma.sanpham.update({ where: { id }, data });
+    return updatedSanpham;
   }
 
   async remove(id: string) {

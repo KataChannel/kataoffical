@@ -29,7 +29,7 @@
   </ng-container>
 
   <ng-container *ngIf="!isDelete()">
-    <div class="w-full flex flex-col space-y-2">
+    <div class="w-full grid grid-cols-2 gap-2 p-2">
       <mat-form-field appearance="outline">
         <mat-label>Tiêu Đề</mat-label>
         <input matInput [(ngModel)]="DetailSanpham().title" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
@@ -50,37 +50,78 @@
         <mat-label>Đơn Vị Tính</mat-label>
         <input matInput [(ngModel)]="DetailSanpham().dvt" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
       </mat-form-field>
-      <div class="flex flex-row space-x-2">
+      <mat-form-field appearance="outline">
+        <mat-label>Điểm Trọng Tải</mat-label>
+        <input matInput type="number" [(ngModel)]="DetailSanpham().loadpoint" [disabled]="!isEdit()" placeholder="Vui lòng nhập Điểm Trọng Tải"/>
+      </mat-form-field>
+      <div class="col-span-2 flex flex-row space-x-2">
         <mat-form-field appearance="outline">
           <mat-label>Số Lượng</mat-label>
-          <input matInput type="number" [(ngModel)]="DetailSanpham().soluong" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+          <input matInput type="number" [(ngModel)]="DetailSanpham().soluong" [disabled]="true" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Số Lượng Kho</mat-label>
-          <input matInput type="number" [(ngModel)]="DetailSanpham().soluongkho" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+          <input matInput type="number" [(ngModel)]="DetailSanpham().soluongkho" [disabled]="true" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Hao Hụt %</mat-label>
           <input matInput type="number" [(ngModel)]="DetailSanpham().haohut" [disabled]="!isEdit()" placeholder="Vui lòng nhập haohut"/>
         </mat-form-field>
       </div>
-      <div class="flex flex-col space-y-2 p-4">
-        <div class="grid grid-cols-3 gap-2 font-bold">
-          <span>Mã Đơn</span>
-          <span>Số Lượng</span>
-          <span>Ngày Tạo</span>
+      <div class="col-span-2 w-full flex flex-wrap gap-2">   
+        <button [disabled]="!isEdit()" mat-flat-button color="primary" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
+          Nhà Cung Cấp
+        </button>
+             <mat-menu #menu="matMenu">
+                 <div (click)="$event.stopPropagation()"  class="cursor-pointer flex flex-col space-y-4 p-3">                                        
+                 <div class="relative w-full">
+                     <input type="text"
+                         placeholder="Tìm Kiếm..." (keyup)="doSearch($event)"
+                         class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                         <span class="material-symbols-outlined text-gray-500">search</span>
+                     </div>
+                 </div>
+                 <div class="flex flex-row space-x-2 items-center justify-between">
+                     <div class="flex flex-row space-x-2 items-center">
+                         <span class="text-xs text-blue-600 underline" (click)="ChosenAll()">Chọn Tất Cả {{FilterListNCC.length||0}}</span>
+                         <span class="text-xs text-blue-600 underline" (click)="EmptyFiter()">Xoá</span>
+                     </div>
+                     <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
+                 </div>
+                 <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
+                  <div *ngFor="let item of FilterListNCC; trackBy:trackByFn" (click)="ChosenItem(item)" class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
+                     <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>
+                     <span> {{item.name}}  </span>   
+                  </div>
+                </div>
+                <div class="flex flex-row space-x-2 items-end justify-end">
+                    <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
+                    <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)" >Áp Dụng</button>
+                </div>
+              </div>
+             </mat-menu>
+          <button mat-flat-button disabled="true" *ngFor="let item of ChosenListNCC; let i=index">
+            {{item.name}}
+          </button>   
         </div>
-        <div class="grid grid-cols-3 gap-2 text-red-600" *ngFor="let item of DetailSanpham().Donhang; let i=index">
-          <span>{{item.madonhang}}</span>
-          <span>- {{item.sldat}}</span>
-          <span>{{item.createdAt|date:'dd/MM/yyyy'}}</span>
+       <div class="col-span-2 flex flex-col space-y-2 p-4">
+          <div class="grid grid-cols-3 gap-2 font-bold">
+            <span>Mã Đơn</span>
+            <span>Số Lượng</span>
+            <span>Ngày Tạo</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-red-600" *ngFor="let item of DetailSanpham().Donhang; let i=index">
+            <span>{{item.madonhang}}</span>
+            <span>- {{item.sldat}}</span>
+            <span>{{item.createdAt|date:'dd/MM/yyyy'}}</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2 text-green-600" *ngFor="let item of DetailSanpham().Dathang; let i=index">
+            <span>{{item.madncc}}</span>
+            <span>+ {{item.sldat}}</span>
+            <span>{{item.createdAt|date:'dd/MM/yyyy'}}</span>
+          </div>
         </div>
-        <div class="grid grid-cols-3 gap-2 text-green-600" *ngFor="let item of DetailSanpham().Dathang; let i=index">
-          <span>{{item.madncc}}</span>
-          <span>+ {{item.sldat}}</span>
-          <span>{{item.createdAt|date:'dd/MM/yyyy'}}</span>
-        </div>
-      </div>
     </div>
   </ng-container>
 </div>

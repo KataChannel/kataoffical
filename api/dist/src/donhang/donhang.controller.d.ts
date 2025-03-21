@@ -95,6 +95,7 @@ export declare class DonhangController {
             giagoc: number;
             dvt: string | null;
             hinhanh: string | null;
+            loadpoint: number | null;
             soluong: number;
             soluongkho: number;
             haohut: number;
@@ -222,6 +223,7 @@ export declare class DonhangController {
             giagoc: number;
             dvt: string | null;
             hinhanh: string | null;
+            loadpoint: number | null;
             soluong: number;
             soluongkho: number;
             haohut: number;
