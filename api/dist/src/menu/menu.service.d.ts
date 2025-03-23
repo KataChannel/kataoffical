@@ -8,9 +8,9 @@ export declare class MenuService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
+        slug: string | null;
         order: number | null;
         icon: string | null;
-        slug: string | null;
         parentId: string | null;
     }>;
     findAll(): Promise<({
@@ -20,9 +20,9 @@ export declare class MenuService {
             createdAt: Date;
             updatedAt: Date;
             title: string;
+            slug: string | null;
             order: number | null;
             icon: string | null;
-            slug: string | null;
             parentId: string | null;
         }[];
     } & {
@@ -31,9 +31,9 @@ export declare class MenuService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
+        slug: string | null;
         order: number | null;
         icon: string | null;
-        slug: string | null;
         parentId: string | null;
     })[]>;
     findOne(id: string): Promise<({
@@ -43,9 +43,9 @@ export declare class MenuService {
             createdAt: Date;
             updatedAt: Date;
             title: string;
+            slug: string | null;
             order: number | null;
             icon: string | null;
-            slug: string | null;
             parentId: string | null;
         }[];
     } & {
@@ -54,9 +54,9 @@ export declare class MenuService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
+        slug: string | null;
         order: number | null;
         icon: string | null;
-        slug: string | null;
         parentId: string | null;
     }) | null>;
     update(id: string, data: any): Promise<{
@@ -65,9 +65,9 @@ export declare class MenuService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
+        slug: string | null;
         order: number | null;
         icon: string | null;
-        slug: string | null;
         parentId: string | null;
     }>;
     remove(id: string): Promise<{
@@ -76,9 +76,9 @@ export declare class MenuService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
+        slug: string | null;
         order: number | null;
         icon: string | null;
-        slug: string | null;
         parentId: string | null;
     }>;
     getTree(data: any): Promise<any>;

@@ -25,6 +25,9 @@ let SanphamController = class SanphamController {
     findAll() {
         return this.sanphamService.findAll();
     }
+    nhucaudathang() {
+        return this.sanphamService.nhucaudathang();
+    }
     async getLastUpdatedSanpham() {
         return this.sanphamService.getLastUpdatedSanpham();
     }
@@ -55,6 +58,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], SanphamController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('nhucaudathang'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], SanphamController.prototype, "nhucaudathang", null);
 __decorate([
     (0, common_1.Get)('last-updated'),
     __metadata("design:type", Function),

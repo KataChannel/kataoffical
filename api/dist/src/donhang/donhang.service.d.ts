@@ -37,8 +37,8 @@ export declare class DonhangService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        type: string | null;
         order: number | null;
+        type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
@@ -65,11 +65,11 @@ export declare class DonhangService {
                 createdAt: Date;
                 updatedAt: Date;
                 title: string | null;
+                order: number | null;
                 mabanggia: string | null;
                 type: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
-                order: number | null;
                 status: string | null;
             })[];
         } & {
@@ -100,8 +100,8 @@ export declare class DonhangService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        type: string | null;
         order: number | null;
+        type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
@@ -125,9 +125,8 @@ export declare class DonhangService {
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            order: number | null;
-            slug: string | null;
             title2: string | null;
+            slug: string | null;
             masp: string;
             giagoc: number;
             dvt: string | null;
@@ -136,6 +135,7 @@ export declare class DonhangService {
             soluong: number;
             soluongkho: number;
             haohut: number;
+            order: number | null;
         }[];
         khachhang: {
             id: string;
@@ -165,8 +165,8 @@ export declare class DonhangService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        type: string | null;
         order: number | null;
+        type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
@@ -190,9 +190,8 @@ export declare class DonhangService {
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            order: number | null;
-            slug: string | null;
             title2: string | null;
+            slug: string | null;
             masp: string;
             giagoc: number;
             dvt: string | null;
@@ -201,6 +200,7 @@ export declare class DonhangService {
             soluong: number;
             soluongkho: number;
             haohut: number;
+            order: number | null;
         }[];
         khachhang: {
             banggia: ({
@@ -219,11 +219,11 @@ export declare class DonhangService {
                 createdAt: Date;
                 updatedAt: Date;
                 title: string | null;
+                order: number | null;
                 mabanggia: string | null;
                 type: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
-                order: number | null;
                 status: string | null;
             })[];
         } & {
@@ -254,8 +254,8 @@ export declare class DonhangService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        type: string | null;
         order: number | null;
+        type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
@@ -284,8 +284,8 @@ export declare class DonhangService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        type: string | null;
         order: number | null;
+        type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
@@ -314,8 +314,8 @@ export declare class DonhangService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        type: string | null;
         order: number | null;
+        type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
@@ -329,8 +329,8 @@ export declare class DonhangService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        type: string | null;
         order: number | null;
+        type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;

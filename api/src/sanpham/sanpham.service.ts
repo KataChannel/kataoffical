@@ -90,6 +90,20 @@ export class SanphamService {
       throw error;
     }
   }
+  async nhucaudathang() {
+    try {
+      const sanphams = await this.prisma.sanpham.findMany();
+      return sanphams.filter((item) => {
+        const check = parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
+        return parseFloat(check) > 0;
+      });
+    } catch (error) {
+      this._ErrorlogsService.logError('Lỗi lấy tất cả sản phẩm', {
+        error: error.message,
+      });
+      throw error;
+    }
+  }
 
   async findOne(id: string) {
     const sanpham = await this.prisma.sanpham.findUnique({

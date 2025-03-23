@@ -10,9 +10,8 @@ export declare class SanphamController {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        order: number | null;
-        slug: string | null;
         title2: string | null;
+        slug: string | null;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -21,6 +20,7 @@ export declare class SanphamController {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        order: number | null;
     }>;
     findAll(): Promise<{
         id: string;
@@ -30,9 +30,8 @@ export declare class SanphamController {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        order: number | null;
-        slug: string | null;
         title2: string | null;
+        slug: string | null;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -41,6 +40,27 @@ export declare class SanphamController {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        order: number | null;
+    }[]>;
+    nhucaudathang(): Promise<{
+        id: string;
+        subtitle: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        title2: string | null;
+        slug: string | null;
+        masp: string;
+        giagoc: number;
+        dvt: string | null;
+        hinhanh: string | null;
+        loadpoint: number | null;
+        soluong: number;
+        soluongkho: number;
+        haohut: number;
+        order: number | null;
     }[]>;
     getLastUpdatedSanpham(): Promise<{
         updatedAt: number | Date;
@@ -79,9 +99,8 @@ export declare class SanphamController {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        order: number | null;
-        slug: string | null;
         title2: string | null;
+        slug: string | null;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -90,6 +109,7 @@ export declare class SanphamController {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        order: number | null;
     }>;
     update(id: string, updateSanphamDto: any): Promise<{
         id: string;
@@ -99,9 +119,8 @@ export declare class SanphamController {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        order: number | null;
-        slug: string | null;
         title2: string | null;
+        slug: string | null;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -110,6 +129,7 @@ export declare class SanphamController {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        order: number | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -119,9 +139,8 @@ export declare class SanphamController {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        order: number | null;
-        slug: string | null;
         title2: string | null;
+        slug: string | null;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -130,6 +149,7 @@ export declare class SanphamController {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        order: number | null;
     }>;
     reorder(body: {
         sanphamIds: string[];

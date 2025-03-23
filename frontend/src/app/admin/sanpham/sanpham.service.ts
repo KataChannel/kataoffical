@@ -42,6 +42,29 @@ export class SanphamService {
         return console.error(error);
     }
   }
+  async getNhucau() {
+    try {
+      const options = {
+          method:'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+          },
+        };
+        const response = await fetch(`${environment.APIURL}/sanpham/nhucaudathang`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+          this.handleError(response.status);
+        }
+        this.ListSanpham.set(data)
+        return data;
+    } catch (error) {
+        return console.error(error);
+    }
+  }
 
   async getAllSanpham() {
     const db = await this.initDB();

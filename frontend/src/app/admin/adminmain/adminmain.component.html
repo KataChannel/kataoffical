@@ -6,30 +6,6 @@
       </div>
       <div class="relative h-full overflow-auto p-2">
         <app-treemenu [ListMenu]="ListMenu"></app-treemenu>
-        <!-- <mat-tree class="cursor-pointer flex flex-col space-y-2" [dataSource]="dataSource" [treeControl]="treeControl">
-          <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-            <a [routerLink]="[node.node.slug]"
-              class="w-full flex flex-row space-x-2 items-center rounded-lg hover:bg-slate-300"
-              routerLinkActive="bg-slate-300">
-              <button mat-icon-button disabled></button>
-              <span>{{node.node.title}}</span>
-            </a>
-          </mat-tree-node>
-          <mat-tree-node class="flex flex-row space-x-2 items-center rounded-lg hover:bg-slate-300"
-            routerLinkActive="bg-slate-300" *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding
-            matTreeNodeToggle [cdkTreeNodeTypeaheadLabel]="node.title">
-            <a [routerLink]="[node.node.slug]"
-              class="w-full flex flex-row space-x-2 items-center rounded-lg hover:bg-slate-300"
-              routerLinkActive="bg-slate-300">
-              <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.title">
-                <mat-icon class="mat-icon-rtl-mirror">
-                  {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-                </mat-icon>
-              </button>
-              <span [routerLink]="[node.node.slug]"> {{node.node.title}} </span>
-            </a>
-          </mat-tree-node>
-        </mat-tree> -->
       </div>
       <div class="relative w-full justify-between flex flex-row space-x-2 items-center p-2">
         <div class="flex flex-row space-x-2">

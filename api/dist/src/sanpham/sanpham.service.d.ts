@@ -18,9 +18,8 @@ export declare class SanphamService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        order: number | null;
-        slug: string | null;
         title2: string | null;
+        slug: string | null;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -29,6 +28,7 @@ export declare class SanphamService {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        order: number | null;
     }>;
     reorderSanphams(sanphamIds: string[]): Promise<void>;
     findAll(): Promise<{
@@ -39,9 +39,8 @@ export declare class SanphamService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        order: number | null;
-        slug: string | null;
         title2: string | null;
+        slug: string | null;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -50,6 +49,27 @@ export declare class SanphamService {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        order: number | null;
+    }[]>;
+    nhucaudathang(): Promise<{
+        id: string;
+        subtitle: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        title2: string | null;
+        slug: string | null;
+        masp: string;
+        giagoc: number;
+        dvt: string | null;
+        hinhanh: string | null;
+        loadpoint: number | null;
+        soluong: number;
+        soluongkho: number;
+        haohut: number;
+        order: number | null;
     }[]>;
     findOne(id: string): Promise<{
         Donhangsanpham: {
@@ -85,9 +105,8 @@ export declare class SanphamService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        order: number | null;
-        slug: string | null;
         title2: string | null;
+        slug: string | null;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -96,6 +115,7 @@ export declare class SanphamService {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        order: number | null;
     }>;
     finby(id: string): Promise<{
         Donhangsanpham: {
@@ -119,9 +139,8 @@ export declare class SanphamService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        order: number | null;
-        slug: string | null;
         title2: string | null;
+        slug: string | null;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -130,6 +149,7 @@ export declare class SanphamService {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        order: number | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -139,9 +159,8 @@ export declare class SanphamService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        order: number | null;
-        slug: string | null;
         title2: string | null;
+        slug: string | null;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -150,6 +169,7 @@ export declare class SanphamService {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        order: number | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -159,9 +179,8 @@ export declare class SanphamService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
-        order: number | null;
-        slug: string | null;
         title2: string | null;
+        slug: string | null;
         masp: string;
         giagoc: number;
         dvt: string | null;
@@ -170,5 +189,6 @@ export declare class SanphamService {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        order: number | null;
     }>;
 }

@@ -14,6 +14,10 @@ export class SanphamController {
   findAll() {
     return this.sanphamService.findAll();
   }
+  @Get('nhucaudathang')
+  nhucaudathang() {
+    return this.sanphamService.nhucaudathang();
+  }
   @Get('last-updated')
     async getLastUpdatedSanpham() {
       return this.sanphamService.getLastUpdatedSanpham();

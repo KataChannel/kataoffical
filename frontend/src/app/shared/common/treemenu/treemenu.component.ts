@@ -6,13 +6,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTreeFlatDataSource, MatTreeFlattener, MatTreeModule } from '@angular/material/tree';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { DeletedialogComponent } from '../dialog/deletedialog/deletedialog.component';
 import { UpdatedialogComponent } from '../dialog/updatedialog/updatedialog.component';
 @Component({
   selector: 'app-treemenu',
   standalone: true,
-  imports: [MatTreeModule, MatButtonModule, MatIconModule,CommonModule,RouterLink,MatMenuModule],
+  imports: [MatTreeModule, MatButtonModule, MatIconModule,CommonModule,RouterLink,MatMenuModule,RouterLinkActive],
   templateUrl: './treemenu.component.html',
   styleUrl: './treemenu.component.scss',
   changeDetection:ChangeDetectionStrategy.OnPush

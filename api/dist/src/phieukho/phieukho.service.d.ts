@@ -21,9 +21,8 @@ export declare class PhieukhoService {
                 createdAt: Date;
                 updatedAt: Date;
                 title: string;
-                order: number | null;
-                slug: string | null;
                 title2: string | null;
+                slug: string | null;
                 masp: string;
                 giagoc: number;
                 dvt: string | null;
@@ -32,6 +31,7 @@ export declare class PhieukhoService {
                 soluong: number;
                 soluongkho: number;
                 haohut: number;
+                order: number | null;
             };
             id: string;
             ghichu: string | null;

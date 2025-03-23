@@ -197,6 +197,12 @@ export const routes: Routes = [
           ],
         },
         {
+          path: 'nhucaudathang',
+          canActivate: [PermissionGuard],
+          data: { permission: 'nhucaudathang.view' },
+          loadComponent: () => import('./admin/dathang/nhucaudathang/nhucaudathang.component').then((c) => c.NhucaudathangComponent),
+        },
+        {
           path: 'donhang',
           canActivate: [PermissionGuard],
           data: { permission: 'donhang.view' },

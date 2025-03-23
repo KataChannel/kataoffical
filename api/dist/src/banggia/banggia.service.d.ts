@@ -9,11 +9,11 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        order: number | null;
         status: string | null;
     }>;
     createBanggia(data: any): Promise<{
@@ -32,11 +32,11 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        order: number | null;
         status: string | null;
     }>;
     reorderBanggias(banggiaIds: string[]): Promise<void>;
@@ -49,11 +49,11 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        order: number | null;
         status: string | null;
     }[]>;
     findOne(id: string): Promise<{
@@ -66,9 +66,8 @@ export declare class BanggiaService {
             createdAt: Date;
             updatedAt: Date;
             title: string;
-            order: number | null;
-            slug: string | null;
             title2: string | null;
+            slug: string | null;
             masp: string;
             giagoc: number;
             dvt: string | null;
@@ -77,6 +76,7 @@ export declare class BanggiaService {
             soluong: number;
             soluongkho: number;
             haohut: number;
+            order: number | null;
         }[];
         khachhang: {
             id: string;
@@ -106,11 +106,11 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        order: number | null;
         status: string | null;
     }>;
     update(id: string, data: any): Promise<{
@@ -129,11 +129,11 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        order: number | null;
         status: string | null;
     }>;
     remove(id: string): Promise<{
@@ -143,11 +143,11 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        order: number | null;
         status: string | null;
     }>;
     addKHtoBG(banggiaId: string, khachhangIds: any[]): Promise<{
@@ -157,11 +157,11 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        order: number | null;
         status: string | null;
     }>;
     removeKHfromBG(banggiaId: string, khachhangIds: any[]): Promise<{
@@ -171,11 +171,11 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        order: number | null;
         status: string | null;
     }>;
 }

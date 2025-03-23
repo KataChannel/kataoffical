@@ -5,6 +5,7 @@ npx bun prisma migrate dev --name rau3.1.1
 npx prisma db push
 npx bun prisma generate
 npx ts-node prisma/exportData.ts
+npx ts-node prisma/update.ts
 npx ts-node prisma/backup.ts
 
 
