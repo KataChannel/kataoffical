@@ -35,7 +35,7 @@ COPY --from=builder /app/dist /app/dist
 COPY .env .env
 
 # Expose the ports used by the NestJS application (e.g., 3000)
-EXPOSE 3331
+EXPOSE 3333
 
 # Run the application
 CMD ["bun", "run", "dist/src/main.js"]
