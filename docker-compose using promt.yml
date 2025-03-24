@@ -37,7 +37,7 @@ services:
     build: ./api
     restart: always
     ports:
-      - "3331:3331"
+      - "3333:3333"
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
