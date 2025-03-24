@@ -25,7 +25,7 @@ services:
     ports:
       - "3333:3333"
     environment:
-      - DATABASE_URL="postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:5432/tazagroupv2?schema=public"
+      - DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:5432/tazagroupv2?schema=public
       - GOOGLE_CLIENT_ID=896025447185-00d1av64vk2dfr9r9d5sgdf9gjkvpgrs.apps.googleusercontent.com
       - GOOGLE_CLIENT_SECRET=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
       - FACEBOOK_CLIENT_ID=your-facebook-client-id
