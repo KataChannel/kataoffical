@@ -47,7 +47,7 @@
         <div class="flex flex-row space-x-2 items-center">
           @for (item of DetailUser().roles; track $index) {
             <div class="cursor-pointer flex flex-row space-x-2 items-center p-2 rounded-lg bg-gray-100">
-              <div class="font-bold">{{item?.role?.name}}</div>
+              <div class="font-bold">{{item?.name}}</div>
               <mat-icon color="warn" (click)="handleRemoveRole(item)">close</mat-icon>
             </div>
           }

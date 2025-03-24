@@ -1,140 +1,27 @@
-<div class="w-full flex flex-col space-y-2 py-4 items-center text-center">
-    <div class="flex flex-row space-x-2 items-center">
-        <span class="font-bold text-xl">Dashboard</span>
-        <span class="material-symbols-outlined">wand_stars</span>
-    </div>
-    <div class="w-full p-8 bg-gray-100 h-screen-16 overflow-auto">
-        <div class="w-full mx-auto">
-            <div class="bg-white shadow rounded-md p-4 mb-4 flex items-center justify-between">
-                <div class="space-x-2">
-                    <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-md text-sm focus:outline-none focus:shadow-outline">Hôm nay</button>
-                    <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-md text-sm focus:outline-none focus:shadow-outline">Tuần này</button>
-                    <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-md text-sm focus:outline-none focus:shadow-outline">Tháng này</button>
-                    <button class="bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded-md text-sm focus:outline-none focus:shadow-outline">Tùy chọn</button>
-                </div>
-            </div>
-    
-            <section class="mb-8">
-                <h2 class="text-lg font-semibold mb-2">I. TỔNG QUAN</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-1">Tổng Doanh Thu</h3>
-                        <p class="text-xl font-bold text-blue-500">[Số tiền]</p>
-                        <p class="text-sm text-gray-500">[So sánh/Sparkline]</p>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-1">Tổng Số Đơn Hàng</h3>
-                        <p class="text-xl font-bold text-blue-500">[Số lượng]</p>
-                        <p class="text-sm text-gray-500">[So sánh/Sparkline]</p>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-1">Khách Hàng Mới</h3>
-                        <p class="text-xl font-bold text-blue-500">[Số lượng]</p>
-                        <p class="text-sm text-gray-500">[So sánh/Sparkline]</p>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-1">Lợi Nhuận Ước tính</h3>
-                        <p class="text-xl font-bold text-green-500">[Số tiền]</p>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-1">KPI Khác: ...</h3>
-                        <p class="text-xl font-bold text-indigo-500">[Giá trị]</p>
-                    </div>
-                    <div></div> </div>
-            </section>
-    
-            <section class="mb-8">
-                <h2 class="text-lg font-semibold mb-2">II. THỐNG KÊ BÁN HÀNG</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Biểu Đồ Doanh Thu theo Thời Gian</h3>
-                        <div class="border border-gray-300 rounded-md h-48 bg-gray-100 flex items-center justify-center text-gray-500 italic">
-                            [Biểu đồ đường/cột]
-                        </div>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Biểu Đồ Phân Loại Doanh Thu</h3>
-                        <div class="border border-gray-300 rounded-md h-48 bg-gray-100 flex items-center justify-center text-gray-500 italic">
-                            [Biểu đồ tròn/cột]
-                        </div>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Biểu Đồ Phân Bố Đơn Hàng theo Trạng Thái</h3>
-                        <div class="border border-gray-300 rounded-md h-48 bg-gray-100 flex items-center justify-center text-gray-500 italic">
-                            [Biểu đồ tròn/cột]
-                        </div>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Top Sản Phẩm Bán Chạy Nhất</h3>
-                        <ol class="list-decimal pl-5">
-                            <li class="mb-1">[Tên SP] - [Số lượng] ([%])</li>
-                            <li class="mb-1">[Tên SP] - [Số lượng] ([%])</li>
-                            <li class="mb-1">...</li>
-                        </ol>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Top Khách Hàng Mua Nhiều Nhất</h3>
-                        <ol class="list-decimal pl-5">
-                            <li class="mb-1">[Tên KH] - [Tổng giá trị]</li>
-                            <li class="mb-1">[Tên KH] - [Tổng giá trị]</li>
-                            <li class="mb-1">...</li>
-                        </ol>
-                    </div>
-                    <div></div> </div>
-            </section>
-    
-            <section class="mb-8">
-                <h2 class="text-lg font-semibold mb-2">III. QUẢN LÝ KHO HÀNG</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-1">Tổng SL Kho</h3>
-                        <p class="text-xl font-bold text-yellow-500">[Số lượng]</p>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Giá Trị Kho (ƯT)</h3>
-                        <p class="text-xl font-bold text-yellow-500">[Số tiền]</p>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Danh Sách SP Sắp Hết Hàng</h3>
-                        <ul class="list-disc pl-5">
-                            <li class="mb-1">[Tên SP] - Còn: [SL] (Ngưỡng: [SL])</li>
-                            <li class="mb-1">[Tên SP] - Còn: [SL] (Ngưỡng: [SL])</li>
-                            <li class="mb-1">...</li>
-                        </ul>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Danh Sách SP Hết/Sắp Hết Hạn</h3>
-                        <ul class="list-disc pl-5">
-                            <li class="mb-1">[Tên SP] - Hạn: [Ngày]</li>
-                            <li class="mb-1">[Tên SP] - Hạn: [Ngày]</li>
-                            <li class="mb-1">...</li>
-                        </ul>
-                    </div>
-                    <div class="md:col-span-2"></div> </div>
-            </section>
-    
-            <section class="mb-8">
-                <h2 class="text-lg font-semibold mb-2">IV. THÀNH PHẦN HỖ TRỢ KHÁC</h2>
-                <div class="bg-white shadow rounded-md p-4">
-                    <h3 class="text-md font-medium text-gray-700 mb-2">Thông Báo / Cảnh Báo</h3>
-                    <ul class="list-disc pl-5 text-sm text-gray-600">
-                        <li class="mb-1">[Thời gian] - [Nội dung thông báo 1]</li>
-                        <li class="mb-1">[Thời gian] - [Nội dung thông báo 2]</li>
-                        <li class="mb-1">...</li>
-                    </ul>
-                </div>
-                <div class="bg-white shadow rounded-md p-4 mt-4">
-                    <h3 class="text-md font-medium text-gray-700 mb-2">Truy Cập Nhanh</h3>
-                    <div class="space-x-2">
-                        <button class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm focus:outline-none focus:shadow-outline">Quản lý Đơn hàng</button>
-                        <button class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-md text-sm focus:outline-none focus:shadow-outline">Quản lý Sản phẩm</button>
-                        <button class="bg-indigo-500 hover:bg-indigo-700 text-white py-2 px-4 rounded-md text-sm focus:outline-none focus:shadow-outline">Báo cáo Chi tiết</button>
-                        </div>
-                </div>
-                <div class="bg-white shadow rounded-md p-4 mt-4">
-                    <button class="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md text-sm focus:outline-none focus:shadow-outline">Cá Nhân Hóa</button>
-                </div>
-            </section>
+<div class="container w-full h-full mx-auto py-8 justify-center items-center text-center">
+    <h1>Dashboard</h1>
+    <div>Coming Soon</div>
+    <div class="flex flex-col space-y-2 container p-4 rounded-lg border border-gray-200">
+        <div class="chat-box">
+          <div *ngFor="let msg of messages" class="message {{msg.sender?'text-start':'text-end'}}">
+            <span>{{ msg?.text?.reply }}</span>
+          </div>
         </div>
-    </div>
+        <div class="relative w-full flex flex-col space-y-2">
+            <div class="flex flex-row space-x-2">   
+              <div #editablechatAI (keyup.enter)="sendMessage($event)" (paste)="handlePaste($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" #editable contenteditable="true" (input)="onInput($event)" 
+              class="w-full text-start border p-4 editable rounded-lg {{isDragging?'h-40 border-2 border-dashed border-blue-500 bg-slate-100':''}}" data-placeholder="Nhập nội dung ở đây..." autofocus>
+            </div>
+              <button mat-icon-button color="primary" (click)="sendMessage($event)"><mat-icon>send</mat-icon></button>
+            </div>
+            <div class="flex flex-row space-x-2 items-center">
+              <button (click)="fileInput.click()" mat-icon-button color="primary"><mat-icon>image</mat-icon></button>
+              <button (click)="fileDrive.click()" mat-icon-button color="primary"><mat-icon>cloud_upload</mat-icon></button>
+              <input class="hidden" (change)="onFileSelected($event)" type="file" #fileInput>
+              <input class="hidden" (change)="uploadDriver($event)" type="file" #fileDrive>
+        
+            </div>
+            </div>
+      </div>
+      
 </div>

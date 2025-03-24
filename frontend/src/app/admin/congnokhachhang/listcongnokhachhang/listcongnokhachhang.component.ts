@@ -39,7 +39,6 @@ import moment from 'moment';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
 import { DonhangService } from '../../donhang/donhang.service';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 @Component({
   selector: 'app-listcongnokhachhang',
   templateUrl: './listcongnokhachhang.component.html',
@@ -62,7 +61,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     MatDatepickerModule,
     MatDialogModule,
   ],
-  // providers: [provideNativeDateAdapter()],
+  providers: [provideNativeDateAdapter()],
 })
 export class ListcongnokhachhangComponent {
   Detail: any = {};
@@ -105,10 +104,11 @@ export class ListcongnokhachhangComponent {
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   SearchParams: any = {
-    Batdau: moment().toDate(),
-    Ketthuc: moment().toDate(),
+    Batdau: moment().format('YYYY-MM-DD'),
+    Ketthuc: moment().add(1, 'day').format('YYYY-MM-DD'),
     Type: 'donsi',
-    Status:'dagiao'
+    pageSize: 9999,
+    pageNumber: 0,
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -124,42 +124,45 @@ export class ListcongnokhachhangComponent {
     });
   }
   onSelectionChange(event: MatSelectChange): void {
-    // const timeFrames: { [key: string]: () => void } = {
-    //   day: () => {
-    //     this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment()
-    //       .endOf('day')
-    //       .add(1, 'day')
-    //       .format('YYYY-MM-DD');
-    //   },
-    //   week: () => {
-    //     this.SearchParams.Batdau = moment()
-    //       .startOf('week')
-    //       .format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
-    //   },
-    //   month: () => {
-    //     this.SearchParams.Batdau = moment()
-    //       .startOf('month')
-    //       .format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment()
-    //       .endOf('month')
-    //       .format('YYYY-MM-DD');
-    //   },
-    //   year: () => {
-    //     this.SearchParams.Batdau = moment()
-    //       .startOf('year')
-    //       .format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
-    //   },
-    // };
+    const timeFrames: { [key: string]: () => void } = {
+      day: () => {
+        this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment()
+          .endOf('day')
+          .add(1, 'day')
+          .format('YYYY-MM-DD');
+      },
+      week: () => {
+        this.SearchParams.Batdau = moment()
+          .startOf('week')
+          .format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
+      },
+      month: () => {
+        this.SearchParams.Batdau = moment()
+          .startOf('month')
+          .format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment()
+          .endOf('month')
+          .format('YYYY-MM-DD');
+      },
+      year: () => {
+        this.SearchParams.Batdau = moment()
+          .startOf('year')
+          .format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
+      },
+    };
 
-    // timeFrames[event.value]?.();
-    // console.log(this.SearchParams);   
+    timeFrames[event.value]?.();
+    console.log(this.SearchParams);
+    
      this.ngOnInit();
   }
   onDateChange(event: any): void {
-    this.ngOnInit()
+    console.log(event);
+    if (event.value) {
+    }
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -274,7 +277,7 @@ export class ListcongnokhachhangComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]
@@ -346,9 +349,7 @@ export class ListcongnokhachhangComponent {
       this.editDonhang.push(item);
     }
   }
-  TinhTong(items: any, fieldTong: any) {
-    return (items?.reduce((sum: any, item: any) => sum + (item[fieldTong] || 0), 0) ||0);
-  }
+
   dialog = inject(MatDialog);
   dialogCreateRef: any;
   Phieuchia:any[] = [];
@@ -357,15 +358,10 @@ export class ListcongnokhachhangComponent {
     this.Phieuchia = this.editDonhang.map((v: any) => ({
       makh: v.khachhang?.makh,
       name: v.khachhang?.name,
-      madonhang:v.madonhang,
-      ngaygiao:v.ngaygiao,
       sanpham: v.sanpham.map((v1: any) => ({
-        masp:v1.masp,
         title: v1.title,
         dvt: v1.dvt,
         slgiao: v1.slgiao,
-        giaban: v1.giaban,
-        ttgiao: v1.ttgiao,
       })),
     }));
     console.log(this.Phieuchia);
@@ -374,13 +370,7 @@ export class ListcongnokhachhangComponent {
       disableClose: true,
     });
   }
-  BackStatus()
-  {
-    this.editDonhang.forEach((v:any) => {
-        v.status = 'dadat';
-        this._DonhangService.updateDonhang(v);
-    });
-  }
+
   getUniqueProducts(): string[] {
     const products = new Set<string>();
     this.Phieuchia.forEach(kh => kh.sanpham.forEach((sp:any) => products.add(sp.title)));
@@ -398,6 +388,8 @@ export class ListcongnokhachhangComponent {
           .map(p => [p.title, p])
       ).values()
   );
+  console.log(uniqueProducts);
+  
     const item = uniqueProducts.find((sp:any) => sp.title === product);
     return item ? item.dvt : '';
   }

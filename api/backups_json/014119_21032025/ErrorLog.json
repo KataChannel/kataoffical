@@ -1,0 +1,35 @@
+[
+  {
+    "id": "04df29e1-6a1c-4934-82f9-c9e03d5b5337",
+    "timestamp": "2025-03-20T15:17:44.131Z",
+    "message": "Failed to create getAllSanpham",
+    "details": {
+      "url": "http://localhost:4303/admin/sanpham",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-20T15:17:44.133Z"
+  },
+  {
+    "id": "d8e2d44e-6d05-414e-af88-879bc361c2f5",
+    "timestamp": "2025-03-20T15:54:00.366Z",
+    "message": "Failed to getSanphamBy",
+    "details": {
+      "url": "http://localhost:4303/admin/sanpham/4f9a92f5-1790-4049-8882-1a2720fcae4a",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-20T15:54:00.368Z"
+  },
+  {
+    "id": "e8219098-05ff-4dfa-a5a5-0757e4fffc55",
+    "timestamp": "2025-03-20T16:33:41.933Z",
+    "message": "Failed to create getAllSanpham",
+    "details": {
+      "url": "http://localhost:4303/admin/sanpham",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-20T16:33:41.934Z"
+  }
+]

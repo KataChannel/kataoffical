@@ -72,7 +72,10 @@ export class UserService {
       ),
     }));
   }
-   
+
+
+
+  
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
@@ -106,7 +109,6 @@ export class UserService {
       permissions,
     };
   }
-  
 
   async update(id: string, data: any) {
     this._SocketGateway.senduserUpdate();
@@ -140,9 +142,9 @@ export class UserService {
       },
     });
   }
-
   async removeRoleFromUser(data: { userId: string; roleId: any }) {
     const { userId, roleId } = data;
+    // Check if the role-permission relationship exists
     const rolePermission = await this.prisma.userRole.findFirst({
       where: {
         userId,
@@ -154,6 +156,7 @@ export class UserService {
         `Permission with ID ${roleId} is not assigned to Role with ID ${userId}`,
       );
     }
+    // Remove permission from role
     return this.prisma.userRole.delete({
       where: {
         id: rolePermission.id,

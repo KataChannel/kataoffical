@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, TemplateRef, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -19,7 +19,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 @Component({
   selector: 'app-listsanpham',
   templateUrl: './listsanpham.component.html',
@@ -39,34 +39,30 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     CommonModule,
     FormsModule,
     MatTooltipModule,
+    MatDialogModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListSanphamComponent {
-  Detail: any = {};
   displayedColumns: string[] = [
     'title',
-    'title2',
     'masp',
     'giagoc',
     'dvt',
     'soluong',
     'soluongkho',
     'haohut',
-    'subtitle',
     'ghichu',
     'createdAt',
   ];
   ColumnName: any = {
     title: 'Tên Sản Phẩm',
-    title2: 'Tên Sản Phẩm 2',
     masp: 'Mã Sản Phẩm',
     giagoc: 'Giá Gốc',
     dvt: 'Đơn Vị Tính',
     soluong: 'SL',
     soluongkho: 'SL Kho',
     haohut: 'Hao Hụt',
-    subtitle: 'Gợi ý',
     ghichu: 'Ghi Chú',
     createdAt: 'Ngày Tạo'
   };
@@ -74,6 +70,11 @@ export class ListSanphamComponent {
     localStorage.getItem('SanphamColFilter') || '[]'
   );
   Columns: any[] = [];
+  //pagination
+  totalItems = 0;
+  pageSize = 10;
+  currentPage = 1;
+  totalPages = 1;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
@@ -82,7 +83,9 @@ export class ListSanphamComponent {
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
+  private _dialog: MatDialog = inject(MatDialog);
   Listsanpham:any = this._SanphamService.ListSanpham;
+  EditList:any=[];
   dataSource = new MatTableDataSource([]);
   sanphamId:any = this._SanphamService.sanphamId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -91,6 +94,11 @@ export class ListSanphamComponent {
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
+    });
+    effect(() => {
+      this.dataSource.data = this.Listsanpham();
+      this.totalItems = this.Listsanpham().length;
+      this.calculateTotalPages();
     });
   }
   applyFilter(event: Event) {
@@ -101,18 +109,14 @@ export class ListSanphamComponent {
     }
   }
   async ngOnInit(): Promise<void> {    
+    this.updateDisplayData();
+    this._SanphamService.listenSanphamUpdates();
     await this._SanphamService.getAllSanpham();
-    this.CountItem = this.Listsanpham().length;
     this.dataSource = new MatTableDataSource(this.Listsanpham());
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.initializeColumns();
     this.setupDrawer();
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
   async refresh() {
    await this._SanphamService.getAllSanpham();
@@ -144,7 +148,6 @@ export class ListSanphamComponent {
       .subscribe((result) => {
         if (result.matches) {
           this.drawer.mode = 'over';
-          this.paginator.hidePageSize = true;
         } else {
           this.drawer.mode = 'side';
         }
@@ -167,7 +170,7 @@ export class ListSanphamComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listsanpham().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    this.dataSource.filteredData = this.Listsanpham().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]
@@ -213,7 +216,6 @@ export class ListSanphamComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-
     this.dataSource.data = this.Listsanpham().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -238,11 +240,47 @@ export class ListSanphamComponent {
   }
   create(): void {
     this.drawer.open();
-    this._router.navigate(['admin/sanpham', 0]);
+    this._router.navigate(['admin/sanpham', 'new']);
+  }
+  openDeleteDialog(teamplate: TemplateRef<any>) {
+      const dialogDeleteRef = this._dialog.open(teamplate, {
+        hasBackdrop: true,
+        disableClose: true,
+      });
+      dialogDeleteRef.afterClosed().subscribe((result) => {
+        if (result=="true") {
+          this.DeleteListItem();
+        }
+      });
+  }
+  DeleteListItem(): void {
+    this.EditList.forEach((item: any) => {
+      this._SanphamService.DeleteSanpham(item);
+    });
+    this.EditList = [];
+    this._snackBar.open('Xóa Thành Công', '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+
+
+  }
+  AddToEdit(item: any): void {
+    const existingItem = this.EditList.find((v: any) => v.id === item.id);
+    if (existingItem) {
+      this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
+    } else {
+      this.EditList.push(item);
+    }
+  }
+  CheckItemInEdit(item: any): boolean {
+    return this.EditList.some((v: any) => v.id === item.id);
   }
   goToDetail(item: any): void {
-     this._SanphamService.setSanphamId(item.id);
     this.drawer.open();
+    this._SanphamService.setSanphamId(item.id);
     this._router.navigate(['admin/sanpham', item.id]);
   }
   async LoadDrive() {
@@ -253,60 +291,48 @@ export class ListSanphamComponent {
     };
    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
    const data = ConvertDriveData(result.values);
-   console.log(data);
    this.DoImportData(data);
   }
-  DoImportData(data:any)
-  {
-    console.log(data);
-    
+  async DoImportData(data: any) {
     const transformedData = data.map((v: any) => ({
-      title: v.title?.trim()||'',
-      title2: v.title2?.trim()||'',
-      subtitle: v.subtitle?.trim()||'',
-      masp: v.masp?.trim()||'',
-      giagoc: Number(v.giagoc)||0,
-      dvt: v.dvt?.trim()||'',
-      soluong: Number(v.soluong)||0,
-      soluongkho: Number(v.soluongkho)||0,
-      haohut: Number(v.haohut)||0,
-      ghichu: v.ghichu?.trim()||'',
-   }));
+      title: v.title?.trim() || '',
+      masp: v.masp?.trim() || '',
+      giagoc: Number(v.giagoc) || 0,
+      dvt: v.dvt?.trim() || '',
+      soluong: Number(v.soluong) || 0,
+      soluongkho: Number(v.soluongkho) || 0,
+      haohut: Number(v.haohut) || 0,
+      ghichu: v.ghichu?.trim() || '',
+    }));
 
-   // Filter out duplicate masp values
-   const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
-      index === self.findIndex((t:any) => (
-        t.masp === value.masp
-      ))
-   )
-    const listId2 = uniqueData.map((v: any) => v.masp);
-    const listId1 = this._SanphamService.ListSanpham().map((v: any) => v.masp);
-    const listId3 = listId2.filter((item:any) => !listId1.includes(item));
-    const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._SanphamService.ListSanpham().find((v1) => v1.masp === v.masp);
-        if (item) {
-          const item1 = { ...item, ...v };
-          await this._SanphamService.updateSanpham(item1);
-        }
-        else{
-          await this._SanphamService.CreateSanpham(v);
-        }
-      });
-     const disableItem = listId3.map(async (v: any) => {
-        const item = this._SanphamService.ListSanpham().find((v1) => v1.masp === v);
-        item.isActive = false;
-        await this._SanphamService.updateSanpham(item);
-      });
-      Promise.all([...createuppdateitem, ...disableItem]).then(() => {
-        this._snackBar.open('Cập Nhật Thành Công', '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-       // window.location.reload();
-      });
+    // Filter out duplicate masp values
+    const uniqueData = Array.from(new Map(transformedData.map((item:any) => [item.masp, item])).values());
+    const existingSanpham = this._SanphamService.ListSanpham();
+    const existingMasp  = existingSanpham.map((v: any) => v.masp);
+    const newMasp = uniqueData.map((v: any) => v.masp).filter((item: any) => !existingMasp.includes(item));
+
+    await Promise.all(uniqueData.map(async (v: any) => {
+      const existingItem = existingSanpham.find((v1: any) => v1.masp === v.masp);
+      if (existingItem) {
+        const updatedItem = { ...existingItem, ...v };
+        await this._SanphamService.updateSanpham(updatedItem);
+      } else {
+        await this._SanphamService.CreateSanpham(v);
+      }
+    }));
+    await Promise.all(existingSanpham
+      .filter(sp => !uniqueData.some((item:any) => item.masp === sp.masp))
+      .map(sp => this._SanphamService.updateSanpham({ ...sp, isActive: false }))
+    );
+
+    this._snackBar.open('Cập Nhật Thành Công', '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
   }
+  
   async ImporExcel(event: any) {
   const data = await readExcelFile(event)
   this.DoImportData(data);
@@ -314,8 +340,6 @@ export class ListSanphamComponent {
   ExportExcel(data:any,title:any) {
     const dulieu = data.map((v: any) => ({
       title: v.title,
-      title2: v.title2,
-      subtitle: v.subtitle,
       masp: v.masp,
       giagoc: v.giagoc,
       dvt: v.dvt,
@@ -328,6 +352,55 @@ export class ListSanphamComponent {
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
+  }
+
+
+
+
+
+
+calculateTotalPages() {
+  this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+}
+
+onPageSizeChange(size: number,menuHienthi:any) {
+  if(size>this.Listsanpham().length){
+    this.pageSize = this.Listsanpham().length;
+    this._snackBar.open(`Số lượng tối đa ${this.Listsanpham().length}`, '', {
+      duration: 1000,
+      horizontalPosition: "end",
+      verticalPosition: "top",
+      panelClass: ['snackbar-success'],
+    });
+  }
+  else {
+    this.pageSize = size;
+  }
+  this.currentPage = 1; // Reset to first page when changing page size
+  this.calculateTotalPages();
+  this.updateDisplayData();
+  menuHienthi.closeMenu();
+}
+
+onPreviousPage() {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.updateDisplayData();
+  }
+}
+
+onNextPage() {
+  if (this.currentPage < this.totalPages) {
+    this.currentPage++;
+    this.updateDisplayData();
+  }
+}
+
+updateDisplayData() {
+  const startIndex = (this.currentPage - 1) * this.pageSize;
+  const endIndex = startIndex + this.pageSize;
+  const pageData = this.Listsanpham().slice(startIndex, endIndex);
+  this.dataSource.data = pageData;
   }
 }
 

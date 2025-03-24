@@ -19,8 +19,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
-import moment from 'moment';
 @Component({
   selector: 'app-listbanggia',
   templateUrl: './listbanggia.component.html',
@@ -49,7 +47,6 @@ export class ListBanggiaComponent {
     'title',
     'type',
     'sanpham',
-    'khachhang',
     'batdau',
     'ketthuc',
     //  'order',
@@ -61,7 +58,6 @@ export class ListBanggiaComponent {
     title: 'Tiêu Đề',
     type: 'Loại',
     sanpham: 'Sản Phẩm',
-    khachhang: 'Khách Hàng',
     batdau: 'Bắt Đầu',
     ketthuc: 'Kết Thúc',
     status: 'Tình Trạng',
@@ -164,7 +160,7 @@ export class ListBanggiaComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listbanggia().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    this.dataSource.filteredData = this.Listbanggia().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]
@@ -245,49 +241,47 @@ export class ListBanggiaComponent {
   async LoadDrive() {
     const DriveInfo = {
       IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'DSBanggiaImport',
+      SheetName: 'BGImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
    const data = ConvertDriveData(result.values);
-  this.DoImportData(data);
+   console.log(data);
+   this.DoImportData(data);
   }
   DoImportData(data:any)
   {
     console.log(data);
     
     const transformedData = data.map((v: any) => ({
-      mabanggia: v.mabanggia?.trim()||'',
-      title: v.title?.trim()||'',
-      batdau: moment(v.batdau,"DD/MM/YYYY").toDate()||moment().toDate(),
-      ketthuc: moment(v.ketthuc,"DD/MM/YYYY").toDate()||moment().toDate(),
+      name: v.name?.trim()||'',
+      mancc: v.mancc?.trim()||'',
+      sdt: v.sdt?.trim()||'',
+      diachi: v.diachi?.trim()||'',
       ghichu: v.ghichu?.trim()||'',
-      status: v.status?.trim()||'',
    }));
-   console.log(transformedData);
-   
-   // Filter out duplicate mabanggia values
+   // Filter out duplicate mancc values
    const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
       index === self.findIndex((t:any) => (
-        t.mabanggia === value.mabanggia
+        t.mancc === value.mancc
       ))
    )
-    const listId2 = uniqueData.map((v: any) => v.mabanggia);
-    const listId1 = this._BanggiaService.ListBanggia().map((v: any) => v.mabanggia);
+    const listId2 = uniqueData.map((v: any) => v.mancc);
+    const listId1 = this._BanggiaService.ListBanggia().map((v: any) => v.mancc);
     const listId3 = listId2.filter((item:any) => !listId1.includes(item));
     const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._BanggiaService.ListBanggia().find((v1) => v1.mabanggia === v.mabanggia);
+        const item = this._BanggiaService.ListBanggia().find((v1) => v1.mancc === v.mancc);
         if (item) {
           const item1 = { ...item, ...v };
-          // await this._BanggiaService.updateBanggia(item1);
+          await this._BanggiaService.updateBanggia(item1);
         }
         else{
           await this._BanggiaService.CreateBanggia(v);
         }
       });
      const disableItem = listId3.map(async (v: any) => {
-        const item = this._BanggiaService.ListBanggia().find((v1) => v1.mabanggia === v);
-        // item.isActive = false;
+        const item = this._BanggiaService.ListBanggia().find((v1) => v1.mancc === v);
+        item.isActive = false;
         await this._BanggiaService.updateBanggia(item);
       });
       Promise.all([...createuppdateitem, ...disableItem]).then(() => {

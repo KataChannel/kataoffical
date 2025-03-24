@@ -73,6 +73,8 @@ import { MatMenuModule } from '@angular/material/menu';
     async ngOnInit() {    
       await this._RoleService.getAllRole();
       this.ListRole = this._RoleService.ListRole();
+      console.log(this.ListRole);
+      
     }
     async handleUserAction() {
       if (this.userId() === '0') {
@@ -154,10 +156,10 @@ import { MatMenuModule } from '@angular/material/menu';
     handleAddRole(item:any){
       console.log(item);
       this.ListRole.push(item);
-      this._UserService.assignRoleToUser({userId:this.DetailUser().id,roleId:item.id});
+      // this._UserService.assignRoleToUser({userId:this.DetailUser().id,roleId:item.id});
     }
     handleRemoveRole(item:any){
       this.ListRole = this.ListRole.filter((v:any)=>v.id !== item.id);
-      this._UserService.removeRoleFromUser({userId:item.userId,roleId:item.roleId});
+      // this._UserService.removeRoleFromUser({userId:item.userId,roleId:item.roleId});
     }
   }

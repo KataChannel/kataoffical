@@ -22,7 +22,6 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 @Component({
   selector: 'app-vandon',
   templateUrl: './vandon.component.html',
@@ -44,7 +43,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     MatTooltipModule,
     MatDatepickerModule
   ],
-  // providers:[provideNativeDateAdapter()]
+  providers:[provideNativeDateAdapter()]
 })
 export class VandonComponent {
   Detail: any = {};
@@ -91,10 +90,29 @@ export class VandonComponent {
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
-  dataSource = computed(() => {   
-    const ds = new MatTableDataSource(this.Listvandon);
+  Vandon:any = this._DonhangService.ListDonhang;
+  dataSource = computed(() => {
+    const Listvandon = this.Vandon()
+    .flatMap((item: any,k:any) => {
+      const Info = {
+      madonhang: item?.madonhang,
+      khachhang: item?.khachhang?.name,
+      sdt: item?.khachhang?.sdt,  
+      diachi: item?.khachhang?.diachi,
+      createdAt: item.createdAt,
+      isActive: item.isActive,
+      ngaygiao: item.ngaygiao,
+      };
+      return item.sanpham.map((v: any) => ({ ...v, ...Info }));
+    }); 
+    Listvandon.forEach((v:any,k:any)=>{
+      v.id=k+1
+    })
+    console.log(Listvandon);
+    
+    const ds = new MatTableDataSource(Listvandon);
     ds.filterPredicate = this.createFilter();
-    //ds.paginator = this.paginator;
+    ds.paginator = this.paginator;
     ds.sort = this.sort;
     return ds;
   });
@@ -102,10 +120,11 @@ export class VandonComponent {
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   SearchParams: any = {
-    Batdau: moment().toDate(),
-    Ketthuc: moment().toDate(),
+    Batdau: moment().format('YYYY-MM-DD'),
+    Ketthuc: moment().add(1,'day').format('YYYY-MM-DD'),
     Type: 'donsi',
-    Status:'dadat'
+    pageSize: 9999,
+    pageNumber: 1,
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -121,31 +140,32 @@ export class VandonComponent {
     });
   }
   onSelectionChange(event: MatSelectChange): void {
-    // const timeFrames: { [key: string]: () => void } = {
-    //   day: () => {
-    //     this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment().endOf('day').add(1,'day').format('YYYY-MM-DD');
-    //   },
-    //   week: () => {
-    //     this.SearchParams.Batdau = moment().startOf('week').format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
-    //   },
-    //   month: () => {
-    //     this.SearchParams.Batdau = moment().startOf('month').format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment().endOf('month').format('YYYY-MM-DD');
-    //   },
-    //   year: () => {
-    //     this.SearchParams.Batdau = moment().startOf('year').format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
-    //   },
-    // };
+    const timeFrames: { [key: string]: () => void } = {
+      day: () => {
+        this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment().endOf('day').add(1,'day').format('YYYY-MM-DD');
+      },
+      week: () => {
+        this.SearchParams.Batdau = moment().startOf('week').format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
+      },
+      month: () => {
+        this.SearchParams.Batdau = moment().startOf('month').format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment().endOf('month').format('YYYY-MM-DD');
+      },
+      year: () => {
+        this.SearchParams.Batdau = moment().startOf('year').format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
+      },
+    };
 
-    // timeFrames[event.value]?.();
-    // this.refresh();
-    this.ngOnInit()
+    timeFrames[event.value]?.();
+    this.refresh();
   }
   onDateChange(event: any): void {
-    this.ngOnInit()
+    console.log(event);
+    if(event.value){
+    }
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -167,24 +187,9 @@ export class VandonComponent {
       this.dataSource()?.paginator?.firstPage();
     }
   }
-  Listvandon:any[]=[]
   async ngOnInit(): Promise<void> {    
     await this._DonhangService.searchDonhang(this.SearchParams);
-    this.CountItem = this._DonhangService.ListDonhang().length;
-    this.Listvandon = this._DonhangService.ListDonhang().flatMap((item:any, index:any) =>
-      item.sanpham.map((v:any) => ({
-        ...v,
-        madonhang: item.madonhang,
-        khachhang: item.khachhang?.name,
-        sdt: item.khachhang?.sdt,
-        diachi: item.khachhang?.diachi,
-        createdAt: item.createdAt,
-        isActive: item.isActive,
-        ngaygiao: item.ngaygiao
-      }))
-    ).map((v:any, i:any) => ({ ...v, id: i + 1 }));   
-    this.dataSource().data = this.Listvandon;
-    this.dataSource().paginator = this.paginator
+    this.CountItem = this.Vandon().length;
     this.initializeColumns();
     this.setupDrawer();
     this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
@@ -356,9 +361,7 @@ export class VandonComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource().filteredData = this.Listvandon.filter((v: any) => 
-      removeVietnameseAccents(v[column]).toLowerCase().includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase())
-  );  
+    this.dataSource().filteredData = this.Vandon().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   trackByFn(index: number, item: any): any {
@@ -369,17 +372,13 @@ export class VandonComponent {
   {
     const CheckItem = this.dataSource().filteredData.filter((v:any)=>v[column]===item[column]);
     const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
-    console.log(this.ListFilter);
-    console.log(item);
-    console.log(column);
-    
     if(CheckItem1.length>0)
     {
       this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
     }
     else{
       this.ListFilter = [...this.ListFilter,...CheckItem];
-    }    
+    }
   }
   ChosenAll(list:any)
   {
@@ -396,9 +395,9 @@ export class VandonComponent {
   }
   ResetFilter()
   {
-    this.ListFilter = this.Listvandon;
-    this.dataSource().data = this.Listvandon;
-    //this.dataSource().paginator = this.paginator;
+    this.ListFilter = this.Vandon();
+    this.dataSource().data = this.Vandon();
+    this.dataSource().paginator = this.paginator;
     this.dataSource().sort = this.sort;
   }
   EmptyFiter()
@@ -411,8 +410,8 @@ export class VandonComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-    this.dataSource().data = this.Listvandon.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
-    //this.dataSource().paginator = this.paginator;
+    this.dataSource().data = this.Vandon().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    this.dataSource().paginator = this.paginator;
     this.dataSource().sort = this.sort;
     menu.closeMenu();
   }

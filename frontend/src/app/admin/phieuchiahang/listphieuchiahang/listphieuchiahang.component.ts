@@ -39,10 +39,6 @@ import moment from 'moment';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
 import { DonhangService } from '../../donhang/donhang.service';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
-import { environment } from '../../../../environments/environment.development';
-import { SearchService } from '../../../shared/services/search.service';
-import { StorageService } from '../../../shared/utils/storage.service';
 @Component({
   selector: 'app-listphieuchiahang',
   templateUrl: './listphieuchiahang.component.html',
@@ -65,14 +61,14 @@ import { StorageService } from '../../../shared/utils/storage.service';
     MatDatepickerModule,
     MatDialogModule,
   ],
-  // providers: [provideNativeDateAdapter()],
+  providers: [provideNativeDateAdapter()],
 })
 export class ListPhieuchiahangComponent {
   Detail: any = {};
   displayedColumns: string[] = [
     'madonhang',
     'name',
-    'sanpham',
+    'donhang',
     'ngaygiao',
     'ghichu',
     'status',
@@ -82,7 +78,7 @@ export class ListPhieuchiahangComponent {
   ColumnName: any = {
     madonhang: 'Mã Đơn Hàng',
     name: 'Khách Hàng',
-    sanpham: 'Sản Phẩm',
+    donhang: 'Sản Phẩm',
     ngaygiao: 'Ngày Giao',
     ghichu: 'Ghi Chú',
     status: 'Trạng Thái',
@@ -101,8 +97,6 @@ export class ListPhieuchiahangComponent {
   private _DonhangService: DonhangService = inject(DonhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
-  private _SearchService: SearchService = inject(SearchService);
-  private _StorageService: StorageService = inject(StorageService);
   private _router: Router = inject(Router);
   Listdonhang: any = this._DonhangService.ListDonhang;
   dataSource = new MatTableDataSource([]);
@@ -110,10 +104,11 @@ export class ListPhieuchiahangComponent {
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   SearchParams: any = {
-    Batdau: moment().toDate(),
-    Ketthuc: moment().toDate(),
+    Batdau: moment().format('YYYY-MM-DD'),
+    Ketthuc: moment().add(1, 'day').format('YYYY-MM-DD'),
     Type: 'donsi',
-    Status:'dadat',
+    pageSize: 9999,
+    pageNumber: 0,
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -132,7 +127,10 @@ export class ListPhieuchiahangComponent {
     const timeFrames: { [key: string]: () => void } = {
       day: () => {
         this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment().endOf('day').add(1, 'day').format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment()
+          .endOf('day')
+          .add(1, 'day')
+          .format('YYYY-MM-DD');
       },
       week: () => {
         this.SearchParams.Batdau = moment()
@@ -160,7 +158,9 @@ export class ListPhieuchiahangComponent {
     this.ngOnInit();
   }
   onDateChange(event: any): void {
-    this.ngOnInit()
+    console.log(event);
+    if (event.value) {
+    }
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -191,8 +191,6 @@ export class ListPhieuchiahangComponent {
     this.initializeColumns();
     this.setupDrawer();
     this.dataSource = new MatTableDataSource(this.Listdonhang());
-    console.log(this.dataSource.data);
-    
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.createFilter();
@@ -277,7 +275,7 @@ export class ListPhieuchiahangComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]
@@ -358,10 +356,8 @@ export class ListPhieuchiahangComponent {
     this.Phieuchia = this.editDonhang.map((v: any) => ({
       makh: v.khachhang?.makh,
       name: v.khachhang?.name,
-      madonhang: v.madonhang,
       sanpham: v.sanpham.map((v1: any) => ({
         title: v1.title,
-        masp: v1.masp,
         dvt: v1.dvt,
         slgiao: v1.slgiao,
       })),
@@ -372,41 +368,28 @@ export class ListPhieuchiahangComponent {
       disableClose: true,
     });
   }
-  ListBillXuly:any[] = [];
-  openXembillDialog(teamplate: TemplateRef<any>) {
-    this.ListBillXuly = this.ListBill
-    this.ListBillXuly.forEach((v:any) => {
-      v.sanpham.forEach((v1:any) => {
-          v1.slgiao = v1.sltt?v1.sltt:v1.sld;
-      });
-    });
-    console.log(this.ListBillXuly);
-    this.dialogCreateRef = this.dialog.open(teamplate, {
-      hasBackdrop: true,
-      disableClose: true,
-    });
-  }
 
-  getUniqueProducts(list:any[]): string[] {
+  getUniqueProducts(): string[] {
     const products = new Set<string>();
-    list.forEach(kh => kh.sanpham.forEach((sp: { title: string; masp: string }) => 
-      products.add(sp.title)));
+    this.Phieuchia.forEach(kh => kh.sanpham.forEach((sp:any) => products.add(sp.title)));
     return Array.from(products);
   }
 
-  getProductQuantity(list:any[],product: string, makh: string) {
-    const customer = list.find(kh => kh.makh === makh);
+  getProductQuantity(product: string, makh: string): number | string {
+    const customer = this.Phieuchia.find(kh => kh.makh === makh);
     const item = customer?.sanpham.find((sp:any) => sp.title === product);
-    return item ? item : '';
+    return item ? item.slgiao : '';
   }
-  getDvtForProduct(list:any[],product: string) {
+  getDvtForProduct(product: string) {
     const uniqueProducts = Array.from(
-      new Map(list.flatMap(c => c.sanpham.map((sp:any) => ({ ...sp, makh: c.makh, name: c.name })))
+      new Map(this.Phieuchia.flatMap(c => c.sanpham.map((sp:any) => ({ ...sp, makh: c.makh, name: c.name })))
           .map(p => [p.title, p])
       ).values()
   );
+  console.log(uniqueProducts);
+  
     const item = uniqueProducts.find((sp:any) => sp.title === product);
-    return item ? item : '';
+    return item ? item.dvt : '';
   }
   
   CheckItemInDonhang(item: any): boolean {
@@ -506,26 +489,15 @@ export class ListPhieuchiahangComponent {
   const printContent = document.getElementById('printContent');
   if (printContent) {
     const newWindow = window.open('', '_blank');
-    const tailwindCSS =  `
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: { extend: {} }
-      };
-    </script>
-  `
+
     if (newWindow) {
       newWindow.document.write(`
         <html>
         <head>
           <title>In Bảng</title>
-                 ${tailwindCSS}
           <style>
             body { font-size: 12px; font-family: Arial, sans-serif; }
-            table { width: auto;
-    border-collapse: collapse;
-    margin-left: auto;
-    margin-right: auto; }
+            table { width: 100%; border-collapse: collapse; }
             th, td { border: 1px solid #000; padding: 4px; text-align: left; }
             @media print { body { margin: 0; } }
           </style>
@@ -589,137 +561,7 @@ export class ListPhieuchiahangComponent {
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
-
-
-
-  selectedFile!: File;
-  ListBill:any =this._StorageService.getItem('ListBill') || [];
-  isLoading = false; // Biến để kiểm tra trạng thái loading
-  uploadMessage = ''; // Hiển thị thông báo sau khi upload
-  onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0]; // Lấy file từ input
-    this.uploadMessage = ''; // Reset thông báo cũ
-    this.uploadFile()
-  }
-
-  async uploadFile() {
-    if (!this.selectedFile) {
-      alert('Chọn file trước khi upload!');
-      return;
-    }
-    this.isLoading = true; // Bắt đầu loading
-    this.uploadMessage = '';
-
-    const formData = new FormData();
-    formData.append('file', this.selectedFile); // 'file' phải khớp với tên bên NestJS
-  
-    try {
-      const response = await fetch(`${environment.APIURL}/googledrive/upload`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Lỗi upload: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      this.ListBill = data.jsonData;
-      this._StorageService.setItem('ListBill', this.ListBill);
-    //  const uniqueMadonhang = Array.from(new Set(data.jsonData.map((item:any) => item.madonhang)));
-    //  this.ListBill = await this.GetDonhang(uniqueMadonhang);
-     console.log(this.ListBill);
-      this.uploadMessage = 'Upload thành công!';
-      console.log('Upload thành công', data);
-    } catch (error) {
-      this.uploadMessage = 'Lỗi khi upload file!';
-      console.error('Lỗi upload file', error);
-    } finally {
-      this.isLoading = false; // Dừng loading dù có lỗi hay không
-    }
-  }
-  async GetDonhang(items: any) {
-    const query = {
-      "model": "donhang",
-      "filters": {
-        "madonhang": { "value": items, "type": "in" }
-      },
-      "relations": {
-        "sanpham": {"include":{"sanpham": true}},
-        "khachhang": {
-          "include": true
-        }
-      },
-      "orderBy": { "field": "createdAt", "direction": "desc" },
-      "take": 10
-    };
-    return await this._SearchService.Search(query)
-  }
-
-updateValue(event: Event,j: any,i: any,field: keyof any,type: 'number' | 'string') {
-  const newValue = type === 'number'? Number((event.target as HTMLElement).innerText.trim()) || 0
-      : (event.target as HTMLElement).innerText.trim();
-      const keyboardEvent = event as KeyboardEvent;
-      if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
-        event.preventDefault();
-      }
-      if (type === "number") {
-        const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
-        // Chặn nếu không phải số và không thuộc danh sách phím cho phép
-        if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
-          event.preventDefault();
-        }
-      } 
-      this.ListBillXuly[j].sanpham[i][field] = newValue; 
-      const inputs = document.querySelectorAll('.slgiao-input-'+j)as NodeListOf<HTMLInputElement>;
-      console.log(inputs);
-      
-      if (i < this.getUniqueProducts(this.ListBillXuly).length - 1) {
-        const nextInput = inputs[i + 1]as HTMLInputElement
-        if (nextInput) {
-          if (nextInput instanceof HTMLInputElement) {
-            nextInput.focus();
-            nextInput.select();
-          }
-          // Then select text using a different method that works on more element types
-          setTimeout(() => {
-            if (document.createRange && window.getSelection) {
-              const range = document.createRange();
-              range.selectNodeContents(nextInput);
-              const selection = window.getSelection();
-              selection?.removeAllRanges();
-              selection?.addRange(range);
-            }
-          }, 10);
-        }
-      }    
-  }
-  UpdateListBill(){
-    console.log(this.ListBillXuly);
-    const updatePromises = this.ListBillXuly.map(async (v) => {
-      const v1 = await this._DonhangService.SearchField({ madonhang: v.madonhang });
-      v1.sanpham.forEach((v2: any) => {
-        const item = v.sanpham.find((v3: any) => v3.masp === v2.masp);
-        if (item) {
-          v2.slgiao = item.slgiao;
-        }
-      });
-      console.log(v1);
-      await this._DonhangService.updateDonhang(v1);
-    });
-
-    Promise.all(updatePromises).then(() => {
-      this._snackBar.open('Cập Nhật Thành Công', '', {
-        duration: 1000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
-    });
-  }
 }
-
 
 
 function memoize() {
@@ -763,5 +605,4 @@ function Debounce(delay: number = 300) {
 
     return descriptor;
   };
-  
 }

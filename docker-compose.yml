@@ -1,45 +1,45 @@
 services:
-  postgres:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: AWois79wFA1bxMK
-      POSTGRES_PASSWORD: 7bhNHJcSEbWln9v
-      POSTGRES_DB: rausachv2
-    ports:
-      - "5432:5432"
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@rausachtrangia.com
-      PGADMIN_DEFAULT_PASSWORD: 7bhNHJcSEbWln9v
-    ports:
-      - "5050:80"
-    depends_on:
-      - postgres  
-  berausach:
+  # postgres:
+  #   image: postgres:15
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: AWois79wFA1bxMK
+  #     POSTGRES_PASSWORD: 7bhNHJcSEbWln9v
+  #     POSTGRES_DB: tazagroupv2
+  #   ports:
+  #     - "5432:5432"
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   container_name: pgadmin
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@rausachtrangia.com
+  #     PGADMIN_DEFAULT_PASSWORD: 7bhNHJcSEbWln9v
+  #   ports:
+  #     - "5050:80"
+  #   depends_on:
+  #     - postgres  
+  betazagroup:
     build: ./api
     restart: always
     ports:
       - "3331:3331"
     environment:
-      - DATABASE_URL=postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:5432/rausachv2?schema=public
-      - GOOGLE_CLIENT_ID=897974685698-efprsqffgop935h5d5l2lidle1go9i17.apps.googleusercontent.com
-      - GOOGLE_CLIENT_SECRET=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
+      - DATABASE_URL="postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:5432/tazagroupv2?schema=public"
+      - GOOGLE_CLIENT_ID=896025447185-00d1av64vk2dfr9r9d5sgdf9gjkvpgrs.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
       - FACEBOOK_CLIENT_ID=your-facebook-client-id
       - FACEBOOK_CLIENT_SECRET=your-facebook-client-secret
       - ZALO_APP_ID=your-zalo-app-id
       - ZALO_APP_SECRET=your-zalo-app-secret
-      - BASE_URL=https://sandbox2.rausachtrangia.com
-      - SERVER_URL=https://sandboxapi2.rausachtrangia.com
-      - PORT=3331
-  ferausach:
+      - BASE_URL=https://v2.tazagroup.vn
+      - SERVER_URL=https://tazagroup.onrender.com
+      - PORT=3333
+  feazagroup:
     build: ./frontend
     restart: always
     ports:
-      - "4301:4301"
+      - "4303:4303"
     environment:
       - NODE_ENV=production
 volumes:

@@ -19,7 +19,6 @@ import { DathangService } from '../../dathang/dathang.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
   @Component({
     selector: 'app-detailphieukho',
     imports: [
@@ -34,7 +33,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
       MatSlideToggleModule,
       MatDatepickerModule
     ],
-    // providers:[provideNativeDateAdapter()],
+    providers:[provideNativeDateAdapter()],
     templateUrl: './detailphieukho.component.html',
     styleUrl: './detailphieukho.component.scss'
   })
@@ -204,10 +203,8 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
       })
     }
     DoFindSanpham(event:any){
-       const query = event.target.value.toLowerCase();
-       this.filterSP = this._SanphamService.ListSanpham().filter(v => 
-        removeVietnameseAccents(v.title).includes(query)|| v.title.toLowerCase().includes(query)
-      );      
+      const query = event.target.value.toLowerCase();
+       this.filterSP = this._SanphamService.ListSanpham().filter(v => v.title.toLowerCase().includes(query));      
    }
    onChangeSoluong(item:any,event:any){
 

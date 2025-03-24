@@ -2,12 +2,9 @@ import {
   Component,
   computed,
   effect,
-  ElementRef,
   inject,
-  QueryList,
   signal,
   ViewChild,
-  ViewChildren,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -39,10 +36,6 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import html2canvas from 'html2canvas';
-import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
-import { SearchService } from '../../../shared/services/search.service';
-import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 @Component({
   selector: 'app-detaildonhang',
   imports: [
@@ -61,7 +54,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     MatSortModule,
     MatPaginatorModule,
   ],
-  // providers: [provideNativeDateAdapter()],
+  providers: [provideNativeDateAdapter()],
   templateUrl: './detaildonhang.component.html',
   styleUrl: './detaildonhang.component.scss',
 })
@@ -71,7 +64,6 @@ export class DetailDonhangComponent {
   _KhachhangService: KhachhangService = inject(KhachhangService);
   _BanggiaService: BanggiaService = inject(BanggiaService);
   _SanphamService: SanphamService = inject(SanphamService);
-  _SearchService: SearchService = inject(SearchService);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -79,13 +71,15 @@ export class DetailDonhangComponent {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
       this._DonhangService.setDonhangId(id);
+      await this._KhachhangService.getAllKhachhang();
+      this.filterKhachhang = this.ListKhachhang().filter((v:any) => v.isActive);
       await this._BanggiaService.getAllBanggia();
       this.filterBanggia = this._BanggiaService.ListBanggia();
       await this._SanphamService.getAllSanpham();
       this.filterSanpham = this._SanphamService.ListSanpham();
       this.dataSource().data = this.DetailDonhang().sanpham;
-      this.dataSource().data.sort((a, b) => a.order - b.order);
-      
+      this.dataSource().paginator = this.paginator;
+      this.dataSource().sort = this.sort;
     });
 
     effect(async () => {
@@ -97,7 +91,7 @@ export class DetailDonhangComponent {
       if (id === '0') {
         this.DetailDonhang.set({
           title: GenId(8, false),
-          // madonhang: GenId(8, false),
+          madonhang: GenId(8, false),
           ngaygiao: moment().add(1, 'days').format('YYYY-MM-DD'),
         });
         this._ListdonhangComponent.drawer.open();
@@ -105,16 +99,9 @@ export class DetailDonhangComponent {
         this._router.navigate(['/admin/donhang', '0']);
       } else {
         await this._DonhangService.getDonhangByid(id);
-        this.ListFilter = this.DetailDonhang().sanpham
-        this.DetailDonhang.update((v:any)=>{
-          v.banggiaId = v?.khachhang?.banggia.find((v: any) => moment() > moment(v.batdau) && moment() < moment(v.ketthuc))?.id;
-          return v
-        })        
         this._ListdonhangComponent.drawer.open();
         this._router.navigate(['/admin/donhang', id]);
       }
-      await this._KhachhangService.getAllKhachhang();
-      this.filterKhachhang = this.ListKhachhang()
     });
   }
   DetailDonhang: any = this._DonhangService.DetailDonhang;
@@ -126,7 +113,11 @@ export class DetailDonhangComponent {
   filterSanpham: any[] = [];
   donhangId: any = this._DonhangService.donhangId;
   async ngOnInit() {
-
+    document.addEventListener('keydown', (e:any) => {
+      if (e.key === 'Enter' && document.activeElement?.getAttribute('contenteditable') === 'true') {
+        e.preventDefault();
+      }
+    });
   }
   async handleDonhangAction() {
     if (this.donhangId() === '0') {
@@ -137,22 +128,15 @@ export class DetailDonhangComponent {
   }
   private async createDonhang() {
     try {
-      this.DetailDonhang.update((v: any) => ({
-        ...v,
-        type: 'donsi',
-        status: 'dadat',
-      }));
-      
-      this.DetailDonhang.update((v: any) => ({
-        ...v,
-        sanpham: v.sanpham?.map((sp: any) => ({
-          ...sp,
-          ttgiao: Number(sp.slgiao) * Number(sp.giaban) || 0,
-        }))||[],
-      }));
-      await this._DonhangService.CreateDonhang(this.DetailDonhang()).then((data)=>{
-        console.log(data);  
+      this.DetailDonhang.update((v: any) => {
+        v.type = 'donsi';
+        return v;
+      });
+      this.DetailDonhang().sanpham = this.DetailDonhang().sanpham.map((v:any)=>{
+        v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
+        return v;
       })
+      await this._DonhangService.CreateDonhang(this.DetailDonhang());
       this._snackBar.open('Tạo Mới Thành Công', '', {
         duration: 1000,
         horizontalPosition: 'end',
@@ -167,22 +151,11 @@ export class DetailDonhangComponent {
 
   private async updateDonhang() {
     try {
-      this.DetailDonhang.update((v: any) => ({
-        ...v,
-        type: 'donsi',
-        status: 'dadat',
-      }));
-      
-      this.DetailDonhang.update((v: any) => ({
-        ...v,
-        sanpham: v.sanpham.map((sp: any) => ({
-          ...sp,
-          ttgiao: Number(sp.slgiao) * Number(sp.giaban) || 0,
-        })),
-      }));
-      await this._DonhangService.updateDonhang(this.DetailDonhang()).then((data)=>{
-        console.log(data);  
+      this.DetailDonhang().sanpham = this.DetailDonhang().sanpham.map((v:any)=>{
+        v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
+        return v;
       })
+      await this._DonhangService.updateDonhang(this.DetailDonhang());
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,
         horizontalPosition: 'end',
@@ -230,11 +203,14 @@ export class DetailDonhangComponent {
       return v;
     });
   }
-  searchInput$ = new Subject<string>();
-  async DoFindKhachhang(event: any) {
-    const value = event.target.value.trim().toLowerCase();
-    this.filterKhachhang = this.ListKhachhang().filter((v: any) =>
-     removeVietnameseAccents(v.name).toLowerCase().includes(value)
+  DoFindKhachhang(event: any) {
+    const query = event.target.value.toLowerCase();
+    this.filterKhachhang = this.ListKhachhang().filter(
+      (v: any) =>
+        v.isActive &&
+        v.name?.toLowerCase().includes(query) ||
+        v.namenn?.toLowerCase().includes(query) ||
+        v.sdt?.toLowerCase().includes(query)
     );
   }
   DoFindBanggia(event: any) {
@@ -276,76 +252,23 @@ export class DetailDonhangComponent {
     });
   }
 
-  updateValue(event: Event,index: number | null,element: any,field: keyof any,type: 'number' | 'string') {
+  updateValue(
+    event: Event,
+    index: number | null,
+    element: any,
+    field: keyof any,
+    type: 'number' | 'string'
+  ) {
     const newValue =
       type === 'number'
         ? Number((event.target as HTMLElement).innerText.trim()) || 0
         : (event.target as HTMLElement).innerText.trim();
-        const keyboardEvent = event as KeyboardEvent;
-        if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
-          event.preventDefault();
-        }
-        if (type === "number") {
-          const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
-          
-          // Chặn nếu không phải số và không thuộc danh sách phím cho phép
-          if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
-            event.preventDefault();
-          }
-        } 
+  
     this.DetailDonhang.update((v: any) => {
       if (index !== null) {
         if (field === 'sldat') {
           v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
-          // Find the next input to focus on
-          const inputs = document.querySelectorAll('.sldat-input')as NodeListOf<HTMLInputElement>;
-              if (index < this.dataSource().filteredData.length - 1) {
-                const nextInput = inputs[index + 1]as HTMLInputElement
-                if (nextInput) {
-                  if (nextInput instanceof HTMLInputElement) {
-                    nextInput.focus();
-                    nextInput.select();
-                  }
-                  // Then select text using a different method that works on more element types
-                  setTimeout(() => {
-                    if (document.createRange && window.getSelection) {
-                      const range = document.createRange();
-                      range.selectNodeContents(nextInput);
-                      const selection = window.getSelection();
-                      selection?.removeAllRanges();
-                      selection?.addRange(range);
-                    }
-                  }, 10);
-                }
-              }
-
-        } 
-        else if (field === 'ghichu') {
-          v.sanpham[index][field] = newValue;
-          // Find the next input to focus on
-          const inputs = document.querySelectorAll('.ghichu-input')as NodeListOf<HTMLInputElement>;
-              if (index < this.dataSource().filteredData.length - 1) {
-                const nextInput = inputs[index + 1]as HTMLInputElement
-                if (nextInput) {
-                  if (nextInput instanceof HTMLInputElement) {
-                    nextInput.focus();
-                    nextInput.select();
-                  }
-                  // Then select text using a different method that works on more element types
-                  setTimeout(() => {
-                    if (document.createRange && window.getSelection) {
-                      const range = document.createRange();
-                      range.selectNodeContents(nextInput);
-                      const selection = window.getSelection();
-                      selection?.removeAllRanges();
-                      selection?.addRange(range);
-                    }
-                  }, 10);
-                }
-              }
-        } 
-        
-        else if (field === 'slgiao') {
+        } else if (field === 'slgiao') {
           const newGiao = newValue
           if (newGiao < v.sanpham[index]['sldat']) {
             // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
@@ -369,12 +292,13 @@ export class DetailDonhangComponent {
     });
   
     // CẬP NHẬT LẠI UI BẰNG CÁCH SET NỘI DUNG CHO `contentEditable`
-    // setTimeout(() => {
-    //   if(index !== null){
-    //   (event.target as HTMLElement).innerText = this.DetailDonhang()?.sanpham[index]?.slgiao || '0';
-    //   }
-    // }, 0);
-
+    setTimeout(() => {
+      if(index !== null){
+      (event.target as HTMLElement).innerText = this.DetailDonhang()?.sanpham[index]?.slgiao || '0';
+      }
+    }, 0);
+    
+    console.log(this.DetailDonhang());
   }
 
   
@@ -392,7 +316,7 @@ export class DetailDonhangComponent {
     );
   }
   SelectKhachhang(event: any) {
-    const selectedKhachhang = this.filterKhachhang.find(
+    const selectedKhachhang = this.ListKhachhang().find(
       (v: any) => v.id === event.value
     );
     console.log(selectedKhachhang);
@@ -480,7 +404,8 @@ export class DetailDonhangComponent {
     //   return v;
     // })
     this.dataSource().data = this.DetailDonhang().sanpham;
-
+    this.dataSource().paginator = this.paginator;
+    this.dataSource().sort = this.sort;
     this.reloadfilter();
   }
   applyFilter(event: Event) {
@@ -494,7 +419,8 @@ export class DetailDonhangComponent {
       return v;
     })
     this.dataSource().data = this.DetailDonhang().sanpham;
-    this.ListFilter = [];
+    this.dataSource().paginator = this.paginator;
+    this.dataSource().sort = this.sort;
     this.reloadfilter();
   }
   getName(id:any)
@@ -513,7 +439,7 @@ export class DetailDonhangComponent {
   //     return v;
   //   })
   //   this.dataSource().data = this.DetailBanggia().sanpham;
-  //   
+  //   this.dataSource().paginator = this.paginator;
   //   this.dataSource().sort = this.sort;
   // }
   DoFindSanpham(event:any){
@@ -528,19 +454,19 @@ export class DetailDonhangComponent {
     this.DetailDonhang.update((v:any)=>{
       if(!v.sanpham){
         v.sanpham = [];
-        item.sldat = item.slgiao = item.slnhan = 1;
+        item.sldat = item.slgiao = 1;
         v.sanpham.push(item);
       }
       else{
-          item.sldat = item.slgiao = item.slnhan = 1;
+          item.sldat = item.slgiao = 1;
           v.sanpham.push(item);
       }
       this.reloadfilter();
       return v;
     })
     this.dataSource().data = this.DetailDonhang().sanpham;
-    
-    
+    this.dataSource().paginator = this.paginator;
+    this.dataSource().sort = this.sort;    
   }
   RemoveSanpham(item:any){
     this.DetailDonhang.update((v:any)=>{
@@ -549,8 +475,8 @@ export class DetailDonhangComponent {
       return v;
     })
     this.dataSource().data = this.DetailDonhang().sanpham;
-    
-
+    this.dataSource().paginator = this.paginator;
+    this.dataSource().sort = this.sort;
   }
 
   CoppyDon()
@@ -633,135 +559,44 @@ export class DetailDonhangComponent {
           </html>
         `);
         newWindow.document.close();
-          this.DetailDonhang.update((v:any)=>{
-            v.printCount= v.printCount+1;
-            return v;
-          })
-          console.log(this.DetailDonhang());
-          
-          this._DonhangService.updateDonhang(this.DetailDonhang());
       } else {
         console.error('Không thể mở cửa sổ in');
       }
     } else {
       console.error('Không tìm thấy phần tử printContent');
     }
+  
+    // const element = document.getElementById('printContent');
+    // if (!element) return;
+
+    // html2canvas(element, { scale: 2 }).then(canvas => {
+    //   const imageData = canvas.toDataURL('image/png');
+
+    //   // Mở cửa sổ mới và in ảnh
+    //   const printWindow = window.open('', '_blank');
+    //   if (!printWindow) return;
+
+    //   printWindow.document.write(`
+    //     <html>
+    //       <head>
+    //         <title>${this.DetailDonhang()?.title}</title>
+    //       </head>
+    //       <body style="text-align: center;">
+    //         <img src="${imageData}" style="max-width: 100%;"/>
+    //         <script>
+    //           window.onload = function() {
+    //             window.print();
+    //             window.onafterprint = function() { window.close(); };
+    //           };
+    //         </script>
+    //       </body>
+    //     </html>
+    //   `);
+
+    //   printWindow.document.close();
+    // });
   }
   GetGoiy(item:any){
    return parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
   }
-  doFilterSanpham(event: any): void {
-    const searchTerm = event.target.value.toLowerCase();
-    if (!searchTerm) {
-      this.filterSanpham = [...this._SanphamService.ListSanpham()]; // Reset to original list if search is empty
-      return;
-    }
-    this.filterSanpham = this._SanphamService.ListSanpham().filter((item: any) =>
-      item?.title?.toLowerCase().includes(searchTerm)||item?.subtitle?.toLowerCase().includes(searchTerm)
-    );
-
-    if (event.key === 'Enter') {      
-      if (this.filterSanpham.length > 0) {
-        this.ChosenItem(this.filterSanpham[0]);
-        this.filterSanpham = [...this._SanphamService.ListSanpham()];
-      }
-    }
-  }
-  ListFilter:any[] =[]
-  ChosenItem(item:any)
-  {
-    const CheckItem = this.filterSanpham.find((v:any)=>v.id===item.id);
-    const CheckItem1 = this.ListFilter.find((v:any)=>v.id===item.id);
-    if(CheckItem1)
-    {
-      this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
-    }
-    else{
-      CheckItem.order = this.ListFilter.length+1
-      console.log(CheckItem);
-      this.ListFilter.push(CheckItem)
-    }
-  }
-  ChosenAll(list:any)
-  {
-    this.ListFilter =list
-  }
-  ResetFilter()
-  {
-    this.ListFilter = this._SanphamService.ListSanpham();
-    this.dataSource().data = this.filterSanpham;
-  }
-  EmptyFiter()
-  {
-    this.ListFilter = [];
-  }
-  CheckItem(item:any)
-  {
-    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
-  }
-  ApplyFilterColum(menu:any)
-  {    
-    this.ListFilter.forEach((v)=>{
-      v.sldat = v.slgiao = v.slnhan=1;
-    })
-    this.dataSource().data = this.ListFilter
-    this.DetailDonhang.update((v:any)=>{
-      v.sanpham =  this.ListFilter
-      return v
-    })  
-    this.dataSource().data.sort((a, b) => a.order - b.order);
-    menu.closeMenu();
-  }
-
-async ImporExcel(event: any) {
-          const data = await readExcelFile(event)
-          this.DoImportData(data);
-         }   
-        ExportExcel(data:any,title:any) {
-            const transformedData = data.map((v: any) => ({
-              masp: v.masp?.trim()||'',
-              giaban: Number(v.giaban)||0,
-              sldat: Number(v.sldat)||0,
-              slgiao: Number(v.slgiao)||0,
-              slnhan: Number(v.slnhan)||0,
-              ttdat: Number(v.ttdat)||0,
-              ttgiao: Number(v.ttgiao)||0,
-              ttnhan: Number(v.ttnhan)||0,
-              ghichu: v.ghichu?.trim()||'',
-           }));
-            writeExcelFile(transformedData,title);
-          }
-          DoImportData(data:any)
-          {
-            const transformedData = data.map((v: any) => ({
-              masp: v.masp?.trim()||'',
-              giaban: Number(v.giaban)||0,
-              sldat: Number(v.sldat)||0,
-              slgiao: Number(v.slgiao)||0,
-              slnhan: Number(v.slnhan)||0,
-              ttdat: Number(v.ttdat)||0,
-              ttgiao: Number(v.ttgiao)||0,
-              ttnhan: Number(v.ttnhan)||0,
-              ghichu: v.ghichu?.trim()||'',
-           }));
-           this.ListFilter = transformedData.map((item:any) => {
-            const item1 = this._SanphamService.ListSanpham().find((v1) => v1.masp === item.masp);
-            if (item1) {
-              return { ...item1, ...item };
-            }
-            return item;
-          });
-           this.dataSource().data = this.ListFilter
-           this.DetailDonhang.update((v:any)=>{
-             v.sanpham = this.ListFilter
-             return v
-           })  
-           
-           this._snackBar.open('Cập Nhật Thành Công', '', {
-                  duration: 1000,
-                  horizontalPosition: 'end',
-                  verticalPosition: 'top',
-                  panelClass: ['snackbar-success'],
-            });
-        }
 }

@@ -56,20 +56,14 @@ export class BanggiaService {
     }
   }
   async findAll() {
-    const banggias = await this.prisma.banggia.findMany({
+    return this.prisma.banggia.findMany({
       include: {
         sanpham: true,
-        khachhang: true,
       },
       orderBy: {
         order: 'asc',
       },
     });
-    return banggias.map((bg) => ({
-      ...bg,
-      sanpham: bg.sanpham.length,
-      khachhang: bg.khachhang.length,
-    }));
   }
 
   async findOne(id: string) {
@@ -97,34 +91,26 @@ export class BanggiaService {
     }
   }
 
-  async update(id: string, data: any) {    
-    const existingBanggia = await this.prisma.banggia.findUnique({
-      where: { id },
-    });
-    if (!existingBanggia) {
-      throw new NotFoundException(`Banggia with ID "${id}" not found`);
-    }
+  async update(id: string, data: any) {
     return this.prisma.banggia.update({
       where: { id },
       data: {
-      title: data.title,
-      isActive: data.isActive,
-      type: data.type,
-      status: data.status || 'baogia',
-      batdau: data.batdau ? new Date(data.batdau) : null,
-      ketthuc: data.ketthuc ? new Date(data.ketthuc) : null,
-      sanpham: data.sanpham && Array.isArray(data.sanpham) ? {
-        deleteMany: {}, // Xóa tất cả sản phẩm cũ trước khi cập nhật
-        create: data.sanpham
-        .filter((sp: any) => sp?.sanphamId || sp?.id) // Loại bỏ các sản phẩm không có sanphamId hoặc id
-        .map((sp: any) => ({
-          sanphamId: sp.sanphamId || sp.id,
-          giaban: sp.giaban || 0,
-        })),
-      } : undefined,
+        title: data.title,
+        isActive: data.isActive,
+        type: data.type,
+        status: data.status||'baogia',
+        batdau: data.batdau ? new Date(data.batdau) : null,
+        ketthuc: data.ketthuc ? new Date(data.ketthuc) : null,
+        sanpham: {
+          deleteMany: {}, // Xóa tất cả sản phẩm cũ trước khi cập nhật
+          create: data.sanpham?.map((sp:any) => ({
+            sanphamId: sp.sanphamId,
+            giaban: sp.giaban,
+          })),
+        },
       },
       include: {
-      sanpham: true,
+        sanpham: true,
       },
     });
   }

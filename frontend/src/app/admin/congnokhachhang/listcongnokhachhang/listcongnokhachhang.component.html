@@ -50,7 +50,7 @@
               </mat-select>
             </mat-form-field>
   
-            <!-- <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
               <mat-label>Chọn Thời Gian</mat-label>
               <mat-select [(ngModel)]="Chonthoigian" [ngModelOptions]="{standalone: true}"
                 (selectionChange)="onSelectionChange($event)">
@@ -58,7 +58,7 @@
                 <mat-option [value]="item.value">{{item.Title}}</mat-option>
                 }
               </mat-select>
-            </mat-form-field> -->
+            </mat-form-field>
             <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
               <mat-label>Bắt Đầu</mat-label>
               <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau" [(ngModel)]="SearchParams.Batdau" [ngModelOptions]="{standalone: true}">
@@ -77,11 +77,6 @@
             <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button>
             <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Phiếu Chia</button>
           </div> -->
-          <div class="flex flex-row space-x-2">
-            <!-- <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button> -->
-            <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Công Nợ</button>
-            <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="BackStatus()">Về Đã Đặt</button>
-          </div>
         <div class="w-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {
@@ -197,7 +192,7 @@
                 </ng-container>
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="toggleDonhang(row)" class="hover:bg-slate-100 {{CheckItemInDonhang(row)?'!bg-slate-200':''}}"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="goToDetail(row);"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
@@ -210,63 +205,46 @@
 
 
 <ng-template #dialogCreateTemplate>
-    <h2 mat-dialog-title>Công Nợ     
+    <h2 mat-dialog-title>Phiếu Chia Hàng     
         <button mat-icon-button color="primary" (click)="printContent()">
         <mat-icon>print</mat-icon>
       </button></h2>
     <mat-dialog-content>
      <div class="lg:min-w-[400px] w-full h-full flex flex-col space-y-8 items-center p-4">
-
-      <div class="w-full overflow-x-auto">
-        <table  id="printContent" class="w-full border-collapse">
-          <thead>
-            <tr>
-              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">NGÀY</th>
-              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">MÃ KHÁCH HÀNG</th>
-              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">TÊN KHÁCH HÀNG</th>
-              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">MÃ ĐƠN HÀNG</th>
-              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">TỔNG TIỀN</th>
-              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">MÃ HÀNG</th>
-              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">TÊN HÀNG</th>
-              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">ĐVT</th>
-              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">SỐ LƯỢNG</th>
-              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">ĐƠN GIÁ</th>
-              <th class="p-2 border border-gray-300 bg-yellow-200 text-center font-bold">THÀNH TIỀN</th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngFor="let item of editDonhang; let i = index">
-              <tr *ngFor="let item1 of item.sanpham let j = index">
-
-                <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length" class="p-2 border border-gray-300 align-middle text-center">
-                  {{ item.ngaygiao|date:'dd/MM/yyyy' }}
-                </td>
-                <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length" class="p-2 border border-gray-300 align-middle text-center">
-                  {{item.makh}}
-                </td>
-                <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length" class="p-2 border border-gray-300 align-middle text-center">
-                  {{ item.name }}
-                </td>
-                <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length" class="p-2 border border-gray-300 align-middle text-center">
-                  {{ item.madonhang }}
-                </td>
-                <td *ngIf="j === 0" [attr.rowspan]="item.sanpham.length" class="p-2 border border-gray-300 align-middle text-center">
-                  {{ TinhTong(item.sanpham,'ttgiao') | number:'1.0-0' }}
-                </td>
-                <td class="p-2 border border-gray-300 text-center">{{ item1.masp }}</td>
-                <td class="p-2 border border-gray-300">{{ item1.title }}</td>
-                <td class="p-2 border border-gray-300 text-center">{{ item1.dvt }}</td>
-                <td class="p-2 border border-gray-300 text-right">{{ item1.soluong | number:'1.1-3' }}</td>
-                <td class="p-2 border border-gray-300 text-right">{{ item1.giaban | number:'1.0-0' }}</td>
-                <td class="p-2 border border-gray-300 text-right">{{ item1.ttgiao | number:'1.0-0' }}</td>
-              </tr>
-            </ng-container>
-          </tbody>
-        </table>
-      </div>
+        <div class="relative overflow-x-auto sm:rounded-lg">
+            <table id="printContent" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                <thead class="border text-xs text-gray-700 uppercase dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="border px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                            Mô tả
+                        </th>
+                        <th scope="col" class="border px-6 py-3">
+                            Đơn vị
+                        </th>
+                        <th *ngFor="let kh of Phieuchia" scope="col" class="border px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                            {{ kh.name }}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let product of getUniqueProducts()" class="border border-gray-200 dark:border-gray-700">
+                        <th scope="row" class="border px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800">
+                            {{ product }}
+                        </th>
+                        <td class="border px-6 py-4">
+                            {{ getDvtForProduct(product) }}
+                        </td>
+                        <td class="border px-6 py-4 bg-gray-50 dark:bg-gray-800" *ngFor="let kh of Phieuchia">
+                            {{ getProductQuantity(product, kh.makh)||0 }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>            
      </div>
     </mat-dialog-content>
     <mat-dialog-actions [align]="'end'">
       <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
+      <button mat-flat-button color="primary" (click)="create()">Tạo</button>
     </mat-dialog-actions>
   </ng-template>

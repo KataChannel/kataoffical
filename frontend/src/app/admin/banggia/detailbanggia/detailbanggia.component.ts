@@ -43,7 +43,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
       MatTableModule,
       MatMenuModule
     ],
-    // providers: [provideNativeDateAdapter()],
+    providers: [provideNativeDateAdapter()],
     templateUrl: './detailbanggia.component.html',
     styleUrl: './detailbanggia.component.scss',
   })
@@ -63,6 +63,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
       'title',
       'masp',
       'dvt',
+      'giagoc',
       'giaban',
     ];
     ColumnName: any = {
@@ -70,6 +71,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
       title: 'Tiêu Đề',
       masp: 'Mã SP',
       dvt: 'Đơn Vị Tính',
+      giagoc: 'Giá Gốc',
       giaban: 'Giá Bán',
     };
     dataSource = signal(new MatTableDataSource<any>([]));
@@ -126,7 +128,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
     ngAfterViewInit() {
       setTimeout(() => {
         if (this.paginator) {
-          //this.dataSource().paginator = this.paginator;
+          this.dataSource().paginator = this.paginator;
           this.dataSource().sort = this.sort;
         }
       }, 300);
@@ -218,51 +220,15 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
       const newValue = type === 'number' 
       ? Number((event.target as HTMLElement).innerText.trim().replace(/[^0-9]/g, '')) || 0 
       : (event.target as HTMLElement).innerText.trim();
-      const keyboardEvent = event as KeyboardEvent;
-      if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
-        event.preventDefault();
-      }
-      if (type === "number") {
-        const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
-        
-        // Chặn nếu không phải số và không thuộc danh sách phím cho phép
-        if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
-          event.preventDefault();
-        }
-      } 
+
       this.DetailBanggia.update((v: any) => {
       if (index !== null) {
-        if (field === 'giaban') {
         v.sanpham[index][field] = newValue;
-        const inputs = document.querySelectorAll('.giaban-input')as NodeListOf<HTMLInputElement>;
-          if (index < this.dataSource().filteredData.length - 1) {
-            const nextInput = inputs[index + 1]as HTMLInputElement
-            if (nextInput) {
-              if (nextInput instanceof HTMLInputElement) {
-                nextInput.focus();
-                nextInput.select();
-              }
-              // Then select text using a different method that works on more element types
-              setTimeout(() => {
-                if (document.createRange && window.getSelection) {
-                  const range = document.createRange();
-                  range.selectNodeContents(nextInput);
-                  const selection = window.getSelection();
-                  selection?.removeAllRanges();
-                  selection?.addRange(range);
-                }
-              }, 10);
-            }
-          }
-        }
       } else {
         v[field] = newValue;
       }
       return v;
       });
-
-
-
 
       console.log(element, field, newValue);
       console.log('Dữ liệu đã cập nhật:', this.DetailBanggia());
@@ -277,7 +243,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         };
        const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
        const data = ConvertDriveData(result.values);
-       this.DoImportData(data);
+      this.DoImportData(data);
       }
       AddSanpham(){}
       EmptyCart(){
@@ -286,7 +252,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
           return v;
         })
         this.dataSource().data = this.DetailBanggia().sanpham;
-        //this.dataSource().paginator = this.paginator;
+        this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;
         this.reloadfilter();
       }
@@ -314,7 +280,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
           return v;
         })
         this.dataSource().data = this.DetailBanggia().sanpham;
-        //this.dataSource().paginator = this.paginator;
+        this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;
       }
       RemoveSanpham(item:any){
@@ -324,7 +290,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
           return v;
         })
         this.dataSource().data = this.DetailBanggia().sanpham;
-        //this.dataSource().paginator = this.paginator;
+        this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;
       }
       DoFindSanpham(event:any){
@@ -430,8 +396,8 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
       async ImporExcel(event: any) {
         const data = await readExcelFile(event)
         this.DoImportData(data);
-       }   
-      ExportExcel(data:any,title:any) {
+        }   
+        ExportExcel(data:any,title:any) {
           const transformedData = data.data.map((v: any) => ({
             masp: v.masp?.trim()||'',
             giaban: Number(v.giaban)||0,
@@ -440,11 +406,10 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         }
         DoImportData(data:any)
         {
-            const transformedData = data.map((v: any) => ({
-              masp: v.masp?.trim() || '',
-              giaban: Number(v.giaban) || 0,
-            }))
-            .filter((v: any) => v.masp); // Loại bỏ các mục có masp trống
+          const transformedData = data.map((v: any) => ({
+            masp: v.masp?.trim()||'',
+            giaban: Number(v.giaban)||0,
+         }));
 
          this.DetailBanggia.update((v:any)=>{
           const listdata = transformedData.map((item:any) => {
@@ -460,10 +425,8 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
           this.reloadfilter();
           return v;
         })       
-        console.log(this.DetailBanggia().sanpham);
-        
         this.dataSource().data = this.DetailBanggia().sanpham;
-        //this.dataSource().paginator = this.paginator;
+        this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;             
          this._snackBar.open('Cập Nhật Thành Công', '', {
                 duration: 1000,
@@ -471,7 +434,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
                 verticalPosition: 'top',
                 panelClass: ['snackbar-success'],
           });
-      }
+        }
 
         doFilterSanpham(event: any): void {
           this.dataSource().filteredData = this.filterSanpham.filter((v: any) => v.title.toLowerCase().includes(event.target.value.toLowerCase()));  
@@ -480,6 +443,8 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         ListFilter:any[] =[]
         ChosenItem(item:any)
         {
+          console.log(item);
+          
           const CheckItem = this.filterSanpham.filter((v:any)=>v.id===item.id);
           const CheckItem1 = this.ListFilter.filter((v:any)=>v.id===item.id);
           if(CheckItem1.length>0)
@@ -498,7 +463,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         {
           this.ListFilter = this.filterSanpham;
           this.dataSource().data = this.filterSanpham;
-          //this.dataSource().paginator = this.paginator;
+          this.dataSource().paginator = this.paginator;
           this.dataSource().sort = this.sort;
         }
         EmptyFiter()
@@ -511,19 +476,11 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         }
         ApplyFilterColum(menu:any)
         {    
-          this.dataSource().data = this.ListFilter
-          this.DetailBanggia.update((v:any)=>{
-            v.sanpham =  this.ListFilter
-            return v
-          })  
-          this.dataSource().data.sort((a, b) => a.order - b.order);
+      
+          this.dataSource().data = this.filterSanpham.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+          this.dataSource().paginator = this.paginator;
+          this.dataSource().sort = this.sort;
           menu.closeMenu();
-
-
-          // this.dataSource().data = this.filterSanpham.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
-          // //this.dataSource().paginator = this.paginator;
-          // this.dataSource().sort = this.sort;
-          // menu.closeMenu();
         }
 
   }

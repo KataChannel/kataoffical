@@ -9,14 +9,13 @@ export class SanphamController {
   create(@Body() createSanphamDto: any) {
     return this.sanphamService.create(createSanphamDto);
   }
-
+  @Post('findby')
+  findby(@Body() param: any) {
+    return this.sanphamService.findby(param);
+  }
   @Get()
   findAll() {
     return this.sanphamService.findAll();
-  }
-  @Get('nhucaudathang')
-  nhucaudathang() {
-    return this.sanphamService.nhucaudathang();
   }
   @Get('last-updated')
     async getLastUpdatedSanpham() {
@@ -27,8 +26,8 @@ export class SanphamController {
     return this.sanphamService.findOne(id);
   }
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSanphamDto: any) {
-    return this.sanphamService.update(id, updateSanphamDto);
+  update(@Param('id') id: string, @Body() data: any) {
+    return this.sanphamService.update(id, data);
   }
 
   @Delete(':id')

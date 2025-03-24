@@ -35,6 +35,22 @@ export const routes: Routes = [
           ],
         },
         {
+          path: 'lead',
+          canActivate: [PermissionGuard],
+          data: { permission: 'lead.view' },
+          loadComponent: () => import('./admin/lead/listlead/listlead.component').then((c) => c.ListLeadComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/lead/listlead/listlead.component').then((c) => c.ListLeadComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/lead/detaillead/detaillead.component').then((c) => c.DetailLeadComponent),
+            },
+          ],
+        },
+        {
           path: 'hotro',
           loadComponent: () => import('./admin/hotro/listhotro/listhotro.component').then((c) => c.ListHotroComponent),
           children: [
@@ -195,12 +211,6 @@ export const routes: Routes = [
               loadComponent: () => import('./admin/dathang/detaildathang/detaildathang.component').then((c) => c.DetailDathangComponent),
             },
           ],
-        },
-        {
-          path: 'nhucaudathang',
-          canActivate: [PermissionGuard],
-          data: { permission: 'nhucaudathang.view' },
-          loadComponent: () => import('./admin/dathang/nhucaudathang/nhucaudathang.component').then((c) => c.NhucaudathangComponent),
         },
         {
           path: 'donhang',

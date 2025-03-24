@@ -2,7 +2,6 @@ import { Inject, Injectable, signal,Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
-import moment from 'moment';
 @Injectable({
   providedIn: 'root'
 })
@@ -58,9 +57,6 @@ export class DonhangService {
   }
 
   async searchDonhang(SearchParams: any) {
-    const payload = {...SearchParams}
-    payload.Batdau = moment(payload.Batdau).utc()
-    payload.Ketthuc = moment(payload.Ketthuc).utc()
     try {
       const options = {
         method: 'POST',
@@ -68,11 +64,25 @@ export class DonhangService {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer '+this._StorageService.getItem('token')
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(SearchParams),
       };
       const response = await fetch(`${environment.APIURL}/donhang/search`, options);
       if (!response.ok) {
-
+        // if (response.status === 401) {
+        //   const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
+        //   this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+        //   // this.Dangxuat()
+        // } else if (response.status === 403) {
+        //   const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
+        //   this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+        //   // this.Dangxuat()
+        // } else if (response.status === 500) {
+        //   const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
+        //   this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+        // } else {
+        //   const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
+        //   this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+        // }
       }
       const data = await response.json();           
       this.ListDonhang.set(data)
@@ -244,25 +254,6 @@ export class DonhangService {
           }
           const data = await response.json();   
           this.ListDonhang.set(data.items)
-          return data;
-      } catch (error) {
-          return console.error(error);
-      }
-  }
-  async SearchField(SearchParams:any) {   
-    try {
-      const options = {
-        method:'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(SearchParams),
-      };
-          const response = await fetch(`${environment.APIURL}/donhang/searchfield`,options);
-          if (!response.ok) {
-          }
-          const data = await response.json();   
-          this.DetailDonhang.set(data)
           return data;
       } catch (error) {
           return console.error(error);

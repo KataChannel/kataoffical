@@ -54,7 +54,7 @@ import { DonhangService } from '../../donhang/donhang.service';
     MatSortModule,
     MatPaginatorModule,
   ],
-  // providers: [provideNativeDateAdapter()],
+  providers: [provideNativeDateAdapter()],
   templateUrl: './detailphieugiaohang.component.html',
   styleUrl: './detailphieugiaohang.component.scss',
 })
@@ -102,7 +102,7 @@ export class DetailPhieugiaohangComponent {
         this.isEdit.update((value) => !value);
         this._router.navigate(['/admin/phieugiaohang', '0']);
       } else {
-        await this._PhieugiaohangService.SearchField({id:id});
+        await this._PhieugiaohangService.getDonhangByid(id);
         this._ListphieugiaohangComponent.drawer.open();
         this._router.navigate(['/admin/phieugiaohang', id]);
       }
@@ -110,7 +110,7 @@ export class DetailPhieugiaohangComponent {
   }
   DetailPhieugiaohang: any = this._PhieugiaohangService.DetailDonhang;
   ListKhachhang: any = this._KhachhangService.ListKhachhang;
-  isEdit = signal(true);
+  isEdit = signal(false);
   isDelete = signal(false);
   filterKhachhang: any = [];
   filterBanggia: any[] = [];
@@ -238,85 +238,26 @@ export class DetailPhieugiaohangComponent {
       type === 'number'
         ? Number((event.target as HTMLElement).innerText.trim()) || 0
         : (event.target as HTMLElement).innerText.trim();
-        const keyboardEvent = event as KeyboardEvent;
-        if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
-          event.preventDefault();
-        }
-        if (type === "number") {
-          const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
-          
-          // Chặn nếu không phải số và không thuộc danh sách phím cho phép
-          if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
-            event.preventDefault();
-          }
-        } 
-
-        this.DetailPhieugiaohang.update((v: any) => {
+  
+    this.DetailPhieugiaohang.update((v: any) => {
       if (index !== null) {
         if (field === 'sldat') {
           v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
-        }   
-        else if (field === 'ghichu') {
-          console.log(index,field,newValue);
-          
-          v.sanpham[index]['ghichu'] = newValue;
-          const inputs = document.querySelectorAll('.ghichu-input')as NodeListOf<HTMLInputElement>;
-              if (index < this.dataSource().filteredData.length - 1) {
-                const nextInput = inputs[index + 1]as HTMLInputElement
-                if (nextInput) {
-                  if (nextInput instanceof HTMLInputElement) {
-                    nextInput.focus();
-                    nextInput.select();
-                  }
-                  // Then select text using a different method that works on more element types
-                  setTimeout(() => {
-                    if (document.createRange && window.getSelection) {
-                      const range = document.createRange();
-                      range.selectNodeContents(nextInput);
-                      const selection = window.getSelection();
-                      selection?.removeAllRanges();
-                      selection?.addRange(range);
-                    }
-                  }, 10);
-                }
-           }
-        } 
-        
-        else if (field === 'slgiao') {
+        } else if (field === 'slgiao') {
           const newGiao = newValue
-          // if (newGiao < v.sanpham[index]['sldat']) {
-          //   // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
-          //   v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
-          //   this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
-          //     duration: 1000,
-          //     horizontalPosition: "end",
-          //     verticalPosition: "top",
-          //     panelClass: ['snackbar-error'],
-          //   });
-          // } else {
+          if (newGiao < v.sanpham[index]['sldat']) {
+            // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
+            v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
+            this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
+              duration: 1000,
+              horizontalPosition: "end",
+              verticalPosition: "top",
+              panelClass: ['snackbar-error'],
+            });
+          } else {
             v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newGiao;
             v.sanpham[index]['ttgiao']=v.sanpham[index]['slgiao']*v.sanpham[index]['giaban']
-            const inputs = document.querySelectorAll('.slgiao-input')as NodeListOf<HTMLInputElement>;
-            if (index < this.dataSource().filteredData.length - 1) {
-              const nextInput = inputs[index + 1]as HTMLInputElement
-              if (nextInput) {
-                if (nextInput instanceof HTMLInputElement) {
-                  nextInput.focus();
-                  nextInput.select();
-                }
-                // Then select text using a different method that works on more element types
-                setTimeout(() => {
-                  if (document.createRange && window.getSelection) {
-                    const range = document.createRange();
-                    range.selectNodeContents(nextInput);
-                    const selection = window.getSelection();
-                    selection?.removeAllRanges();
-                    selection?.addRange(range);
-                  }
-                }, 10);
-              }
-            }
-          // }
+          }
         } else {
           v.sanpham[index][field] = newValue;
         }
@@ -324,7 +265,16 @@ export class DetailPhieugiaohangComponent {
         v[field] = newValue;
       }
       return v;
-    });    
+    });
+  
+    // CẬP NHẬT LẠI UI BẰNG CÁCH SET NỘI DUNG CHO `contentEditable`
+    setTimeout(() => {
+      if(index !== null){
+      (event.target as HTMLElement).innerText = this.DetailPhieugiaohang()?.sanpham[index]?.slgiao || '0';
+      }
+    }, 0);
+    
+    console.log(this.DetailPhieugiaohang());
   }
   GiaoDonhang()
   {
@@ -371,7 +321,6 @@ export class DetailPhieugiaohangComponent {
   displayedColumns: string[] = [
     'STT',
     'title',
-    'title2',
     'masp',
     'dvt',
     'sldat',
@@ -385,7 +334,6 @@ export class DetailPhieugiaohangComponent {
   ColumnName: any = {
     STT: 'STT',
     title: 'Tiêu Đề',
-    title2: 'Tiêu Đề',
     masp: 'Mã SP',
     dvt: 'Đơn Vị Tính',
     sldat: 'SL Đặt',
@@ -395,7 +343,6 @@ export class DetailPhieugiaohangComponent {
     slnhan: 'SL Nhận',
     ghichu: 'Ghi Chú'
   };
-
   dataSource = signal(new MatTableDataSource<any>([]));
   CountItem = computed(() => this.dataSource().data.length);
   @ViewChild(MatPaginator) paginator!: MatPaginator;

@@ -49,44 +49,6 @@
             </mat-form-field>
             <button mat-icon-button color="warn" (click)="isSearch=!isSearch"><mat-icon>cancel</mat-icon></button>
         </div>
-        <div class="w-full grid lg:grid-cols-4 grid-cols-2 gap-2 items-center">
-            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Loại Đơn</mat-label>
-              <mat-select [(ngModel)]="SearchParams.Type" [ngModelOptions]="{standalone: true}"
-                (selectionChange)="onSelectionChange($event)">
-                @for (item of [
-                {id:1,Title:'Đơn Sỉ',value:'donsi'},
-                {id:2,Title:'Đơn Lẻ',value:'donle'},
-                ]; track item) {
-                <mat-option [value]="item.value">{{item.Title}}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-  
-            <!-- <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Chọn Thời Gian</mat-label>
-              <mat-select [(ngModel)]="Chonthoigian" [ngModelOptions]="{standalone: true}"
-                (selectionChange)="onSelectionChange($event)">
-                @for (item of ListDate; track item) {
-                <mat-option [value]="item.value">{{item.Title}}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field> -->
-            
-            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Bắt Đầu</mat-label>
-              <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau" [(ngModel)]="SearchParams.Batdau" [ngModelOptions]="{standalone: true}">
-              <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau"></mat-datepicker-toggle>
-              <mat-datepicker #pickerBatdau></mat-datepicker>
-            </mat-form-field>
-  
-            <mat-form-field  [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Kết Thúc</mat-label>
-              <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerKetthuc" [(ngModel)]="SearchParams.Ketthuc" [ngModelOptions]="{standalone: true}">
-              <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
-              <mat-datepicker #pickerKetthuc></mat-datepicker>
-            </mat-form-field>
-          </div>
         <div class="w-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {
@@ -188,7 +150,7 @@
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
             </table>
-            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="dataSource.data.length"></mat-paginator>
+            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
         </div>
     </div>
 </mat-drawer-container>

@@ -1,12 +1,18 @@
+git add .
+git commit -m "update"
+git push
+
+
 npx bun add @nestjs/config @nestjs/jwt @nestjs/passport passport passport-jwt bcryptjs
 npx bun add @prisma/client
 npx bun add -d prisma
-npx bun prisma migrate dev --name rau3.1.1
+npx bun prisma migrate dev --name tazagroup1.1.1
 npx prisma db push
 npx bun prisma generate
-npx ts-node prisma/exportData.ts
-npx ts-node prisma/update.ts
-npx ts-node prisma/backup.ts
+npx ts-node prisma/scriptdb/exportData.ts
+npx ts-node prisma/scriptdb/seed.ts
+npx ts-node prisma/scriptdb/backup.ts
+npx ts-node prisma/scriptdb/restore.ts
 
 
 npx prisma db seed
@@ -22,8 +28,9 @@ npx katacreate --type nestjs --name kho --outputDir kho
 npx katacreate --type nestjs --name phieukho --outputDir phieukho
 npx katacreate --type nestjs --name role --outputDir role
 npx katacreate --type nestjs --name permission --outputDir permission
-npx katacreate --type nestjs --name googledrive --outputDir googledrive
-npx katacreate --type nestjs --name errorlogs --outputDir errorlogs
+npx katacreate --type nestjs --name nhomkhachhang --outputDir nhomkhachhang
+npx katacreate --type nestjs --name chatbot --outputDir chatbot
+npx katacreate --type nestjs --name lead --outputDir lead
 
 
 Tình huống	Lệnh cần chạy
@@ -64,45 +71,3 @@ model Giohang {
   isActive  Boolean  @default(false)
   sanpham   Giohangsanpham[]
 }
-
-Tạo Index Full-Text Search
-ALTER TABLE Khachhang ADD COLUMN search_vector tsvector;
-UPDATE Khachhang 
-SET search_vector = to_tsvector('simple', name || ' ' || namenn || ' ' || diachi || ' ' || makh || ' ' || sdt  );
-CREATE INDEX search_vector_idx ON Khachhang USING gin(search_vector);
-
-
-
-{
-  "model": "users",
-  "filters": {
-    "OR": [
-      { "name": { "value": "John", "type": "contains" } },
-      { "email": { "value": "john@example.com", "type": "equals" } }
-    ],
-    "age": { "value": 30, "type": "gte" },
-    "profile": {
-      "bio": { "value": "developer", "type": "contains" }
-    }
-  },
-  "relations": {
-    "profile": {
-      "include": true,
-      "filters": {
-        "bio": { "value": "developer", "type": "contains" }
-      }
-    },
-    "posts": {
-      "include": true,
-      "filters": {
-        "title": { "value": "NestJS", "type": "contains" }
-      }
-    }
-  },
-  "orderBy": { "field": "id", "direction": "desc" },
-  "skip": 0,
-  "take": 10
-}
-
-
-[{"title":"Trứng bắc thảo","dvt":"Quả","khachhang":[{"name":"99 SOUL","data":{"SLDAT":1,"SLTT":"1,2"}},{"name":"NHÀ HÀNG DOOKKI","data":{"SLDAT":1,"SLTT":"1,2"}}]},{"title":"Bún gạo","dvt":"Kg","khachhang":[{"name":"99 SOUL","data":{"SLDAT":1,"SLTT":"1,2"}},{"name":"NHÀ HÀNG DOOKKI","data":{"SLDAT":"","SLTT":"1,2"}}]}]

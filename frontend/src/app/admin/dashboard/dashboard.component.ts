@@ -1,100 +1,92 @@
-import { Component, inject } from '@angular/core';
-import { environment } from '../../../environments/environment.development';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import { DashboardService } from './dashboard.service';
 import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { DonhangService } from '../donhang/donhang.service';
-import { SearchService } from '../../shared/services/search.service';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+
 @Component({
   selector: 'app-dashboard',
   imports: [
-    MatFormFieldModule,
-    MatInputModule,
-    FormsModule,
     CommonModule,
-    MatButtonModule
+    FormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatIconModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent {
-   _PhieugiaohangService: DonhangService = inject(DonhangService);
-   _SearchService: SearchService = inject(SearchService);
-  selectedFile!: File;
-  ketqua:any = [];
-  isLoading = false; // Biến để kiểm tra trạng thái loading
-  uploadMessage = ''; // Hiển thị thông báo sau khi upload
-  onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0]; // Lấy file từ input
-    this.uploadMessage = ''; // Reset thông báo cũ
-    this.uploadFile()
+  messages: any[] = [];
+  userMessage: string = '';
+  userId = 'user_123'; // Có thể lấy từ Auth Service
+
+  constructor(private _DashboardService: DashboardService) {}
+  @ViewChild('editablechatAI') private editablechatAI!: ElementRef<HTMLDivElement>;
+  ngAfterViewInit(): void {
+    this.focusEditableDiv();
   }
 
-  async uploadFile() {
-    if (!this.selectedFile) {
-      alert('Chọn file trước khi upload!');
-      return;
-    }
-    this.isLoading = true; // Bắt đầu loading
-    this.uploadMessage = '';
+  sendMessage(event: Event): void {
+    const eventKey = event as KeyboardEvent;
+    if (eventKey.key === 'Enter' && !eventKey.shiftKey) {
+      event.preventDefault();
+      this.userMessage = this.editablechatAI.nativeElement.textContent?.trim() || '';
 
-    const formData = new FormData();
-    formData.append('file', this.selectedFile); // 'file' phải khớp với tên bên NestJS
-  
-    try {
-      const response = await fetch(`${environment.APIURL}/googledrive/upload`, {
-        method: 'POST',
-        body: formData,
+      if (!this.userMessage) return;
+
+      this.messages.push({ sender: 'user', text: this.userMessage });
+      this.messages.push({ sender: 'bot', text: '...', isTyping: true });
+      this.resetEditableDiv();
+
+      const payload = { userId: this.userId, message: this.userMessage };
+
+      this._DashboardService.sendMessage(payload).then((response: any) => {
+        this.messages = this.messages.filter((msg) => !msg.isTyping);
+        this.messages.push({ sender: 'bot', text: response });
+        this.focusEditableDiv(); // Maintain focus after message received
+      }).catch((error: any) => {
+        console.error('Error sending message:', error);
+        this.messages = this.messages.filter((msg) => !msg.isTyping); // Remove typing indicator on error
+        this.messages.push({ sender: 'bot', text: 'An error occurred.' });
+        this.focusEditableDiv();
       });
-
-      if (!response.ok) {
-        throw new Error(`Lỗi upload: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      this.ketqua  = data.jsonData;
-      // const query = {
-      //   "model": "donhang",
-      //   "filters": {
-      //     "madonhang": { "value": value, "type": "contains" }
-      //   },
-      //   "relations": {
-      //     "banggia": {
-      //       "include": true
-      //     }
-      //   },
-      //   "orderBy": { "field": "createdAt", "direction": "desc" },
-      //   "take": 10
-      // };
-      // await this._SearchService.Search(query).then((data) => {
-      //   this.filterKhachhang = data;
-      // });
-      this.uploadMessage = 'Upload thành công!';
-      console.log('Upload thành công', data);
-    } catch (error) {
-      this.uploadMessage = 'Lỗi khi upload file!';
-      console.error('Lỗi upload file', error);
-    } finally {
-      this.isLoading = false; // Dừng loading dù có lỗi hay không
     }
   }
-  async ngOnInit(): Promise<void> {
-      // const query = {
-      //   "model": "donhang",
-      //   "filters": {
-      //     "madonhang": { "value": value, "type": "contains" }
-      //   },
-      //   "relations": {
-      //     "banggia": {
-      //       "include": true
-      //     }
-      //   },
-      //   "orderBy": { "field": "createdAt", "direction": "desc" },
-      //   "take": 10
-      // };
-      // await this._SearchService.Search(query)
-    
+
+  private resetEditableDiv(): void {
+    if (this.editablechatAI) {
+      this.editablechatAI.nativeElement.textContent = '';
+      this.focusEditableDiv();
+    }
   }
+
+  private focusEditableDiv(): void {
+    if (this.editablechatAI) {
+      this.editablechatAI.nativeElement.focus();
+    }
+  }
+
+  isDragging = false;
+  handlePaste(event: ClipboardEvent) {
+
+  }
+  handleInput(event: Event) {
+
+  }
+  onDragOver(event: DragEvent) {
+  }
+  onDragLeave(event: DragEvent) {
+  }
+  onInput(event: Event) {
+  }
+  onDrop(event: DragEvent) {
+  }
+  onFileSelected(event: Event) {
+  }
+  uploadDriver(event: Event){
+  }
+
 }

@@ -16,6 +16,7 @@ import { MenuService } from '../menu/menu/menu.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TreemenuComponent } from '../../shared/common/treemenu/treemenu.component';
 import { UserService } from '../user/user.service';
+import moment from 'moment';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -41,6 +42,7 @@ export class AdminmainComponent {
   showFiller = false;
   Config:any =Config
   User:any ={}
+  version:any= moment().format('hh:mm:ss dd/mm/yyyy')
   private _transformer = (node: any, level: number) => {
     return {
       expandable: !!node?.children && node?.children.length > 0,
@@ -105,7 +107,7 @@ export class AdminmainComponent {
       }
     });
   }
-  ClearCache(): void {
+  ClearCache(){
     const token = localStorage.getItem('token');
     const permissions = localStorage.getItem('permissions');
     localStorage.clear();
@@ -115,10 +117,10 @@ export class AdminmainComponent {
     if (permissions) {
       localStorage.setItem('permissions', permissions);
     }
-    this._snackBar.open('Xóa Cache Thành Công', '', {
+    this._snackBar.open('Xoá Cache Thành Công', '', {
       duration: 1000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
+      horizontalPosition: "end",
+      verticalPosition: "top",
       panelClass: ['snackbar-success'],
     });
   }

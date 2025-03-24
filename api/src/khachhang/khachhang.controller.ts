@@ -1,21 +1,15 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
 import { KhachhangService } from './khachhang.service';
 
 @Controller('khachhang')
 export class KhachhangController {
   constructor(private readonly khachhangService: KhachhangService) {}
-  @Get('search')
-  async searchCustomers(@Query('q') query: string) {
-    return this.khachhangService.timkiemkhachhang(query);
-  }
+
   @Post()
   create(@Body() createKhachhangDto: any) {
     return this.khachhangService.create(createKhachhangDto);
   }
-  @Post('searchfield')
-  async searchfield(@Body() searchParams: Record<string, any>) {
-    return this.khachhangService.searchfield(searchParams);
-  }
+
   @Get()
   findAll() {
     return this.khachhangService.findAll();

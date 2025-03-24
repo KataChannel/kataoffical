@@ -3,9 +3,9 @@ import { SanphamService } from './sanpham.service';
 import { SanphamController } from './sanpham.controller';
 import { PrismaModule } from 'prisma/prisma.module';
 import { SocketGateway } from 'src/socket.gateway';
-import { ErrorlogsModule } from 'src/errorlogs/errorlogs.module';
+import { ErrorlogModule } from 'src/errorlog/errorlog.module';
   @Module({
-    imports: [PrismaModule,ErrorlogsModule],
+    imports: [PrismaModule,ErrorlogModule],
     controllers: [SanphamController],
     providers: [SanphamService,SocketGateway],
     exports:[SanphamService]

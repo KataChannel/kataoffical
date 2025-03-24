@@ -19,4 +19,7 @@ export class SocketGateway {
   senduserUpdate() {
     this.server.emit('user-updated'); // FE sẽ nhận sự kiện này
   }
+  sendleadUpdate() {
+    this.server.emit('lead-updated'); // FE sẽ nhận sự kiện này
+  }
 }

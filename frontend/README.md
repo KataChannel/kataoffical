@@ -1,3 +1,6 @@
+git add .
+git commit -m "update"
+git push
 
 npx katacreate --type angular --name menu --outputDir menu
 npx katacreate --type angular --name sanpham --outputDir .
@@ -13,6 +16,7 @@ npx katacreate --type angular --name permission --outputDir .
 npx katacreate --type angular --name nhomkhachhang --outputDir .
 npx katacreate --type angular --name phieugiaohang --outputDir .
 npx katacreate --type angular --name congnokhachhang --outputDir .
+npx katacreate --type angular --name lead --outputDir .
 
 npx ng g c congnokhachhang --skip-tests --standalone
 npx ng g c congnoncc --skip-tests --standalone

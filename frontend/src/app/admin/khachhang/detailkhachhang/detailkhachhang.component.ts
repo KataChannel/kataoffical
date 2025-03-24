@@ -55,7 +55,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           this._router.navigate(['/admin/khachhang', "0"]);
         }
         else{
-            await this._KhachhangService.searchfield({id:id});
+            await this._KhachhangService.getKhachhangByid(id);
             this._ListkhachhangComponent.drawer.open();
             this._router.navigate(['/admin/khachhang', id]);
         }
@@ -92,10 +92,6 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 
     private async updateKhachhang() {
       try {
-        this.DetailKhachhang.update((v: any) => {
-          const { banggia, ...rest } = v;
-          return rest;
-        });
         await this._KhachhangService.updateKhachhang(this.DetailKhachhang());
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,

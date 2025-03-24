@@ -18,7 +18,7 @@ COPY . .
 
 # # Install Prisma globally and run migrations
 RUN bun install -g prisma
-RUN bun prisma migrate dev --name rau3.1.1
+RUN bun prisma migrate dev --name taza1.1.1
 RUN bun prisma generate
 
 # Use a smaller runtime image
@@ -32,7 +32,7 @@ COPY --from=builder /app /app
 
 # Copy only necessary files
 COPY --from=builder /app/dist /app/dist
-# COPY .env .env
+COPY .env .env
 
 # Expose the ports used by the NestJS application (e.g., 3000)
 EXPOSE 3331

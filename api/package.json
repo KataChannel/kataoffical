@@ -21,11 +21,10 @@
     "seed": "npx prisma db seed"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node prisma/scriptdb/seed.ts"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.0",
-    "@katachanneloffical/kata-snippets": "^1.0.10",
+    "@katachanneloffical/kata-snippets": "^1.0.18",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.1",
@@ -38,10 +37,8 @@
     "@prisma/client": "^6.5.0",
     "bcryptjs": "^3.0.0",
     "class-validator": "^0.14.1",
-    "googleapis": "^146.0.0",
+    "firebase-admin": "^13.2.0",
     "moment": "^2.30.1",
-    "moment-timezone": "^0.5.47",
-    "multer": "^1.4.5-lts.1",
     "passport": "^0.7.0",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
@@ -60,7 +57,6 @@
     "@swc/core": "^1.10.7",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
-    "@types/multer": "^1.4.12",
     "@types/node": "^22.13.5",
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/supertest": "^6.0.2",
@@ -96,5 +92,11 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "trustedDependencies": [
+    "@firebase/util",
+    "@nestjs/core",
+    "@swc/core",
+    "protobufjs"
+  ]
 }

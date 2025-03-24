@@ -13,9 +13,6 @@ import { ListSanphamComponent } from '../listsanpham/listsanpham.component';
 import { SanphamService } from '../sanpham.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
-import { MatMenuModule } from '@angular/material/menu';
-import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
   @Component({
     selector: 'app-detailsanpham',
     imports: [
@@ -27,8 +24,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
       MatSelectModule,
       MatDialogModule,
       CommonModule,
-      MatSlideToggleModule,
-      MatMenuModule
+      MatSlideToggleModule
     ],
     templateUrl: './detailsanpham.component.html',
     styleUrl: './detailsanpham.component.scss'
@@ -36,50 +32,42 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
   export class DetailSanphamComponent {
     _ListsanphamComponent:ListSanphamComponent = inject(ListSanphamComponent)
     _SanphamService:SanphamService = inject(SanphamService)
-    _NhacungcapService:NhacungcapService = inject(NhacungcapService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
-    ListNCC:any =[]
-    ChosenListNCC:any =[]
-    FilterListNCC:any =[]
-    DetailSanpham: any = this._SanphamService.DetailSanpham;
-    isEdit = signal(false);
-    isDelete = signal(false);  
-    sanphamId:any = this._SanphamService.sanphamId
     constructor(){
       this._route.paramMap.subscribe((params) => {
         const id = params.get('id');
         this._SanphamService.setSanphamId(id);
       });
   
-      effect(async () => {  
+      effect(async () => {
         const id = this._SanphamService.sanphamId();
-        await this._NhacungcapService.getAllNhacungcap();
-        this.ListNCC = this.FilterListNCC = this._NhacungcapService.ListNhacungcap();
         if (!id){
           this._router.navigate(['/admin/sanpham']);
           this._ListsanphamComponent.drawer.close();
         }
-        if(id === '0'){
+        if(id === 'new'){
           this.DetailSanpham.set({});
           this._ListsanphamComponent.drawer.open();
           this.isEdit.update(value => !value);
-          this._router.navigate(['/admin/sanpham', "0"]);
-          this.ChosenListNCC = this.DetailSanpham().Nhacungcap||[];
+          this._router.navigate(['/admin/sanpham', "new"]);
         }
         else{
-            await this._SanphamService.getSanphamByid(id);
+            await this._SanphamService.getSanphamBy({id:id});
             this._ListsanphamComponent.drawer.open();
             this._router.navigate(['/admin/sanpham', id]);
-            this.ChosenListNCC = this.DetailSanpham().Nhacungcap||[];
         }
       });
     }
+    DetailSanpham: any = this._SanphamService.DetailSanpham;
+    isEdit = signal(false);
+    isDelete = signal(false);  
+    sanphamId:any = this._SanphamService.sanphamId
     async ngOnInit() {       
     }
     async handleSanphamAction() {
-      if (this.sanphamId() === '0') {
+      if (this.sanphamId() === 'new') {
         await this.createSanpham();
       }
       else {
@@ -151,46 +139,5 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
         v.slug = convertToSlug(v.title);
         return v;
       })
-    }
-
-    doSearch(event: any) {
-      this.FilterListNCC = this.ListNCC.filter((v: any) => removeVietnameseAccents(v.name).includes(event.target.value.toLowerCase())||v.name.toLowerCase().includes(event.target.value.toLowerCase())); 
-    }
-    ChosenAll() {
-      this.FilterListNCC.forEach((item: any) => {
-      const isItemChosen = this.ChosenListNCC.some((chosenItem:any) => chosenItem.id === item.id);
-      if (isItemChosen) {
-        this.ChosenListNCC = this.ChosenListNCC.filter((chosenItem:any) => chosenItem.id !== item.id);
-      } else {
-        this.ChosenListNCC = [...this.ChosenListNCC, item];
-      }
-      });
-    }
-    EmptyFiter() {
-      this.ChosenListNCC = [];
-    }
-    ResetFilter(){
-      this.ChosenListNCC = this.ListNCC;
-    }
-    ChosenItem(item: any) {
-      const isItemInFilterList = this.ChosenListNCC.some((v: any) => v.id === item.id);
-      if (isItemInFilterList) {
-      this.ChosenListNCC = this.ChosenListNCC.filter((v: any) => v.id !== item.id);
-      } else {
-      const itemToAdd = this.ListNCC.find((v: any) => v.id === item.id);
-      if (itemToAdd) {
-        this.ChosenListNCC = [...this.ChosenListNCC, itemToAdd];
-      }
-      }
-    }
-    CheckItem(item: any): boolean {
-      return this.ChosenListNCC.some((v: any) => v.id === item.id);
-    }
-    ApplyFilterColum(menu:any){
-        this.DetailSanpham.update((v:any)=>{
-          v.Nhacungcap = this.ChosenListNCC
-          return v;
-        })
-        menu.closeMenu();
     }
   }

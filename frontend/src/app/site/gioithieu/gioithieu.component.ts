@@ -31,7 +31,7 @@ import { MatButtonModule } from '@angular/material/button';
     FormsModule,
     MatButtonModule
   ],
-  // providers: [provideNativeDateAdapter()],
+  providers: [provideNativeDateAdapter()],
   templateUrl: './gioithieu.component.html',
   styleUrl: './gioithieu.component.scss'
 })

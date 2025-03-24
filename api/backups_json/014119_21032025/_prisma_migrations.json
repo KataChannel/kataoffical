@@ -1,0 +1,262 @@
+[
+  {
+    "id": "19f578ea-755c-4dbd-bed9-18bf37cf2ba6",
+    "checksum": "0d878092fbbf54fe02a3c6175e454abd4ef3b51b90c65dbffdc51d70417423df",
+    "finished_at": "2025-03-10T05:45:35.327Z",
+    "migration_name": "20250228021026_rau2_1_1",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.109Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "d5b06436-1602-4f2f-8001-953551191634",
+    "checksum": "a61aae1501225726b6d174a647c6a01194413d17d1d30dc0c7babee785d7f70c",
+    "finished_at": "2025-03-10T05:45:36.016Z",
+    "migration_name": "20250310042511_rau2_4_1",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.994Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "057a3a4c-a109-4e57-aea7-76796a3e49eb",
+    "checksum": "2a587ee8545d5872f67524003ca5b562906a74f84ddba63d979c36b40aa4a542",
+    "finished_at": "2025-03-10T05:45:35.362Z",
+    "migration_name": "20250301150015_rau2_1_3",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.337Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "32d488be-23f7-46f5-8f58-b95191067c9c",
+    "checksum": "7d36432f6bc0bb352740da1686df1c8e3d4d4b8c5f71c50be77261f5f7be3e28",
+    "finished_at": "2025-03-10T05:45:35.400Z",
+    "migration_name": "20250302185128_rau2_1_4",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.371Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "63c93196-4029-4b2a-aff8-bfeed18f4388",
+    "checksum": "cc8e2414bed256946259eb69e0cd4c4bb00a3c67dd6fff80125560ffaee5847f",
+    "finished_at": "2025-03-10T05:45:35.476Z",
+    "migration_name": "20250304092506_rau2_2_1",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.408Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "de2d5222-7fcf-4007-b0a7-294aa3df3789",
+    "checksum": "59e24bad276f51f0feb2197e7d078b67125e448c4e2f87007075f411cf4b0192",
+    "finished_at": "2025-03-12T13:41:11.407Z",
+    "migration_name": "20250312134111_tazagroup2_5_1",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-12T13:41:11.364Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "64254739-9440-434c-be5d-d0662c3886a3",
+    "checksum": "8d08ccc32a73b51fef2f03f1e83ab8fc9007c3445e44282e06d78ba0d7115231",
+    "finished_at": "2025-03-10T05:45:35.516Z",
+    "migration_name": "20250304095750_rau2_2_2",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.485Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "31c677e5-51fc-4a39-a6a5-8e8419725c15",
+    "checksum": "8c7589d2cbdfe389c271f95a0b63dcf7ac3a7d116d8e58bd70d867b91d4c7d4c",
+    "finished_at": "2025-03-10T05:45:35.585Z",
+    "migration_name": "20250304154101_rau2_2_4",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.523Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "0c1b0e7f-4f12-44f3-80e1-cb2908a89551",
+    "checksum": "1fc31a341feeb78c29f0c43b2f83d657851516ba2f36c590a5206b6ccf9f1e06",
+    "finished_at": "2025-03-20T14:41:40.475Z",
+    "migration_name": "20250320144140_tazagroup3_1_3",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-20T14:41:40.441Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "b896b0d2-89eb-4e59-8042-c731acd670e8",
+    "checksum": "7b259982944188837236a9e28f0a37d0c568a36ce2f9a9f6ac0a70f843675e1c",
+    "finished_at": "2025-03-10T05:45:35.641Z",
+    "migration_name": "20250304163545_rau2_2_5",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.593Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "89b6ef57-efc1-4a1b-a596-9fb07070f376",
+    "checksum": "78efe49527e135557455d7cfd075dac37c6fb7a91c0c0ffa13d10c6aebf63b10",
+    "finished_at": "2025-03-12T13:48:33.040Z",
+    "migration_name": "20250312134832_tazagroup2_5_2",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-12T13:48:33.007Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "e7be1386-449b-4a5a-9a5c-16cb0d2143f6",
+    "checksum": "aafc8435c4f1681c94d7ef66ede986dfa9085fb20d23a4017421f0b5b74cce55",
+    "finished_at": "2025-03-10T05:45:35.699Z",
+    "migration_name": "20250304163744_rau2_2_6",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.649Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "d401d1ae-028e-4c08-b1ce-b8f5a53956a8",
+    "checksum": "5d0a0ebacfc7150b7743435290598dc9bab7f1cea77f3d1fa626ca576a4645e0",
+    "finished_at": "2025-03-10T05:45:35.774Z",
+    "migration_name": "20250306031547_rau2_2_7",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.706Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "2b73d5f9-0f59-4725-91b7-ef907a1b3f13",
+    "checksum": "532041856d27e429232e7c202978fea3b41f6a1dedd44422c77722eb7272da51",
+    "finished_at": "2025-03-10T05:45:35.814Z",
+    "migration_name": "20250306062241_rau2_2_8",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.782Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "735eebd0-3521-48da-bc71-5ca7d993abc8",
+    "checksum": "d84fb200fee152142ceeb02a4860dfca44e6dd691054134c04e4c7d232aa67b8",
+    "finished_at": "2025-03-12T17:36:18.584Z",
+    "migration_name": "20250312173618_tazagroup2_5_3",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-12T17:36:18.558Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "18265f1a-307d-4231-9a19-99938a337109",
+    "checksum": "9f25d8544a44f0b80a687a2f0c812baa6db94c606fe111a3d2ee2c3acd0c3cfa",
+    "finished_at": "2025-03-10T05:45:35.849Z",
+    "migration_name": "20250306065855_rau2_2_8",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.823Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "fb580753-61a4-4755-8792-cad0373da317",
+    "checksum": "74556d0f22c8193fdac3c08c218400e8a12de4ec9d35bd7a1f98d3ae7c299b4c",
+    "finished_at": "2025-03-10T05:45:35.889Z",
+    "migration_name": "20250306092535_rau2_2_9",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.861Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "174f86bb-0de5-4d65-a548-2b1ab2f50620",
+    "checksum": "27c33326c892ad4e1c41cf8b79b2d929dfa7cf33317cb58694ec23f7520d7f9f",
+    "finished_at": "2025-03-10T05:45:35.924Z",
+    "migration_name": "20250307173029_rau2_3_1",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.897Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "613d5abe-b764-4ece-9c69-bb445a6a3888",
+    "checksum": "9bdd3fe700e0f16cf1545b7751d76efe9473db46970867527cc44a2e34b0dbee",
+    "finished_at": "2025-03-12T19:46:04.747Z",
+    "migration_name": "20250312194604_tazagroup2_5_4",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-12T19:46:04.713Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "267f1b12-f9be-409d-be9e-bf260d8cc5d6",
+    "checksum": "32a0bbb33901fcf8a89300c44a05bf31d59a0392b855b5c8c38ddd6adf402cee",
+    "finished_at": "2025-03-10T05:45:35.981Z",
+    "migration_name": "20250309144734_rau2_3_4",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-10T05:45:35.936Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "acfcd8bc-69aa-4d9a-a5b8-33a42f9f7f45",
+    "checksum": "0d9dd38a21f1a51d7fb446065156d591c92285ac5dcbb2413a57dd119fdab23f",
+    "finished_at": "2025-03-20T14:43:43.968Z",
+    "migration_name": "20250320144343_tazagroup3_1_4",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-20T14:43:43.935Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "7cd67e74-facb-4c07-a91e-7a66822f0b4f",
+    "checksum": "200815dd7f5470227deafb7557d5faf584c23aa15d027c179199eb6020612b7c",
+    "finished_at": "2025-03-18T04:52:37.018Z",
+    "migration_name": "20250318045236_tazagroup2_6_1",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-18T04:52:36.989Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "79fb5d1a-f546-4b1d-bb67-a58cc9d8eab8",
+    "checksum": "108ad1cfb82035605d9ad7e9f12489483f82cbf79f0cdef5420e7d1ba27e971d",
+    "finished_at": "2025-03-19T01:55:59.947Z",
+    "migration_name": "20250319015559_tazagroup2_6_2",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-19T01:55:59.916Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "f5a6dbdf-dcea-4f16-adb2-5a09d08a4362",
+    "checksum": "f3627e59c3c9722cdb7f502cfb04e0d99dbac48b05226ad7eabf598e7ea57237",
+    "finished_at": "2025-03-19T04:29:52.942Z",
+    "migration_name": "20250319042952_tazagroup3_1_1",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-19T04:29:52.880Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "0b9eaf73-4dcd-428c-b425-acd91a9418c8",
+    "checksum": "027fe208b61a01ad21770197bdb2451e576b793f0d66ea2d7f76a6e4af59847f",
+    "finished_at": "2025-03-20T14:46:01.681Z",
+    "migration_name": "20250320144601_tazagroup3_1_5",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-20T14:46:01.648Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "1bc3cb40-8522-4d80-a3fc-b7701c3e26df",
+    "checksum": "d80371ac11226ad8c3315aaa7a3390cc5a07fb1050bd5daf97afe69ce8c8e2d9",
+    "finished_at": "2025-03-19T09:03:54.577Z",
+    "migration_name": "20250319090354_tazagroup3_1_2",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-03-19T09:03:54.546Z",
+    "applied_steps_count": 1
+  }
+]

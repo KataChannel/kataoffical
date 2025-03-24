@@ -92,7 +92,7 @@
             </mat-select>
           </mat-form-field>
           <button mat-flat-button color="primary" [disabled]="!isEdit()" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
-            {{dataSource().filteredData.length}}  Sản Phẩm
+            {{ListFilter.length}}  Sản Phẩm
           </button>
          <mat-menu  #menu="matMenu">
                      <div (click)="$event.stopPropagation()"  class="cursor-pointer flex flex-col space-y-4 p-3">                                        
@@ -163,10 +163,10 @@
               <mat-icon>file_upload</mat-icon>
           </button>
           <input class="hidden" (change)="ImporExcel($event)" type="file" #uploadfile>
+          <button [disabled]="!isEdit()" mat-icon-button color="warn" (click)="EmptyCart()"><mat-icon>delete</mat-icon></button>
             <button [disabled]="!isEdit()" matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
               <mat-icon>cloud_download</mat-icon>
           </button>
-          <button [disabled]="!isEdit()" mat-icon-button color="warn" (click)="EmptyCart()"><mat-icon>delete</mat-icon></button>
             <!-- <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                 {{CountItem()}} Sản Phẩm
             </span> -->
@@ -194,9 +194,9 @@
                     @case ('giaban') {
                   <div *ngIf="isEdit()"
                       [contentEditable]="true"
-                      (keydown.enter)="updateValue($event,idx, row, 'giaban','number')"
-                      class="giaban-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
-                      >
+                      (blur)="updateValue($event,idx, row, 'giaban','number')"
+                      class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                    >
                     {{ row[column]||0|number:'1.0-2' }}
                      </div>
                      <span *ngIf="!isEdit()" class="max-w-20 line-clamp-4">
@@ -223,7 +223,7 @@
                 <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
             </tr>
         </table>
-        <!-- <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator> -->
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
     </div>
     }
 

@@ -20,6 +20,7 @@ model User {
   isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  audits    AuditLog[]
 }
 
 model Role {
@@ -83,15 +84,14 @@ model Profile {
 
 model Banggia {
   id        String   @id @default(uuid())
-  title     String?
-  mabanggia String?
-  type      String?
+  title     String
+  type      String
   batdau    DateTime?
   ketthuc   DateTime?
   order     Int?     @default(1)
-  ghichu    String?
-  status    String?
-  isActive  Boolean    @default(true)
+  ghichu   String?
+  status   String?
+  isActive Boolean    @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   sanpham   Banggiasanpham[]
@@ -101,7 +101,6 @@ model Khachhang {
   id           String   @id @default(uuid())
   name         String?
   namenn       String?
-  subtitle      String?
   makh         String   @unique
   diachi       String?
   sdt          String?
@@ -113,9 +112,8 @@ model Khachhang {
   address      String?
   loaikh       String?
   ghichu       String?
-  hiengia      Boolean  @default(false)
+  hiengia     Boolean  @default(false)
   isActive     Boolean  @default(false)
-  istitle2     Boolean  @default(false)
   banggia      Banggia[] @relation("Banggiakhachhang")
   donhang      Donhang[]
   createdAt    DateTime @default(now())
@@ -165,7 +163,6 @@ model Donhang {
   khachhangId String
   khachhang   Khachhang @relation(fields: [khachhangId], references: [id])
   sanpham     Donhangsanpham[]
-  printCount  Int? @default(0)
   order       Int?
   isActive    Boolean  @default(false)
   createdAt    DateTime @default(now())
@@ -196,7 +193,6 @@ model Nhacungcap {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   dathang  Dathang[]  // 1 nhà cung cấp có nhiều đơn đặt hàng
-  Sanpham Sanpham[]
 }
 
 model Dathang {
@@ -211,9 +207,6 @@ model Dathang {
   order       Int?
   isActive    Boolean  @default(false)
   sanpham     Dathangsanpham[]
-  printCount  Int? @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime? @updatedAt  
 }
 
 model Dathangsanpham {
@@ -302,14 +295,11 @@ model PhieuKhoSanpham {
 model Sanpham {
   id        String   @id @default(uuid())
   title     String
-  title2     String?
   slug      String?   @unique
   masp      String   @unique
-  subtitle  String? 
   giagoc    Float @default(0)
   dvt       String?
   hinhanh   String?
-  loadpoint Float? @default(0)
   soluong   Float @default(0)
   soluongkho Float @default(0)
   haohut    Float @default(0)
@@ -323,7 +313,6 @@ model Sanpham {
   Dathangsanpham Dathangsanpham[]
   SanphamKho SanphamKho[]
   PhieuKhoSanpham PhieuKhoSanpham[]
-  Nhacungcap Nhacungcap[]
 }
 model ChatAIMessage {
   id        String  @id @default(uuid())
@@ -339,13 +328,51 @@ model ChatAIHistory {
   sender    String   // 'user' hoặc 'bot'
   createdAt DateTime @default(now())
 }
-model File {
-  id        String  @id @default(uuid())
-  fileName  String?
-  fileUrl   String?
-  jsonData  Json?
-  createdAt DateTime @default(now())
+
+
+model Activity {
+  id          String       @id @default(uuid())
+  type        ActivityType
+  title       String?      // Task, Support, Meeting, Notification dùng
+  content     String?      // Chat, Support, Notification dùng
+  senderId    String?      // Chat, Support, Notification dùng
+  receiverId  String?      // Chat, Support, Notification dùng
+  assignedTo  String?      // Task, Support, Meeting dùng
+  groupId     String?      // Chat nhóm, Meeting nhóm dùng
+  priority    WorkPriority?  // Task, Support, Meeting dùng
+  status      ActivityStatus
+  deadline    DateTime?    // Task, Support, Meeting dùng
+  meetingLink String?      // Meeting dùng (Link Google Meet, Zoom,...)
+  customerId  String?      // Support dùng
+  slaTime     DateTime?    // Support dùng (SLA - Thời gian xử lý cam kết)
+  read        Boolean      @default(false)  // Notification dùng
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
+
+enum ActivityType {
+  CHAT
+  TASK
+  SUPPORT
+  MEETING
+  NOTIFICATION
+}
+
+enum WorkPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ActivityStatus {
+  PENDING
+  IN_PROGRESS
+  DONE
+  CLOSED
+  SENT // Notification dùng
+}
+
 model ErrorLog {
   id        String   @id @default(uuid())
   timestamp DateTime
@@ -353,4 +380,59 @@ model ErrorLog {
   details   Json?    // Lưu thông tin bổ sung dưới dạng JSON
   source    String   // "client" hoặc "server" để phân biệt nguồn lỗi
   createdAt DateTime @default(now())
+}
+
+
+
+model Lead {
+  id          String   @id @default(uuid())
+  name        String
+  code        String?  @unique
+  phone       String?  @unique
+  email       String?  @unique
+  order       Int?      
+  status      String   @default("new") // new, contacted, converted, rejected
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  logs        LeadLog[]
+  callLogs    CallLog[]
+  tags        LeadTag[]
+}
+
+model LeadLog {
+  id        String   @id @default(uuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  action    String   // create, update, status_change
+  note      String?
+  createdAt DateTime @default(now())
+}
+
+model CallLog {
+  id        String   @id @default(uuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  callTime  DateTime @default(now())
+  duration  Int      // in seconds
+  outcome   String   // success, failed, no answer
+  note      String?
+}
+
+model LeadTag {
+  id     String @id @default(uuid())
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  tag    String
+}
+
+model AuditLog {
+  id         String      @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  action     String?
+  entity     String?
+  entityId   String?
+  oldValue   Json?
+  newValue   Json?
+  createdAt  DateTime @default(now())
 }

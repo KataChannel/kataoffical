@@ -13,10 +13,6 @@ export class DonhangController {
   async search(@Body() params: any) {
     return this.donhangService.search(params);
   }
-  @Post('searchfield')
-  async searchfield(@Body() searchParams: Record<string, any>) {
-    return this.donhangService.searchfield(searchParams);
-  }
   @Get()
   findAll() {
     return this.donhangService.findAll();

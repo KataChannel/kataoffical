@@ -18,9 +18,10 @@ import { AuthMiddleware } from './middleware/auth.middleware';
 import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
 import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
-import { GoogledriveModule } from './shared/googledrive/googledrive.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
-import { ErrorlogsModule } from './errorlogs/errorlogs.module';
+import { AuditLogModule } from './auditlog/auditlog.module';
+import { auditMiddleware } from 'prisma/prisma.middleware';
+import { leadModule } from './lead/lead.module';
 
 @Module({
   imports: [
@@ -39,9 +40,9 @@ import { ErrorlogsModule } from './errorlogs/errorlogs.module';
     PhieukhoModule,
     RoleModule,
     PermissionModule,
-    GoogledriveModule,
-    ErrorlogsModule
-    // ChatbotModule
+    ChatbotModule,
+    leadModule,
+    AuditLogModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  
@@ -50,5 +51,8 @@ import { ErrorlogsModule } from './errorlogs/errorlogs.module';
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AuthMiddleware).forRoutes('*');
+  }
+  constructor(private readonly prismaService: PrismaService) {
+    this.prismaService.$use(auditMiddleware());
   }
 }

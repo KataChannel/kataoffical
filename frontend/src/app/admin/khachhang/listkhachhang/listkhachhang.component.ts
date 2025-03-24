@@ -19,7 +19,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 @Component({
   selector: 'app-listkhachhang',
   templateUrl: './listkhachhang.component.html',
@@ -172,7 +171,7 @@ export class ListKhachhangComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listkhachhang().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    this.dataSource.filteredData = this.Listkhachhang().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]
@@ -267,41 +266,33 @@ export class ListKhachhangComponent {
     
     const transformedData = data.map((v: any) => ({
       name: v.name?.trim()||'',
-      makh: v.makh?.trim()||'',
-      namenn: v.namenn?.trim()||'',
-      diachi: v.diachi?.trim()||'',
-      quan: v.quan?.trim()||'',
-      email: v.email?.trim()||'',
+      mancc: v.mancc?.trim()||'',
       sdt: v.sdt?.trim()||'',
-      mst: v.mst?.trim()||'',
-      gionhanhang: v.gionhanhang?.trim()||'',
-      loaikh: v.loaikh?.trim()||'',
-      hiengia:true,
-      ghichu: v.ghichu?.trim()||'', 
+      diachi: v.diachi?.trim()||'',
+      ghichu: v.ghichu?.trim()||'',
    }));
-   // Filter out duplicate makh values
+   // Filter out duplicate mancc values
    const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
       index === self.findIndex((t:any) => (
-        t.makh === value.makh
+        t.mancc === value.mancc
       ))
    )
-    const listId2 = uniqueData.map((v: any) => v.makh);
-    const listId1 = this._KhachhangService.ListKhachhang().map((v: any) => v.makh);
+    const listId2 = uniqueData.map((v: any) => v.mancc);
+    const listId1 = this._KhachhangService.ListKhachhang().map((v: any) => v.mancc);
     const listId3 = listId2.filter((item:any) => !listId1.includes(item));
     const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.makh === v.makh);
+        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.mancc === v.mancc);
         if (item) {
           const item1 = { ...item, ...v };
-          // await this._KhachhangService.updateKhachhang(item1);
+          await this._KhachhangService.updateKhachhang(item1);
         }
         else{
-          v.subtitle = removeVietnameseAccents(v.name);
           await this._KhachhangService.CreateKhachhang(v);
         }
       });
      const disableItem = listId3.map(async (v: any) => {
-        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.makh === v);
-        // item.isActive = false;
+        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.mancc === v);
+        item.isActive = false;
         await this._KhachhangService.updateKhachhang(item);
       });
       Promise.all([...createuppdateitem, ...disableItem]).then(() => {

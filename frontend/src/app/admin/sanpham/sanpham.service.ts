@@ -1,9 +1,10 @@
-import {  Injectable, signal } from '@angular/core';
+import { Inject, Injectable, signal,Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
 import { io } from 'socket.io-client';
 import { openDB } from 'idb';
+import { ErrorLogService } from '../../shared/services/errorlog.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -11,6 +12,7 @@ export class SanphamService {
   constructor(
     private _StorageService: StorageService,
     private router: Router,
+    private _ErrorLogService: ErrorLogService,
   ) { }
   ListSanpham = signal<any[]>([]);
   DetailSanpham = signal<any>({});
@@ -39,48 +41,22 @@ export class SanphamService {
         this.getAllSanpham()
         this.sanphamId.set(data.id)
     } catch (error) {
-        return console.error(error);
-    }
-  }
-  async getNhucau() {
-    try {
-      const options = {
-          method:'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
-          },
-        };
-        const response = await fetch(`${environment.APIURL}/sanpham/nhucaudathang`, options);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (!response.ok) {
-          this.handleError(response.status);
-        }
-        this.ListSanpham.set(data)
-        return data;
-    } catch (error) {
+        this._ErrorLogService.logError('Failed to CreateSanpham', error);
         return console.error(error);
     }
   }
 
   async getAllSanpham() {
     const db = await this.initDB();
-    
-    // 🛑 Kiểm tra cache từ IndexedDB trước
     const cachedData = await db.getAll('sanphams');
     const updatedAtCache = this._StorageService.getItem('sanphams_updatedAt') || '0';
-    
-    // ✅ Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
-    if (cachedData.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) { // 5 phút cache TTL
+    // Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
+    if (cachedData.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) { // 5 phút cache TTL
       this.ListSanpham.set(cachedData);
       return cachedData;
     }
-  
     try {
-      // ✅ Gọi API chỉ để lấy `updatedAt` mới nhất
+      // Gọi API chỉ để lấy `updatedAt` mới nhất
       const options = {
         method: 'GET',
         headers: {
@@ -88,20 +64,19 @@ export class SanphamService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-      
-      const lastUpdatedResponse = await fetch(`${environment.APIURL}/last-updated?table=sanpham`, options);
+      const lastUpdatedResponse = await fetch(`${environment.APIURL}/sanpham/last-updated`, options);
       if (!lastUpdatedResponse.ok) {
         this.handleError(lastUpdatedResponse.status);
         return cachedData;
       }    
       const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-      // ✅ Nếu cache vẫn mới, không cần tải lại dữ liệu
+      //Nếu cache vẫn mới, không cần tải lại dữ liệu
       if (updatedAtServer <= updatedAtCache) {
         this.ListSanpham.set(cachedData);
         return cachedData;
       }
       console.log(updatedAtServer, updatedAtCache); 
-      // ✅ Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
+      //Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
       const response = await fetch(`${environment.APIURL}/sanpham`, options);
       if (!response.ok) {
         this.handleError(response.status);
@@ -113,36 +88,22 @@ export class SanphamService {
       this.ListSanpham.set(data);
       return data;
     } catch (error) {
+      this._ErrorLogService.logError('Failed to create getAllSanpham', error);
       console.error(error);
       return cachedData;
     }
   }
 
-  private handleError(status: number) {
-    let message = 'Lỗi không xác định';
-    switch (status) {
-      case 401:
-        message = 'Vui lòng đăng nhập lại';
-        break;
-      case 403:
-        message = 'Bạn không có quyền truy cập';
-        break;
-      case 500:
-        message = 'Lỗi máy chủ, vui lòng thử lại sau';
-        break;
-    }
-    const result = JSON.stringify({ code: status, title: message });
-    this.router.navigate(['/errorserver'], { queryParams: { data: result } });
-  }
 
-  // 3️⃣ Lắng nghe cập nhật từ WebSocket
+  //Lắng nghe cập nhật từ WebSocket
   listenSanphamUpdates() {
     this.socket.on('sanpham-updated', async () => {
       console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
+      this._StorageService.removeItem('sanphams_updatedAt');
       await this.getAllSanpham();
     });
   }
-  // Khởi tạo IndexedDB
+  //Khởi tạo IndexedDB
   private async initDB() {
     return await openDB('SanphamDB', 1, {
       upgrade(db) {
@@ -150,7 +111,6 @@ export class SanphamService {
       },
     });
   }
-
   // Lưu vào IndexedDB
   private async saveSanphams(data: any[]) {
     const db = await this.initDB();
@@ -161,21 +121,24 @@ export class SanphamService {
     await tx.done;
   }
 
-  async getSanphamByid(id: any) {
+  async getSanphamBy(param: any) {
     try {
       const options = {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
+        body: JSON.stringify(param),
       };
-      const response = await fetch(`${environment.APIURL}/sanpham/findid/${id}`, options);      
+      const response = await fetch(`${environment.APIURL}/sanpham/findby`, options);      
       if (!response.ok) {
         this.handleError(response.status);
       }
       const data = await response.json();      
       this.DetailSanpham.set(data)
     } catch (error) {
+      this._ErrorLogService.logError('Failed to getSanphamBy', error);
       return console.error(error);
     }
   }
@@ -197,8 +160,9 @@ export class SanphamService {
           this.handleError(response.status);
         }
         this.getAllSanpham()
-        this.getSanphamByid(dulieu.id)
+        this.getSanphamBy({id:data.id})
     } catch (error) {
+      this._ErrorLogService.logError('Failed to updateSanpham', error);
         return console.error(error);
     }
   }
@@ -216,7 +180,25 @@ export class SanphamService {
           }
           this.getAllSanpham()
       } catch (error) {
+        this._ErrorLogService.logError('Failed to DeleteSanpham', error);
           return console.error(error);
       }
   }
+  private handleError(status: number) {
+    let message = 'Lỗi không xác định';
+    switch (status) {
+      case 401:
+        message = 'Vui lòng đăng nhập lại';
+        break;
+      case 403:
+        message = 'Bạn không có quyền truy cập';
+        break;
+      case 500:
+        message = 'Lỗi máy chủ, vui lòng thử lại sau';
+        break;
+    }
+    const result = JSON.stringify({ code: status, title: message });
+    this.router.navigate(['/errorserver'], { queryParams: { data: result } });
+  }
+
 }

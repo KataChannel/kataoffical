@@ -39,7 +39,6 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 @Component({
   selector: 'app-listdonhang',
   templateUrl: './listdonhang.component.html',
@@ -62,14 +61,14 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     MatDatepickerModule,
     MatDialogModule,
   ],
-  // providers: [provideNativeDateAdapter()],
+  providers: [provideNativeDateAdapter()],
 })
 export class ListDonhangComponent {
   Detail: any = {};
   displayedColumns: string[] = [
     'madonhang',
     'name',
-    'sanpham',
+    'donhang',
     'ngaygiao',
     'ghichu',
     'status',
@@ -79,7 +78,7 @@ export class ListDonhangComponent {
   ColumnName: any = {
     madonhang: 'Mã Đơn Hàng',
     name: 'Khách Hàng',
-    sanpham: 'Sản Phẩm',
+    donhang: 'Sản Phẩm',
     ngaygiao: 'Ngày Giao',
     ghichu: 'Ghi Chú',
     status: 'Trạng Thái',
@@ -105,8 +104,8 @@ export class ListDonhangComponent {
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   SearchParams: any = {
-    Batdau: moment().toDate(),
-    Ketthuc: moment().toDate(),
+    Batdau: moment().format('YYYY-MM-DD'),
+    Ketthuc: moment().add(1, 'day').format('YYYY-MM-DD'),
     Type: 'donsi',
     pageSize: 9999,
     pageNumber: 0,
@@ -127,7 +126,7 @@ export class ListDonhangComponent {
   onSelectionChange(event: MatSelectChange): void {
     const timeFrames: { [key: string]: () => void } = {
       day: () => {
-        this.SearchParams.Batdau = moment()
+        this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
         this.SearchParams.Ketthuc = moment()
           .endOf('day')
           .add(1, 'day')
@@ -154,10 +153,16 @@ export class ListDonhangComponent {
         this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
       },
     };
+
+    timeFrames[event.value]?.();
+    console.log(this.SearchParams);
+    
      this.ngOnInit();
   }
   onDateChange(event: any): void {
-    this.ngOnInit();
+    console.log(event);
+    if (event.value) {
+    }
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -185,8 +190,6 @@ export class ListDonhangComponent {
   async ngOnInit(): Promise<void> {
     await this._DonhangService.searchDonhang(this.SearchParams);
     this.CountItem = this.Listdonhang().length;
-    console.log(this.SearchParams);
-    
     this.initializeColumns();
     this.setupDrawer();
     this.dataSource = new MatTableDataSource(this.Listdonhang());
@@ -274,7 +277,7 @@ export class ListDonhangComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]

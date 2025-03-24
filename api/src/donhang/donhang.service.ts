@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import * as moment from 'moment-timezone';
 
 @Injectable()
 export class DonhangService {
@@ -63,18 +62,14 @@ export class DonhangService {
   }
 
   async search(params: any) {
-    const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;   
-    console.log('Batdau',moment(Batdau).startOf('day').toDate());
-    console.log('Ketthuc',moment(Ketthuc).endOf('day').toDate());
-         
+    const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;
     const result =await this.prisma.donhang.findMany({
       where: {
         ngaygiao: {
-          gte: Batdau ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate() : undefined,
-          lte: Ketthuc ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate() : undefined,
+          gte: Batdau ? new Date(Batdau) : undefined,
+          lte: Ketthuc ? new Date(Ketthuc) : undefined,
         },
         type: Type,
-        status: Array.isArray(params.Status) ? { in: params.Status } : params.Status,
       },
       include: {
         sanpham: {
@@ -82,19 +77,15 @@ export class DonhangService {
             sanpham: true,
           },
         },
-        khachhang: {include: {banggia: {include: {sanpham: true}}},},
+        khachhang: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { ngaygiao: 'desc' },
     });
-    return result.map(({ khachhang, sanpham, ...donhang }) => ({
+    return result.map((donhang) => ({
       ...donhang,
-      sanpham: sanpham.map((item: any) => ({
+      sanpham: donhang.sanpham.map((item: any) => ({
         ...item.sanpham,
         idSP: item.idSP,
-        giaban: khachhang.banggia.find((bg) => 
-          donhang.ngaygiao && bg.batdau && bg.ketthuc &&
-          donhang.ngaygiao >= bg.batdau && donhang.ngaygiao <= bg.ketthuc
-        )?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
         sldat: item.sldat,
         slgiao: item.slgiao,
         slnhan: item.slnhan,
@@ -103,10 +94,8 @@ export class DonhangService {
         ttnhan: item.ttnhan,
         ghichu: item.ghichu,
       })),
-      khachhang: (({ banggia, ...rest }) => rest)(khachhang), // Xóa banggia
-      name: khachhang.name
+      name: donhang.khachhang.name,
     }));
-    
   }
   
   async findAll() {
@@ -117,7 +106,7 @@ export class DonhangService {
             sanpham: true,
           },
         },
-        khachhang: {include: {banggia: {include: {sanpham: true}}},},
+        khachhang: true,
       },
     });
     return donhangs.map((donhang) => ({
@@ -125,7 +114,6 @@ export class DonhangService {
       sanpham: donhang.sanpham.map((item: any) => ({
         ...item.sanpham,
         idSP: item.idSP,
-        giaban: donhang.khachhang.banggia.find((bg) => donhang.ngaygiao && bg.batdau && bg.ketthuc && donhang.ngaygiao >= bg.batdau && donhang.ngaygiao <= bg.ketthuc)?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
         sldat: item.sldat,
         slgiao: item.slgiao,
         slnhan: item.slnhan,
@@ -138,66 +126,6 @@ export class DonhangService {
     }));
   }
 
-  async searchfield(searchParams: Record<string, any>) {
-    const where: any = {};
-
-    // Xây dựng điều kiện tìm kiếm linh hoạt
-    for (const [key, value] of Object.entries(searchParams)) {
-      if (!value) continue;
-
-      if (key === 'id') {
-        where[key] = value; // Tìm chính xác theo ID
-      } else if (typeof value === 'number' || typeof value === 'boolean') {
-        where[key] = value; // Tìm theo số hoặc boolean
-      } else {
-        where[key] = { contains: value, mode: 'insensitive' }; // Tìm gần đúng với string
-      }
-    }
-
-    const donhang = await this.prisma.donhang.findFirst({
-      where,
-      include: {
-        sanpham: {
-          include: {
-            sanpham: true,
-          },
-        },
-        khachhang: {
-          include: {
-            banggia: {
-              include: { sanpham: true },
-            },
-          },
-        },
-      },
-    });
-
-    if (!donhang) throw new NotFoundException('DonHang not found');
-
-    return {
-      ...donhang,
-      sanpham: donhang.sanpham.map((item) => ({
-        ...item.sanpham,
-        idSP: item.idSP,
-        giaban: donhang.khachhang.banggia.find(
-          (bg) =>
-            donhang.ngaygiao &&
-            bg.batdau &&
-            bg.ketthuc &&
-            donhang.ngaygiao >= bg.batdau &&
-            donhang.ngaygiao <= bg.ketthuc
-        )?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
-        sldat: item.sldat,
-        slgiao: item.slgiao,
-        slnhan: item.slnhan,
-        ttdat: item.ttdat,
-        ttgiao: item.ttgiao,
-        ttnhan: item.ttnhan,
-        ghichu: item.ghichu,
-      })),
-      khachhang: (({ banggia, ...rest }) => rest)(donhang.khachhang) // Xóa banggia
-    };
-  }
   async findOne(id: string) {
     // const donhang = await this.prisma.donhang.findUnique({ where: { id } });
     const donhang = await this.prisma.donhang.findUnique({
@@ -254,7 +182,6 @@ export class DonhangService {
               ttdat: sp.ttdat ?? 0,
               ttgiao: sp.ttgiao ?? 0,
               ttnhan: sp.ttnhan ?? 0,
-              order:sp.order??0,
             })),
           },
         },
@@ -315,7 +242,6 @@ export class DonhangService {
           status: data.status,
           order: data.order,
           ghichu: data.ghichu,
-          printCount: data.printCount,
           sanpham: {
             deleteMany: {}, // Xóa tất cả sản phẩm cũ trước khi thêm mới
             create: data?.sanpham?.map((sp: any) => ({
@@ -327,7 +253,6 @@ export class DonhangService {
               ttdat: sp.ttdat ?? 0,
               ttgiao: sp.ttgiao ?? 0,
               ttnhan: sp.ttnhan ?? 0,
-              order:sp.order??0,
             })),
           },
         },
