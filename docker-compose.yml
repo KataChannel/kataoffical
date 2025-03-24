@@ -23,7 +23,7 @@ services:
     build: ./api
     restart: always
     ports:
-      - "3331:3331"
+      - "3333:3333"
     environment:
       - DATABASE_URL="postgresql://AWois79wFA1bxMK:7bhNHJcSEbWln9v@116.118.49.243:5432/tazagroupv2?schema=public"
       - GOOGLE_CLIENT_ID=896025447185-00d1av64vk2dfr9r9d5sgdf9gjkvpgrs.apps.googleusercontent.com
