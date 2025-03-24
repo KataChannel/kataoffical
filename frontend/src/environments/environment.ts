@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  APIURL: 'https://tazagroup.onrender.com',
+  APIURL: 'https://v3api.tazagroup.vn',
   ImageURL: 'http://localhost:4303',
   app_id: '1416835846626859002',
   secret_key: 'HLBWj23hToA9fuiQvQY4',

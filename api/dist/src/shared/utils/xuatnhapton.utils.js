@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertXuatnhapton = void 0;
+exports.convertXuatnhapton = convertXuatnhapton;
 function convertXuatnhapton(data) {
     const warehouse = new Map();
     console.log(data);
@@ -29,5 +29,4 @@ function convertXuatnhapton(data) {
     });
     return result;
 }
-exports.convertXuatnhapton = convertXuatnhapton;
 //# sourceMappingURL=xuatnhapton.utils.js.map

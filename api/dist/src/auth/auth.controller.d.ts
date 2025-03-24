@@ -18,7 +18,7 @@ export declare class AuthController {
         email: string;
         password: string;
     }): Promise<{
-        access_token: any;
+        access_token: string;
         user: any;
     }>;
     changePassword(req: any, body: {

@@ -33,7 +33,7 @@ services:
       - ZALO_APP_ID=your-zalo-app-id
       - ZALO_APP_SECRET=your-zalo-app-secret
       - BASE_URL=https://v2.tazagroup.vn
-      - SERVER_URL=https://tazagroup.onrender.com
+      - SERVER_URL=https://v3api.tazagroup.vn
       - PORT=3333
   fetazagroup:
     build: ./frontend

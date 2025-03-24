@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.auditMiddleware = void 0;
+exports.auditMiddleware = auditMiddleware;
 const client_1 = require("@prisma/client");
 function auditMiddleware() {
     return async (params, next) => {
@@ -45,5 +45,4 @@ function auditMiddleware() {
         return result;
     };
 }
-exports.auditMiddleware = auditMiddleware;
 //# sourceMappingURL=prisma.middleware.js.map

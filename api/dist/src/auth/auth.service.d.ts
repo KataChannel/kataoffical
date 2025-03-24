@@ -6,7 +6,7 @@ export declare class AuthService {
     constructor(prisma: PrismaService, jwtService: JwtService);
     register(email: string, password: string): Promise<any>;
     login(SDT: string, email: string, password: string): Promise<{
-        access_token: any;
+        access_token: string;
         user: any;
     }>;
     changePassword(userId: string, oldPassword: string, newPassword: string): Promise<any>;
@@ -14,7 +14,7 @@ export declare class AuthService {
         newPassword: string;
     }>;
     validateOAuthLogin(provider: string, providerId: string, email?: string): Promise<{
-        token: any;
+        token: string;
         user: any;
     }>;
     getUserRoles(userId: string): Promise<any>;
