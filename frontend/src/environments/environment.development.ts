@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  APIURL: 'http://localhost:3332',
+  APIURL: 'http://localhost:3333',
   ImageURL: 'http://localhost:4303',
   app_id: '1416835846626859002',
   secret_key: 'HLBWj23hToA9fuiQvQY4',

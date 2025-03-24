@@ -7,14 +7,74 @@ export declare class leadService {
     private _ErrorlogService;
     constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogService: ErrorlogService);
     getLastUpdatedlead(): Promise<{
-        updatedAt: any;
+        updatedAt: number | Date;
     }>;
     generateCode(): Promise<string>;
-    create(data: any): Promise<any>;
+    create(data: any): Promise<{
+        id: string;
+        name: string;
+        email: string | null;
+        phone: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        order: number | null;
+        status: string;
+        code: string | null;
+    }>;
     reorderleads(leadIds: string[]): Promise<void>;
-    findAll(): Promise<any>;
-    findby(param: any): Promise<any>;
-    findOne(id: string): Promise<any>;
-    update(id: string, data: any): Promise<any>;
-    remove(id: string): Promise<any>;
+    findAll(): Promise<{
+        id: string;
+        name: string;
+        email: string | null;
+        phone: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        order: number | null;
+        status: string;
+        code: string | null;
+    }[]>;
+    findby(param: any): Promise<{
+        id: string;
+        name: string;
+        email: string | null;
+        phone: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        order: number | null;
+        status: string;
+        code: string | null;
+    }>;
+    findOne(id: string): Promise<{
+        id: string;
+        name: string;
+        email: string | null;
+        phone: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        order: number | null;
+        status: string;
+        code: string | null;
+    }>;
+    update(id: string, data: any): Promise<{
+        id: string;
+        name: string;
+        email: string | null;
+        phone: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        order: number | null;
+        status: string;
+        code: string | null;
+    }>;
+    remove(id: string): Promise<{
+        id: string;
+        name: string;
+        email: string | null;
+        phone: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        order: number | null;
+        status: string;
+        code: string | null;
+    }>;
 }

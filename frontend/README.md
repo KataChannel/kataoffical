@@ -17,6 +17,7 @@ npx katacreate --type angular --name nhomkhachhang --outputDir .
 npx katacreate --type angular --name phieugiaohang --outputDir .
 npx katacreate --type angular --name congnokhachhang --outputDir .
 npx katacreate --type angular --name lead --outputDir .
+npx katacreate --type angular --name task --outputDir .
 
 npx ng g c congnokhachhang --skip-tests --standalone
 npx ng g c congnoncc --skip-tests --standalone

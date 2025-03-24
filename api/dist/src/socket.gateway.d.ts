@@ -5,4 +5,5 @@ export declare class SocketGateway {
     sendKhachangUpdate(): void;
     senduserUpdate(): void;
     sendleadUpdate(): void;
+    sendtaskUpdate(): void;
 }

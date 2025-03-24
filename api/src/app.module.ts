@@ -21,6 +21,7 @@ import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { AuditLogModule } from './auditlog/auditlog.module';
 import { leadModule } from './lead/lead.module';
+import { taskModule } from './task/task.module';
 
 @Module({
   imports: [
@@ -41,7 +42,8 @@ import { leadModule } from './lead/lead.module';
     PermissionModule,
     ChatbotModule,
     leadModule,
-    AuditLogModule
+    AuditLogModule,
+    taskModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

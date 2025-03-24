@@ -31,6 +31,7 @@ npx katacreate --type nestjs --name permission --outputDir permission
 npx katacreate --type nestjs --name nhomkhachhang --outputDir nhomkhachhang
 npx katacreate --type nestjs --name chatbot --outputDir chatbot
 npx katacreate --type nestjs --name lead --outputDir lead
+npx katacreate --type nestjs --name task --outputDir task
 
 
 Tình huống	Lệnh cần chạy

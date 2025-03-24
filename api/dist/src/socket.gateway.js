@@ -25,6 +25,9 @@ let SocketGateway = class SocketGateway {
     sendleadUpdate() {
         this.server.emit('lead-updated');
     }
+    sendtaskUpdate() {
+        this.server.emit('task-updated');
+    }
 };
 exports.SocketGateway = SocketGateway;
 __decorate([

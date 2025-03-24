@@ -51,6 +51,22 @@ export const routes: Routes = [
           ],
         },
         {
+          path: 'task',
+          canActivate: [PermissionGuard],
+          data: { permission: 'task.view' },
+          loadComponent: () => import('./admin/task/listtask/listtask.component').then((c) => c.ListTaskComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/task/listtask/listtask.component').then((c) => c.ListTaskComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/task/detailtask/detailtask.component').then((c) => c.DetailTaskComponent),
+            },
+          ],
+        },
+        {
           path: 'hotro',
           loadComponent: () => import('./admin/hotro/listhotro/listhotro.component').then((c) => c.ListHotroComponent),
           children: [

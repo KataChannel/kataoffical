@@ -22,4 +22,7 @@ export class SocketGateway {
   sendleadUpdate() {
     this.server.emit('lead-updated'); // FE sẽ nhận sự kiện này
   }
+  sendtaskUpdate() {
+    this.server.emit('task-updated'); // FE sẽ nhận sự kiện này
+  }
 }

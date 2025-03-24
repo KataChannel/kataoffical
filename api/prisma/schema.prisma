@@ -21,6 +21,15 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   audits    AuditLog[]
+  Task Task[]
+  Comment Comment[]
+  SupportTicket SupportTicket[]
+  handler SupportTicket[] @relation("SupportTicketHandler")
+  relatedUser SupportTicket[] @relation("SupportTicketRelatedUser")
+  Meeting Meeting[]
+  Notification Notification[]
+  assignedTasks Task[] @relation("TaskAssignee")
+  relatedTasks Task[] @relation("TaskRelatedUser")
 }
 
 model Role {
@@ -329,50 +338,6 @@ model ChatAIHistory {
   createdAt DateTime @default(now())
 }
 
-
-model Activity {
-  id          String       @id @default(uuid())
-  type        ActivityType
-  title       String?      // Task, Support, Meeting, Notification dùng
-  content     String?      // Chat, Support, Notification dùng
-  senderId    String?      // Chat, Support, Notification dùng
-  receiverId  String?      // Chat, Support, Notification dùng
-  assignedTo  String?      // Task, Support, Meeting dùng
-  groupId     String?      // Chat nhóm, Meeting nhóm dùng
-  priority    WorkPriority?  // Task, Support, Meeting dùng
-  status      ActivityStatus
-  deadline    DateTime?    // Task, Support, Meeting dùng
-  meetingLink String?      // Meeting dùng (Link Google Meet, Zoom,...)
-  customerId  String?      // Support dùng
-  slaTime     DateTime?    // Support dùng (SLA - Thời gian xử lý cam kết)
-  read        Boolean      @default(false)  // Notification dùng
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-}
-
-enum ActivityType {
-  CHAT
-  TASK
-  SUPPORT
-  MEETING
-  NOTIFICATION
-}
-
-enum WorkPriority {
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
-}
-
-enum ActivityStatus {
-  PENDING
-  IN_PROGRESS
-  DONE
-  CLOSED
-  SENT // Notification dùng
-}
-
 model ErrorLog {
   id        String   @id @default(uuid())
   timestamp DateTime
@@ -435,4 +400,69 @@ model AuditLog {
   oldValue   Json?
   newValue   Json?
   createdAt  DateTime @default(now())
+}
+
+
+
+model Task {
+  id          String      @id @default(uuid())
+  title       String
+  description String?
+  status      String   @default("pending")
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  assigneeId  String?
+  assignee    User?    @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  relatedUserId String?
+  relatedUser User?    @relation("TaskRelatedUser", fields: [relatedUserId], references: [id])
+  comments    Comment[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Comment {
+  id        String      @id @default(uuid())
+  content   String
+  taskId    String?
+  supportId String?
+  userId    String
+  task      Task?    @relation(fields: [taskId], references: [id])
+  support   SupportTicket? @relation(fields: [supportId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model SupportTicket {
+  id          String      @id @default(uuid())
+  title       String
+  description String?
+  status      String   @default("open")
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  handlerId   String?
+  handler     User?    @relation("SupportTicketHandler", fields: [handlerId], references: [id])
+  relatedUserId String?
+  relatedUser User?    @relation("SupportTicketRelatedUser", fields: [relatedUserId], references: [id])
+  comments    Comment[]
+  createdAt   DateTime @default(now())
+}
+
+model Meeting {
+  id         String      @id @default(uuid())
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Notification {
+  id        String      @id @default(uuid())
+  message   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
 }

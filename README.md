@@ -131,7 +131,9 @@ Nhấn Esc rồi nhập :wq! và nhấn Enter.
 
 
 
-
+SSL
+sudo certbot --nginx -d v2.tazagroup.vn -d v2.tazagroup.vn
+sudo certbot --nginx -d v3api.tazagroup.vn -d v3api.tazagroup.vn
 
 #Backup
 docker cp <container_name_or_id>:/path/to/backup/file /path/to/destination

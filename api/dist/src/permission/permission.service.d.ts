@@ -2,9 +2,39 @@ import { PrismaService } from 'prisma/prisma.service';
 export declare class PermissionService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    create(data: any): Promise<any>;
-    findAll(): Promise<any>;
-    findOne(id: string): Promise<any>;
-    update(id: string, data: any): Promise<any>;
-    remove(id: string): Promise<any>;
+    create(data: any): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+    }>;
+    findAll(): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+    }[]>;
+    findOne(id: string): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+    }>;
+    update(id: string, data: any): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+    }>;
+    remove(id: string): Promise<{
+        id: string;
+        name: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+    }>;
 }

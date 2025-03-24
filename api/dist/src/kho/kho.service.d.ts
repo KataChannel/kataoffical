@@ -2,9 +2,64 @@ import { PrismaService } from 'prisma/prisma.service';
 export declare class khoService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    create(data: any): Promise<any>;
-    findAll(): Promise<any>;
-    findOne(id: string): Promise<any>;
-    update(id: string, data: any): Promise<any>;
-    remove(id: string): Promise<any>;
+    create(data: any): Promise<{
+        id: string;
+        name: string;
+        diachi: string | null;
+        sdt: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        makho: string | null;
+        congtyId: string | null;
+    }>;
+    findAll(): Promise<{
+        id: string;
+        name: string;
+        diachi: string | null;
+        sdt: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        makho: string | null;
+        congtyId: string | null;
+    }[]>;
+    findOne(id: string): Promise<{
+        id: string;
+        name: string;
+        diachi: string | null;
+        sdt: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        makho: string | null;
+        congtyId: string | null;
+    }>;
+    update(id: string, data: any): Promise<{
+        id: string;
+        name: string;
+        diachi: string | null;
+        sdt: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        makho: string | null;
+        congtyId: string | null;
+    }>;
+    remove(id: string): Promise<{
+        id: string;
+        name: string;
+        diachi: string | null;
+        sdt: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        makho: string | null;
+        congtyId: string | null;
+    }>;
 }
