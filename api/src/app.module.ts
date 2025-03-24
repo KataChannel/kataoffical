@@ -20,7 +20,6 @@ import { PermissionModule } from './permission/permission.module';
 import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { AuditLogModule } from './auditlog/auditlog.module';
-import { auditMiddleware } from 'prisma/prisma.middleware';
 import { leadModule } from './lead/lead.module';
 
 @Module({
@@ -51,8 +50,5 @@ import { leadModule } from './lead/lead.module';
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(AuthMiddleware).forRoutes('*');
-  }
-  constructor(private readonly prismaService: PrismaService) {
-    this.prismaService.$use(auditMiddleware());
   }
 }
