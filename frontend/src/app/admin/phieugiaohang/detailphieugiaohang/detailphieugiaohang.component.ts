@@ -337,7 +337,7 @@ export class DetailPhieugiaohangComponent {
     'slgiao',
     'giaban',
     'ttgiao',
-    'slnhan',
+    'thucnhan',
     'ghichu'
   ];
   
@@ -351,7 +351,7 @@ export class DetailPhieugiaohangComponent {
     slgiao: 'SL Giao',
     giaban: 'Giá Bán',
     ttgiao: 'TT Giao',
-    slnhan: 'SL Nhận',
+    thucnhan: 'Thực Nhận',
     ghichu: 'Ghi Chú'
   };
 
