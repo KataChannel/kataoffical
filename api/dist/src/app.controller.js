@@ -23,6 +23,9 @@ let AppController = class AppController {
     getHello() {
         return this.appService.getHello();
     }
+    getVersion() {
+        return '1.1.1';
+    }
     async search(searchDto) {
         if (!searchDto.model) {
             throw new common_1.BadRequestException('Thiếu model cần tìm kiếm');
@@ -40,6 +43,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)
 ], AppController.prototype, "getHello", null);
+__decorate([
+    (0, common_1.Get)('v'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", String)
+], AppController.prototype, "getVersion", null);
 __decorate([
     (0, common_1.Post)('search'),
     __param(0, (0, common_1.Body)()),

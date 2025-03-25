@@ -10,6 +10,10 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+  @Get('v')
+  getVersion(): string {
+    return '1.1.1'
+  }
   @Post('search')
   async search(@Body() searchDto: SearchDto) {
     if (!searchDto.model) {
