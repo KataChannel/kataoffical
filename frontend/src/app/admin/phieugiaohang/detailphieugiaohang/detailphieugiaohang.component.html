@@ -253,7 +253,7 @@
             <th class="border p-2 max-w-10">Số Lượng</th>
             <th class="border p-2 max-w-20">Đơn giá</th>
             <th class="border p-2 max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
-            <th class="border p-2 max-w-10">Số Lượng Nhận</th>
+            <th class="border p-2 max-w-10">Thực Nhận</th>
             <th class="border p-2">Ghi chú</th>
           </tr>
         </thead>
@@ -266,7 +266,7 @@
               <td class="border p-2 text-end max-w-10">{{item.slgiao|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-20">{{item.giaban|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{item.ttgiao|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-10">{{item.slnhan|number:'1.0-2'}}</td>
+              <td class="border p-2 text-end max-w-10"></td>
               <td class="border p-2">{{item.ghichu}}</td>
             </tr>
           }
