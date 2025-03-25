@@ -25,6 +25,9 @@ let DonhangController = class DonhangController {
     async search(params) {
         return this.donhangService.search(params);
     }
+    async phieuchuyen(params) {
+        return this.donhangService.phieuchuyen(params);
+    }
     async searchfield(searchParams) {
         return this.donhangService.searchfield(searchParams);
     }
@@ -59,6 +62,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], DonhangController.prototype, "search", null);
+__decorate([
+    (0, common_1.Post)('phieuchuyen'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DonhangController.prototype, "phieuchuyen", null);
 __decorate([
     (0, common_1.Post)('searchfield'),
     __param(0, (0, common_1.Body)()),

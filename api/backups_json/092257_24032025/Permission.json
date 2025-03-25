@@ -1,0 +1,177 @@
+[
+  {
+    "id": "8c39977e-2556-464e-8cb6-14bc78338d55",
+    "name": "donhang.view",
+    "description": null,
+    "createdAt": "2025-03-07T01:03:13.245Z",
+    "updatedAt": "2025-03-07T01:03:13.245Z"
+  },
+  {
+    "id": "5c7aac74-796d-4c18-a1a3-061b3c011ded",
+    "name": "donhang.edit",
+    "description": null,
+    "createdAt": "2025-03-07T01:07:00.598Z",
+    "updatedAt": "2025-03-07T01:07:00.598Z"
+  },
+  {
+    "id": "cb5f970d-dd64-4652-bf4e-26c391bb2ea1",
+    "name": "donhang.delete",
+    "description": null,
+    "createdAt": "2025-03-07T01:07:24.834Z",
+    "updatedAt": "2025-03-07T01:07:24.834Z"
+  },
+  {
+    "id": "55a32069-092c-45de-83ca-5e9a3c62c6cf",
+    "name": "user.view",
+    "description": "Xem Module Users",
+    "createdAt": "2025-03-07T02:20:20.487Z",
+    "updatedAt": "2025-03-07T02:20:20.487Z"
+  },
+  {
+    "id": "b32d40d3-c7b6-407d-a346-3303b153322a",
+    "name": "menu.view",
+    "description": "Xem Menu",
+    "createdAt": "2025-03-07T04:03:41.982Z",
+    "updatedAt": "2025-03-07T04:02:45.815Z"
+  },
+  {
+    "id": "9d41b26c-2cc9-473e-a197-9c400ffe0ce1",
+    "name": "permission.view",
+    "description": "Xem Permission",
+    "createdAt": "2025-03-07T04:03:41.982Z",
+    "updatedAt": "2025-03-07T04:02:57.678Z"
+  },
+  {
+    "id": "6712fb26-0aa5-425f-9182-9a82c9c918ab",
+    "name": "nhomuser.view",
+    "description": null,
+    "createdAt": "2025-03-07T04:12:54.868Z",
+    "updatedAt": "2025-03-07T04:12:54.868Z"
+  },
+  {
+    "id": "7b4fb065-2f2a-4ddb-8923-ebb4b90a90a8",
+    "name": "sanpham.view",
+    "description": null,
+    "createdAt": "2025-03-07T06:24:24.837Z",
+    "updatedAt": "2025-03-07T06:24:24.837Z"
+  },
+  {
+    "id": "549ec602-49b9-488f-999c-2684f23939be",
+    "name": "banggia.view",
+    "description": null,
+    "createdAt": "2025-03-07T06:26:45.691Z",
+    "updatedAt": "2025-03-07T06:26:45.691Z"
+  },
+  {
+    "id": "20a631c0-837c-4121-8c84-dd6402e83f6c",
+    "name": "khachhang.view",
+    "description": null,
+    "createdAt": "2025-03-07T06:29:23.536Z",
+    "updatedAt": "2025-03-07T06:29:23.536Z"
+  },
+  {
+    "id": "057045f2-49f9-48ef-89f7-4a8dc62c53be",
+    "name": "nhacungcap.view",
+    "description": null,
+    "createdAt": "2025-03-07T06:30:02.573Z",
+    "updatedAt": "2025-03-07T06:30:02.573Z"
+  },
+  {
+    "id": "4ee1dfd7-f83e-4c2c-8e94-8c578240afe3",
+    "name": "dathang.view",
+    "description": null,
+    "createdAt": "2025-03-07T08:17:45.092Z",
+    "updatedAt": "2025-03-07T08:17:45.092Z"
+  },
+  {
+    "id": "ba7537a1-1169-416b-904c-143663db9fbe",
+    "name": "vandon.view",
+    "description": null,
+    "createdAt": "2025-03-07T08:18:13.098Z",
+    "updatedAt": "2025-03-07T08:18:13.098Z"
+  },
+  {
+    "id": "f8b0b02a-d6a2-4986-9105-07853a48929b",
+    "name": "phieukho.view",
+    "description": null,
+    "createdAt": "2025-03-07T08:18:24.131Z",
+    "updatedAt": "2025-03-07T08:18:24.131Z"
+  },
+  {
+    "id": "aedcf410-70e8-47ad-b8e5-78b7aa745c87",
+    "name": "kho.view",
+    "description": null,
+    "createdAt": "2025-03-07T08:18:36.946Z",
+    "updatedAt": "2025-03-07T08:18:36.946Z"
+  },
+  {
+    "id": "8085621f-05b8-4ca9-9315-9bb74df6125f",
+    "name": "phieugiaohang.view",
+    "description": null,
+    "createdAt": "2025-03-07T08:18:57.098Z",
+    "updatedAt": "2025-03-07T08:18:57.098Z"
+  },
+  {
+    "id": "99ec5c98-c25e-43fc-a4a4-f83a3f4763f1",
+    "name": "nhomkhachhang.view",
+    "description": null,
+    "createdAt": "2025-03-07T08:19:23.146Z",
+    "updatedAt": "2025-03-07T08:19:23.146Z"
+  },
+  {
+    "id": "1d53086e-c6d6-4dca-941d-3e4cfd18c0fd",
+    "name": "xuatnhapton.view",
+    "description": null,
+    "createdAt": "2025-03-07T08:19:52.828Z",
+    "updatedAt": "2025-03-07T08:19:52.828Z"
+  },
+  {
+    "id": "39d7782e-c621-4acd-b2d5-c3746b672e7d",
+    "name": "cnkh.view",
+    "description": null,
+    "createdAt": "2025-03-07T08:20:08.298Z",
+    "updatedAt": "2025-03-07T08:20:08.298Z"
+  },
+  {
+    "id": "0f59dc0c-9780-4eb0-a7ed-ab65d30ce610",
+    "name": "dashboard.view",
+    "description": null,
+    "createdAt": "2025-03-07T18:11:36.973Z",
+    "updatedAt": "2025-03-07T18:11:36.973Z"
+  },
+  {
+    "id": "0d28ab2b-a14c-44f1-8d1f-c16eae764c8c",
+    "name": "phieuchiahang.view",
+    "description": null,
+    "createdAt": "2025-03-09T15:21:15.359Z",
+    "updatedAt": "2025-03-09T15:21:15.359Z"
+  },
+  {
+    "id": "e3c22901-d960-4645-9bfb-b0790a506e40",
+    "name": "congnokhachhang.view",
+    "description": null,
+    "createdAt": "2025-03-07T08:20:35.219Z",
+    "updatedAt": "2025-03-07T08:20:35.219Z"
+  },
+  {
+    "id": "bcf5164a-592a-49e2-b5e1-5c6afbd464f6",
+    "name": "congnoncc.view",
+    "description": null,
+    "createdAt": "2025-03-10T09:56:31.764Z",
+    "updatedAt": "2025-03-10T09:56:31.764Z"
+  },
+  {
+    "id": "fc09df94-493e-4002-a978-6fb08d831f5d",
+    "name": "role.view",
+    "description": null,
+    "createdAt": "2025-03-11T06:48:00.736Z",
+    "updatedAt": "2025-03-11T06:47:50.811Z"
+  },
+  {
+    "id": "c89288b2-bcf0-46ca-9fbf-300d6921731b",
+    "name": "nhucaudathang.view",
+    "description": null,
+    "createdAt": "2025-03-21T06:32:59.745Z",
+    "updatedAt": "2025-03-21T06:32:59.745Z"
+  }
+]

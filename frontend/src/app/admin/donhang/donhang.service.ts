@@ -80,6 +80,29 @@ export class DonhangService {
       return console.error(error);
     }
   }
+  async Phieuchuyen(SearchParams: any) {
+    const payload = {...SearchParams}
+    payload.Batdau = moment(payload.Batdau).utc()
+    payload.Ketthuc = moment(payload.Ketthuc).utc()
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer '+this._StorageService.getItem('token')
+        },
+        body: JSON.stringify(payload),
+      };
+      const response = await fetch(`${environment.APIURL}/donhang/phieuchuyen`, options);
+      if (!response.ok) {
+
+      }
+      const data = await response.json();           
+      this.ListDonhang.set(data)
+    } catch (error) {
+      return console.error(error);
+    }
+  }
   async getAllDonhang() {
     try {
       const options = {

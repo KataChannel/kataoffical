@@ -63,10 +63,7 @@ export class DonhangService {
   }
 
   async search(params: any) {
-    const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;   
-    console.log('Batdau',moment(Batdau).startOf('day').toDate());
-    console.log('Ketthuc',moment(Ketthuc).endOf('day').toDate());
-         
+    const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;            
     const result =await this.prisma.donhang.findMany({
       where: {
         ngaygiao: {
@@ -105,10 +102,42 @@ export class DonhangService {
       })),
       khachhang: (({ banggia, ...rest }) => rest)(khachhang), // Xóa banggia
       name: khachhang.name
-    }));
-    
+    })); 
   }
-  
+
+  async phieuchuyen(params: any) {
+    const { Batdau, Ketthuc, Type} = params;   
+    console.log('Batdau',moment(Batdau).startOf('day').toDate());
+    console.log('Ketthuc',moment(Ketthuc).endOf('day').toDate());   
+    const result =await this.prisma.donhang.findMany({
+      where: {
+        ngaygiao: {
+          gte: Batdau ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate() : undefined,
+          lte: Ketthuc ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate() : undefined,
+        },
+        type: Type,
+        status: Array.isArray(params.Status) ? { in: params.Status } : params.Status,
+      },
+      include: {
+        sanpham: {
+          include: {
+            sanpham: true,
+          },
+        },
+        khachhang: {include: {banggia: {include: {sanpham: true}}},},
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return result.map(({ khachhang, sanpham, ...donhang }) => ({
+      ...donhang,
+      name: khachhang.name,
+      diachi: khachhang.diachi,
+      sdt: khachhang.sdt,
+      gionhanhang: khachhang.gionhanhang,
+      tongsomon:sanpham.length,
+      soluongtt: sanpham.reduce((total, item:any) => total + item.slgiao, 0),
+    }));
+  }
   async findAll() {
     const donhangs = await this.prisma.donhang.findMany({
       include: {

@@ -225,6 +225,12 @@ export const routes: Routes = [
           loadComponent: () => import('./admin/donhang/vandon/vandon.component').then((c) => c.VandonComponent),
         },
         {
+          path: 'phieuchuyen',
+          canActivate: [PermissionGuard],
+          data: { permission: 'phieuchuyen.view' },
+          loadComponent: () => import('./admin/phieuchuyen/listphieuchuyen/listphieuchuyen.component').then((c) => c.ListPhieuchuyenComponent),
+        },
+        {
           path: 'kho',
           loadComponent: () => import('./admin/kho/listkho/listkho.component').then((c) => c.ListKhoComponent),
           children: [

@@ -71,6 +71,27 @@ export declare class DonhangController {
         khachhangId: string;
         printCount: number | null;
     }[]>;
+    phieuchuyen(params: any): Promise<{
+        name: string | null;
+        diachi: string | null;
+        sdt: string | null;
+        gionhanhang: string | null;
+        tongsomon: number;
+        soluongtt: any;
+        id: string;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        order: number | null;
+        type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        madonhang: string;
+        ngaygiao: Date | null;
+        khachhangId: string;
+        printCount: number | null;
+    }[]>;
     searchfield(searchParams: Record<string, any>): Promise<{
         sanpham: {
             idSP: string;

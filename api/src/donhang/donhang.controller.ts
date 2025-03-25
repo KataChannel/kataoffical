@@ -4,7 +4,6 @@ import { DonhangService } from './donhang.service';
 @Controller('donhang')
 export class DonhangController {
   constructor(private readonly donhangService: DonhangService) {}
-
   @Post()
   create(@Body() createDonhangDto: any) {
     return this.donhangService.create(createDonhangDto);
@@ -12,6 +11,10 @@ export class DonhangController {
   @Post('search')
   async search(@Body() params: any) {
     return this.donhangService.search(params);
+  }
+  @Post('phieuchuyen')
+  async phieuchuyen(@Body() params: any) {
+    return this.donhangService.phieuchuyen(params);
   }
   @Post('searchfield')
   async searchfield(@Body() searchParams: Record<string, any>) {
@@ -21,7 +24,6 @@ export class DonhangController {
   findAll() {
     return this.donhangService.findAll();
   }
-
   @Get('findid/:id')
   findOne(@Param('id') id: string) {
     return this.donhangService.findOne(id);
