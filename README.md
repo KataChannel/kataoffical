@@ -3,6 +3,8 @@ git add .
 git commit -m "update"
 git push
 
+ssh root@116.118.49.243
+docker compose -f 'docker-compose.yml' up -d --build 'fetazagroup'
 
 Xoá Tất Cả
 docker system prune -a --volumes -f
@@ -132,7 +134,9 @@ Nhấn Esc rồi nhập :wq! và nhấn Enter.
 
 
 SSL
-sudo certbot --nginx -d v2.tazagroup.vn -d v2.tazagroup.vn
+sudo ln -s /etc/nginx/sites-available/v3.tazagroup.vn /etc/nginx/sites-enabled/
+sudo certbot --nginx -d v3.tazagroup.vn -d v3.tazagroup.vn
+sudo certbot --nginx -d v3.tazagroup.vn -d v3.tazagroup.vn
 sudo certbot --nginx -d v3api.tazagroup.vn -d v3api.tazagroup.vn
 
 #Backup

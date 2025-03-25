@@ -95,6 +95,38 @@ export default {
       "chunk-TWKCCMUI.js",
       "chunk-5XE6AL7T.js"
     ],
+    "route": "/admin/quanlyqrcode"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-JLC6THXK.js",
+      "chunk-6VPVDOUV.js",
+      "chunk-IY7NJMDE.js",
+      "chunk-4OLKJBQI.js",
+      "chunk-ODNUIVVS.js",
+      "chunk-EF567M4M.js",
+      "chunk-ALC2JAPJ.js",
+      "chunk-4IWP4MAP.js",
+      "chunk-TWKCCMUI.js",
+      "chunk-5XE6AL7T.js"
+    ],
+    "route": "/admin/quanlyqrcode/*"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-JLC6THXK.js",
+      "chunk-6VPVDOUV.js",
+      "chunk-IY7NJMDE.js",
+      "chunk-4OLKJBQI.js",
+      "chunk-ODNUIVVS.js",
+      "chunk-EF567M4M.js",
+      "chunk-ALC2JAPJ.js",
+      "chunk-4IWP4MAP.js",
+      "chunk-TWKCCMUI.js",
+      "chunk-5XE6AL7T.js"
+    ],
     "route": "/admin/lead"
   },
   {
@@ -937,8 +969,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72764, hash: 'f8c84028d1cc3c2c9bbf1d13fdc46a4e46958643394af863bb2a37cf3c27c784', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24055, hash: '7998a950b437c967707273dc2a0d478d14befc4e0a372ad12285532962a9f1f6', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 72764, hash: '6989364d0df690e57ebc23eac1185e277dc3a934379d9ba0452b14d7ab818041', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24055, hash: '3bc707545c836518933788f87ab852b31145f33b57f2618b6a32271affc3db31', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-RP2WMOOL.css': {size: 370147, hash: 'hziy4b7dhis', text: () => import('./assets-chunks/styles-RP2WMOOL_css.mjs').then(m => m.default)}
   },
 };

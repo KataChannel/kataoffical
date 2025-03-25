@@ -22,6 +22,7 @@ import { ChatbotModule } from './chatbot/chatbot.module';
 import { AuditLogModule } from './auditlog/auditlog.module';
 import { leadModule } from './lead/lead.module';
 import { taskModule } from './task/task.module';
+import { QuanlyqrcodeModule } from 'quanlyqrcode/quanlyqrcode.module';
 
 @Module({
   imports: [
@@ -43,7 +44,8 @@ import { taskModule } from './task/task.module';
     ChatbotModule,
     leadModule,
     AuditLogModule,
-    taskModule
+    taskModule,
+    QuanlyqrcodeModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

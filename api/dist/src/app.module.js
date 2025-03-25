@@ -31,6 +31,7 @@ const chatbot_module_1 = require("./chatbot/chatbot.module");
 const auditlog_module_1 = require("./auditlog/auditlog.module");
 const lead_module_1 = require("./lead/lead.module");
 const task_module_1 = require("./task/task.module");
+const quanlyqrcode_module_1 = require("../quanlyqrcode/quanlyqrcode.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -58,7 +59,8 @@ exports.AppModule = AppModule = __decorate([
             chatbot_module_1.ChatbotModule,
             lead_module_1.leadModule,
             auditlog_module_1.AuditLogModule,
-            task_module_1.taskModule
+            task_module_1.taskModule,
+            quanlyqrcode_module_1.QuanlyqrcodeModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

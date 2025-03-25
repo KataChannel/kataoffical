@@ -9,9 +9,9 @@ export declare class leadController {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
+        code: string | null;
         order: number | null;
         status: string;
-        code: string | null;
     }>;
     findby(param: any): Promise<{
         id: string;
@@ -20,9 +20,9 @@ export declare class leadController {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
+        code: string | null;
         order: number | null;
         status: string;
-        code: string | null;
     }>;
     findAll(): Promise<{
         id: string;
@@ -31,9 +31,9 @@ export declare class leadController {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
+        code: string | null;
         order: number | null;
         status: string;
-        code: string | null;
     }[]>;
     getLastUpdatedlead(): Promise<{
         updatedAt: number | Date;
@@ -45,9 +45,9 @@ export declare class leadController {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
+        code: string | null;
         order: number | null;
         status: string;
-        code: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -56,9 +56,9 @@ export declare class leadController {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
+        code: string | null;
         order: number | null;
         status: string;
-        code: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -67,9 +67,9 @@ export declare class leadController {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
+        code: string | null;
         order: number | null;
         status: string;
-        code: string | null;
     }>;
     reorder(body: {
         leadIds: string[];

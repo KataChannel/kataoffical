@@ -466,3 +466,15 @@ model Notification {
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
 }
+
+model Quanlyqrcode {
+  id        String   @id @default(uuid())
+  qrcode    String   @unique
+  code      String   @unique
+  name      String   // Họ Tên khách mời
+  phone     String   // Số Điện Thoại
+  email     String   // Email
+  checkedAt DateTime?  // Null nếu chưa check-in, lưu thời gian nếu đã check-in
+  createdAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

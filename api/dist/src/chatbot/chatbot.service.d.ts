@@ -7,43 +7,43 @@ export declare class ChatbotService {
     chatWithAI(userId: string, message: string): Promise<{
         id: string;
         createdAt: Date;
-        userId: string;
         message: string;
+        userId: string;
         reply: string;
     }>;
     create(data: any): Promise<{
         id: string;
         createdAt: Date;
-        userId: string;
         message: string;
+        userId: string;
         reply: string;
     }>;
     findAll(): Promise<{
         id: string;
         createdAt: Date;
-        userId: string;
         message: string;
+        userId: string;
         reply: string;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
         createdAt: Date;
-        userId: string;
         message: string;
+        userId: string;
         reply: string;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
         createdAt: Date;
-        userId: string;
         message: string;
+        userId: string;
         reply: string;
     }>;
     remove(id: string): Promise<{
         id: string;
         createdAt: Date;
-        userId: string;
         message: string;
+        userId: string;
         reply: string;
     }>;
 }

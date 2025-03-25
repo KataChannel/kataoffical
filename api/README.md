@@ -32,6 +32,7 @@ npx katacreate --type nestjs --name nhomkhachhang --outputDir nhomkhachhang
 npx katacreate --type nestjs --name chatbot --outputDir chatbot
 npx katacreate --type nestjs --name lead --outputDir lead
 npx katacreate --type nestjs --name task --outputDir task
+npx katacreate --type nestjs --name quanlyqrcode --outputDir quanlyqrcode
 
 
 Tình huống	Lệnh cần chạy

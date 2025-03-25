@@ -17,9 +17,9 @@ export declare class leadService {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
+        code: string | null;
         order: number | null;
         status: string;
-        code: string | null;
     }>;
     reorderleads(leadIds: string[]): Promise<void>;
     findAll(): Promise<{
@@ -29,9 +29,9 @@ export declare class leadService {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
+        code: string | null;
         order: number | null;
         status: string;
-        code: string | null;
     }[]>;
     findby(param: any): Promise<{
         id: string;
@@ -40,9 +40,9 @@ export declare class leadService {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
+        code: string | null;
         order: number | null;
         status: string;
-        code: string | null;
     }>;
     findOne(id: string): Promise<{
         id: string;
@@ -51,9 +51,9 @@ export declare class leadService {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
+        code: string | null;
         order: number | null;
         status: string;
-        code: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -62,9 +62,9 @@ export declare class leadService {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
+        code: string | null;
         order: number | null;
         status: string;
-        code: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -73,8 +73,8 @@ export declare class leadService {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
+        code: string | null;
         order: number | null;
         status: string;
-        code: string | null;
     }>;
 }
