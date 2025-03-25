@@ -62,8 +62,8 @@ export class ListPhieuchuyenComponent {
     'kynhan',
   ];
   ColumnName: any = {
-    name: 'Tên khách hàng',
     ngaygiao: 'Ngày giao',
+    name: 'Tên khách hàng',
     soluongtt: 'Số lượng TT',
     chuyen: 'Chuyến',
     diachi: 'Địa chỉ',
