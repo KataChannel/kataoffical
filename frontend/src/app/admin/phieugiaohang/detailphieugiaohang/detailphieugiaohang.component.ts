@@ -71,16 +71,16 @@ export class DetailPhieugiaohangComponent {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
       this._PhieugiaohangService.setDonhangId(id);
-      await this._KhachhangService.getAllKhachhang();
-      this.filterKhachhang = this.ListKhachhang();
+      // await this._KhachhangService.getAllKhachhang();
+      // this.filterKhachhang = this.ListKhachhang();
       await this._BanggiaService.getAllBanggia();
       this.filterBanggia = this._BanggiaService.ListBanggia();
       this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang().sanpham.map((v:any)=>{
         v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
         return v;
       })
-      await this._SanphamService.getAllSanpham();
-      this.filterSanpham = this._SanphamService.ListSanpham();
+      // await this._SanphamService.getAllSanpham();
+      // this.filterSanpham = this._SanphamService.ListSanpham();
       this.dataSource().data = this.DetailPhieugiaohang().sanpham;
       this.dataSource().paginator = this.paginator;
       this.dataSource().sort = this.sort;
