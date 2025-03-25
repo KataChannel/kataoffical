@@ -61,9 +61,6 @@ import { DonhangService } from '../../donhang/donhang.service';
 export class DetailPhieugiaohangComponent {
   _ListphieugiaohangComponent: ListPhieugiaohangComponent = inject(ListPhieugiaohangComponent);
   _PhieugiaohangService: DonhangService = inject(DonhangService);
-  _KhachhangService: KhachhangService = inject(KhachhangService);
-  _BanggiaService: BanggiaService = inject(BanggiaService);
-  _SanphamService: SanphamService = inject(SanphamService);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -73,43 +70,34 @@ export class DetailPhieugiaohangComponent {
       this._PhieugiaohangService.setDonhangId(id);
       // await this._KhachhangService.getAllKhachhang();
       // this.filterKhachhang = this.ListKhachhang();
-      await this._BanggiaService.getAllBanggia();
-      this.filterBanggia = this._BanggiaService.ListBanggia();
-      this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang().sanpham.map((v:any)=>{
-        v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
-        return v;
-      })
-      // await this._SanphamService.getAllSanpham();
+      // await this._BanggiaService.getAllBanggia();
+      // this.filterBanggia = this._BanggiaService.ListBanggia();
+            // await this._SanphamService.getAllSanpham();
       // this.filterSanpham = this._SanphamService.ListSanpham();
-      this.dataSource().data = this.DetailPhieugiaohang().sanpham;
-      this.dataSource().paginator = this.paginator;
-      this.dataSource().sort = this.sort;
     });
 
     effect(async () => {
       const id = this._PhieugiaohangService.donhangId();
-      if (!id) {
+      if (!id || id === '0') {
         this._router.navigate(['/admin/phieugiaohang']);
         this._ListphieugiaohangComponent.drawer.close();
       }
-      if (id === '0') {
-        this.DetailPhieugiaohang.set({
-          title: GenId(8, false),
-          maphieugiaohang: GenId(8, false),
-          ngaygiao: moment().add(1, 'days').format('YYYY-MM-DD'),
-        });
-        this._ListphieugiaohangComponent.drawer.open();
-        this.isEdit.update((value) => !value);
-        this._router.navigate(['/admin/phieugiaohang', '0']);
-      } else {
-        await this._PhieugiaohangService.SearchField({id:id});
+      else {
+        await this._PhieugiaohangService.Phieugiaohang({id:id});
+        this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang()?.sanpham.map((v:any)=>{
+          v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
+          return v;
+        })
+        this.dataSource().data = this.DetailPhieugiaohang().sanpham;
+        this.dataSource().paginator = this.paginator;
+        this.dataSource().sort = this.sort;
         this._ListphieugiaohangComponent.drawer.open();
         this._router.navigate(['/admin/phieugiaohang', id]);
       }
     });
   }
   DetailPhieugiaohang: any = this._PhieugiaohangService.DetailDonhang;
-  ListKhachhang: any = this._KhachhangService.ListKhachhang;
+  // ListKhachhang: any = this._KhachhangService.ListKhachhang;
   isEdit = signal(true);
   isDelete = signal(false);
   filterKhachhang: any = [];
@@ -178,15 +166,6 @@ export class DetailPhieugiaohangComponent {
       v.slug = convertToSlug(v.title);
       return v;
     });
-  }
-  DoFindKhachhang(event: any) {
-    const query = event.target.value.toLowerCase();
-    this.filterKhachhang = this.ListKhachhang().filter(
-      (v: any) =>
-        v.name.toLowerCase().includes(query) ||
-        v.namenn.toLowerCase().includes(query) ||
-        v.sdt.toLowerCase().includes(query)
-    );
   }
   DoFindBanggia(event: any) {
     const query = event.target.value.toLowerCase();
@@ -347,26 +326,6 @@ export class DetailPhieugiaohangComponent {
       0
     );
   }
-  SelectKhachhang(event: any) {
-    const selectedKhachhang = this.ListKhachhang().find(
-      (v: any) => v.id === event.value
-    );
-    console.log(selectedKhachhang);
-    if (selectedKhachhang) {
-      this.DetailPhieugiaohang.update((v: any) => {
-        const khachhang = {
-          name: selectedKhachhang.name,
-          diachi: selectedKhachhang.diachi,
-          sdt: selectedKhachhang.sdt,
-          ghichu: selectedKhachhang.ghichu,
-        };
-        v.khachhangId = selectedKhachhang.id;
-        v.khachhang = khachhang;
-        return v;
-      });
-    }
-    console.log(this.DetailPhieugiaohang());
-  }
 
   displayedColumns: string[] = [
     'STT',
@@ -385,7 +344,7 @@ export class DetailPhieugiaohangComponent {
   ColumnName: any = {
     STT: 'STT',
     title: 'Tiêu Đề',
-    title2: 'Tiêu Đề',
+    title2: 'Tiêu Đề 2',
     masp: 'Mã SP',
     dvt: 'Đơn Vị Tính',
     sldat: 'SL Đặt',
@@ -400,53 +359,7 @@ export class DetailPhieugiaohangComponent {
   CountItem = computed(() => this.dataSource().data.length);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
-  async LoadDrive() {
-    const DriveInfo = {
-      IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'GHImport',
-      ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
-    };
-    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
-    const data = ConvertDriveData(result.values);
-    console.log(data);
-    this.DetailPhieugiaohang.update((v:any)=>{
-      v.sanpham = data.map((v1:any) => {
-        v1.sldat = Number(v1.sldat)||0;
-        v1.slgiao = Number(v1.slgiao)||0;
-        v1.slnhan = Number(v1.slnhan)||0;
-        v1.ttdat = Number(v1.ttdat)||0;
-        v1.ttgiao = Number(v1.ttgiao)||0;
-        v1.ttnhan = Number(v1.ttnhan)||0;
-        const item = this._SanphamService.ListSanpham().find((v2) => v2.masp === v1.masp);
-        console.log(item); 
-        if (item) {
-          return { ...item, ...v1 };
-        }
-        return v1;
-      });
-      return v;
-    });
-    console.log(this.DetailPhieugiaohang());
-        
-    //  this.DetailBanggia.update((v:any)=>{
-    //   const listdata = data.map((item:any) => {
-    //     item.masp = item.masp?.trim()||'';
-    //     item.giaban = Number(item.giaban)||0;
-    //     const item1 = this._SanphamService.ListSanpham().find((v1) => v1.masp === item.masp);
-    //     if (item1) {
-    //       return { ...item1, ...item };
-    //     }
-    //     return item;
-    //   });
-    //   v.sanpham = listdata
-    //   return v;
-    // })
-    this.dataSource().data = this.DetailPhieugiaohang().sanpham;
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;
-    this.reloadfilter();
-  }
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource().filter = filterValue.trim().toLowerCase();
@@ -460,17 +373,9 @@ export class DetailPhieugiaohangComponent {
     this.dataSource().data = this.DetailPhieugiaohang().sanpham;
     this.dataSource().paginator = this.paginator;
     this.dataSource().sort = this.sort;
-    this.reloadfilter();
-  }
-  getName(id:any)
-  {
-    return this.ListKhachhang().find((v:any)=>v.id===id);
   }
 
 
-  reloadfilter(){
-    this.filterSanpham = this._SanphamService.ListSanpham().filter((v:any) => !this.DetailPhieugiaohang().sanpham.some((v2:any) => v2.id === v.id));
-  }
   // RemoveSanpham(item:any){
   //   this.DetailBanggia.update((v:any)=>{
   //     v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
@@ -481,43 +386,6 @@ export class DetailPhieugiaohangComponent {
   //   this.dataSource().paginator = this.paginator;
   //   this.dataSource().sort = this.sort;
   // }
-  DoFindSanpham(event:any){
-    const value = event.target.value;
-    console.log(value);
-    
-    this.filterSanpham = this._SanphamService.ListSanpham().filter((v) => v.title.toLowerCase().includes(value.toLowerCase()));
-  }
-  SelectSanpham(event:any){
-    const value = event.value;
-    const item = this._SanphamService.ListSanpham().find((v) => v.id === value);
-    this.DetailPhieugiaohang.update((v:any)=>{
-      if(!v.sanpham){
-        v.sanpham = [];
-        item.sldat = item.slgiao = 1;
-        v.sanpham.push(item);
-      }
-      else{
-          item.sldat = item.slgiao = 1;
-          v.sanpham.push(item);
-      }
-      this.reloadfilter();
-      return v;
-    })
-    this.dataSource().data = this.DetailPhieugiaohang().sanpham;
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;    
-  }
-  RemoveSanpham(item:any){
-    this.DetailPhieugiaohang.update((v:any)=>{
-      v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
-      this.reloadfilter();
-      return v;
-    })
-    this.dataSource().data = this.DetailPhieugiaohang().sanpham;
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;
-  }
-
   CoppyDon()
   {
 

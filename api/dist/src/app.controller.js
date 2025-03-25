@@ -24,7 +24,7 @@ let AppController = class AppController {
         return this.appService.getHello();
     }
     getVersion() {
-        return '1.1.1';
+        return '1.1.2';
     }
     async search(searchDto) {
         if (!searchDto.model) {

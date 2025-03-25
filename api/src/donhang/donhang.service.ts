@@ -138,6 +138,46 @@ export class DonhangService {
       soluongtt: sanpham.reduce((total, item:any) => total + item.slgiao, 0),
     }));
   }
+  async phieugiao(params: any) {
+ 
+    const result = await this.prisma.donhang.findUnique({
+      where: params,
+      include: {
+        sanpham: {
+          include: {
+            sanpham: true,
+          },
+        },
+        khachhang: {include: {banggia: {include: {sanpham: true}}},},   
+      },
+    });
+    if (!result) {
+      throw new NotFoundException('DonHang not found');
+    }
+
+    return {
+      ...result,
+      sanpham: result.sanpham.map((item: any) => ({
+        ...item.sanpham,
+        idSP: item.idSP,
+        giaban: result.khachhang.banggia.find((bg) => 
+          result.ngaygiao && bg.batdau && bg.ketthuc &&
+          result.ngaygiao >= bg.batdau && result.ngaygiao <= bg.ketthuc
+        )?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
+        sldat: item.sldat,
+        slgiao: item.slgiao,
+        slnhan: item.slnhan,
+        ttdat: item.ttdat,
+        ttgiao: item.ttgiao,
+        ttnhan: item.ttnhan,
+        ghichu: item.ghichu,
+      })),
+      khachhang: (({ banggia, ...rest }) => rest)(result.khachhang), // Xóa banggia
+    }
+  }
+
+
+
   async findAll() {
     const donhangs = await this.prisma.donhang.findMany({
       include: {

@@ -16,6 +16,10 @@ export class DonhangController {
   async phieuchuyen(@Body() params: any) {
     return this.donhangService.phieuchuyen(params);
   }
+  @Post('phieugiao')
+  async phieugiao(@Body() params: any) {
+    return this.donhangService.phieugiao(params);
+  }
   @Post('searchfield')
   async searchfield(@Body() searchParams: Record<string, any>) {
     return this.donhangService.searchfield(searchParams);
