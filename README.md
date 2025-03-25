@@ -3,6 +3,11 @@ git add .
 git commit -m "update"
 git push
 
+# server
+ssh root@116.118.49.243 
+git pull
+docker compose -f 'docker-compose.yml' up -d --build 'ferausach'
+docker compose -f 'docker-compose.yml' up -d --build 'berausach'
 
 Xoá Tất Cả
 docker system prune -a --volumes -f

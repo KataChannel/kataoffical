@@ -5,9 +5,6 @@
     <div class="flex flex-col space-y-2 h-screen-16 w-full p-2">
         <div *ngIf="!isSearch" class="border p-1 cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center bg-white rounded-lg">
             <div class="w-full flex flex-row space-x-2 items-center">
-                <button matTooltip="Thêm mới" (click)="create()" color="primary" mat-icon-button>
-                    <mat-icon>add_circle</mat-icon>
-                </button>
                 <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
                     <mat-icon>tune</mat-icon>
                 </button>
@@ -34,7 +31,7 @@
                     <mat-icon>file_download</mat-icon>
                 </button>
                 <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
-                    {{this.Listphieuchuyen().length}} Sản Phẩm
+                    {{this.Listphieuchuyen().length}} Chuyến
                 </span>
             </div>
         </div>

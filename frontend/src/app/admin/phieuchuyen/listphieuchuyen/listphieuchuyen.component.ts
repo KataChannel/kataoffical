@@ -281,32 +281,11 @@ export class ListPhieuchuyenComponent {
       giove: v.giove,
       kynhan: v.kynhan,
     }));
-    dulieu.unshift({
-      name: 'Tên khách hàng',
-      ngaygiao: 'Ngày giao',
-      soluongtt: 'Số lượng TT',
-      chuyen: 'Chuyến',
-      diachi: 'Địa chỉ',
-      sdt: 'Số điện thoại',
-      gionhanhang: 'Giờ nhận hàng',
-      tongsomon: 'Tổng số món',
-      shipper: 'Shipper',
-      giodi: 'Giờ đi',
-      giove: 'Giờ về',
-      kynhan: 'Ký nhận',
-    });
-
-
-    writeExcelFile(dulieu,title);
+    writeExcelFile(dulieu,title,Object.values(this.ColumnName),this.ColumnName);
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
-
-
-
-
-
 
 calculateTotalPages() {
   this.totalPages = Math.ceil(this.totalItems / this.pageSize);
