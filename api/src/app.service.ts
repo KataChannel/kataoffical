@@ -96,7 +96,7 @@ export class AppService {
     const lastUpdated = await this.prisma[table].aggregate({
       _max: { updatedAt: true },
     });
-    return { table, updatedAt: lastUpdated._max.updatedAt || 0 };
+    return { table, updatedAt: new Date(lastUpdated._max.updatedAt).getTime() || 0 };
   }
 
 }

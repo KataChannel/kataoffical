@@ -96,7 +96,7 @@ export class RoleService {
       // 2️⃣ Nếu dữ liệu trên server mới hơn, cập nhật IndexedDB + LocalStorage
       if (updatedAtServer > updatedAtCache) {
         await this.saveRoles(data);
-        localStorage.setItem('lastUpdated', updatedAtServer.toString());
+        localStorage.setItem('lastUpdated', updatedAtServer);
         localStorage.setItem('roles', JSON.stringify(data));
       }
       this.ListRole.set(data);

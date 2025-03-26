@@ -109,7 +109,7 @@ export class KhachhangService {
       }
       const data = await response.json();
       await this.saveKhachhangs(data);
-      this._StorageService.setItem('khachhangs_updatedAt', updatedAtServer.toString());
+      this._StorageService.setItem('khachhangs_updatedAt', updatedAtServer);
       this.ListKhachhang.set(data);
       return data;
     } catch (error) {

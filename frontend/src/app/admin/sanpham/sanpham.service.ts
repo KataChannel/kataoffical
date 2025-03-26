@@ -109,7 +109,7 @@ export class SanphamService {
       }
       const data = await response.json();
       await this.saveSanphams(data);
-      this._StorageService.setItem('sanphams_updatedAt', updatedAtServer.toString());
+      this._StorageService.setItem('sanphams_updatedAt', updatedAtServer);
       this.ListSanpham.set(data);
       return data;
     } catch (error) {

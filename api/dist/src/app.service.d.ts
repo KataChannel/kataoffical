@@ -10,6 +10,6 @@ export declare class AppService {
     private buildIncludeClause;
     getLastUpdated(table: string): Promise<{
         table: string;
-        updatedAt: any;
+        updatedAt: number;
     }>;
 }

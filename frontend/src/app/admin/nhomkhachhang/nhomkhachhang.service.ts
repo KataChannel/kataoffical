@@ -172,7 +172,7 @@ export class NhomkhachhangService {
       // 2️⃣ Nếu dữ liệu trên server mới hơn, cập nhật IndexedDB + LocalStorage
       if (updatedAtServer > updatedAtCache) {
         await this.saveNhomkhachhangs(data);
-        localStorage.setItem('lastUpdated', updatedAtServer.toString());
+        localStorage.setItem('lastUpdated', updatedAtServer);
         localStorage.setItem('nhomkhachhangs', JSON.stringify(data));
       }
       this.ListNhomkhachhang.set(data);

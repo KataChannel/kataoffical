@@ -8,6 +8,6 @@ export declare class AppController {
     search(searchDto: SearchDto): Promise<any>;
     getLastUpdated(table: string): Promise<{
         table: string;
-        updatedAt: any;
+        updatedAt: number;
     }>;
 }

@@ -45,16 +45,13 @@ export class BanggiaService {
 
   async getAllBanggia() {
     const db = await this.initDB();
-    
-    // 🛑 Kiểm tra cache từ IndexedDB trước
     const cachedData = await db.getAll('banggias');
-    const updatedAtCache = this._StorageService.getItem('banggias_updatedAt') || '0';
-    
-    // ✅ Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
+    const updatedAtCache = this._StorageService.getItem('banggias_updatedAt') || '0'; 
+    console.log((Date.now() - updatedAtCache)/(60*1000));
     console.log(Date.now());
     console.log(updatedAtCache);
-    console.log(Date.now() - updatedAtCache);
     
+      
     if (cachedData.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) { // 5 phút cache TTL
       this.ListBanggia.set(cachedData);
       return cachedData;
@@ -75,11 +72,7 @@ export class BanggiaService {
         this.handleError(lastUpdatedResponse.status);
         return cachedData;
       }    
-      const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-      // ✅ Nếu cache vẫn mới, không cần tải lại dữ liệu
-      console.log('updatedAtServer',updatedAtServer);
-      console.log('updatedAtCache',updatedAtCache);
-      
+      const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();     
       if (updatedAtServer <= updatedAtCache) {
         this.ListBanggia.set(cachedData);
         return cachedData;
@@ -92,7 +85,7 @@ export class BanggiaService {
       }
       const data = await response.json();
       await this.saveBanggias(data);
-      this._StorageService.setItem('banggias_updatedAt', updatedAtServer.toString());
+      this._StorageService.setItem('banggias_updatedAt', updatedAtServer);
       this.ListBanggia.set(data);
       return data;
     } catch (error) {

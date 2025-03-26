@@ -96,7 +96,7 @@ export class PermissionService {
       // 2️⃣ Nếu dữ liệu trên server mới hơn, cập nhật IndexedDB + LocalStorage
       if (updatedAtServer > updatedAtCache) {
         await this.savePermissions(data);
-        localStorage.setItem('lastUpdated', updatedAtServer.toString());
+        localStorage.setItem('lastUpdated', updatedAtServer);
       }
       this.ListPermission.set(data);
       return cachedData.length > 0 ? cachedData : data;    
