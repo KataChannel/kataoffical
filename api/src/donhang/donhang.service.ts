@@ -1,10 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import * as moment from 'moment-timezone';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class DonhangService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly redis: RedisService,
+
+  ) {}
 
   async generateNextOrderCode(): Promise<string> {
     // Lấy mã đơn hàng gần nhất
@@ -63,8 +68,10 @@ export class DonhangService {
   }
 
   async search(params: any) {
+    const cache = await this.redis.get('donhang-search');
+    if (cache) return cache;
     const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;            
-    const result =await this.prisma.donhang.findMany({
+    const donhangs =await this.prisma.donhang.findMany({
       where: {
         ngaygiao: {
           gte: Batdau ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate() : undefined,
@@ -83,7 +90,8 @@ export class DonhangService {
       },
       orderBy: { createdAt: 'desc' },
     });
-    return result.map(({ khachhang, sanpham, ...donhang }) => ({
+
+    const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
       ...donhang,
       sanpham: sanpham.map((item: any) => ({
         ...item.sanpham,
@@ -102,7 +110,10 @@ export class DonhangService {
       })),
       khachhang: (({ banggia, ...rest }) => rest)(khachhang), // Xóa banggia
       name: khachhang.name
-    })); 
+    }));
+
+       await this.redis.set('donhang-search', result);
+       return result 
   }
 
   async phieuchuyen(params: any) {
@@ -179,6 +190,8 @@ export class DonhangService {
 
 
   async findAll() {
+    const cache = await this.redis.get('donhang');
+    if (cache) return cache;
     const donhangs = await this.prisma.donhang.findMany({
       include: {
         sanpham: {
@@ -189,6 +202,7 @@ export class DonhangService {
         khachhang: {include: {banggia: {include: {sanpham: true}}},},
       },
     });
+    await this.redis.set('donhang', donhangs);
     return donhangs.map((donhang) => ({
       ...donhang,
       sanpham: donhang.sanpham.map((item: any) => ({

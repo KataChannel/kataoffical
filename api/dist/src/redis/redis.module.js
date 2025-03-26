@@ -6,21 +6,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DonhangModule = void 0;
+exports.RedisModule = void 0;
 const common_1 = require("@nestjs/common");
-const donhang_service_1 = require("./donhang.service");
-const donhang_controller_1 = require("./donhang.controller");
-const prisma_module_1 = require("../../prisma/prisma.module");
-const redis_module_1 = require("../redis/redis.module");
-let DonhangModule = class DonhangModule {
+const redis_service_1 = require("./redis.service");
+let RedisModule = class RedisModule {
 };
-exports.DonhangModule = DonhangModule;
-exports.DonhangModule = DonhangModule = __decorate([
+exports.RedisModule = RedisModule;
+exports.RedisModule = RedisModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, redis_module_1.RedisModule],
-        controllers: [donhang_controller_1.DonhangController],
-        providers: [donhang_service_1.DonhangService],
-        exports: [donhang_service_1.DonhangService]
+        providers: [redis_service_1.RedisService],
+        exports: [redis_service_1.RedisService],
     })
-], DonhangModule);
-//# sourceMappingURL=donhang.module.js.map
+], RedisModule);
+//# sourceMappingURL=redis.module.js.map

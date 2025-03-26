@@ -13,9 +13,11 @@ exports.DonhangService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const moment = require("moment-timezone");
+const redis_service_1 = require("../redis/redis.service");
 let DonhangService = class DonhangService {
-    constructor(prisma) {
+    constructor(prisma, redis) {
         this.prisma = prisma;
+        this.redis = redis;
     }
     async generateNextOrderCode() {
         const lastOrder = await this.prisma.donhang.findFirst({
@@ -62,8 +64,11 @@ let DonhangService = class DonhangService {
         }
     }
     async search(params) {
+        const cache = await this.redis.get('donhang-search');
+        if (cache)
+            return cache;
         const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;
-        const result = await this.prisma.donhang.findMany({
+        const donhangs = await this.prisma.donhang.findMany({
             where: {
                 ngaygiao: {
                     gte: Batdau ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate() : undefined,
@@ -82,7 +87,7 @@ let DonhangService = class DonhangService {
             },
             orderBy: { createdAt: 'desc' },
         });
-        return result.map(({ khachhang, sanpham, ...donhang }) => ({
+        const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
             ...donhang,
             sanpham: sanpham.map((item) => ({
                 ...item.sanpham,
@@ -100,6 +105,8 @@ let DonhangService = class DonhangService {
             khachhang: (({ banggia, ...rest }) => rest)(khachhang),
             name: khachhang.name
         }));
+        await this.redis.set('donhang-search', result);
+        return result;
     }
     async phieuchuyen(params) {
         const { Batdau, Ketthuc, Type } = params;
@@ -168,6 +175,9 @@ let DonhangService = class DonhangService {
         };
     }
     async findAll() {
+        const cache = await this.redis.get('donhang');
+        if (cache)
+            return cache;
         const donhangs = await this.prisma.donhang.findMany({
             include: {
                 sanpham: {
@@ -178,6 +188,7 @@ let DonhangService = class DonhangService {
                 khachhang: { include: { banggia: { include: { sanpham: true } } }, },
             },
         });
+        await this.redis.set('donhang', donhangs);
         return donhangs.map((donhang) => ({
             ...donhang,
             sanpham: donhang.sanpham.map((item) => ({
@@ -394,6 +405,7 @@ let DonhangService = class DonhangService {
 exports.DonhangService = DonhangService;
 exports.DonhangService = DonhangService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        redis_service_1.RedisService])
 ], DonhangService);
 //# sourceMappingURL=donhang.service.js.map
