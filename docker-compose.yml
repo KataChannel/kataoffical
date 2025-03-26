@@ -19,6 +19,15 @@ services:
       - "5050:80"
     depends_on:
       - postgres  
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]      
   berausach:
     build: ./api
     restart: always
@@ -35,6 +44,11 @@ services:
       - BASE_URL=https://sandbox2.rausachtrangia.com
       - SERVER_URL=https://sandboxapi2.rausachtrangia.com
       - PORT=3331
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - postgres
+      - redis      
   ferausach:
     build: ./frontend
     restart: always
@@ -44,3 +58,4 @@ services:
       - NODE_ENV=production
 volumes:
   pg_data:
+  redis_data:
