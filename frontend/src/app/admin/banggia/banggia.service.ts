@@ -51,6 +51,10 @@ export class BanggiaService {
     const updatedAtCache = this._StorageService.getItem('banggias_updatedAt') || '0';
     
     // ✅ Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
+    console.log(Date.now());
+    console.log(updatedAtCache);
+    console.log(Date.now() - updatedAtCache);
+    
     if (cachedData.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) { // 5 phút cache TTL
       this.ListBanggia.set(cachedData);
       return cachedData;
@@ -73,11 +77,13 @@ export class BanggiaService {
       }    
       const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
       // ✅ Nếu cache vẫn mới, không cần tải lại dữ liệu
+      console.log('updatedAtServer',updatedAtServer);
+      console.log('updatedAtCache',updatedAtCache);
+      
       if (updatedAtServer <= updatedAtCache) {
         this.ListBanggia.set(cachedData);
         return cachedData;
       }
-      console.log(updatedAtServer, updatedAtCache); 
       // ✅ Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
       const response = await fetch(`${environment.APIURL}/banggia`, options);
       if (!response.ok) {
