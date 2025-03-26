@@ -21,6 +21,7 @@ import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
 import { GoogledriveModule } from './shared/googledrive/googledrive.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ErrorlogsModule } from './errorlogs/errorlogs.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -40,8 +41,8 @@ import { ErrorlogsModule } from './errorlogs/errorlogs.module';
     RoleModule,
     PermissionModule,
     GoogledriveModule,
-    ErrorlogsModule
-    // ChatbotModule
+    ErrorlogsModule,
+    RedisModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  
