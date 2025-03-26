@@ -8,7 +8,45 @@ export declare class DonhangService {
     private incrementOrderCode;
     private incrementLetters;
     reorderDonHangs(donhangIds: string[]): Promise<void>;
-    search(params: any): Promise<any>;
+    search(params: any): Promise<{
+        sanpham: any[];
+        khachhang: {
+            id: string;
+            name: string | null;
+            namenn: string | null;
+            subtitle: string | null;
+            makh: string;
+            diachi: string | null;
+            sdt: string | null;
+            mst: string | null;
+            gionhanhang: string | null;
+            quan: string | null;
+            email: string | null;
+            phone: string | null;
+            address: string | null;
+            loaikh: string | null;
+            ghichu: string | null;
+            hiengia: boolean;
+            isActive: boolean;
+            istitle2: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        };
+        name: string | null;
+        id: string;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        order: number | null;
+        type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        madonhang: string;
+        ngaygiao: Date | null;
+        khachhangId: string;
+        printCount: number | null;
+    }[]>;
     phieuchuyen(params: any): Promise<{
         name: string | null;
         diachi: string | null;
