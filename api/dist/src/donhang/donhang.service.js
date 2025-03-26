@@ -64,7 +64,7 @@ let DonhangService = class DonhangService {
         }
     }
     async search(params) {
-        const cache = await this.redis.get('donhang-search');
+        const cache = await this.redis.read('donhang-search');
         if (cache)
             return cache;
         const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;
@@ -105,7 +105,7 @@ let DonhangService = class DonhangService {
             khachhang: (({ banggia, ...rest }) => rest)(khachhang),
             name: khachhang.name
         }));
-        await this.redis.set('donhang-search', result);
+        await this.redis.create('donhang-search', result);
         return result;
     }
     async phieuchuyen(params) {
@@ -175,7 +175,7 @@ let DonhangService = class DonhangService {
         };
     }
     async findAll() {
-        const cache = await this.redis.get('donhang');
+        const cache = await this.redis.read('donhang');
         if (cache)
             return cache;
         const donhangs = await this.prisma.donhang.findMany({
@@ -188,7 +188,7 @@ let DonhangService = class DonhangService {
                 khachhang: { include: { banggia: { include: { sanpham: true } } }, },
             },
         });
-        await this.redis.set('donhang', donhangs);
+        await this.redis.create('donhang', donhangs);
         return donhangs.map((donhang) => ({
             ...donhang,
             sanpham: donhang.sanpham.map((item) => ({
@@ -262,6 +262,9 @@ let DonhangService = class DonhangService {
         };
     }
     async findOne(id) {
+        const cache = await this.redis.read(`donhangid-${id}`);
+        if (cache)
+            return cache;
         const donhang = await this.prisma.donhang.findUnique({
             where: { id },
             include: {
@@ -275,7 +278,7 @@ let DonhangService = class DonhangService {
         });
         if (!donhang)
             throw new common_1.NotFoundException('DonHang not found');
-        return {
+        const result = {
             ...donhang,
             sanpham: donhang.sanpham.map((item) => ({
                 ...item.sanpham,
@@ -290,9 +293,13 @@ let DonhangService = class DonhangService {
                 ghichu: item.ghichu,
             })),
         };
+        await this.redis.create(`donhangid-${id}`, donhang);
+        return result;
     }
     async create(dto) {
         const madonhang = await this.generateNextOrderCode();
+        await this.redis.delete(`donhang`);
+        await this.redis.delete(`donhang-search`);
         return this.prisma.$transaction(async (prisma) => {
             const newDonhang = await prisma.donhang.create({
                 data: {
@@ -336,6 +343,8 @@ let DonhangService = class DonhangService {
         });
     }
     async update(id, data) {
+        await this.redis.delete(`donhang`);
+        await this.redis.delete(`donhang-search`);
         return this.prisma.$transaction(async (prisma) => {
             const oldDonhang = await prisma.donhang.findUnique({
                 where: { id },
@@ -399,6 +408,8 @@ let DonhangService = class DonhangService {
         });
     }
     async remove(id) {
+        await this.redis.delete(`donhang`);
+        await this.redis.delete(`donhangid-${id}`);
         return this.prisma.donhang.delete({ where: { id } });
     }
 };

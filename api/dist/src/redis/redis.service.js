@@ -19,12 +19,35 @@ let RedisService = class RedisService {
             port: Number(process.env.REDIS_PORT) || 6379,
         });
     }
-    async set(key, value, ttl = 3600) {
+    async create(key, value, ttl = 3600) {
         await this.client.set(key, JSON.stringify(value), 'EX', ttl);
     }
-    async get(key) {
+    async read(key) {
         const data = await this.client.get(key);
         return data ? JSON.parse(data) : null;
+    }
+    async update(key, value, ttl = 3600) {
+        const exists = await this.client.exists(key);
+        if (exists === 1) {
+            await this.client.set(key, JSON.stringify(value), 'EX', ttl);
+        }
+        else {
+            throw new Error(`Key "${key}" does not exist`);
+        }
+    }
+    async delete(key) {
+        await this.client.del(key);
+    }
+    async exists(key) {
+        const exists = await this.client.exists(key);
+        return exists === 1;
+    }
+    async expire(key, ttl) {
+        await this.client.expire(key, ttl);
+    }
+    async keys(pattern) {
+        const keys = await this.client.keys(pattern);
+        return keys;
     }
 };
 exports.RedisService = RedisService;

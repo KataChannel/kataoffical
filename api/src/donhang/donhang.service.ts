@@ -68,7 +68,7 @@ export class DonhangService {
   }
 
   async search(params: any) {
-    const cache = await this.redis.get('donhang-search');
+    const cache = await this.redis.read('donhang-search');
     if (cache) return cache;
     const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;            
     const donhangs =await this.prisma.donhang.findMany({
@@ -111,8 +111,7 @@ export class DonhangService {
       khachhang: (({ banggia, ...rest }) => rest)(khachhang), // Xóa banggia
       name: khachhang.name
     }));
-
-       await this.redis.set('donhang-search', result);
+       await this.redis.create('donhang-search', result);
        return result 
   }
 
@@ -190,7 +189,7 @@ export class DonhangService {
 
 
   async findAll() {
-    const cache = await this.redis.get('donhang');
+    const cache = await this.redis.read('donhang');
     if (cache) return cache;
     const donhangs = await this.prisma.donhang.findMany({
       include: {
@@ -202,7 +201,7 @@ export class DonhangService {
         khachhang: {include: {banggia: {include: {sanpham: true}}},},
       },
     });
-    await this.redis.set('donhang', donhangs);
+    await this.redis.create('donhang', donhangs);
     return donhangs.map((donhang) => ({
       ...donhang,
       sanpham: donhang.sanpham.map((item: any) => ({
@@ -283,6 +282,8 @@ export class DonhangService {
   }
   async findOne(id: string) {
     // const donhang = await this.prisma.donhang.findUnique({ where: { id } });
+       const cache = await this.redis.read(`donhangid-${id}`);
+       if (cache) return cache;
     const donhang = await this.prisma.donhang.findUnique({
       where: { id },
       include: {
@@ -295,7 +296,7 @@ export class DonhangService {
       },
     });
     if (!donhang) throw new NotFoundException('DonHang not found');
-    return {
+    const result = {
       ...donhang,
       sanpham: donhang.sanpham.map((item) => ({
         ...item.sanpham,
@@ -310,12 +311,16 @@ export class DonhangService {
         ghichu: item.ghichu,
       })),
     };
+    await this.redis.create(`donhangid-${id}`, donhang);
+    return result
   }
 
 
   
   async create(dto: any) {
     const madonhang = await this.generateNextOrderCode();
+    await this.redis.delete(`donhang`);
+    await this.redis.delete(`donhang-search`);
     return this.prisma.$transaction(async (prisma) => {
       const newDonhang = await prisma.donhang.create({
         data: {
@@ -364,6 +369,8 @@ export class DonhangService {
 
   
   async update(id: string, data: any) {
+    await this.redis.delete(`donhang`);
+    await this.redis.delete(`donhang-search`);
     return this.prisma.$transaction(async (prisma) => {
       // Lấy đơn hàng cũ
       const oldDonhang = await prisma.donhang.findUnique({
@@ -437,6 +444,8 @@ export class DonhangService {
   
 
   async remove(id: string) {
+    await this.redis.delete(`donhang`);
+    await this.redis.delete(`donhangid-${id}`);
     return this.prisma.donhang.delete({ where: { id } });
   }
 }
