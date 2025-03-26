@@ -22,6 +22,7 @@ import { GoogledriveModule } from './shared/googledrive/googledrive.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { ErrorlogsModule } from './errorlogs/errorlogs.module';
 import { RedisModule } from './redis/redis.module';
+import { RedisService } from './redis/redis.service';
 
 @Module({
   imports: [

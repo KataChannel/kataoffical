@@ -16,6 +16,7 @@ import { MenuService } from '../menu/menu/menu.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TreemenuComponent } from '../../shared/common/treemenu/treemenu.component';
 import { UserService } from '../user/user.service';
+import { ErrorLogService } from '../../shared/services/errorlog.service';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -67,6 +68,7 @@ export class AdminmainComponent {
   constructor(
     private _breakpointObserver:BreakpointObserver,
     private _UserService:UserService,
+    private _ErrorLogService:ErrorLogService,
   ) {}
 
   hasChild = (_: number, node: any) => node.expandable;
@@ -105,7 +107,7 @@ export class AdminmainComponent {
       }
     });
   }
-  ClearCache(): void {
+  async ClearCache(): Promise<void> {
     const token = localStorage.getItem('token');
     const permissions = localStorage.getItem('permissions');
     localStorage.clear();
@@ -115,6 +117,7 @@ export class AdminmainComponent {
     if (permissions) {
       localStorage.setItem('permissions', permissions);
     }
+    await this._ErrorLogService.ClearRedisCache()
     this._snackBar.open('Xóa Cache Thành Công', '', {
       duration: 1000,
       horizontalPosition: 'end',

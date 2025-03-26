@@ -49,6 +49,12 @@ let RedisService = class RedisService {
         const keys = await this.client.keys(pattern);
         return keys;
     }
+    async clearAll() {
+        const keys = await this.client.keys('*');
+        if (keys.length > 0) {
+            await this.client.del(keys);
+        }
+    }
 };
 exports.RedisService = RedisService;
 exports.RedisService = RedisService = __decorate([
