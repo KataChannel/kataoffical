@@ -114,7 +114,7 @@
                     </th>
                     <td mat-cell *matCellDef="let row; let idx = index">
                         @switch (column) {
-                        @case ('masp') {
+                        @case ('qrcode') {
                         <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
                             {{ row[column] }}
                         </span>
@@ -145,6 +145,11 @@
                         </span>
                         }
                         @case ('updatedAt') {
+                        <span class="max-w-40 line-clamp-4">
+                            {{ row[column]|date:'dd/MM/yyyy'}}
+                        </span>
+                        }
+                        @case ('checkedAt') {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column]|date:'dd/MM/yyyy'}}
                         </span>

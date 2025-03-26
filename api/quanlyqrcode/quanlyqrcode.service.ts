@@ -43,7 +43,6 @@ export class QuanlyqrcodeService {
   async findby(param: any) {
     try {
       const quanlyqrcode = await this.prisma.quanlyqrcode.findUnique({ where: param });
-      if (!quanlyqrcode) throw new NotFoundException('quanlyqrcode not found');
       return quanlyqrcode;
     } catch (error) {
       this._ErrorlogService.logError('findby',error);

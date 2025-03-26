@@ -23,7 +23,7 @@ export declare class QuanlyqrcodeController {
         qrcode: string;
         code: string;
         checkedAt: Date | null;
-    }>;
+    } | null>;
     findAll(): Promise<{
         id: string;
         name: string;

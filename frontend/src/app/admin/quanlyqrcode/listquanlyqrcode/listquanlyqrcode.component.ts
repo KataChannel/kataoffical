@@ -45,26 +45,22 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 })
 export class ListQuanlyqrcodeComponent {
   displayedColumns: string[] = [
-    'title',
-    'masp',
-    'giagoc',
-    'dvt',
-    'soluong',
-    'soluongkho',
-    'haohut',
-    'ghichu',
+    'qrcode',
+    'code',
+    'name',
+    'phone',
+    'email',
+    'checkedAt',
     'createdAt',
   ];
   ColumnName: any = {
-    title: 'Tên Sản Phẩm',
-    masp: 'Mã Sản Phẩm',
-    giagoc: 'Giá Gốc',
-    dvt: 'Đơn Vị Tính',
-    soluong: 'SL',
-    soluongkho: 'SL Kho',
-    haohut: 'Hao Hụt',
-    ghichu: 'Ghi Chú',
-    createdAt: 'Ngày Tạo'
+      qrcode: 'Mã QR',
+      code: 'Mã Xác Nhận',
+      name: 'Họ Tên',
+      phone: 'Số Điện Thoại',
+      email: 'Email',
+      checkedAt: 'Checkin',
+      createdAt: 'Ngày Tạo',
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('QuanlyqrcodeColFilter') || '[]'

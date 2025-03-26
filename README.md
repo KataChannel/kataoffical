@@ -5,6 +5,7 @@ git push
 
 ssh root@116.118.49.243
 docker compose -f 'docker-compose.yml' up -d --build 'fetazagroup'
+docker compose -f 'docker-compose.yml' up -d --build 'betazagroup'
 
 Xoá Tất Cả
 docker system prune -a --volumes -f

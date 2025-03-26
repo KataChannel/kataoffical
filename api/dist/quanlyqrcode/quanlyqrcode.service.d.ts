@@ -39,7 +39,7 @@ export declare class QuanlyqrcodeService {
         qrcode: string;
         code: string;
         checkedAt: Date | null;
-    }>;
+    } | null>;
     findOne(id: string): Promise<{
         id: string;
         name: string;
