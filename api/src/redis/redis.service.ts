@@ -12,7 +12,7 @@ export class RedisService {
     });
   }
 
-  async create(key: string, value: any, ttl: number = 3600) {
+  async create(key: string, value: any, ttl: number = 60) {
     await this.client.set(key, JSON.stringify(value), 'EX', ttl);
   }
 
@@ -21,7 +21,7 @@ export class RedisService {
     return data ? JSON.parse(data) : null;
   }
 
-  async update(key: string, value: any, ttl: number = 3600) {
+  async update(key: string, value: any, ttl: number = 60) {
     const exists = await this.client.exists(key);
     if (exists === 1) {
       await this.client.set(key, JSON.stringify(value), 'EX', ttl);

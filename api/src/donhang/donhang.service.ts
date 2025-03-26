@@ -68,9 +68,9 @@ export class DonhangService {
   }
 
   async search(params: any) {
-    // const cache = await this.redis.read('donhang-search');
-    // console.log('cache', cache); 
-    // if (cache) return cache;
+    const cache = await this.redis.read('donhang-search');
+    console.log('cache', cache); 
+    if (cache) return cache;
     const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;            
     const donhangs = await this.prisma.donhang.findMany({
       where: {
@@ -112,9 +112,9 @@ export class DonhangService {
       khachhang: (({ banggia, ...rest }) => rest)(khachhang), // Xóa banggia
       name: khachhang.name
     }));
-    // await this.redis.create('donhang-search', result);
-    // console.log('result', result); 
-    // console.log('donhangs', donhangs); 
+    await this.redis.create('donhang-search', result);
+    console.log('result', result); 
+    console.log('donhangs', donhangs); 
     return result 
   }
 

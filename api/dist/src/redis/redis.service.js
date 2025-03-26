@@ -19,14 +19,14 @@ let RedisService = class RedisService {
             port: Number(process.env.REDIS_PORT) || 6379,
         });
     }
-    async create(key, value, ttl = 3600) {
+    async create(key, value, ttl = 60) {
         await this.client.set(key, JSON.stringify(value), 'EX', ttl);
     }
     async read(key) {
         const data = await this.client.get(key);
         return data ? JSON.parse(data) : null;
     }
-    async update(key, value, ttl = 3600) {
+    async update(key, value, ttl = 60) {
         const exists = await this.client.exists(key);
         if (exists === 1) {
             await this.client.set(key, JSON.stringify(value), 'EX', ttl);
