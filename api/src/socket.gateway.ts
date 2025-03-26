@@ -9,14 +9,30 @@ import { Server } from 'socket.io';
 export class SocketGateway {
   @WebSocketServer() server: Server;
 
-  // Gửi sự kiện cập nhật sản phẩm đến tất cả client
+  afterInit() {
+    console.log('✅ WebSocket Server Initialized');
+  }
+
+  handleConnection(client: any) {
+    console.log(`✅ Client connected: ${client.id}`);
+  }
+
+  handleDisconnect(client: any) {
+    console.log(`❌ Client disconnected: ${client.id}`);
+  }
+
   sendSanphamUpdate() {
-    this.server.emit('sanpham-updated'); // FE sẽ nhận sự kiện này
+    console.log('📢 Emitting: sanpham-updated');
+    this.server.emit('sanpham-updated');
   }
+
   sendKhachangUpdate() {
-    this.server.emit('khachhang-updated'); // FE sẽ nhận sự kiện này
+    console.log('📢 Emitting: khachhang-updated');
+    this.server.emit('khachhang-updated');
   }
+
   senduserUpdate() {
-    this.server.emit('user-updated'); // FE sẽ nhận sự kiện này
+    console.log('📢 Emitting: user-updated');
+    this.server.emit('user-updated');
   }
 }

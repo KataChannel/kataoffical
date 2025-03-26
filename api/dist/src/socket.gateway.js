@@ -13,13 +13,25 @@ exports.SocketGateway = void 0;
 const websockets_1 = require("@nestjs/websockets");
 const socket_io_1 = require("socket.io");
 let SocketGateway = class SocketGateway {
+    afterInit() {
+        console.log('✅ WebSocket Server Initialized');
+    }
+    handleConnection(client) {
+        console.log(`✅ Client connected: ${client.id}`);
+    }
+    handleDisconnect(client) {
+        console.log(`❌ Client disconnected: ${client.id}`);
+    }
     sendSanphamUpdate() {
+        console.log('📢 Emitting: sanpham-updated');
         this.server.emit('sanpham-updated');
     }
     sendKhachangUpdate() {
+        console.log('📢 Emitting: khachhang-updated');
         this.server.emit('khachhang-updated');
     }
     senduserUpdate() {
+        console.log('📢 Emitting: user-updated');
         this.server.emit('user-updated');
     }
 };
