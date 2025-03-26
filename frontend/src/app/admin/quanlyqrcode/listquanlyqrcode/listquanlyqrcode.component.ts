@@ -122,7 +122,7 @@ export class ListQuanlyqrcodeComponent {
   }
   downloadQRCode(item:any,event:any) {
 
-    QRCode.toDataURL(item.qrcode, { width: 100, errorCorrectionLevel: 'M' }, (err:any, url:any) => {
+    QRCode.toDataURL(item.qrcode, { width: 300, errorCorrectionLevel: 'M' }, (err:any, url:any) => {
       if (err) {
         console.error('Lỗi khi tạo mã QR:', err);
         return;
