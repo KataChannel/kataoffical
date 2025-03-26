@@ -120,8 +120,8 @@
                         </span>
                         }
                         @case ('STT') {
-                        <span class="max-w-40 line-clamp-4">
-                            {{ idx + 1 }}
+                        <span>
+                          <qrcode (click)="downloadQRCode(row,$event)" [qrdata]="row['qrcode']" [width]="100" [errorCorrectionLevel]="'M'"></qrcode>
                         </span>
                         }
                         @case ('createdAt') {

@@ -20,6 +20,9 @@ import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { QRCodeComponent } from 'angularx-qrcode';
+import * as QRCode from 'qrcode';
+
 @Component({
   selector: 'app-listquanlyqrcode',
   templateUrl: './listquanlyqrcode.component.html',
@@ -39,12 +42,14 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
     CommonModule,
     FormsModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    QRCodeComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListQuanlyqrcodeComponent {
   displayedColumns: string[] = [
+    'STT',
     'qrcode',
     'code',
     'name',
@@ -54,6 +59,7 @@ export class ListQuanlyqrcodeComponent {
     'createdAt',
   ];
   ColumnName: any = {
+      STT: 'STT',
       qrcode: 'Mã QR',
       code: 'Mã Xác Nhận',
       name: 'Họ Tên',
@@ -114,6 +120,22 @@ export class ListQuanlyqrcodeComponent {
     this.initializeColumns();
     this.setupDrawer();
   }
+  downloadQRCode(item:any,event:any) {
+
+    QRCode.toDataURL(item.qrcode, { width: 100, errorCorrectionLevel: 'M' }, (err:any, url:any) => {
+      if (err) {
+        console.error('Lỗi khi tạo mã QR:', err);
+        return;
+      }
+
+      // Tạo liên kết tải xuống
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${item.name}_qrcode.png`; // Tên file tải xuống
+      link.click();
+    });
+  }
+
   async refresh() {
    await this._QuanlyqrcodeService.getAllQuanlyqrcode();
   }
