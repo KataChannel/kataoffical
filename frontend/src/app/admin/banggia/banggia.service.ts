@@ -18,7 +18,11 @@ export class BanggiaService {
   setBanggiaId(id: string | null) {
     this.banggiaId.set(id);
   }
-  private socket = io(`${environment.APIURL}`);
+  private socket = io(`${environment.APIURL}`,{
+    transports: ['websocket', 'polling'], // Thêm polling để fallback
+    reconnectionAttempts: 5, // Giới hạn reconnect nếu fail
+    timeout: 5000, // Timeout 5s
+  });
   async CreateBanggia(dulieu: any) {
     try {
       const options = {

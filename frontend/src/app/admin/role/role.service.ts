@@ -18,7 +18,11 @@ export class RoleService {
   setRoleId(id: string | null) {
     this.roleId.set(id);
   }
-  private socket = io(`${environment.APIURL}`);
+  private socket = io(`${environment.APIURL}`,{
+    transports: ['websocket', 'polling'], // Thêm polling để fallback
+    reconnectionAttempts: 5, // Giới hạn reconnect nếu fail
+    timeout: 5000, // Timeout 5s
+  });
   async CreateRole(dulieu: any) {
     try {
       const options = {

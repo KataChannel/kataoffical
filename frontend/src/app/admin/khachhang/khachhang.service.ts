@@ -18,7 +18,11 @@ export class KhachhangService {
   setKhachhangId(id: string | null) {
     this.khachhangId.set(id);
   }
-  private socket = io(`${environment.APIURL}`);
+  private socket = io(`${environment.APIURL}`,{
+    transports: ['websocket', 'polling'], // Thêm polling để fallback
+    reconnectionAttempts: 5, // Giới hạn reconnect nếu fail
+    timeout: 5000, // Timeout 5s
+  });
   async CreateKhachhang(dulieu: any) {
     try {
       const options = {
