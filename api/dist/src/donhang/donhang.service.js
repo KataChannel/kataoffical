@@ -65,6 +65,7 @@ let DonhangService = class DonhangService {
     }
     async search(params) {
         const cache = await this.redis.read('donhang-search');
+        console.log(cache);
         if (cache)
             return cache;
         const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;
@@ -106,6 +107,7 @@ let DonhangService = class DonhangService {
             name: khachhang.name
         }));
         await this.redis.create('donhang-search', result);
+        console.log('result', result);
         return result;
     }
     async phieuchuyen(params) {
