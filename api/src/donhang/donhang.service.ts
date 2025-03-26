@@ -69,9 +69,10 @@ export class DonhangService {
 
   async search(params: any) {
     const cache = await this.redis.read('donhang-search');
+    console.log('cache', cache); 
     if (cache.length>0) return cache;
     const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;            
-    const donhangs =await this.prisma.donhang.findMany({
+    const donhangs = await this.prisma.donhang.findMany({
       where: {
         ngaygiao: {
           gte: Batdau ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate() : undefined,
@@ -113,6 +114,7 @@ export class DonhangService {
     }));
     await this.redis.create('donhang-search', result);
     console.log('result', result); 
+    console.log('donhangs', donhangs); 
     return result 
   }
 
