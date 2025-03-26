@@ -53,4 +53,13 @@ export class RedisService {
       await this.client.del(keys);
     }
   }
+  async showAll() {
+    const keys = await this.client.keys('*');
+    const allData = {};
+    for (const key of keys) {
+      const value = await this.read(key);
+      allData[key] = value;
+    }
+    return allData;
+  }
 }

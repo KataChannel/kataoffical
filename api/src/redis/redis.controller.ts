@@ -4,7 +4,17 @@ import { RedisService } from './redis.service';
 @Controller('redis')
 export class RedisController {
   constructor(private readonly redisService: RedisService) {}
-
+  @Get()
+  async getAll() {
+    const allData = await this.redisService.showAll();
+    return { data: allData };
+  }
+  
+  @Get('keys')
+  async keys(@Query('pattern') pattern: string) {
+    const keys = await this.redisService.keys(pattern || '*');
+    return { keys };
+  }
   @Post()
   async create(
     @Body('key') key: string,
@@ -52,11 +62,5 @@ export class RedisController {
   async expire(@Param('key') key: string, @Body('ttl') ttl: number) {
     await this.redisService.expire(key, ttl);
     return { message: 'TTL updated successfully' };
-  }
-
-  @Get('keys')
-  async keys(@Query('pattern') pattern: string) {
-    const keys = await this.redisService.keys(pattern || '*');
-    return { keys };
   }
 }

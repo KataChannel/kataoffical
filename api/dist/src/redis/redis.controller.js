@@ -19,6 +19,14 @@ let RedisController = class RedisController {
     constructor(redisService) {
         this.redisService = redisService;
     }
+    async getAll() {
+        const allData = await this.redisService.showAll();
+        return { data: allData };
+    }
+    async keys(pattern) {
+        const keys = await this.redisService.keys(pattern || '*');
+        return { keys };
+    }
     async create(key, value, ttl) {
         await this.redisService.create(key, value, ttl);
         return { message: 'Key created successfully' };
@@ -47,12 +55,21 @@ let RedisController = class RedisController {
         await this.redisService.expire(key, ttl);
         return { message: 'TTL updated successfully' };
     }
-    async keys(pattern) {
-        const keys = await this.redisService.keys(pattern || '*');
-        return { keys };
-    }
 };
 exports.RedisController = RedisController;
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], RedisController.prototype, "getAll", null);
+__decorate([
+    (0, common_1.Get)('keys'),
+    __param(0, (0, common_1.Query)('pattern')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], RedisController.prototype, "keys", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)('key')),
@@ -106,13 +123,6 @@ __decorate([
     __metadata("design:paramtypes", [String, Number]),
     __metadata("design:returntype", Promise)
 ], RedisController.prototype, "expire", null);
-__decorate([
-    (0, common_1.Get)('keys'),
-    __param(0, (0, common_1.Query)('pattern')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], RedisController.prototype, "keys", null);
 exports.RedisController = RedisController = __decorate([
     (0, common_1.Controller)('redis'),
     __metadata("design:paramtypes", [redis_service_1.RedisService])

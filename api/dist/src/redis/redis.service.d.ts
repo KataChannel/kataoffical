@@ -9,4 +9,5 @@ export declare class RedisService {
     expire(key: string, ttl: number): Promise<void>;
     keys(pattern: string): Promise<string[]>;
     clearAll(): Promise<void>;
+    showAll(): Promise<{}>;
 }

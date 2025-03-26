@@ -2,6 +2,12 @@ import { RedisService } from './redis.service';
 export declare class RedisController {
     private readonly redisService;
     constructor(redisService: RedisService);
+    getAll(): Promise<{
+        data: {};
+    }>;
+    keys(pattern: string): Promise<{
+        keys: string[];
+    }>;
     create(key: string, value: any, ttl?: number): Promise<{
         message: string;
     }>;
@@ -24,8 +30,5 @@ export declare class RedisController {
     }>;
     expire(key: string, ttl: number): Promise<{
         message: string;
-    }>;
-    keys(pattern: string): Promise<{
-        keys: string[];
     }>;
 }
