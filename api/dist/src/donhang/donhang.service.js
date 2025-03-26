@@ -65,8 +65,7 @@ let DonhangService = class DonhangService {
     }
     async search(params) {
         const cache = await this.redis.read('donhang-search');
-        console.log(cache);
-        if (cache)
+        if (cache.length > 0)
             return cache;
         const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;
         const donhangs = await this.prisma.donhang.findMany({
@@ -178,7 +177,7 @@ let DonhangService = class DonhangService {
     }
     async findAll() {
         const cache = await this.redis.read('donhang');
-        if (cache)
+        if (cache.length > 0)
             return cache;
         const donhangs = await this.prisma.donhang.findMany({
             include: {
@@ -190,8 +189,7 @@ let DonhangService = class DonhangService {
                 khachhang: { include: { banggia: { include: { sanpham: true } } }, },
             },
         });
-        await this.redis.create('donhang', donhangs);
-        return donhangs.map((donhang) => ({
+        const result = donhangs.map((donhang) => ({
             ...donhang,
             sanpham: donhang.sanpham.map((item) => ({
                 ...item.sanpham,
@@ -207,6 +205,8 @@ let DonhangService = class DonhangService {
             })),
             name: donhang.khachhang.name,
         }));
+        await this.redis.create('donhang', result);
+        return result;
     }
     async searchfield(searchParams) {
         const where = {};
