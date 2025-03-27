@@ -279,9 +279,6 @@ export class DonhangService {
     };
   }
   async findOne(id: string) {
-    // const donhang = await this.prisma.donhang.findUnique({ where: { id } });
-       const cache = await this.redis.read(`donhangid-${id}`);
-       if (cache) return cache;
     const donhang = await this.prisma.donhang.findUnique({
       where: { id },
       include: {
@@ -309,7 +306,6 @@ export class DonhangService {
         ghichu: item.ghichu,
       })),
     };
-    await this.redis.create(`donhangid-${id}`, donhang);
     return result
   }
 
@@ -437,7 +433,42 @@ export class DonhangService {
       return updatedDonhang;
     });
   }
+  async updatePhieugiao(id: string, data: any) {
+    await this.redis.delete(`donhang`);
+    return this.prisma.$transaction(async (prisma) => {
+      const updatedDonhang = await prisma.donhang.update({
+        where: { id },
+        data: {
+          title: data.title,
+          type: data.type,
+          madonhang: data.madonhang,
+          ngaygiao: new Date(data.ngaygiao),
+          khachhangId: data.khachhangId,
+          isActive: data.isActive,
+          status: data.status,
+          order: data.order,
+          ghichu: data.ghichu,
+          printCount: data.printCount,
+          sanpham: {
+            updateMany: data?.sanpham?.map((sp: any) => ({
+              where: { idSP: sp.id },
+              data: {
+                ghichu: sp.ghichu,
+                slgiao: sp.slgiao ?? 0,
+              },
+            })),
+          },
+        },
+        include: {
+          sanpham: true,
+        },
+      });  
+      return updatedDonhang;
+    });
+  }
   
+
+
 
   async remove(id: string) {
     await this.redis.delete(`donhang`);

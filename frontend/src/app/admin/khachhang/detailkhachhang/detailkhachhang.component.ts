@@ -13,6 +13,7 @@ import { ListKhachhangComponent } from '../listkhachhang/listkhachhang.component
 import { KhachhangService } from '../khachhang.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
+import { BanggiaService } from '../../banggia/banggia.service';
   @Component({
     selector: 'app-detailkhachhang',
     imports: [
@@ -24,7 +25,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       MatSelectModule,
       MatDialogModule,
       CommonModule,
-      MatSlideToggleModule
+      MatSlideToggleModule,
     ],
     templateUrl: './detailkhachhang.component.html',
     styleUrl: './detailkhachhang.component.scss'
@@ -32,6 +33,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   export class DetailKhachhangComponent {
     _ListkhachhangComponent:ListKhachhangComponent = inject(ListKhachhangComponent)
     _KhachhangService:KhachhangService = inject(KhachhangService)
+    _BanggiaService:BanggiaService = inject(BanggiaService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
@@ -39,11 +41,10 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       this._route.paramMap.subscribe((params) => {
         const id = params.get('id');
         this._KhachhangService.setKhachhangId(id);
-      });
-  
+      });  
       effect(async () => {
         const id = this._KhachhangService.khachhangId();
-      
+        await this._BanggiaService.getAllBanggia();
         if (!id){
           this._router.navigate(['/admin/khachhang']);
           this._ListkhachhangComponent.drawer.close();
@@ -62,6 +63,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       });
     }
     DetailKhachhang: any = this._KhachhangService.DetailKhachhang;
+    filterItem:any = this._BanggiaService.ListBanggia();
     isEdit = signal(false);
     isDelete = signal(false);  
     khachhangId:any = this._KhachhangService.khachhangId
@@ -144,5 +146,12 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
         v.slug = convertToSlug(v.title);
         return v;
       })
+    }
+    DoOutFilter(event:any)
+    {
+      this.DetailKhachhang.update((v:any)=>{
+        v.banggia = event;
+        return v;
+      })      
     }
   }

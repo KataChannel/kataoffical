@@ -32,6 +32,10 @@ export class DonhangController {
   findOne(@Param('id') id: string) {
     return this.donhangService.findOne(id);
   }
+  @Patch('phieugiao/:id')
+  updatePhieugiao(@Param('id') id: string, @Body() updateDonhangDto: any) {
+    return this.donhangService.updatePhieugiao(id, updateDonhangDto);
+  }
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateDonhangDto: any) {
     return this.donhangService.update(id, updateDonhangDto);

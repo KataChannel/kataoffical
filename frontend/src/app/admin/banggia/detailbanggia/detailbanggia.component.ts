@@ -25,6 +25,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 import html2canvas from 'html2canvas';
 import { MatMenuModule } from '@angular/material/menu';
 import { KhachhangService } from '../../khachhang/khachhang.service';
+import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
   @Component({
     selector: 'app-detailbanggia',
     imports: [
@@ -41,7 +42,8 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
       MatSortModule,
       MatPaginatorModule,
       MatTableModule,
-      MatMenuModule
+      MatMenuModule,
+      SearchfilterComponent
     ],
     // providers: [provideNativeDateAdapter()],
     templateUrl: './detailbanggia.component.html',
@@ -80,7 +82,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
       { value: 'dangban', title: 'Đang Bán' },
       { value: 'ngungban', title: 'Ngừng Bán' },
     ];
-    ListKhachhang: any[] = [];
+    filterKhachhang: any[] = [];
     CheckListKhachhang: any[] = [];
     constructor(){
       this._route.paramMap.subscribe(async (params) => {
@@ -89,7 +91,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         await this._SanphamService.getAllSanpham(); 
         this.filterSanpham = this._SanphamService.ListSanpham();
         await this._KhachhangService.getAllKhachhang();
-        this.ListKhachhang = this._KhachhangService.ListKhachhang().filter(v=>v.isActive);
+        this.filterKhachhang = this._KhachhangService.ListKhachhang().filter(v=>v.isActive);
       });
       effect(async () => {      
         const id = this._BanggiaService.banggiaId();
@@ -112,8 +114,6 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         else{
             await this._BanggiaService.getBanggiaByid(id);
             this.dataSource().data = this.DetailBanggia().sanpham;
-            this.CheckListKhachhang = this.DetailBanggia().khachhang;
-            this.ListFilter = this.DetailBanggia().sanpham
             this._ListbanggiaComponent.drawer.open();
             this._router.navigate(['/admin/banggia', id]);
         }
@@ -286,50 +286,15 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
           return v;
         })
         this.dataSource().data = this.DetailBanggia().sanpham;
-        //this.dataSource().paginator = this.paginator;
-        this.dataSource().sort = this.sort;
-        this.reloadfilter();
-      }
-      reloadfilter(){
-        console.log(this.DetailBanggia().sanpham);
-        console.log(this._SanphamService.ListSanpham());
-        
-        this.filterSanpham = this._SanphamService.ListSanpham().filter((v:any) => !this.DetailBanggia().sanpham.some((v2:any) => v2.id === v.id));
-        console.log(this.filterSanpham);
-      }
-      SelectSanpham(event:any){
-        const value = event.value;
-        const item = this._SanphamService.ListSanpham().find((v) => v.id === value);
-        console.log(item);
-        
-        this.DetailBanggia.update((v:any)=>{
-          if(!v.sanpham){
-            v.sanpham = [];
-            v.sanpham.push(item);
-          }
-          else{
-              v.sanpham.push(item);
-          }
-          this.reloadfilter();
-          return v;
-        })
-        this.dataSource().data = this.DetailBanggia().sanpham;
-        //this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;
       }
       RemoveSanpham(item:any){
         this.DetailBanggia.update((v:any)=>{
           v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
-          this.reloadfilter();
           return v;
         })
         this.dataSource().data = this.DetailBanggia().sanpham;
-        //this.dataSource().paginator = this.paginator;
         this.dataSource().sort = this.sort;
-      }
-      DoFindSanpham(event:any){
-        const value = event.target.value;
-        this.filterSanpham = this._SanphamService.ListSanpham().filter((v) => v.title.toLowerCase().includes(value.toLowerCase()));
       }
       CoppyDon()
       {
@@ -391,42 +356,6 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
         });
       }
 
-
-
-  
-      doFilterKhachhang(event:any){
-        const value = event.target.value;
-        this.ListKhachhang = this._KhachhangService.ListKhachhang().filter((v) => v.name.toLowerCase().includes(value.toLowerCase()));
-      }
-      ChosenKhachhang(item:any){
-        const checkitem = this.CheckListKhachhang.find((v) => v.id === item.id);            
-        if(!checkitem){
-          this.CheckListKhachhang.push(item);
-
-        }
-        else{
-          this.CheckListKhachhang = this.CheckListKhachhang.filter((v) => v.id !== item.id);
-        }
-      }
-      async ApplyKhachhang(menu:any){
-        const removeData = {
-          banggiaId: this.banggiaId(),
-          khachhangIds: this.DetailBanggia().khachhang.map((v:any) => v.id)
-        }
-        const removePromise = await this._BanggiaService.removeKHfromBG(removeData)
-        const addData = {
-          banggiaId: this.banggiaId(),
-          khachhangIds: this.CheckListKhachhang.map((v:any) => v.id)
-        }
-        const adddPromise = await this._BanggiaService.addKHtoBG(addData)
-        Promise.all([removePromise,adddPromise]).then(()=>{menu.closeMenu()});
-
-      }
-      CheckKhachhang(item:any)
-      {
-        return this.CheckListKhachhang.find((v:any) => v.id === item.id)?true:false;
-      }
-
       async ImporExcel(event: any) {
         const data = await readExcelFile(event)
         this.DoImportData(data);
@@ -457,7 +386,6 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
             return item;
           });
           v.sanpham = listdata
-          this.reloadfilter();
           return v;
         })       
         console.log(this.DetailBanggia().sanpham);
@@ -473,57 +401,27 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
           });
       }
 
-        doFilterSanpham(event: any): void {
-          this.dataSource().filteredData = this.filterSanpham.filter((v: any) => v.title.toLowerCase().includes(event.target.value.toLowerCase()));  
-          const query = event.target.value.toLowerCase();  
-        }
-        ListFilter:any[] =[]
-        ChosenItem(item:any)
+        DoOutFilter (event:any)
         {
-          const CheckItem = this.filterSanpham.filter((v:any)=>v.id===item.id);
-          const CheckItem1 = this.ListFilter.filter((v:any)=>v.id===item.id);
-          if(CheckItem1.length>0)
-          {
-            this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
-          }
-          else{
-            this.ListFilter = [...this.ListFilter,...CheckItem];
-          }
-        }
-        ChosenAll(list:any)
-        {
-          this.ListFilter =list
-        }
-        ResetFilter()
-        {
-          this.ListFilter = this.filterSanpham;
-          this.dataSource().data = this.filterSanpham;
-          //this.dataSource().paginator = this.paginator;
+          this.filterSanpham = event
+          this.dataSource().data = event
           this.dataSource().sort = this.sort;
-        }
-        EmptyFiter()
-        {
-          this.ListFilter = [];
-        }
-        CheckItem(item:any)
-        {
-          return this.ListFilter.find((v)=>v.id===item.id)?true:false;
-        }
-        ApplyFilterColum(menu:any)
-        {    
-          this.dataSource().data = this.ListFilter
           this.DetailBanggia.update((v:any)=>{
-            v.sanpham =  this.ListFilter
+            v.sanpham =  event
             return v
           })  
-          this.dataSource().data.sort((a, b) => a.order - b.order);
-          menu.closeMenu();
-
-
-          // this.dataSource().data = this.filterSanpham.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
-          // //this.dataSource().paginator = this.paginator;
-          // this.dataSource().sort = this.sort;
-          // menu.closeMenu();
         }
-
+        async DoOutKhachhang (event:any)
+        {
+          const removeData = {
+            banggiaId: this.banggiaId(),
+            khachhangIds: this.DetailBanggia().khachhang.map((v:any) => v.id)
+          }
+          const removePromise = await this._BanggiaService.removeKHfromBG(removeData)
+          const addData = {
+            banggiaId: this.banggiaId(),
+            khachhangIds: event.map((v:any) => v.id)
+          }
+          const adddPromise = await this._BanggiaService.addKHtoBG(addData)
+        }
   }

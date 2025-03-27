@@ -172,7 +172,95 @@ export declare class DonhangService {
         khachhangId: string;
         printCount: number | null;
     }>;
-    findOne(id: string): Promise<any>;
+    findOne(id: string): Promise<{
+        sanpham: {
+            idSP: string;
+            giaban: number | undefined;
+            sldat: number | null;
+            slgiao: number | null;
+            slnhan: number | null;
+            ttdat: number | null;
+            ttgiao: number | null;
+            ttnhan: number | null;
+            ghichu: string | null;
+            id: string;
+            subtitle: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            title: string;
+            title2: string | null;
+            slug: string | null;
+            masp: string;
+            giagoc: number;
+            dvt: string | null;
+            hinhanh: string | null;
+            loadpoint: number | null;
+            soluong: number;
+            soluongkho: number;
+            haohut: number;
+            order: number | null;
+        }[];
+        khachhang: {
+            banggia: ({
+                sanpham: {
+                    id: string;
+                    isActive: boolean;
+                    order: number | null;
+                    giaban: number;
+                    sanphamId: string;
+                    banggiaId: string;
+                }[];
+            } & {
+                id: string;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                title: string | null;
+                order: number | null;
+                mabanggia: string | null;
+                type: string | null;
+                batdau: Date | null;
+                ketthuc: Date | null;
+                status: string | null;
+            })[];
+        } & {
+            id: string;
+            name: string | null;
+            namenn: string | null;
+            subtitle: string | null;
+            makh: string;
+            diachi: string | null;
+            sdt: string | null;
+            mst: string | null;
+            gionhanhang: string | null;
+            quan: string | null;
+            email: string | null;
+            phone: string | null;
+            address: string | null;
+            loaikh: string | null;
+            ghichu: string | null;
+            hiengia: boolean;
+            isActive: boolean;
+            istitle2: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        };
+        id: string;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        order: number | null;
+        type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        madonhang: string;
+        ngaygiao: Date | null;
+        khachhangId: string;
+        printCount: number | null;
+    }>;
     create(dto: any): Promise<{
         sanpham: {
             id: string;
@@ -204,6 +292,36 @@ export declare class DonhangService {
         printCount: number | null;
     }>;
     update(id: string, data: any): Promise<{
+        sanpham: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean | null;
+            order: number | null;
+            idSP: string;
+            sldat: number | null;
+            slgiao: number | null;
+            slnhan: number | null;
+            ttdat: number | null;
+            ttgiao: number | null;
+            ttnhan: number | null;
+            donhangId: string;
+        }[];
+    } & {
+        id: string;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        order: number | null;
+        type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        madonhang: string;
+        ngaygiao: Date | null;
+        khachhangId: string;
+        printCount: number | null;
+    }>;
+    updatePhieugiao(id: string, data: any): Promise<{
         sanpham: {
             id: string;
             ghichu: string | null;

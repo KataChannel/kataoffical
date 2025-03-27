@@ -189,25 +189,33 @@ export class DonhangService {
         }
         const data = await response.json();
         if (!response.ok) {
-          // if (response.status === 401) {
-          //   const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-          //   this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          //   // this.Dangxuat()
-          // } else if (response.status === 403) {
-          //   const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-          //   this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          //   // this.Dangxuat()
-          // } else if (response.status === 500) {
-          //   const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-          //   this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          //   // this.Dangxuat()
-          // } else {
-          //   const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-          //   this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          // }
+          
         }
         this.getAllDonhang()
         this.getDonhangByid(dulieu.id)
+    } catch (error) {
+        return console.error(error);
+    }
+  }
+  async updatePhieugiao(dulieu: any) {
+    try {
+      const options = {
+          method:'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/donhang/phieugiao/${dulieu.id}`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+          
+        }
+        this.getAllDonhang()
+        this.Phieugiaohang({id:dulieu.id})
     } catch (error) {
         return console.error(error);
     }

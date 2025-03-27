@@ -19,10 +19,8 @@ import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
 import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
 import { GoogledriveModule } from './shared/googledrive/googledrive.module';
-import { ChatbotModule } from './chatbot/chatbot.module';
 import { ErrorlogsModule } from './errorlogs/errorlogs.module';
 import { RedisModule } from './redis/redis.module';
-import { RedisService } from './redis/redis.service';
 
 @Module({
   imports: [

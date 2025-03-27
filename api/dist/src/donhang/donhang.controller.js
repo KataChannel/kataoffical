@@ -40,6 +40,9 @@ let DonhangController = class DonhangController {
     findOne(id) {
         return this.donhangService.findOne(id);
     }
+    updatePhieugiao(id, updateDonhangDto) {
+        return this.donhangService.updatePhieugiao(id, updateDonhangDto);
+    }
     update(id, updateDonhangDto) {
         return this.donhangService.update(id, updateDonhangDto);
     }
@@ -99,6 +102,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], DonhangController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)('phieugiao/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], DonhangController.prototype, "updatePhieugiao", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),

@@ -259,9 +259,6 @@ let DonhangService = class DonhangService {
         };
     }
     async findOne(id) {
-        const cache = await this.redis.read(`donhangid-${id}`);
-        if (cache)
-            return cache;
         const donhang = await this.prisma.donhang.findUnique({
             where: { id },
             include: {
@@ -290,7 +287,6 @@ let DonhangService = class DonhangService {
                 ghichu: item.ghichu,
             })),
         };
-        await this.redis.create(`donhangid-${id}`, donhang);
         return result;
     }
     async create(dto) {
@@ -399,6 +395,39 @@ let DonhangService = class DonhangService {
                     },
                 });
             }
+            return updatedDonhang;
+        });
+    }
+    async updatePhieugiao(id, data) {
+        await this.redis.delete(`donhang`);
+        return this.prisma.$transaction(async (prisma) => {
+            const updatedDonhang = await prisma.donhang.update({
+                where: { id },
+                data: {
+                    title: data.title,
+                    type: data.type,
+                    madonhang: data.madonhang,
+                    ngaygiao: new Date(data.ngaygiao),
+                    khachhangId: data.khachhangId,
+                    isActive: data.isActive,
+                    status: data.status,
+                    order: data.order,
+                    ghichu: data.ghichu,
+                    printCount: data.printCount,
+                    sanpham: {
+                        updateMany: data?.sanpham?.map((sp) => ({
+                            where: { idSP: sp.id },
+                            data: {
+                                ghichu: sp.ghichu,
+                                slgiao: sp.slgiao ?? 0,
+                            },
+                        })),
+                    },
+                },
+                include: {
+                    sanpham: true,
+                },
+            });
             return updatedDonhang;
         });
     }

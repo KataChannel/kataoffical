@@ -7,9 +7,20 @@ export class RedisService {
 
   constructor() {
     this.client = new Redis({
-      host: process.env.REDIS_HOST || 'localhost',
+      host: process.env.REDIS_HOST || '116.118.49.243',
       port: Number(process.env.REDIS_PORT) || 6379,
+      maxRetriesPerRequest: 5, // Giới hạn tối đa 5 lần thử lại khi request lỗi
+      retryStrategy(times) {
+        if (times >= 5) {
+          console.error('Redis: Quá số lần thử lại, dừng kết nối.');
+          return null; // Ngừng thử lại
+        }
+        const delay = Math.min(times * 100, 2000); // Delay tăng dần, tối đa 2s
+        console.warn(`Redis: Thử lại lần ${times}, delay ${delay}ms`);
+        return delay;
+      },
     });
+    
   }
 
   async create(key: string, value: any, ttl: number = 60) {

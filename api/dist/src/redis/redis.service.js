@@ -15,8 +15,18 @@ const ioredis_1 = require("ioredis");
 let RedisService = class RedisService {
     constructor() {
         this.client = new ioredis_1.Redis({
-            host: process.env.REDIS_HOST || 'localhost',
+            host: process.env.REDIS_HOST || '116.118.49.243',
             port: Number(process.env.REDIS_PORT) || 6379,
+            maxRetriesPerRequest: 5,
+            retryStrategy(times) {
+                if (times >= 5) {
+                    console.error('Redis: Quá số lần thử lại, dừng kết nối.');
+                    return null;
+                }
+                const delay = Math.min(times * 100, 2000);
+                console.warn(`Redis: Thử lại lần ${times}, delay ${delay}ms`);
+                return delay;
+            },
         });
     }
     async create(key, value, ttl = 60) {
