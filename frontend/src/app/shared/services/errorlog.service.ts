@@ -30,4 +30,15 @@ export class ErrorLogService {
       localStorage.setItem('errorLogs', JSON.stringify(logEntry));
     }
   }
+
+  async ClearRedisCache(){
+    try {
+      await fetch(`${environment.APIURL}/redis/clear`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+    } catch (err) {
+      console.error('Failed to send log to server:', err);
+    }
+  }
 }

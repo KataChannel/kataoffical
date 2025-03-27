@@ -282,8 +282,30 @@ export class ListQuanlyqrcodeComponent {
       verticalPosition: 'top',
       panelClass: ['snackbar-success'],
     });
-
-
+  }
+  openSentEmailDialog(teamplate: TemplateRef<any>) {
+      const dialogDeleteRef = this._dialog.open(teamplate, {
+        hasBackdrop: true,
+        disableClose: true,
+      });
+      dialogDeleteRef.afterClosed().subscribe((result) => {
+        if (result=="true") {
+          this.DeleteListItem();
+        }
+      });
+  }
+  SentEmailListItem(): void {
+    this.EditList.forEach((item: any) => {
+      item.isSentEmail = true;
+      this._QuanlyqrcodeService.updateQuanlyqrcode(item);
+    });
+    this.EditList = [];
+    this._snackBar.open('Xóa Thành Công', '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
   }
   AddToEdit(item: any): void {
     const existingItem = this.EditList.find((v: any) => v.id === item.id);

@@ -46,25 +46,28 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 export class ListTaskComponent {
   displayedColumns: string[] = [
     'title',
-    'masp',
-    'giagoc',
-    'dvt',
-    'soluong',
-    'soluongkho',
-    'haohut',
-    'ghichu',
+    'description',
+    'status',
     'createdAt',
+    'NguoitaoEmail',
+    'NguoitaoSDT',
+    'NguoinhanEmail',
+    'NguoinhanSDT',
+    'NguoilienquanEmail',
+    'NguoilienquanSDT'
   ];
+
   ColumnName: any = {
-    title: 'Tên Sản Phẩm',
-    masp: 'Mã Sản Phẩm',
-    giagoc: 'Giá Gốc',
-    dvt: 'Đơn Vị Tính',
-    soluong: 'SL',
-    soluongkho: 'SL Kho',
-    haohut: 'Hao Hụt',
-    ghichu: 'Ghi Chú',
-    createdAt: 'Ngày Tạo'
+    title: 'Tên Công Việc',
+    description: 'Mô Tả',
+    status: 'Trạng Thái',
+    createdAt: 'Ngày Tạo',
+    NguoitaoEmail: 'Email Người Tạo',
+    NguoitaoSDT: 'SĐT Người Tạo',
+    NguoinhanEmail: 'Email Người Nhận',
+    NguoinhanSDT: 'SĐT Người Nhận',
+    NguoilienquanEmail: 'Email Người Liên Quan',
+    NguoilienquanSDT: 'SĐT Người Liên Quan'
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('TaskColFilter') || '[]'

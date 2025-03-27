@@ -12,7 +12,6 @@ export declare class SanphamService {
     generateMaSP(): Promise<string>;
     create(data: any): Promise<{
         id: string;
-        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -26,11 +25,11 @@ export declare class SanphamService {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        ghichu: string | null;
     }>;
     reorderSanphams(sanphamIds: string[]): Promise<void>;
     findAll(): Promise<{
         id: string;
-        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -44,10 +43,10 @@ export declare class SanphamService {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        ghichu: string | null;
     }[]>;
     findby(param: any): Promise<{
         id: string;
-        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -61,10 +60,10 @@ export declare class SanphamService {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        ghichu: string | null;
     }>;
     findOne(id: string): Promise<{
         id: string;
-        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -78,10 +77,10 @@ export declare class SanphamService {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        ghichu: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
-        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -95,10 +94,10 @@ export declare class SanphamService {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        ghichu: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
-        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -112,5 +111,6 @@ export declare class SanphamService {
         soluong: number;
         soluongkho: number;
         haohut: number;
+        ghichu: string | null;
     }>;
 }

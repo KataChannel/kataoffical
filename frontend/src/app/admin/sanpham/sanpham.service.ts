@@ -20,7 +20,11 @@ export class SanphamService {
   setSanphamId(id: string | null) {
     this.sanphamId.set(id);
   }
-  private socket = io(`${environment.APIURL}`);
+    private socket = io(`${environment.APIURL}`,{
+    transports: ['websocket'],
+    reconnectionAttempts: 5,
+    timeout: 5000,
+  });
   async CreateSanpham(dulieu: any) {
     try {
       const options = {
@@ -84,7 +88,7 @@ export class SanphamService {
       }
       const data = await response.json();
       await this.saveSanphams(data);
-      this._StorageService.setItem('sanphams_updatedAt', updatedAtServer.toString());
+      this._StorageService.setItem('sanphams_updatedAt', updatedAtServer);
       this.ListSanpham.set(data);
       return data;
     } catch (error) {

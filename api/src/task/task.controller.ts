@@ -11,13 +11,13 @@ export class taskController {
   findby(@Body() param: any) {
     return this.taskService.findby(param);
   }
+  @Post('search')
+  async search(@Body() params: any) {
+    return this.taskService.search(params);
+  }
   @Get()
   findAll() {
     return this.taskService.findAll();
-  }
-  @Get('last-updated')
-    async getLastUpdatedtask() {
-      return this.taskService.getLastUpdatedtask();
   }
   @Get('findid/:id')
   findOne(@Param('id') id: string) {

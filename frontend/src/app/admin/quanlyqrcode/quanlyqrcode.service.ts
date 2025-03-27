@@ -20,7 +20,11 @@ export class QuanlyqrcodeService {
   setQuanlyqrcodeId(id: string | null) {
     this.quanlyqrcodeId.set(id);
   }
-  private socket = io(`${environment.APIURL}`);
+  private socket = io(`${environment.APIURL}`,{
+    transports: ['websocket'],
+    reconnectionAttempts: 5,
+    timeout: 5000,
+  });
   async CreateQuanlyqrcode(dulieu: any) {
     try {
       const options = {
@@ -84,7 +88,7 @@ export class QuanlyqrcodeService {
       }
       const data = await response.json();
       await this.saveQuanlyqrcodes(data);
-      this._StorageService.setItem('quanlyqrcodes_updatedAt', updatedAtServer.toString());
+      this._StorageService.setItem('quanlyqrcodes_updatedAt', updatedAtServer);
       this.ListQuanlyqrcode.set(data);
       return data;
     } catch (error) {

@@ -25,11 +25,11 @@ let taskController = class taskController {
     findby(param) {
         return this.taskService.findby(param);
     }
+    async search(params) {
+        return this.taskService.search(params);
+    }
     findAll() {
         return this.taskService.findAll();
-    }
-    async getLastUpdatedtask() {
-        return this.taskService.getLastUpdatedtask();
     }
     findOne(id) {
         return this.taskService.findOne(id);
@@ -57,17 +57,18 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], taskController.prototype, "findby", null);
 __decorate([
+    (0, common_1.Post)('search'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], taskController.prototype, "search", null);
+__decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], taskController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)('last-updated'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], taskController.prototype, "getLastUpdatedtask", null);
 __decorate([
     (0, common_1.Get)('findid/:id'),
     __param(0, (0, common_1.Param)('id')),

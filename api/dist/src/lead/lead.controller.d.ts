@@ -4,72 +4,72 @@ export declare class leadController {
     constructor(leadService: leadService);
     create(createleadDto: any): Promise<{
         id: string;
-        name: string;
         email: string | null;
-        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
-        code: string | null;
+        name: string;
         order: number | null;
         status: string;
+        phone: string | null;
+        code: string | null;
     }>;
     findby(param: any): Promise<{
         id: string;
-        name: string;
         email: string | null;
-        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
-        code: string | null;
+        name: string;
         order: number | null;
         status: string;
+        phone: string | null;
+        code: string | null;
     }>;
     findAll(): Promise<{
         id: string;
-        name: string;
         email: string | null;
-        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
-        code: string | null;
+        name: string;
         order: number | null;
         status: string;
+        phone: string | null;
+        code: string | null;
     }[]>;
     getLastUpdatedlead(): Promise<{
         updatedAt: number | Date;
     }>;
     findOne(id: string): Promise<{
         id: string;
-        name: string;
         email: string | null;
-        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
-        code: string | null;
+        name: string;
         order: number | null;
         status: string;
+        phone: string | null;
+        code: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
-        name: string;
         email: string | null;
-        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
-        code: string | null;
+        name: string;
         order: number | null;
         status: string;
+        phone: string | null;
+        code: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
-        name: string;
         email: string | null;
-        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
-        code: string | null;
+        name: string;
         order: number | null;
         status: string;
+        phone: string | null;
+        code: string | null;
     }>;
     reorder(body: {
         leadIds: string[];

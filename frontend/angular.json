@@ -24,7 +24,8 @@
               "@mixmark-io/domino",
               "color-name",
               "debug",
-              "xmlhttprequest-ssl"
+              "xmlhttprequest-ssl",
+              "qrcode"
              ],
             "outputPath": "dist/frontend",
             "index": "src/index.html",

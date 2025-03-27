@@ -41,10 +41,13 @@
                     <mat-icon>cloud_download</mat-icon>
                 </button>
                 <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
-                    {{this.Listquanlyqrcode().length}} Sản Phẩm
+                    {{this.Listquanlyqrcode().length}} Khách Mời
                 </span>
                 <button *ngIf="EditList.length > 0" matTooltip="Xoá" (click)="openDeleteDialog(DeleteDialog)" color="warn" mat-icon-button>
                     <mat-icon>delete</mat-icon>
+                </button>
+                <button *ngIf="EditList.length > 0" matTooltip="Gửi Email" (click)="openSentEmailDialog(SentEmailDialog)" color="primary" mat-icon-button>
+                    <mat-icon>forward_to_inbox</mat-icon>
                 </button>
             </div>
         </div>
@@ -117,6 +120,12 @@
                         @case ('qrcode') {
                         <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
                             {{ row[column] }}
+                        </span>
+                        }
+                        @case ('email') {
+                         <span class="max-w-40 line-clamp-4 flex flex-row space-x-2 items-center">
+                            <span *ngIf="row.isSentEmail" class="material-symbols-outlined text-blue-600">mark_email_read</span>
+                               <span>{{ row[column] }}</span>
                         </span>
                         }
                         @case ('STT') {
@@ -203,6 +212,18 @@
         <div class="flex flex-col space-y-8 items-center justify-center">
             <div class="font-bold">Xác Nhận</div>
             <div>Bạn chắc chắn muốn xoá không?</div>
+            <div class="flex flex-row space-x-2 items-center justify-center">
+                <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
+                <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
+            </div>
+        </div>
+    </mat-dialog-content>
+  </ng-template>
+<ng-template #SentEmailDialog>
+    <mat-dialog-content>
+        <div class="flex flex-col space-y-8 items-center justify-center">
+            <div class="font-bold">Xác Nhận</div>
+            <div>Bạn chắc chắn muốn gửi email đến khách mời đã chọn không?</div>
             <div class="flex flex-row space-x-2 items-center justify-center">
                 <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
                 <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>

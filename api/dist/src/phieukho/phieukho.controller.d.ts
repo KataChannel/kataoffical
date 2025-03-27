@@ -5,21 +5,21 @@ export declare class PhieukhoController {
     create(createPhieukhoDto: any): Promise<{
         sanpham: {
             id: string;
-            ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
             soluong: number;
+            ghichu: string | null;
             sanphamId: string;
             sldat: number;
             phieuKhoId: string;
         }[];
     } & {
+        type: string;
         id: string;
-        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
+        ghichu: string | null;
         khoId: string;
         maphieu: string;
         ngay: Date;
@@ -28,7 +28,6 @@ export declare class PhieukhoController {
         sanpham: {
             sanpham: {
                 id: string;
-                ghichu: string | null;
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
@@ -42,34 +41,35 @@ export declare class PhieukhoController {
                 soluong: number;
                 soluongkho: number;
                 haohut: number;
+                ghichu: string | null;
             };
             id: string;
-            ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
             soluong: number;
+            ghichu: string | null;
             sanphamId: string;
             sldat: number;
             phieuKhoId: string;
         }[];
         kho: {
             id: string;
-            name: string;
-            diachi: string | null;
-            sdt: string | null;
-            ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
+            ghichu: string | null;
+            diachi: string | null;
+            sdt: string | null;
             makho: string | null;
             congtyId: string | null;
         };
+        type: string;
         id: string;
-        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
+        ghichu: string | null;
         khoId: string;
         maphieu: string;
         ngay: Date;
@@ -86,33 +86,33 @@ export declare class PhieukhoController {
     findOne(id: string): Promise<{
         kho: {
             id: string;
-            name: string;
-            diachi: string | null;
-            sdt: string | null;
-            ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
+            ghichu: string | null;
+            diachi: string | null;
+            sdt: string | null;
             makho: string | null;
             congtyId: string | null;
         };
         sanpham: {
             id: string;
-            ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
             soluong: number;
+            ghichu: string | null;
             sanphamId: string;
             sldat: number;
             phieuKhoId: string;
         }[];
     } & {
+        type: string;
         id: string;
-        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
+        ghichu: string | null;
         khoId: string;
         maphieu: string;
         ngay: Date;
@@ -120,32 +120,32 @@ export declare class PhieukhoController {
     update(id: string, updatePhieukhoDto: any): Promise<{
         sanpham: {
             id: string;
-            ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
             soluong: number;
+            ghichu: string | null;
             sanphamId: string;
             sldat: number;
             phieuKhoId: string;
         }[];
     } & {
+        type: string;
         id: string;
-        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
+        ghichu: string | null;
         khoId: string;
         maphieu: string;
         ngay: Date;
     }>;
     remove(id: string): Promise<{
+        type: string;
         id: string;
-        ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
+        ghichu: string | null;
         khoId: string;
         maphieu: string;
         ngay: Date;

@@ -20,7 +20,11 @@ export class TaskService {
   setTaskId(id: string | null) {
     this.taskId.set(id);
   }
-  private socket = io(`${environment.APIURL}`);
+    private socket = io(`${environment.APIURL}`,{
+    transports: ['websocket'],
+    reconnectionAttempts: 5,
+    timeout: 5000,
+  });
   async CreateTask(dulieu: any) {
     try {
       const options = {
@@ -63,8 +67,8 @@ export class TaskService {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
-      };
-      const lastUpdatedResponse = await fetch(`${environment.APIURL}/task/last-updated`, options);
+      };     
+      const lastUpdatedResponse = await fetch(`${environment.APIURL}/last-updated?table=task`, options);
       if (!lastUpdatedResponse.ok) {
         this.handleError(lastUpdatedResponse.status);
         return cachedData;
@@ -84,7 +88,7 @@ export class TaskService {
       }
       const data = await response.json();
       await this.saveTasks(data);
-      this._StorageService.setItem('tasks_updatedAt', updatedAtServer.toString());
+      this._StorageService.setItem('tasks_updatedAt', updatedAtServer);
       this.ListTask.set(data);
       return data;
     } catch (error) {

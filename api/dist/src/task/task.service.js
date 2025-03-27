@@ -20,20 +20,6 @@ let taskService = class taskService {
         this._SocketGateway = _SocketGateway;
         this._ErrorlogService = _ErrorlogService;
     }
-    async getLastUpdatedtask() {
-        try {
-            const lastUpdated = await this.prisma.task.aggregate({
-                _max: {
-                    updatedAt: true,
-                },
-            });
-            return { updatedAt: lastUpdated._max.updatedAt || 0 };
-        }
-        catch (error) {
-            this._ErrorlogService.logError('getLastUpdatedtask', error);
-            throw error;
-        }
-    }
     async create(data) {
         try {
             this._SocketGateway.sendtaskUpdate();
@@ -46,10 +32,52 @@ let taskService = class taskService {
     }
     async findAll() {
         try {
-            return this.prisma.task.findMany();
+            const tasks = await this.prisma.task.findMany({
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    assignee: true,
+                    comments: true,
+                    user: true,
+                    relatedUser: true,
+                },
+            });
+            const result = tasks.map((task) => {
+                const { user, assignee, relatedUser, ...rest } = task;
+                return {
+                    ...rest,
+                    NguoitaoEmail: user?.email,
+                    NguoitaoSDT: user?.SDT,
+                    NguoinhanEmail: assignee?.email,
+                    NguoinhanSDT: assignee?.SDT,
+                    NguoilienquanEmail: relatedUser?.email,
+                    NguoilienquanSDT: relatedUser?.SDT,
+                };
+            });
+            console.log('result', result);
+            return result;
         }
         catch (error) {
             this._ErrorlogService.logError('findAll', error);
+            throw error;
+        }
+    }
+    async search(params) {
+        try {
+            const { filters, relations, orderBy, skip, take } = params;
+            const where = filters ? { ...filters } : {};
+            const include = relations ? { ...relations } : {};
+            const orderByClause = orderBy ? { [orderBy.field]: orderBy.direction } : undefined;
+            const tasks = await this.prisma.task.findMany({
+                where,
+                include,
+                orderBy: orderByClause,
+                skip: skip || 0,
+                take: take || 10,
+            });
+            return tasks;
+        }
+        catch (error) {
+            this._ErrorlogService.logError('searchtask', error);
             throw error;
         }
     }

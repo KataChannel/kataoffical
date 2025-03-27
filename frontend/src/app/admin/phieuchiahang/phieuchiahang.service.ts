@@ -18,7 +18,11 @@ export class PhieuchiahangService {
   setPhieuchiahangId(id: string | null) {
     this.phieuchiahangId.set(id);
   }
-  private socket = io(`${environment.APIURL}`);
+    private socket = io(`${environment.APIURL}`,{
+    transports: ['websocket'],
+    reconnectionAttempts: 5,
+    timeout: 5000,
+  });
   async CreatePhieuchiahang(dulieu: any) {
     try {
       const options = {
@@ -96,7 +100,7 @@ export class PhieuchiahangService {
       // 2️⃣ Nếu dữ liệu trên server mới hơn, cập nhật IndexedDB + LocalStorage
       if (updatedAtServer > updatedAtCache) {
         await this.savePhieuchiahangs(data);
-        localStorage.setItem('lastUpdated', updatedAtServer.toString());
+        localStorage.setItem('lastUpdated', updatedAtServer);
         localStorage.setItem('phieuchiahangs', JSON.stringify(data));
       }
       this.ListPhieuchiahang.set(data);

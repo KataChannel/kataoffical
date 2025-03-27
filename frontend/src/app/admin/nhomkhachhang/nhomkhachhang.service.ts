@@ -18,7 +18,11 @@ export class NhomkhachhangService {
   setNhomkhachhangId(id: string | null) {
     this.nhomkhachhangId.set(id);
   }
-  private socket = io(`${environment.APIURL}`);
+    private socket = io(`${environment.APIURL}`,{
+    transports: ['websocket'],
+    reconnectionAttempts: 5,
+    timeout: 5000,
+  });
 
   async addKHtoNhom(dulieu: any) {
     try {
@@ -172,7 +176,7 @@ export class NhomkhachhangService {
       // 2️⃣ Nếu dữ liệu trên server mới hơn, cập nhật IndexedDB + LocalStorage
       if (updatedAtServer > updatedAtCache) {
         await this.saveNhomkhachhangs(data);
-        localStorage.setItem('lastUpdated', updatedAtServer.toString());
+        localStorage.setItem('lastUpdated', updatedAtServer);
         localStorage.setItem('nhomkhachhangs', JSON.stringify(data));
       }
       this.ListNhomkhachhang.set(data);

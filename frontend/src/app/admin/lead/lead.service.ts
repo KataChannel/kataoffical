@@ -20,7 +20,11 @@ export class LeadService {
   setLeadId(id: string | null) {
     this.leadId.set(id);
   }
-  private socket = io(`${environment.APIURL}`);
+    private socket = io(`${environment.APIURL}`,{
+    transports: ['websocket'],
+    reconnectionAttempts: 5,
+    timeout: 5000,
+  });
   async CreateLead(dulieu: any) {
     try {
       const options = {
@@ -84,7 +88,7 @@ export class LeadService {
       }
       const data = await response.json();
       await this.saveLeads(data);
-      this._StorageService.setItem('lead_updatedAt', updatedAtServer.toString());
+      this._StorageService.setItem('lead_updatedAt', updatedAtServer);
       this.ListLead.set(data);
       return data;
     } catch (error) {

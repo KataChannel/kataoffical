@@ -13,6 +13,9 @@ import { ListTaskComponent } from '../listtask/listtask.component';
 import { TaskService } from '../task.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
+import { UserService } from '../../user/user.service';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { KeditorComponent } from '../../../shared/common/keditor/keditor.component';
   @Component({
     selector: 'app-detailtask',
     imports: [
@@ -24,7 +27,9 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       MatSelectModule,
       MatDialogModule,
       CommonModule,
-      MatSlideToggleModule
+      MatSlideToggleModule,
+      MatSidenavModule,
+      KeditorComponent
     ],
     templateUrl: './detailtask.component.html',
     styleUrl: './detailtask.component.scss'
@@ -32,9 +37,11 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   export class DetailTaskComponent {
     _ListtaskComponent:ListTaskComponent = inject(ListTaskComponent)
     _TaskService:TaskService = inject(TaskService)
+    _UserService:UserService = inject(UserService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
+    Profile:any = this._UserService.profile
     constructor(){
       this._route.paramMap.subscribe((params) => {
         const id = params.get('id');
@@ -42,13 +49,14 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       });
   
       effect(async () => {
+        await this._UserService.getProfile();
         const id = this._TaskService.taskId();
         if (!id){
           this._router.navigate(['/admin/task']);
           this._ListtaskComponent.drawer.close();
         }
         if(id === 'new'){
-          this.DetailTask.set({});
+          this.DetailTask.set({userId:this.Profile().id});
           this._ListtaskComponent.drawer.open();
           this.isEdit.update(value => !value);
           this._router.navigate(['/admin/task', "new"]);

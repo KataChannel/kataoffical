@@ -65,7 +65,11 @@ export class KhachhangService {
   }
 
   // 3️⃣ Lắng nghe cập nhật từ WebSocket
-  private socket = io(`${environment.APIURL}`);
+    private socket = io(`${environment.APIURL}`,{
+    transports: ['websocket'],
+    reconnectionAttempts: 5,
+    timeout: 5000,
+  });
   listenKhachhangUpdates() {
     this.socket.on('khachhang-updated', async () => {
       console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');

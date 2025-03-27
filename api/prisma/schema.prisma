@@ -474,6 +474,7 @@ model Quanlyqrcode {
   name      String   // Họ Tên khách mời
   phone     String   // Số Điện Thoại
   email     String   // Email
+  isSentEmail      Boolean  @default(false)
   checkedAt DateTime?  // Null nếu chưa check-in, lưu thời gian nếu đã check-in
   createdAt DateTime @default(now())
   updatedAt   DateTime @updatedAt

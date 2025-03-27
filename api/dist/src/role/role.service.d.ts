@@ -4,9 +4,9 @@ export declare class RoleService {
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     }>;
     findAll(): Promise<({
         permissions: {
@@ -16,9 +16,9 @@ export declare class RoleService {
         }[];
     } & {
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     })[]>;
     findOne(id: string): Promise<({
         permissions: {
@@ -28,9 +28,9 @@ export declare class RoleService {
         }[];
     } & {
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     }) | null>;
     update(id: string, data: {
         name?: string;
@@ -39,9 +39,9 @@ export declare class RoleService {
         permissions: ({
             permission: {
                 id: string;
-                name: string;
                 createdAt: Date;
                 updatedAt: Date;
+                name: string;
                 description: string | null;
             };
         } & {
@@ -51,15 +51,15 @@ export declare class RoleService {
         })[];
     } & {
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     }>;
     remove(id: string): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     }>;
     assignPermissionToRole(data: any): Promise<{
         id: string;

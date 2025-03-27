@@ -7,13 +7,13 @@ export declare class AuthService {
     register(email: string, password: string): Promise<{
         id: string;
         email: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     login(SDT: string, email: string, password: string): Promise<{
         access_token: string;
@@ -22,13 +22,13 @@ export declare class AuthService {
     changePassword(userId: string, oldPassword: string, newPassword: string): Promise<{
         id: string;
         email: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
         SDT: string | null;
         password: string;
         provider: string | null;
         providerId: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     generateRandomPassword(userId: string): Promise<{
         newPassword: string;
@@ -38,13 +38,13 @@ export declare class AuthService {
         user: {
             id: string;
             email: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
             SDT: string | null;
             password: string;
             provider: string | null;
             providerId: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
         };
     }>;
     getUserRoles(userId: string): Promise<({
@@ -52,9 +52,9 @@ export declare class AuthService {
             permissions: ({
                 permission: {
                     id: string;
-                    name: string;
                     createdAt: Date;
                     updatedAt: Date;
+                    name: string;
                     description: string | null;
                 };
             } & {
@@ -64,9 +64,9 @@ export declare class AuthService {
             })[];
         } & {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
         };
     } & {
         id: string;
