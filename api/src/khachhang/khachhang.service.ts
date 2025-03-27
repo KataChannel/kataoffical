@@ -93,8 +93,36 @@ export class KhachhangService {
   }
 
   async update(id: string, data: any) {
-    return this.prisma.khachhang.update({ where: { id }, data });
+    // Lấy thông tin khách hàng cùng các bảng giá liên kết
+    const existingCustomer = await this.prisma.khachhang.findUnique({
+      where: { id },
+      select: { banggia: { select: { id: true } } }, // Chỉ lấy ID của bảng giá
+    });
+  
+    if (!existingCustomer) {
+      throw new Error("Khách hàng không tồn tại");
+    }
+  
+    // Ngắt kết nối tất cả bảng giá cũ
+    const disconnectBanggia = existingCustomer.banggia.map(({ id }) => ({ id }));
+  
+    // Lấy danh sách bảng giá mới từ payload
+    const newBanggiaIds = data.banggia?.map(({ id }: { id: string }) => ({ id })) || [];
+  
+    // Cập nhật dữ liệu khách hàng
+    return this.prisma.khachhang.update({
+      where: { id },
+      data: {
+        ...data,
+        banggia: {
+          disconnect: disconnectBanggia, // Ngắt toàn bộ bảng giá cũ
+          connect: newBanggiaIds, // Kết nối bảng giá mới từ payload
+        },
+      },
+      include: { banggia: true },
+    });
   }
+  
 
   async remove(id: string) {
     return this.prisma.khachhang.delete({ where: { id } });

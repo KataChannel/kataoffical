@@ -14,6 +14,7 @@ import { KhachhangService } from '../khachhang.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { BanggiaService } from '../../banggia/banggia.service';
+import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
   @Component({
     selector: 'app-detailkhachhang',
     imports: [
@@ -26,6 +27,7 @@ import { BanggiaService } from '../../banggia/banggia.service';
       MatDialogModule,
       CommonModule,
       MatSlideToggleModule,
+      SearchfilterComponent
     ],
     templateUrl: './detailkhachhang.component.html',
     styleUrl: './detailkhachhang.component.scss'
@@ -45,6 +47,7 @@ import { BanggiaService } from '../../banggia/banggia.service';
       effect(async () => {
         const id = this._KhachhangService.khachhangId();
         await this._BanggiaService.getAllBanggia();
+        this.filterItem = this._BanggiaService.ListBanggia();
         if (!id){
           this._router.navigate(['/admin/khachhang']);
           this._ListkhachhangComponent.drawer.close();
@@ -57,13 +60,15 @@ import { BanggiaService } from '../../banggia/banggia.service';
         }
         else{
             await this._KhachhangService.searchfield({id:id});
+            this.ListFilter = this._KhachhangService.DetailKhachhang().banggia;
             this._ListkhachhangComponent.drawer.open();
             this._router.navigate(['/admin/khachhang', id]);
         }
       });
     }
     DetailKhachhang: any = this._KhachhangService.DetailKhachhang;
-    filterItem:any = this._BanggiaService.ListBanggia();
+    ListFilter:any = [];
+    filterItem:any = [];
     isEdit = signal(false);
     isDelete = signal(false);  
     khachhangId:any = this._KhachhangService.khachhangId
@@ -94,10 +99,10 @@ import { BanggiaService } from '../../banggia/banggia.service';
 
     private async updateKhachhang() {
       try {
-        this.DetailKhachhang.update((v: any) => {
-          const { banggia, ...rest } = v;
-          return rest;
-        });
+        // this.DetailKhachhang.update((v: any) => {
+        //   const { banggia, ...rest } = v;
+        //   return rest;
+        // });
         await this._KhachhangService.updateKhachhang(this.DetailKhachhang());
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,

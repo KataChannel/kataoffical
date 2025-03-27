@@ -90,7 +90,26 @@ let KhachhangService = class KhachhangService {
         return khachhang;
     }
     async update(id, data) {
-        return this.prisma.khachhang.update({ where: { id }, data });
+        const existingCustomer = await this.prisma.khachhang.findUnique({
+            where: { id },
+            select: { banggia: { select: { id: true } } },
+        });
+        if (!existingCustomer) {
+            throw new Error("Khách hàng không tồn tại");
+        }
+        const disconnectBanggia = existingCustomer.banggia.map(({ id }) => ({ id }));
+        const newBanggiaIds = data.banggia?.map(({ id }) => ({ id })) || [];
+        return this.prisma.khachhang.update({
+            where: { id },
+            data: {
+                ...data,
+                banggia: {
+                    disconnect: disconnectBanggia,
+                    connect: newBanggiaIds,
+                },
+            },
+            include: { banggia: true },
+        });
     }
     async remove(id) {
         return this.prisma.khachhang.delete({ where: { id } });
