@@ -15,6 +15,7 @@ model User {
   password  String
   provider  String?  // "google", "facebook", "zalo"
   providerId String? @unique
+  isSuperAdmin Boolean @default(false)
   profile   Profile?
   roles     UserRole[]
   isActive  Boolean  @default(false)

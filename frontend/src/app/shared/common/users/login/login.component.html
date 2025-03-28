@@ -16,7 +16,7 @@
               </mat-form-field>
               <mat-form-field subscriptSizing="dynamic" appearance="outline" class="w-full">
                 <mat-label>Mật khẩu</mat-label>
-                <input type="password" matInput class="w-full" [(ngModel)]="User.password" [ngModelOptions]="{standalone: true}" [placeholder]="'Mật khẩu'"/>
+                <input type="password" matInput class="w-full" (keyup.enter)="Dangnhap()" [(ngModel)]="User.password" [ngModelOptions]="{standalone: true}" [placeholder]="'Mật khẩu'"/>
                 <mat-icon class="material-symbols-outlined" matPrefix>lock</mat-icon>
               </mat-form-field>
               <div class="w-full flex flex-row justify-between items-center">
@@ -24,7 +24,7 @@
                 <a routerLink="/register" class="text-blue-500 cursor-pointer font-bold">Đăng ký</a>
               </div>
   
-              <div (click)="Dangnhap()" class="cursor-pointer lg:w-auto w-full flex space-x-2 border items-center justify-center p-4 rounded-lg bg-slate-100 hover:bg-white">
+              <div (click)="Dangnhap()" (keyup.enter)="Dangnhap()" class="cursor-pointer lg:w-auto w-full flex space-x-2 border items-center justify-center p-4 rounded-lg bg-slate-100 hover:bg-white">
                   <span>Đăng nhập tài khoản</span>   
               </div>
   
