@@ -32,4 +32,7 @@ export class QuanlyqrcodeController {
   remove(@Param('id') id: string) {
     return this.quanlyqrcodeService.remove(id);
   }
+
+
+  
 }

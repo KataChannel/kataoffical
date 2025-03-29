@@ -9,12 +9,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
-import { ListSanphamComponent } from '../listsanpham/listsanpham.component';
-import { SanphamService } from '../sanpham.service';
+import { ListQuanlydriveComponent } from '../listquanlydrive/listquanlydrive.component';
+import { QuanlydriveService } from '../quanlydrive.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   @Component({
-    selector: 'app-detailsanpham',
+    selector: 'app-detailquanlydrive',
     imports: [
       MatFormFieldModule,
       MatInputModule,
@@ -26,57 +26,57 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       CommonModule,
       MatSlideToggleModule
     ],
-    templateUrl: './detailsanpham.component.html',
-    styleUrl: './detailsanpham.component.scss'
+    templateUrl: './detailquanlydrive.component.html',
+    styleUrl: './detailquanlydrive.component.scss'
   })
-  export class DetailSanphamComponent {
-    _ListsanphamComponent:ListSanphamComponent = inject(ListSanphamComponent)
-    _SanphamService:SanphamService = inject(SanphamService)
+  export class DetailQuanlydriveComponent {
+    _ListquanlydriveComponent:ListQuanlydriveComponent = inject(ListQuanlydriveComponent)
+    _QuanlydriveService:QuanlydriveService = inject(QuanlydriveService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
     constructor(){
       this._route.paramMap.subscribe((params) => {
         const id = params.get('id');
-        this._SanphamService.setSanphamId(id);
+        this._QuanlydriveService.setQuanlydriveId(id);
       });
   
       effect(async () => {
-        const id = this._SanphamService.sanphamId();
+        const id = this._QuanlydriveService.quanlydriveId();
         if (!id){
-          this._router.navigate(['/admin/sanpham']);
-          this._ListsanphamComponent.drawer.close();
+          this._router.navigate(['/admin/quanlydrive']);
+          this._ListquanlydriveComponent.drawer.close();
         }
         if(id === 'new'){
-          this.DetailSanpham.set({});
-          this._ListsanphamComponent.drawer.open();
+          this.DetailQuanlydrive.set({});
+          this._ListquanlydriveComponent.drawer.open();
           this.isEdit.update(value => !value);
-          this._router.navigate(['/admin/sanpham', "new"]);
+          this._router.navigate(['/admin/quanlydrive', "new"]);
         }
         else{
-            await this._SanphamService.getSanphamBy({id:id});
-            this._ListsanphamComponent.drawer.open();
-            this._router.navigate(['/admin/sanpham', id]);
+            await this._QuanlydriveService.getQuanlydriveBy({id:id});
+            this._ListquanlydriveComponent.drawer.open();
+            this._router.navigate(['/admin/quanlydrive', id]);
         }
       });
     }
-    DetailSanpham: any = this._SanphamService.DetailSanpham;
+    DetailQuanlydrive: any = this._QuanlydriveService.DetailQuanlydrive;
     isEdit = signal(false);
     isDelete = signal(false);  
-    sanphamId:any = this._SanphamService.sanphamId
+    quanlydriveId:any = this._QuanlydriveService.quanlydriveId
     async ngOnInit() {       
     }
-    async handleSanphamAction() {
-      if (this.sanphamId() === 'new') {
-        await this.createSanpham();
+    async handleQuanlydriveAction() {
+      if (this.quanlydriveId() === 'new') {
+        await this.createQuanlydrive();
       }
       else {
-        await this.updateSanpham();
+        await this.updateQuanlydrive();
       }
     }
-    private async createSanpham() {
+    private async createQuanlydrive() {
       try {
-        await this._SanphamService.CreateSanpham(this.DetailSanpham());
+        await this._QuanlydriveService.CreateQuanlydrive(this.DetailQuanlydrive());
         this._snackBar.open('Tạo Mới Thành Công', '', {
           duration: 1000,
           horizontalPosition: 'end',
@@ -85,13 +85,13 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
         });
         this.isEdit.update(value => !value);
       } catch (error) {
-        console.error('Lỗi khi tạo sanpham:', error);
+        console.error('Lỗi khi tạo quanlydrive:', error);
       }
     }
 
-    private async updateSanpham() {
+    private async updateQuanlydrive() {
       try {
-        await this._SanphamService.updateSanpham(this.DetailSanpham());
+        await this._QuanlydriveService.updateQuanlydrive(this.DetailQuanlydrive());
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,
           horizontalPosition: 'end',
@@ -100,13 +100,13 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
         });
         this.isEdit.update(value => !value);
       } catch (error) {
-        console.error('Lỗi khi cập nhật sanpham:', error);
+        console.error('Lỗi khi cập nhật quanlydrive:', error);
       }
     }
     async DeleteData()
     {
       try {
-        await this._SanphamService.DeleteSanpham(this.DetailSanpham());
+        await this._QuanlydriveService.DeleteQuanlydrive(this.DetailQuanlydrive());
   
         this._snackBar.open('Xóa Thành Công', '', {
           duration: 1000,
@@ -115,14 +115,14 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           panelClass: ['snackbar-success'],
         });
   
-        this._router.navigate(['/admin/sanpham']);
+        this._router.navigate(['/admin/quanlydrive']);
       } catch (error) {
-        console.error('Lỗi khi xóa sanpham:', error);
+        console.error('Lỗi khi xóa quanlydrive:', error);
       }
     }
     goBack(){
-      this._router.navigate(['/admin/sanpham'])
-      this._ListsanphamComponent.drawer.close();
+      this._router.navigate(['/admin/quanlydrive'])
+      this._ListquanlydriveComponent.drawer.close();
     }
     trackByFn(index: number, item: any): any {
       return item.id;
@@ -135,7 +135,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       this.isDelete.update(value => !value);
     }
     FillSlug(){
-      this.DetailSanpham.update((v:any)=>{
+      this.DetailQuanlydrive.update((v:any)=>{
         v.slug = convertToSlug(v.title);
         return v;
       })

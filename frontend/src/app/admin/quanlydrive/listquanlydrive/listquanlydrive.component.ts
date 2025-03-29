@@ -14,16 +14,18 @@ import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { SanphamService } from '../sanpham.service';
+import { QuanlydriveService } from '../quanlydrive.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTreeFlatDataSource, MatTreeFlattener, MatTreeModule } from '@angular/material/tree';
+import { FlatTreeControl } from '@angular/cdk/tree';
 @Component({
-  selector: 'app-listsanpham',
-  templateUrl: './listsanpham.component.html',
-  styleUrls: ['./listsanpham.component.scss'],
+  selector: 'app-listquanlydrive',
+  templateUrl: './listquanlydrive.component.html',
+  styleUrls: ['./listquanlydrive.component.scss'],
   imports: [
     MatFormFieldModule,
     MatInputModule,
@@ -39,37 +41,35 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
     CommonModule,
     FormsModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    MatTreeModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ListSanphamComponent {
-  displayedColumns: string[] = [
-    'title',
-    'masp',
-    'giagoc',
-    'dvt',
-    'soluong',
-    'soluongkho',
-    'haohut',
-    'ghichu',
-    'createdAt',
-  ];
-  ColumnName: any = {
-    title: 'Tên Sản Phẩm',
-    masp: 'Mã Sản Phẩm',
-    giagoc: 'Giá Gốc',
-    dvt: 'Đơn Vị Tính',
-    soluong: 'SL',
-    soluongkho: 'SL Kho',
-    haohut: 'Hao Hụt',
-    ghichu: 'Ghi Chú',
-    createdAt: 'Ngày Tạo'
+export class ListQuanlydriveComponent {
+
+  private _transformer = (node: any, level: number) => {
+    return {
+      expandable: !!node.children && node.children.length > 0,
+      node: node,
+      name: node.name,
+      level: level,
+    };
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('SanphamColFilter') || '[]'
+
+  treeControl = new FlatTreeControl<any>(
+    node => node.level,
+    node => node.expandable,
   );
-  Columns: any[] = [];
+
+  treeFlattener = new MatTreeFlattener(
+    this._transformer,
+    node => node.level,
+    node => node.expandable,
+    node => node.children,
+  );
+  dataTreeSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+  hasChild = (_: number, node: any) => node.expandable;
   //pagination
   totalItems = 0;
   pageSize = 10;
@@ -79,25 +79,23 @@ export class ListSanphamComponent {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
-  private _SanphamService: SanphamService = inject(SanphamService);
+  private _QuanlydriveService: QuanlydriveService = inject(QuanlydriveService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   private _dialog: MatDialog = inject(MatDialog);
-  Listsanpham:any = this._SanphamService.ListSanpham;
+  Listquanlydrive:any = this._QuanlydriveService.ListQuanlydrive;
   EditList:any=[];
   dataSource = new MatTableDataSource([]);
-  sanphamId:any = this._SanphamService.sanphamId;
+  quanlydriveId:any = this._QuanlydriveService.quanlydriveId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   isSearch: boolean = false;
   constructor() {
-    this.displayedColumns.forEach(column => {
-      this.filterValues[column] = '';
-    });
     effect(() => {
-      this.dataSource.data = this.Listsanpham();
-      this.totalItems = this.Listsanpham().length;
+      this.dataSource.data = this.Listquanlydrive();
+      this.dataTreeSource.data = this.Listquanlydrive();
+      this.totalItems = this.Listquanlydrive().length;
       this.calculateTotalPages();
     });
   }
@@ -110,36 +108,21 @@ export class ListSanphamComponent {
   }
   async ngOnInit(): Promise<void> {    
     this.updateDisplayData();
-    this._SanphamService.listenSanphamUpdates();
-    await this._SanphamService.getAllSanpham();
-    this.dataSource = new MatTableDataSource(this.Listsanpham());
+    this._QuanlydriveService.listenQuanlydriveUpdates();
+    await this._QuanlydriveService.getAllQuanlydrive();
+    this.dataTreeSource.data = this.Listquanlydrive();
+    console.log(this.dataTreeSource.data);
+    this.dataSource = new MatTableDataSource(this.Listquanlydrive());
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    this.initializeColumns();
     this.setupDrawer();
   }
-  async refresh() {
-   await this._SanphamService.getAllSanpham();
-  }
-  private initializeColumns(): void {
-    this.Columns = Object.keys(this.ColumnName).map((key) => ({
-      key,
-      value: this.ColumnName[key],
-      isShow: true,
-    }));
-    if (this.FilterColumns.length === 0) {
-      this.FilterColumns = this.Columns;
-    } else {
-      localStorage.setItem('SanphamColFilter',JSON.stringify(this.FilterColumns)
-      );
+  LoadFolder(item:any){
+    console.log(item);
+    if(item.type==="folder")
+    {
+    this._QuanlydriveService.QuanlydriveQueryfolder(item);
     }
-    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
-      (item) => item.key
-    );
-    this.ColumnName = this.FilterColumns.reduce((obj, item) => {
-      if (item.isShow) obj[item.key] = item.value;
-      return obj;
-    }, {} as Record<string, string>);
   }
 
   private setupDrawer(): void {
@@ -152,26 +135,6 @@ export class ListSanphamComponent {
           this.drawer.mode = 'side';
         }
       });
-  }
-  toggleColumn(item: any): void {
-    const column = this.FilterColumns.find((v) => v.key === item.key);
-    if (column) {
-      column.isShow = !column.isShow;
-      this.updateDisplayedColumns();
-    }
-  }
-  @memoize()
-  FilterHederColumn(list:any,column:any)
-  {
-    const uniqueList = list.filter((obj: any, index: number, self: any) => 
-      index === self.findIndex((t: any) => t[column] === obj[column])
-    );
-    return uniqueList
-  }
-  @Debounce(300)
-  doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listsanpham().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]
   ChosenItem(item:any,column:any)
@@ -201,8 +164,8 @@ export class ListSanphamComponent {
   }
   ResetFilter()
   {
-    this.ListFilter = this.Listsanpham();
-    this.dataSource.data = this.Listsanpham();
+    this.ListFilter = this.Listquanlydrive();
+    this.dataSource.data = this.Listquanlydrive();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -216,31 +179,14 @@ export class ListSanphamComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-    this.dataSource.data = this.Listsanpham().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    this.dataSource.data = this.Listquanlydrive().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     menu.closeMenu();
   }
-  private updateDisplayedColumns(): void {
-    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
-      (item) => item.key
-    );
-    this.ColumnName = this.FilterColumns.reduce((obj, item) => {
-      if (item.isShow) obj[item.key] = item.value;
-      return obj;
-    }, {} as Record<string, string>);
-    localStorage.setItem('SanphamColFilter',JSON.stringify(this.FilterColumns)
-    );
-  }
-  doFilterColumns(event: any): void {
-    const query = event.target.value.toLowerCase();
-    this.FilterColumns = this.Columns.filter((v) =>
-      v.value.toLowerCase().includes(query)
-    );
-  }
   create(): void {
     this.drawer.open();
-    this._router.navigate(['admin/sanpham', 'new']);
+    this._router.navigate(['admin/quanlydrive', 'new']);
   }
   openDeleteDialog(teamplate: TemplateRef<any>) {
       const dialogDeleteRef = this._dialog.open(teamplate, {
@@ -255,7 +201,7 @@ export class ListSanphamComponent {
   }
   DeleteListItem(): void {
     this.EditList.forEach((item: any) => {
-      this._SanphamService.DeleteSanpham(item);
+      this._QuanlydriveService.DeleteQuanlydrive(item);
     });
     this.EditList = [];
     this._snackBar.open('Xóa Thành Công', '', {
@@ -280,8 +226,8 @@ export class ListSanphamComponent {
   }
   goToDetail(item: any): void {
     this.drawer.open();
-    this._SanphamService.setSanphamId(item.id);
-    this._router.navigate(['admin/sanpham', item.id]);
+    this._QuanlydriveService.setQuanlydriveId(item.id);
+    this._router.navigate(['admin/quanlydrive', item.id]);
   }
   async LoadDrive() {
     const DriveInfo = {
@@ -307,22 +253,22 @@ export class ListSanphamComponent {
 
     // Filter out duplicate masp values
     const uniqueData = Array.from(new Map(transformedData.map((item:any) => [item.masp, item])).values());
-    const existingSanpham = this._SanphamService.ListSanpham();
-    const existingMasp  = existingSanpham.map((v: any) => v.masp);
+    const existingQuanlydrive = this._QuanlydriveService.ListQuanlydrive();
+    const existingMasp  = existingQuanlydrive.map((v: any) => v.masp);
     const newMasp = uniqueData.map((v: any) => v.masp).filter((item: any) => !existingMasp.includes(item));
 
     await Promise.all(uniqueData.map(async (v: any) => {
-      const existingItem = existingSanpham.find((v1: any) => v1.masp === v.masp);
+      const existingItem = existingQuanlydrive.find((v1: any) => v1.masp === v.masp);
       if (existingItem) {
         const updatedItem = { ...existingItem, ...v };
-        await this._SanphamService.updateSanpham(updatedItem);
+        await this._QuanlydriveService.updateQuanlydrive(updatedItem);
       } else {
-        await this._SanphamService.CreateSanpham(v);
+        await this._QuanlydriveService.CreateQuanlydrive(v);
       }
     }));
-    await Promise.all(existingSanpham
+    await Promise.all(existingQuanlydrive
       .filter(sp => !uniqueData.some((item:any) => item.masp === sp.masp))
-      .map(sp => this._SanphamService.updateSanpham({ ...sp, isActive: false }))
+      .map(sp => this._QuanlydriveService.updateQuanlydrive({ ...sp, isActive: false }))
     );
 
     this._snackBar.open('Cập Nhật Thành Công', '', {
@@ -364,9 +310,9 @@ calculateTotalPages() {
 }
 
 onPageSizeChange(size: number,menuHienthi:any) {
-  if(size>this.Listsanpham().length){
-    this.pageSize = this.Listsanpham().length;
-    this._snackBar.open(`Số lượng tối đa ${this.Listsanpham().length}`, '', {
+  if(size>this.Listquanlydrive().length){
+    this.pageSize = this.Listquanlydrive().length;
+    this._snackBar.open(`Số lượng tối đa ${this.Listquanlydrive().length}`, '', {
       duration: 1000,
       horizontalPosition: "end",
       verticalPosition: "top",
@@ -399,7 +345,7 @@ onNextPage() {
 updateDisplayData() {
   const startIndex = (this.currentPage - 1) * this.pageSize;
   const endIndex = startIndex + this.pageSize;
-  const pageData = this.Listsanpham().slice(startIndex, endIndex);
+  const pageData = this.Listquanlydrive().slice(startIndex, endIndex);
   this.dataSource.data = pageData;
   }
 }
@@ -449,3 +395,23 @@ function Debounce(delay: number = 300) {
     return descriptor;
   };
 }
+
+const EXAMPLE_DATA: any[] = [
+  {
+    name: 'Fruit',
+    children: [{name: 'Apple'}, {name: 'Banana'}, {name: 'Fruit loops'}],
+  },
+  {
+    name: 'Vegetables',
+    children: [
+      {
+        name: 'Green',
+        children: [{name: 'Broccoli'}, {name: 'Brussels sprouts'}],
+      },
+      {
+        name: 'Orange',
+        children: [{name: 'Pumpkins'}, {name: 'Carrots'}],
+      },
+    ],
+  },
+];

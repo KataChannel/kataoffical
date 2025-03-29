@@ -1,0 +1,38 @@
+[
+  {
+    "id": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "email": "chikiet88@gmail.com",
+    "SDT": "0977272967",
+    "password": "$2b$10$Rng92MTiFVCGAW0gNs9OWO..3EpfgA8FD8XVSnWqopqXS2F2yjghi",
+    "provider": null,
+    "providerId": null,
+    "isActive": false,
+    "createdAt": "2025-03-12T06:00:36.468Z",
+    "updatedAt": "2025-03-12T06:10:44.121Z",
+    "isSuperAdmin": false
+  },
+  {
+    "id": "bc05bf2f-dd3a-4ee1-b45a-f761a09d4493",
+    "email": "wetdragon1996@gmail.com",
+    "SDT": null,
+    "password": "$2b$10$6QVcgxJSE.XtepfsVsrpKOPVGaIV3UaLFE0MBCPqhcjbzMuKEWvhu",
+    "provider": "google",
+    "providerId": "116773791244163725605",
+    "isActive": false,
+    "createdAt": "2025-03-12T08:48:21.295Z",
+    "updatedAt": "2025-03-12T08:48:21.295Z",
+    "isSuperAdmin": false
+  },
+  {
+    "id": "b8d6abad-12a5-4fd3-9ae3-42cd9c431392",
+    "email": "katachanneloffical@gmail.com",
+    "SDT": null,
+    "password": "$2b$10$AQhVrioBz5cHZuxKrZQfo.LWHrLQlORMuv.NjDivqe5pE7gYNhkU.",
+    "provider": "google",
+    "providerId": "116895729763152566602",
+    "isActive": false,
+    "createdAt": "2025-03-28T01:22:23.760Z",
+    "updatedAt": "2025-03-28T01:22:23.760Z",
+    "isSuperAdmin": false
+  }
+]

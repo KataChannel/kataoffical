@@ -8,20 +8,20 @@ import { ErrorLogService } from '../../shared/services/errorlog.service';
 @Injectable({
   providedIn: 'root'
 })
-export class SanphamService {
+export class QuanlydriveService {
   constructor(
     private _StorageService: StorageService,
     private router: Router,
     private _ErrorLogService: ErrorLogService,
   ) { }
-  ListSanpham = signal<any[]>([]);
-  DetailSanpham = signal<any>({});
-  sanphamId = signal<string | null>(null);
-  setSanphamId(id: string | null) {
-    this.sanphamId.set(id);
+  ListQuanlydrive = signal<any[]>([]);
+  DetailQuanlydrive = signal<any>({});
+  quanlydriveId = signal<string | null>(null);
+  setQuanlydriveId(id: string | null) {
+    this.quanlydriveId.set(id);
   }
   private socket = io(`${environment.APIURL}`);
-  async CreateSanpham(dulieu: any) {
+  async CreateQuanlydrive(dulieu: any) {
     try {
       const options = {
           method:'POST',
@@ -30,7 +30,7 @@ export class SanphamService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.APIURL}/sanpham`, options);
+        const response = await fetch(`${environment.APIURL}/quanlydrive`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -38,21 +38,21 @@ export class SanphamService {
         if (!response.ok) {
           this.handleError(response.status);
         }
-        this.getAllSanpham()
-        this.sanphamId.set(data.id)
+        this.getAllQuanlydrive()
+        this.quanlydriveId.set(data.id)
     } catch (error) {
-        this._ErrorLogService.logError('Failed to CreateSanpham', error);
+        this._ErrorLogService.logError('Failed to CreateQuanlydrive', error);
         return console.error(error);
     }
   }
 
-  async getAllSanpham() {
+  async getAllQuanlydrive() {
     const db = await this.initDB();
-    const cachedData = await db.getAll('sanphams');
-    const updatedAtCache = this._StorageService.getItem('sanphams_updatedAt') || '0';
+    const cachedData = await db.getAll('quanlydrives');
+    const updatedAtCache = this._StorageService.getItem('quanlydrives_updatedAt') || '0';
     // Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
     if (cachedData.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) { // 5 phút cache TTL
-      this.ListSanpham.set(cachedData);
+      this.ListQuanlydrive.set(cachedData);
       return cachedData;
     }
     try {
@@ -64,7 +64,7 @@ export class SanphamService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-      const lastUpdatedResponse = await fetch(`${environment.APIURL}/sanpham/last-updated`, options);
+      const lastUpdatedResponse = await fetch(`${environment.APIURL}/last-updated?table=driveItem`, options);
       if (!lastUpdatedResponse.ok) {
         this.handleError(lastUpdatedResponse.status);
         return cachedData;
@@ -72,23 +72,23 @@ export class SanphamService {
       const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
       //Nếu cache vẫn mới, không cần tải lại dữ liệu
       if (updatedAtServer <= updatedAtCache) {
-        this.ListSanpham.set(cachedData);
+        this.ListQuanlydrive.set(cachedData);
         return cachedData;
       }
       console.log(updatedAtServer, updatedAtCache); 
       //Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
-      const response = await fetch(`${environment.APIURL}/sanpham`, options);
+      const response = await fetch(`${environment.APIURL}/quanlydrive`, options);
       if (!response.ok) {
         this.handleError(response.status);
         return cachedData;
       }
       const data = await response.json();
-      await this.saveSanphams(data);
-      this._StorageService.setItem('sanphams_updatedAt', updatedAtServer.toString());
-      this.ListSanpham.set(data);
+      await this.saveQuanlydrives(data);
+      this._StorageService.setItem('quanlydrives_updatedAt', updatedAtServer.toString());
+      this.ListQuanlydrive.set(data);
       return data;
     } catch (error) {
-      this._ErrorLogService.logError('Failed to create getAllSanpham', error);
+      this._ErrorLogService.logError('Failed to create getAllQuanlydrive', error);
       console.error(error);
       return cachedData;
     }
@@ -96,32 +96,32 @@ export class SanphamService {
 
 
   //Lắng nghe cập nhật từ WebSocket
-  listenSanphamUpdates() {
-    this.socket.on('sanpham-updated', async () => {
+  listenQuanlydriveUpdates() {
+    this.socket.on('quanlydrive-updated', async () => {
       console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-      this._StorageService.removeItem('sanphams_updatedAt');
-      await this.getAllSanpham();
+      this._StorageService.removeItem('quanlydrives_updatedAt');
+      await this.getAllQuanlydrive();
     });
   }
   //Khởi tạo IndexedDB
   private async initDB() {
-    return await openDB('SanphamDB', 1, {
+    return await openDB('QuanlydriveDB', 1, {
       upgrade(db) {
-        db.createObjectStore('sanphams', { keyPath: 'id' });
+        db.createObjectStore('quanlydrives', { keyPath: 'id' });
       },
     });
   }
   // Lưu vào IndexedDB
-  private async saveSanphams(data: any[]) {
+  private async saveQuanlydrives(data: any[]) {
     const db = await this.initDB();
-    const tx = db.transaction('sanphams', 'readwrite');
-    const store = tx.objectStore('sanphams');
+    const tx = db.transaction('quanlydrives', 'readwrite');
+    const store = tx.objectStore('quanlydrives');
     await store.clear(); // Xóa dữ liệu cũ
     data.forEach(item => store.put(item));
     await tx.done;
   }
 
-  async getSanphamBy(param: any) {
+  async getQuanlydriveBy(param: any) {
     try {
       const options = {
         method: 'POST',
@@ -131,18 +131,18 @@ export class SanphamService {
         },
         body: JSON.stringify(param),
       };
-      const response = await fetch(`${environment.APIURL}/sanpham/findby`, options);      
+      const response = await fetch(`${environment.APIURL}/quanlydrive/findby`, options);      
       if (!response.ok) {
         this.handleError(response.status);
       }
       const data = await response.json();      
-      this.DetailSanpham.set(data)
+      this.DetailQuanlydrive.set(data)
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getSanphamBy', error);
+      this._ErrorLogService.logError('Failed to getQuanlydriveBy', error);
       return console.error(error);
     }
   }
-  async updateSanpham(dulieu: any) {
+  async updateQuanlydrive(dulieu: any) {
     try {
       const options = {
           method:'PATCH',
@@ -151,7 +151,7 @@ export class SanphamService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.APIURL}/sanpham/${dulieu.id}`, options);
+        const response = await fetch(`${environment.APIURL}/quanlydrive/${dulieu.id}`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -159,14 +159,14 @@ export class SanphamService {
         if (!response.ok) {
           this.handleError(response.status);
         }
-        this.getAllSanpham()
-        this.getSanphamBy({id:data.id})
+        this.getAllQuanlydrive()
+        this.getQuanlydriveBy({id:data.id})
     } catch (error) {
-      this._ErrorLogService.logError('Failed to updateSanpham', error);
+      this._ErrorLogService.logError('Failed to updateQuanlydrive', error);
         return console.error(error);
     }
   }
-  async DeleteSanpham(item:any) {    
+  async DeleteQuanlydrive(item:any) {    
     try {
         const options = {
             method:'DELETE',
@@ -174,16 +174,41 @@ export class SanphamService {
               'Content-Type': 'application/json',
             },
           };
-          const response = await fetch(`${environment.APIURL}/sanpham/${item.id}`, options);
+          const response = await fetch(`${environment.APIURL}/quanlydrive/${item.id}`, options);
           if (!response.ok) {
             this.handleError(response.status);
           }
-          this.getAllSanpham()
+          this.getAllQuanlydrive()
       } catch (error) {
-        this._ErrorLogService.logError('Failed to DeleteSanpham', error);
+        this._ErrorLogService.logError('Failed to DeleteQuanlydrive', error);
           return console.error(error);
       }
   }
+  
+  async QuanlydriveQueryfolder(item:any) {    
+    try {
+        const options = {
+            method:'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          };
+          const response = await fetch(`${environment.APIURL}/quanlydrive/queryfolder?query=${item.googleId}`, options);
+          if (!response.ok) {
+            this.handleError(response.status);
+          }
+          this.getAllQuanlydrive()
+      } catch (error) {
+        this._ErrorLogService.logError('Failed to DeleteQuanlydrive', error);
+          return console.error(error);
+      }
+  }
+
+
+
+
+
+
   private handleError(status: number) {
     let message = 'Lỗi không xác định';
     switch (status) {

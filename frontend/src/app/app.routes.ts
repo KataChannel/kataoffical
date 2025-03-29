@@ -51,6 +51,38 @@ export const routes: Routes = [
           ],
         },
         {
+          path: 'quanlydrive',
+          canActivate: [PermissionGuard],
+          data: { permission: 'quanlydrive.view' },
+          loadComponent: () => import('./admin/quanlydrive/listquanlydrive/listquanlydrive.component').then((c) => c.ListQuanlydriveComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/quanlydrive/listquanlydrive/listquanlydrive.component').then((c) => c.ListQuanlydriveComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/quanlydrive/detailquanlydrive/detailquanlydrive.component').then((c) => c.DetailQuanlydriveComponent),
+            },
+          ],
+        },
+        {
+          path: 'googlesheet',
+          canActivate: [PermissionGuard],
+          data: { permission: 'googlesheet.view' },
+          loadComponent: () => import('./admin/googlesheet/listgooglesheet/listgooglesheet.component').then((c) => c.ListGooglesheetComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/googlesheet/listgooglesheet/listgooglesheet.component').then((c) => c.ListGooglesheetComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/googlesheet/detailgooglesheet/detailgooglesheet.component').then((c) => c.DetailGooglesheetComponent),
+            },
+          ],
+        },
+        {
           path: 'lead',
           canActivate: [PermissionGuard],
           data: { permission: 'lead.view' },

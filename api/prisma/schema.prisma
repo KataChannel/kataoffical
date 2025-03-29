@@ -31,6 +31,7 @@ model User {
   Notification Notification[]
   assignedTasks Task[] @relation("TaskAssignee")
   relatedTasks Task[] @relation("TaskRelatedUser")
+  PermissionDrive PermissionDrive[] 
 }
 
 model Role {
@@ -479,4 +480,37 @@ model Quanlyqrcode {
   checkedAt DateTime?  // Null nếu chưa check-in, lưu thời gian nếu đã check-in
   createdAt DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+
+enum DriveItemType {
+  folder
+  file
+}
+model DriveItem {
+  id        String           @id @default(uuid())
+  googleId  String        @unique
+  name      String
+  type      DriveItemType
+  parentId  String?
+  mimeType  String?
+  size      Int?
+  permissions PermissionDrive[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([parentId])
+  @@index([type])
+}
+
+model PermissionDrive {
+  id          String      @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  driveItemId String
+  driveItem   DriveItem @relation(fields: [driveItemId], references: [id], onDelete: Cascade)
+  permission  String    // Ví dụ: "read", "write", "owner"
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  @@unique([userId, driveItemId], name: "uniqueUserDriveItemPermission")
 }

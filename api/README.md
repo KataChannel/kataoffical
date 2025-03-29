@@ -6,7 +6,7 @@ git push
 npx bun add @nestjs/config @nestjs/jwt @nestjs/passport passport passport-jwt bcryptjs
 npx bun add @prisma/client
 npx bun add -d prisma
-npx bun prisma migrate dev --name tazagroup1.1.4
+npx bun prisma migrate dev --name tazagroup1.1.7
 npx prisma db push
 npx bun prisma generate
 npx ts-node prisma/scriptdb/exportData.ts
@@ -33,6 +33,8 @@ npx katacreate --type nestjs --name chatbot --outputDir chatbot
 npx katacreate --type nestjs --name lead --outputDir lead
 npx katacreate --type nestjs --name task --outputDir task
 npx katacreate --type nestjs --name quanlyqrcode --outputDir quanlyqrcode
+npx katacreate --type nestjs --name quanlydrive --outputDir quanlydrive
+npx katacreate --type nestjs --name googlesheet --outputDir googlesheet
 
 
 Tình huống	Lệnh cần chạy

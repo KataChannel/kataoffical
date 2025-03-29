@@ -73,7 +73,7 @@ let AppService = class AppService {
         return include;
     }
     async getLastUpdated(table) {
-        const validTables = ['task', 'lead', 'sanpham', 'banggia', 'donhang', 'khachhang', 'nhacungcap', 'dathang', 'kho', 'phieukho', 'role', 'permission', 'nhomkhachhang'];
+        const validTables = ['task', 'googlesheet', 'driveItem', 'lead', 'sanpham', 'banggia', 'donhang', 'khachhang', 'nhacungcap', 'dathang', 'kho', 'phieukho', 'role', 'permission', 'nhomkhachhang'];
         if (!validTables.includes(table)) {
             throw new common_1.BadRequestException(`Invalid table name: ${table}`);
         }

@@ -11,6 +11,7 @@ export declare class UserController {
         password: string;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -34,6 +35,7 @@ export declare class UserController {
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -57,6 +59,7 @@ export declare class UserController {
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -90,6 +93,7 @@ export declare class UserController {
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -101,6 +105,7 @@ export declare class UserController {
         password: string;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -112,6 +117,7 @@ export declare class UserController {
         password: string;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;

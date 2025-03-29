@@ -24,7 +24,8 @@ import { leadModule } from './lead/lead.module';
 import { taskModule } from './task/task.module';
 import { MailModule } from './mail/mail.module';
 import { QuanlyqrcodeModule } from './quanlyqrcode/quanlyqrcode.module';
-
+import { QuanlydriveModule } from './quanlydrive/quanlydrive.module';
+import { GooglesheetModule } from './googlesheet/googlesheet.module';
 @Module({
   imports: [
     AuthModule, 
@@ -48,6 +49,8 @@ import { QuanlyqrcodeModule } from './quanlyqrcode/quanlyqrcode.module';
     taskModule,
     QuanlyqrcodeModule,
     MailModule,
+    QuanlydriveModule,
+    GooglesheetModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

@@ -19,6 +19,7 @@ export declare class AuthController {
         password: string;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -41,6 +42,7 @@ export declare class AuthController {
         password: string;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;

@@ -1,0 +1,690 @@
+[
+  {
+    "id": "04df29e1-6a1c-4934-82f9-c9e03d5b5337",
+    "timestamp": "2025-03-20T15:17:44.131Z",
+    "message": "Failed to create getAllSanpham",
+    "details": {
+      "url": "http://localhost:4303/admin/sanpham",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-20T15:17:44.133Z"
+  },
+  {
+    "id": "d8e2d44e-6d05-414e-af88-879bc361c2f5",
+    "timestamp": "2025-03-20T15:54:00.366Z",
+    "message": "Failed to getSanphamBy",
+    "details": {
+      "url": "http://localhost:4303/admin/sanpham/4f9a92f5-1790-4049-8882-1a2720fcae4a",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-20T15:54:00.368Z"
+  },
+  {
+    "id": "e8219098-05ff-4dfa-a5a5-0757e4fffc55",
+    "timestamp": "2025-03-20T16:33:41.933Z",
+    "message": "Failed to create getAllSanpham",
+    "details": {
+      "url": "http://localhost:4303/admin/sanpham",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-20T16:33:41.934Z"
+  },
+  {
+    "id": "ee071d04-b066-4f5e-9c62-bc5f00dddd73",
+    "timestamp": "2025-03-20T18:55:22.369Z",
+    "message": "Failed to CreateLead",
+    "details": {
+      "url": "http://localhost:4303/admin/lead/new",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-20T18:55:22.371Z"
+  },
+  {
+    "id": "0c5511d6-24ed-4028-827d-b456e5b7684d",
+    "timestamp": "2025-03-20T19:07:47.624Z",
+    "message": "Failed to create getAllLead",
+    "details": {
+      "url": "http://localhost:4303/admin/lead",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-20T19:07:47.626Z"
+  },
+  {
+    "id": "c93f6d2e-6f3c-4f01-ba21-d92b93ade1a3",
+    "timestamp": "2025-03-20T19:07:47.627Z",
+    "message": "Failed to create getAllLead",
+    "details": {
+      "url": "http://localhost:4303/admin/lead",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-20T19:07:47.628Z"
+  },
+  {
+    "id": "4fbceb1c-d819-4768-8a27-3c3eccb98fa4",
+    "timestamp": "2025-03-24T00:54:52.911Z",
+    "message": "Failed to CreateLead",
+    "details": {
+      "url": "http://localhost:4303/admin/lead/new",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-24T00:54:52.914Z"
+  },
+  {
+    "id": "b4f8be5d-3879-4c3a-82b7-cc9ced43ebd3",
+    "timestamp": "2025-03-24T01:12:18.910Z",
+    "message": "Failed to create getAllLead",
+    "details": {
+      "url": "http://localhost:4303/admin/lead",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-24T01:12:18.913Z"
+  },
+  {
+    "id": "d28738f8-06c6-49f9-850c-f454d76890cf",
+    "timestamp": "2025-03-24T01:12:18.937Z",
+    "message": "Failed to create getAllLead",
+    "details": {
+      "url": "http://localhost:4303/admin/lead",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-24T01:12:18.939Z"
+  },
+  {
+    "id": "41ea29c3-4ebe-4203-8b6e-baca87c69826",
+    "timestamp": "2025-03-24T01:12:34.576Z",
+    "message": "Failed to create getAllLead",
+    "details": {
+      "url": "http://localhost:4303/admin/lead",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-24T01:12:34.579Z"
+  },
+  {
+    "id": "4753b57a-b861-458c-9581-48714ec96d09",
+    "timestamp": "2025-03-24T01:12:34.613Z",
+    "message": "Failed to create getAllLead",
+    "details": {
+      "url": "http://localhost:4303/admin/lead",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-24T01:12:34.615Z"
+  },
+  {
+    "id": "7b7dc88d-51e2-4b7a-b114-80c04a428eab",
+    "timestamp": "2025-03-24T01:13:53.316Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "lead not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "lead not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-24T01:13:53.317Z"
+  },
+  {
+    "id": "d33b9e39-4d09-486d-a213-a99878fb0401",
+    "timestamp": "2025-03-24T07:55:47.900Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "lead not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "lead not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-24T07:55:47.902Z"
+  },
+  {
+    "id": "4c1b48d8-13b8-4c9c-9a8e-6bf42948417e",
+    "timestamp": "2025-03-24T07:55:49.392Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "lead not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "lead not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-24T07:55:49.394Z"
+  },
+  {
+    "id": "b0ce37af-1e3f-4f8a-bfcf-175a2f60bbef",
+    "timestamp": "2025-03-24T08:29:46.318Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "lead not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "lead not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-24T08:29:46.320Z"
+  },
+  {
+    "id": "c6d20f1b-036f-4935-ac2c-6001685c69a1",
+    "timestamp": "2025-03-24T08:29:47.296Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "lead not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "lead not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-24T08:29:47.298Z"
+  },
+  {
+    "id": "f3e57e18-3a5b-488d-909b-c1f9e6f23e60",
+    "timestamp": "2025-03-25T18:38:25.069Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-25T18:38:25.072Z"
+  },
+  {
+    "id": "20e6f25c-6abe-499b-8944-b5848036d53f",
+    "timestamp": "2025-03-25T18:39:10.472Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-25T18:39:10.475Z"
+  },
+  {
+    "id": "5da3349f-c747-4331-bcd8-792f547b0040",
+    "timestamp": "2025-03-25T18:43:22.636Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-25T18:43:22.637Z"
+  },
+  {
+    "id": "94c8cc23-ef31-4937-9ef1-6bb6046d4184",
+    "timestamp": "2025-03-25T18:43:24.759Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-25T18:43:24.762Z"
+  },
+  {
+    "id": "4e5587cb-5f64-4137-9162-3d464f6ad1af",
+    "timestamp": "2025-03-25T18:43:26.109Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-25T18:43:26.110Z"
+  },
+  {
+    "id": "afd1a54a-ffd8-4330-9117-59713a7fe880",
+    "timestamp": "2025-03-25T18:43:27.301Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-25T18:43:27.302Z"
+  },
+  {
+    "id": "6293bbb0-69e3-4ed9-b776-e57996fee7c3",
+    "timestamp": "2025-03-25T18:43:28.882Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-25T18:43:28.883Z"
+  },
+  {
+    "id": "1e7060e5-c3a3-4d29-af06-54751311c9bc",
+    "timestamp": "2025-03-25T18:43:33.640Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-25T18:43:33.641Z"
+  },
+  {
+    "id": "a1ead32e-c8fc-45db-a804-dd2d6dbfa17c",
+    "timestamp": "2025-03-25T18:43:37.529Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-25T18:43:37.530Z"
+  },
+  {
+    "id": "5cb3cb3e-9763-4bc0-9bb5-ef4b2000ef56",
+    "timestamp": "2025-03-25T18:43:40.418Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-25T18:43:40.419Z"
+  },
+  {
+    "id": "1a3976f8-8c12-47b6-813e-4f9d16c124b1",
+    "timestamp": "2025-03-25T18:43:41.205Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-25T18:43:41.206Z"
+  },
+  {
+    "id": "86e77eff-21f7-4741-a2ae-afc700b677a6",
+    "timestamp": "2025-03-26T02:53:10.180Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-26T02:53:10.182Z"
+  },
+  {
+    "id": "527508c2-7e7d-4357-af5a-a4ac7d2e027b",
+    "timestamp": "2025-03-26T02:53:46.683Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-26T02:53:46.684Z"
+  },
+  {
+    "id": "81f7d798-2dbb-45cf-9891-8f8f51d910a5",
+    "timestamp": "2025-03-26T02:57:33.145Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-26T02:57:33.146Z"
+  },
+  {
+    "id": "4cdbb024-0177-4d41-a6a2-e45b7b9f042a",
+    "timestamp": "2025-03-26T03:09:48.848Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-26T03:09:48.850Z"
+  },
+  {
+    "id": "cb1cc9fb-ee74-4391-812f-9b63535846fe",
+    "timestamp": "2025-03-26T03:13:09.293Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-26T03:13:09.294Z"
+  },
+  {
+    "id": "34ec5591-b3f3-4e77-aada-bd6724ea5a98",
+    "timestamp": "2025-03-26T03:15:27.506Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-26T03:15:27.507Z"
+  },
+  {
+    "id": "ace7b88c-6c88-4c86-a5e8-affa9068cf81",
+    "timestamp": "2025-03-26T03:15:55.988Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-26T03:15:55.989Z"
+  },
+  {
+    "id": "2cf369dd-866c-4c1c-b287-27dca694dbc8",
+    "timestamp": "2025-03-26T03:16:59.046Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-26T03:16:59.047Z"
+  },
+  {
+    "id": "f42e758a-f9ef-4f1c-9d60-19c23dacf4c3",
+    "timestamp": "2025-03-26T03:18:14.767Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "quanlyqrcode not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "quanlyqrcode not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-26T03:18:14.768Z"
+  },
+  {
+    "id": "0c723df4-4533-4900-a368-3372495c39d1",
+    "timestamp": "2025-03-26T04:55:02.847Z",
+    "message": "findby",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "lead not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "lead not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-03-26T04:55:02.849Z"
+  },
+  {
+    "id": "3e2455fd-c878-4e46-ae5e-98c736a9ef04",
+    "timestamp": "2025-03-26T08:11:57.035Z",
+    "message": "Failed to CreateTask",
+    "details": {
+      "url": "http://localhost:4303/admin/task/new",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-26T08:11:57.050Z"
+  },
+  {
+    "id": "89b94111-4f2d-4566-aef3-aab4aeec4f05",
+    "timestamp": "2025-03-26T09:39:28.724Z",
+    "message": "Failed to create getAllTask",
+    "details": {
+      "url": "http://localhost:4303/admin/task",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-26T09:39:28.727Z"
+  },
+  {
+    "id": "546407ae-6d0c-4960-ab62-13acc89a8d35",
+    "timestamp": "2025-03-26T09:39:29.106Z",
+    "message": "Failed to create getAllTask",
+    "details": {
+      "url": "http://localhost:4303/admin/task",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-26T09:39:29.107Z"
+  },
+  {
+    "id": "66ca5bb8-9279-417c-8fb5-23ab745f21fb",
+    "timestamp": "2025-03-27T01:47:43.028Z",
+    "message": "Failed to getTaskBy",
+    "details": {
+      "url": "http://localhost:4303/admin/task/7c715a1d-abd0-473c-ab31-f14e5677eb67",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-27T01:47:43.032Z"
+  },
+  {
+    "id": "b63f3e0f-6947-4e96-819f-60f869d43d69",
+    "timestamp": "2025-03-27T01:49:55.531Z",
+    "message": "Failed to getTaskBy",
+    "details": {
+      "url": "http://localhost:4303/admin/task/7c715a1d-abd0-473c-ab31-f14e5677eb67",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-27T01:49:55.532Z"
+  },
+  {
+    "id": "01386b05-38bd-4fcd-871f-488a1ddd1e3c",
+    "timestamp": "2025-03-27T02:04:01.245Z",
+    "message": "Failed to create getAllTask",
+    "details": {
+      "url": "http://localhost:4303/admin/task/2dcf5636-d855-4587-9335-5058ed268731",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-27T02:04:01.252Z"
+  },
+  {
+    "id": "b3e3e71c-e731-4f7b-ac54-0761e454e511",
+    "timestamp": "2025-03-27T02:04:01.255Z",
+    "message": "Failed to getTaskBy",
+    "details": {
+      "url": "http://localhost:4303/admin/task/2dcf5636-d855-4587-9335-5058ed268731",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-27T02:04:01.257Z"
+  },
+  {
+    "id": "988ad6a9-f724-4fa2-b05d-faede3910aef",
+    "timestamp": "2025-03-27T02:25:49.750Z",
+    "message": "Failed to getTaskBy",
+    "details": {
+      "url": "http://localhost:4303/admin/task/2dcf5636-d855-4587-9335-5058ed268731",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-27T02:25:49.752Z"
+  },
+  {
+    "id": "f2d29f72-ed69-4b42-a9e8-a7639371e5d4",
+    "timestamp": "2025-03-27T04:39:42.903Z",
+    "message": "Failed to create getAllQuanlyqrcode",
+    "details": {
+      "url": "http://localhost:4303/admin/quanlyqrcode",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-03-27T04:39:42.905Z"
+  }
+]

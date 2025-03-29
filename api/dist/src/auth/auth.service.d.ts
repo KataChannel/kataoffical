@@ -11,6 +11,7 @@ export declare class AuthService {
         password: string;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -26,6 +27,7 @@ export declare class AuthService {
         password: string;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -42,6 +44,7 @@ export declare class AuthService {
             password: string;
             provider: string | null;
             providerId: string | null;
+            isSuperAdmin: boolean;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;

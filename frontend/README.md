@@ -19,6 +19,8 @@ npx katacreate --type angular --name congnokhachhang --outputDir .
 npx katacreate --type angular --name lead --outputDir .
 npx katacreate --type angular --name task --outputDir .
 npx katacreate --type angular --name quanlyqrcode --outputDir .
+npx katacreate --type angular --name quanlydrive --outputDir .
+npx katacreate --type angular --name quanlygooglesheet --outputDir .
 
 npx ng g c congnokhachhang --skip-tests --standalone
 npx ng g c congnoncc --skip-tests --standalone

@@ -11,6 +11,7 @@ export declare class UserService {
         password: string;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -34,6 +35,7 @@ export declare class UserService {
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -57,6 +59,7 @@ export declare class UserService {
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -80,6 +83,7 @@ export declare class UserService {
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -91,6 +95,7 @@ export declare class UserService {
         password: string;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -102,6 +107,7 @@ export declare class UserService {
         password: string;
         provider: string | null;
         providerId: string | null;
+        isSuperAdmin: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
