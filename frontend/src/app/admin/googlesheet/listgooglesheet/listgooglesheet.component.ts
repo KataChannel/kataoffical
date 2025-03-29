@@ -97,8 +97,10 @@ export class ListGooglesheetComponent {
     this.sheetName = this._StorageService.getItem('sheetName');
     this.initializeColumns(); 
     this.updateDisplayData();
-    await this._GooglesheetService.getAllGooglesheet(this.sheetId,this.sheetName);
-    this.displayedColumns = Object.keys(this.Listgooglesheet()[0])
+    if(this.sheetId && this.sheetName) {
+      await this._GooglesheetService.getAllGooglesheet(this.sheetId,this.sheetName);
+    }  
+    this.displayedColumns = Object.keys(this.Listgooglesheet()[0]||{})
     this.Columns =this.Listgooglesheet()[0]
     this.dataSource = new MatTableDataSource(this.Listgooglesheet());
     this.dataSource.paginator = this.paginator;
@@ -106,9 +108,12 @@ export class ListGooglesheetComponent {
     this.setupDrawer();
   }
   async loadSheet() {
-   await this._GooglesheetService.getAllGooglesheet(this.sheetId,this.sheetName);
-   this._StorageService.setItem('sheetId',this.sheetId);
-   this._StorageService.setItem('sheetName',this.sheetName);
+    if(this.sheetId && this.sheetName) {
+      await this._GooglesheetService.getAllGooglesheet(this.sheetId,this.sheetName);
+      this._StorageService.setItem('sheetId',this.sheetId);
+      this._StorageService.setItem('sheetName',this.sheetName);
+    }
+
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
