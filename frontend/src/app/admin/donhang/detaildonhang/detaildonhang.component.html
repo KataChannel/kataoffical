@@ -86,7 +86,10 @@
               </mat-form-field>
               <div class="overflow-y-auto max-h-44">
                 @for (item of filterBanggia; track item.id) {
-                <mat-option [value]="item.id">{{item.title}}</mat-option>
+                <mat-option [value]="item.id">
+                  <span class="text-xs text italic text-red-600">Hết Hạn</span>
+                  {{item.title}}
+                </mat-option>
                 }
               </div>
             </div>
@@ -300,3 +303,17 @@
   </div>
     </ng-container> 
 </div>
+
+
+<ng-template #BgHethanDialog>
+  <mat-dialog-content class="!relative !flex flex-col space-y-8 items-center justify-center">
+          <div class="relative flex flex-row space-x-2 items-center">
+              <div class="text-red-600 italic">Bảng giá này đã hết hạn, tiếp tục sử dụng</div>
+          </div>
+          <div class="relative flex flex-row space-x-2 items-center justify-center">
+              <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
+              <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
+          </div>
+  </mat-dialog-content>
+</ng-template>
+

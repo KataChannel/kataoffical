@@ -6,6 +6,7 @@ import {
   inject,
   QueryList,
   signal,
+  TemplateRef,
   ViewChild,
   ViewChildren,
 } from '@angular/core';
@@ -17,7 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { ListDonhangComponent } from '../listdonhang/listdonhang.component';
 import { DonhangService } from '../donhang.service';
@@ -75,6 +76,7 @@ export class DetailDonhangComponent {
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
+  @ViewChild('BgHethanDialog') BgHethanDialog!: TemplateRef<any>;
   constructor() {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
@@ -391,6 +393,7 @@ export class DetailDonhangComponent {
       0
     );
   }
+  private _dialog:MatDialog = inject(MatDialog);
   SelectKhachhang(event: any) {
     const selectedKhachhang = this.filterKhachhang.find(
       (v: any) => v.id === event.value
@@ -406,7 +409,31 @@ export class DetailDonhangComponent {
         };
         v.khachhangId = selectedKhachhang.id;
         v.khachhang = khachhang;
-        v.banggiaId = selectedKhachhang.banggia.find((v: any) => moment() > moment(v.batdau) && moment() < moment(v.ketthuc))?.id;
+        const banggia = selectedKhachhang.banggia.find((v: any) => moment() > moment(v.batdau) && moment() < moment(v.ketthuc))
+      if (!banggia) {
+        // Open dialog to ask if user wants to use the first banggia
+        const dialogRef = this._dialog.open(this.BgHethanDialog, {
+          hasBackdrop: true,
+          disableClose: true,
+        })
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result=="true") {
+          this.DetailDonhang.update((v: any) => {
+            if (result && selectedKhachhang.banggia && selectedKhachhang.banggia.length > 0) {
+              v.banggiaId = selectedKhachhang.banggia[0].id;
+            }
+            // If result is false, don't set banggiaId
+            return v;
+          });
+        }
+        });
+
+
+      } else {
+        v.banggiaId = banggia.id;
+      }
+       
+        // v.banggiaId = banggia?banggia.id:selectedKhachhang.banggia[0].id;
         return v;
       });
     }
