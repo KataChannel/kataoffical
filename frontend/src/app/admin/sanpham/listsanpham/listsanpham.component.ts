@@ -20,6 +20,10 @@ import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
+import { env } from 'process';
+import { environment } from '../../../../environments/environment.development';
+import { KtableComponent } from '../../../shared/common/ktable/ktable.component';
 @Component({
   selector: 'app-listsanpham',
   templateUrl: './listsanpham.component.html',
@@ -39,22 +43,14 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
     CommonModule,
     FormsModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    SearchfilterComponent,
+    KtableComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListSanphamComponent {
-  displayedColumns: string[] = [
-    'title',
-    'masp',
-    'giagoc',
-    'dvt',
-    'soluong',
-    'soluongkho',
-    'haohut',
-    'ghichu',
-    'createdAt',
-  ];
+  displayedColumns: string[] = [];
   ColumnName: any = {
     title: 'Tên Sản Phẩm',
     masp: 'Mã Sản Phẩm',
@@ -78,7 +74,6 @@ export class ListSanphamComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
-  filterValues: { [key: string]: string } = {};
   private _SanphamService: SanphamService = inject(SanphamService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
@@ -92,11 +87,10 @@ export class ListSanphamComponent {
   CountItem: any = 0;
   isSearch: boolean = false;
   constructor() {
-    this.displayedColumns.forEach(column => {
-      this.filterValues[column] = '';
-    });
     effect(() => {
       this.dataSource.data = this.Listsanpham();
+      console.log(this.Listsanpham());
+      
       this.totalItems = this.Listsanpham().length;
       this.calculateTotalPages();
     });
@@ -109,9 +103,11 @@ export class ListSanphamComponent {
     }
   }
   async ngOnInit(): Promise<void> {    
-    this.updateDisplayData();
     this._SanphamService.listenSanphamUpdates();
     await this._SanphamService.getAllSanpham();
+    this.displayedColumns = Object.keys(this.ColumnName)
+    console.log(this.displayedColumns);
+    this.updateDisplayData();
     this.dataSource = new MatTableDataSource(this.Listsanpham());
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -202,9 +198,9 @@ export class ListSanphamComponent {
   ResetFilter()
   {
     this.ListFilter = this.Listsanpham();
-    this.dataSource.data = this.Listsanpham();
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    // this.dataSource.data = this.Listsanpham();
+    // this.dataSource.paginator = this.paginator;
+    // this.dataSource.sort = this.sort;
   }
   EmptyFiter()
   {
@@ -220,6 +216,12 @@ export class ListSanphamComponent {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     menu.closeMenu();
+  }
+  onOutFilter(event:any)
+  {    
+    this.dataSource.data = event;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -283,16 +285,41 @@ export class ListSanphamComponent {
     this._SanphamService.setSanphamId(item.id);
     this._router.navigate(['admin/sanpham', item.id]);
   }
+  OpenLoadDrive(teamplate: TemplateRef<any>)
+  {
+    const dialogDeleteRef = this._dialog.open(teamplate, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+    dialogDeleteRef.afterClosed().subscribe((result) => {
+      if (result=="true") {
+      }
+    });
+  }
+  IdSheet:any='15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk'
+  SheetName:any= 'SPImport'
+  ImportIteam:any=[]
+  ImportColumnName:any = {}
+  ImportdisplayedColumns:any[] = []
   async LoadDrive() {
     const DriveInfo = {
-      IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'SPImport',
-      ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
+      IdSheet: this.IdSheet,
+      SheetName: this.SheetName,
+      ApiKey: environment.GSApiKey,
     };
    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
-   const data = ConvertDriveData(result.values);
-   this.DoImportData(data);
+   this.ImportIteam = ConvertDriveData(result.values);
+  //  console.log(result.values[0]);
+  //  console.log(result.values[1]);
+   this.ImportColumnName = Object.fromEntries(result.values[0].map((key:any, i:any) => [key, result.values[1][i]]));
+   this.ImportdisplayedColumns = result.values[0]
+  //  console.log(this.ImportColumnName);
+  //  console.log(this.ImportdisplayedColumns);
+  //  console.log(this.ImportIteam);
+   
+  //  this.DoImportData(data);
   }
+
   async DoImportData(data: any) {
     const transformedData = data.map((v: any) => ({
       title: v.title?.trim() || '',

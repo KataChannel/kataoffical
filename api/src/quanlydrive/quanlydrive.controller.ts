@@ -44,8 +44,8 @@ export class QuanlydriveController {
     return this.quanlydriveService.findby(param);
   }
   @Get()
-  findAll() {
-    return this.quanlydriveService.findAll();
+  findAll(@Query('driveId') driveId: string) {
+    return this.quanlydriveService.findAll(driveId);
   }
   @Get('findid/:id')
   findOne(@Param('id') id: string) {
@@ -60,6 +60,5 @@ export class QuanlydriveController {
   remove(@Param('id') id: string) {
     return this.quanlydriveService.remove(id);
   }
-
-
+  
 }

@@ -60,11 +60,12 @@ let QuanlydriveService = class QuanlydriveService {
                 googleId: item.id,
                 name: item.name,
                 parentId: driveId,
-                type: item.mimeType === 'application/vnd.google-apps.folder' ? 'folder' : 'file',
+                type: item.mimeType === 'application/vnd.google-apps.folder'
+                    ? 'folder'
+                    : 'file',
                 mimeType: item.mimeType,
                 size: Number(item.size) || 0,
             }));
-            console.log(folderItems);
             await this.prisma.$transaction(folderItems.map((item) => this.prisma.driveItem.upsert({
                 where: { googleId: item.googleId },
                 update: item,
@@ -77,12 +78,46 @@ let QuanlydriveService = class QuanlydriveService {
             throw new Error('Failed to query folders');
         }
     }
+    async UpdateAllFolderDrive(driveId) {
+        const foldes = await this.queryFolders(driveId);
+        console.log(foldes);
+    }
     async listUsersFolder(driveId) {
         const response = await this.drive.permissions.list({
             fileId: driveId,
             supportsAllDrives: true,
+            fields: 'permissions(id,emailAddress,type,kind,role)',
         });
-        return response.data.permissions;
+        const users = response.data.permissions;
+        const driveExists = await this.prisma.driveItem.findUnique({
+            where: { googleId: driveId },
+        });
+        console.log('driveExists', driveExists);
+        if (driveExists) {
+            const userItem = users.map((user) => ({
+                userIdDrive: user.id,
+                driveId: driveExists.id,
+                googleId: driveExists.googleId,
+                emailAddress: user.emailAddress,
+                type: user.type,
+                kind: user.kind,
+                role: user.role,
+            }));
+            console.log('userItem', userItem);
+            await this.prisma.$transaction(userItem.map((item) => this.prisma.permissionDrive.upsert({
+                where: { uniqueUserDriveItemPermission: { userIdDrive: item.userIdDrive, driveId: driveExists.id, googleId: driveExists.googleId } },
+                update: item,
+                create: item,
+            })));
+        }
+        else {
+            console.log(`Drive with ID ${driveId} does not exist in the database`);
+        }
+        const result = await this.prisma.permissionDrive.findMany({
+            where: { driveId: driveId },
+            include: { driveItem: true },
+        });
+        return result;
     }
     async addUser(email, driveId, role) {
         const response = await this.drive.permissions.create({
@@ -97,12 +132,22 @@ let QuanlydriveService = class QuanlydriveService {
         return response.data;
     }
     async removeUser(permissionId, driveId) {
-        await this.drive.permissions.delete({
-            fileId: driveId,
-            permissionId,
-            supportsAllDrives: true,
-        });
-        return { message: `User ${permissionId} removed` };
+        try {
+            const result = await this.drive.permissions.delete({
+                fileId: driveId,
+                permissionId,
+                supportsAllDrives: true,
+            });
+            return {
+                statusCode: result.status,
+                message: `User ${permissionId} removed`,
+            };
+        }
+        catch (error) {
+            this._ErrorlogService.logError('removeUser', error.message);
+            console.log(error.status);
+            return { statusCode: error.status, message: error.message };
+        }
     }
     async getLastUpdateddriveItem() {
         try {
@@ -127,10 +172,10 @@ let QuanlydriveService = class QuanlydriveService {
             throw error;
         }
     }
-    async findAll() {
+    async findAll(driveId = '0AKQL50NKsue5Uk9PVA') {
         try {
-            const files = await this.prisma.driveItem.findMany();
-            const tree = this.buildTree(files, '0AKQL50NKsue5Uk9PVA');
+            const files = await this.prisma.driveItem.findMany({ include: { permissions: true } });
+            const tree = this.buildTree(files, driveId);
             console.log(tree);
             return tree;
         }
@@ -141,12 +186,17 @@ let QuanlydriveService = class QuanlydriveService {
     }
     buildTree(items, parentId = null) {
         return items
-            .filter(item => item.parentId === parentId)
-            .map(item => ({ ...item, children: this.buildTree(items, item.googleId) }));
+            .filter((item) => item.parentId === parentId)
+            .map((item) => ({
+            ...item,
+            children: this.buildTree(items, item.googleId),
+        }));
     }
     async findby(param) {
         try {
-            const driveItem = await this.prisma.driveItem.findUnique({ where: param });
+            const driveItem = await this.prisma.driveItem.findUnique({
+                where: param,
+            });
             return driveItem;
         }
         catch (error) {
@@ -156,7 +206,9 @@ let QuanlydriveService = class QuanlydriveService {
     }
     async findOne(id) {
         try {
-            const driveItem = await this.prisma.driveItem.findUnique({ where: { id } });
+            const driveItem = await this.prisma.driveItem.findUnique({
+                where: { id },
+            });
             if (!driveItem)
                 throw new common_1.NotFoundException('driveItem not found');
             return driveItem;
@@ -176,8 +228,9 @@ let QuanlydriveService = class QuanlydriveService {
         }
     }
     async remove(id) {
+        console.log('id', id);
         try {
-            return this.prisma.driveItem.delete({ where: { id } });
+            return this.prisma.permissionDrive.delete({ where: { id } });
         }
         catch (error) {
             this._ErrorlogService.logError('removedriveItem', error);

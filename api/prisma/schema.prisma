@@ -31,7 +31,6 @@ model User {
   Notification Notification[]
   assignedTasks Task[] @relation("TaskAssignee")
   relatedTasks Task[] @relation("TaskRelatedUser")
-  PermissionDrive PermissionDrive[] 
 }
 
 model Role {
@@ -487,30 +486,34 @@ enum DriveItemType {
   folder
   file
 }
-model DriveItem {
-  id        String           @id @default(uuid())
-  googleId  String        @unique
-  name      String
-  type      DriveItemType
-  parentId  String?
-  mimeType  String?
-  size      Int?
-  permissions PermissionDrive[]
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
 
-  @@index([parentId])
-  @@index([type])
+model DriveItem {
+  id          String           @id @default(uuid())
+  googleId    String           @unique
+  name        String
+  type        DriveItemType
+  parentId    String?
+  mimeType    String?
+  size        Int?
+  permissions PermissionDrive[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([type,parentId])
 }
 
 model PermissionDrive {
-  id          String      @id @default(uuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  driveItemId String
-  driveItem   DriveItem @relation(fields: [driveItemId], references: [id], onDelete: Cascade)
-  permission  String    // Ví dụ: "read", "write", "owner"
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  @@unique([userId, driveItemId], name: "uniqueUserDriveItemPermission")
+  id           String    @id @default(uuid())
+  userIdDrive  String
+  type         String    // "user" hoặc "group"
+  kind         String    // "drive#permission"
+  emailAddress String?
+  role         String    // "reader", "writer", "commenter", "owner"
+  driveId      String
+  googleId     String
+  driveItem    DriveItem @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([userIdDrive, driveId,googleId], name: "uniqueUserDriveItemPermission")
 }

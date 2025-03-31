@@ -25,3 +25,4 @@ npx katacreate --type angular --name quanlygooglesheet --outputDir .
 npx ng g c congnokhachhang --skip-tests --standalone
 npx ng g c congnoncc --skip-tests --standalone
 npx ng g c keditor --skip-tests --standalone
+npx ng g c ktable --skip-tests --standalone

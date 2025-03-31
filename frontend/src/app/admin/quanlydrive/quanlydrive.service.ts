@@ -46,7 +46,10 @@ export class QuanlydriveService {
     }
   }
 
-  async getAllQuanlydrive() {
+  async getAllQuanlydrive(driveId?: string,isLoad?: boolean) {
+    if(isLoad){
+      this._StorageService.removeItem('quanlydrives_updatedAt')
+    }
     const db = await this.initDB();
     const cachedData = await db.getAll('quanlydrives');
     const updatedAtCache = this._StorageService.getItem('quanlydrives_updatedAt') || '0';
@@ -77,7 +80,7 @@ export class QuanlydriveService {
       }
       console.log(updatedAtServer, updatedAtCache); 
       //Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
-      const response = await fetch(`${environment.APIURL}/quanlydrive`, options);
+      const response = await fetch(`${environment.APIURL}/quanlydrive?driveId=${driveId}`, options);
       if (!response.ok) {
         this.handleError(response.status);
         return cachedData;
@@ -166,6 +169,24 @@ export class QuanlydriveService {
         return console.error(error);
     }
   }
+  async DeleteUserDrive(item:any) {    
+    try {
+        const options = {
+            method:'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          };
+          const response = await fetch(`${environment.APIURL}/quanlydrive/users/${item.userIdDrive}/${item.googleId}`, options);
+          if (!response.ok) {
+            this.handleError(response.status);
+          }
+          return response.json();
+      } catch (error) {
+        this._ErrorLogService.logError('Failed to DeleteQuanlydrive', error);
+          return console.error(error);
+      }
+  }
   async DeleteQuanlydrive(item:any) {    
     try {
         const options = {
@@ -194,6 +215,24 @@ export class QuanlydriveService {
             },
           };
           const response = await fetch(`${environment.APIURL}/quanlydrive/queryfolder?query=${item.googleId}`, options);
+          if (!response.ok) {
+            this.handleError(response.status);
+          }
+          this.getAllQuanlydrive()
+      } catch (error) {
+        this._ErrorLogService.logError('Failed to DeleteQuanlydrive', error);
+          return console.error(error);
+      }
+  }
+  async ListUsersFolder(item:any) {    
+    try {
+        const options = {
+            method:'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          };
+          const response = await fetch(`${environment.APIURL}/quanlydrive/listUsersFolder?query=${item.googleId}`, options);
           if (!response.ok) {
             this.handleError(response.status);
           }

@@ -43,8 +43,8 @@ let QuanlydriveController = class QuanlydriveController {
     findby(param) {
         return this.quanlydriveService.findby(param);
     }
-    findAll() {
-        return this.quanlydriveService.findAll();
+    findAll(driveId) {
+        return this.quanlydriveService.findAll(driveId);
     }
     findOne(id) {
         return this.quanlydriveService.findOne(id);
@@ -110,8 +110,9 @@ __decorate([
 ], QuanlydriveController.prototype, "findby", null);
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)('driveId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], QuanlydriveController.prototype, "findAll", null);
 __decorate([

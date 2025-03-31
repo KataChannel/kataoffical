@@ -10,10 +10,35 @@ export declare class QuanlydriveService {
     constructor(_SocketGateway: SocketGateway, prisma: PrismaService, _ErrorlogService: ErrorlogService);
     uploadFile(file: Express.Multer.File): Promise<string>;
     queryFolders(driveId: string): Promise<any[]>;
-    listUsersFolder(driveId: any): Promise<any>;
+    UpdateAllFolderDrive(driveId: any): Promise<void>;
+    listUsersFolder(driveId: any): Promise<({
+        driveItem: {
+            type: import(".prisma/client").$Enums.DriveItemType;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            parentId: string | null;
+            googleId: string;
+            mimeType: string | null;
+            size: number | null;
+        };
+    } & {
+        role: string;
+        type: string;
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        googleId: string;
+        userIdDrive: string;
+        kind: string;
+        emailAddress: string | null;
+        driveId: string;
+    })[]>;
     addUser(email: string, driveId: any, role: 'reader' | 'writer' | 'commenter' | 'fileOrganizer' | 'organizer'): Promise<any>;
     removeUser(permissionId: string, driveId: any): Promise<{
-        message: string;
+        statusCode: any;
+        message: any;
     }>;
     getLastUpdateddriveItem(): Promise<{
         updatedAt: number | Date;
@@ -29,7 +54,7 @@ export declare class QuanlydriveService {
         mimeType: string | null;
         size: number | null;
     }>;
-    findAll(): Promise<any>;
+    findAll(driveId?: string): Promise<any>;
     private buildTree;
     findby(param: any): Promise<{
         type: import(".prisma/client").$Enums.DriveItemType;
@@ -65,14 +90,15 @@ export declare class QuanlydriveService {
         size: number | null;
     }>;
     remove(id: string): Promise<{
-        type: import(".prisma/client").$Enums.DriveItemType;
+        role: string;
+        type: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        name: string;
-        parentId: string | null;
         googleId: string;
-        mimeType: string | null;
-        size: number | null;
+        userIdDrive: string;
+        kind: string;
+        emailAddress: string | null;
+        driveId: string;
     }>;
 }

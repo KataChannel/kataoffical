@@ -17,11 +17,13 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { QuanlydriveService } from '../quanlydrive.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
-import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
+import { ConvertDriveData, convertToSlug, flattenData, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTreeFlatDataSource, MatTreeFlattener, MatTreeModule } from '@angular/material/tree';
 import { FlatTreeControl } from '@angular/cdk/tree';
+import {MatBadgeModule} from '@angular/material/badge';
+import { StorageService } from '../../../shared/utils/storage.service';
 @Component({
   selector: 'app-listquanlydrive',
   templateUrl: './listquanlydrive.component.html',
@@ -42,7 +44,8 @@ import { FlatTreeControl } from '@angular/cdk/tree';
     FormsModule,
     MatTooltipModule,
     MatDialogModule,
-    MatTreeModule
+    MatTreeModule,
+    MatBadgeModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -75,6 +78,7 @@ export class ListQuanlydriveComponent {
   pageSize = 10;
   currentPage = 1;
   totalPages = 1;
+  driveId:any;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
@@ -82,6 +86,7 @@ export class ListQuanlydriveComponent {
   private _QuanlydriveService: QuanlydriveService = inject(QuanlydriveService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
+  private _StorageService: StorageService = inject(StorageService);
   private _router: Router = inject(Router);
   private _dialog: MatDialog = inject(MatDialog);
   Listquanlydrive:any = this._QuanlydriveService.ListQuanlydrive;
@@ -91,6 +96,7 @@ export class ListQuanlydriveComponent {
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   isSearch: boolean = false;
+  ListTimkiem:any = [];
   constructor() {
     effect(() => {
       this.dataSource.data = this.Listquanlydrive();
@@ -100,22 +106,70 @@ export class ListQuanlydriveComponent {
     });
   }
   applyFilter(event: Event) {
+    const ListItem = this.Listquanlydrive();
+    console.log(flattenData(ListItem))
+    this.ListTimkiem = flattenData(ListItem).map((v:any) => {
+        const item = flattenData(v.permissions).map((v1:any) => {
+          return {
+            ...v1,
+            name: v.name,
+          }
+        })
+        return item
+    }).flat();
     const filterValue = (event.target as HTMLInputElement).value;
+    this.ListTimkiem = this.ListTimkiem.filter((v:any) => {
+      return v.emailAddress?.toLowerCase().includes(filterValue.toLowerCase())
+    });
     this.dataSource.filter = filterValue.trim().toLowerCase();
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
   }
-  async ngOnInit(): Promise<void> {    
+
+  async deleteItem(item: any): Promise<void> {
+  await this._QuanlydriveService.DeleteUserDrive(item).then((data) => {
+    console.log(data);  
+     if(data.statusCode===204||data.statusCode===404)
+     {
+      this._QuanlydriveService.DeleteQuanlydrive(item);
+      this._snackBar.open('Xóa Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+     }
+    });
+  }
+
+  async ngOnInit(): Promise<void> {   
+    this._StorageService.getItem('driveId')?this.driveId = this._StorageService.getItem('driveId'):this.driveId = null; 
     this.updateDisplayData();
     this._QuanlydriveService.listenQuanlydriveUpdates();
     await this._QuanlydriveService.getAllQuanlydrive();
     this.dataTreeSource.data = this.Listquanlydrive();
+    this.treeControl.collapseAll();
     console.log(this.dataTreeSource.data);
-    this.dataSource = new MatTableDataSource(this.Listquanlydrive());
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
     this.setupDrawer();
+  }
+  async LoadDulieu(driveId:any){
+    this._StorageService.setItem('driveId',driveId);
+    this._QuanlydriveService.listenQuanlydriveUpdates();
+    const ListItem = await this._QuanlydriveService.getAllQuanlydrive(driveId,true);
+
+    // flattenData(ListItem).forEach((v:any,k:any) => {
+    //     console.log(v);
+    //     setTimeout(() => {
+    //      // this.LoadDulieu(v.googleId);
+    //       this.LoadPermission(v);
+    //     }, k*100);
+    // });
+    this.dataTreeSource.data = this.Listquanlydrive();
+  }
+  async LoadSyncDrive(driveId:any){
+    await this._QuanlydriveService.getAllQuanlydrive(driveId,true);
+    this.dataTreeSource.data = this.Listquanlydrive();
   }
   LoadFolder(item:any){
     console.log(item);
@@ -124,7 +178,9 @@ export class ListQuanlydriveComponent {
     this._QuanlydriveService.QuanlydriveQueryfolder(item);
     }
   }
-
+  LoadPermission(item:any){
+    this._QuanlydriveService.ListUsersFolder(item);
+  }
   private setupDrawer(): void {
     this._breakpointObserver
       .observe([Breakpoints.Handset])
@@ -395,23 +451,3 @@ function Debounce(delay: number = 300) {
     return descriptor;
   };
 }
-
-const EXAMPLE_DATA: any[] = [
-  {
-    name: 'Fruit',
-    children: [{name: 'Apple'}, {name: 'Banana'}, {name: 'Fruit loops'}],
-  },
-  {
-    name: 'Vegetables',
-    children: [
-      {
-        name: 'Green',
-        children: [{name: 'Broccoli'}, {name: 'Brussels sprouts'}],
-      },
-      {
-        name: 'Orange',
-        children: [{name: 'Pumpkins'}, {name: 'Carrots'}],
-      },
-    ],
-  },
-];
