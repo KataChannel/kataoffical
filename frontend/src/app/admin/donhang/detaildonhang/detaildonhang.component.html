@@ -87,7 +87,6 @@
               <div class="overflow-y-auto max-h-44">
                 @for (item of filterBanggia; track item.id) {
                 <mat-option [value]="item.id">
-                  <span class="text-xs text italic text-red-600">Hết Hạn</span>
                   {{item.title}}
                 </mat-option>
                 }

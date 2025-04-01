@@ -5,6 +5,7 @@ export declare class SocketGateway {
     handleConnection(client: any): void;
     handleDisconnect(client: any): void;
     sendSanphamUpdate(): void;
+    sendBanggiaUpdate(): void;
     sendKhachangUpdate(): void;
     senduserUpdate(): void;
 }

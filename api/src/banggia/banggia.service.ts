@@ -1,9 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
 export class BanggiaService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly _SocketGateway: SocketGateway
+  ) {}
 
   // async create(data: any) {
   //   return this.prisma.banggia.create({ data });
@@ -24,7 +28,7 @@ export class BanggiaService {
   }
   async createBanggia(data: any) {
     console.error(data);
-    
+    this._SocketGateway.sendBanggiaUpdate();
     return this.prisma.banggia.create({
       data: {
         title: data.title,
@@ -104,6 +108,7 @@ export class BanggiaService {
     if (!existingBanggia) {
       throw new NotFoundException(`Banggia with ID "${id}" not found`);
     }
+    this._SocketGateway.sendBanggiaUpdate();
     return this.prisma.banggia.update({
       where: { id },
       data: {

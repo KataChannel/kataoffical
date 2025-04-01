@@ -1,7 +1,9 @@
 import { PrismaService } from 'prisma/prisma.service';
+import { SocketGateway } from 'src/socket.gateway';
 export declare class BanggiaService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly _SocketGateway;
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
     create(data: any): Promise<{
         id: string;
         ghichu: string | null;

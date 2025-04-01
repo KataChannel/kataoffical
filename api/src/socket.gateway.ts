@@ -25,6 +25,10 @@ export class SocketGateway {
     console.log('📢 Emitting: sanpham-updated');
     this.server.emit('sanpham-updated');
   }
+  sendBanggiaUpdate() {
+    console.log('📢 Emitting: banggia-updated');
+    this.server.emit('banggia-updated');
+  }
 
   sendKhachangUpdate() {
     console.log('📢 Emitting: khachhang-updated');

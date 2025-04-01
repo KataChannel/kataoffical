@@ -12,9 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BanggiaService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const socket_gateway_1 = require("../socket.gateway");
 let BanggiaService = class BanggiaService {
-    constructor(prisma) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
+        this._SocketGateway = _SocketGateway;
     }
     async create(data) {
         let newOrder;
@@ -31,6 +33,7 @@ let BanggiaService = class BanggiaService {
     }
     async createBanggia(data) {
         console.error(data);
+        this._SocketGateway.sendBanggiaUpdate();
         return this.prisma.banggia.create({
             data: {
                 title: data.title,
@@ -105,6 +108,7 @@ let BanggiaService = class BanggiaService {
         if (!existingBanggia) {
             throw new common_1.NotFoundException(`Banggia with ID "${id}" not found`);
         }
+        this._SocketGateway.sendBanggiaUpdate();
         return this.prisma.banggia.update({
             where: { id },
             data: {
@@ -156,6 +160,7 @@ let BanggiaService = class BanggiaService {
 exports.BanggiaService = BanggiaService;
 exports.BanggiaService = BanggiaService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        socket_gateway_1.SocketGateway])
 ], BanggiaService);
 //# sourceMappingURL=banggia.service.js.map

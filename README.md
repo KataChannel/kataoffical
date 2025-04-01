@@ -102,7 +102,7 @@ ssh root@116.118.49.243
 sudo ufw status
 sudo firewall-cmd --state
 
-sudo ufw allow 80/tcp
+sudo ufw allow 6379/tcp
 sudo ufw allow 443/tcp
 sudo ufw allow 22/tcp  # 
 
