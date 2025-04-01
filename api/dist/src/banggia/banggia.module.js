@@ -11,14 +11,16 @@ const common_1 = require("@nestjs/common");
 const banggia_service_1 = require("./banggia.service");
 const banggia_controller_1 = require("./banggia.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
+const errorlogs_module_1 = require("../errorlogs/errorlogs.module");
+const socket_gateway_1 = require("../socket.gateway");
 let BanggiaModule = class BanggiaModule {
 };
 exports.BanggiaModule = BanggiaModule;
 exports.BanggiaModule = BanggiaModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, errorlogs_module_1.ErrorlogsModule],
         controllers: [banggia_controller_1.BanggiaController],
-        providers: [banggia_service_1.BanggiaService],
+        providers: [banggia_service_1.BanggiaService, socket_gateway_1.SocketGateway],
         exports: [banggia_service_1.BanggiaService]
     })
 ], BanggiaModule);
