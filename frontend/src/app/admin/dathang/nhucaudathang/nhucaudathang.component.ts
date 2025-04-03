@@ -21,6 +21,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
+import { DathangService } from '../dathang.service';
 @Component({
   selector: 'app-nhucaudathang',
   templateUrl: './nhucaudathang.component.html',
@@ -82,6 +83,7 @@ export class NhucaudathangComponent {
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _NhacungcapService: NhacungcapService = inject(NhacungcapService);
+  private _DathangService: DathangService = inject(DathangService);
   private _router: Router = inject(Router);
   private _dialog: MatDialog = inject(MatDialog);
   Listsanpham:any = this._SanphamService.ListSanpham;
@@ -269,24 +271,68 @@ export class NhucaudathangComponent {
       panelClass: ['snackbar-success'],
     });
   }
-
-  async OpenTaodonDialog(teamplate: TemplateRef<any>) {
-    console.log(this.EditList);
-    await this._NhacungcapService.getAllNhacungcap();
-    this.ListSPNCC = this._NhacungcapService.ListNhacungcap().filter((v:any)=>v.isActive===true);
-    console.log(this.ListSPNCC);
+  ListFindNCC:any[] = [];
+  ListDathang:any[] = [];
+  async OpenTaodonDialog(teamplate: TemplateRef<any>) {    
+    this.ListFindNCC =  await this._NhacungcapService.Findbyids(this.EditList.map((v:any)=>v.id));    
+    this.EditList = this.EditList.filter((v:any)=> this.ListFindNCC.some((v1:any)=>v1.Sanpham.some((v3:any)=>v3.id===v.id)));
     const dialogDeleteRef = this._dialog.open(teamplate, {
       hasBackdrop: true,
       disableClose: true,
     });
     dialogDeleteRef.afterClosed().subscribe((result) => {
       if (result=="true") {
-   
+        Promise.all(this.ListDathang.map(item => this._DathangService.CreateByNhucau(item)))
+          .then(() => {
+            this._snackBar.open('Tạo đơn đặt hàng thành công', '', {
+              duration: 2000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-success'],
+            });
+            this._router.navigate(['/admin/dathang']);
+          })
+          .catch(error => {
+            this._snackBar.open('Có lỗi xảy ra khi tạo đơn đặt hàng', '', {
+              duration: 2000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-error'],
+            });
+            console.error('Error creating orders:', error);
+          });
       }
     });
   }
-
-
+  CheckSanphaminNCC(NCC:any,item:any){
+    const existingItem = NCC.Sanpham?.find((v:any) => v.id === item.id);
+    return existingItem ? true : false;
+  }
+  updateValue(Soluong:any,Sanpham:any,Nhacungcap:any){
+    const newValue = Number((Soluong.target as HTMLElement).innerText.trim()) || 0
+    const exitNCC = this.ListDathang.find((v:any)=>v.id===Nhacungcap.id);
+    console.log(exitNCC);
+    
+    if(exitNCC)
+    {
+      const exitSP = exitNCC.sanpham.find((v:any)=>v.id===Sanpham.id);
+      if(exitSP)
+      {
+        exitSP.sldat = newValue;
+      }
+      else{
+        Sanpham.sldat = newValue;
+        exitNCC.Sanpham.push(Sanpham);
+      }
+    }
+    else{
+      Sanpham.sldat = newValue;
+      Nhacungcap.sanpham = [Sanpham]
+      Nhacungcap.ngaynhan = new Date();
+      this.ListDathang.push(Nhacungcap);
+    }
+    console.log(this.ListDathang);
+  }
 
   AddToEdit(item: any): void {
     const existingItem = this.EditList.find((v: any) => v.id === item.id);
@@ -295,6 +341,9 @@ export class NhucaudathangComponent {
     } else {
       this.EditList.push(item);
     }
+  }
+  ChoseAllEdit(): void {
+    this.EditList = this.Listsanpham()
   }
   CheckItemInEdit(item: any): boolean {
     return this.EditList.some((v: any) => v.id === item.id);

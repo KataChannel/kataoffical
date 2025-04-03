@@ -22,6 +22,9 @@ let DathangController = class DathangController {
     create(createDathangDto) {
         return this.dathangService.create(createDathangDto);
     }
+    createbynhucau(data) {
+        return this.dathangService.createbynhucau(data);
+    }
     findAll() {
         return this.dathangService.findAll();
     }
@@ -46,6 +49,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DathangController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('bynhucau'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], DathangController.prototype, "createbynhucau", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

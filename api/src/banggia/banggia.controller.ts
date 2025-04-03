@@ -14,7 +14,10 @@ export class BanggiaController {
   findAll() {
     return this.banggiaService.findAll();
   }
-
+  @Post('reorder')
+  reorder(@Body() body: { banggiaIds: string[] }) {
+    return this.banggiaService.reorderBanggias(body.banggiaIds);
+  }
   @Post('addKHtoBG')
   addMultipleKhachhangToBanggia(@Body() data:any) {
     return this.banggiaService.addKHtoBG(data.banggiaId,data.khachhangIds);
@@ -36,8 +39,5 @@ export class BanggiaController {
   remove(@Param('id') id: string) {
     return this.banggiaService.remove(id);
   }
-  @Post('reorder')
-  reorder(@Body() body: { banggiaIds: string[] }) {
-    return this.banggiaService.reorderBanggias(body.banggiaIds);
-  }
+
 }

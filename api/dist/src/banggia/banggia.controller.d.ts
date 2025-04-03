@@ -41,6 +41,9 @@ export declare class BanggiaController {
         ketthuc: Date | null;
         status: string | null;
     }[]>;
+    reorder(body: {
+        banggiaIds: string[];
+    }): Promise<void>;
     addMultipleKhachhangToBanggia(data: any): Promise<{
         id: string;
         ghichu: string | null;
@@ -163,7 +166,4 @@ export declare class BanggiaController {
         ketthuc: Date | null;
         status: string | null;
     }>;
-    reorder(body: {
-        banggiaIds: string[];
-    }): Promise<void>;
 }

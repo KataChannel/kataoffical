@@ -25,6 +25,9 @@ let BanggiaController = class BanggiaController {
     findAll() {
         return this.banggiaService.findAll();
     }
+    reorder(body) {
+        return this.banggiaService.reorderBanggias(body.banggiaIds);
+    }
     addMultipleKhachhangToBanggia(data) {
         return this.banggiaService.addKHtoBG(data.banggiaId, data.khachhangIds);
     }
@@ -39,9 +42,6 @@ let BanggiaController = class BanggiaController {
     }
     remove(id) {
         return this.banggiaService.remove(id);
-    }
-    reorder(body) {
-        return this.banggiaService.reorderBanggias(body.banggiaIds);
     }
 };
 exports.BanggiaController = BanggiaController;
@@ -58,6 +58,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], BanggiaController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Post)('reorder'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], BanggiaController.prototype, "reorder", null);
 __decorate([
     (0, common_1.Post)('addKHtoBG'),
     __param(0, (0, common_1.Body)()),
@@ -94,13 +101,6 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], BanggiaController.prototype, "remove", null);
-__decorate([
-    (0, common_1.Post)('reorder'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], BanggiaController.prototype, "reorder", null);
 exports.BanggiaController = BanggiaController = __decorate([
     (0, common_1.Controller)('banggia'),
     __metadata("design:paramtypes", [banggia_service_1.BanggiaService])

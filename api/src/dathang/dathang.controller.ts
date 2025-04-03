@@ -9,7 +9,10 @@ export class DathangController {
   create(@Body() createDathangDto: any) {
     return this.dathangService.create(createDathangDto);
   }
-
+  @Post('bynhucau')
+  createbynhucau(@Body() data: any) {
+    return this.dathangService.createbynhucau(data);
+  }
   @Get()
   findAll() {
     return this.dathangService.findAll();

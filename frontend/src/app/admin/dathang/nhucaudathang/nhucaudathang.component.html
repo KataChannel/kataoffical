@@ -40,7 +40,7 @@
                 <button matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
                     <mat-icon>cloud_download</mat-icon>
                 </button> -->
-                <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
+                <span (click)="ChoseAllEdit()" class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{this.Listsanpham().length}} Sản Phẩm
                 </span>
                 <button (click)="OpenTaodonDialog(TaodonDialog)" *ngIf="EditList.length>0" color="primary" mat-flat-button>
@@ -231,7 +231,7 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Gợi Ý
                             </th>
-                            <th *ngFor="let item of ListSPNCC; let i=index" scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th *ngFor="let item of ListFindNCC; let i=index" scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 {{item.name}}
                             </th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -240,26 +240,29 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr *ngFor="let item of EditList; trackBy:trackByFn">
-                            <td class="px-6 py-4 whitespace-nowrap">
+                        <tr *ngFor="let item of EditList; trackBy:trackByFn; let j=index">
+                            <td class="whitespace-nowrap">
                                 <span class="max-w-40 line-clamp-4">
                                     {{ item.title }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="whitespace-nowrap">
                                 <span class="max-w-40 line-clamp-4">
                                     {{ item.masp }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                            <td class="whitespace-nowrap">
                                 <span class="max-w-40 line-clamp-4">
                                     {{GetGoiy(item)}}
                                 </span>
                             </td>
-                            <td *ngFor="let item of ListSPNCC; let i=index" class="px-6 py-4 whitespace-nowrap">
-                                <div
+                            <td *ngFor="let item of ListFindNCC; let i=index" class="whitespace-nowrap">
+  
+                                <div *ngIf="CheckSanphaminNCC(item,EditList[j])"
                                 [contentEditable]="true"
                                 class="sldat-input p-2 min-w-28 text-end bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                                (blur)="updateValue($event,EditList[j],item)"
+                                (keyup.enter)="updateValue($event,EditList[j],item)"
                                 >
                                {{ item.soluong||0|number:'1.0-2' }}
                                </div>

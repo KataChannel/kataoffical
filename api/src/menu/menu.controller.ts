@@ -18,6 +18,10 @@ export class MenuController {
   getTree(@Body() data: any) {
     return this.menuService.getTree(data);
   }
+  @Post('reorder')
+  reorder(@Body() banggiaIds: string[]) {
+    return this.menuService.reorderMenus(banggiaIds);
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.menuService.findOne(id);

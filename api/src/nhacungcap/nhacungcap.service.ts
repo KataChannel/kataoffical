@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { log } from 'console';
 import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
@@ -48,4 +49,25 @@ export class NhacungcapService {
   async remove(id: string) {
     return this.prisma.nhacungcap.delete({ where: { id } });
   }
+
+
+  async findByProductIds(productIds: string[]) {
+    if (!productIds || productIds.length === 0) {
+      return [];
+    }
+    const suppliers = await this.prisma.nhacungcap.findMany({
+      where: {
+        Sanpham: {
+          some: {
+            id: { in: productIds }
+          }
+        }
+      },
+      include: {
+        Sanpham: true,
+      },
+    });
+    return suppliers;
+  }
+
 }

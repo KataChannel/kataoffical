@@ -22,6 +22,9 @@ let NhacungcapController = class NhacungcapController {
     create(createNhacungcapDto) {
         return this.nhacungcapService.create(createNhacungcapDto);
     }
+    findByProductIds(productIds) {
+        return this.nhacungcapService.findByProductIds(productIds);
+    }
     findAll() {
         return this.nhacungcapService.findAll();
     }
@@ -43,6 +46,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], NhacungcapController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('finbyids'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], NhacungcapController.prototype, "findByProductIds", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

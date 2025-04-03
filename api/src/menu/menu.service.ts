@@ -44,12 +44,22 @@ export class MenuService {
     filteredMenus.push(...parents);
     menus.length = 0;
     menus.push(...filteredMenus);    
-    return this.buildTree(menus);
+    return this.buildTree(menus).sort((a:any,b:any) => a.order - b.order);
   }
 
   private buildTree(menus: any[], parentId: string | null = null) {
     return menus
       .filter(menu => menu.parentId === parentId)
       .map(menu => ({ ...menu, children: this.buildTree(menus, menu.id) }));
+  }
+    async reorderMenus(menuIds: string[]) {
+    // Update the order of each menu based on its position in the array
+    for (let i = 0; i < menuIds.length; i++) {
+      await this.prisma.menu.update({
+        where: { id: menuIds[i] },
+        data: { order: i + 1 },
+      });
+    }
+    return true
   }
 }

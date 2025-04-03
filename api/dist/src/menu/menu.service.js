@@ -50,12 +50,21 @@ let MenuService = class MenuService {
         filteredMenus.push(...parents);
         menus.length = 0;
         menus.push(...filteredMenus);
-        return this.buildTree(menus);
+        return this.buildTree(menus).sort((a, b) => a.order - b.order);
     }
     buildTree(menus, parentId = null) {
         return menus
             .filter(menu => menu.parentId === parentId)
             .map(menu => ({ ...menu, children: this.buildTree(menus, menu.id) }));
+    }
+    async reorderMenus(menuIds) {
+        for (let i = 0; i < menuIds.length; i++) {
+            await this.prisma.menu.update({
+                where: { id: menuIds[i] },
+                data: { order: i + 1 },
+            });
+        }
+        return true;
     }
 };
 exports.MenuService = MenuService;

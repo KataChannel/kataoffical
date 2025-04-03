@@ -9,6 +9,10 @@ export class NhacungcapController {
   create(@Body() createNhacungcapDto: any) {
     return this.nhacungcapService.create(createNhacungcapDto);
   }
+  @Post('finbyids')
+  findByProductIds(@Body() productIds: any) {
+    return this.nhacungcapService.findByProductIds(productIds);
+  }
 
   @Get()
   findAll() {

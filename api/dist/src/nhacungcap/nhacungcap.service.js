@@ -53,6 +53,24 @@ let NhacungcapService = class NhacungcapService {
     async remove(id) {
         return this.prisma.nhacungcap.delete({ where: { id } });
     }
+    async findByProductIds(productIds) {
+        if (!productIds || productIds.length === 0) {
+            return [];
+        }
+        const suppliers = await this.prisma.nhacungcap.findMany({
+            where: {
+                Sanpham: {
+                    some: {
+                        id: { in: productIds }
+                    }
+                }
+            },
+            include: {
+                Sanpham: true,
+            },
+        });
+        return suppliers;
+    }
 };
 exports.NhacungcapService = NhacungcapService;
 exports.NhacungcapService = NhacungcapService = __decorate([

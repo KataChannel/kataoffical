@@ -28,6 +28,9 @@ let MenuController = class MenuController {
     getTree(data) {
         return this.menuService.getTree(data);
     }
+    reorder(banggiaIds) {
+        return this.menuService.reorderMenus(banggiaIds);
+    }
     findOne(id) {
         return this.menuService.findOne(id);
     }
@@ -59,6 +62,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], MenuController.prototype, "getTree", null);
+__decorate([
+    (0, common_1.Post)('reorder'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", void 0)
+], MenuController.prototype, "reorder", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),

@@ -112,6 +112,35 @@ export declare class DathangService {
         ngaynhan: Date | null;
         nhacungcapId: string;
     }>;
+    createbynhucau(data: any): Promise<{
+        sanpham: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            order: number | null;
+            idSP: string;
+            sldat: number | null;
+            slgiao: number | null;
+            slnhan: number | null;
+            ttdat: number | null;
+            ttgiao: number | null;
+            ttnhan: number | null;
+            dathangId: string;
+        }[];
+    } & {
+        id: string;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date | null;
+        title: string | null;
+        order: number | null;
+        type: string | null;
+        printCount: number | null;
+        madncc: string | null;
+        ngaynhan: Date | null;
+        nhacungcapId: string;
+    }>;
     update(id: string, data: any): Promise<{
         sanpham: {
             id: string;

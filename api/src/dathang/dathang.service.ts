@@ -82,13 +82,66 @@ export class DathangService {
           title: data.title,
           type: data.type,
           madncc: data.madncc,
-          ngaynhan: new Date(data.ngaynhan),
+          ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
           ghichu: data.ghichu,
           nhacungcapId: data.nhacungcapId,
           order: data.order,
           isActive: data.isActive,
           sanpham: {
-            create: data.sanpham.map(sp => ({
+            create: data.sanpham?.map((sp:any) => ({
+              idSP: sp.id,
+              sldat: sp.sldat,
+              slgiao: sp.slgiao,
+              slnhan: sp.slnhan,
+              ttdat: sp.ttdat || 0,
+              ttgiao: sp.ttgiao || 0,
+              ttnhan: sp.ttnhan || 0,
+              ghichu: sp.ghichu,
+              order: sp.order,
+              isActive: sp.isActive,
+            })),
+          },
+        },
+        include: { sanpham: true },
+      });
+  
+      // Cập nhật số lượng sản phẩm trong kho (tăng số lượng nhận)
+      for (const sp of data.sanpham) {
+        await prisma.sanpham.update({
+          where: { id: sp.id },
+          data: {
+            soluong: {
+              increment: sp.sldat|| 0, // Tăng số lượng sản phẩm nhập về
+            },
+          },
+        });
+      }
+  
+      return newDathang;
+    });
+  }
+
+  async createbynhucau(data: any) {
+    console.error(data);  
+    return this.prisma.$transaction(async (prisma) => {
+    const nhacungcap:any = await prisma.nhacungcap.findUnique({
+        where: { id: data.id },
+      });
+      if (!nhacungcap) throw new NotFoundException('Nhà cung cấp không tồn tại');
+      // Tạo mã đơn hàng mới
+
+      const newDathang = await prisma.dathang.create({
+        data: {
+          title: nhacungcap?.title,
+          type: nhacungcap?.type,
+          madncc: nhacungcap?.madncc,
+          ngaynhan: new Date(),
+          ghichu: data.ghichu,
+          nhacungcapId: nhacungcap.id,
+          order: data.order || 0,
+          isActive: data.isActive !== undefined ? data.isActive : true,
+          sanpham: {
+            create: data.sanpham?.map((sp:any) => ({
               idSP: sp.id,
               sldat: sp.sldat,
               slgiao: sp.slgiao,
@@ -159,7 +212,7 @@ export class DathangService {
           title: data.title,
           type: data.type,
           madncc: data.madncc,
-          ngaynhan: new Date(data.ngaynhan),
+          ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
           ghichu: data.ghichu,
           order: data.order,
           isActive: data.isActive,

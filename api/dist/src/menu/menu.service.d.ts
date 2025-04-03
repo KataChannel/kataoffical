@@ -83,4 +83,5 @@ export declare class MenuService {
     }>;
     getTree(data: any): Promise<any>;
     private buildTree;
+    reorderMenus(menuIds: string[]): Promise<boolean>;
 }

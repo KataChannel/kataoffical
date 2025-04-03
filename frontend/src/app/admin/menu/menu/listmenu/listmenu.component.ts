@@ -20,6 +20,8 @@ import { GoogleSheetService } from '../../../../shared/googlesheets/googlesheets
 import { readExcelFile, writeExcelFile } from '../../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData } from '../../../../shared/utils/shared.utils';
 import { removeVietnameseAccents } from '../../../../shared/utils/texttransfer.utils';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 @Component({
   selector: 'app-listmenu',
   templateUrl: './listmenu.component.html',
@@ -38,7 +40,8 @@ import { removeVietnameseAccents } from '../../../../shared/utils/texttransfer.u
     MatSelectModule,
     CommonModule,
     FormsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    DragDropModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -130,6 +133,17 @@ export class ListMenuComponent {
     }, {} as Record<string, string>);
   }
 
+  drop(event: any) {
+    const data = this.dataSource.data;
+    moveItemInArray(data, event.previousIndex, event.currentIndex);   
+    // Cập nhật lại `order`
+    data.forEach((item: any, index: number) => {
+      item.order = index + 1;
+    });
+    const newOrder = data.map((item: any) => item.id);
+    this._MenuService.updateOrder(newOrder)
+    this.dataSource.data = data;
+  }
   private setupDrawer(): void {
     this._breakpointObserver
       .observe([Breakpoints.Handset])

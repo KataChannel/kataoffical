@@ -37,6 +37,7 @@ export declare class MenuController {
         parentId: string | null;
     })[]>;
     getTree(data: any): Promise<any>;
+    reorder(banggiaIds: string[]): Promise<boolean>;
     findOne(id: string): Promise<({
         children: {
             id: string;
