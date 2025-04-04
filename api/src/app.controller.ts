@@ -12,7 +12,7 @@ export class AppController {
   }
   @Get('v')
   getVersion(): string {
-    return '1.1.3'
+    return '1.1.6'
   }
   @Post('search')
   async search(@Body() searchDto: SearchDto) {
