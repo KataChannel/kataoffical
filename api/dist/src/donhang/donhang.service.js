@@ -13,11 +13,9 @@ exports.DonhangService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const moment = require("moment-timezone");
-const redis_service_1 = require("../redis/redis.service");
 let DonhangService = class DonhangService {
-    constructor(prisma, redis) {
+    constructor(prisma) {
         this.prisma = prisma;
-        this.redis = redis;
     }
     async generateNextOrderCode() {
         const lastOrder = await this.prisma.donhang.findFirst({
@@ -171,9 +169,6 @@ let DonhangService = class DonhangService {
         };
     }
     async findAll() {
-        const cache = await this.redis.read('donhang');
-        if (cache)
-            return cache;
         const donhangs = await this.prisma.donhang.findMany({
             include: {
                 sanpham: {
@@ -200,7 +195,6 @@ let DonhangService = class DonhangService {
             })),
             name: donhang.khachhang.name,
         }));
-        await this.redis.create('donhang', result);
         return result;
     }
     async searchfield(searchParams) {
@@ -291,7 +285,6 @@ let DonhangService = class DonhangService {
     }
     async create(dto) {
         const madonhang = await this.generateNextOrderCode();
-        await this.redis.delete(`donhang`);
         return this.prisma.$transaction(async (prisma) => {
             const newDonhang = await prisma.donhang.create({
                 data: {
@@ -335,7 +328,6 @@ let DonhangService = class DonhangService {
         });
     }
     async update(id, data) {
-        await this.redis.delete(`donhang`);
         return this.prisma.$transaction(async (prisma) => {
             const oldDonhang = await prisma.donhang.findUnique({
                 where: { id },
@@ -399,7 +391,6 @@ let DonhangService = class DonhangService {
         });
     }
     async updatePhieugiao(id, data) {
-        await this.redis.delete(`donhang`);
         return this.prisma.$transaction(async (prisma) => {
             const updatedDonhang = await prisma.donhang.update({
                 where: { id },
@@ -432,15 +423,12 @@ let DonhangService = class DonhangService {
         });
     }
     async remove(id) {
-        await this.redis.delete(`donhang`);
-        await this.redis.delete(`donhangid-${id}`);
         return this.prisma.donhang.delete({ where: { id } });
     }
 };
 exports.DonhangService = DonhangService;
 exports.DonhangService = DonhangService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        redis_service_1.RedisService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], DonhangService);
 //# sourceMappingURL=donhang.service.js.map

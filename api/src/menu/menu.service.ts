@@ -52,7 +52,7 @@ export class MenuService {
       .filter(menu => menu.parentId === parentId)
       .map(menu => ({ ...menu, children: this.buildTree(menus, menu.id) }));
   }
-    async reorderMenus(menuIds: string[]) {
+  async reorderMenus(menuIds: string[]) {
     // Update the order of each menu based on its position in the array
     for (let i = 0; i < menuIds.length; i++) {
       await this.prisma.menu.update({

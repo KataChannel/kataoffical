@@ -1,13 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import * as moment from 'moment-timezone';
-import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class DonhangService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly redis: RedisService,
 
   ) {}
 
@@ -186,8 +184,6 @@ export class DonhangService {
 
 
   async findAll() {
-    const cache = await this.redis.read('donhang');
-    if (cache) return cache;
     const donhangs = await this.prisma.donhang.findMany({
       include: {
         sanpham: {
@@ -214,7 +210,6 @@ export class DonhangService {
       })),
       name: donhang.khachhang.name,
     }));
-    await this.redis.create('donhang', result);
     return result;
   }
 
@@ -313,7 +308,6 @@ export class DonhangService {
   
   async create(dto: any) {
     const madonhang = await this.generateNextOrderCode();
-    await this.redis.delete(`donhang`);
     return this.prisma.$transaction(async (prisma) => {
       const newDonhang = await prisma.donhang.create({
         data: {
@@ -362,7 +356,6 @@ export class DonhangService {
 
   
   async update(id: string, data: any) {
-    await this.redis.delete(`donhang`);
     return this.prisma.$transaction(async (prisma) => {
       // Lấy đơn hàng cũ
       const oldDonhang = await prisma.donhang.findUnique({
@@ -434,7 +427,6 @@ export class DonhangService {
     });
   }
   async updatePhieugiao(id: string, data: any) {
-    await this.redis.delete(`donhang`);
     return this.prisma.$transaction(async (prisma) => {
       const updatedDonhang = await prisma.donhang.update({
         where: { id },
@@ -471,8 +463,6 @@ export class DonhangService {
 
 
   async remove(id: string) {
-    await this.redis.delete(`donhang`);
-    await this.redis.delete(`donhangid-${id}`);
     return this.prisma.donhang.delete({ where: { id } });
   }
 }

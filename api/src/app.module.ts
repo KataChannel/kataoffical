@@ -20,7 +20,6 @@ import { PermissionModule } from './permission/permission.module';
 import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
 import { GoogledriveModule } from './shared/googledrive/googledrive.module';
 import { ErrorlogsModule } from './errorlogs/errorlogs.module';
-import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -41,7 +40,6 @@ import { RedisModule } from './redis/redis.module';
     PermissionModule,
     GoogledriveModule,
     ErrorlogsModule,
-    RedisModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  
