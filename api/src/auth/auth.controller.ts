@@ -45,9 +45,9 @@ export class AuthController {
   @Post('register')
   async register(@Body() data: any) {
     try {
-      const user = await this.authService.register(data);
-      return { message: 'Đăng ký thành công', user };
-    } catch (error) {
+      const user = await this.authService.register(data, data.affiliateCode);
+      return { statusCode: HttpStatus.CREATED, message: 'Đăng ký thành công', user };
+    } catch (error) {      
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }

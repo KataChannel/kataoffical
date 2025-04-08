@@ -13,7 +13,6 @@ export class TrackingEventService {
 
   async logEvent(data: any): Promise<any> {
     try {
-       console.log('Logging tracking event:', data); // Add proper logging
       return await this.prisma.trackingEvent.create({
         data: {
           affiliateLink: { connect: { id: data.affiliateLinkId } },

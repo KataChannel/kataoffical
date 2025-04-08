@@ -13,10 +13,10 @@ export declare class AffiliatelinkController {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
-        order: number | null;
-        codeId: string;
-        createdById: string;
         landingPageId: string;
+        codeId: string;
+        order: number | null;
+        createdById: string;
     }>;
     findBy(param: any): Promise<{
         id: string;
@@ -24,10 +24,10 @@ export declare class AffiliatelinkController {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
-        order: number | null;
-        codeId: string;
-        createdById: string;
         landingPageId: string;
+        codeId: string;
+        order: number | null;
+        createdById: string;
     }>;
     findListBy(param: any): Promise<{
         trackingEvents: number;
@@ -36,12 +36,12 @@ export declare class AffiliatelinkController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            description: string | null;
             title: string;
-            slug: string;
-            order: number | null;
-            status: string;
             codeId: string;
+            order: number | null;
+            description: string | null;
+            slug: string;
+            status: string;
             thumbnail: string | null;
             contentHtml: string | null;
             customCss: string | null;
@@ -57,10 +57,10 @@ export declare class AffiliatelinkController {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
-        order: number | null;
-        codeId: string;
-        createdById: string;
         landingPageId: string;
+        codeId: string;
+        order: number | null;
+        createdById: string;
     }[]>;
     findAll(): Promise<{
         id: string;
@@ -68,10 +68,10 @@ export declare class AffiliatelinkController {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
-        order: number | null;
-        codeId: string;
-        createdById: string;
         landingPageId: string;
+        codeId: string;
+        order: number | null;
+        createdById: string;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
@@ -79,10 +79,10 @@ export declare class AffiliatelinkController {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
-        order: number | null;
-        codeId: string;
-        createdById: string;
         landingPageId: string;
+        codeId: string;
+        order: number | null;
+        createdById: string;
     }>;
     update(id: string, updateAffiliatelinkDto: any): Promise<{
         id: string;
@@ -90,10 +90,10 @@ export declare class AffiliatelinkController {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
-        order: number | null;
-        codeId: string;
-        createdById: string;
         landingPageId: string;
+        codeId: string;
+        order: number | null;
+        createdById: string;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -101,10 +101,10 @@ export declare class AffiliatelinkController {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
-        order: number | null;
-        codeId: string;
-        createdById: string;
         landingPageId: string;
+        codeId: string;
+        order: number | null;
+        createdById: string;
     }>;
     reorder(reorderAffiliatelinkDto: ReorderAffiliatelinkDto): Promise<void>;
 }

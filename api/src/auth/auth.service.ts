@@ -13,7 +13,7 @@ export class AuthService {
   //     data: { email, password: hashedPassword },
   //   });
   // }
-  async register(data: any) {
+  async register(data: any,affiliateCode?: string) {
     const { email, phone, zaloId, facebookId,googleId, password } = data;
 
     // Kiểm tra xem người dùng đã tồn tại chưa
@@ -21,6 +21,7 @@ export class AuthService {
       where: {
         OR: [
           { email: email || undefined },
+          { phone: phone || undefined },
           { SDT: phone || undefined },
           { zaloId: zaloId || undefined },
           { facebookId: facebookId || undefined },
@@ -35,25 +36,64 @@ export class AuthService {
 
     // Mã hóa mật khẩu nếu có
     const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
-
+    let referrerId: string | null = null;
+    let affiliateLinkId: string | null = null;
+    console.log(`Affiliate code: ${affiliateCode}`);
+    
+    if (affiliateCode) {
+      try {
+          const affiliateLink = await this.prisma.affiliateLink.findUnique({
+              where: { codeId: affiliateCode },
+              include: { createdBy: true } // Include the user who owns the link (referrer)
+          });
+          console.log(`Affiliate link found: ${affiliateLink}`);
+          
+          if (affiliateLink) {
+              referrerId = affiliateLink.createdById; // ID of the user who created the affiliate link
+              affiliateLinkId = affiliateLink.id;
+              console.log(`Registration via affiliate code: ${affiliateCode}, Referrer ID: ${referrerId}`);
+          } else {
+               console.warn(`Affiliate code ${affiliateCode} provided but not found.`);
+               // Decide if you want to throw an error or proceed without referral
+          }
+      } catch (error) {
+          console.error(`Error finding affiliate link for code ${affiliateCode}:`, error);
+          // Decide handling: throw error or log and proceed
+      }
+   }
     // Tạo người dùng mới
     const user = await this.prisma.user.create({
       data: {
         email: email || null,
         phone: phone || null,
+        SDT: phone || null,
         zaloId: zaloId || null,
         facebookId: facebookId || null,
         googleId: googleId || null,
         password: hashedPassword,
+        referrerId: referrerId || null,
       },
     });
-
+    if (affiliateLinkId && user) {
+      try {
+        await this.prisma.registration.create({
+          data: {
+            registeredUserId: user.id,
+            affiliateLinkId: affiliateLinkId,
+          },
+        });
+        console.log(`Registration record created for user ${user.id} via link ${affiliateLinkId}`);
+        } catch (error) {
+            console.error(`Failed to create Registration record or tracking event for user ${user.id}:`, error);
+            // Log error, but registration is likely already successful
+        }
+      }
     return { id: user.id, email: user.email, phone: user.phone };
   }
 
-  async login(SDT:string,email: string, password: string) {   
+  async login(phone:string,email: string, password: string) {   
     const user:any = await this.prisma.user.findFirst({ 
-      where: { OR: [{ email }, { SDT }] },
+      where: { OR: [{ email }, { phone }, { SDT: phone }] },
       include: {
       roles: { include: { role: { include: { permissions: {include:{permission:true}} } } } },
       },

@@ -131,7 +131,8 @@ let AffiliatelinkService = class AffiliatelinkService {
     }
     async findListBy(param) {
         try {
-            console.log('findListBy', param);
+            if (Object.entries(param).length === 0)
+                return [];
             const affiliatelinks = await this.prisma.affiliateLink.findMany({ where: param,
                 include: {
                     landingPage: true,

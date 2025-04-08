@@ -147,7 +147,7 @@ docker cp pgadmin:/var/lib/pgadmin/storage/admin_example.com/bk_23_02_2025 ./bk_
 
 docker exec -it rausach-berausach-1 /bin/bash
 docker cp credentials.json rausach-berausach-1:/app/dist
-docker cp credentials.json tazagroup-betazagroup-1:/app/dist
+docker cp credentials.json tazagroup-betazagroup-1:/app
 
 cd /etc/nginx/sites-available
 sudo certbot --nginx -d sandboxapi2.rausachtrangia.com -d sandbox2.rausachtrangia.com

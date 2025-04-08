@@ -28,6 +28,9 @@ let UserController = class UserController {
     findAll() {
         return this.userService.findAll();
     }
+    leaderboard() {
+        return this.userService.leaderboard();
+    }
     async getProfile(req) {
         return this.userService.findOne(req.user.id);
     }
@@ -61,6 +64,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('leaderboard'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], UserController.prototype, "leaderboard", null);
 __decorate([
     (0, common_1.Get)('profile'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

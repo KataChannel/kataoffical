@@ -7,8 +7,8 @@ export declare class TrackingeventController {
         type: string;
         id: string;
         updatedAt: Date;
-        timestamp: Date;
         affiliateLinkId: string;
+        timestamp: Date;
         ipAddress: string | null;
         userAgent: string | null;
         triggeredByUserId: string | null;
@@ -17,8 +17,8 @@ export declare class TrackingeventController {
         type: string;
         id: string;
         updatedAt: Date;
-        timestamp: Date;
         affiliateLinkId: string;
+        timestamp: Date;
         ipAddress: string | null;
         userAgent: string | null;
         triggeredByUserId: string | null;
@@ -27,8 +27,8 @@ export declare class TrackingeventController {
         type: string;
         id: string;
         updatedAt: Date;
-        timestamp: Date;
         affiliateLinkId: string;
+        timestamp: Date;
         ipAddress: string | null;
         userAgent: string | null;
         triggeredByUserId: string | null;
@@ -37,8 +37,8 @@ export declare class TrackingeventController {
         type: string;
         id: string;
         updatedAt: Date;
-        timestamp: Date;
         affiliateLinkId: string;
+        timestamp: Date;
         ipAddress: string | null;
         userAgent: string | null;
         triggeredByUserId: string | null;
@@ -47,8 +47,8 @@ export declare class TrackingeventController {
         type: string;
         id: string;
         updatedAt: Date;
-        timestamp: Date;
         affiliateLinkId: string;
+        timestamp: Date;
         ipAddress: string | null;
         userAgent: string | null;
         triggeredByUserId: string | null;
@@ -57,8 +57,8 @@ export declare class TrackingeventController {
         type: string;
         id: string;
         updatedAt: Date;
-        timestamp: Date;
         affiliateLinkId: string;
+        timestamp: Date;
         ipAddress: string | null;
         userAgent: string | null;
         triggeredByUserId: string | null;

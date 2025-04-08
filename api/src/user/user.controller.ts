@@ -21,6 +21,10 @@ export class UserController {
   findAll() {
     return this.userService.findAll();
   }
+  @Get('leaderboard')
+  leaderboard() {
+    return this.userService.leaderboard();
+  }
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   // @Permissions('view_profile')

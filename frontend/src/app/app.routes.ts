@@ -6,6 +6,7 @@ import { PermissionGuard } from './shared/common/users/guards/permission.guard';
 export const routes: Routes = [
     { path: '', redirectTo: 'welcome', pathMatch: 'full' },
     {
+      canActivate: [AuthGuard],
       path: 'welcome',
       loadComponent: () => import('./admin/welcome/welcome.component').then((c) => c.WelcomeComponent),
     },

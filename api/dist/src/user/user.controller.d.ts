@@ -19,6 +19,8 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        affiliateCode: string | null;
+        referrerId: string | null;
     }>;
     findAll(): Promise<{
         roles: {
@@ -47,6 +49,66 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        affiliateCode: string | null;
+        referrerId: string | null;
+    }[]>;
+    leaderboard(): Promise<{
+        name: string | undefined;
+        phone: string | null;
+        SDT: string | null;
+        email: string | null;
+        referralsCount: number;
+        profile: {
+            id: string;
+            name: string;
+            userId: string;
+            avatar: string | null;
+            bio: string | null;
+            citizenId: string | null;
+            birthDate: Date | null;
+            hometown: string | null;
+            address: string | null;
+            companyName: string | null;
+            position: string | null;
+            level: string | null;
+            department: string | null;
+            startDate: Date | null;
+            endDate: Date | null;
+            companyEmail: string | null;
+            companyPhone: string | null;
+            softwareAccounts: import("@prisma/client/runtime/library").JsonValue | null;
+            socialAccounts: import("@prisma/client/runtime/library").JsonValue | null;
+        } | null;
+        referrals: {
+            email: string | null;
+            phone: string | null;
+            zaloId: string | null;
+            facebookId: string | null;
+            googleId: string | null;
+            password: string | null;
+            id: string;
+            SDT: string | null;
+            provider: string | null;
+            providerId: string | null;
+            isSuperAdmin: boolean;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            affiliateCode: string | null;
+            referrerId: string | null;
+        }[];
+        zaloId: string | null;
+        facebookId: string | null;
+        googleId: string | null;
+        id: string;
+        provider: string | null;
+        providerId: string | null;
+        isSuperAdmin: boolean;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        affiliateCode: string | null;
+        referrerId: string | null;
     }[]>;
     getProfile(req: any): Promise<{
         roles: {
@@ -83,6 +145,42 @@ export declare class UserController {
             name: string;
             description: string | null;
         }[];
+        referrer: {
+            email: string | null;
+            phone: string | null;
+            zaloId: string | null;
+            facebookId: string | null;
+            googleId: string | null;
+            password: string | null;
+            id: string;
+            SDT: string | null;
+            provider: string | null;
+            providerId: string | null;
+            isSuperAdmin: boolean;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            affiliateCode: string | null;
+            referrerId: string | null;
+        } | null;
+        referrals: {
+            email: string | null;
+            phone: string | null;
+            zaloId: string | null;
+            facebookId: string | null;
+            googleId: string | null;
+            password: string | null;
+            id: string;
+            SDT: string | null;
+            provider: string | null;
+            providerId: string | null;
+            isSuperAdmin: boolean;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            affiliateCode: string | null;
+            referrerId: string | null;
+        }[];
         email: string | null;
         phone: string | null;
         zaloId: string | null;
@@ -96,6 +194,8 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        affiliateCode: string | null;
+        referrerId: string | null;
     }>;
     assignRoleToUser(data: any): Promise<{
         id: string;
@@ -142,6 +242,42 @@ export declare class UserController {
             name: string;
             description: string | null;
         }[];
+        referrer: {
+            email: string | null;
+            phone: string | null;
+            zaloId: string | null;
+            facebookId: string | null;
+            googleId: string | null;
+            password: string | null;
+            id: string;
+            SDT: string | null;
+            provider: string | null;
+            providerId: string | null;
+            isSuperAdmin: boolean;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            affiliateCode: string | null;
+            referrerId: string | null;
+        } | null;
+        referrals: {
+            email: string | null;
+            phone: string | null;
+            zaloId: string | null;
+            facebookId: string | null;
+            googleId: string | null;
+            password: string | null;
+            id: string;
+            SDT: string | null;
+            provider: string | null;
+            providerId: string | null;
+            isSuperAdmin: boolean;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            affiliateCode: string | null;
+            referrerId: string | null;
+        }[];
         email: string | null;
         phone: string | null;
         zaloId: string | null;
@@ -155,6 +291,8 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        affiliateCode: string | null;
+        referrerId: string | null;
     }>;
     update(id: string, data: any): Promise<{
         email: string | null;
@@ -171,6 +309,8 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        affiliateCode: string | null;
+        referrerId: string | null;
     }>;
     remove(id: string): Promise<{
         email: string | null;
@@ -187,5 +327,7 @@ export declare class UserController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        affiliateCode: string | null;
+        referrerId: string | null;
     }>;
 }

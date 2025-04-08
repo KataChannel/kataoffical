@@ -40,8 +40,8 @@ let AuthController = class AuthController {
     }
     async register(data) {
         try {
-            const user = await this.authService.register(data);
-            return { message: 'Đăng ký thành công', user };
+            const user = await this.authService.register(data, data.affiliateCode);
+            return { statusCode: common_1.HttpStatus.CREATED, message: 'Đăng ký thành công', user };
         }
         catch (error) {
             throw new common_1.HttpException(error.message, common_1.HttpStatus.BAD_REQUEST);

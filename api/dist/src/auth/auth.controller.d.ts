@@ -1,3 +1,4 @@
+import { HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 export declare class AuthController {
     private readonly authService;
@@ -9,6 +10,7 @@ export declare class AuthController {
     zaloLogin(): Promise<void>;
     zaloCallback(req: any, res: any): any;
     register(data: any): Promise<{
+        statusCode: HttpStatus;
         message: string;
         user: {
             id: string;
@@ -42,6 +44,8 @@ export declare class AuthController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        affiliateCode: string | null;
+        referrerId: string | null;
     }>;
     randomPassword(req: any): Promise<{
         newPassword: string;

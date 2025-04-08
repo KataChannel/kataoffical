@@ -36,13 +36,13 @@ model User {
   assignedTasks Task[] @relation("TaskAssignee")
   relatedTasks Task[] @relation("TaskRelatedUser")
   Dexuat Dexuat[]
-
   LandingPage LandingPage[]
-
   AffiliateLink AffiliateLink[]
-
   TrackingEvent TrackingEvent[] @relation("TriggeredByUser")
-
+  affiliateCode String?   @unique // Mã affiliate riêng của user này
+  referrerId    String?   // ID của user đã giới thiệu user này
+  referrer      User?     @relation("Referrals", fields: [referrerId], references: [id])
+  referrals     User[]    @relation("Referrals")
   Registration Registration[]
 }
 

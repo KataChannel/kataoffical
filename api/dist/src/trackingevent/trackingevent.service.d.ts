@@ -11,8 +11,8 @@ export declare class TrackingEventService {
         type: string;
         id: string;
         updatedAt: Date;
-        timestamp: Date;
         affiliateLinkId: string;
+        timestamp: Date;
         ipAddress: string | null;
         userAgent: string | null;
         triggeredByUserId: string | null;
@@ -22,8 +22,8 @@ export declare class TrackingEventService {
         type: string;
         id: string;
         updatedAt: Date;
-        timestamp: Date;
         affiliateLinkId: string;
+        timestamp: Date;
         ipAddress: string | null;
         userAgent: string | null;
         triggeredByUserId: string | null;
@@ -32,8 +32,8 @@ export declare class TrackingEventService {
         type: string;
         id: string;
         updatedAt: Date;
-        timestamp: Date;
         affiliateLinkId: string;
+        timestamp: Date;
         ipAddress: string | null;
         userAgent: string | null;
         triggeredByUserId: string | null;
@@ -42,8 +42,8 @@ export declare class TrackingEventService {
         type: string;
         id: string;
         updatedAt: Date;
-        timestamp: Date;
         affiliateLinkId: string;
+        timestamp: Date;
         ipAddress: string | null;
         userAgent: string | null;
         triggeredByUserId: string | null;
@@ -52,8 +52,8 @@ export declare class TrackingEventService {
         type: string;
         id: string;
         updatedAt: Date;
-        timestamp: Date;
         affiliateLinkId: string;
+        timestamp: Date;
         ipAddress: string | null;
         userAgent: string | null;
         triggeredByUserId: string | null;
@@ -62,8 +62,8 @@ export declare class TrackingEventService {
         type: string;
         id: string;
         updatedAt: Date;
-        timestamp: Date;
         affiliateLinkId: string;
+        timestamp: Date;
         ipAddress: string | null;
         userAgent: string | null;
         triggeredByUserId: string | null;
@@ -72,8 +72,8 @@ export declare class TrackingEventService {
         type: string;
         id: string;
         updatedAt: Date;
-        timestamp: Date;
         affiliateLinkId: string;
+        timestamp: Date;
         ipAddress: string | null;
         userAgent: string | null;
         triggeredByUserId: string | null;

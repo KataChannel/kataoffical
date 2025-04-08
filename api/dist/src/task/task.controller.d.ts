@@ -6,9 +6,9 @@ export declare class taskController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
         userId: string;
         description: string | null;
-        title: string;
         status: string;
         assigneeId: string | null;
         relatedUserId: string | null;
@@ -17,9 +17,9 @@ export declare class taskController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
         userId: string;
         description: string | null;
-        title: string;
         status: string;
         assigneeId: string | null;
         relatedUserId: string | null;
@@ -53,9 +53,9 @@ export declare class taskController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
         userId: string;
         description: string | null;
-        title: string;
         status: string;
         assigneeId: string | null;
         relatedUserId: string | null;
@@ -78,9 +78,9 @@ export declare class taskController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
         userId: string;
         description: string | null;
-        title: string;
         status: string;
         assigneeId: string | null;
         relatedUserId: string | null;
@@ -89,9 +89,9 @@ export declare class taskController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
         userId: string;
         description: string | null;
-        title: string;
         status: string;
         assigneeId: string | null;
         relatedUserId: string | null;
@@ -100,9 +100,9 @@ export declare class taskController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
         userId: string;
         description: string | null;
-        title: string;
         status: string;
         assigneeId: string | null;
         relatedUserId: string | null;
@@ -111,9 +111,9 @@ export declare class taskController {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string;
         userId: string;
         description: string | null;
-        title: string;
         status: string;
         assigneeId: string | null;
         relatedUserId: string | null;

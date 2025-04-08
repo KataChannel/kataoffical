@@ -4,12 +4,12 @@ export declare class AuthService {
     private prisma;
     private jwtService;
     constructor(prisma: PrismaService, jwtService: JwtService);
-    register(data: any): Promise<{
+    register(data: any, affiliateCode?: string): Promise<{
         id: string;
         email: string | null;
         phone: string | null;
     }>;
-    login(SDT: string, email: string, password: string): Promise<{
+    login(phone: string, email: string, password: string): Promise<{
         access_token: string;
         user: any;
     }>;
@@ -28,6 +28,8 @@ export declare class AuthService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        affiliateCode: string | null;
+        referrerId: string | null;
     }>;
     generateRandomPassword(userId: string): Promise<{
         newPassword: string;
@@ -49,6 +51,8 @@ export declare class AuthService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            affiliateCode: string | null;
+            referrerId: string | null;
         };
     }>;
     getUserRoles(userId: string): Promise<({

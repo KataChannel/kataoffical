@@ -19,12 +19,13 @@ let AuthService = class AuthService {
         this.prisma = prisma;
         this.jwtService = jwtService;
     }
-    async register(data) {
+    async register(data, affiliateCode) {
         const { email, phone, zaloId, facebookId, googleId, password } = data;
         const existingUser = await this.prisma.user.findFirst({
             where: {
                 OR: [
                     { email: email || undefined },
+                    { phone: phone || undefined },
                     { SDT: phone || undefined },
                     { zaloId: zaloId || undefined },
                     { facebookId: facebookId || undefined },
@@ -36,21 +37,60 @@ let AuthService = class AuthService {
             throw new Error('Thông tin đăng ký đã tồn tại');
         }
         const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
+        let referrerId = null;
+        let affiliateLinkId = null;
+        console.log(`Affiliate code: ${affiliateCode}`);
+        if (affiliateCode) {
+            try {
+                const affiliateLink = await this.prisma.affiliateLink.findUnique({
+                    where: { codeId: affiliateCode },
+                    include: { createdBy: true }
+                });
+                console.log(`Affiliate link found: ${affiliateLink}`);
+                if (affiliateLink) {
+                    referrerId = affiliateLink.createdById;
+                    affiliateLinkId = affiliateLink.id;
+                    console.log(`Registration via affiliate code: ${affiliateCode}, Referrer ID: ${referrerId}`);
+                }
+                else {
+                    console.warn(`Affiliate code ${affiliateCode} provided but not found.`);
+                }
+            }
+            catch (error) {
+                console.error(`Error finding affiliate link for code ${affiliateCode}:`, error);
+            }
+        }
         const user = await this.prisma.user.create({
             data: {
                 email: email || null,
                 phone: phone || null,
+                SDT: phone || null,
                 zaloId: zaloId || null,
                 facebookId: facebookId || null,
                 googleId: googleId || null,
                 password: hashedPassword,
+                referrerId: referrerId || null,
             },
         });
+        if (affiliateLinkId && user) {
+            try {
+                await this.prisma.registration.create({
+                    data: {
+                        registeredUserId: user.id,
+                        affiliateLinkId: affiliateLinkId,
+                    },
+                });
+                console.log(`Registration record created for user ${user.id} via link ${affiliateLinkId}`);
+            }
+            catch (error) {
+                console.error(`Failed to create Registration record or tracking event for user ${user.id}:`, error);
+            }
+        }
         return { id: user.id, email: user.email, phone: user.phone };
     }
-    async login(SDT, email, password) {
+    async login(phone, email, password) {
         const user = await this.prisma.user.findFirst({
-            where: { OR: [{ email }, { SDT }] },
+            where: { OR: [{ email }, { phone }, { SDT: phone }] },
             include: {
                 roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } },
             },

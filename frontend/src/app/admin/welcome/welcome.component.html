@@ -1,29 +1,66 @@
 <div class="relative w-screen h-screen">
     <img src="images/welcome_nam_bg.png" class="p-2 rounded-3xl absolute top-0 right-0 h-full w-full object-cover" alt="Welcome Image" />
-    <div class="container m-auto grid lg:grid-cols-3 gap-4 p-8">
-    <mat-card class="relative example-card opacity-70" appearance="outlined">
-        <mat-card-header class="!z-10">
-          <div mat-card-avatar class="example-header-image"></div>
-          <mat-card-title>Affiliate Link</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-            <div class="flex flex-col space-y-2">
-                <div class="flex flex-row space-x-2 items-center" *ngFor="let item of LinkAffiliate(); let i=index">
-                    <a [href]="getAffiliateLink(item)">{{ item.codeId }}</a> 
-                    <span>{{ item.trackingEvents || 0 }}</span>
-                </div>
-            </div>
-        </mat-card-content>
-      </mat-card>
-      <div></div>
-      <mat-card class="relative example-card" appearance="outlined">
-        <mat-card-header>
-          <div mat-card-avatar class="example-header-image"></div>
-          <mat-card-title>Đã Giới Thiệu</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
+    <div class="cursor-pointer container m-auto grid lg:grid-cols-3 gap-4 p-8">
+      <div class="text-green-800 bg-green-50/80 relative flex flex-col space-y-2 rounded-lg p-4">
+        <div class="relative z-10 flex flex-row space-x-2 items-center">
+          <span class="material-symbols-outlined">
+            social_leaderboard
+            </span>
+          <span class="text-lg font-bold">Top 10 Bảng Xếp Hạng</span>
+        </div>
+        <div class="flex flex-col space-y-2">
+          <div class="flex flex-col overflow-auto lg:max-h-60 max-h-36">
+            <div class="flex flex-row space-x-2 items-center justify-between p-2 hover:bg-slate-200 rounded-lg" *ngFor="let item of ListUser(); let i=index">
+              <div class="flex flex-row space-x-1 items-center">
+                <span>{{ i+1}}. {{ item.phone || item.SDT }}</span>
+                <ng-container *ngIf="i < 3">
+                  <div class="flex">
+                  <span class="material-symbols-outlined text-yellow-500" *ngFor="let crown of [].constructor(3 - i)">
+                    crown
+                  </span>
+                  </div>
+                </ng-container>
+              </div>  
+              <div class="flex flex-row space-x-2 items-center">
+                <span class="font-bold">{{ item.referralsCount || 0 }}</span>
+                <mat-icon>diversity_3</mat-icon>
+              </div>  
 
-        </mat-card-content>
-      </mat-card>
+          </div>  
+          </div>
+        </div>
+      </div>
+      <div class="text-blue-700 relative flex flex-col space-y-2 rounded-lg bg-blue-50/80 p-4">
+        <div class="flex flex-row space-x-2 items-center">
+          <mat-icon>share</mat-icon>
+          <a href="/landingpage" class="text-lg font-bold">Liên Kết Tiếp Thị</a>
+        </div>
+        <div class="flex flex-col space-y-2">
+          <div class="flex flex-col overflow-auto lg:max-h-60 max-h-36">
+            <div class="flex flex-row space-x-2 items-center justify-between p-2 hover:bg-slate-200 rounded-lg" *ngFor="let item of LinkAffiliate(); let i=index">
+                <a [href]="getAffiliateLink(item)">{{i+1}}. {{ item.codeId }}</a> 
+                <div class="flex flex-row space-x-2 items-center">
+                  <span>{{ item.trackingEvents || 0 }}</span>
+                  <mat-icon>visibility</mat-icon>
+                </div>   
+            </div>  
+        </div>
+        </div>
+      </div>
+      <div class="text-gray-800 relative flex flex-col space-y-2 rounded-lg bg-gray-100/80 p-4">
+        <div class="flex flex-row space-x-2 items-center">
+          <mat-icon>diversity_3</mat-icon>
+          <span class="text-lg font-bold">Đã Giới Thiệu</span>
+        </div>
+        <div class="flex flex-col overflow-auto lg:max-h-60 max-h-36">
+          <div class="flex flex-row space-x-2 items-center justify-between p-2 hover:bg-slate-200 rounded-lg" *ngFor="let item of Profile().referrals; let i=index">
+            <div class="flex flex-row space-x-2 items-center">
+              <span>{{ i+1}}.</span>
+              <span>{{ item.phone || 0 }}</span>
+              <span>{{ item.createdAt | date:'dd/MM/yyyy' }}</span>
+            </div>   
+        </div>  
+        </div>
+      </div>
     </div>
 </div>

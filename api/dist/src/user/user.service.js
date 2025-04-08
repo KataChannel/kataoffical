@@ -74,6 +74,41 @@ let UserService = class UserService {
             permissions: Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission)))),
         }));
     }
+    async leaderboard() {
+        const users = await this.prisma.user.findMany({
+            include: {
+                referrals: true,
+                profile: true,
+            },
+            orderBy: {
+                referrals: {
+                    _count: 'desc',
+                },
+            },
+            take: 10,
+        });
+        return users
+            .filter(user => user.referrals.length > 0)
+            .map(({ password, ...user }) => {
+            const maskedPhone = user?.phone ?
+                `${user.phone.slice(0, 3)}${'*'.repeat(Math.max(0, user.phone.length - 6))}${user.phone.slice(-3)}` :
+                null;
+            const maskedSDT = user?.SDT ?
+                `${user.SDT.slice(0, 3)}${'*'.repeat(Math.max(0, user.SDT.length - 6))}${user.SDT.slice(-3)}` :
+                null;
+            const maskedEmail = user?.email ?
+                `${user.email.slice(0, 3)}${'*'.repeat(Math.max(0, user.email.indexOf('@') - 3))}${user.email.slice(user.email.indexOf('@') - 3)}` :
+                null;
+            return {
+                ...user,
+                name: user.profile?.name,
+                phone: maskedPhone,
+                SDT: maskedSDT,
+                email: maskedEmail,
+                referralsCount: user.referrals.length,
+            };
+        });
+    }
     async findOne(id) {
         const user = await this.prisma.user.findUnique({
             where: { id },
@@ -88,6 +123,8 @@ let UserService = class UserService {
                     },
                 },
                 profile: true,
+                referrals: true,
+                referrer: true,
             },
         });
         if (!user)
