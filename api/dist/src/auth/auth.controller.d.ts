@@ -8,21 +8,13 @@ export declare class AuthController {
     facebookCallback(req: any, res: any): any;
     zaloLogin(): Promise<void>;
     zaloCallback(req: any, res: any): any;
-    register(body: {
-        email: string;
-        password: string;
-        name: string;
-    }): Promise<{
-        id: string;
-        email: string | null;
-        SDT: string | null;
-        password: string;
-        provider: string | null;
-        providerId: string | null;
-        isSuperAdmin: boolean;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
+    register(data: any): Promise<{
+        message: string;
+        user: {
+            id: string;
+            email: string | null;
+            phone: string | null;
+        };
     }>;
     login(body: {
         SDT: string;
@@ -36,10 +28,14 @@ export declare class AuthController {
         oldPassword: string;
         newPassword: string;
     }): Promise<{
-        id: string;
         email: string | null;
+        phone: string | null;
+        zaloId: string | null;
+        facebookId: string | null;
+        googleId: string | null;
+        password: string | null;
+        id: string;
         SDT: string | null;
-        password: string;
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;

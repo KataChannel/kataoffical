@@ -5,10 +5,14 @@ export declare class UserService {
     private _SocketGateway;
     constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
     createUser(dto: any): Promise<{
-        id: string;
         email: string | null;
+        phone: string | null;
+        zaloId: string | null;
+        facebookId: string | null;
+        googleId: string | null;
+        password: string | null;
+        id: string;
         SDT: string | null;
-        password: string;
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
@@ -17,6 +21,7 @@ export declare class UserService {
         updatedAt: Date;
     }>;
     getUsers(): Promise<{
+        name: string | undefined;
         roles: {
             id: string;
             createdAt: Date;
@@ -30,8 +35,33 @@ export declare class UserService {
             name: string;
             description: string | null;
         }[];
-        id: string;
+        profile: {
+            id: string;
+            name: string;
+            userId: string;
+            avatar: string | null;
+            bio: string | null;
+            citizenId: string | null;
+            birthDate: Date | null;
+            hometown: string | null;
+            address: string | null;
+            companyName: string | null;
+            position: string | null;
+            level: string | null;
+            department: string | null;
+            startDate: Date | null;
+            endDate: Date | null;
+            companyEmail: string | null;
+            companyPhone: string | null;
+            softwareAccounts: import("@prisma/client/runtime/library").JsonValue | null;
+            socialAccounts: import("@prisma/client/runtime/library").JsonValue | null;
+        } | null;
         email: string | null;
+        phone: string | null;
+        zaloId: string | null;
+        facebookId: string | null;
+        googleId: string | null;
+        id: string;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
@@ -54,8 +84,12 @@ export declare class UserService {
             name: string;
             description: string | null;
         }[];
-        id: string;
         email: string | null;
+        phone: string | null;
+        zaloId: string | null;
+        facebookId: string | null;
+        googleId: string | null;
+        id: string;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
@@ -71,6 +105,27 @@ export declare class UserService {
             updatedAt: Date;
             name: string;
         }[];
+        profile: {
+            id: string;
+            name: string;
+            userId: string;
+            avatar: string | null;
+            bio: string | null;
+            citizenId: string | null;
+            birthDate: Date | null;
+            hometown: string | null;
+            address: string | null;
+            companyName: string | null;
+            position: string | null;
+            level: string | null;
+            department: string | null;
+            startDate: Date | null;
+            endDate: Date | null;
+            companyEmail: string | null;
+            companyPhone: string | null;
+            softwareAccounts: import("@prisma/client/runtime/library").JsonValue | null;
+            socialAccounts: import("@prisma/client/runtime/library").JsonValue | null;
+        } | null;
         permissions: {
             id: string;
             createdAt: Date;
@@ -78,8 +133,12 @@ export declare class UserService {
             name: string;
             description: string | null;
         }[];
-        id: string;
         email: string | null;
+        phone: string | null;
+        zaloId: string | null;
+        facebookId: string | null;
+        googleId: string | null;
+        id: string;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
@@ -89,10 +148,14 @@ export declare class UserService {
         updatedAt: Date;
     }>;
     update(id: string, data: any): Promise<{
-        id: string;
         email: string | null;
+        phone: string | null;
+        zaloId: string | null;
+        facebookId: string | null;
+        googleId: string | null;
+        password: string | null;
+        id: string;
         SDT: string | null;
-        password: string;
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
@@ -101,10 +164,14 @@ export declare class UserService {
         updatedAt: Date;
     }>;
     remove(id: string): Promise<{
-        id: string;
         email: string | null;
+        phone: string | null;
+        zaloId: string | null;
+        facebookId: string | null;
+        googleId: string | null;
+        password: string | null;
+        id: string;
         SDT: string | null;
-        password: string;
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;

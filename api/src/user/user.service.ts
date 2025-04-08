@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { profile } from 'console';
 import { PrismaService } from 'prisma/prisma.service';
 import { permission } from 'process';
 import { Role } from 'src/role/entities/role.entity';
@@ -32,11 +33,13 @@ export class UserService {
             },
           },
         },
+        profile: true,
       },
     });
   
     return users.map(({ password, roles, ...userWithoutPassword }) => ({
       ...userWithoutPassword,
+      name:userWithoutPassword.profile?.name,
       roles: roles.map(({ role }) => {
         const { permissions, ...roleWithoutPermissions } = role;
         return roleWithoutPermissions;
@@ -89,6 +92,7 @@ export class UserService {
             },
           },
         },
+        profile: true,
       },
     }); 
     if (!user) throw new NotFoundException('User not found');
@@ -106,6 +110,7 @@ export class UserService {
     return {
       ...userWithoutPassword,
       roles: formattedRoles,
+      profile: user.profile,
       permissions,
     };
   }

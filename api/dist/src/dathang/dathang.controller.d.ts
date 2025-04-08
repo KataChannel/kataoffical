@@ -31,8 +31,8 @@ export declare class DathangController {
     findAll(): Promise<{
         sanpham: any[];
         nhacungcap: {
-            id: string;
             email: string | null;
+            id: string;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
@@ -78,8 +78,8 @@ export declare class DathangController {
             haohut: number;
         }[];
         nhacungcap: {
-            id: string;
             email: string | null;
+            id: string;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;

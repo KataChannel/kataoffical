@@ -89,7 +89,7 @@ export class LoginComponent implements OnInit {
         console.log('Token from URL:', token);
         this.validateToken(token); // Validate the token
       } else {
-        this.router.navigate(['/admin/donhang']);
+        this.router.navigate(['/admin/welcome']);
         console.error('Token not found in URL');
       }
     });

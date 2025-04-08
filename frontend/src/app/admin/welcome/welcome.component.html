@@ -1,0 +1,29 @@
+<div class="relative w-screen h-screen">
+    <img src="images/welcome_nam_bg.png" class="p-2 rounded-3xl absolute top-0 right-0 h-full w-full object-cover" alt="Welcome Image" />
+    <div class="container m-auto grid lg:grid-cols-3 gap-4 p-8">
+    <mat-card class="relative example-card opacity-70" appearance="outlined">
+        <mat-card-header class="!z-10">
+          <div mat-card-avatar class="example-header-image"></div>
+          <mat-card-title>Affiliate Link</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div class="flex flex-col space-y-2">
+                <div class="flex flex-row space-x-2 items-center" *ngFor="let item of LinkAffiliate(); let i=index">
+                    <a [href]="getAffiliateLink(item)">{{ item.codeId }}</a> 
+                    <span>{{ item.trackingEvents || 0 }}</span>
+                </div>
+            </div>
+        </mat-card-content>
+      </mat-card>
+      <div></div>
+      <mat-card class="relative example-card" appearance="outlined">
+        <mat-card-header>
+          <div mat-card-avatar class="example-header-image"></div>
+          <mat-card-title>Đã Giới Thiệu</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+
+        </mat-card-content>
+      </mat-card>
+    </div>
+</div>

@@ -35,12 +35,14 @@ export declare class DonhangController {
         sanpham: any[];
         name: string | null;
         khachhang: {
-            id: string;
             email: string | null;
+            phone: string | null;
+            id: string;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
+            address: string | null;
             ghichu: string | null;
             namenn: string | null;
             makh: string;
@@ -49,8 +51,6 @@ export declare class DonhangController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            phone: string | null;
-            address: string | null;
             loaikh: string | null;
             hiengia: boolean;
         };
@@ -71,12 +71,14 @@ export declare class DonhangController {
         sanpham: any[];
         name: string | null;
         khachhang: {
-            id: string;
             email: string | null;
+            phone: string | null;
+            id: string;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
+            address: string | null;
             ghichu: string | null;
             namenn: string | null;
             makh: string;
@@ -85,8 +87,6 @@ export declare class DonhangController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            phone: string | null;
-            address: string | null;
             loaikh: string | null;
             hiengia: boolean;
         };
@@ -153,12 +153,14 @@ export declare class DonhangController {
                 status: string | null;
             })[];
         } & {
-            id: string;
             email: string | null;
+            phone: string | null;
+            id: string;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
+            address: string | null;
             ghichu: string | null;
             namenn: string | null;
             makh: string;
@@ -167,8 +169,6 @@ export declare class DonhangController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            phone: string | null;
-            address: string | null;
             loaikh: string | null;
             hiengia: boolean;
         };

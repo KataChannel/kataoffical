@@ -7,22 +7,22 @@ export declare class QuanlydriveController {
     listUsersFolder(query: any): Promise<({
         driveItem: {
             type: import(".prisma/client").$Enums.DriveItemType;
+            googleId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
             name: string;
             parentId: string | null;
-            googleId: string;
             mimeType: string | null;
             size: number | null;
         };
     } & {
         role: string;
         type: string;
+        googleId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        googleId: string;
         userIdDrive: string;
         kind: string;
         emailAddress: string | null;
@@ -39,56 +39,56 @@ export declare class QuanlydriveController {
     }>;
     create(createquanlyqrcodeDto: any): Promise<{
         type: import(".prisma/client").$Enums.DriveItemType;
+        googleId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         parentId: string | null;
-        googleId: string;
         mimeType: string | null;
         size: number | null;
     }>;
     findby(param: any): Promise<{
         type: import(".prisma/client").$Enums.DriveItemType;
+        googleId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         parentId: string | null;
-        googleId: string;
         mimeType: string | null;
         size: number | null;
     } | null>;
     findAll(driveId: string): Promise<any>;
     findOne(id: string): Promise<{
         type: import(".prisma/client").$Enums.DriveItemType;
+        googleId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         parentId: string | null;
-        googleId: string;
         mimeType: string | null;
         size: number | null;
     }>;
     update(id: string, data: any): Promise<{
         type: import(".prisma/client").$Enums.DriveItemType;
+        googleId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         parentId: string | null;
-        googleId: string;
         mimeType: string | null;
         size: number | null;
     }>;
     remove(id: string): Promise<{
         role: string;
         type: string;
+        googleId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        googleId: string;
         userIdDrive: string;
         kind: string;
         emailAddress: string | null;

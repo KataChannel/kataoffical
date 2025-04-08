@@ -21,8 +21,13 @@ npx katacreate --type angular --name task --outputDir .
 npx katacreate --type angular --name quanlyqrcode --outputDir .
 npx katacreate --type angular --name quanlydrive --outputDir .
 npx katacreate --type angular --name quanlygooglesheet --outputDir .
+npx katacreate --type angular --name dexuat --outputDir .
+npx katacreate --type angular --name affiliate --outputDir .
 
 npx ng g c congnokhachhang --skip-tests --standalone
 npx ng g c congnoncc --skip-tests --standalone
 npx ng g c keditor --skip-tests --standalone
 npx ng g c ktable --skip-tests --standalone
+npx ng g c welcome --skip-tests --standalone
+npx ng g c landingpage --skip-tests --standalone
+npx ng g c affiliate --skip-tests --standalone

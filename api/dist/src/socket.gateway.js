@@ -28,6 +28,18 @@ let SocketGateway = class SocketGateway {
     sendtaskUpdate() {
         this.server.emit('task-updated');
     }
+    sendDexuatUpdate() {
+        this.server.emit('dexuat-updated');
+    }
+    sendlandingPageUpdate() {
+        this.server.emit('landingPage-updated');
+    }
+    sendTrackingEventUpdate() {
+        this.server.emit('trackingevent-updated');
+    }
+    sendAffiliatelinkUpdate() {
+        this.server.emit('affiliatelink-updated');
+    }
 };
 exports.SocketGateway = SocketGateway;
 __decorate([

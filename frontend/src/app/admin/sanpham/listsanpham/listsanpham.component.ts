@@ -66,7 +66,6 @@ export class ListSanphamComponent {
     localStorage.getItem('SanphamColFilter') || '[]'
   );
   Columns: any[] = [];
-  //pagination
   totalItems = 0;
   pageSize = 10;
   currentPage = 1;

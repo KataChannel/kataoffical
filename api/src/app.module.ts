@@ -26,6 +26,9 @@ import { MailModule } from './mail/mail.module';
 import { QuanlyqrcodeModule } from './quanlyqrcode/quanlyqrcode.module';
 import { QuanlydriveModule } from './quanlydrive/quanlydrive.module';
 import { GooglesheetModule } from './googlesheet/googlesheet.module';
+import { DexuatModule } from './dexuat/dexuat.module';
+import { LandingPageModule } from './landingpage/landingpage.module';
+import { AffiliatelinkModule } from './affiliatelink/affiliatelink.module';
 @Module({
   imports: [
     AuthModule, 
@@ -50,7 +53,10 @@ import { GooglesheetModule } from './googlesheet/googlesheet.module';
     QuanlyqrcodeModule,
     MailModule,
     QuanlydriveModule,
-    GooglesheetModule
+    GooglesheetModule,
+    DexuatModule,
+    LandingPageModule,
+    AffiliatelinkModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

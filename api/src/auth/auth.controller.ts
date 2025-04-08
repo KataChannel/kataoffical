@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Req, Get, Res } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Get, Res, HttpException, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
@@ -38,11 +38,19 @@ export class AuthController {
 
 
 
+  // @Post('register')
+  // register(@Body() body: { email: string; password: string; name: string }) {
+  //   return this.authService.register(body.email, body.password);
+  // }
   @Post('register')
-  register(@Body() body: { email: string; password: string; name: string }) {
-    return this.authService.register(body.email, body.password);
+  async register(@Body() data: any) {
+    try {
+      const user = await this.authService.register(data);
+      return { message: 'Đăng ký thành công', user };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
-
   @Post('login')
   login(@Body() body: {SDT:string; email: string; password: string }) {
     console.log(body);

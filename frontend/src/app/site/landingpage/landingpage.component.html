@@ -1,0 +1,27 @@
+<div class="container grid grid-cols-3 gap-4 m-auto p-8">
+    @defer () {
+        <div class="rounded-lg p-3 flex flex-col space-y-2 border" *ngFor="let item of ListLandingpage(); let i=index">
+            {{item.link}}
+            <div class="font-bold">{{item.title}}</div>
+            <img [src]="item.thumbnail" alt="Thumbnail" class="w-full h-auto rounded-md"/>
+            <div>{{item.description}}</div>
+            <div>
+                <button *ngIf="!getAffiliateLink(item)" mat-flat-button color="primary" (click)="CreateAffiliateLink(item)">Tạo Mới</button>
+            </div>
+           <div *ngIf="getAffiliateLink(item)" class="flex flex-row space-x-2 items-center">
+            <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                <mat-label>Liên Kết</mat-label>
+               <input matInput [disabled]="true" [ngModel]="getAffiliateLink(item)" placeholder="Vui lòng Nhập Liên Kết" />
+           </mat-form-field> 
+            <button mat-icon-button color="primary" (click)="CopyLinkAffiliate(item)">
+                <mat-icon>content_copy</mat-icon>
+            </button>
+            <button mat-icon-button color="primary" (click)="SharedAffiliate(item)">
+                <mat-icon>share</mat-icon>
+            </button>
+           </div>
+        </div>
+      } 
+    
+
+</div>

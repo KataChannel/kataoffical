@@ -38,10 +38,12 @@ let UserService = class UserService {
                         },
                     },
                 },
+                profile: true,
             },
         });
         return users.map(({ password, roles, ...userWithoutPassword }) => ({
             ...userWithoutPassword,
+            name: userWithoutPassword.profile?.name,
             roles: roles.map(({ role }) => {
                 const { permissions, ...roleWithoutPermissions } = role;
                 return roleWithoutPermissions;
@@ -85,6 +87,7 @@ let UserService = class UserService {
                         },
                     },
                 },
+                profile: true,
             },
         });
         if (!user)
@@ -98,6 +101,7 @@ let UserService = class UserService {
         return {
             ...userWithoutPassword,
             roles: formattedRoles,
+            profile: user.profile,
             permissions,
         };
     }

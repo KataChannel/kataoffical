@@ -1,0 +1,20 @@
+<div class="h-screen flex flex-col space-y-2 container mx-auto">
+   @defer () {
+    <div class="iframe-container">
+        <iframe 
+            [src]="SecurityTrustUrl(DetailLandingpage().contentHtml)" 
+            width="100%" 
+            class="h-screen-16" 
+            frameborder="0" 
+            allowfullscreen>
+        </iframe>
+    </div>
+    <div class="flex flex-row justify-center space-x-2">
+        <button mat-flat-button color="primary" class="flex flex-row space-x-1" (click)="onRegister()">
+            <mat-icon>how_to_reg</mat-icon>
+            <span>Đăng Ký</span>    
+        </button>
+    </div>
+   }
+</div>
+

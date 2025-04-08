@@ -38,8 +38,14 @@ let AuthController = class AuthController {
         const token = req.user.token;
         return res.redirect(`${process.env.BASE_URL}/oauth-callback?token=${token}`);
     }
-    register(body) {
-        return this.authService.register(body.email, body.password);
+    async register(data) {
+        try {
+            const user = await this.authService.register(data);
+            return { message: 'Đăng ký thành công', user };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.BAD_REQUEST);
+        }
     }
     login(body) {
         console.log(body);
@@ -102,7 +108,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
 __decorate([
     (0, common_1.Post)('login'),

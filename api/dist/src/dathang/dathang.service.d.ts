@@ -6,8 +6,8 @@ export declare class DathangService {
     findAll(): Promise<{
         sanpham: any[];
         nhacungcap: {
-            id: string;
             email: string | null;
+            id: string;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
@@ -53,8 +53,8 @@ export declare class DathangService {
             haohut: number;
         }[];
         nhacungcap: {
-            id: string;
             email: string | null;
+            id: string;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;

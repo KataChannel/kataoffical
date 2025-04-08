@@ -53,7 +53,6 @@ let taskService = class taskService {
                     NguoilienquanSDT: relatedUser?.SDT,
                 };
             });
-            console.log('result', result);
             return result;
         }
         catch (error) {

@@ -1,9 +1,9 @@
 <mat-drawer-container class="!w-screen !h-screen" autosize>
-  <mat-drawer #drawer class="" mode="side" position="start">
+  <mat-drawer #drawer mode="side" position="start">
     <div class="relative h-full flex flex-col space-y-2">
-      <div class="relative flex flex-col space-y-2 p-2">
+      <a [href]="'admin/welcome'" class="relative flex flex-col space-y-2 p-2">
         <img [src]="Config.Logoimage" class="h-10 object-fill" alt="Logo">
-      </div>
+      </a>
       <div class="relative h-full overflow-auto p-2">
         <app-treemenu [ListMenu]="ListMenu"></app-treemenu>
         <!-- <mat-tree class="cursor-pointer flex flex-col space-y-2" [dataSource]="dataSource" [treeControl]="treeControl">

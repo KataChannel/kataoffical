@@ -3,8 +3,8 @@ export declare class NhacungcapController {
     private readonly nhacungcapService;
     constructor(nhacungcapService: NhacungcapService);
     create(createNhacungcapDto: any): Promise<{
-        id: string;
         email: string | null;
+        id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -15,8 +15,8 @@ export declare class NhacungcapController {
         mancc: string;
     }>;
     findAll(): Promise<{
-        id: string;
         email: string | null;
+        id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -27,8 +27,8 @@ export declare class NhacungcapController {
         mancc: string;
     }[]>;
     findOne(id: string): Promise<{
-        id: string;
         email: string | null;
+        id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -39,8 +39,8 @@ export declare class NhacungcapController {
         mancc: string;
     }>;
     update(id: string, updateNhacungcapDto: any): Promise<{
-        id: string;
         email: string | null;
+        id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -51,8 +51,8 @@ export declare class NhacungcapController {
         mancc: string;
     }>;
     remove(id: string): Promise<{
-        id: string;
         email: string | null;
+        id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;

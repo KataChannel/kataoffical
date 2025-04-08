@@ -87,7 +87,7 @@ export class AppService {
 
   async getLastUpdated(table: string) {
     // Kiểm tra xem bảng có hợp lệ không
-    const validTables = ['task','googlesheet','driveItem','lead','sanpham', 'banggia', 'donhang', 'khachhang', 'nhacungcap', 'dathang', 'kho', 'phieukho', 'role', 'permission', 'nhomkhachhang'];
+    const validTables = ['affiliateLink','trackingEvent','landingPage','task','googlesheet','driveItem','lead','sanpham', 'banggia', 'donhang', 'khachhang', 'nhacungcap', 'dathang', 'kho', 'phieukho', 'role', 'permission', 'nhomkhachhang'];
     if (!validTables.includes(table)) {
       throw new BadRequestException(`Invalid table name: ${table}`);
     }

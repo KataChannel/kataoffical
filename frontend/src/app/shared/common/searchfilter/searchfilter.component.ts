@@ -42,7 +42,7 @@ export class SearchfilterComponent {
   @Input() filterItem: any[] = [];
   @Input() ListFilter: any[] = [];
   @Input() CountItems: any = 0;
-  @Input() icon: any = 'search';
+  @Input() icon: any = '';
   @Input() title: any = 'Items';
   @Input() fieldsearch: any = 'title';
   @Input() isEdit = signal(false);

@@ -44,9 +44,6 @@ export class taskService {
           NguoilienquanSDT: relatedUser?.SDT,
         };
       });
-
-      console.log('result', result);
-      
       return result;
     } catch (error) {
       this._ErrorlogService.logError('findAll',error);

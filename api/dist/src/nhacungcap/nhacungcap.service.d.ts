@@ -4,8 +4,8 @@ export declare class NhacungcapService {
     constructor(prisma: PrismaService);
     generateMancc(): Promise<string>;
     create(data: any): Promise<{
-        id: string;
         email: string | null;
+        id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -16,8 +16,8 @@ export declare class NhacungcapService {
         mancc: string;
     }>;
     findAll(): Promise<{
-        id: string;
         email: string | null;
+        id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -28,8 +28,8 @@ export declare class NhacungcapService {
         mancc: string;
     }[]>;
     findOne(id: string): Promise<{
-        id: string;
         email: string | null;
+        id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -40,8 +40,8 @@ export declare class NhacungcapService {
         mancc: string;
     }>;
     update(id: string, data: any): Promise<{
-        id: string;
         email: string | null;
+        id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -52,8 +52,8 @@ export declare class NhacungcapService {
         mancc: string;
     }>;
     remove(id: string): Promise<{
-        id: string;
         email: string | null;
+        id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;

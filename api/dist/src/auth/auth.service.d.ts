@@ -4,27 +4,24 @@ export declare class AuthService {
     private prisma;
     private jwtService;
     constructor(prisma: PrismaService, jwtService: JwtService);
-    register(email: string, password: string): Promise<{
+    register(data: any): Promise<{
         id: string;
         email: string | null;
-        SDT: string | null;
-        password: string;
-        provider: string | null;
-        providerId: string | null;
-        isSuperAdmin: boolean;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
+        phone: string | null;
     }>;
     login(SDT: string, email: string, password: string): Promise<{
         access_token: string;
         user: any;
     }>;
     changePassword(userId: string, oldPassword: string, newPassword: string): Promise<{
-        id: string;
         email: string | null;
+        phone: string | null;
+        zaloId: string | null;
+        facebookId: string | null;
+        googleId: string | null;
+        password: string | null;
+        id: string;
         SDT: string | null;
-        password: string;
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
@@ -38,10 +35,14 @@ export declare class AuthService {
     validateOAuthLogin(provider: string, providerId: string, email?: string): Promise<{
         token: string;
         user: {
-            id: string;
             email: string | null;
+            phone: string | null;
+            zaloId: string | null;
+            facebookId: string | null;
+            googleId: string | null;
+            password: string | null;
+            id: string;
             SDT: string | null;
-            password: string;
             provider: string | null;
             providerId: string | null;
             isSuperAdmin: boolean;

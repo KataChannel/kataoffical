@@ -19,11 +19,34 @@ let AuthService = class AuthService {
         this.prisma = prisma;
         this.jwtService = jwtService;
     }
-    async register(email, password) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        return this.prisma.user.create({
-            data: { email, password: hashedPassword },
+    async register(data) {
+        const { email, phone, zaloId, facebookId, googleId, password } = data;
+        const existingUser = await this.prisma.user.findFirst({
+            where: {
+                OR: [
+                    { email: email || undefined },
+                    { SDT: phone || undefined },
+                    { zaloId: zaloId || undefined },
+                    { facebookId: facebookId || undefined },
+                    { googleId: googleId || undefined },
+                ],
+            },
         });
+        if (existingUser) {
+            throw new Error('Thông tin đăng ký đã tồn tại');
+        }
+        const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
+        const user = await this.prisma.user.create({
+            data: {
+                email: email || null,
+                phone: phone || null,
+                zaloId: zaloId || null,
+                facebookId: facebookId || null,
+                googleId: googleId || null,
+                password: hashedPassword,
+            },
+        });
+        return { id: user.id, email: user.email, phone: user.phone };
     }
     async login(SDT, email, password) {
         const user = await this.prisma.user.findFirst({
@@ -52,7 +75,7 @@ let AuthService = class AuthService {
     }
     async changePassword(userId, oldPassword, newPassword) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
-        if (!user || !(await bcrypt.compare(oldPassword, user.password))) {
+        if (!user || !user.password || !(await bcrypt.compare(oldPassword, user.password))) {
             throw new common_1.UnauthorizedException('Old password is incorrect');
         }
         const hashedPassword = await bcrypt.hash(newPassword, 10);

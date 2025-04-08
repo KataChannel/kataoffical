@@ -25,4 +25,16 @@ export class SocketGateway {
   sendtaskUpdate() {
     this.server.emit('task-updated'); // FE sẽ nhận sự kiện này
   }
+  sendDexuatUpdate() {
+    this.server.emit('dexuat-updated'); // FE sẽ nhận sự kiện này
+  }
+  sendlandingPageUpdate() {
+    this.server.emit('landingPage-updated'); // FE sẽ nhận sự kiện này
+  }
+  sendTrackingEventUpdate() {
+    this.server.emit('trackingevent-updated'); // FE sẽ nhận sự kiện này
+  }
+  sendAffiliatelinkUpdate() {
+    this.server.emit('affiliatelink-updated'); // FE sẽ nhận sự kiện này
+  }
 }

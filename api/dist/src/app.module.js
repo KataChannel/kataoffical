@@ -35,6 +35,9 @@ const mail_module_1 = require("./mail/mail.module");
 const quanlyqrcode_module_1 = require("./quanlyqrcode/quanlyqrcode.module");
 const quanlydrive_module_1 = require("./quanlydrive/quanlydrive.module");
 const googlesheet_module_1 = require("./googlesheet/googlesheet.module");
+const dexuat_module_1 = require("./dexuat/dexuat.module");
+const landingpage_module_1 = require("./landingpage/landingpage.module");
+const affiliatelink_module_1 = require("./affiliatelink/affiliatelink.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -66,7 +69,10 @@ exports.AppModule = AppModule = __decorate([
             quanlyqrcode_module_1.QuanlyqrcodeModule,
             mail_module_1.MailModule,
             quanlydrive_module_1.QuanlydriveModule,
-            googlesheet_module_1.GooglesheetModule
+            googlesheet_module_1.GooglesheetModule,
+            dexuat_module_1.DexuatModule,
+            landingpage_module_1.LandingPageModule,
+            affiliatelink_module_1.AffiliatelinkModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

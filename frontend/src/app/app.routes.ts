@@ -4,7 +4,11 @@ import { AuthGuard } from './shared/common/users/guards/auth.guard';
 import { GuestGuard } from './shared/common/users/guards/guest.guard';
 import { PermissionGuard } from './shared/common/users/guards/permission.guard';
 export const routes: Routes = [
-    { path: '', redirectTo: 'admin/dashboard', pathMatch: 'full' },
+    { path: '', redirectTo: 'welcome', pathMatch: 'full' },
+    {
+      path: 'welcome',
+      loadComponent: () => import('./admin/welcome/welcome.component').then((c) => c.WelcomeComponent),
+    },
     {
       path: '404',
       loadComponent: () => import('./site/notfound/notfound.component').then((c) => c.NotfoundComponent),
@@ -14,6 +18,10 @@ export const routes: Routes = [
       canActivate: [AuthGuard],
       loadComponent: () => import('./admin/adminmain/adminmain.component').then((c) => c.AdminmainComponent),
       children: [
+        {
+          path: 'welcome',
+          loadComponent: () => import('./admin/welcome/welcome.component').then((c) => c.WelcomeComponent),
+        },
         {
           path: 'dashboard',
           loadComponent: () => import('./admin/dashboard/dashboard.component').then((c) => c.DashboardComponent),
@@ -79,6 +87,22 @@ export const routes: Routes = [
             {
               path: ':id',
               loadComponent: () => import('./admin/googlesheet/detailgooglesheet/detailgooglesheet.component').then((c) => c.DetailGooglesheetComponent),
+            },
+          ],
+        },
+        {
+          path: 'landingpage',
+          canActivate: [PermissionGuard],
+          data: { permission: 'landingpage.view' },
+          loadComponent: () => import('./admin/landingpage/listlandingpage/listlandingpage.component').then((c) => c.ListLandingpageComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/landingpage/listlandingpage/listlandingpage.component').then((c) => c.ListLandingpageComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/landingpage/detaillandingpage/detaillandingpage.component').then((c) => c.DetailLandingpageComponent),
             },
           ],
         },
@@ -197,6 +221,22 @@ export const routes: Routes = [
           ],
         },
         {
+          path: 'trackingevent',
+          canActivate: [PermissionGuard],
+          data: { permission: 'trackingevent.view' },
+          loadComponent: () => import('./admin/trackingevent/listtrackingevent/listtrackingevent.component').then((c) => c.ListTrackingeventComponent),
+          children: [
+            {
+         path: '',
+         loadComponent: () => import('./admin/trackingevent/listtrackingevent/listtrackingevent.component').then((c) => c.ListTrackingeventComponent),
+            },
+            {
+         path: ':id',
+         loadComponent: () => import('./admin/trackingevent/detailtrackingevent/detailtrackingevent.component').then((c) => c.DetailTrackingeventComponent),
+            },
+          ],
+        },
+        {
           path: 'banggia',
           canActivate: [PermissionGuard],
           data: { permission: 'banggia.view' },
@@ -225,6 +265,22 @@ export const routes: Routes = [
             {
               path: ':id',
               loadComponent: () => import('./admin/khachhang/detailkhachhang/detailkhachhang.component').then((c) => c.DetailKhachhangComponent),
+            },
+          ],
+        },
+        {
+          path: 'affiliatelink',
+          canActivate: [PermissionGuard],
+          data: { permission: 'affiliatelink.view' },
+          loadComponent: () => import('./admin/affiliatelink/listaffiliatelink/listaffiliatelink.component').then((c) => c.ListAffiliatelinkComponent),
+          children: [
+            {
+         path: '',
+         loadComponent: () => import('./admin/affiliatelink/listaffiliatelink/listaffiliatelink.component').then((c) => c.ListAffiliatelinkComponent),
+            },
+            {
+         path: ':id',
+         loadComponent: () => import('./admin/affiliatelink/detailaffiliatelink/detailaffiliatelink.component').then((c) => c.DetailAffiliatelinkComponent),
             },
           ],
         },
@@ -428,6 +484,22 @@ export const routes: Routes = [
           ]
         },
         {
+          path: 'dexuat',
+          canActivate: [PermissionGuard],
+          data: { permission: 'dexuat.view' },
+          loadComponent: () => import('./admin/dexuat/listdexuat/listdexuat.component').then((c) => c.ListDexuatComponent),
+          children: [
+            {
+              path: '',
+              loadComponent: () => import('./admin/dexuat/listdexuat/listdexuat.component').then((c) => c.ListDexuatComponent),
+            },
+            {
+              path: ':id',
+              loadComponent: () => import('./admin/dexuat/detaildexuat/detaildexuat.component').then((c) => c.DetailDexuatComponent),
+            },
+          ],
+        },
+        {
           path: 'account',
           redirectTo: 'account/general', // Chuyển hướng đến 'account/password'
           pathMatch: 'full', // Xác định khớp chính xác
@@ -470,6 +542,15 @@ export const routes: Routes = [
         {
           path: '',
           loadComponent: () =>import('./site/home/home.component').then((c) => c.HomeComponent),
+        },
+        {
+          canActivate: [AuthGuard],
+          path: 'landingpage',
+          loadComponent: () => import('./site/landingpage/landingpage.component').then((c) => c.LandingpageComponent),
+        },
+        {
+          path: 'landingpage/:slug',
+          loadComponent: () => import('./site/landingpage/detaillandingpage/detaillandingpage.component').then((c) => c.DetaillandingpageComponent),
         },
         {
           path: 'lien-he',

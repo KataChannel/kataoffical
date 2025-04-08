@@ -11,70 +11,70 @@ export declare class leadService {
     }>;
     generateCode(): Promise<string>;
     create(data: any): Promise<{
-        id: string;
         email: string | null;
+        phone: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         order: number | null;
         status: string;
-        phone: string | null;
         code: string | null;
     }>;
     reorderleads(leadIds: string[]): Promise<void>;
     findAll(): Promise<{
-        id: string;
         email: string | null;
+        phone: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         order: number | null;
         status: string;
-        phone: string | null;
         code: string | null;
     }[]>;
     findby(param: any): Promise<{
-        id: string;
         email: string | null;
+        phone: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         order: number | null;
         status: string;
-        phone: string | null;
         code: string | null;
     }>;
     findOne(id: string): Promise<{
-        id: string;
         email: string | null;
+        phone: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         order: number | null;
         status: string;
-        phone: string | null;
         code: string | null;
     }>;
     update(id: string, data: any): Promise<{
-        id: string;
         email: string | null;
+        phone: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         order: number | null;
         status: string;
-        phone: string | null;
         code: string | null;
     }>;
     remove(id: string): Promise<{
-        id: string;
         email: string | null;
+        phone: string | null;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         order: number | null;
         status: string;
-        phone: string | null;
         code: string | null;
     }>;
 }

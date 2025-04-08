@@ -92,12 +92,14 @@ export declare class BanggiaController {
             ghichu: string | null;
         }[];
         khachhang: {
-            id: string;
             email: string | null;
+            phone: string | null;
+            id: string;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
+            address: string | null;
             ghichu: string | null;
             namenn: string | null;
             makh: string;
@@ -106,8 +108,6 @@ export declare class BanggiaController {
             mst: string | null;
             gionhanhang: string | null;
             quan: string | null;
-            phone: string | null;
-            address: string | null;
             loaikh: string | null;
             hiengia: boolean;
         }[];

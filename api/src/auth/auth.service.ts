@@ -7,11 +7,48 @@ import { PrismaService } from 'prisma/prisma.service';
 export class AuthService {
   constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
-  async register(email: string, password: string) {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    return this.prisma.user.create({
-      data: { email, password: hashedPassword },
+  // async register(email: string, password: string) {
+  //   const hashedPassword = await bcrypt.hash(password, 10);
+  //   return this.prisma.user.create({
+  //     data: { email, password: hashedPassword },
+  //   });
+  // }
+  async register(data: any) {
+    const { email, phone, zaloId, facebookId,googleId, password } = data;
+
+    // Kiểm tra xem người dùng đã tồn tại chưa
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: email || undefined },
+          { SDT: phone || undefined },
+          { zaloId: zaloId || undefined },
+          { facebookId: facebookId || undefined },
+          { googleId: googleId || undefined },
+        ],
+      },
     });
+
+    if (existingUser) {
+      throw new Error('Thông tin đăng ký đã tồn tại');
+    }
+
+    // Mã hóa mật khẩu nếu có
+    const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
+
+    // Tạo người dùng mới
+    const user = await this.prisma.user.create({
+      data: {
+        email: email || null,
+        phone: phone || null,
+        zaloId: zaloId || null,
+        facebookId: facebookId || null,
+        googleId: googleId || null,
+        password: hashedPassword,
+      },
+    });
+
+    return { id: user.id, email: user.email, phone: user.phone };
   }
 
   async login(SDT:string,email: string, password: string) {   
@@ -42,7 +79,7 @@ export class AuthService {
 
   async changePassword(userId: string, oldPassword: string, newPassword: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user || !(await bcrypt.compare(oldPassword, user.password))) {
+    if (!user || !user.password || !(await bcrypt.compare(oldPassword, user.password))) {
       throw new UnauthorizedException('Old password is incorrect');
     }
     const hashedPassword = await bcrypt.hash(newPassword, 10);

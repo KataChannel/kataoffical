@@ -6,4 +6,8 @@ export declare class SocketGateway {
     senduserUpdate(): void;
     sendleadUpdate(): void;
     sendtaskUpdate(): void;
+    sendDexuatUpdate(): void;
+    sendlandingPageUpdate(): void;
+    sendTrackingEventUpdate(): void;
+    sendAffiliatelinkUpdate(): void;
 }
