@@ -1,13 +1,13 @@
 @if(ListMenu.length>0)
 {
-<mat-tree class="!bg-white p-2" [dataSource]="dataSource" [treeControl]="treeControl">
+<mat-tree class="!bg-[#0B9444] p-2" [dataSource]="dataSource" [treeControl]="treeControl">
   <mat-tree-node *matTreeNodeDef="let node">
     <div class="w-full flex items-center justify-between">
       <!-- <button mat-icon-button [matMenuTriggerFor]="menu1">
         <span class="material-symbols-outlined">more_vert</span>
       </button> -->
-      <a [routerLink]="node.Item.slug" routerLinkActive="!bg-slate-200"
-        class="hover:bg-slate-200 rounded-lg p-2 truncate flex-grow">{{ node.Item.title }}</a>
+      <a [routerLink]="node.Item.slug" routerLinkActive="!bg-[#0A7A3D]"
+        class="text-white hover:bg-[#0A7A3D] rounded-lg p-2 truncate flex-grow">{{ node.Item.title }}</a>
       <!-- @if(node.node.TypeMenu == 'Task'){
               <a routerLinkActive="bg-slate-200" class="hover:bg-slate-200 rounded-lg p-2 truncate flex-grow">{{ node.Title }}</a>
             }@else{
@@ -35,9 +35,9 @@
       <!-- <button mat-icon-button [matMenuTriggerFor]="menu2">
         <span class="material-symbols-outlined">more_vert</span>
       </button> -->
-      <a [routerLink]="node.Slug" class="hover:bg-slate-200 rounded-lg p-2 truncate flex-grow">{{node.Item.title}}</a>
+      <a [routerLink]="node.Slug" class="text-white hover:bg-[#0A7A3D] rounded-lg p-2 truncate flex-grow">{{node.Item.title}}</a>
       <a mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.Item.title">
-        <span class="material-symbols-outlined">
+        <span class="material-symbols-outlined text-white">
           {{
           treeControl.isExpanded(node)
           ? "expand_more"

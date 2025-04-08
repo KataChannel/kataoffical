@@ -13,13 +13,13 @@ export class SocketGateway {
     console.log('✅ WebSocket Server Initialized');
   }
 
-  handleConnection(client: any) {
-    console.log(`✅ Client connected: ${client.id}`);
-  }
+  // handleConnection(client: any) {
+  //   console.log(`✅ Client connected: ${client.id}`);
+  // }
 
-  handleDisconnect(client: any) {
-    console.log(`❌ Client disconnected: ${client.id}`);
-  }
+  // handleDisconnect(client: any) {
+  //   console.log(`❌ Client disconnected: ${client.id}`);
+  // }
 
   sendSanphamUpdate() {
     console.log('📢 Emitting: sanpham-updated');

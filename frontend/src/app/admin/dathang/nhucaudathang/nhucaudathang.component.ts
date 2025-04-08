@@ -284,7 +284,7 @@ export class NhucaudathangComponent {
       if (result=="true") {
         Promise.all(this.ListDathang.map(item => this._DathangService.CreateByNhucau(item)))
           .then(() => {
-            this._snackBar.open('Tạo đơn đặt hàng thành công', '', {
+            this._snackBar.open('Tạo Mới đặt hàng thành công', '', {
               duration: 2000,
               horizontalPosition: 'end',
               verticalPosition: 'top',
@@ -293,7 +293,7 @@ export class NhucaudathangComponent {
             this._router.navigate(['/admin/dathang']);
           })
           .catch(error => {
-            this._snackBar.open('Có lỗi xảy ra khi tạo đơn đặt hàng', '', {
+            this._snackBar.open('Có lỗi xảy ra khi Tạo Mới đặt hàng', '', {
               duration: 2000,
               horizontalPosition: 'end',
               verticalPosition: 'top',

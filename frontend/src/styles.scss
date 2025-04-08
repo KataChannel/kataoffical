@@ -527,3 +527,25 @@ div[contenteditable] {
   min-height: 50px; 
 }
 
+
+
+
+//Custom Style
+.mat-mdc-unelevated-button.mat-primary {
+  --mdc-filled-button-container-color: #0B9444 !important;
+  --mdc-filled-button-label-text-color: white;
+}
+.mat-mdc-icon-button.mat-primary {
+  --mdc-icon-button-icon-color: #0B9444 !important;
+}
+.btn-primary {
+  background-color: #0B9444 !important;
+  color: white !important;
+  border-radius: 5px;
+  padding: 10px;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #0A7A3D !important;
+  }
+}

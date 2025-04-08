@@ -16,12 +16,6 @@ let SocketGateway = class SocketGateway {
     afterInit() {
         console.log('✅ WebSocket Server Initialized');
     }
-    handleConnection(client) {
-        console.log(`✅ Client connected: ${client.id}`);
-    }
-    handleDisconnect(client) {
-        console.log(`❌ Client disconnected: ${client.id}`);
-    }
     sendSanphamUpdate() {
         console.log('📢 Emitting: sanpham-updated');
         this.server.emit('sanpham-updated');
