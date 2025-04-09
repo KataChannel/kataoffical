@@ -10,6 +10,9 @@ import { UserService } from '../../admin/user/user.service';
 import { AffiliatelinkService } from '../../admin/affiliatelink/affiliatelink.service';
 import {Clipboard} from '@angular/cdk/clipboard';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
+import { RouterLink } from '@angular/router';
+import { ErrorLogService } from '../../shared/services/errorlog.service';
 @Component({
   selector: 'app-landingpage',
   imports: [
@@ -18,7 +21,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatButtonModule,
     MatIconModule,
     MatInputModule,
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   templateUrl: './landingpage.component.html',
   styleUrl: './landingpage.component.scss',
@@ -29,6 +33,8 @@ export class LandingpageComponent {
     private _UserService:UserService = inject(UserService)
     private _clipboard:Clipboard = inject(Clipboard)
     private _MatSnackBar:MatSnackBar = inject(MatSnackBar)
+    private _ErrorLogService:ErrorLogService = inject(ErrorLogService)
+    private _snackBar:MatSnackBar = inject(MatSnackBar)
     ListLandingpage:any = this._LandingpageService.ListLandingpage
     LinkAffiliate:any = this._AffiliatelinkService.ListAffiliatelink
     Profile:any
@@ -46,7 +52,7 @@ export class LandingpageComponent {
 
     getAffiliateLink(item:any) {
       const affiliateLink = this.LinkAffiliate().find((v:any)=> v.landingPageId == item.id);
-      console.log('affiliateLink',affiliateLink);
+    //  console.log('affiliateLink',affiliateLink);
       const link = affiliateLink ? affiliateLink?.landingPage?.slug+'/?ref='+affiliateLink.codeId : null;
       return link
     }
@@ -72,5 +78,39 @@ export class LandingpageComponent {
     }
     SharedAffiliate(item:any) {
       window.open(`/landingpage/${this.getAffiliateLink(item)}`, '_blank');
+    }
+    applyFilter(event: Event) {
+      const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
+      
+      if (filterValue === '') {
+        // Reset to original list by fetching all landing pages again
+        this._LandingpageService.getAllLandingpage();
+      } else {
+        // Filter the existing list
+        this._LandingpageService.ListLandingpage.update((list: any[]) => {
+          return list.filter((v: any) => 
+            removeVietnameseAccents(v?.title || '').toLowerCase().includes(filterValue) || 
+            (v?.title || '').toLowerCase().includes(filterValue)
+          );
+        });
+      }
+    }
+    async ClearCache(){
+      const token = localStorage.getItem('token');
+      const permissions = localStorage.getItem('permissions');
+      localStorage.clear();
+      if (token) {
+        localStorage.setItem('token', token);
+      }
+      if (permissions) {
+        localStorage.setItem('permissions', permissions);
+      }
+      await this._ErrorLogService.ClearRedisCache()
+      this._snackBar.open('Xoá Cache Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-success'],
+      });
     }
 }

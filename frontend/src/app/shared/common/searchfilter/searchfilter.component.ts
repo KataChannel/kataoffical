@@ -65,8 +65,7 @@ export class SearchfilterComponent {
       const value = event.target.value;
       this.filterItem = this.ListItem.filter((v) => 
       removeVietnameseAccents(v[field]).includes(value.toLowerCase())
-      ||v[field].toLowerCase().includes(value.toLowerCase())
-    );
+      ||v[field].toLowerCase().includes(value.toLowerCase()));
   }
   DoListFilter()
   {

@@ -56,6 +56,7 @@ export class ListLandingpageComponent {
     codeId: 'Mã ID',
     title: 'Tên Landingpage',
     slug: 'Slug',
+    contentHtml:'Liên Kết Ladingpage',
     status: 'Trạng thái',
     order: 'Thứ tự',
     createdAt: 'Ngày tạo',

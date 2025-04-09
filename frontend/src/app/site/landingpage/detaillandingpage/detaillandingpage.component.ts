@@ -134,11 +134,12 @@ export class DetaillandingpageComponent {
     async Dangky() {
       this.User.affiliateCode = this.affiliateCode
       if(
-        this.User.phone &&
-        this.User.phone !== '' &&
-        this.User.password &&
+        ((this.User.phone && this.User.phone !== '') || 
+         (this.User.email && this.User.email !== '')) &&
+        this.User.password && 
         this.User.password !== ''
-      ) {
+      ) 
+      {
         try {
           this._UserService.register(this.User).then((data: any) => {
             console.log(data);

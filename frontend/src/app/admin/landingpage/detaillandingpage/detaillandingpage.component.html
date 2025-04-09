@@ -40,6 +40,12 @@
       </mat-form-field>
       <div class="flex flex-col space-y-2">
         <mat-form-field appearance="outline">
+          <mat-label>Liên Kết Ladipage</mat-label>
+          <input matInput [(ngModel)]="DetailLandingpage().contentHtml" [disabled]="!isEdit()" placeholder="Vui lòng nhập Liên Kết Ladipage"/>
+        </mat-form-field>
+      </div>
+      <div class="flex flex-col space-y-2">
+        <mat-form-field appearance="outline">
           <mat-label>Hình Nhỏ</mat-label>
           <input matInput [(ngModel)]="DetailLandingpage().thumbnail" [disabled]="!isEdit()" placeholder="Vui lòng nhập Hình Nhỏ"/>
         </mat-form-field>

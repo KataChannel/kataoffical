@@ -4,7 +4,7 @@
         <iframe *ngIf="SafeUrl"
             [src]="SafeUrl" 
             width="100%" 
-            class="h-screen-16"
+            class="h-screen-20"
             frameborder="0">
         </iframe>
     </div>
@@ -32,6 +32,11 @@
                             <mat-icon class="material-symbols-outlined" matPrefix>call</mat-icon>
                         </mat-form-field>
                         <mat-form-field subscriptSizing="dynamic" appearance="outline" class="w-full">
+                          <mat-label>Email</mat-label>
+                          <input type="text" matInput class="w-full" [(ngModel)]="User.email" [ngModelOptions]="{standalone: true}" [placeholder]="'Email'"/>
+                            <mat-icon class="material-symbols-outlined" matPrefix>email</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field subscriptSizing="dynamic" appearance="outline" class="w-full">
                           <mat-label>Mật khẩu</mat-label>
                           <input type="password" matInput class="w-full" (keyup.enter)="Dangky()" [(ngModel)]="User.password" [ngModelOptions]="{standalone: true}" [placeholder]="'Mật khẩu'"/>
                           <mat-icon class="material-symbols-outlined" matPrefix>lock</mat-icon>
@@ -44,7 +49,7 @@
                                 </span>
                             </button>
                         </div>          
-            
+<!--             
                    <div class="text-center font-bold"> Hoặc Đăng Ký Bằng</div>
             
                         <div class="cursor-pointer w-full">
@@ -54,7 +59,7 @@
                               </svg>    
                               <span>Gmail</span>   
                           </div>
-                        </div>
+                        </div> -->
                       </div>
                 </div>
               } 

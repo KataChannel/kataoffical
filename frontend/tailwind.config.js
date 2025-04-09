@@ -37,6 +37,8 @@ module.exports = {
           'screen-16': 'calc(100vh - 4rem)',              
           'screen-14': 'calc(100vh - 3.5rem)', 
           'screen-12': 'calc(100vh - 3rem)',                
+          'screen-20': 'calc(100vh - 5rem)',                
+          'screen-24': 'calc(100vh - 6rem)',                
           'screen-28': 'calc(100vh - 7rem)',                
       },
     },
