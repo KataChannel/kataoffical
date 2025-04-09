@@ -56,14 +56,18 @@
     </div>
  -->
     <ng-container>
-      <div class="w-full flex flex-col space-y-2">
-      <mat-form-field appearance="outline">
+      <div class="w-full flex flex-col space-y-4">
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
         <mat-label>Tiêu Đề</mat-label>
         <input matInput [(ngModel)]="DetailMenu().title" (input)="FillSlug()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
       </mat-form-field>
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
         <mat-label>Slug</mat-label>
         <input matInput [(ngModel)]="DetailMenu().slug" [disabled]="!isEdit()" placeholder="Vui lòng nhập Slug"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>Icon</mat-label>
+        <input matInput [(ngModel)]="DetailMenu().icon" [disabled]="!isEdit()" placeholder="Vui lòng nhập Icon"/>
       </mat-form-field>
       @defer () {
         <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
@@ -86,9 +90,9 @@
           </mat-select>
         </mat-form-field>
       }
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
         <mat-label>Vị Trí</mat-label>
-        <input matInput type="number" [(ngModel)]="DetailMenu().order" [disabled]="!isEdit()" placeholder="Vui lòng nhập Slug"/>
+        <input matInput type="number" [(ngModel)]="DetailMenu().order" [disabled]="!isEdit()" placeholder="Vui lòng nhập Vị Trí"/>
       </mat-form-field>
       <mat-slide-toggle [(ngModel)]="DetailMenu().isActive" [disabled]="!isEdit()">{{DetailMenu().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
         
