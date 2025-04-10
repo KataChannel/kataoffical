@@ -38,6 +38,9 @@ export declare class UserService {
             description: string | null;
         }[];
         profile: {
+            department: string | null;
+            position: string | null;
+            address: string | null;
             id: string;
             name: string;
             userId: string;
@@ -46,11 +49,8 @@ export declare class UserService {
             citizenId: string | null;
             birthDate: Date | null;
             hometown: string | null;
-            address: string | null;
             companyName: string | null;
-            position: string | null;
             level: string | null;
-            department: string | null;
             startDate: Date | null;
             endDate: Date | null;
             companyEmail: string | null;
@@ -111,6 +111,9 @@ export declare class UserService {
         email: string | null;
         referralsCount: number;
         profile: {
+            department: string | null;
+            position: string | null;
+            address: string | null;
             id: string;
             name: string;
             userId: string;
@@ -119,11 +122,8 @@ export declare class UserService {
             citizenId: string | null;
             birthDate: Date | null;
             hometown: string | null;
-            address: string | null;
             companyName: string | null;
-            position: string | null;
             level: string | null;
-            department: string | null;
             startDate: Date | null;
             endDate: Date | null;
             companyEmail: string | null;
@@ -170,6 +170,9 @@ export declare class UserService {
             name: string;
         }[];
         profile: {
+            department: string | null;
+            position: string | null;
+            address: string | null;
             id: string;
             name: string;
             userId: string;
@@ -178,11 +181,8 @@ export declare class UserService {
             citizenId: string | null;
             birthDate: Date | null;
             hometown: string | null;
-            address: string | null;
             companyName: string | null;
-            position: string | null;
             level: string | null;
-            department: string | null;
             startDate: Date | null;
             endDate: Date | null;
             companyEmail: string | null;

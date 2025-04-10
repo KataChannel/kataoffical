@@ -9,6 +9,7 @@
 # Node
 /node_modules
 api/node_modules
+api/backups_json
 frontend/node_modules
 npm-debug.log
 yarn-error.log

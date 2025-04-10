@@ -11,9 +11,9 @@ export declare class taskService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
+        status: string;
         userId: string;
         description: string | null;
-        status: string;
         assigneeId: string | null;
         relatedUserId: string | null;
     }>;
@@ -36,9 +36,9 @@ export declare class taskService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
+        status: string;
         userId: string;
         description: string | null;
-        status: string;
         assigneeId: string | null;
         relatedUserId: string | null;
     }[]>;
@@ -72,9 +72,9 @@ export declare class taskService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
+        status: string;
         userId: string;
         description: string | null;
-        status: string;
         assigneeId: string | null;
         relatedUserId: string | null;
     })[]>;
@@ -83,9 +83,9 @@ export declare class taskService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
+        status: string;
         userId: string;
         description: string | null;
-        status: string;
         assigneeId: string | null;
         relatedUserId: string | null;
     }>;
@@ -94,9 +94,9 @@ export declare class taskService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
+        status: string;
         userId: string;
         description: string | null;
-        status: string;
         assigneeId: string | null;
         relatedUserId: string | null;
     }>;
@@ -105,9 +105,9 @@ export declare class taskService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
+        status: string;
         userId: string;
         description: string | null;
-        status: string;
         assigneeId: string | null;
         relatedUserId: string | null;
     }>;
@@ -116,9 +116,9 @@ export declare class taskService {
         createdAt: Date;
         updatedAt: Date;
         title: string;
+        status: string;
         userId: string;
         description: string | null;
-        status: string;
         assigneeId: string | null;
         relatedUserId: string | null;
     }>;

@@ -25,8 +25,8 @@ export declare class DonhangController {
         updatedAt: Date;
         title: string;
         order: number | null;
-        ghichu: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ghichu: string | null;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
@@ -35,6 +35,7 @@ export declare class DonhangController {
         sanpham: any[];
         name: string | null;
         khachhang: {
+            address: string | null;
             email: string | null;
             phone: string | null;
             id: string;
@@ -42,7 +43,6 @@ export declare class DonhangController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            address: string | null;
             ghichu: string | null;
             namenn: string | null;
             makh: string;
@@ -61,8 +61,8 @@ export declare class DonhangController {
         updatedAt: Date;
         title: string;
         order: number | null;
-        ghichu: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ghichu: string | null;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
@@ -71,6 +71,7 @@ export declare class DonhangController {
         sanpham: any[];
         name: string | null;
         khachhang: {
+            address: string | null;
             email: string | null;
             phone: string | null;
             id: string;
@@ -78,7 +79,6 @@ export declare class DonhangController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            address: string | null;
             ghichu: string | null;
             namenn: string | null;
             makh: string;
@@ -97,8 +97,8 @@ export declare class DonhangController {
         updatedAt: Date;
         title: string;
         order: number | null;
-        ghichu: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ghichu: string | null;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
@@ -147,12 +147,13 @@ export declare class DonhangController {
                 updatedAt: Date;
                 title: string;
                 order: number | null;
+                status: string | null;
                 ghichu: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
-                status: string | null;
             })[];
         } & {
+            address: string | null;
             email: string | null;
             phone: string | null;
             id: string;
@@ -160,7 +161,6 @@ export declare class DonhangController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            address: string | null;
             ghichu: string | null;
             namenn: string | null;
             makh: string;
@@ -179,8 +179,8 @@ export declare class DonhangController {
         updatedAt: Date;
         title: string;
         order: number | null;
-        ghichu: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ghichu: string | null;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
@@ -208,8 +208,8 @@ export declare class DonhangController {
         updatedAt: Date;
         title: string;
         order: number | null;
-        ghichu: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ghichu: string | null;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
@@ -222,8 +222,8 @@ export declare class DonhangController {
         updatedAt: Date;
         title: string;
         order: number | null;
-        ghichu: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ghichu: string | null;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;

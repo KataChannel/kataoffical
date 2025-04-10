@@ -1,4 +1,5 @@
 node_modules
+backups_json
 # Add this line to your .gitignore
 # .env
 

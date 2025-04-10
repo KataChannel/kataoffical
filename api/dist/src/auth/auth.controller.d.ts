@@ -13,9 +13,14 @@ export declare class AuthController {
         statusCode: HttpStatus;
         message: string;
         user: {
-            id: string;
-            email: string | null;
-            phone: string | null;
+            id: any;
+            email: any;
+            phone: any;
+            isNewUser: boolean;
+            isEmployee: boolean;
+            isReferrer: boolean;
+            isBoth: boolean;
+            referrerId: any;
         };
     }>;
     login(body: {

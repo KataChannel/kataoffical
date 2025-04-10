@@ -19,10 +19,10 @@ export declare class BanggiaController {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     findAll(): Promise<({
         sanpham: {
@@ -41,10 +41,10 @@ export declare class BanggiaController {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     })[]>;
     addMultipleKhachhangToBanggia(data: any): Promise<{
         type: string;
@@ -54,10 +54,10 @@ export declare class BanggiaController {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     removeKHfromBG(data: any): Promise<{
         type: string;
@@ -67,10 +67,10 @@ export declare class BanggiaController {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -92,6 +92,7 @@ export declare class BanggiaController {
             ghichu: string | null;
         }[];
         khachhang: {
+            address: string | null;
             email: string | null;
             phone: string | null;
             id: string;
@@ -99,7 +100,6 @@ export declare class BanggiaController {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            address: string | null;
             ghichu: string | null;
             namenn: string | null;
             makh: string;
@@ -118,10 +118,10 @@ export declare class BanggiaController {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     update(id: string, updateBanggiaDto: any): Promise<{
         sanpham: {
@@ -140,10 +140,10 @@ export declare class BanggiaController {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     remove(id: string): Promise<{
         type: string;
@@ -153,10 +153,10 @@ export declare class BanggiaController {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     reorder(body: {
         banggiaIds: string[];

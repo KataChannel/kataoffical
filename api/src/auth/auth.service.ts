@@ -7,62 +7,107 @@ import { PrismaService } from 'prisma/prisma.service';
 export class AuthService {
   constructor(private prisma: PrismaService, private jwtService: JwtService) {}
 
-  // async register(email: string, password: string) {
-  //   const hashedPassword = await bcrypt.hash(password, 10);
-  //   return this.prisma.user.create({
-  //     data: { email, password: hashedPassword },
-  //   });
-  // }
-  async register(data: any,affiliateCode?: string) {
-    const { email, phone, zaloId, facebookId,googleId, password } = data;
 
-    // Kiểm tra xem người dùng đã tồn tại chưa
-    const existingUser = await this.prisma.user.findFirst({
-      where: {
-        OR: [
-          { email: email || undefined },
-          { phone: phone || undefined },
-          { SDT: phone || undefined },
-          { zaloId: zaloId || undefined },
-          { facebookId: facebookId || undefined },
-          { googleId: googleId || undefined },
-        ],
-      },
-    });
+async register(data: any, affiliateCode?: string) {
+  const { email, phone, zaloId, facebookId, googleId, password } = data;
 
-    if (existingUser) {
-      throw new Error('Thông tin đăng ký đã tồn tại');
+  // Kiểm tra xem người dùng đã tồn tại chưa
+  const existingUser = await this.prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: email || undefined },
+        { phone: phone || undefined },
+        { SDT: phone || undefined },
+        { zaloId: zaloId || undefined },
+        { facebookId: facebookId || undefined },
+        { googleId: googleId || undefined },
+      ],
+    },
+    include: {
+      Employee: true, // Bao gồm thông tin employee để kiểm tra
+      referrals: true, // Bao gồm thông tin referrals để kiểm tra
+      referrer: true, // Bao gồm thông tin referrer
+    },
+  });
+
+  let user;
+  let isNewUser = false;
+  let referrerId: string | null = null;
+  let affiliateLinkId: string | null = null;
+
+  // Xử lý affiliate code nếu có
+  if (affiliateCode) {
+    try {
+      const affiliateLink = await this.prisma.affiliateLink.findUnique({
+        where: { codeId: affiliateCode },
+        include: { createdBy: true }, // Include user sở hữu link
+      });
+
+      console.log(`Affiliate link found: ${JSON.stringify(affiliateLink)}`);
+
+      if (affiliateLink) {
+        referrerId = affiliateLink.createdById; // ID của user đã giới thiệu
+        affiliateLinkId = affiliateLink.id;
+        console.log(`Processing affiliate code: ${affiliateCode}, Referrer ID: ${referrerId}`);
+      } else {
+        console.warn(`Affiliate code ${affiliateCode} provided but not found.`);
+      }
+    } catch (error) {
+      console.error(`Error finding affiliate link for code ${affiliateCode}:`, error);
+      // Tiếp tục mà không dừng quá trình
+    }
+  }
+
+  if (existingUser) {
+    // User đã tồn tại
+    user = existingUser;
+
+    // Kiểm tra và cập nhật thông tin nhân viên
+    if (!user.employee) {
+      // Nếu chưa là nhân viên, tạo bản ghi Employee
+      await this.prisma.employee.create({
+        data: {
+          userId: user.id,
+          employeeCode: `EMP-${Date.now()}`,
+          firstName: data.firstName || 'Default',
+          lastName: data.lastName || 'Name',
+          workEmail: user.email || `employee-${Date.now()}@example.com`,
+          // Thêm các trường Employee khác nếu cần, ví dụ:
+          // name: data.name || null,
+          // position: data.position || null,
+        },
+      });
+      console.log(`Created Employee record for user ${user.id}`);
+    } else {
+      // Nếu đã là nhân viên, cập nhật thông tin Employee
+      await this.prisma.employee.update({
+        where: { userId: user.id },
+        data: {
+          // Cập nhật các trường Employee nếu cần, ví dụ:
+          // name: data.name || user.employee.name,
+          // position: data.position || user.employee.position,
+          updatedAt: new Date(),
+        },
+      });
+      console.log(`Updated Employee record for user ${user.id}`);
     }
 
-    // Mã hóa mật khẩu nếu có
+    // Kiểm tra và thêm thông tin referrer nếu chưa có
+    if (!user.referrerId && referrerId) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          referrerId,
+        },
+      });
+      console.log(`Added referrerId ${referrerId} for user ${user.id}`);
+    }
+  } else {
+    // User chưa tồn tại, tạo user mới
+    isNewUser = true;
     const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
-    let referrerId: string | null = null;
-    let affiliateLinkId: string | null = null;
-    console.log(`Affiliate code: ${affiliateCode}`);
-    
-    if (affiliateCode) {
-      try {
-          const affiliateLink = await this.prisma.affiliateLink.findUnique({
-              where: { codeId: affiliateCode },
-              include: { createdBy: true } // Include the user who owns the link (referrer)
-          });
-          console.log(`Affiliate link found: ${affiliateLink}`);
-          
-          if (affiliateLink) {
-              referrerId = affiliateLink.createdById; // ID of the user who created the affiliate link
-              affiliateLinkId = affiliateLink.id;
-              console.log(`Registration via affiliate code: ${affiliateCode}, Referrer ID: ${referrerId}`);
-          } else {
-               console.warn(`Affiliate code ${affiliateCode} provided but not found.`);
-               // Decide if you want to throw an error or proceed without referral
-          }
-      } catch (error) {
-          console.error(`Error finding affiliate link for code ${affiliateCode}:`, error);
-          // Decide handling: throw error or log and proceed
-      }
-   }
-    // Tạo người dùng mới
-    const user = await this.prisma.user.create({
+
+    user = await this.prisma.user.create({
       data: {
         email: email || null,
         phone: phone || null,
@@ -73,23 +118,63 @@ export class AuthService {
         password: hashedPassword,
         referrerId: referrerId || null,
       },
+      include: {
+        Employee: true,
+        referrals: true,
+        referrer: true,
+      },
     });
-    if (affiliateLinkId && user) {
-      try {
-        await this.prisma.registration.create({
-          data: {
-            registeredUserId: user.id,
-            affiliateLinkId: affiliateLinkId,
-          },
-        });
-        console.log(`Registration record created for user ${user.id} via link ${affiliateLinkId}`);
-        } catch (error) {
-            console.error(`Failed to create Registration record or tracking event for user ${user.id}:`, error);
-            // Log error, but registration is likely already successful
-        }
-      }
-    return { id: user.id, email: user.email, phone: user.phone };
+
+    // Tạo bản ghi Employee cho user mới
+    await this.prisma.employee.create({
+      data: {
+        userId: user.id,
+        employeeCode: `EMP-${Date.now()}`,
+        firstName: data.firstName || 'Default',
+        lastName: data.lastName || 'Name',
+        workEmail: user.email || `employee-${Date.now()}@example.com`,
+        // Thêm các trường Employee khác nếu cần, ví dụ:
+        // name: data.name || null,
+        // position: data.position || null,
+      },
+    });
+    console.log(`Created new user ${user.id} with Employee record`);
   }
+
+  // Tạo bản ghi Registration nếu có affiliate link
+  if (affiliateLinkId && user) {
+    try {
+      await this.prisma.registration.create({
+        data: {
+          registeredUserId: user.id,
+          affiliateLinkId: affiliateLinkId,
+        },
+      });
+      console.log(`Registration record created for user ${user.id} via link ${affiliateLinkId}`);
+    } catch (error) {
+      console.error(`Failed to create Registration record for user ${user.id}:`, error);
+      // Không dừng quá trình nếu lỗi này xảy ra
+    }
+  }
+
+  // Kiểm tra vai trò
+  const isEmployee = !!(user.employee || isNewUser); // Nếu mới tạo hoặc có employee
+  const isReferrer = user.referrals.length > 0 || !!affiliateCode || !!user.referrerId; // Có referrals, affiliateCode, hoặc referrerId
+
+  // Trả về thông tin user và trạng thái
+  return {
+    id: user.id,
+    email: user.email,
+    phone: user.phone,
+    isNewUser, // true nếu user vừa được tạo
+    isEmployee, // true nếu là nhân viên
+    isReferrer, // true nếu liên quan đến giới thiệu
+    isBoth: isEmployee && isReferrer, // true nếu là cả hai
+    referrerId: user.referrerId || referrerId, // ID của người giới thiệu
+  };
+}
+
+
 
   async login(phone:string,email: string, password: string) {   
     const user:any = await this.prisma.user.findFirst({ 

@@ -11,6 +11,7 @@ export declare class NhomkhachhangService {
     }>;
     findAll(): Promise<({
         khachhang: {
+            address: string | null;
             email: string | null;
             phone: string | null;
             id: string;
@@ -18,7 +19,6 @@ export declare class NhomkhachhangService {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            address: string | null;
             ghichu: string | null;
             namenn: string | null;
             makh: string;
@@ -39,6 +39,7 @@ export declare class NhomkhachhangService {
     })[]>;
     findOne(id: string): Promise<{
         khachhang: {
+            address: string | null;
             email: string | null;
             phone: string | null;
             id: string;
@@ -46,7 +47,6 @@ export declare class NhomkhachhangService {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            address: string | null;
             ghichu: string | null;
             namenn: string | null;
             makh: string;

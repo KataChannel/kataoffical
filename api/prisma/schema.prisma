@@ -44,6 +44,10 @@ model User {
   referrer      User?     @relation("Referrals", fields: [referrerId], references: [id])
   referrals     User[]    @relation("Referrals")
   Registration Registration[]
+  LeaveRequest LeaveRequest[] @relation("LeaveApprover")
+  EmployeeWorkflowTask EmployeeWorkflowTask[] @relation("TaskAssignee")
+  TimesheetEntry TimesheetEntry[] @relation("TimesheetApprover")
+  Employee Employee[]
 }
 
 model Role {
@@ -434,6 +438,8 @@ model AuditLog {
   oldValue   Json?
   newValue   Json?
   createdAt  DateTime @default(now())
+
+  Employee Employee[]
 }
 
 
@@ -677,4 +683,598 @@ model Registration {
   affiliateLinkId String    // Link affiliate dẫn đến đăng ký này
   affiliateLink   AffiliateLink @relation(fields: [affiliateLinkId], references: [id])
   timestamp       DateTime  @default(now())
+}
+
+
+
+/// schema.prisma
+
+/// EXPANDED Example Schema for a Core HRM System
+/// Includes Core HR Profile, plus basic models for Leave, Time, Payroll, Benefits, Org Structure, Onboarding/Offboarding.
+/// WARNING: This is a conceptual, illustrative schema. Real-world implementation, especially for Payroll and Benefits,
+/// requires deep domain expertise and localization based on legal/regional requirements.
+// --- Enums (Existing + New) ---
+
+enum EmploymentType { 
+  FULL_TIME 
+  PART_TIME 
+  CONTRACTOR 
+  INTERN 
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+  ON_LEAVE
+  TERMINATED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  DIVORCED
+  WIDOWED
+  OTHER
+}
+
+enum Relation {
+  SPOUSE
+  CHILD
+  PARENT
+  SIBLING
+  OTHER
+}
+
+enum ContractType {
+  PERMANENT
+  FIXED_TERM
+  PROBATIONARY
+}
+
+// New Enums
+enum LeaveRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum TimesheetStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum ComponentType {
+  EARNING
+  DEDUCTION
+} // For Payroll
+
+enum PayrollStatus {
+  DRAFT
+  PROCESSING
+  COMPLETED
+  FAILED
+  ERROR
+}
+
+enum PlanType {
+  HEALTH
+  DENTAL
+  RETIREMENT
+  LIFE_INSURANCE
+  OTHER
+} // For Benefits
+
+enum WorkflowType {
+  ONBOARDING
+  OFFBOARDING
+  PERFORMANCE_REVIEW
+  OTHER
+}
+
+enum WorkflowStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  SKIPPED
+  WAITING
+}
+
+// --- Core Models (Mostly from previous schema, with minor additions/relation changes) ---
+
+model Employee {
+  id            String  @id @default(cuid())
+  employeeCode  String  @unique
+  firstName     String
+  lastName      String
+  dateOfBirth   DateTime?
+  gender        Gender?
+  nationality   String?
+  maritalStatus MaritalStatus?
+  personalEmail String? @unique
+  workEmail     String  @unique
+  phoneNumber   String?
+  hireDate      DateTime @default(now())
+  terminationDate DateTime?
+  status          EmployeeStatus @default(ACTIVE)
+  positionId      String?
+  position        Position?       @relation(fields: [positionId], references: [id], onDelete: SetNull) // Changed to SetNull
+  departmentId    String?
+  department      Department?     @relation(fields: [departmentId], references: [id], onDelete: SetNull) // Changed to SetNull
+  locationId      String?
+  location        Location?       @relation(fields: [locationId], references: [id], onDelete: SetNull) // Changed to SetNull
+  employmentType  EmploymentType?
+  managerId       String?
+  manager         Employee?       @relation("EmployeeManager", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  directReports   Employee[]      @relation("EmployeeManager")
+  userId          String?         @unique
+  user            User?           @relation(fields: [userId], references: [id], onDelete: SetNull) // Changed to SetNull
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  // --- Relations (Existing + New) ---
+  addresses         Address[]
+  contracts         Contract[]
+  emergencyContacts EmergencyContact[]
+  dependants        Dependant[]
+  educationHistory  Education[]
+  skills            EmployeeSkill[]
+  jobHistory        JobHistory[]
+  auditLogs         AuditLog[] // Audit logs related to this employee specifically
+  // NEW RELATIONS for added modules
+  leaveRequests     LeaveRequest[]
+  leaveBalances     LeaveBalance[]
+  workSchedules     EmployeeWorkSchedule[]
+  timesheetEntries  TimesheetEntry[]
+  salaryInfo        EmployeeSalary[]
+  payslips          Payslip[]
+  benefitEnrollments EmployeeEnrollment[]
+  workflows         EmployeeWorkflow[] // Workflows this employee is subject to
+}
+
+model Department {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  employees   Employee[]
+  jobHistory  JobHistory[]
+}
+
+model JobGrade { // NEW: Ngạch/Bậc công việc
+  id          String @id @default(cuid())
+  name        String @unique // e.g., "G1", "G2", "Senior Manager"
+  level       Int    // Numeric level for sorting/comparison
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  positions   Position[] // Positions belonging to this grade
+}
+
+model Position {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  jobGradeId  String? // NEW: Link to Job Grade
+  jobGrade    JobGrade? @relation(fields: [jobGradeId], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  employees   Employee[]
+  jobHistory  JobHistory[]
+}
+
+model Location {
+  id          String    @id @default(cuid())
+  name        String
+  address     String?
+  city        String?
+  country     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  employees   Employee[]
+}
+
+model Contract {
+  id             String       @id @default(cuid())
+  employeeId     String
+  employee       Employee     @relation(fields: [employeeId], references: [id], onDelete: Restrict) // Changed to Restrict
+  contractNumber String?      @unique
+  contractType   ContractType
+  startDate      DateTime
+  endDate        DateTime?
+  filePath       String?
+  description    String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  @@index([employeeId])
+}
+
+model JobHistory {
+  id           String     @id @default(cuid())
+  employeeId   String
+  employee     Employee   @relation(fields: [employeeId], references: [id], onDelete: Restrict) // Changed to Restrict
+  startDate    DateTime
+  endDate      DateTime?
+  positionId   String
+  position     Position   @relation(fields: [positionId], references: [id], onDelete: Restrict)
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  description  String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  @@index([employeeId])
+}
+
+model Address {
+  id              String   @id @default(cuid())
+  employeeId      String
+  employee        Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade) // Cascade might be ok here
+  street          String
+  city            String
+  stateOrProvince String?
+  postalCode      String?
+  country         String
+  isPrimary       Boolean  @default(false)
+  addressType     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  @@index([employeeId])
+}
+
+model EmergencyContact {
+  id           String   @id @default(cuid())
+  employeeId   String
+  employee     Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade) // Cascade might be ok
+  name         String
+  relationship Relation
+  phoneNumber  String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  @@index([employeeId])
+}
+
+model Dependant {
+  id           String   @id @default(cuid())
+  employeeId   String
+  employee     Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade) // Cascade might be ok
+  name         String
+  dateOfBirth  DateTime
+  relationship Relation
+  idNumber     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  @@index([employeeId])
+}
+
+model Education {
+  id              String   @id @default(cuid())
+  employeeId      String
+  employee        Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade) // Cascade ok
+  institutionName String
+  degree          String?
+  fieldOfStudy    String?
+  startDate       DateTime?
+  endDate         DateTime
+  description     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  @@index([employeeId])
+}
+
+model Skill {
+  id             String          @id @default(cuid())
+  name           String          @unique
+  description    String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  employeeSkills EmployeeSkill[]
+}
+
+model EmployeeSkill {
+  employeeId       String
+  employee         Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade) // Cascade ok
+  skillId          String
+  skill            Skill    @relation(fields: [skillId], references: [id], onDelete: Cascade) // Cascade ok
+  proficiencyLevel Int?     @default(1)
+  assignedAt       DateTime @default(now())
+  @@id([employeeId, skillId])
+}
+
+// --- Leave Management ---
+model LeaveType {
+  id               String  @id @default(cuid())
+  name             String  @unique // e.g., "Annual Leave", "Sick Leave", "Unpaid Leave"
+  description      String?
+  requiresApproval Boolean @default(true)
+  paidLeave        Boolean @default(true)
+  maxDaysPerYear   Int?    // Số ngày tối đa/năm (nếu có giới hạn)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  leaveRequests    LeaveRequest[]
+  leaveBalances    LeaveBalance[]
+}
+
+model LeaveRequest {
+  id           String             @id @default(cuid())
+  employeeId   String
+  employee     Employee           @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  leaveTypeId  String
+  leaveType    LeaveType          @relation(fields: [leaveTypeId], references: [id], onDelete: Restrict)
+  startDate    DateTime
+  endDate      DateTime
+  // calculatedDays Decimal // Should be calculated dynamically or via trigger
+  reason       String?
+  status       LeaveRequestStatus @default(PENDING)
+  requestedAt  DateTime           @default(now())
+  approverId   String? // ID of the User who approved/rejected
+  approver     User?              @relation("LeaveApprover", fields: [approverId], references: [id], onDelete: SetNull)
+  approvedAt   DateTime?
+  comments     String? // Ghi chú của người duyệt/nhân viên
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([employeeId])
+  @@index([leaveTypeId])
+  @@index([status])
+  @@index([approverId])
+}
+
+model LeaveBalance {
+  id            String   @id @default(cuid())
+  employeeId    String
+  employee      Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade) // Cascade might be ok
+  leaveTypeId   String
+  leaveType     LeaveType @relation(fields: [leaveTypeId], references: [id], onDelete: Cascade) // Cascade might be ok
+  year          Int // Năm áp dụng số dư
+  allocatedDays Decimal // Số ngày được cấp trong năm
+  takenDays     Decimal  @default(0) // Số ngày đã nghỉ (cần update khi request được duyệt)
+  // remainingDays Decimal // Should be calculated dynamically
+
+  // Unique constraint per employee, type, year
+  @@unique([employeeId, leaveTypeId, year])
+}
+
+
+// --- Time & Attendance (Basic) ---
+model WorkSchedule {
+  id        String  @id @default(cuid())
+  name      String  @unique // e.g., "Standard 9-5 Mon-Fri", "Shift A"
+  isDefault Boolean @default(false)
+  // details   Json? // Store complex rules like working hours per day, exceptions, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  employeeSchedules EmployeeWorkSchedule[]
+}
+
+model EmployeeWorkSchedule {
+  id             String       @id @default(cuid())
+  employeeId     String
+  employee       Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  workScheduleId String
+  workSchedule   WorkSchedule @relation(fields: [workScheduleId], references: [id], onDelete: Restrict)
+  effectiveDate  DateTime // Ngày bắt đầu áp dụng lịch này
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([employeeId])
+  @@index([workScheduleId])
+}
+
+model TimesheetEntry {
+  id          String          @id @default(cuid())
+  employeeId  String
+  employee    Employee        @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  date        DateTime        @postgres.Date // Chỉ lưu ngày, không lưu giờ
+  timeIn      DateTime?       // Giờ vào làm thực tế
+  timeOut     DateTime?       // Giờ ra về thực tế
+  // projectId   String?      // Optional link to project module
+  // taskId      String?      // Optional link to task
+  hoursWorked Decimal?        // Số giờ làm việc (có thể tự tính hoặc nhập tay)
+  notes       String?
+  status      TimesheetStatus @default(DRAFT)
+  submittedAt DateTime?
+  approverId  String? // ID of the User who approved/rejected
+  approver    User?           @relation("TimesheetApprover", fields: [approverId], references: [id], onDelete: SetNull)
+  approvedAt  DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([employeeId, date])
+  @@index([status])
+  @@index([approverId])
+}
+
+
+// --- Payroll (Very Basic - Data Structure Placeholder ONLY) ---
+// WARNING: Real payroll logic is extremely complex and localized. Do not use this directly for calculations.
+model PayGrade {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g., "Level 1", "Senior Staff"
+  minSalary   Decimal? // Mức lương tối thiểu
+  maxSalary   Decimal? // Mức lương tối đa
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  salaries    EmployeeSalary[]
+}
+
+model SalaryComponent {
+  id              String        @id @default(cuid())
+  name            String        @unique // e.g., "Base Salary", "Housing Allowance", "Income Tax", "Social Insurance"
+  type            ComponentType // EARNING or DEDUCTION
+  isTaxable       Boolean       @default(false)
+  // calculationRule String?    // Placeholder for complex formula/logic description
+  // isStatutory     Boolean @default(false) // Component bắt buộc theo luật?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model EmployeeSalary {
+  id           String    @id @default(cuid())
+  employeeId   String
+  employee     Employee  @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  payGradeId   String?
+  payGrade     PayGrade? @relation(fields: [payGradeId], references: [id], onDelete: SetNull)
+  effectiveDate DateTime // Ngày hiệu lực của cấu trúc lương này
+  // Option 1: Store components as JSON (flexible but hard to query)
+  components   Json?    // Example: [{ "componentId": "...", "amount": 5000000, "currency": "VND" }, { ... }]
+  // Option 2: Normalize with a separate table (better for querying)
+  // salaryComponents EmployeeSalaryComponent[] // Requires defining EmployeeSalaryComponent model
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([employeeId])
+  @@index([payGradeId])
+}
+
+model PayrollRun {
+  id              String        @id @default(cuid())
+  periodStartDate DateTime      @postgres.Date
+  periodEndDate   DateTime      @postgres.Date
+  paymentDate     DateTime      @postgres.Date
+  status          PayrollStatus @default(DRAFT)
+  processedAt     DateTime?
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  payslips        Payslip[]
+}
+
+model Payslip {
+  id               String     @id @default(cuid())
+  payrollRunId     String
+  payrollRun       PayrollRun @relation(fields: [payrollRunId], references: [id], onDelete: Restrict)
+  employeeId       String
+  employee         Employee   @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  grossEarnings    Decimal    // Tổng thu nhập trước thuế/khấu trừ
+  totalDeductions  Decimal    // Tổng khấu trừ
+  netPay           Decimal    // Lương thực nhận
+  // details          Json       // JSON object storing breakdown: { earnings: [...], deductions: [...] }
+  paymentMethod    String?    // e.g., "Bank Transfer"
+  // paymentReference String? // Transaction ID
+  generatedAt      DateTime   @default(now())
+
+  @@unique([payrollRunId, employeeId]) // Only one payslip per employee per run
+}
+
+
+// --- Benefits Administration (Basic) ---
+model BenefitPlan {
+  id                   String   @id @default(cuid())
+  name                 String   @unique // e.g., "Standard Health Insurance PVI", "Retirement Fund ABC"
+  provider             String?  // Nhà cung cấp (e.g., "PVI", "Bao Viet", "Prudential")
+  description          String?
+  type                 PlanType // Loại hình (HEALTH, DENTAL, RETIREMENT...)
+  // contributionEmployee Decimal? // Mức đóng của NV
+  // contributionEmployer Decimal? // Mức đóng của NSDLĐ
+  // eligibilityRule      String? // Điều kiện tham gia
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  enrollments          EmployeeEnrollment[]
+}
+
+model EmployeeEnrollment {
+  id             String      @id @default(cuid())
+  employeeId     String
+  employee       Employee    @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  planId         String
+  plan           BenefitPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
+  enrollmentDate DateTime    // Ngày đăng ký
+  effectiveDate  DateTime    // Ngày hiệu lực
+  endDate        DateTime?   // Ngày kết thúc (nếu hủy)
+  coverageLevel  String?     // e.g., "Employee Only", "Employee + Spouse", "Family"
+  // beneficiaries  Json?    // Link to Dependants or specific beneficiary info
+  status         String      @default("ACTIVE") // ACTIVE, INACTIVE, PENDING
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@unique([employeeId, planId, effectiveDate]) // Ensure one enrollment per plan per effective date? Might need adjustment.
+}
+
+
+// --- Onboarding/Offboarding Workflows (Basic Task Tracking) ---
+model WorkflowTemplate {
+  id          String                 @id @default(cuid())
+  name        String                 @unique // e.g., "Standard Employee Onboarding", "Manager Offboarding IT Tasks"
+  type        WorkflowType           // ONBOARDING, OFFBOARDING, etc.
+  description String?
+  isActive    Boolean                @default(true)
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  taskTemplates WorkflowTaskTemplate[]
+  workflows     EmployeeWorkflow[]
+}
+
+model WorkflowTaskTemplate {
+  id            String            @id @default(cuid())
+  templateId    String
+  template      WorkflowTemplate  @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  name          String            // e.g., "Prepare Workstation", "Create Email Account", "Conduct Exit Interview"
+  description   String?
+  assignedRole  String?           // Role responsible (e.g., "HR", "IT", "Manager")
+  dueDays       Int?              // Due X days relative to workflow start date (positive for onboarding, negative for offboarding?)
+  order         Int?              // Optional order of tasks within template
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  employeeTasks EmployeeWorkflowTask[]
+}
+
+model EmployeeWorkflow {
+  id         String         @id @default(cuid())
+  employeeId String
+  employee   Employee       @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  templateId String
+  template   WorkflowTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  startDate  DateTime       // Thường là ngày vào làm (Onboarding) hoặc ngày thông báo nghỉ (Offboarding)
+  // expectedCompletionDate DateTime?
+  status     WorkflowStatus @default(PENDING)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  tasks      EmployeeWorkflowTask[]
+  @@index([employeeId])
+  @@index([templateId])
+  @@index([status])
+}
+
+model EmployeeWorkflowTask {
+  id             String               @id @default(cuid())
+  workflowId     String
+  workflow       EmployeeWorkflow     @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  taskTemplateId String
+  taskTemplate   WorkflowTaskTemplate @relation(fields: [taskTemplateId], references: [id], onDelete: Restrict)
+  status         TaskStatus           @default(TODO)
+  dueDate        DateTime?            // Calculated based on workflow start date and template dueDays
+  completedAt    DateTime?
+  assigneeId     String?              // User assigned to this specific task instance
+  assignee       User?                @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  notes          String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  @@index([workflowId])
+  @@index([taskTemplateId])
+  @@index([status])
+  @@index([assigneeId])
 }

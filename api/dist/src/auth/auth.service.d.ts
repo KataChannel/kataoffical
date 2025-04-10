@@ -5,9 +5,14 @@ export declare class AuthService {
     private jwtService;
     constructor(prisma: PrismaService, jwtService: JwtService);
     register(data: any, affiliateCode?: string): Promise<{
-        id: string;
-        email: string | null;
-        phone: string | null;
+        id: any;
+        email: any;
+        phone: any;
+        isNewUser: boolean;
+        isEmployee: boolean;
+        isReferrer: boolean;
+        isBoth: boolean;
+        referrerId: any;
     }>;
     login(phone: string, email: string, password: string): Promise<{
         access_token: string;

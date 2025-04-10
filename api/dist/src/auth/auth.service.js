@@ -32,25 +32,27 @@ let AuthService = class AuthService {
                     { googleId: googleId || undefined },
                 ],
             },
+            include: {
+                Employee: true,
+                referrals: true,
+                referrer: true,
+            },
         });
-        if (existingUser) {
-            throw new Error('Thông tin đăng ký đã tồn tại');
-        }
-        const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
+        let user;
+        let isNewUser = false;
         let referrerId = null;
         let affiliateLinkId = null;
-        console.log(`Affiliate code: ${affiliateCode}`);
         if (affiliateCode) {
             try {
                 const affiliateLink = await this.prisma.affiliateLink.findUnique({
                     where: { codeId: affiliateCode },
-                    include: { createdBy: true }
+                    include: { createdBy: true },
                 });
-                console.log(`Affiliate link found: ${affiliateLink}`);
+                console.log(`Affiliate link found: ${JSON.stringify(affiliateLink)}`);
                 if (affiliateLink) {
                     referrerId = affiliateLink.createdById;
                     affiliateLinkId = affiliateLink.id;
-                    console.log(`Registration via affiliate code: ${affiliateCode}, Referrer ID: ${referrerId}`);
+                    console.log(`Processing affiliate code: ${affiliateCode}, Referrer ID: ${referrerId}`);
                 }
                 else {
                     console.warn(`Affiliate code ${affiliateCode} provided but not found.`);
@@ -60,18 +62,70 @@ let AuthService = class AuthService {
                 console.error(`Error finding affiliate link for code ${affiliateCode}:`, error);
             }
         }
-        const user = await this.prisma.user.create({
-            data: {
-                email: email || null,
-                phone: phone || null,
-                SDT: phone || null,
-                zaloId: zaloId || null,
-                facebookId: facebookId || null,
-                googleId: googleId || null,
-                password: hashedPassword,
-                referrerId: referrerId || null,
-            },
-        });
+        if (existingUser) {
+            user = existingUser;
+            if (!user.employee) {
+                await this.prisma.employee.create({
+                    data: {
+                        userId: user.id,
+                        employeeCode: `EMP-${Date.now()}`,
+                        firstName: data.firstName || 'Default',
+                        lastName: data.lastName || 'Name',
+                        workEmail: user.email || `employee-${Date.now()}@example.com`,
+                    },
+                });
+                console.log(`Created Employee record for user ${user.id}`);
+            }
+            else {
+                await this.prisma.employee.update({
+                    where: { userId: user.id },
+                    data: {
+                        updatedAt: new Date(),
+                    },
+                });
+                console.log(`Updated Employee record for user ${user.id}`);
+            }
+            if (!user.referrerId && referrerId) {
+                await this.prisma.user.update({
+                    where: { id: user.id },
+                    data: {
+                        referrerId,
+                    },
+                });
+                console.log(`Added referrerId ${referrerId} for user ${user.id}`);
+            }
+        }
+        else {
+            isNewUser = true;
+            const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
+            user = await this.prisma.user.create({
+                data: {
+                    email: email || null,
+                    phone: phone || null,
+                    SDT: phone || null,
+                    zaloId: zaloId || null,
+                    facebookId: facebookId || null,
+                    googleId: googleId || null,
+                    password: hashedPassword,
+                    referrerId: referrerId || null,
+                },
+                include: {
+                    Employee: true,
+                    referrals: true,
+                    referrer: true,
+                },
+            });
+            await this.prisma.employee.create({
+                data: {
+                    userId: user.id,
+                    employeeCode: `EMP-${Date.now()}`,
+                    firstName: data.firstName || 'Default',
+                    lastName: data.lastName || 'Name',
+                    workEmail: user.email || `employee-${Date.now()}@example.com`,
+                },
+            });
+            console.log(`Created new user ${user.id} with Employee record`);
+        }
         if (affiliateLinkId && user) {
             try {
                 await this.prisma.registration.create({
@@ -83,10 +137,21 @@ let AuthService = class AuthService {
                 console.log(`Registration record created for user ${user.id} via link ${affiliateLinkId}`);
             }
             catch (error) {
-                console.error(`Failed to create Registration record or tracking event for user ${user.id}:`, error);
+                console.error(`Failed to create Registration record for user ${user.id}:`, error);
             }
         }
-        return { id: user.id, email: user.email, phone: user.phone };
+        const isEmployee = !!(user.employee || isNewUser);
+        const isReferrer = user.referrals.length > 0 || !!affiliateCode || !!user.referrerId;
+        return {
+            id: user.id,
+            email: user.email,
+            phone: user.phone,
+            isNewUser,
+            isEmployee,
+            isReferrer,
+            isBoth: isEmployee && isReferrer,
+            referrerId: user.referrerId || referrerId,
+        };
     }
     async login(phone, email, password) {
         const user = await this.prisma.user.findFirst({

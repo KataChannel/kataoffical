@@ -10,10 +10,10 @@ export declare class BanggiaService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     createBanggia(data: any): Promise<{
         sanpham: {
@@ -32,10 +32,10 @@ export declare class BanggiaService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     reorderBanggias(banggiaIds: string[]): Promise<void>;
     findAll(): Promise<({
@@ -55,10 +55,10 @@ export declare class BanggiaService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     })[]>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -80,6 +80,7 @@ export declare class BanggiaService {
             ghichu: string | null;
         }[];
         khachhang: {
+            address: string | null;
             email: string | null;
             phone: string | null;
             id: string;
@@ -87,7 +88,6 @@ export declare class BanggiaService {
             createdAt: Date;
             updatedAt: Date;
             name: string | null;
-            address: string | null;
             ghichu: string | null;
             namenn: string | null;
             makh: string;
@@ -106,10 +106,10 @@ export declare class BanggiaService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     update(id: string, data: any): Promise<{
         sanpham: {
@@ -128,10 +128,10 @@ export declare class BanggiaService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     remove(id: string): Promise<{
         type: string;
@@ -141,10 +141,10 @@ export declare class BanggiaService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     addKHtoBG(banggiaId: string, khachhangIds: any[]): Promise<{
         type: string;
@@ -154,10 +154,10 @@ export declare class BanggiaService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     removeKHfromBG(banggiaId: string, khachhangIds: any[]): Promise<{
         type: string;
@@ -167,9 +167,9 @@ export declare class BanggiaService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        status: string | null;
         ghichu: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
 }

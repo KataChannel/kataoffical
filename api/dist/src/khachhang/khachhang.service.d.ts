@@ -3,6 +3,7 @@ export declare class KhachhangService {
     private readonly prisma;
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
+        address: string | null;
         email: string | null;
         phone: string | null;
         id: string;
@@ -10,7 +11,6 @@ export declare class KhachhangService {
         createdAt: Date;
         updatedAt: Date;
         name: string | null;
-        address: string | null;
         ghichu: string | null;
         namenn: string | null;
         makh: string;
@@ -31,12 +31,13 @@ export declare class KhachhangService {
             updatedAt: Date;
             title: string;
             order: number | null;
+            status: string | null;
             ghichu: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
-            status: string | null;
         }[];
     } & {
+        address: string | null;
         email: string | null;
         phone: string | null;
         id: string;
@@ -44,7 +45,6 @@ export declare class KhachhangService {
         createdAt: Date;
         updatedAt: Date;
         name: string | null;
-        address: string | null;
         ghichu: string | null;
         namenn: string | null;
         makh: string;
@@ -57,6 +57,7 @@ export declare class KhachhangService {
         hiengia: boolean;
     })[]>;
     findOne(id: string): Promise<{
+        address: string | null;
         email: string | null;
         phone: string | null;
         id: string;
@@ -64,7 +65,6 @@ export declare class KhachhangService {
         createdAt: Date;
         updatedAt: Date;
         name: string | null;
-        address: string | null;
         ghichu: string | null;
         namenn: string | null;
         makh: string;
@@ -77,6 +77,7 @@ export declare class KhachhangService {
         hiengia: boolean;
     }>;
     update(id: string, data: any): Promise<{
+        address: string | null;
         email: string | null;
         phone: string | null;
         id: string;
@@ -84,7 +85,6 @@ export declare class KhachhangService {
         createdAt: Date;
         updatedAt: Date;
         name: string | null;
-        address: string | null;
         ghichu: string | null;
         namenn: string | null;
         makh: string;
@@ -97,6 +97,7 @@ export declare class KhachhangService {
         hiengia: boolean;
     }>;
     remove(id: string): Promise<{
+        address: string | null;
         email: string | null;
         phone: string | null;
         id: string;
@@ -104,7 +105,6 @@ export declare class KhachhangService {
         createdAt: Date;
         updatedAt: Date;
         name: string | null;
-        address: string | null;
         ghichu: string | null;
         namenn: string | null;
         makh: string;

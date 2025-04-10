@@ -39,9 +39,9 @@ export declare class AffiliatelinkController {
             title: string;
             codeId: string;
             order: number | null;
+            status: string;
             description: string | null;
             slug: string;
-            status: string;
             thumbnail: string | null;
             contentHtml: string | null;
             customCss: string | null;
