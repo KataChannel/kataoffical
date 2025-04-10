@@ -10,7 +10,6 @@ export class AuthService {
 
 async register(data: any, affiliateCode?: string) {
   const { email, phone, zaloId, facebookId, googleId, password } = data;
-
   // Kiểm tra xem người dùng đã tồn tại chưa
   const existingUser = await this.prisma.user.findFirst({
     where: {
@@ -24,9 +23,9 @@ async register(data: any, affiliateCode?: string) {
       ],
     },
     include: {
-      Employee: true, // Bao gồm thông tin employee để kiểm tra
-      referrals: true, // Bao gồm thông tin referrals để kiểm tra
-      referrer: true, // Bao gồm thông tin referrer
+      Employee: true,
+      referrals: true,
+      referrer: true,
     },
   });
 
@@ -40,31 +39,46 @@ async register(data: any, affiliateCode?: string) {
     try {
       const affiliateLink = await this.prisma.affiliateLink.findUnique({
         where: { codeId: affiliateCode },
-        include: { createdBy: true }, // Include user sở hữu link
+        include: { createdBy: true },
       });
-
-      console.log(`Affiliate link found: ${JSON.stringify(affiliateLink)}`);
-
       if (affiliateLink) {
-        referrerId = affiliateLink.createdById; // ID của user đã giới thiệu
+        referrerId = affiliateLink.createdById;
         affiliateLinkId = affiliateLink.id;
-        console.log(`Processing affiliate code: ${affiliateCode}, Referrer ID: ${referrerId}`);
       } else {
         console.warn(`Affiliate code ${affiliateCode} provided but not found.`);
       }
     } catch (error) {
       console.error(`Error finding affiliate link for code ${affiliateCode}:`, error);
-      // Tiếp tục mà không dừng quá trình
     }
   }
 
   if (existingUser) {
     // User đã tồn tại
     user = existingUser;
+    
+    // Kiểm tra xem người dùng đã là referrer chưa
+    const isExistingReferrer = user.referrals.length > 0 || !!user.referrerId;      
+    // Nếu chưa là referrer, cập nhật mật khẩu
+    if (!isExistingReferrer && password) {      
+      const hashedPassword = await bcrypt.hash(password, 10);
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { password: hashedPassword },
+      });
+      console.log(`Updated password for existing user ${user.id} (not a referrer yet)`);
+    } else if (!isExistingReferrer) {
+      // Nếu không có password được cung cấp, tạo mật khẩu ngẫu nhiên
+      const randomPassword = Math.random().toString(36).slice(-8);
+      const hashedPassword = await bcrypt.hash(randomPassword, 10);
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { password: hashedPassword },
+      });
+      console.log(`Generated new random password for existing user ${user.id}: ${randomPassword}`);
+    }
 
     // Kiểm tra và cập nhật thông tin nhân viên
     if (!user.employee) {
-      // Nếu chưa là nhân viên, tạo bản ghi Employee
       await this.prisma.employee.create({
         data: {
           userId: user.id,
@@ -72,20 +86,13 @@ async register(data: any, affiliateCode?: string) {
           firstName: data.firstName || 'Default',
           lastName: data.lastName || 'Name',
           workEmail: user.email || `employee-${Date.now()}@example.com`,
-          // Thêm các trường Employee khác nếu cần, ví dụ:
-          // name: data.name || null,
-          // position: data.position || null,
         },
       });
       console.log(`Created Employee record for user ${user.id}`);
     } else {
-      // Nếu đã là nhân viên, cập nhật thông tin Employee
       await this.prisma.employee.update({
         where: { userId: user.id },
         data: {
-          // Cập nhật các trường Employee nếu cần, ví dụ:
-          // name: data.name || user.employee.name,
-          // position: data.position || user.employee.position,
           updatedAt: new Date(),
         },
       });
@@ -105,7 +112,14 @@ async register(data: any, affiliateCode?: string) {
   } else {
     // User chưa tồn tại, tạo user mới
     isNewUser = true;
-    const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
+    let hashedPassword:any;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    } else {
+      const randomPassword = Math.random().toString(36).slice(-8);
+      hashedPassword = await bcrypt.hash(randomPassword, 10);
+      console.log(`Generated random password for new user: ${randomPassword}`);
+    }
 
     user = await this.prisma.user.create({
       data: {
@@ -133,9 +147,6 @@ async register(data: any, affiliateCode?: string) {
         firstName: data.firstName || 'Default',
         lastName: data.lastName || 'Name',
         workEmail: user.email || `employee-${Date.now()}@example.com`,
-        // Thêm các trường Employee khác nếu cần, ví dụ:
-        // name: data.name || null,
-        // position: data.position || null,
       },
     });
     console.log(`Created new user ${user.id} with Employee record`);
@@ -153,24 +164,23 @@ async register(data: any, affiliateCode?: string) {
       console.log(`Registration record created for user ${user.id} via link ${affiliateLinkId}`);
     } catch (error) {
       console.error(`Failed to create Registration record for user ${user.id}:`, error);
-      // Không dừng quá trình nếu lỗi này xảy ra
     }
   }
 
   // Kiểm tra vai trò
-  const isEmployee = !!(user.employee || isNewUser); // Nếu mới tạo hoặc có employee
-  const isReferrer = user.referrals.length > 0 || !!affiliateCode || !!user.referrerId; // Có referrals, affiliateCode, hoặc referrerId
+  const isEmployee = !!(user.employee || isNewUser);
+  const isReferrer = user.referrals.length > 0 || !!affiliateCode || !!user.referrerId;
 
   // Trả về thông tin user và trạng thái
   return {
     id: user.id,
     email: user.email,
     phone: user.phone,
-    isNewUser, // true nếu user vừa được tạo
-    isEmployee, // true nếu là nhân viên
-    isReferrer, // true nếu liên quan đến giới thiệu
-    isBoth: isEmployee && isReferrer, // true nếu là cả hai
-    referrerId: user.referrerId || referrerId, // ID của người giới thiệu
+    isNewUser,
+    isEmployee,
+    isReferrer,
+    isBoth: isEmployee && isReferrer,
+    referrerId: user.referrerId || referrerId,
   };
 }
 

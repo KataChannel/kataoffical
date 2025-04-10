@@ -29,7 +29,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatButtonModule,
     FormsModule,
     MatIconModule,
-    RouterLink,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
@@ -133,11 +132,9 @@ export class LoginComponent implements OnInit {
       this.User.password &&
       this.User.password !== ''
     ) {
-      this.User.email = this.User.SDT;
       try {
         this._UserService.login(this.User).then((data: any) => {
           console.log(data);
-
           if (data&&data[0]) {
             setTimeout(() => {
               window.location.reload();

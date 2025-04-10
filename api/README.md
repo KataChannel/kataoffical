@@ -8,7 +8,7 @@ npx bun add @prisma/client
 npx bun add -d prisma
 npx bun prisma migrate dev --name tazagroup1.2.4
 npx prisma db push
-npx bun prisma generate
+npx bun prisma generate --skip-generate
 npx ts-node prisma/scriptdb/exportData.ts
 npx ts-node prisma/scriptdb/seed.ts
 npx ts-node prisma/scriptdb/backup.ts

@@ -48,11 +48,9 @@ let AuthService = class AuthService {
                     where: { codeId: affiliateCode },
                     include: { createdBy: true },
                 });
-                console.log(`Affiliate link found: ${JSON.stringify(affiliateLink)}`);
                 if (affiliateLink) {
                     referrerId = affiliateLink.createdById;
                     affiliateLinkId = affiliateLink.id;
-                    console.log(`Processing affiliate code: ${affiliateCode}, Referrer ID: ${referrerId}`);
                 }
                 else {
                     console.warn(`Affiliate code ${affiliateCode} provided but not found.`);
@@ -64,6 +62,24 @@ let AuthService = class AuthService {
         }
         if (existingUser) {
             user = existingUser;
+            const isExistingReferrer = user.referrals.length > 0 || !!user.referrerId;
+            if (!isExistingReferrer && password) {
+                const hashedPassword = await bcrypt.hash(password, 10);
+                await this.prisma.user.update({
+                    where: { id: user.id },
+                    data: { password: hashedPassword },
+                });
+                console.log(`Updated password for existing user ${user.id} (not a referrer yet)`);
+            }
+            else if (!isExistingReferrer) {
+                const randomPassword = Math.random().toString(36).slice(-8);
+                const hashedPassword = await bcrypt.hash(randomPassword, 10);
+                await this.prisma.user.update({
+                    where: { id: user.id },
+                    data: { password: hashedPassword },
+                });
+                console.log(`Generated new random password for existing user ${user.id}: ${randomPassword}`);
+            }
             if (!user.employee) {
                 await this.prisma.employee.create({
                     data: {
@@ -97,7 +113,15 @@ let AuthService = class AuthService {
         }
         else {
             isNewUser = true;
-            const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
+            let hashedPassword;
+            if (password) {
+                hashedPassword = await bcrypt.hash(password, 10);
+            }
+            else {
+                const randomPassword = Math.random().toString(36).slice(-8);
+                hashedPassword = await bcrypt.hash(randomPassword, 10);
+                console.log(`Generated random password for new user: ${randomPassword}`);
+            }
             user = await this.prisma.user.create({
                 data: {
                     email: email || null,
