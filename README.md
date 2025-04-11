@@ -1,1 +1,5 @@
 # kataoffical
+# github
+git add .
+git commit -m "update"
+git push

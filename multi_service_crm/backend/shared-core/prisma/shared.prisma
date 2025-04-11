@@ -1,0 +1,60 @@
+/// prisma/shared.prisma (Shared Core Service)
+datasource db { provider = "postgresql"; url = env("SHARED_DATABASE_URL"); }
+generator client { provider = "prisma-client-js"; output = "../node_modules/.prisma/client-shared"; previewFeatures = ["extendedWhereUnique"]; }
+
+enum UserStatus { ACTIVE INACTIVE DISABLED }
+
+model User {
+  id            String     @id @default(cuid())
+  username      String     @unique
+  passwordHash  String
+  email         String     @unique
+  firstName     String?
+  lastName      String?
+  phone         String?
+  role          String     /// Quản lý trong RBAC Module (e.g., "ADMIN", "SPA_MANAGER")
+  status        UserStatus @default(ACTIVE)
+  lastLogin     DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  @@map("users")
+}
+
+model Customer {
+  id            String   @id @default(cuid())
+  firstName     String?
+  lastName      String?
+  primaryEmail  String?  @unique
+  primaryPhone  String?  @unique
+  dateOfBirth   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  @@index([primaryEmail])
+  @@index([primaryPhone])
+  @@map("customers")
+}
+
+// Optional Lookup Tables
+model LookupType {
+  id          String        @id @default(cuid())
+  code        String        @unique
+  name        String
+  description String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  values      LookupValue[]
+  @@map("lookup_types")
+}
+model LookupValue {
+  id          String      @id @default(cuid())
+  typeCode    String
+  lookupType  LookupType  @relation(fields: [typeCode], references: [code], onDelete: Cascade)
+  code        String
+  name        String
+  order       Int?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  @@unique([typeCode, code])
+  @@map("lookup_values")
+}

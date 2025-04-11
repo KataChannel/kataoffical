@@ -1,0 +1,100 @@
+/// prisma/academy.prisma (Academy Service)
+datasource db { provider = "postgresql"; url = env("ACADEMY_DATABASE_URL"); }
+generator client { provider = "prisma-client-js"; output = "../node_modules/.prisma/client-academy"; previewFeatures = ["extendedWhereUnique"]; }
+
+// Enums specific to Academy (or use strings + lookup/config)
+enum ApplicationStatus { SUBMITTED UNDER_REVIEW WAITLISTED ACCEPTED REJECTED ENROLLED WITHDRAWN }
+enum EnrollmentStatus { ENROLLED IN_PROGRESS COMPLETED WITHDRAWN FAILED AUDITING }
+enum CourseMode { ONLINE OFFLINE HYBRID }
+enum GradeType { LETTER NUMBER PASS_FAIL }
+enum CertificateStatus { PENDING_ISSUANCE ISSUED REVOKED }
+// Re-declare shared enums if needed locally or use strings
+enum ActivityType { CALL EMAIL MEETING TASK NOTE OTHER }
+enum ActivityStatus { OPEN IN_PROGRESS COMPLETED CANCELLED DEFERRED }
+enum WorkflowType { ONBOARDING ADMISSION OTHER }
+enum WorkflowStatus { PENDING IN_PROGRESS COMPLETED CANCELLED }
+enum TaskStatus { TODO IN_PROGRESS DONE SKIPPED WAITING }
+
+// Models: Application, Student, Program, Course, CourseOffering, Faculty, Enrollment, Certificate, Activity (Academy specific), Workflows
+// IMPORTANT: Add Foreign Key fields referencing shared_db logically
+
+model Student {
+  id            String    @id @default(cuid())
+  customerId    String    @unique /// FK to shared_db.customers.id (Logical)
+  studentCode   String?   @unique
+  firstName     String    // Synced/Specific
+  lastName      String    // Synced/Specific
+  // ... other academy specific fields
+  admissionDate DateTime?
+  graduationDate DateTime?
+  studentStatus String    @default("Active")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  applications  Application[]
+  enrollments   Enrollment[]
+  certificates  Certificate[]
+  activities    Activity[] @relation("ActivityStudents")
+  workflows     StudentWorkflow[]
+  @@map("students")
+}
+
+model Application {
+  id                String            @id @default(cuid())
+  applicationCode   String?           @unique
+  studentId         String?           /// FK to academy_db.students.id
+  student           Student?          @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  programId         String?
+  program           Program?          @relation(fields: [programId], references: [id], onDelete: SetNull)
+  courseId          String?
+  course            Course?           @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  applicationDate   DateTime          @default(now())
+  status            ApplicationStatus @default(SUBMITTED) // Or String
+  notes             String?
+  documents         Json?
+  assignedToId      String?           /// FK to shared_db.users.id (Logical)
+  originatingLeadId String?           @unique /// FK to academy_db.leads.id (Logical, if Lead model is here)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  activities        Activity[]        @relation("ActivityApplications")
+  workflows         StudentWorkflow[]
+  @@index([studentId])
+  @@index([programId])
+  @@index([courseId])
+  @@index([status])
+  @@index([assignedToId])
+  @@map("applications")
+}
+
+// ... Rest of Academy Models (Program, Course, Offering, Faculty, Enrollment, Certificate, Activity, Workflows) ...
+// Ensure FKs like Faculty.userId, Activity.ownerId, WorkflowTask.assigneeId are defined as String?
+// Example Activity:
+model Activity {
+  id            String         @id @default(cuid())
+  subject       String
+  type          ActivityType   // Or String
+  status        ActivityStatus @default(OPEN) // Or String
+  dueDate       DateTime?
+  description   String?
+  ownerId       String         /// FK to shared_db.users.id (Logical)
+  applicationId String?
+  application   Application?   @relation("ActivityApplications", fields: [applicationId], references: [id], onDelete: Cascade)
+  studentId     String?
+  student       Student?       @relation("ActivityStudents", fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  @@index([ownerId])
+  @@index([applicationId])
+  @@index([studentId])
+  @@map("activities")
+}
+
+model Program { id String @id @default(cuid()); name String @unique; @@map("programs"); courses Course[] @relation("ProgramCourses"); applications Application[]; certificates Certificate[]; } // Simplified
+model Course { id String @id @default(cuid()); courseCode String @unique; name String; @@map("courses"); programs Program[] @relation("ProgramCourses"); offerings CourseOffering[]; applications Application[]; certificates Certificate[]; } // Simplified
+model CourseOffering { id String @id @default(cuid()); offeringCode String @unique; courseId String; course Course @relation(fields: [courseId], references: [id]); facultyId String?; /* faculty Faculty? @relation(...) */ startDate DateTime; endDate DateTime; mode CourseMode; @@map("course_offerings"); enrollments Enrollment[]; } // Simplified
+model Faculty { id String @id @default(cuid()); email String @unique; userId String? @unique; /// FK to shared_db.users.id; @@map("faculty"); /* courseOfferings CourseOffering[] */} // Simplified
+model Enrollment { id String @id @default(cuid()); studentId String; student Student @relation(fields: [studentId], references: [id]); courseOfferingId String; courseOffering CourseOffering @relation(fields: [courseOfferingId], references: [id]); status EnrollmentStatus @default(ENROLLED); @@unique([studentId, courseOfferingId]); @@map("enrollments"); } // Simplified
+model Certificate { id String @id @default(cuid()); studentId String; student Student @relation(fields: [studentId], references: [id]); certificateNumber String @unique; @@map("certificates"); programId String?; program Program? @relation(fields: [programId], references: [id]); courseId String?; course Course? @relation(fields: [courseId], references: [id]); } // Simplified
+model WorkflowTemplate {id String @id @default(cuid()); name String @unique; type WorkflowType; @@map("workflow_templates"); taskTemplates WorkflowTaskTemplate[]; workflows StudentWorkflow[]; } // Simplified
+model WorkflowTaskTemplate {id String @id @default(cuid()); templateId String; template WorkflowTemplate @relation(fields: [templateId], references: [id]); name String; @@map("workflow_task_templates"); studentTasks StudentWorkflowTask[]; } // Simplified
+model StudentWorkflow { id String @id @default(cuid()); studentId String?; student Student? @relation(fields: [studentId], references: [id]); templateId String; template WorkflowTemplate @relation(fields: [templateId], references: [id]); status WorkflowStatus @default(PENDING); @@map("student_workflows"); tasks StudentWorkflowTask[]; applicationId String? @unique; application Application? @relation(fields: [applicationId], references: [id]);} // Simplified
+model StudentWorkflowTask { id String @id @default(cuid()); workflowId String; workflow StudentWorkflow @relation(fields: [workflowId], references: [id]); taskTemplateId String; taskTemplate WorkflowTaskTemplate @relation(fields: [taskTemplateId], references: [id]); status TaskStatus @default(TODO); assigneeId String?; /// FK to shared_db.users.id; @@map("student_workflow_tasks"); } // Simplified
