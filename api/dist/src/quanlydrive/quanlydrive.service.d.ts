@@ -21,7 +21,9 @@ export declare class QuanlydriveService {
             name: string;
             parentId: string | null;
             mimeType: string | null;
-            size: number | null;
+            size: bigint | null;
+            createdTime: Date | null;
+            modifiedTime: Date | null;
         };
     } & {
         role: string;
@@ -52,8 +54,64 @@ export declare class QuanlydriveService {
         name: string;
         parentId: string | null;
         mimeType: string | null;
-        size: number | null;
+        size: bigint | null;
+        createdTime: Date | null;
+        modifiedTime: Date | null;
     }>;
+    search(searchParams: {
+        name?: string;
+        type?: string;
+        mimeType?: string;
+        parentId?: string;
+        size?: number | {
+            min?: number;
+            max?: number;
+        };
+        createdTime?: Date | {
+            from?: Date;
+            to?: Date;
+        };
+        modifiedTime?: Date | {
+            from?: Date;
+            to?: Date;
+        };
+        page?: number;
+        pageSize?: number;
+    }): Promise<{
+        data: {
+            size: string | null;
+            path: string;
+            permissions: {
+                role: string;
+                type: string;
+                googleId: string;
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                userIdDrive: string;
+                kind: string;
+                emailAddress: string | null;
+                driveId: string;
+            }[];
+            type: import(".prisma/client").$Enums.DriveItemType;
+            googleId: string;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            parentId: string | null;
+            mimeType: string | null;
+            createdTime: Date | null;
+            modifiedTime: Date | null;
+        }[];
+        pagination: {
+            total: number;
+            page: number;
+            pageSize: number;
+            totalPages: number;
+        };
+    }>;
+    private buildPath;
     findAll(driveId?: string): Promise<any>;
     private buildTree;
     findby(param: any): Promise<{
@@ -65,7 +123,9 @@ export declare class QuanlydriveService {
         name: string;
         parentId: string | null;
         mimeType: string | null;
-        size: number | null;
+        size: bigint | null;
+        createdTime: Date | null;
+        modifiedTime: Date | null;
     } | null>;
     findOne(id: string): Promise<{
         type: import(".prisma/client").$Enums.DriveItemType;
@@ -76,7 +136,9 @@ export declare class QuanlydriveService {
         name: string;
         parentId: string | null;
         mimeType: string | null;
-        size: number | null;
+        size: bigint | null;
+        createdTime: Date | null;
+        modifiedTime: Date | null;
     }>;
     update(id: string, data: any): Promise<{
         type: import(".prisma/client").$Enums.DriveItemType;
@@ -87,7 +149,9 @@ export declare class QuanlydriveService {
         name: string;
         parentId: string | null;
         mimeType: string | null;
-        size: number | null;
+        size: bigint | null;
+        createdTime: Date | null;
+        modifiedTime: Date | null;
     }>;
     remove(id: string): Promise<{
         role: string;

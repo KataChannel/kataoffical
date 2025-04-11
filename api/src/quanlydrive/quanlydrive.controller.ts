@@ -34,7 +34,10 @@ export class QuanlydriveController {
   async removeUser(@Param('permissionId') permissionId: string,@Param('driveId') driveId:any) {
     return this.quanlydriveService.removeUser(permissionId,driveId);
   }
-
+  @Post('search')
+  async search(@Body() searchParams: any) {
+    return this.quanlydriveService.search(searchParams);
+  }
   @Post()
   create(@Body() createquanlyqrcodeDto: any) {
     return this.quanlydriveService.create(createquanlyqrcodeDto);

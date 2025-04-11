@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import { MailService } from './mail.service';
 export declare class MailController {
     private readonly mailService;
@@ -6,4 +7,5 @@ export declare class MailController {
         statusCode: number;
         message: string;
     }>;
+    previewEmail(data: any, res: Response): Promise<void>;
 }

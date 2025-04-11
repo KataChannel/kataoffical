@@ -172,6 +172,114 @@ let QuanlydriveService = class QuanlydriveService {
             throw error;
         }
     }
+    async search(searchParams) {
+        try {
+            const { name, type, mimeType, parentId, size, createdTime, modifiedTime, page = 1, pageSize = 20 } = searchParams;
+            const whereClause = {};
+            if (name) {
+                whereClause.name = {
+                    contains: name,
+                    mode: 'insensitive',
+                };
+            }
+            if (type) {
+                whereClause.type = type;
+            }
+            if (mimeType) {
+                whereClause.mimeType = mimeType;
+            }
+            if (parentId) {
+                whereClause.parentId = parentId;
+            }
+            if (size) {
+                if (typeof size === 'number') {
+                    whereClause.size = size;
+                }
+                else {
+                    whereClause.size = {};
+                    if (size.min !== undefined)
+                        whereClause.size.gte = size.min;
+                    if (size.max !== undefined)
+                        whereClause.size.lte = size.max;
+                }
+            }
+            if (createdTime) {
+                if (createdTime instanceof Date) {
+                    whereClause.createdTime = createdTime;
+                }
+                else {
+                    whereClause.createdTime = {};
+                    if (createdTime.from)
+                        whereClause.createdTime.gte = createdTime.from;
+                    if (createdTime.to)
+                        whereClause.createdTime.lte = createdTime.to;
+                }
+            }
+            if (modifiedTime) {
+                if (modifiedTime instanceof Date) {
+                    whereClause.modifiedTime = modifiedTime;
+                }
+                else {
+                    whereClause.modifiedTime = {};
+                    if (modifiedTime.from)
+                        whereClause.modifiedTime.gte = modifiedTime.from;
+                    if (modifiedTime.to)
+                        whereClause.modifiedTime.lte = modifiedTime.to;
+                }
+            }
+            const skip = (page - 1) * pageSize;
+            const [results, totalCount] = await Promise.all([
+                this.prisma.driveItem.findMany({
+                    where: whereClause,
+                    include: { permissions: true },
+                    orderBy: { name: 'asc' },
+                    skip,
+                    take: pageSize,
+                }),
+                this.prisma.driveItem.count({ where: whereClause }),
+            ]);
+            const allItems = await this.prisma.driveItem.findMany({
+                select: { googleId: true, name: true, parentId: true }
+            });
+            const itemMap = new Map(allItems.map(item => [item.googleId, item]));
+            const resultsWithPath = results.map(item => ({
+                ...item,
+                size: item.size ? item.size.toString() : null,
+                path: this.buildPath(item.googleId, itemMap),
+            }));
+            return {
+                data: resultsWithPath,
+                pagination: {
+                    total: totalCount,
+                    page,
+                    pageSize,
+                    totalPages: Math.ceil(totalCount / pageSize),
+                },
+            };
+        }
+        catch (error) {
+            this._ErrorlogService.logError('search', error);
+            throw error;
+        }
+    }
+    buildPath(googleId, itemMap) {
+        const pathParts = [];
+        let currentItem = itemMap.get(googleId);
+        if (!currentItem)
+            return "";
+        let parentId = currentItem.parentId;
+        let iterations = 0;
+        const MAX_ITERATIONS = 100;
+        while (parentId && iterations < MAX_ITERATIONS) {
+            const parent = itemMap.get(parentId);
+            if (!parent)
+                break;
+            pathParts.unshift(parent.name);
+            parentId = parent.parentId;
+            iterations++;
+        }
+        return pathParts.join('/');
+    }
     async findAll(driveId = '0AKQL50NKsue5Uk9PVA') {
         try {
             const files = await this.prisma.driveItem.findMany({ include: { permissions: true } });

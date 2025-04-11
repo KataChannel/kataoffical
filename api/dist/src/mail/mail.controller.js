@@ -26,6 +26,16 @@ let MailController = class MailController {
             "message": "Gửi email thành công",
         };
     }
+    async previewEmail(data, res) {
+        const qrCodeData = data.qrcode;
+        const qrCode = await this.mailService.generateQrCode(qrCodeData);
+        console.log('qrCode', qrCode);
+        const templateData = {
+            name: data.name || 'Trần Mỹ Duyên',
+            qrcode: qrCode,
+        };
+        res.render('./welcome', templateData);
+    }
 };
 exports.MailController = MailController;
 __decorate([
@@ -35,6 +45,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], MailController.prototype, "sendemail", null);
+__decorate([
+    (0, common_1.Post)('preview'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], MailController.prototype, "previewEmail", null);
 exports.MailController = MailController = __decorate([
     (0, common_1.Controller)('mail'),
     __metadata("design:paramtypes", [mail_service_1.MailService])

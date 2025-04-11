@@ -37,6 +37,9 @@ let QuanlydriveController = class QuanlydriveController {
     async removeUser(permissionId, driveId) {
         return this.quanlydriveService.removeUser(permissionId, driveId);
     }
+    async search(searchParams) {
+        return this.quanlydriveService.search(searchParams);
+    }
     create(createquanlyqrcodeDto) {
         return this.quanlydriveService.create(createquanlyqrcodeDto);
     }
@@ -94,6 +97,13 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], QuanlydriveController.prototype, "removeUser", null);
+__decorate([
+    (0, common_1.Post)('search'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], QuanlydriveController.prototype, "search", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),

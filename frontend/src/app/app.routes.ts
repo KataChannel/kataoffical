@@ -76,6 +76,22 @@ export const routes: Routes = [
           ],
         },
         {
+          path: 'drivelocal',
+          canActivate: [PermissionGuard],
+          data: { permission: 'drivelocal.view' },
+          loadComponent: () => import('./admin/quanlydrive/drivelocal/listdrivelocal/listdrivelocal.component').then((c) => c.ListDrivelocalComponent),
+          children: [
+            {
+         path: '',
+         loadComponent: () => import('./admin/quanlydrive/drivelocal/listdrivelocal/listdrivelocal.component').then((c) => c.ListDrivelocalComponent),
+            },
+            {
+         path: ':id',
+         loadComponent: () => import('./admin/quanlydrive/drivelocal/detaildrivelocal/detaildrivelocal.component').then((c) => c.DetailDrivelocalComponent),
+            },
+          ],
+        },
+        {
           path: 'googlesheet',
           canActivate: [PermissionGuard],
           data: { permission: 'googlesheet.view' },

@@ -13,15 +13,25 @@ import { MailController } from './mail.controller';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         transport: {
-          host: configService.get<string>('MAIL_HOST'),
-          port: configService.get<number>('MAIL_PORT'),
+          host: process.env.MAIL_HOST,
+          port: process.env.MAIL_PORT,
+          secure: process.env.MAIL_SECURE, // true for 465, false for other ports
           auth: {
-            user: configService.get<string>('MAIL_USER'),
-            pass: configService.get<string>('MAIL_PASS'),
+            user: process.env.MAIL_USER, // generated ethereal user
+            pass: process.env.MAIL_PASS,
           },
         },
+        // transport: {
+        //   host: configService.get<string>('MAIL_HOST'),
+        //   port: configService.get<number>('MAIL_PORT'),
+        //   auth: {
+        //     user: configService.get<string>('MAIL_USER'),
+        //     pass: configService.get<string>('MAIL_PASS'),
+        //   },
+        //   secure: configService.get<boolean>('MAIL_SECURE'),
+        // },
         defaults: {
-          from: `"No Reply" <${configService.get<string>('MAIL_FROM')}>`,
+          from: `"No Reply" <${process.env.MAIL_FROM}>`,
         },
         template: {
           dir: path.join(__dirname, 'templates'),

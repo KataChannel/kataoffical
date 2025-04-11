@@ -25,15 +25,16 @@ exports.MailModule = MailModule = __decorate([
                 inject: [config_1.ConfigService],
                 useFactory: async (configService) => ({
                     transport: {
-                        host: configService.get('MAIL_HOST'),
-                        port: configService.get('MAIL_PORT'),
+                        host: process.env.MAIL_HOST,
+                        port: process.env.MAIL_PORT,
+                        secure: process.env.MAIL_SECURE,
                         auth: {
-                            user: configService.get('MAIL_USER'),
-                            pass: configService.get('MAIL_PASS'),
+                            user: process.env.MAIL_USER,
+                            pass: process.env.MAIL_PASS,
                         },
                     },
                     defaults: {
-                        from: `"No Reply" <${configService.get('MAIL_FROM')}>`,
+                        from: `"No Reply" <${process.env.MAIL_FROM}>`,
                     },
                     template: {
                         dir: path.join(__dirname, 'templates'),

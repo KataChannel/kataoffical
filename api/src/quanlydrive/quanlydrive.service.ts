@@ -38,10 +38,7 @@ export class QuanlydriveService {
       fileId: response.data.id,
       requestBody: { role: 'reader', type: 'anyone' },
     });
-    // const fileUrl = `https://drive.google.com/uc?id=${response.data.id}`;
-    // const fileUrl = `https://i.ibb.co/ynR7dC9L/bill.jpg`;
     const fileUrl = `https://drive.google.com/uc?export=view&id=${response.data.id}`;
-    // const fileUrl = `https://drive.usercontent.google.com/download?id=${response.data.id}&authuser=0`;
     return fileUrl;
   }
 
@@ -180,6 +177,7 @@ export class QuanlydriveService {
     }
   }
 
+
   async create(data: any) {
     try {
       return this.prisma.driveItem.create({ data });
@@ -187,6 +185,158 @@ export class QuanlydriveService {
       this._ErrorlogService.logError('createdriveItem', error);
       throw error;
     }
+  }
+
+
+
+
+  async search(searchParams: {
+    name?: string;
+    type?: string;
+    mimeType?: string;
+    parentId?: string;
+    size?: number | { min?: number; max?: number };
+    createdTime?: Date | { from?: Date; to?: Date };
+    modifiedTime?: Date | { from?: Date; to?: Date };
+    page?: number;
+    pageSize?: number;
+  }) {
+    try {
+      const { 
+        name, 
+        type, 
+        mimeType, 
+        parentId, 
+        size, 
+        createdTime, 
+        modifiedTime, 
+        page = 1, 
+        pageSize = 20 
+      } = searchParams;
+      
+      // Build the where clause based on provided parameters
+      const whereClause: any = {};
+      
+      if (name) {
+        whereClause.name = {
+          contains: name,
+          mode: 'insensitive', // Case-insensitive search
+        };
+      }
+      
+      if (type) {
+        whereClause.type = type;
+      }
+      
+      if (mimeType) {
+        whereClause.mimeType = mimeType;
+      }
+      
+      if (parentId) {
+        whereClause.parentId = parentId;
+      }
+      
+      // Handle size filtering
+      if (size) {
+        if (typeof size === 'number') {
+          whereClause.size = size;
+        } else {
+          whereClause.size = {};
+          if (size.min !== undefined) whereClause.size.gte = size.min;
+          if (size.max !== undefined) whereClause.size.lte = size.max;
+        }
+      }
+      
+      // Handle createdTime filtering
+      if (createdTime) {
+        if (createdTime instanceof Date) {
+          whereClause.createdTime = createdTime;
+        } else {
+          whereClause.createdTime = {};
+          if (createdTime.from) whereClause.createdTime.gte = createdTime.from;
+          if (createdTime.to) whereClause.createdTime.lte = createdTime.to;
+        }
+      }
+      
+      // Handle modifiedTime filtering
+      if (modifiedTime) {
+        if (modifiedTime instanceof Date) {
+          whereClause.modifiedTime = modifiedTime;
+        } else {
+          whereClause.modifiedTime = {};
+          if (modifiedTime.from) whereClause.modifiedTime.gte = modifiedTime.from;
+          if (modifiedTime.to) whereClause.modifiedTime.lte = modifiedTime.to;
+        }
+      }
+      
+      // Calculate pagination
+      const skip = (page - 1) * pageSize;
+      
+      // Query the database with pagination
+      const [results, totalCount] = await Promise.all([
+        this.prisma.driveItem.findMany({
+          where: whereClause,
+          include: { permissions: true },
+          orderBy: { name: 'asc' },
+          skip,
+          take: pageSize,
+        }),
+        this.prisma.driveItem.count({ where: whereClause }),
+      ]);
+      
+      // Get all necessary items for building paths
+      const allItems = await this.prisma.driveItem.findMany({
+        select: { googleId: true, name: true, parentId: true }
+      });
+      
+      // Build a map for quick lookup
+      const itemMap = new Map(allItems.map(item => [item.googleId, item]));
+      
+      // Convert BigInt to string and add path to each result
+      const resultsWithPath = results.map(item => ({
+        ...item,
+        size: item.size ? item.size.toString() : null,
+        path: this.buildPath(item.googleId, itemMap),
+      }));
+      
+      return {
+        data: resultsWithPath,
+        pagination: {
+          total: totalCount,
+          page,
+          pageSize,
+          totalPages: Math.ceil(totalCount / pageSize),
+        },
+      };
+    } catch (error) {
+      this._ErrorlogService.logError('search', error);
+      throw error;
+    }
+  }
+
+  // Helper function to build path of parent folders
+  private buildPath(googleId: string, itemMap: Map<string, { name: string, parentId: string | null }>): string {
+    const pathParts: string[] = [];
+    let currentItem = itemMap.get(googleId);
+    if (!currentItem) return "";
+    
+    let parentId = currentItem.parentId;
+    let iterations = 0;
+    const MAX_ITERATIONS = 100; // Safety check to prevent infinite loops
+    
+    while (parentId && iterations < MAX_ITERATIONS) {
+      const parent = itemMap.get(parentId);
+      if (!parent) break;
+      
+      // Add the parent name to the path
+      pathParts.unshift(parent.name);
+      
+      // Move to the next parent
+      parentId = parent.parentId;
+      iterations++;
+    }
+    
+    return pathParts.join('/');
   }
 
   async findAll(driveId: string='0AKQL50NKsue5Uk9PVA') {
