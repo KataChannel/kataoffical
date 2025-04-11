@@ -48,6 +48,8 @@ model User {
   EmployeeWorkflowTask EmployeeWorkflowTask[] @relation("TaskAssignee")
   TimesheetEntry TimesheetEntry[] @relation("TimesheetApprover")
   Employee Employee[]
+
+  Expense Expense[]
 }
 
 model Role {
@@ -445,20 +447,51 @@ model AuditLog {
 
 
 model Task {
-  id          String      @id @default(uuid())
-  title       String
-  description String?
-  status      String   @default("pending")
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  assigneeId  String?
-  assignee    User?    @relation("TaskAssignee", fields: [assigneeId], references: [id])
-  relatedUserId String?
-  relatedUser User?    @relation("TaskRelatedUser", fields: [relatedUserId], references: [id])
-  comments    Comment[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String     @id @default(uuid())
+  title          String      // Using 'title' from user task model
+  description    String?
+  // Status using TaskStatus enum with default TODO
+  status         TaskStatus @default(TODO)
+  
+  // User-related fields from original model
+  userId         String?
+  user           User?      @relation(fields: [userId], references: [id])
+  assigneeId     String?
+  assignee       User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  relatedUserId  String?
+  relatedUser    User?      @relation("TaskRelatedUser", fields: [relatedUserId], references: [id])
+  comments       Comment[]
+  
+  // Project-related fields from PSA model
+  projectId      String?
+  project        Project?   @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  projectPhaseId String?    
+  projectPhase   ProjectPhase? @relation(fields: [projectPhaseId], references: [id], onDelete: SetNull)
+  
+  // Additional fields from PSA model
+  priority       Int?       @default(0)
+  startDate      DateTime?
+  dueDate        DateTime?
+  estimatedHours Decimal?
+  isBillable     Boolean    @default(true)
+  
+  // Assignments relation from PSA model
+  assignments    TaskAssignment[]
+  
+  // Timesheet entries relation
+  timesheetEntries TimesheetEntry[]
+  
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  
+  @@index([projectId])
+  @@index([projectPhaseId])
+  @@index([status])
+  @@index([userId])
+  @@index([assigneeId])
 }
+
+
 
 model Comment {
   id        String      @id @default(uuid())
@@ -533,7 +566,9 @@ model DriveItem {
   type        DriveItemType
   parentId    String?
   mimeType    String?
-  size        Int?
+  size        BigInt?
+  createdTime  DateTime?
+  modifiedTime DateTime?
   permissions PermissionDrive[]
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
@@ -790,9 +825,12 @@ enum WorkflowStatus {
 enum TaskStatus {
   TODO
   IN_PROGRESS
+  WAITING
+  ON_HOLD
+  FOR_REVIEW
   DONE
   SKIPPED
-  WAITING
+  CANCELLED
 }
 
 // --- Core Models (Mostly from previous schema, with minor additions/relation changes) ---
@@ -844,6 +882,12 @@ model Employee {
   payslips          Payslip[]
   benefitEnrollments EmployeeEnrollment[]
   workflows         EmployeeWorkflow[] // Workflows this employee is subject to
+
+  Project Project[] @relation("ProjectManager")
+
+  ProjectResource ProjectResource[]
+
+  Expense Expense[]
 }
 
 model Department {
@@ -1081,26 +1125,30 @@ model TimesheetEntry {
   id          String          @id @default(cuid())
   employeeId  String
   employee    Employee        @relation(fields: [employeeId], references: [id], onDelete: Restrict)
-  date        DateTime        @postgres.Date // Chỉ lưu ngày, không lưu giờ
+  date        DateTime        @postgres.Date
   timeIn      DateTime?       // Giờ vào làm thực tế
   timeOut     DateTime?       // Giờ ra về thực tế
-  // projectId   String?      // Optional link to project module
-  // taskId      String?      // Optional link to task
-  hoursWorked Decimal?        // Số giờ làm việc (có thể tự tính hoặc nhập tay)
+  hoursWorked Decimal         // Số giờ làm việc
+  projectId   String?         // Link to project
+  project     Project?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  taskId      String?
+  task        Task?           @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  isBillable  Boolean         @default(true)
   notes       String?
-  status      TimesheetStatus @default(DRAFT)
+  status      ApprovalStatus  @default(DRAFT)
   submittedAt DateTime?
-  approverId  String? // ID of the User who approved/rejected
+  approverId  String?
   approver    User?           @relation("TimesheetApprover", fields: [approverId], references: [id], onDelete: SetNull)
   approvedAt  DateTime?
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
   @@index([employeeId, date])
+  @@index([projectId])
+  @@index([taskId])
   @@index([status])
   @@index([approverId])
 }
-
 
 // --- Payroll (Very Basic - Data Structure Placeholder ONLY) ---
 // WARNING: Real payroll logic is extremely complex and localized. Do not use this directly for calculations.
@@ -1277,4 +1325,265 @@ model EmployeeWorkflowTask {
   @@index([taskTemplateId])
   @@index([status])
   @@index([assigneeId])
+}
+
+
+
+/// schema.prisma (Phần bổ sung cho PSA Module)
+
+// --- Enums for PSA ---
+enum ProjectStatus {
+  PLANNING
+  IN_PROGRESS
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+
+enum BillingType {
+  TIME_AND_MATERIALS // Theo thời gian và vật tư
+  FIXED_FEE          // Giá cố định
+  MILESTONE          // Theo cột mốc
+  NON_BILLABLE       // Không tính phí
+}
+
+enum ApprovalStatus { // Dùng cho Expense, có thể cả Timesheet
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  PARTIALLY_PAID
+  VOID
+  OVERDUE
+}
+
+// --- PSA Core Models ---
+
+// Basic Client model (can be expanded or linked to CRM)
+model Client {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  contactName  String?
+  contactEmail String?
+  contactPhone String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects  Project[]
+}
+
+model Project {
+  id             String        @id @default(cuid())
+  name           String
+  projectCode    String        @unique // Mã dự án
+  description    String?
+
+  clientId       String?       // Optional link to a client
+  client         Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
+
+  projectManagerId String?    // Link to Employee (Project Manager)
+  projectManager Employee?     @relation("ProjectManager", fields: [projectManagerId], references: [id], onDelete: SetNull)
+
+  status         ProjectStatus @default(PLANNING)
+  startDate      DateTime?
+  endDate        DateTime?     // Dự kiến kết thúc
+  actualEndDate  DateTime?     // Thực tế kết thúc
+
+  // --- Financials & Billing ---
+  billingType    BillingType   @default(TIME_AND_MATERIALS)
+  budgetHours    Decimal?      // Tổng số giờ dự kiến
+  budgetCost     Decimal?      // Tổng chi phí dự kiến (VND/USD etc.)
+  currency       String        @default("VND") // Đơn vị tiền tệ
+  // actualHours    Decimal?   // Thường được tính toán từ Timesheets
+  // actualCost     Decimal?   // Thường được tính toán từ Timesheets & Expenses
+  // billingRate    Decimal?   // Tỷ lệ thanh toán mặc định (nếu có)
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  // --- Relations ---
+  phases         ProjectPhase[]
+  tasks          Task[]
+  resources      ProjectResource[] // Nguồn lực được gán vào dự án
+  timesheetEntries TimesheetEntry[] // Các mục chấm công liên quan
+  expenses       Expense[]       // Các chi phí liên quan
+  invoices       Invoice[]       // Hóa đơn liên quan
+
+  @@index([clientId])
+  @@index([projectManagerId])
+  @@index([status])
+}
+
+model ProjectPhase {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name        String    // e.g., "Phase 1: Discovery", "Phase 2: Development"
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  order       Int?      // Thứ tự phase
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tasks       Task[]    // Nhiệm vụ thuộc phase này
+
+  @@index([projectId])
+}
+
+
+
+// Represents a role needed or assigned within a project context
+model ResourceRole {
+  id          String @id @default(cuid())
+  name        String @unique // e.g., "Consultant", "Developer", "Project Manager", "QA Tester"
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projectResources ProjectResource[]
+}
+
+// Assigns an Employee to a Project, potentially with a specific role
+model ProjectResource {
+  id             String        @id @default(cuid())
+  projectId      String
+  project        Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  employeeId     String
+  employee       Employee      @relation(fields: [employeeId], references: [id], onDelete: Restrict) // Don't delete employee if removed from project
+  resourceRoleId String?       // Vai trò cụ thể trong dự án này
+  resourceRole   ResourceRole? @relation(fields: [resourceRoleId], references: [id], onDelete: SetNull)
+  allocationPercent Int?       // % thời gian phân bổ cho dự án (e.g., 50 for 50%)
+  startDate      DateTime      // Ngày bắt đầu tham gia dự án
+  endDate        DateTime?     // Ngày kết thúc tham gia dự án (dự kiến hoặc thực tế)
+  // billingRate    Decimal?   // Tỷ lệ thanh toán cho nguồn lực này trên dự án này (ghi đè mặc định)
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  taskAssignments TaskAssignment[] // Các task được giao cho resource này
+
+  @@unique([projectId, employeeId]) // Một nhân viên chỉ được gán vào dự án 1 lần (trừ khi quản lý theo giai đoạn)
+  @@index([employeeId])
+}
+
+// Assigns a ProjectResource (Employee on Project) to a specific Task
+model TaskAssignment {
+  id                String          @id @default(cuid())
+  taskId            String
+  task              Task            @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  projectResourceId String
+  projectResource   ProjectResource @relation(fields: [projectResourceId], references: [id], onDelete: Cascade) // If resource removed from project, assignments gone too
+  // OR assign directly to Employee? Simpler but less context:
+  // employeeId        String
+  // employee          Employee        @relation(fields: [employeeId], references: [id])
+
+  assignedAt        DateTime        @default(now())
+
+  @@unique([taskId, projectResourceId]) // Gán một resource vào task 1 lần
+}
+
+
+// --- Time Tracking (Adapt/Reuse TimesheetEntry model) ---
+// Add/Ensure these fields are present in your TimesheetEntry model (from Time & Attendance)
+// model TimesheetEntry {
+//   ... (other fields like id, employeeId, date, timeIn, timeOut, hoursWorked, status, approverId etc.)
+//   projectId String? // Make this required or optional based on policy
+//   project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+//   taskId    String? // Optional link to a specific task
+//   task      Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+//   isBillable Boolean @default(true) // Thời gian này có tính phí không?
+//   notes     String?
+//   ...
+//   @@index([projectId])
+//   @@index([taskId])
+// }
+
+
+// --- Expense Tracking ---
+model ExpenseCategory {
+  id          String    @id @default(cuid())
+  name        String    @unique // e.g., "Travel", "Meals", "Software", "Accommodation"
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  expenses    Expense[]
+}
+
+model Expense {
+  id              String         @id @default(cuid())
+  employeeId      String
+  employee        Employee       @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  projectId       String
+  project         Project        @relation(fields: [projectId], references: [id], onDelete: Cascade) // Expense tied to project
+  categoryId      String
+  category        ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  expenseDate     DateTime
+  amount          Decimal
+  currency        String         @default("VND")
+  description     String?
+  receiptUrl      String?        // Link to uploaded receipt image/PDF
+  isBillable      Boolean        @default(true) // Chi phí này có thu lại từ khách hàng không?
+  status          ApprovalStatus @default(DRAFT)
+  submittedAt     DateTime?
+  approverId      String?        // User ID of approver
+  approver        User?          @relation(fields: [approverId], references: [id], onDelete: SetNull)
+  approvedAt      DateTime?
+  approverComments String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([employeeId])
+  @@index([projectId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([approverId])
+}
+
+// --- Basic Invoicing --- (Very Simplified)
+model Invoice {
+  id            String        @id @default(cuid())
+  projectId     String
+  project       Project       @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  // clientId      String // Could be derived from Project
+  invoiceNumber String        @unique // Số hóa đơn
+  issueDate     DateTime      @default(now())
+  dueDate       DateTime
+  subTotal      Decimal       // Tổng tiền trước thuế
+  taxAmount     Decimal?      // Tiền thuế
+  totalAmount   Decimal       // Tổng tiền sau thuế
+  amountPaid    Decimal       @default(0) // Số tiền đã thanh toán
+  currency      String        @default("VND")
+  status        InvoiceStatus @default(DRAFT)
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  lineItems     InvoiceLineItem[]
+
+  @@index([projectId])
+  @@index([status])
+
+}
+
+model InvoiceLineItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String   // e.g., "Consulting Services - Week 1", "Travel Expenses", "Software License"
+  quantity    Decimal
+  unitPrice   Decimal
+  totalAmount Decimal  // quantity * unitPrice
+  // Optional links back to source data
+  // timesheetEntryId String?
+  // expenseId String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
