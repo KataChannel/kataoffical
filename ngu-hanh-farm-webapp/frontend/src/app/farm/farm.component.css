@@ -1,0 +1,8 @@
+.farm { padding: 20px; }
+.plant-section button { margin: 5px; padding: 8px; display: inline-flex; align-items: center; }
+.plant-section img { margin-right: 5px; }
+.action-section button { margin: 10px; padding: 10px 20px; background: #28a745; color: white; border: none; cursor: pointer; }
+.crops-section { margin-top: 20px; }
+.crop-card { display: flex; align-items: center; margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+.crop-card img { margin-right: 10px; }
+.crop-card:hover { transform: scale(1.05); transition: transform 0.2s; }

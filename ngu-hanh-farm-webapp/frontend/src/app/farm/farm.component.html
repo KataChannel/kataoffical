@@ -1,0 +1,24 @@
+<div class="farm">
+    <h2>Farm</h2>
+    <div class="plant-section">
+        <h3>Plant a Crop</h3>
+        <button (click)="plantCrop('truc vang')"><img src="/assets/trucvang.jpg" width="30"> Trúc Vàng (Kim)</button>
+        <button (click)="plantCrop('tre')"><img src="/assets/tre.jpg" width="30"> Tre (Mộc)</button>
+        <button (click)="plantCrop('sen')"><img src="/assets/sen.jpg" width="30"> Sen (Thủy)</button>
+        <button (click)="plantCrop('phuong vi')"><img src="/assets/phuongvi.jpg" width="30"> Phượng Vĩ (Hỏa)</button>
+        <button (click)="plantCrop('lua')"><img src="/assets/lua.jpg" width="30"> Lúa (Thổ)</button>
+    </div>
+    <div class="action-section">
+        <button (click)="waterCrops()">Water Crops</button>
+        <button (click)="harvestCrops()">Harvest</button>
+        <button (click)="watchAd()">Watch Ad (+0.01 TON)</button>
+    </div>
+    <div class="crops-section">
+        <h3>Your Crops</h3>
+        <div *ngIf="!user.crops.length">No crops planted.</div>
+        <div *ngFor="let crop of user.crops" class="crop-card">
+            <img [src]="cropImages[crop.name]" width="50">
+            <p>{{ crop.name }}: {{ crop.time_to_mature - (currentTime() - crop.planted_at) > 0 ? (crop.time_to_mature - (currentTime() - crop.planted_at)) / 60 | number:'1.0-0' : 'Mature' }} minutes left</p>
+        </div>
+    </div>
+</div>

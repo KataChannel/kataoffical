@@ -1,0 +1,12 @@
+<div>
+    <h2>Status</h2>
+    <p>XP: {{ user.xp }}</p>
+    <p>TON Testnet Balance: {{ user.balance.toFixed(3) }}</p>
+    <p>Wallet: {{ user.wallet || 'Not connected' }}</p>
+    <p>VIP: {{ user.vip && user.vipExpiry > currentTime() ? 'Active' : 'None' }}</p>
+    <h3>Crops</h3>
+    <p *ngIf="!user.crops.length">No crops planted.</p>
+    <p *ngFor="let crop of user.crops">
+        {{ crop.name }}: {{ crop.time_to_mature - (currentTime() - crop.planted_at) > 0 ? (crop.time_to_mature - (currentTime() - crop.planted_at)) / 60 | number:'1.0-0' : 'Mature' }} minutes left
+    </p>
+</div>
