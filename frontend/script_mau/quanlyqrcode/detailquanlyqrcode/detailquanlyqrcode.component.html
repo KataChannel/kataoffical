@@ -35,29 +35,31 @@
         <input matInput [(ngModel)]="DetailQuanlyqrcode().title" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Họ Tên</mat-label>
-        <input matInput [(ngModel)]="DetailQuanlyqrcode().name" [disabled]="!isEdit()" placeholder="Vui lòng nhập Họ Tên"/>
+        <mat-label>Mã Sản Phẩm</mat-label>
+        <input matInput [(ngModel)]="DetailQuanlyqrcode().masp" [disabled]="true" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Số Điện Thoại</mat-label>
-        <input matInput [(ngModel)]="DetailQuanlyqrcode().phone" [disabled]="!isEdit()" placeholder="Vui lòng nhập Số Điện Thoại"/>
+        <mat-label>Giá Gốc</mat-label>
+        <input matInput type="number" [(ngModel)]="DetailQuanlyqrcode().giagoc" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giá Gốc"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Email</mat-label>
-        <input matInput [(ngModel)]="DetailQuanlyqrcode().email" [disabled]="!isEdit()" placeholder="Vui lòng nhập Email"/>
+        <mat-label>Đơn Vị Tính</mat-label>
+        <input matInput [(ngModel)]="DetailQuanlyqrcode().dvt" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>QR Code</mat-label>
-        <input matInput [(ngModel)]="DetailQuanlyqrcode().qrcode" [disabled]="!isEdit()" placeholder="Vui lòng nhập QRcode"/>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Code</mat-label>
-        <input matInput [(ngModel)]="DetailQuanlyqrcode().code" [disabled]="!isEdit()" placeholder="Vui lòng nhập Code"/>
-      </mat-form-field>
-
-
-
-
+      <div class="flex flex-row space-x-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Số Lượng</mat-label>
+          <input matInput type="number" [(ngModel)]="DetailQuanlyqrcode().soluong" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Số Lượng Kho</mat-label>
+          <input matInput type="number" [(ngModel)]="DetailQuanlyqrcode().soluongkho" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Hao Hụt %</mat-label>
+          <input matInput type="number" [(ngModel)]="DetailQuanlyqrcode().haohut" [disabled]="!isEdit()" placeholder="Vui lòng nhập haohut"/>
+        </mat-form-field>
+      </div>
     </div>
   </ng-container>
 </div>

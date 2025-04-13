@@ -542,15 +542,21 @@ model Notification {
 
 model Quanlyqrcode {
   id        String   @id @default(uuid())
+  title     String?   // Tiêu đề của QR code
+  slug      String?   // URL thân thiện, ví dụ: "chien-dich-thang-4"
   qrcode    String   @unique
   code      String   @unique
-  name      String   // Họ Tên khách mời
-  phone     String   // Số Điện Thoại
-  email     String   // Email
+  name      String?   // Họ Tên khách mời
+  phone     String?   // Số Điện Thoại
+  email     String?   // Email
   isSentEmail      Boolean  @default(false)
+  isSentZalo      Boolean  @default(false)
+  order      Int? @default(1)
+  isActive  Boolean @default(true)
   checkedAt DateTime?  // Null nếu chưa check-in, lưu thời gian nếu đã check-in
   createdAt DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  updatedAt DateTime @updatedAt
+  @@unique([slug, phone, email], name: "Quanlyqrcode_slug_phone_email_key")
 }
 
 

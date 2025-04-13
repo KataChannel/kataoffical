@@ -30,7 +30,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     styleUrl: './detailquanlyqrcode.component.scss'
   })
   export class DetailQuanlyqrcodeComponent {
-    _ListquanlyqrcodeComponent:ListQuanlyqrcodeComponent = inject(ListQuanlyqrcodeComponent)
+    _ListQuanlyqrcodeComponent:ListQuanlyqrcodeComponent = inject(ListQuanlyqrcodeComponent)
     _QuanlyqrcodeService:QuanlyqrcodeService = inject(QuanlyqrcodeService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
@@ -45,17 +45,17 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
         const id = this._QuanlyqrcodeService.quanlyqrcodeId();
         if (!id){
           this._router.navigate(['/admin/quanlyqrcode']);
-          this._ListquanlyqrcodeComponent.drawer.close();
+          this._ListQuanlyqrcodeComponent.drawer.close();
         }
         if(id === 'new'){
           this.DetailQuanlyqrcode.set({});
-          this._ListquanlyqrcodeComponent.drawer.open();
+          this._ListQuanlyqrcodeComponent.drawer.open();
           this.isEdit.update(value => !value);
           this._router.navigate(['/admin/quanlyqrcode', "new"]);
         }
         else{
             await this._QuanlyqrcodeService.getQuanlyqrcodeBy({id:id});
-            this._ListquanlyqrcodeComponent.drawer.open();
+            this._ListQuanlyqrcodeComponent.drawer.open();
             this._router.navigate(['/admin/quanlyqrcode', id]);
         }
       });
@@ -76,12 +76,6 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     }
     private async createQuanlyqrcode() {
       try {
-        this.DetailQuanlyqrcode.update((v:any)=>{
-          v.slug = convertToSlug(v.title);
-          v.qrcode = GenId(12,false);
-          v.code = GenId(6,false);
-          return v;
-        });
         await this._QuanlyqrcodeService.CreateQuanlyqrcode(this.DetailQuanlyqrcode());
         this._snackBar.open('Tạo Mới Thành Công', '', {
           duration: 1000,
@@ -128,7 +122,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     }
     goBack(){
       this._router.navigate(['/admin/quanlyqrcode'])
-      this._ListquanlyqrcodeComponent.drawer.close();
+      this._ListQuanlyqrcodeComponent.drawer.close();
     }
     trackByFn(index: number, item: any): any {
       return item.id;

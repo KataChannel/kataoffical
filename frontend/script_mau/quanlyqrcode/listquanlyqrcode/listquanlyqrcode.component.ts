@@ -21,11 +21,9 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
   import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
   import { MatDialog, MatDialogModule } from '@angular/material/dialog';
   import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
-  import { QRCodeComponent } from 'angularx-qrcode';
-  import * as QRCode from 'qrcode';
+  import { env } from 'process';
   import { environment } from '../../../../environments/environment.development';
   import { KtableComponent } from '../../../shared/common/ktable/ktable.component';
-import { StorageService } from '../../../shared/utils/storage.service';
   @Component({
     selector: 'app-listquanlyqrcode',
     templateUrl: './listquanlyqrcode.component.html',
@@ -36,7 +34,6 @@ import { StorageService } from '../../../shared/utils/storage.service';
       MatTableModule,
       MatSortModule,
       MatPaginatorModule,
-      QRCodeComponent,
       MatMenuModule,
       MatSidenavModule,
       RouterOutlet,
@@ -54,17 +51,17 @@ import { StorageService } from '../../../shared/utils/storage.service';
   })
   export class ListQuanlyqrcodeComponent {
     displayedColumns: string[] = [];
-  ColumnName: any = {
-      STT: 'STT',
-      isSentEmail: 'Đã Gửi Email',
-      qrcode: 'Mã QR',
-      code: 'Mã Xác Nhận',
-      name: 'Họ Tên',
-      phone: 'Số Điện Thoại',
-      email: 'Email',
-      checkedAt: 'Checkin',
-      createdAt: 'Ngày Tạo',
-  };
+    ColumnName: any = {
+      title: 'Tên Sản Phẩm',
+      masp: 'Mã Sản Phẩm',
+      giagoc: 'Giá Gốc',
+      dvt: 'Đơn Vị Tính',
+      soluong: 'SL',
+      soluongkho: 'SL Kho',
+      haohut: 'Hao Hụt',
+      ghichu: 'Ghi Chú',
+      createdAt: 'Ngày Tạo'
+    };
     FilterColumns: any[] = JSON.parse(
       localStorage.getItem('QuanlyqrcodeColFilter') || '[]'
     );
@@ -79,7 +76,6 @@ import { StorageService } from '../../../shared/utils/storage.service';
     private _QuanlyqrcodeService: QuanlyqrcodeService = inject(QuanlyqrcodeService);
     private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
     private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
-    private _StorageService: StorageService = inject(StorageService);
     private _router: Router = inject(Router);
     private _dialog: MatDialog = inject(MatDialog);
     Listquanlyqrcode:any = this._QuanlyqrcodeService.ListQuanlyqrcode;
@@ -92,6 +88,8 @@ import { StorageService } from '../../../shared/utils/storage.service';
     constructor() {
       effect(() => {
         this.dataSource.data = this.Listquanlyqrcode();
+        console.log(this.Listquanlyqrcode());
+        
         this.totalItems = this.Listquanlyqrcode().length;
         this.calculateTotalPages();
       });
@@ -107,6 +105,7 @@ import { StorageService } from '../../../shared/utils/storage.service';
       this._QuanlyqrcodeService.listenQuanlyqrcodeUpdates();
       await this._QuanlyqrcodeService.getAllQuanlyqrcode();
       this.displayedColumns = Object.keys(this.ColumnName)
+      console.log(this.displayedColumns);
       this.updateDisplayData();
       this.dataSource = new MatTableDataSource(this.Listquanlyqrcode());
       this.dataSource.paginator = this.paginator;
@@ -117,21 +116,6 @@ import { StorageService } from '../../../shared/utils/storage.service';
     async refresh() {
      await this._QuanlyqrcodeService.getAllQuanlyqrcode();
     }
-      downloadQRCode(item:any,event:any) {
-
-    QRCode.toDataURL(item.qrcode, { width: 300, errorCorrectionLevel: 'M' }, (err:any, url:any) => {
-      if (err) {
-        console.error('Lỗi khi tạo mã QR:', err);
-        return;
-      }
-
-      // Tạo liên kết tải xuống
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `${item.name}_qrcode.png`; // Tên file tải xuống
-      link.click();
-    });
-  }
     private initializeColumns(): void {
       this.Columns = Object.keys(this.ColumnName).map((key) => ({
         key,
@@ -306,30 +290,13 @@ import { StorageService } from '../../../shared/utils/storage.service';
         hasBackdrop: true,
         disableClose: true,
       });
-      dialogDeleteRef.afterClosed().subscribe(async (result) => {
+      dialogDeleteRef.afterClosed().subscribe((result) => {
         if (result=="true") {
-          console.log(this.ImportIteam);
-          await Promise.all(
-            this.ImportIteam.map((item:any) => this._QuanlyqrcodeService.CreateQuanlyqrcode({
-              ...item,
-              slug: convertToSlug(item.title),
-              email: item.email.toLowerCase(),
-              qrcode: GenId(12, false),
-              code: GenId(6, false)
-            }))
-          ).then(() => {
-            this._snackBar.open('Import Successful', '', {
-              duration: 1000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['snackbar-success'],
-            });
-          });
         }
       });
     }
-    IdSheet:any=this._StorageService.getItem('IdSheet') || '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk'
-    SheetName:any= this._StorageService.getItem('SheetName') || 'SPImport' 
+    IdSheet:any='15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk'
+    SheetName:any= 'SPImport'
     ImportIteam:any=[]
     ImportColumnName:any = {}
     ImportdisplayedColumns:any[] = []
@@ -339,8 +306,6 @@ import { StorageService } from '../../../shared/utils/storage.service';
         SheetName: this.SheetName,
         ApiKey: environment.GSApiKey,
       };
-     this._StorageService.setItem('IdSheet', this.IdSheet);
-     this._StorageService.setItem('SheetName', this.SheetName);
      const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
      this.ImportIteam = ConvertDriveData(result.values);
     //  console.log(result.values[0]);
@@ -416,20 +381,7 @@ import { StorageService } from '../../../shared/utils/storage.service';
     }
   
   
-    openSentEmailDialog(teamplate: TemplateRef<any>) {
-      const dialogDeleteRef = this._dialog.open(teamplate, {
-        hasBackdrop: true,
-        disableClose: true,
-      });
-      dialogDeleteRef.afterClosed().subscribe((result) => {
-        if (result=="true") {
-          console.log(this.EditList);
-          this.EditList.forEach((item: any) => {
-            this._QuanlyqrcodeService.SendEmail(item);
-          });
-        }
-      });
-    }
+  
   
   
   

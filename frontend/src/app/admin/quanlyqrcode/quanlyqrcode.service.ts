@@ -25,6 +25,38 @@ export class QuanlyqrcodeService {
     reconnectionAttempts: 5,
     timeout: 5000,
   });
+  async SendEmail(dulieu: any) {
+    try {
+      const item:any ={
+        "to":dulieu.email,
+        "name":dulieu.name,
+        "qrcode":dulieu.qrcode,
+      }
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(item),
+        };
+        const response = await fetch(`${environment.APIURL}/mail/sendemail`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log(data);
+        
+        if(data.statusCode === 200){
+          dulieu.isSentEmail = true;
+          this.updateQuanlyqrcode(dulieu)
+        }
+        this.getAllQuanlyqrcode()
+        this.quanlyqrcodeId.set(data.id)
+    } catch (error) {
+        this._ErrorLogService.logError('Failed to CreateQuanlyqrcode', error);
+        return console.error(error);
+    }
+  }
   async CreateQuanlyqrcode(dulieu: any) {
     try {
       const options = {

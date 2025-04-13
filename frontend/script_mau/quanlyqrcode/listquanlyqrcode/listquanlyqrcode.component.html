@@ -51,9 +51,6 @@
           color="warn" mat-icon-button>
           <mat-icon>delete</mat-icon>
         </button>
-        <button *ngIf="EditList.length > 0" matTooltip="Gửi Email" (click)="openSentEmailDialog(SentEmailDialog)" color="primary" mat-icon-button>
-          <mat-icon>forward_to_inbox</mat-icon>
-      </button>
       </div>
     </div>
     <div *ngIf="isSearch" class="border p-1 py-2 w-full flex flex-row space-x-2 items-center">
@@ -83,69 +80,48 @@
           </th>
           <td mat-cell *matCellDef="let row; let idx = index">
             @switch (column) {
-            @case ('qrcode') {
+            @case ('masp') {
             <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
-                {{ row[column] }}
-            </span>
-            }
-            @case ('email') {
-             <span class="max-w-40 line-clamp-4 flex flex-row space-x-2 items-center">
-                <span *ngIf="row.isSentEmail" class="material-symbols-outlined text-blue-600">mark_email_read</span>
-                   <span>{{ row[column] }}</span>
+              {{ row[column] }}
             </span>
             }
             @case ('STT') {
-            <span>
-              <qrcode (click)="downloadQRCode(row,$event)" [qrdata]="row['qrcode']" [width]="100" [errorCorrectionLevel]="'M'"></qrcode>
+            <span class="max-w-40 line-clamp-4">
+              {{ idx + 1 }}
             </span>
             }
             @case ('createdAt') {
             <span class="max-w-40 line-clamp-4">
-                {{ row[column]|date:'dd/MM/yyyy'}}
+              {{ row[column]|date:'dd/MM/yyyy'}}
             </span>
             }
             @case ('haohut') {
             <span class="max-w-40 line-clamp-4">
-                {{ row[column]}}%
+              {{ row[column]}}%
             </span>
             }
             @case ('isActive') {
             <span class="max-w-40 line-clamp-4">
-                @if (row[column]) {
-                <mat-icon class="text-green-500">check_circle</mat-icon>
-                }
-                @else {
-                <mat-icon class="text-red-500">cancel</mat-icon>
-                }
-            </span>
-            }
-            @case ('isSentEmail') {
-            <span class="max-w-40 line-clamp-4">
-                @if (row[column]) {
-                <mat-icon class="text-green-500">check_circle</mat-icon>
-                }
-                @else {
-                <mat-icon class="text-red-500">cancel</mat-icon>
-                }
+              @if (row[column]) {
+              <mat-icon class="text-green-500">check_circle</mat-icon>
+              }
+              @else {
+              <mat-icon class="text-red-500">cancel</mat-icon>
+              }
             </span>
             }
             @case ('updatedAt') {
             <span class="max-w-40 line-clamp-4">
-                {{ row[column]|date:'dd/MM/yyyy'}}
-            </span>
-            }
-            @case ('checkedAt') {
-            <span class="max-w-40 line-clamp-4">
-                {{ row[column]|date:'dd/MM/yyyy'}}
+              {{ row[column]|date:'dd/MM/yyyy'}}
             </span>
             }
             @default {
             <span class="max-w-40 line-clamp-4">
-                {{ row[column] }}
+              {{ row[column] }}
             </span>
             }
             }
-        </td>
+          </td>
         </ng-container>
         }
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
@@ -229,19 +205,6 @@
       <div class="relative flex flex-row space-x-2 items-center justify-center">
         <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
         <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
-      </div>
-  </mat-dialog-content>
-</ng-template>
-
-<ng-template #SentEmailDialog>
-  <mat-dialog-content>
-      <div class="flex flex-col space-y-8 items-center justify-center">
-          <div class="font-bold">Xác Nhận</div>
-          <div>Bạn chắc chắn muốn gửi email đến khách mời đã chọn không?</div>
-          <div class="flex flex-row space-x-2 items-center justify-center">
-              <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
-              <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
-          </div>
       </div>
   </mat-dialog-content>
 </ng-template>
