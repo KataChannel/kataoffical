@@ -266,7 +266,7 @@
               <td class="border p-2 text-end max-w-10">{{item.slgiao|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-20">{{item.giaban|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{item.ttgiao|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-10"></td>
+              <td class="border p-2 text-end max-w-10">{{item.slnhan|number:'1.0-2'}}</td>
               <td class="border p-2">{{item.ghichu}}</td>
             </tr>
           }
@@ -275,7 +275,7 @@
             <td class="border p-2 text-end font-bold">{{TinhTong(DetailPhieugiaohang().sanpham,'slgiao')|number:'1.0-2'}}</td>
             <td class="border p-2 text-end font-bold"></td>
             <td class="border p-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{TinhTong(DetailPhieugiaohang().sanpham,'ttgiao')|number:'1.0-2'}}</td>
-            <td class="border p-2 text-end"></td>
+            <td class="border p-2 text-end">{{TinhTong(DetailPhieugiaohang().sanpham,'slnhan')|number:'1.0-2'}}</td>
             <td class="border p-2 text-end"></td>
           </tr>
         </tbody>

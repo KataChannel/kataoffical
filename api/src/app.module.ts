@@ -20,6 +20,7 @@ import { PermissionModule } from './permission/permission.module';
 import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
 import { GoogledriveModule } from './shared/googledrive/googledrive.module';
 import { ErrorlogsModule } from './errorlogs/errorlogs.module';
+import { CallbackModule } from './callback/callback.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ErrorlogsModule } from './errorlogs/errorlogs.module';
     PermissionModule,
     GoogledriveModule,
     ErrorlogsModule,
+    CallbackModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

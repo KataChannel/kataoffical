@@ -1,10 +1,11 @@
-import { Inject, Injectable, PLATFORM_ID, signal,Signal } from '@angular/core';
+import { inject, Inject, Injectable, PLATFORM_ID, signal,Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
 import { isPlatformBrowser } from '@angular/common';
 import { of, Observable, BehaviorSubject } from 'rxjs';
 import { AuthUtils } from '../../shared/utils/auth.utils';
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Injectable({
   providedIn: 'root'
 })
@@ -61,22 +62,7 @@ export class UserService {
         }
         const data = await response.json();
         if (!response.ok) {
-          if (response.status === 401) {
-            const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else if (response.status === 403) {
-            const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else if (response.status === 500) {
-            const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else {
-            const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          }
+          this.handleError(response.status);
         }
         this.getAllUser()
         this.userId.set(data.id)
@@ -96,21 +82,7 @@ export class UserService {
       };
       const response = await fetch(`${environment.APIURL}/users`, options);
       if (!response.ok) {
-        if (response.status === 401) {
-          const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          // this.Dangxuat()
-        } else if (response.status === 403) {
-          const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          // this.Dangxuat()
-        } else if (response.status === 500) {
-          const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-        } else {
-          const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-        }
+        this.handleError(response.status);
       }
       const data = await response.json();           
       this.ListUser.set(data)
@@ -128,22 +100,7 @@ export class UserService {
       };
       const response = await fetch(`${environment.APIURL}/users/findid/${id}`, options);      
       if (!response.ok) {
-        if (response.status === 401) {
-          const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          // this.Dangxuat()
-        } else if (response.status === 403) {
-          const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          // this.Dangxuat()
-        } else if (response.status === 500) {
-          const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          // this.Dangxuat()
-        } else {
-          const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-        }
+        this.handleError(response.status);
       }
       const data = await response.json();      
       this.DetailUser.set(data)
@@ -166,22 +123,7 @@ export class UserService {
         }
         const data = await response.json();
         if (!response.ok) {
-          if (response.status === 401) {
-            const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else if (response.status === 403) {
-            const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else if (response.status === 500) {
-            const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else {
-            const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          }
+          this.handleError(response.status);
         }
         this.getAllUser()
         this.getUserByid(dulieu.id)
@@ -191,6 +133,8 @@ export class UserService {
   }
   async assignRoleToUser(dulieu: any) {
     try {
+      console.log(dulieu);
+      
       const options = {
           method:'POST',
           headers: {
@@ -204,22 +148,7 @@ export class UserService {
         }
         const data = await response.json();
         if (!response.ok) {
-          if (response.status === 401) {
-            const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else if (response.status === 403) {
-            const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else if (response.status === 500) {
-            const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else {
-            const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          }
+          this.handleError(response.status);
         }
         this.getUserByid(dulieu.userId)
     } catch (error) {
@@ -228,6 +157,7 @@ export class UserService {
   }
   async removeRoleFromUser(dulieu:any) {    
     try {
+      console.log(dulieu);
         const options = {
             method:'DELETE',
             headers: {
@@ -237,20 +167,10 @@ export class UserService {
           };
           const response = await fetch(`${environment.APIURL}/users/remove`, options);
           if (!response.ok) {
-            if (response.status === 401) {
-              const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            } else if (response.status === 403) {
-              const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            } else if (response.status === 500) {
-              const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            } else {
-              const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            }
+              // this.handleError(response.status);
           }
+          console.log(dulieu);
+          
           this.getUserByid(dulieu.userId)
       } catch (error) {
           return console.error(error);
@@ -266,19 +186,7 @@ export class UserService {
           };
           const response = await fetch(`${environment.APIURL}/users/${item.id}`, options);
           if (!response.ok) {
-            if (response.status === 401) {
-              const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            } else if (response.status === 403) {
-              const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            } else if (response.status === 500) {
-              const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            } else {
-              const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            }
+            this.handleError(response.status);
           }
           this.getAllUser()
       } catch (error) {
@@ -354,23 +262,6 @@ export class UserService {
       return console.error(error);
     }
   }
-  private handleError(status: number) {
-    let message = 'Lỗi không xác định';
-    switch (status) {
-      case 401:
-        message = 'Vui lòng đăng nhập lại';
-        this.router.navigate(['/login']);
-        break;
-      case 403:
-        message = 'Bạn không có quyền truy cập';
-        break;
-      case 500:
-        message = 'Lỗi máy chủ, vui lòng thử lại sau';
-        break;
-    }
-    const result = JSON.stringify({ code: status, title: message });
-    // this.router.navigate(['/errorserver'], { queryParams: { data: result } });
-  }
   set accessToken(token: string) {
     if (this.isBrowser) {
       this._StorageService.setItem('token', token);
@@ -435,21 +326,7 @@ export class UserService {
       };
       const response = await fetch(`${environment.APIURL}/users/register`, options);
       if (!response.ok) {
-        if (response.status === 401) {
-          const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          this.logout()
-        } else if (response.status === 403) {
-          const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          this.logout()
-        } else if (response.status === 500) {
-          const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-        } else {
-          const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-        }
+        this.handleError(response.status);
       }
       const data = await response.json();
       console.log(data);
@@ -529,5 +406,61 @@ export class UserService {
     this.permissionsSubject.next([]);
     this.router.navigate(['/']);
     return true
+  }
+
+  private _snackBar:MatSnackBar = inject(MatSnackBar);
+  private handleError(status: number) {
+    let message = 'Lỗi không xác định';
+    switch (status) {
+      case 400:
+        message = 'Thông tin đã tồn tại';
+        this._snackBar.open(message, '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-error'],
+        });
+        break;
+      case 404:
+        message = 'Vui lòng đăng nhập lại';
+        // this._StorageService.removeItem('token');
+        // this._StorageService.removeItem('permissions');
+        // this.router.navigate(['/login']);
+        break;
+      case 401:
+        message = 'Vui lòng đăng nhập lại';
+        // this._StorageService.removeItem('token');
+        // this._StorageService.removeItem('permissions');
+        // this.router.navigate(['/login']);
+        break;
+      case 403:
+        message = 'Bạn không có quyền truy cập';
+        this._snackBar.open(message, '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-error'],
+        });
+        break;
+      case 500:
+        message = 'Lỗi máy chủ, vui lòng thử lại sau';
+          this._snackBar.open(message, '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-error'],
+        });
+        break;
+      default:
+        this._snackBar.open(message, '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-error'],
+        });
+        break;
+    }
+    //const result = JSON.stringify({ code: status, title: message });
+    // this.router.navigate(['/errorserver'], { queryParams: { data: result } });
   }
 }
