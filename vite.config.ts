@@ -25,7 +25,7 @@ export default defineConfig({
     // Thay thế html-webpack-plugin
     createHtmlPlugin({
       minify: true,
-      template: 'index.html', // Đường dẫn đến tệp HTML mẫu
+      template: 'index1.html', // Đường dẫn đến tệp HTML mẫu
     }),
     // Thay thế copy-webpack-plugin
     viteStaticCopy({
@@ -40,7 +40,7 @@ export default defineConfig({
 
   // Tùy chọn build
   build: {
-    outDir: 'dist', // Thư mục đầu ra (trước đây là 'docs')
+    outDir: 'docs', // Thư mục đầu ra (trước đây là 'docs')
     assetsDir: 'assets', // Thư mục con cho tài nguyên
     sourcemap: process.env.NODE_ENV === 'development', // Bật sourcemap trong dev
     rollupOptions: {
