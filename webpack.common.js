@@ -18,7 +18,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './public/index.html', // Đường dẫn đến file HTML mẫu của bạn
+      template: './dist/index.html', // Đường dẫn đến file HTML mẫu của bạn
       title: 'Phaser Farm Game', // Tiêu đề trang
     }),
   ],
