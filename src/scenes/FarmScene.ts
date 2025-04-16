@@ -25,7 +25,7 @@ export class FarmScene extends Phaser.Scene {
 
     preload(): void {
         console.log('FarmScene preload: Loading images...');
-        const assetsPath = '../assets'; // Giả định assets/ ngang cấp với targetDirectory
+        const assetsPath = 'assets'; // Giả định assets/ ngang cấp với targetDirectory
         this.load.image(config.EMPTY_PLOT_KEY, `${assetsPath}/${config.EMPTY_PLOT_KEY}.png`);
         ALL_FRUITS.forEach(fruit => {
             if (fruit.spriteKeySeed) this.load.image(fruit.spriteKeySeed, `${assetsPath}/${fruit.spriteKeySeed}.jpg`);
