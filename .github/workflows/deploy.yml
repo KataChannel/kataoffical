@@ -4,34 +4,47 @@ on:
   push:
     branches:
       - main  # Thay 'main' bằng branch chính của bạn (ví dụ: master)
+  workflow_dispatch:  # Cho phép kích hoạt thủ công từ giao diện GitHub
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
   build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # Nếu cần build lại game (ví dụ: chạy npm build để tạo thư mục dist)
+      
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # Thay phiên bản Node.js nếu cần
+          node-version: '18'
+          cache: 'npm'  # Thêm caching để tăng tốc quá trình build
+      
       - name: Install dependencies
         run: npm ci  # Hoặc yarn install
+      
       - name: Build game
-        run: npm run build  # Thay bằng lệnh build của bạn, ví dụ: yarn build
-
+        run: npm run build  # Thay bằng lệnh build của bạn
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist  # Thư mục chứa các tệp tĩnh của game
-
+          path: ./dist  # Thư mục chứa các tệp tĩnh của game
+      
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
