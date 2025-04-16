@@ -7,10 +7,6 @@ module.exports = merge(common, {
   mode: 'production', // Chế độ production (tự động tối ưu hóa)
   output: {
     filename: 'bundle.[contenthash].js',
-    path: path.resolve(__dirname, 'dist'),
-    // *** THÊM DÒNG NÀY ***
-    publicPath: '/katagame/v2', // Đường dẫn gốc trên GitHub Pages
-    // clean đã có trong common
   },
   plugins: [
     // Sao chép thư mục assets vào thư mục dist

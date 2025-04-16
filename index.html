@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title><%= htmlWebpackPlugin.options.title %></title>
-  <style>
-    body { margin: 0; background-color: black; }
-    canvas { display: block; margin: 0 auto; } /* Căn giữa canvas */
-  </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Phaser Farming Game (Images)</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; }
+        body { display: flex; justify-content: center; align-items: center; background-color: #222; }
+    </style>
 </head>
 <body>
-  </body>
+    <div id="phaser-game"></div>
+    <script src="dist/bundle.js"></script>
+</body>
 </html>
