@@ -6,7 +6,7 @@ module.exports = merge(common, {
   mode: 'development', // Chế độ development
   devtool: 'inline-source-map', // Giúp debug dễ dàng hơn
   devServer: {
-    static: './dist', // Phục vụ file từ thư mục dist
+    static: './docs', // Phục vụ file từ thư mục dist
     hot: true, // Bật hot module replacement (tải lại nhanh khi code thay đổi)
     open: true, // Tự động mở trình duyệt
     compress: true,

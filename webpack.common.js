@@ -24,7 +24,19 @@ module.exports = {
   ],
   output: {
     // Output sẽ được định nghĩa cụ thể trong dev và prod configs
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'docs'),
     clean: true, // Xóa thư mục output trước mỗi lần build
   },
+  devServer: {
+    static: {
+      directory: path.join(__dirname),
+    },
+    compress: true,
+    port: 9000,
+    devMiddleware: {
+       publicPath: '/docs/',
+       writeToDisk: true,
+    },
+    watchFiles: ['src/**/*', 'assets/**/*'],
+  },  
 };
