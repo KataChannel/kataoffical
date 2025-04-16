@@ -18,13 +18,13 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './dist/index.html', // Đường dẫn đến file HTML mẫu của bạn
+      template: './index.html', // Đường dẫn đến file HTML mẫu của bạn
       title: 'Phaser Farm Game', // Tiêu đề trang
     }),
   ],
   output: {
     // Output sẽ được định nghĩa cụ thể trong dev và prod configs
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'docs'),
     clean: true, // Xóa thư mục output trước mỗi lần build
   },
 };

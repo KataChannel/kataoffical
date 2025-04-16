@@ -8,8 +8,8 @@ module.exports = merge(common, {
   mode: 'production', // Chế độ production (tự động tối ưu hóa)
   output: {
     filename: 'bundle.[contenthash].js',
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: 'dist',
+    path: path.resolve(__dirname, 'docs'),
+    publicPath: 'docs/',
   },
   plugins: [
     // Sao chép thư mục assets vào thư mục dist

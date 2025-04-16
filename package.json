@@ -2,12 +2,12 @@
   "name": "v2",
   "version": "1.0.0",
   "description": "Phaser Farming Game Frontend (LocalStorage & Images)",
-  "main": "dist/bundle.js",
+  "main": "docs/bundle.js",
   "scripts": {
     "start": "webpack serve --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js --stats-error-details --stats-children",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve-dist": "npx http-server dist"
+    "serve-docs": "npx http-server docs"
   },
   "keywords": [
     "phaser",
