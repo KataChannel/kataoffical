@@ -46,7 +46,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // Tùy chỉnh đầu ra để giống bundle.js của Webpack
-        entryFileNames: 'bundle.js',
+        entryFileNames: 'bundle-[hash].js',
         chunkFileNames: 'chunk-[hash].js',
         assetFileNames: 'assets/[name].[ext]',
       },
