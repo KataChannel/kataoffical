@@ -34,7 +34,7 @@ export class UIManager {
         }
         try {
             this.tonConnectUI = new TonConnectUI({
-                manifestUrl: 'https://farm.kataoffical.online/tonconnect-manifest.json',
+                manifestUrl: 'https://katachannel.github.io/kataoffical/tonmanifest.json',
                 uiPreferences: { theme: THEME.DARK, borderRadius: 'm' }
             });
 
