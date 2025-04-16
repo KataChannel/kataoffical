@@ -3,48 +3,58 @@ name: Deploy Game to GitHub Pages
 on:
   push:
     branches:
-      - main  # Thay 'main' bằng branch chính của bạn (ví dụ: master)
-  workflow_dispatch:  # Cho phép kích hoạt thủ công từ giao diện GitHub
+      - main  # Or your primary branch (e.g., master)
+  workflow_dispatch: # Allows manual triggering from GitHub UI
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  cancel-in-progress: false # Changed to false as recommended by actions/deploy-pages
 
 jobs:
-  build-and-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  # Build job
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4 # Use v4 or latest
         with:
-          node-version: '18'
-          cache: 'npm'  # Thêm caching để tăng tốc quá trình build
-      
+          node-version: '18' # Or your preferred Node.js version
+          cache: 'npm'
+
       - name: Install dependencies
-        run: npm ci  # Hoặc yarn install
-      
+        run: npm ci # 'ci' is generally recommended for CI environments
+
       - name: Build game
-        run: npm run build  # Thay bằng lệnh build của bạn
-      
+        run: npm run build # Assumes this creates the ./dist folder
+
       - name: Setup Pages
-        uses: actions/configure-pages@v3
-      
+        uses: actions/configure-pages@v5 # Use v5 or latest
+
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v3 # Use v3 or latest
         with:
-          path: ./dist  # Thư mục chứa các tệp tĩnh của game
-      
+          # Upload entire repository
+          path: ./dist # Ensure this is your Vite build output directory
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build # Run this job after the build job is complete
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v4 # Use v4 or latest
