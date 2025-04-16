@@ -1,0 +1,5 @@
+/* style.css */
+#phaser-game canvas {
+    border: 1px solid #555; /* Màu border nhẹ hơn */
+    /* box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); */
+}

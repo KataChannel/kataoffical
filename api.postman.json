@@ -1,0 +1,182 @@
+{
+    "info": {
+      "name": "Game Backend API",
+      "description": "API collection for the Kata Game backend project",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Authentication",
+        "item": [
+          {
+            "name": "Login",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"username\": \"string\",\n  \"password\": \"string\"\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/auth/login",
+                "host": ["{{baseUrl}}"],
+                "path": ["auth", "login"]
+              },
+              "description": "Authenticate a user and receive a JWT token"
+            }
+          }
+        ]
+      },
+      {
+        "name": "User",
+        "item": [
+          {
+            "name": "Get User Profile",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}",
+                  "type": "text"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/user/profile",
+                "host": ["{{baseUrl}}"],
+                "path": ["user", "profile"]
+              },
+              "description": "Get the current user's profile"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Game",
+        "item": [
+          {
+            "name": "Start Game",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}",
+                  "type": "text"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"gameMode\": \"string\",\n  \"stakeAmount\": 0\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/game/start",
+                "host": ["{{baseUrl}}"],
+                "path": ["game", "start"]
+              },
+              "description": "Start a new game session"
+            }
+          },
+          {
+            "name": "Get Game State",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}",
+                  "type": "text"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/game/{{gameId}}",
+                "host": ["{{baseUrl}}"],
+                "path": ["game", "{{gameId}}"]
+              },
+              "description": "Get the current state of a game"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Wallet",
+        "item": [
+          {
+            "name": "Get Wallet Balance",
+            "request": {
+              "method": "GET",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}",
+                  "type": "text"
+                }
+              ],
+              "url": {
+                "raw": "{{baseUrl}}/wallet/balance",
+                "host": ["{{baseUrl}}"],
+                "path": ["wallet", "balance"]
+              },
+              "description": "Get the user's wallet balance"
+            }
+          },
+          {
+            "name": "Transfer TON",
+            "request": {
+              "method": "POST",
+              "header": [
+                {
+                  "key": "Authorization",
+                  "value": "Bearer {{token}}",
+                  "type": "text"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json",
+                  "type": "text"
+                }
+              ],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"recipientAddress\": \"string\",\n  \"amount\": 0\n}"
+              },
+              "url": {
+                "raw": "{{baseUrl}}/wallet/transfer",
+                "host": ["{{baseUrl}}"],
+                "path": ["wallet", "transfer"]
+              },
+              "description": "Transfer TON to another wallet"
+            }
+          }
+        ]
+      }
+    ],
+    "variable": [
+      {
+        "key": "baseUrl",
+        "value": "http://localhost:3000/api",
+        "type": "string"
+      },
+      {
+        "key": "token",
+        "value": "",
+        "type": "string"
+      },
+      {
+        "key": "gameId",
+        "value": "",
+        "type": "string"
+      }
+    ]
+  }

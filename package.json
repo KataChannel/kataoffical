@@ -6,8 +6,12 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "@ton/core": "^0.60.1",
+    "@ton/crypto": "^3.3.0",
+    "@ton/ton": "^15.2.1",
+    "dotenv": "^16.5.0",
     "node-telegram-bot-api": "^0.66.0",
-    "tonweb": "^0.0.66",
-    "dotenv": "^16.5.0"
+    "ton-crypto": "^3.2.0",
+    "tonweb": "^0.0.66"
   }
 }

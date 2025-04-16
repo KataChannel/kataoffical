@@ -11,7 +11,7 @@ function createFile(filePath, content) {
 }
 
 // Cấu trúc dự án
-const projectDir = 'ngu-hanh-farm-webapp';
+const projectDir = 'game2';
 const backendDir = path.join(projectDir, 'backend');
 const frontendDir = path.join(projectDir, 'frontend');
 
@@ -20,7 +20,7 @@ if (!fs.existsSync(projectDir)) {
     fs.mkdirSync(projectDir);
 }
 
-// 1. Backend files
+// 1. Backend files (NestJS 11)
 const backendFiles = {
     // package.json
     'package.json': `{
@@ -33,18 +33,43 @@ const backendFiles = {
             "prisma:migrate": "prisma migrate dev"
         },
         "dependencies": {
-            "@nestjs/common": "^10.0.0",
-            "@nestjs/core": "^10.0.0",
-            "@nestjs/platform-express": "^10.0.0",
-            "@prisma/client": "^5.6.0",
+            "@nestjs/common": "^11.0.0",
+            "@nestjs/core": "^11.0.0",
+            "@nestjs/platform-express": "^11.0.0",
+            "@prisma/client": "^5.20.0",
             "tonweb": "^0.0.66",
             "dotenv": "^16.4.5",
             "node-telegram-bot-api": "^0.66.0",
             "rxjs": "^7.8.1"
         },
         "devDependencies": {
-            "@nestjs/cli": "^10.0.0",
-            "prisma": "^5.6.0"
+            "@nestjs/cli": "^11.0.0",
+            "@nestjs/schematics": "^11.0.0",
+            "prisma": "^5.20.0",
+            "typescript": "^5.5.0"
+        }
+    }`,
+
+    // tsconfig.json
+    'tsconfig.json': `{
+        "compilerOptions": {
+            "module": "commonjs",
+            "declaration": true,
+            "removeComments": true,
+            "emitDecoratorMetadata": true,
+            "experimentalDecorators": true,
+            "allowSyntheticDefaultImports": true,
+            "target": "ES2021",
+            "sourceMap": true,
+            "outDir": "./dist",
+            "baseUrl": "./",
+            "incremental": true,
+            "skipLibCheck": true,
+            "strictNullChecks": false,
+            "noImplicitAny": false,
+            "strictBindCallApply": false,
+            "forceConsistentCasingInFileNames": false,
+            "noFallthroughCasesInSwitch": false
         }
     }`,
 
@@ -415,7 +440,7 @@ export class UsersController {
     async plantCrop(@Body() body: { userId: string; cropName: string }) {
         try {
             return await this.usersService.plantCrop(body.userId, body.cropName);
-        } catch (error) {
+        } catch (error: any) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
@@ -424,7 +449,7 @@ export class UsersController {
     async waterCrops(@Body() body: { userId: string }) {
         try {
             return await this.usersService.waterCrops(body.userId);
-        } catch (error) {
+        } catch (error: any) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
@@ -433,7 +458,7 @@ export class UsersController {
     async harvestCrops(@Body() body: { userId: string }) {
         try {
             return await this.usersService.harvestCrops(body.userId);
-        } catch (error) {
+        } catch (error: any) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
@@ -442,7 +467,7 @@ export class UsersController {
     async connectWallet(@Body() body: { userId: string; walletAddress: string }) {
         try {
             return await this.usersService.connectWallet(body.userId, body.walletAddress);
-        } catch (error) {
+        } catch (error: any) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
@@ -451,7 +476,7 @@ export class UsersController {
     async buyItem(@Body() body: { userId: string; item: string }) {
         try {
             return await this.usersService.buyItem(body.userId, body.item);
-        } catch (error) {
+        } catch (error: any) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
@@ -460,7 +485,7 @@ export class UsersController {
     async deposit(@Body() body: { userId: string; amount: number }) {
         try {
             return await this.usersService.deposit(body.userId, body.amount);
-        } catch (error) {
+        } catch (error: any) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
@@ -469,7 +494,7 @@ export class UsersController {
     async withdraw(@Body() body: { userId: string; amount: number }) {
         try {
             return await this.usersService.withdraw(body.userId, body.amount);
-        } catch (error) {
+        } catch (error: any) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
@@ -478,7 +503,7 @@ export class UsersController {
     async linkTelegram(@Body() body: { userId: string; telegramChatId: string }) {
         try {
             return await this.usersService.linkTelegram(body.userId, body.telegramChatId);
-        } catch (error) {
+        } catch (error: any) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
@@ -487,7 +512,7 @@ export class UsersController {
     async adReward(@Body() body: { userId: string }) {
         try {
             return await this.usersService.adReward(body.userId);
-        } catch (error) {
+        } catch (error: any) {
             throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
         }
     }
@@ -510,9 +535,8 @@ export class UsersModule {}
 `
 };
 
-// 2. Frontend files
+// 2. Frontend files (Angular 19, giữ nguyên)
 const frontendFiles = {
-    // package.json
     'package.json': `{
         "name": "ngu-hanh-farm-frontend",
         "version": "1.0.0",
@@ -521,26 +545,172 @@ const frontendFiles = {
             "build": "ng build --prod"
         },
         "dependencies": {
-            "@angular/core": "^17.0.0",
-            "@angular/common": "^17.0.0",
-            "@angular/compiler": "^17.0.0",
-            "@angular/platform-browser": "^17.0.0",
-            "@angular/platform-browser-dynamic": "^17.0.0",
-            "@angular/router": "^17.0.0",
-            "@angular/forms": "^17.0.0",
+            "@angular/animations": "^19.0.0",
+            "@angular/common": "^19.0.0",
+            "@angular/compiler": "^19.0.0",
+            "@angular/core": "^19.0.0",
+            "@angular/forms": "^19.0.0",
+            "@angular/platform-browser": "^19.0.0",
+            "@angular/platform-browser-dynamic": "^19.0.0",
+            "@angular/router": "^19.0.0",
             "rxjs": "~7.8.0",
             "tslib": "^2.3.0",
-            "zone.js": "~0.14.0"
+            "zone.js": "~0.15.0"
         },
         "devDependencies": {
-            "@angular-devkit/build-angular": "^17.0.0",
-            "@angular/cli": "^17.0.0",
-            "@angular/compiler-cli": "^17.0.0",
-            "typescript": "~5.2.0"
+            "@angular-devkit/build-angular": "^19.0.0",
+            "@angular/cli": "^19.0.0",
+            "@angular/compiler-cli": "^19.0.0",
+            "typescript": "~5.5.0"
         }
     }`,
 
-    // src/index.html
+    'angular.json': `{
+        "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+        "version": 1,
+        "newProjectRoot": "projects",
+        "projects": {
+            "ngu-hanh-farm-frontend": {
+                "projectType": "application",
+                "schematics": {},
+                "root": "",
+                "sourceRoot": "src",
+                "prefix": "app",
+                "architect": {
+                    "build": {
+                        "builder": "@angular-devkit/build-angular:application",
+                        "options": {
+                            "outputPath": "dist/ngu-hanh-farm-frontend",
+                            "index": "src/index.html",
+                            "browser": "src/main.ts",
+                            "polyfills": ["zone.js"],
+                            "tsConfig": "tsconfig.app.json",
+                            "assets": ["src/favicon.ico", "src/assets"],
+                            "styles": ["src/styles.css"],
+                            "scripts": []
+                        },
+                        "configurations": {
+                            "production": {
+                                "budgets": [
+                                    {
+                                        "type": "initial",
+                                        "maximumWarning": "500kb",
+                                        "maximumError": "1mb"
+                                    },
+                                    {
+                                        "type": "anyComponentStyle",
+                                        "maximumWarning": "2kb",
+                                        "maximumError": "4kb"
+                                    }
+                                ],
+                                "outputHashing": "all"
+                            },
+                            "development": {
+                                "optimization": false,
+                                "extractLicenses": false,
+                                "sourceMap": true
+                            }
+                        },
+                        "defaultConfiguration": "production"
+                    },
+                    "serve": {
+                        "builder": "@angular-devkit/build-angular:dev-server",
+                        "configurations": {
+                            "production": {
+                                "buildTarget": "ngu-hanh-farm-frontend:build:production"
+                            },
+                            "development": {
+                                "buildTarget": "ngu-hanh-farm-frontend:build:development"
+                            }
+                        },
+                        "defaultConfiguration": "development"
+                    },
+                    "extract-i18n": {
+                        "builder": "@angular-devkit/build-angular:extract-i18n"
+                    },
+                    "test": {
+                        "builder": "@angular-devkit/build-angular:karma",
+                        "options": {
+                            "polyfills": ["zone.js"],
+                            "tsConfig": "tsconfig.spec.json",
+                            "assets": ["src/favicon.ico", "src/assets"],
+                            "styles": ["src/styles.css"],
+                            "scripts": []
+                        }
+                    }
+                }
+            }
+        }
+    }`,
+
+    'tsconfig.json': `{
+        "compileOnSave": false,
+        "compilerOptions": {
+            "outDir": "./dist/out-tsc",
+            "forceConsistentCasingInFileNames": true,
+            "strict": true,
+            "noImplicitOverride": true,
+            "noPropertyAccessFromIndexSignature": true,
+            "noImplicitReturns": true,
+            "noFallthroughCasesInSwitch": true,
+            "sourceMap": true,
+            "declaration": false,
+            "downlevelIteration": true,
+            "experimentalDecorators": true,
+            "moduleResolution": "node",
+            "importHelpers": true,
+            "target": "ES2022",
+            "module": "ES2022",
+            "useDefineForClassFields": false,
+            "lib": ["ES2022", "dom"]
+        },
+        "angularCompilerOptions": {
+            "enableI18nLegacyMessageIdFormat": false,
+            "strictInjectionParameters": true,
+            "strictInputAccessModifiers": true,
+            "strictTemplates": true
+        }
+    }`,
+
+    'tsconfig.app.json': `{
+        "extends": "./tsconfig.json",
+        "compilerOptions": {
+            "outDir": "./out-tsc/app",
+            "types": []
+        },
+        "files": [
+            "src/main.ts"
+        ],
+        "include": [
+            "src/**/*.d.ts"
+        ]
+    }`,
+
+    'tsconfig.spec.json': `{
+        "extends": "./tsconfig.json",
+        "compilerOptions": {
+            "outDir": "./out-tsc/spec",
+            "types": ["jasmine"]
+        },
+        "include": [
+            "src/**/*.spec.ts",
+            "src/**/*.d.ts"
+        ]
+    }`,
+
+    'src/main.ts': `import { bootstrapApplication } from '@angular/platform-browser';
+import { appConfig } from './app/app.config';
+import { AppComponent } from './app/app.component';
+
+bootstrapApplication(AppComponent, appConfig)
+    .catch((err) => console.error(err));
+`,
+
+    'src/styles.css': `/* You can add global styles to this file, and also import other style files */
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+`,
+
     'src/index.html': `<!doctype html>
 <html lang="en">
 <head>
@@ -569,30 +739,37 @@ const frontendFiles = {
 </html>
 `,
 
-    // src/app/app.module.ts
-    'src/app/app.module.ts': `import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
-import { AppComponent } from './app.component';
+    'src/app/app.config.ts': `import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { routes } from './app.routes';
+import { provideHttpClient } from '@angular/common/http';
+import { provideClientHydration } from '@angular/platform-browser';
+
+export const appConfig: ApplicationConfig = {
+    providers: [
+        provideRouter(routes),
+        provideHttpClient(),
+        provideClientHydration()
+    ]
+};
+`,
+
+    'src/app/app.routes.ts': `import { Routes } from '@angular/router';
+
+export const routes: Routes = [];
+`,
+
+    'src/app/app.component.ts': `import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FarmComponent } from './farm/farm.component';
 import { ShopComponent } from './shop/shop.component';
 import { StatusComponent } from './status/status.component';
 import { WalletComponent } from './wallet/wallet.component';
 
-@NgModule({
-    declarations: [AppComponent, FarmComponent, ShopComponent, StatusComponent, WalletComponent],
-    imports: [BrowserModule, HttpClientModule, FormsModule],
-    bootstrap: [AppComponent]
-})
-export class AppModule {}
-`,
-
-    // src/app/app.component.ts
-    'src/app/app.component.ts': `import { Component, OnInit } from '@angular/core';
-
 @Component({
     selector: 'app-root',
+    standalone: true,
+    imports: [CommonModule, FarmComponent, ShopComponent, StatusComponent, WalletComponent],
     template: \`
         <div class="container">
             <h1>Ngũ Hành Farm (Testnet)</h1>
@@ -639,11 +816,13 @@ export class AppComponent implements OnInit {
 }
 `,
 
-    // src/app/farm/farm.component.ts
     'src/app/farm/farm.component.ts': `import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-farm',
+    standalone: true,
+    imports: [CommonModule],
     templateUrl: './farm.component.html',
     styleUrls: ['./farm.component.css']
 })
@@ -669,7 +848,7 @@ export class FarmComponent {
             const data = await response.json();
             this.userChange.emit(data.user);
             alert(data.message);
-        } catch (error) {
+        } catch (error: any) {
             alert(error.message);
         }
     }
@@ -684,7 +863,7 @@ export class FarmComponent {
             const data = await response.json();
             this.userChange.emit(data.user);
             alert(data.message);
-        } catch (error) {
+        } catch (error: any) {
             alert(error.message);
         }
     }
@@ -699,7 +878,7 @@ export class FarmComponent {
             const data = await response.json();
             this.userChange.emit(data.user);
             alert(data.message);
-        } catch (error) {
+        } catch (error: any) {
             alert(error.message);
         }
     }
@@ -714,7 +893,7 @@ export class FarmComponent {
             const data = await response.json();
             this.userChange.emit(data.user);
             alert(data.message);
-        } catch (error) {
+        } catch (error: any) {
             alert(error.message);
         }
     }
@@ -725,7 +904,6 @@ export class FarmComponent {
 }
 `,
 
-    // src/app/farm/farm.component.html
     'src/app/farm/farm.component.html': `<div class="farm">
     <h2>Farm</h2>
     <div class="plant-section">
@@ -752,7 +930,6 @@ export class FarmComponent {
 </div>
 `,
 
-    // src/app/farm/farm.component.css
     'src/app/farm/farm.component.css': `.farm { padding: 20px; }
 .plant-section button { margin: 5px; padding: 8px; display: inline-flex; align-items: center; }
 .plant-section img { margin-right: 5px; }
@@ -763,11 +940,13 @@ export class FarmComponent {
 .crop-card:hover { transform: scale(1.05); transition: transform 0.2s; }
 `,
 
-    // src/app/shop/shop.component.ts
     'src/app/shop/shop.component.ts': `import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-shop',
+    standalone: true,
+    imports: [CommonModule],
     templateUrl: './shop.component.html',
     styleUrls: ['./shop.component.css']
 })
@@ -785,14 +964,13 @@ export class ShopComponent {
             const data = await response.json();
             this.userChange.emit(data.user);
             alert(data.message);
-        } catch (error) {
+        } catch (error: any) {
             alert(error.message);
         }
     }
 }
 `,
 
-    // src/app/shop/shop.component.html
     'src/app/shop/shop.component.html': `<div>
     <h2>Shop</h2>
     <button (click)="buyItem('truc vang')">Trúc Vàng Seed (0.5 TON)</button>
@@ -803,15 +981,16 @@ export class ShopComponent {
 </div>
 `,
 
-    // src/app/shop/shop.component.css
     'src/app/shop/shop.component.css': `button { margin: 5px; padding: 8px 16px; background: #007bff; color: white; border: none; cursor: pointer; }
 `,
 
-    // src/app/status/status.component.ts
     'src/app/status/status.component.ts': `import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'app-status',
+    standalone: true,
+    imports: [CommonModule],
     templateUrl: './status.component.html',
     styleUrls: ['./status.component.css']
 })
@@ -824,7 +1003,6 @@ export class StatusComponent {
 }
 `,
 
-    // src/app/status/status.component.html
     'src/app/status/status.component.html': `<div>
     <h2>Status</h2>
     <p>XP: {{ user.xp }}</p>
@@ -839,16 +1017,18 @@ export class StatusComponent {
 </div>
 `,
 
-    // src/app/status/status.component.css
     'src/app/status/status.component.css': `div { padding: 20px; }
 p { margin: 5px 0; }
 `,
 
-    // src/app/wallet/wallet.component.ts
     'src/app/wallet/wallet.component.ts': `import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-wallet',
+    standalone: true,
+    imports: [CommonModule, FormsModule],
     templateUrl: './wallet.component.html',
     styleUrls: ['./wallet.component.css']
 })
@@ -868,7 +1048,7 @@ export class WalletComponent {
             const data = await response.json();
             this.userChange.emit(data.user);
             alert(data.message);
-        } catch (error) {
+        } catch (error: any) {
             alert(error.message);
         }
     }
@@ -883,7 +1063,7 @@ export class WalletComponent {
             const data = await response.json();
             this.userChange.emit(data.user);
             alert(data.message);
-        } catch (error) {
+        } catch (error: any) {
             alert(error.message);
         }
     }
@@ -898,14 +1078,13 @@ export class WalletComponent {
             const data = await response.json();
             this.userChange.emit(data.user);
             alert(data.message);
-        } catch (error) {
+        } catch (error: any) {
             alert(error.message);
         }
     }
 }
 `,
 
-    // src/app/wallet/wallet.component.html
     'src/app/wallet/wallet.component.html': `<div>
     <h2>Wallet</h2>
     <div>
@@ -922,7 +1101,6 @@ export class WalletComponent {
 </div>
 `,
 
-    // src/app/wallet/wallet.component.css
     'src/app/wallet/wallet.component.css': `div { padding: 20px; }
 input { margin: 5px; padding: 8px; width: 200px; }
 button { margin: 5px; padding: 8px 16px; background: #dc3545; color: white; border: none; cursor: pointer; }
@@ -950,9 +1128,9 @@ createFile(path.join(projectDir, '.gitignore'), gitignore);
 // Tạo thư mục assets (cho hình ảnh)
 fs.mkdirSync(path.join(frontendDir, 'src/assets'), { recursive: true });
 
-console.log('Dự án Ngũ Hành Farm đã được tạo thành công!');
+console.log('Dự án Ngũ Hành Farm (NestJS 11, Angular 19) đã được tạo thành công!');
 console.log('Tiếp theo:');
-console.log('1. Cập nhật .env với thông tin thực tế (DATABASE_URL, TON_API_KEY, TELEGRAM_TOKEN, v.v.).');
+console.log('1. Cập nhật backend/.env với thông tin thực tế (DATABASE_URL, TON_API_KEY, TELEGRAM_TOKEN, v.v.).');
 console.log('2. Thêm hình ảnh vào frontend/src/assets (trucvang.jpg, tre.jpg, sen.jpg, phuongvi.jpg, lua.jpg).');
 console.log('3. Chạy: cd ngu-hanh-farm-webapp/backend && npm install && npx prisma migrate dev');
 console.log('4. Chạy: cd ngu-hanh-farm-webapp/frontend && npm install');
