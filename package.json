@@ -1,18 +1,20 @@
 {
   "name": "v2",
+  "type": "module",
   "version": "1.0.0",
-  "description": "Phaser Farming Game Frontend (LocalStorage & Images)",
-  "main": "docs/bundle.js",
+  "description": "Giao diện Game Nông trại Phaser (LocalStorage & Hình ảnh)",
+  "main": "dist/bundle.js",
   "scripts": {
-    "start": "webpack serve --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js --stats-error-details --stats-children",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "serve-docs": "npx http-server docs"
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "echo \"Lỗi: chưa chỉ định kiểm thử\" && exit 1",
+    "serve-docs": "npx http-server dist"
   },
   "keywords": [
     "phaser",
     "game",
-    "farming",
+    "nông trại",
     "typescript",
     "localstorage",
     "sprites"
@@ -21,14 +23,22 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^20.12.12",
-    "copy-webpack-plugin": "^13.0.0",
-    "html-webpack-plugin": "^5.6.3",
     "phaser": "^3.80.1",
-    "ts-loader": "^9.5.1",
     "typescript": "^5.4.5",
-    "webpack": "^5.91.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.4",
-    "webpack-merge": "^6.0.1"
+    "vite": "^5.4.8",
+    "vite-plugin-html": "^3.2.2",
+    "vite-plugin-node-polyfills": "^0.23.0",
+    "vite-plugin-static-copy": "^1.0.6"
+  },
+  "dependencies": {
+    "@tonconnect/sdk": "^3.1.0",
+    "@tonconnect/ui": "^2.1.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.1",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "ton": "^13.9.0",
+    "ton-core": "^0.53.0",
+    "ton-crypto": "^3.2.0"
   }
 }
