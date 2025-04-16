@@ -6,7 +6,7 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'; // Import the polyfi
 
 export default defineConfig({
   // URL cơ sở cho ứng dụng (dùng "/" cho local, hoặc "/tên-repo/" cho GitHub Pages)
-  base: process.env.NODE_ENV === 'production' ? '/kataoffical/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/' : '/',
   
   // Cấu hình alias để import dễ dàng
   resolve: {
