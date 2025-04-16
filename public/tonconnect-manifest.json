@@ -1,7 +1,10 @@
 {
-    "url": "https://farm.kataoffical.online/",
-    "name": "Nông Trại Ngũ Hành (TON Game)", 
-    "iconUrl": "https://farm.kataoffical.online/assets/icon.png",
-    "termsOfUseUrl": "https://farm.kataoffical.online/terms",
-    "privacyPolicyUrl": "https://farm.kataoffical.online/privacy"
-  }
+  "url": "https://katachannel.github.io/kataoffical/",
+  "name": "Nông Trại Ngũ Hành (TON Game)", 
+  "iconUrl": "https://katachannel.github.io/kataoffical/assets/icon.png",
+  "termsOfUseUrl": "https://katachannel.github.io/kataoffical/terms",
+  "privacyPolicyUrl": "https://katachannel.github.io/kataoffical/privacy",
+  "additionalInfoUrl": "https://katachannel.github.io/kataoffical/additional-info",
+  "version": "1.0.0",
+  "description": "A farming game on the TON blockchain."
+}

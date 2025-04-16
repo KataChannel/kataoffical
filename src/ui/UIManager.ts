@@ -192,7 +192,7 @@ export class UIManager {
 
         if (rawAddress) {
             try {
-                const friendlyAddress = Address.parse(rawAddress).toString({ testOnly: false }); // << CHỈNH testOnly=true NẾU DÙNG TESTNET
+                const friendlyAddress = Address.parse(rawAddress).toString({ testOnly: true }); // << CHỈNH testOnly=true NẾU DÙNG TESTNET
                 const shortAddress = `${friendlyAddress.substring(0, 6)}...${friendlyAddress.substring(friendlyAddress.length - 4)}`;
                 this.walletText.setText(`Ví: ${shortAddress}`);
                 this.connectWalletButton.setText('Ngắt kết nối');

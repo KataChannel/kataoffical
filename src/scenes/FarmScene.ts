@@ -19,7 +19,7 @@ export class FarmScene extends Phaser.Scene {
     private farmGridY: number = 100;
 
     // !!! THAY THẾ BẰNG ĐỊA CHỈ VÍ TON CỦA BẠN (MAINNET HOẶC TESTNET) !!!
-    private readonly GAME_TREASURY_ADDRESS = 'UQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADD'; // <<< THAY ĐỊA CHỈ VÍ CỦA BẠN
+    private readonly GAME_TREASURY_ADDRESS = 'UQAxlpWt5W0EPmncnPpFRb3FRlhifLm0j-vAc-EbJiGl_uTf'; // <<< THAY ĐỊA CHỈ VÍ CỦA BẠN
 
     constructor() { super('FarmScene'); }
 
