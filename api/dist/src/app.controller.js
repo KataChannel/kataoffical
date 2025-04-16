@@ -16,6 +16,7 @@ exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
 const app_service_1 = require("./app.service");
 const app_dto_1 = require("./app.dto");
+const callback_data_input_dto_1 = require("./callback/dto/callback-data-input.dto");
 let AppController = class AppController {
     constructor(appService) {
         this.appService = appService;
@@ -25,6 +26,9 @@ let AppController = class AppController {
     }
     getVersion() {
         return '1.1.6';
+    }
+    async callBackData(param) {
+        return this.appService.processCallback(param);
     }
     async search(searchDto) {
         if (!searchDto.model) {
@@ -49,6 +53,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)
 ], AppController.prototype, "getVersion", null);
+__decorate([
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [callback_data_input_dto_1.CallbackDataInput]),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "callBackData", null);
 __decorate([
     (0, common_1.Post)('search'),
     __param(0, (0, common_1.Body)()),

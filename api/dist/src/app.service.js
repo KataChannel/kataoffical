@@ -12,10 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const crypto_1 = require("crypto");
+const callback_data_output_dto_1 = require("./callback/dto/callback-data-output.dto");
+const callback_data_type_enum_1 = require("./callback/enums/callback-data-type.enum");
 let AppService = class AppService {
     constructor(prisma) {
         this.prisma = prisma;
         this.allowedModels = ['sanpham', 'banggia', 'khachhang', 'donhang', 'nhacungcap', 'dathang', 'kho', 'phieukho', 'role', 'permission', 'nhomkhachhang'];
+        this.appId = '2d4b6324-04aa-4dbc-a85c-815fb0099057';
     }
     getHello() {
         return 'Hello World!';
@@ -81,6 +85,58 @@ let AppService = class AppService {
             _max: { updatedAt: true },
         });
         return { table, updatedAt: new Date(lastUpdated._max.updatedAt).getTime() || 0 };
+    }
+    async processCallback(param) {
+        const result = new callback_data_output_dto_1.CallbackDataOutput();
+        try {
+            const signature = this.generateSHA256HMAC(param.data || '', this.appId);
+            if (signature !== param.signature) {
+                result.Success = false;
+                result.ErrorCode = 'InvalidParam';
+                result.ErrorMessage = 'Signature invalid';
+                return result;
+            }
+            this.doCallBackData(param).catch((err) => console.error('Error processing callback:', err));
+        }
+        catch (ex) {
+            result.Success = false;
+            result.ErrorCode = 'Exception';
+            result.ErrorMessage = ex.message;
+        }
+        return result;
+    }
+    async doCallBackData(param) {
+        if (!param)
+            return;
+        this.saveCallBack(param);
+        switch (param.data_type) {
+            case callback_data_type_enum_1.CallBackDataType.SaveVoucher:
+            case callback_data_type_enum_1.CallBackDataType.DeleteVoucher:
+                const data = param.data
+                    ? JSON.parse(param.data)
+                    : [];
+                if (data && data.length > 0) {
+                    for (const item of data) {
+                        console.log(`Processing org_refid: ${item.org_refid}`);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        this.deleteCallBack(param);
+    }
+    saveCallBack(param) {
+        console.log('Saving callback:', param);
+    }
+    deleteCallBack(param) {
+        console.log('Deleting callback:', param);
+    }
+    generateSHA256HMAC(input, key) {
+        input = input || '';
+        const hmac = (0, crypto_1.createHmac)('sha256', key);
+        hmac.update(input);
+        return hmac.digest('hex').toLowerCase();
     }
 };
 exports.AppService = AppService;

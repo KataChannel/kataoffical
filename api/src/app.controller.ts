@@ -1,6 +1,8 @@
 import { BadRequestException, Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { SearchDto } from './app.dto';
+import { CallbackDataInput } from './callback/dto/callback-data-input.dto';
+import { CallbackDataOutput } from './callback/dto/callback-data-output.dto';
 
 @Controller()
 export class AppController {
@@ -13,6 +15,10 @@ export class AppController {
   @Get('v')
   getVersion(): string {
     return '1.1.6'
+  }
+  @Post()
+  async callBackData(@Body() param: CallbackDataInput): Promise<CallbackDataOutput> {
+    return this.appService.processCallback(param);
   }
   @Post('search')
   async search(@Body() searchDto: SearchDto) {
