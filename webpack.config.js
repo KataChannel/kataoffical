@@ -15,11 +15,11 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
-  output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'docs'),
-    publicPath: '/docs/' // Quan trọng cho dev server
-  },
+  // output: {
+  //   filename: 'bundle.js',
+  //   path: path.resolve(__dirname, 'docs'),
+  //   publicPath: '/docs/' // Quan trọng cho dev server
+  // },
   mode: 'development',
   devServer: {
     static: {

@@ -12,8 +12,4 @@ module.exports = merge(common, {
     compress: true,
     port: 8080, // Cổng cho dev server
   },
-  output: {
-      filename: 'bundle.js', // Tên file đơn giản cho dev
-      // path đã được định nghĩa trong common
-  },
 });
