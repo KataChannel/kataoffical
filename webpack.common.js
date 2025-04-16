@@ -24,7 +24,7 @@ module.exports = {
   ],
   output: {
     // Output sẽ được định nghĩa cụ thể trong dev và prod configs
-    path: path.resolve(__dirname, 'docs'),
+    path: path.resolve(__dirname, 'dist'),
     clean: true, // Xóa thư mục output trước mỗi lần build
   },
 };

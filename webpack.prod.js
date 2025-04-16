@@ -9,7 +9,7 @@ module.exports = merge(common, {
   output: {
     filename: 'bundle.[contenthash].js',
     path: path.resolve(__dirname, 'docs'),
-    publicPath: 'docs/',
+    publicPath: 'docs',
   },
   plugins: [
     // Sao chép thư mục assets vào thư mục dist

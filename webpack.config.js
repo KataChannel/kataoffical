@@ -17,8 +17,8 @@ module.exports = {
   },
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'docs'),
-    publicPath: '/docs/' // Quan trọng cho dev server
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/dist/' // Quan trọng cho dev server
   },
   mode: 'development',
   devServer: {
@@ -28,13 +28,13 @@ module.exports = {
     compress: true,
     port: 9000,
     devMiddleware: {
-       publicPath: '/docs/', // Đảm bảo bundle.js được phục vụ từ /docs/
+       publicPath: '/dist/', // Đảm bảo bundle.js được phục vụ từ /dist/
        writeToDisk: true, // Có thể cần thiết để plugin copy hoạt động đúng trong dev
     },
     watchFiles: ['src/**/*', 'assets/**/*'], // Theo dõi thay đổi trong src và assets
   },
   plugins: [
-    new CopyPlugin({ // Copy thư mục assets vào docs khi build
+    new CopyPlugin({ // Copy thư mục assets vào dist khi build
       patterns: [
         { from: 'assets', to: 'assets' }
       ],
