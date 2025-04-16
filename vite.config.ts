@@ -6,7 +6,7 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'; // Import the polyfi
 
 export default defineConfig({
   // URL cơ sở cho ứng dụng (dùng "/" cho local, hoặc "/tên-repo/" cho GitHub Pages)
-  base: '/',
+  base: process.env.NODE_ENV === 'production' ? '/kataoffical/' : '/',
   
   // Cấu hình alias để import dễ dàng
   resolve: {
@@ -25,7 +25,7 @@ export default defineConfig({
     // Thay thế html-webpack-plugin
     createHtmlPlugin({
       minify: true,
-      template: 'index1.html', // Đường dẫn đến tệp HTML mẫu
+      template: 'index.html', // Đường dẫn đến tệp HTML mẫu
     }),
     // Thay thế copy-webpack-plugin
     viteStaticCopy({
