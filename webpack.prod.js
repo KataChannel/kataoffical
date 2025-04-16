@@ -1,5 +1,6 @@
 // webpack.prod.js
 const { merge } = require('webpack-merge');
+const path = require('path');
 const common = require('./webpack.common.js');
 const CopyWebpackPlugin = require('copy-webpack-plugin'); // Đã có trong devDependencies
 
@@ -7,6 +8,7 @@ module.exports = merge(common, {
   mode: 'production', // Chế độ production (tự động tối ưu hóa)
   output: {
     filename: 'bundle.[contenthash].js',
+    path: path.resolve(__dirname, 'dist'),
   },
   plugins: [
     // Sao chép thư mục assets vào thư mục dist
