@@ -1,0 +1,52 @@
+name: Deploy Game to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Hoặc tên branch chính của bạn
+    paths:
+      - 'v2/**'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    # --- KHỐI ENVIRONMENT ĐÃ BỊ XÓA ---
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: v2/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./v2
+        run: npm install
+
+      - name: Build project
+        working-directory: ./v2
+        run: npm run build
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload build artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./v2/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
