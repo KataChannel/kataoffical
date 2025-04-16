@@ -117,6 +117,9 @@ export class AppService {
       try {
         // Validate signature
         const signature = this.generateSHA256HMAC(param.data || '', this.appId);
+        console.log('signature', signature);
+        console.log('param signature', param.signature);
+        
         if (signature !== param.signature) {
           result.Success = false;
           result.ErrorCode = 'InvalidParam';

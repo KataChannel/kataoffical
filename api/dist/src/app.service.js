@@ -90,6 +90,8 @@ let AppService = class AppService {
         const result = new callback_data_output_dto_1.CallbackDataOutput();
         try {
             const signature = this.generateSHA256HMAC(param.data || '', this.appId);
+            console.log('signature', signature);
+            console.log('param signature', param.signature);
             if (signature !== param.signature) {
                 result.Success = false;
                 result.ErrorCode = 'InvalidParam';

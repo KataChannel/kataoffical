@@ -18,7 +18,10 @@ export class AppController {
   }
   @Post()
   async callBackData(@Body() param: CallbackDataInput): Promise<CallbackDataOutput> {
-    return this.appService.processCallback(param);
+    console.log(param);
+    const result = await this.appService.processCallback(param);
+    console.log('Callback processed:', result);
+    return result;
   }
   @Post('search')
   async search(@Body() searchDto: SearchDto) {

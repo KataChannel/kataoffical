@@ -28,7 +28,10 @@ let AppController = class AppController {
         return '1.1.6';
     }
     async callBackData(param) {
-        return this.appService.processCallback(param);
+        console.log(param);
+        const result = await this.appService.processCallback(param);
+        console.log('Callback processed:', result);
+        return result;
     }
     async search(searchDto) {
         if (!searchDto.model) {
