@@ -1,20 +1,19 @@
-// src/interfaces/fruit.interface.ts
+// abc/interfaces/fruit.interface.ts
 export type ElementType = 'Kim' | 'Mộc' | 'Thủy' | 'Hỏa' | 'Thổ';
 
 export interface FruitData {
-  id: string;
-  name: string;
-  element: ElementType;
-  growthTimeSeconds: number;
-  harvestYield: number;
-  seedCost?: number;
-  // Thay thế color bằng spriteKey
-  spriteKeySeed: string;    // Key của ảnh khi mới gieo/hạt giống
-  spriteKeyGrowing: string; // Key của ảnh khi đang lớn
-  spriteKeyReady: string;   // Key của ảnh khi chín
+    id: string;
+    name: string;
+    element: ElementType;
+    growthTimeSeconds: number;
+    harvestYield: number;
+    seedCost?: number;
+    spriteKeySeed: string;      // Key của ảnh khi mới gieo/hạt giống
+    spriteKeyGrowing: string;   // Key của ảnh khi đang lớn
+    spriteKeyReady: string;     // Key của ảnh khi chín
 }
 
-// Trạng thái ô đất để LƯU TRỮ
+// Trạng thái ô đất để LƯU TRỮ (không đổi)
 export interface StoredFarmPlotState {
     tileX: number;
     tileY: number;
@@ -23,12 +22,14 @@ export interface StoredFarmPlotState {
     growthTimer: number;
 }
 
-// Trạng thái ô đất trong Scene (dùng Image thay Rectangle)
-export interface FarmPlot extends StoredFarmPlotState {
-     gameObject: Phaser.GameObjects.Image | null; // Đổi thành Image
+// Mô tả trạng thái runtime và tham chiếu GameObjects
+export interface FarmPlotRuntimeState extends StoredFarmPlotState {
+    gameObject: Phaser.GameObjects.Image | null;
+    timerTextObject?: Phaser.GameObjects.Text | null;
+    stateTextObject?: Phaser.GameObjects.Text | null;
 }
 
-// Kho đồ người chơi
+// Kho đồ người chơi (không đổi)
 export interface PlayerInventory {
     [fruitId: string]: number;
 }
