@@ -6,7 +6,7 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'; // Import the polyfi
 
 export default defineConfig({
   // URL cơ sở cho ứng dụng (dùng "/" cho local, hoặc "/tên-repo/" cho GitHub Pages)
-  base: process.env.NODE_ENV === 'production' ? '/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/kataoffical/' : '/',
   
   // Cấu hình alias để import dễ dàng
   resolve: {
@@ -41,7 +41,7 @@ export default defineConfig({
   // Tùy chọn build
   build: {
     outDir: 'docs', // Thư mục đầu ra (trước đây là 'docs')
-    assetsDir: 'assets', // Thư mục con cho tài nguyên
+    assetsDir: '/kataoffical/assets', // Thư mục con cho tài nguyên
     sourcemap: process.env.NODE_ENV === 'development', // Bật sourcemap trong dev
     rollupOptions: {
       output: {
