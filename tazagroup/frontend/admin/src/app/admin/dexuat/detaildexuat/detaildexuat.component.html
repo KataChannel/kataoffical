@@ -1,0 +1,229 @@
+<div class="relative flex flex-col space-y-2">
+<div class="flex flex-row justify-between items-center space-x-2 p-2">
+  <button mat-icon-button color="primary" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <div class="font-bold">{{ DetailDexuat()?.title || 'Không có dữ liệu' }}</div>
+  <div class="flex flex-row space-x-2 items-center">
+    <mat-slide-toggle [(ngModel)]="DetailDexuat().isActive" [disabled]="!isEdit()">{{DetailDexuat().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+    <button mat-icon-button color="primary" (click)="CopyContent()">
+      <mat-icon>content_copy</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" (click)="printContent()">
+      <mat-icon>print</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleDexuatAction()">
+      <mat-icon>save</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <!-- <button mat-icon-button color="warn" (click)="toggleDelete()">
+      <mat-icon>delete</mat-icon>
+    </button> -->
+  </div>
+</div>
+
+<div class="relative flex flex-col w-full p-4 overflow-auto">
+  <div *ngIf="isEdit()" class="relative mx-auto lg:max-w-[780px] w-full h-full flex flex-col space-y-2 p-4 overflow-auto">
+    <mat-form-field  class="w-full" [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+      <mat-label>Ngày Tạo</mat-label>
+      <input matInput [matDatepicker]="picker" [(ngModel)]="DetailDexuat().ngaytao"
+        [ngModelOptions]="{standalone: true}">
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Tiêu Đề</mat-label>
+      <input matInput [(ngModel)]="DetailDexuat().title" [ngModelOptions]="{ standalone: true }"
+        placeholder="Vui lòng Nhập Tiêu Đề" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Người Nhận</mat-label>
+      <input matInput [(ngModel)]="DetailDexuat().nguoinhan" [ngModelOptions]="{ standalone: true }"
+        placeholder="Vui lòng Nhập Người Nhận" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Trưởng bộ phận</mat-label>
+      <input matInput [(ngModel)]="DetailDexuat().truongbophan" [ngModelOptions]="{ standalone: true }"
+        placeholder="Vui lòng Nhập Trưởng bộ phận" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Giám đốc Kế toán</mat-label>
+      <input matInput [(ngModel)]="DetailDexuat().ketoan" [ngModelOptions]="{ standalone: true }"
+        placeholder="Vui lòng Nhập Giám đốc Kế toán" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Người Đề Xuất</mat-label>
+      <input matInput [(ngModel)]="DetailDexuat().nguoidexuat" [ngModelOptions]="{ standalone: true }"
+        placeholder="Vui lòng Nhập Người Đề Xuất" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Bộ Phận</mat-label>
+      <input matInput [(ngModel)]="DetailDexuat().bophan" [ngModelOptions]="{ standalone: true }"
+        placeholder="Vui lòng Nhập Bộ Phận" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Vị Trí</mat-label>
+      <input matInput [(ngModel)]="DetailDexuat().vitri" [ngModelOptions]="{ standalone: true }"
+        placeholder="Vui lòng Nhập Vị Trí" />
+    </mat-form-field>
+<div class="flex flex-col space-y-2 p-2 border rounded-lg">
+  <div class="overflow-auto">
+    <div class="lg:w-full w-[780px] flex flex-col space-y-2 items-center p-4">
+  @for (item of DetailDexuat()?.chitiet; track item.id; let idx = $index) {
+    <div class="w-full flex flex-row space-x-2 items-center">
+      <span>{{idx+1}}</span>
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>Tiêu Đề</mat-label>
+        <input matInput [(ngModel)]="DetailDexuat().chitiet[idx].title" [ngModelOptions]="{ standalone: true }"
+          placeholder="Vui lòng Nhập Tiêu Đề" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>Thành Tiền</mat-label>
+        <input matInput type="number" [(ngModel)]="DetailDexuat().chitiet[idx].thanhtien" [ngModelOptions]="{ standalone: true }"
+          placeholder="Vui lòng Nhập Vị Trí" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>Ghi Chú</mat-label>
+        <input matInput [(ngModel)]="DetailDexuat().chitiet[idx].ghichu" [ngModelOptions]="{ standalone: true }"
+          placeholder="Vui lòng Nhập Ghi Chú" />
+      </mat-form-field>
+      <button mat-flat-button color="warn" (click)="RemoveItem(idx)">Xoá <mat-icon>delete</mat-icon></button>
+    </div>
+  }
+</div>
+</div>
+  <div>
+    <button mat-flat-button color="primary" (click)="DetailDexuat().chitiet.push({title:'',thanhtien:0,ghichu:''})">Thêm <mat-icon>add</mat-icon></button>
+  </div>
+</div>
+
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Tạm Ứng</mat-label>
+      <input matInput type="number" [(ngModel)]="DetailDexuat().tamung" [ngModelOptions]="{ standalone: true }"
+        placeholder="Vui lòng Nhập Tạm Ứng" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Tiền Bằng Chữ</mat-label>
+      <input matInput [(ngModel)]="DetailDexuat().tienbangchu" [ngModelOptions]="{ standalone: true }"
+        placeholder="Vui lòng Nhập Tiền Bằng Chữ" />
+    </mat-form-field>
+  </div>
+  <div *ngIf="!isEdit()" id="printContent" class="flex flex-row space-x-2 justify-between w-full">
+    <div class="w-full p-2 border">
+      <div class="text-end">BM-04-QT-KT-02</div>
+      <div class="text-end">Ngày hiệu lực: 10/01/2018</div>
+      <div class="text-[16px] font-bold text-center">PHIẾU ĐỀ NGHỊ THANH TOÁN, QUYẾT TOÁN</div>
+      <div class="text-end">{{DetailDexuat()?.ngaytao|date:'dd/MM/yyyy'}}</div>
+      <div class="flex flex-col space-y-2">
+        <span><strong>Kính gửi:</strong> {{ DetailDexuat()?.nguoinhan }}</span>
+        <span><strong>Họ và tên:</strong> {{ DetailDexuat()?.nguoidexuat }}</span>
+        <span><strong>Bộ phận:</strong> {{ DetailDexuat()?.bophan }}</span>
+        <span><strong>Chức vụ:</strong> {{ DetailDexuat()?.vitri }}</span>
+        <span><strong>Đề Nghị Chi Số Tiền:</strong> {{ DetailDexuat()?.tongtien | number }}đ</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full mt-4 border border-gray-300">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="border px-2 py-1 w-10">STT</th>
+              <th class="border px-2 py-1">Nội dung</th>
+              <th class="border px-2 py-1">Số tiền</th>
+              <th class="border px-2 py-1">Ghi chú</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of DetailDexuat()?.chitiet; let i = index">
+              <td class="border px-2 py-1 text-center w-10">{{ i+1 }}</td>
+              <td class="border px-2 py-1">{{ item.title }}</td>
+              <td class="border px-2 py-1 text-right">{{ item.thanhtien | number }}đ</td>
+              <td class="border px-2 py-1 text-center">{{ item.ghichu }}</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="font-bold">
+              <td colspan="2" class="border px-2 py-1 text-right">Tổng cộng:</td>
+              <td class="border px-2 py-1 text-right">{{ DetailDexuat()?.tongtien | number }}đ</td>
+              <td class="border px-2 py-1"></td>
+            </tr>
+            <tr class="font-bold">
+              <td colspan="2" class="border px-2 py-1 text-right">Số đã tạm ứng:</td>
+              <td class="border px-2 py-1 text-right">
+                <span>{{ DetailDexuat()?.tamung | number }}đ</span>
+              </td>
+
+              <td class="border px-2 py-1"></td>
+            </tr>
+            <tr class="font-bold">
+              <td colspan="2" class="border px-2 py-1 text-right">Số tiền (Còn lại) đề nghị chi:</td>
+              <td class="border px-2 py-1 text-right">{{ DetailDexuat()?.tongchi | number }}đ</td>
+              <td class="border px-2 py-1"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <p class="mt-4 capitalize"><strong>Số Tiền Bằng Chữ:</strong> {{ DetailDexuat()?.tienbangchu}}</p>
+      <div class="grid grid-cols-3 gap-4 text-center mt-6">
+        <div class="flex flex-col space-y-16 text-center">
+          <span><strong>Giám đốc Kế toán</strong><br>(Ký và Ghi rõ Họ Tên)</span>
+          <span class="uppercase font-bold">{{DetailDexuat()?.ketoan}}</span>
+
+        </div>
+        <div class="flex flex-col space-y-16 text-center">
+          <span><strong>Trưởng bộ phận</strong><br>(Ký và Ghi rõ Họ Tên)</span>
+          <span class="uppercase font-bold">{{DetailDexuat()?.truongbophan}}</span>
+
+        </div>
+        <div class="flex flex-col space-y-16 text-center">
+          <span><strong>Người đề nghị</strong><br>(Ký và Ghi rõ Họ Tên)</span>
+          <span class="uppercase font-bold">{{DetailDexuat()?.nguoidexuat}}</span>
+        </div>
+      </div>
+
+
+    </div>
+    <div class="w-full p-2 border">
+      <div class="text-right text-sm">BM-01-QT-KT-02</div>
+      <div class="text-right text-sm">Ngày hiệu lực: 10/01/2018</div>
+      <div class="text-center font-bold text-lg my-2">PHIẾU ĐỀ XUẤT CÔNG VIỆC</div>
+      <div class="grid grid-cols-3 gap-4 text-sm">
+        <div><strong>Họ và tên:</strong> {{ DetailDexuat()?.nguoidexuat }}</div>
+        <div><strong>Bộ phận:</strong> {{ DetailDexuat()?.bophan }}</div>
+        <div><strong>Chức danh:</strong> {{ DetailDexuat()?.vitri }}</div>
+      </div>
+
+      <div class="mt-4 p-2 border rounded bg-gray-100">
+        <strong>Đề xuất công việc như sau: </strong>
+        <span class="font-bold">{{DetailDexuat()?.title}}</span>
+      </div>
+
+      <div class="mt-4">
+        <ul class="border rounded divide-y">
+          <li *ngFor="let task of DetailDexuat()?.chitiet" class="p-2 flex justify-between">
+            <span>{{ task.title }}</span>
+            <span class="text-gray-600">{{ task.ghichu }}</span>
+          </li>
+        </ul>
+      </div>
+      <div class="mt-4 font-bold">Dự toán kinh phí: {{ DetailDexuat()?.tongtien|number }}đ</div>
+      <div class="text-right text-sm">Ngày {{ DetailDexuat()?.ngaytao|date:'dd/MM/yyyy' }}</div>
+      <div class="flex justify-between text-sm">
+        <div class="flex flex-col space-y-16 text-center">
+          <span><strong>BGĐ/Trưởng Bộ phận</strong><br>(Ký và Ghi rõ Họ Tên)</span>
+          <span class="uppercase font-bold">{{DetailDexuat()?.truongbophan}}</span>
+        </div>
+        <div class="flex flex-col space-y-16 text-center">
+          <span><strong>Người đề nghị</strong><br>(Ký và Ghi rõ Họ Tên)</span>
+
+          <span class="uppercase font-bold">{{DetailDexuat()?.nguoidexuat}}</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+</div>

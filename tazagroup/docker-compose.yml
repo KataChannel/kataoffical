@@ -1,0 +1,284 @@
+version: '3.8'
+
+services:
+  # --- Database and Cache Services ---
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${SHARED_DATABASE_NAME:-shared_db}
+      ACADEMY_DATABASE_NAME: ${ACADEMY_DATABASE_NAME:-academy_db}
+      COSMETICS_DATABASE_NAME: ${COSMETICS_DATABASE_NAME:-cosmetics_db}
+      SPA_DATABASE_NAME: ${SPA_DATABASE_NAME:-spa_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${SHARED_DATABASE_NAME:-shared_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin_gui
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis_cache
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # --- Backend Services ---
+  shared-core-api:
+    build:
+      context: ./backend/shared-core
+      dockerfile: Dockerfile
+    container_name: shared_core_api
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: ${SHARED_DATABASE_URL}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET}
+      ACADEMY_API_INTERNAL_URL: http://academy-api:3000
+      COSMETICS_API_INTERNAL_URL: http://cosmetics-api:3000
+      SPA_API_INTERNAL_URL: http://spa-api:3000
+    ports:
+      - "3001:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  academy-api:
+    build:
+      context: ./backend/academy
+      dockerfile: Dockerfile
+    container_name: academy_api
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: ${ACADEMY_DATABASE_URL}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SHARED_CORE_API_URL: http://shared-core-api:3000
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - ./backend/academy:/usr/src/app
+    ports:
+      - "3002:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      shared-core-api:
+        condition: service_started
+    networks:
+      - app-network
+    command: bun run start:dev
+    restart: unless-stopped
+
+  cosmetics-api:
+    build:
+      context: ./backend/cosmetics
+      dockerfile: Dockerfile
+    container_name: cosmetics_api
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: ${COSMETICS_DATABASE_URL}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SHARED_CORE_API_URL: http://shared-core-api:3000
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - ./backend/cosmetics:/usr/src/app
+    ports:
+      - "3003:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      shared-core-api:
+        condition: service_started
+    networks:
+      - app-network
+    command: bun run start:dev
+    restart: unless-stopped
+
+  spa-api:
+    build:
+      context: ./backend/spa
+      dockerfile: Dockerfile
+    container_name: spa_api
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: ${SPA_DATABASE_URL}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SHARED_CORE_API_URL: http://shared-core-api:3000
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - ./backend/spa:/usr/src/app
+    ports:
+      - "3004:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      shared-core-api:
+        condition: service_started
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # --- Frontend Services ---
+  admin-ui:
+    build:
+      context: ./frontend/admin
+      dockerfile: Dockerfile
+    container_name: admin_ui_app
+    ports:
+      - "4200:4000"
+    depends_on:
+      shared-core-api:
+        condition: service_started
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  academy-ui:
+    build:
+      context: ./frontend/academy
+      dockerfile: Dockerfile
+    container_name: academy_ui_app
+    volumes:
+      - ./frontend/academy:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "4201:4200"
+    depends_on:
+      academy-api:
+        condition: service_started
+      shared-core-api:
+        condition: service_started
+    networks:
+      - app-network
+    command: ng serve --host 0.0.0.0 --port 4200
+    restart: unless-stopped
+
+  cosmetics-ui:
+    build:
+      context: ./frontend/cosmetics
+      dockerfile: Dockerfile
+    container_name: cosmetics_ui_app
+    volumes:
+      - ./frontend/cosmetics:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "4202:4200"
+    depends_on:
+      cosmetics-api:
+        condition: service_started
+      shared-core-api:
+        condition: service_started
+    networks:
+      - app-network
+    command: ng serve --host 0.0.0.0 --port 4200
+    restart: unless-stopped
+
+  spa-ui:
+    build:
+      context: ./frontend/spa
+      dockerfile: Dockerfile
+    container_name: spa_ui_app
+    volumes:
+      - ./frontend/spa:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "4203:4200"
+    depends_on:
+      spa-api:
+        condition: service_started
+      shared-core-api:
+        condition: service_started
+    networks:
+      - app-network
+    command: ng serve --host 0.0.0.0 --port 4200
+    restart: unless-stopped
+
+  # --- Nginx Reverse Proxy ---
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/includes:/etc/nginx/includes:ro
+    depends_on:
+      - shared-core-api
+      - academy-api
+      - cosmetics-api
+      - spa-api
+      - admin-ui
+      - academy-ui
+      - cosmetics-ui
+      - spa-ui
+    networks:
+      - app-network
+    restart: unless-stopped
+
+# --- Volumes and Networks ---
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
