@@ -144,7 +144,8 @@ export class DonhangService {
     }));
   }
   async phieugiao(params: any) {
- 
+    console.log('params',params);
+    
     const result = await this.prisma.donhang.findUnique({
       where: params,
       include: {
@@ -159,7 +160,8 @@ export class DonhangService {
     if (!result) {
       throw new NotFoundException('DonHang not found');
     }
-
+    console.log('result',result);
+    
     return {
       ...result,
       sanpham: result.sanpham.map((item: any) => ({
@@ -179,6 +181,7 @@ export class DonhangService {
       })),
       khachhang: (({ banggia, ...rest }) => rest)(result.khachhang), // Xóa banggia
     }
+    
   }
 
 
@@ -447,6 +450,8 @@ export class DonhangService {
               data: {
                 ghichu: sp.ghichu,
                 slgiao: sp.slgiao ?? 0,
+                slnhan: sp.slnhan ?? 0,
+                ttgiao: sp.ttgiao ?? 0,
               },
             })),
           },

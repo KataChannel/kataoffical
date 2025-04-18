@@ -130,7 +130,7 @@ export class DetailPhieugiaohangComponent {
     try {
       this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang().sanpham.map((v:any)=>{
         v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
-        return {id:v.id,ttgiao:v.ttgiao,slgiao:v.slgiao,ghichu:v.ghichu};
+        return {id:v.id,ttgiao:v.ttgiao,slgiao:v.slgiao,slnhan:v.slnhan,ghichu:v.ghichu};
       })
       await this._PhieugiaohangService.updatePhieugiao(this.DetailPhieugiaohang());
       this._snackBar.open('Cập Nhật Thành Công', '', {
@@ -301,7 +301,7 @@ export class DetailPhieugiaohangComponent {
         }
       } else {
         v[field] = newValue;
-      }
+      }      
       return v;
     });    
   }

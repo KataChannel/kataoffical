@@ -136,6 +136,7 @@ let DonhangService = class DonhangService {
         }));
     }
     async phieugiao(params) {
+        console.log('params', params);
         const result = await this.prisma.donhang.findUnique({
             where: params,
             include: {
@@ -150,6 +151,7 @@ let DonhangService = class DonhangService {
         if (!result) {
             throw new common_1.NotFoundException('DonHang not found');
         }
+        console.log('result', result);
         return {
             ...result,
             sanpham: result.sanpham.map((item) => ({
@@ -411,6 +413,8 @@ let DonhangService = class DonhangService {
                             data: {
                                 ghichu: sp.ghichu,
                                 slgiao: sp.slgiao ?? 0,
+                                slnhan: sp.slnhan ?? 0,
+                                ttgiao: sp.ttgiao ?? 0,
                             },
                         })),
                     },

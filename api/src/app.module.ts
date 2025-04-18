@@ -21,6 +21,7 @@ import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
 import { GoogledriveModule } from './shared/googledrive/googledrive.module';
 import { ErrorlogsModule } from './errorlogs/errorlogs.module';
 import { CallbackModule } from './callback/callback.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -41,7 +42,8 @@ import { CallbackModule } from './callback/callback.module';
     PermissionModule,
     GoogledriveModule,
     ErrorlogsModule,
-    CallbackModule
+    CallbackModule,
+    DashboardModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

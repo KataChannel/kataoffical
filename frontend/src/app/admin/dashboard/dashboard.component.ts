@@ -7,6 +7,9 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { DonhangService } from '../donhang/donhang.service';
 import { SearchService } from '../../shared/services/search.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { DashboardblockComponent } from './dashboardblock/dashboardblock.component';
 @Component({
   selector: 'app-dashboard',
   imports: [
@@ -14,10 +17,13 @@ import { SearchService } from '../../shared/services/search.service';
     MatInputModule,
     FormsModule,
     CommonModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    DashboardblockComponent
   ],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent {
    _PhieugiaohangService: DonhangService = inject(DonhangService);
