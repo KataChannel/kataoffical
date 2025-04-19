@@ -1,0 +1,91 @@
+<div class="w-full h-full lg:grid lg:grid-cols-2 gap-8 p-2">
+  <div class="w-full flex flex-col gap-4 rounded-lg p-4 bg-slate-50">
+    <span class="text-lg font-bold">Hình Đại diện</span>
+    <div class="relative w-40 h-40 cursor-pointer rounded-full bg-slate-300 p-2 mx-auto">
+      <div class="w-full h-full">
+        @if (account.Avatar) {
+        <img lazyLoad [src]="getTrustUrl('https://lh3.googleusercontent.com/d/'+account.Avatar)" loading="lazy"
+          class="w-full h-full object-cover" />
+        } @else {
+        <img lazyLoad [src]="getTrustUrl('https://tazagroup.vn/assets/images/tazagroup-logo-trangchu.svg')"
+          loading="lazy" class="w-full h-full object-cover" />
+        }
+      </div>
+      <div
+        class="w-full h-full rounded-full absolute opacity-0 group-hover:!opacity-80 bg-black top-0 right-0 flex flex-row justify-center space-x-2 items-center py-3"
+        (paste)="handlePaste($event)">
+        <div class="!relative">
+          <ngx-file-drop class="whitespace-nowrap" browseBtnLabel="Browse files" [showBrowseBtn]="true"
+            dropZoneLabel="Drag and drop your files here" (onFileDrop)="dropped($event)">
+            <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+              <div class="!text-white p-4 flex flex-col space-y-3">
+                <span>Drop file Here</span>
+                <span class="font-bold p-2 rounded-lg border" (click)="openFileSelector()">Chọn File</span>
+              </div>
+            </ng-template>
+          </ngx-file-drop>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-row justify-center items-center gap-2">
+      <button mat-flat-button color="primary" class="flex flex-row gap-2">
+        <span>Upload</span>
+      </button>
+      <button mat-flat-button color="warn" class="flex flex-row gap-2">
+        <span>Reset</span>
+      </button>
+    </div>
+  </div>
+  <div class="w-full rounded-lg p-4 bg-slate-50">
+    <div class="w-full flex flex-col gap-4">
+      <span class="text-lg font-bold">Thay đổi mật khẩu</span>
+      <div class="grid grid-cols-1 gap-2">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Mật khẩu hiện tại</mat-label>
+          <input matInput [type]="hideCurrentPassword ? 'password' : 'text'" id="currentPassword" name="currentPassword"
+            [(ngModel)]="user.oldpass">
+          <button mat-icon-button color="primary" matSuffix (click)="hideCurrentPassword = !hideCurrentPassword"
+            [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideCurrentPassword">
+            <mat-icon>{{hideCurrentPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Mật khẩu mới</mat-label>
+          <input matInput [type]="hideNewPassword ? 'password' : 'text'" id="newPassword" name="newPassword"
+            [(ngModel)]="user.newpass">
+          <button mat-icon-button color="primary" matSuffix (click)="hideNewPassword = !hideNewPassword"
+            [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideNewPassword">
+            <mat-icon>{{hideNewPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Xác nhận mật khẩu mới</mat-label>
+          <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" id="confirmPassword" name="confirmPassword"
+            [(ngModel)]="user.confirmnewpass">
+          <button mat-icon-button color="primary" matSuffix (click)="hideConfirmPassword = !hideConfirmPassword"
+            [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hideConfirmPassword">
+            <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+          </button>
+        </mat-form-field>
+        <div class="flex justify-end">
+          <button (click)="ChangePass()" mat-raised-button color="primary" type="submit" class="w-full sm:w-auto">Đổi mật
+            khẩu</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="w-full col-span-2 gap-4 rounded-lg p-4 bg-slate-50">
+    <mat-form-field class="w-full !mt-8" [subscriptSizing]="'dynamic'" [appearance]="'outline'">
+      <mat-label>Bio</mat-label>
+      <textarea matInput></textarea>
+    </mat-form-field>
+    <app-dynamicform [Detail]="Detail" [CusClass]="{
+      Main:'grid grid-cols-2 gap-4 items-start',
+      Footer:'flex flex-row space-x-2 justify-center items-center'}"></app-dynamicform>
+      
+
+  </div>
+</div>

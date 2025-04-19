@@ -1,0 +1,91 @@
+<div class="flex flex-col space-y-2 h-full w-full p-2">
+<div class="border rounded-lg w-full h-full overflow-auto">
+    <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
+        @for (column of displayedColumns; track column) {
+        <ng-container [matColumnDef]="column">
+            <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
+                <span class="max-w-40 line-clamp-4 me-4">
+                    {{ ColumnName[column] }}
+                </span>
+                <app-searchfilter [icon]="'filter_alt'" [ListItem]="ListItem"
+                [ListFilter]="ListFilter" [filterItem]="FilterHederColumn(dataSource.filteredData,column)"
+                (OutFilter)="onOutFilter($event)"></app-searchfilter>
+            </th>
+            <td mat-cell *matCellDef="let row; let idx = index">
+                @switch (column) {
+                @case ('STT') {
+                <span class="max-w-40 line-clamp-4">
+                    {{ idx + 1 }}
+                </span>
+                }
+                @case ('createdAt') {
+                <span class="max-w-40 line-clamp-4">
+                    {{ row[column]|date:'dd/MM/yyyy'}}
+                </span>
+                }
+                @case ('isActive') {
+                <span class="max-w-40 line-clamp-4">
+                    @if (row[column]) {
+                    <mat-icon class="text-green-500">check_circle</mat-icon>
+                    }
+                    @else {
+                    <mat-icon class="text-red-500">cancel</mat-icon>
+                    }
+                </span>
+                }
+                @case ('updatedAt') {
+                <span class="max-w-40 line-clamp-4">
+                    {{ row[column]|date:'dd/MM/yyyy'}}
+                </span>
+                }
+                @default {
+                <span class="max-w-40 line-clamp-4">
+                    {{ row[column] }}
+                </span>
+                }
+                }
+            </td>
+        </ng-container>
+        }
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
+        </tr>
+    </table>
+</div>
+    <div class="cursor-pointer border rounded-lg px-3 p-1 flex flex-row space-x-2 items-center justify-between">
+        <div
+            class="w-full flex lg:p-0 p-2 lg:flex-row lg:space-x-2 lg:items-center lg:justify-between flex-col justify-center">
+            <span class="w-full text-center">Đang Xem <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> -
+                <strong>{{ currentPage * pageSize > totalItems ? totalItems : currentPage * pageSize }}</strong>
+                trong số {{ totalItems }} mục, {{ currentPage }}/{{totalPages}} Trang</span>
+            <div class="w-full flex flex-row space-x-2 items-center lg:justify-end justify-center">
+                <span class="font-bold text-blue-600" [matMenuTriggerFor]="menu" #menuHienthi="matMenuTrigger">Hiện
+                    Thị : {{pageSize}} mục</span>
+                <mat-menu #menu="matMenu">
+                    <div class="w-full flex flex-col space-y-2 p-4" (click)="$event.stopPropagation()">
+                        <span>Số Lượng</span>
+                        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                            <input matInput [(ngModel)]="pageSize" [ngModelOptions]="{ standalone: true }"
+                                placeholder="Vui lòng Nhập Số Lượng" />
+                        </mat-form-field>
+                        <button mat-flat-button color="primary" (click)="onPageSizeChange(pageSize,menuHienthi)">Áp
+                            Dụng</button>
+                    </div>
+                </mat-menu>
+                <div class="pagination-controls">
+                    <button mat-icon-button color="primary" [disabled]="currentPage === 1"
+                        (click)="onPreviousPage()">
+                        <mat-icon>keyboard_arrow_left</mat-icon>
+                    </button>
+                    <button mat-icon-button color="primary" [disabled]="currentPage === totalPages"
+                        (click)="onNextPage()">
+                        <mat-icon>keyboard_arrow_right</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
