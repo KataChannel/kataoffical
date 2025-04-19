@@ -6,6 +6,7 @@ git push
 # server
 ssh root@116.118.49.243 
 git pull
+docker compose -f 'docker-compose.yml' up -d --build 
 docker compose -f 'docker-compose.yml' up -d --build 'ferausach'
 docker compose -f 'docker-compose.yml' up -d --build 'berausach'
 docker compose -f 'docker-compose.yml' up -d --build 'redis'
