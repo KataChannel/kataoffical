@@ -29,7 +29,7 @@ services:
   #     - redis_data:/data
   #   command: ["redis-server", "--appendonly", "yes"]      
   
-  berausachsanbox1:
+  be:
     build: ./api
     restart: always
     ports:
@@ -50,7 +50,7 @@ services:
     # depends_on:
     #   - postgres
     #   - redis      
-  ferausachsanbox1:
+  fe:
     build: ./frontend
     restart: always
     ports:
