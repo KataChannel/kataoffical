@@ -94,14 +94,14 @@ services:
     container_name: academy_api
     environment:
       NODE_ENV: development
-      PORT: 3000
+      PORT: 3101
       DATABASE_URL: ${ACADEMY_DATABASE_URL}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      SHARED_CORE_API_URL: http://shared-core-api:3000
+      SHARED_CORE_API_URL: http://shared-core-api:3101
       JWT_SECRET: ${JWT_SECRET}
     ports:
-      - "3002:3000"
+      - "3101:3101"
     # depends_on:
     #   postgres:
     #     condition: service_healthy
@@ -121,14 +121,14 @@ services:
     container_name: cosmetics_api
     environment:
       NODE_ENV: development
-      PORT: 3000
+      PORT: 3102
       DATABASE_URL: ${COSMETICS_DATABASE_URL}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      SHARED_CORE_API_URL: http://shared-core-api:3000
+      SHARED_CORE_API_URL: http://shared-core-api:3100
       JWT_SECRET: ${JWT_SECRET}
     ports:
-      - "3003:3000"
+      - "3102:3102"
     # depends_on:
     #   postgres:
     #     condition: service_healthy
@@ -148,14 +148,14 @@ services:
     container_name: spa_api
     environment:
       NODE_ENV: development
-      PORT: 3000
+      PORT: 3103
       DATABASE_URL: ${SPA_DATABASE_URL}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      SHARED_CORE_API_URL: http://shared-core-api:3000
+      SHARED_CORE_API_URL: http://shared-core-api:3100
       JWT_SECRET: ${JWT_SECRET}
     ports:
-      - "3004:3000"
+      - "3103:3103"
     # depends_on:
     #   postgres:
     #     condition: service_healthy
@@ -174,7 +174,7 @@ services:
       dockerfile: Dockerfile
     container_name: admin_ui
     ports:
-      - "4200:4000"
+      - "4400:4400"
     # depends_on:
     #   shared-core-api:
     #     condition: service_started
@@ -191,7 +191,7 @@ services:
     #   - ./frontend/academy:/usr/src/app
     #   - /usr/src/app/node_modules
     ports:
-      - "4201:4200"
+      - "4401:4401"
     # depends_on:
     #   academy-api:
     #     condition: service_started
@@ -211,7 +211,7 @@ services:
     #   - ./frontend/cosmetics:/usr/src/app
     #   - /usr/src/app/node_modules
     ports:
-      - "4202:4200"
+      - "4402:4402"
     # depends_on:
     #   cosmetics-api:
     #     condition: service_started
@@ -231,7 +231,7 @@ services:
     #   - ./frontend/spa:/usr/src/app
     #   - /usr/src/app/node_modules
     ports:
-      - "4203:4200"
+      - "4403:4403"
     # depends_on:
     #   spa-api:
     #     condition: service_started
