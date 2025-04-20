@@ -41,18 +41,29 @@ function saveAsExcelFile(buffer: any, fileName: string) {
   link.remove();
 }
 
-export function readExcelFile(event: any): Promise<any> {
+export function readExcelFile(event: any,sheetName?:any): Promise<any> {
   return new Promise((resolve, reject) => {
-    const file = event.target.files[0];
+    const file = event;
     const fileReader = new FileReader();
     fileReader.onload = (e) => {
       try {
         const data = new Uint8Array((e.target as any).result);
         const workbook = XLSX.read(data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
+        const sn:any = sheetName || workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sn];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-        resolve(jsonData);
+        const result = jsonData.map((item: any) => {
+          if (item.ItemCode === undefined || item.Quantity === undefined) {
+            return null; // Hoặc xử lý theo cách bạn muốn
+          }
+          return {
+            masp:item.ItemCode,
+            sldat:item.Quantity,
+            slgiao:item.Quantity,  
+            slnhan:item.Quantity
+          }
+        }).filter(item => item !== null);
+        resolve(result);
       } catch (error) {
         reject(error);
       }

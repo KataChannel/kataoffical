@@ -12,7 +12,7 @@ async function getTables(): Promise<string[]> {
 
 async function restoreTableFromJson(table: string): Promise<void> {
   try {
-    const latestBackupDir = fs.readdirSync(BACKUP_ROOT_DIR).sort().reverse()[0];
+    const latestBackupDir = fs.readdirSync(BACKUP_ROOT_DIR).sort()[0];
     if (!latestBackupDir) {
       console.error(`❌ Không tìm thấy thư mục backup.`);
       return;
@@ -36,8 +36,17 @@ async function restoreTableFromJson(table: string): Promise<void> {
     // for (const [table, data] of Object.entries(data)) {
       if (Array.isArray(data) && data.length > 0) {
         try {
+          // Convert string numbers to actual numbers, especially for 'size' field
+          const processedData = data.map(item => {
+            const newItem = { ...item };
+            if (newItem.size && typeof newItem.size === 'string') {
+              newItem.size = newItem.size.trim() === '' ? null : parseInt(newItem.size, 10);
+            }
+            return newItem;
+          });
+          
           await prisma[table].createMany({
-            data: data,
+            data: processedData,
             skipDuplicates: true, // Bỏ qua nếu trùng
           });
           console.log(`✅ Đã nhập dữ liệu vào bảng ${table}`);

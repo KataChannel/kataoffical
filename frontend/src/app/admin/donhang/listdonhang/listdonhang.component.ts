@@ -6,6 +6,7 @@ import {
   inject,
   TemplateRef,
   ViewChild,
+  ViewEncapsulation,
 } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -40,6 +41,7 @@ import moment from 'moment';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { MatTabsModule } from '@angular/material/tabs';
 @Component({
   selector: 'app-listdonhang',
   templateUrl: './listdonhang.component.html',
@@ -61,6 +63,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     MatTooltipModule,
     MatDatepickerModule,
     MatDialogModule,
+    MatTabsModule
   ],
   // providers: [provideNativeDateAdapter()],
 })
@@ -94,6 +97,7 @@ export class ListDonhangComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
+  @ViewChild('dialogImportExcel') dialogImportExcel!: TemplateRef<any>;
   filterValues: { [key: string]: string } = {};
   private _DonhangService: DonhangService = inject(DonhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
@@ -184,9 +188,7 @@ export class ListDonhangComponent {
   }
   async ngOnInit(): Promise<void> {
     await this._DonhangService.searchDonhang(this.SearchParams);
-    this.CountItem = this.Listdonhang().length;
-    console.log(this.SearchParams);
-    
+    this.CountItem = this.Listdonhang().length;    
     this.initializeColumns();
     this.setupDrawer();
     this.dataSource = new MatTableDataSource(this.Listdonhang());
@@ -350,6 +352,7 @@ export class ListDonhangComponent {
   dialog = inject(MatDialog);
   dialogCreateRef: any;
   Phieuchia:any[] = [];
+
   openCreateDialog(teamplate: TemplateRef<any>) {
     console.log(this.editDonhang);
     this.Phieuchia = this.editDonhang.map((v: any) => ({
@@ -476,9 +479,24 @@ export class ListDonhangComponent {
       // window.location.reload();
     });
   }
+  ListImportExcel: any[] = []
   async ImporExcel(event: any) {
-    const data = await readExcelFile(event);
-    this.DoImportData(data);
+    for (const file of event.target.files) {
+      const data = await readExcelFile(file,'TEMPLATE');   
+      const item ={title:file.name, data: data};
+      this.ListImportExcel.push(item);     
+      console.log(this.ListImportExcel.map((v:any)=>({title:v.title})));
+       
+    } 
+      this.dialogCreateRef = this.dialog.open(this.dialogImportExcel, {
+        hasBackdrop: true,
+        disableClose: true,
+      });
+      console.log(this.ListImportExcel);
+      
+      
+    //  
+   // this.DoImportData(data);
   }
   ExportExcel(data: any, title: any) {
     writeExcelFile(data, title);

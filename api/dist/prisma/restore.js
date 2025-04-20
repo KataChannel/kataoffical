@@ -11,7 +11,7 @@ async function getTables() {
 }
 async function restoreTableFromJson(table) {
     try {
-        const latestBackupDir = fs.readdirSync(BACKUP_ROOT_DIR).sort().reverse()[0];
+        const latestBackupDir = fs.readdirSync(BACKUP_ROOT_DIR).sort()[0];
         if (!latestBackupDir) {
             console.error(`❌ Không tìm thấy thư mục backup.`);
             return;
@@ -25,8 +25,15 @@ async function restoreTableFromJson(table) {
         const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         if (Array.isArray(data) && data.length > 0) {
             try {
+                const processedData = data.map(item => {
+                    const newItem = { ...item };
+                    if (newItem.size && typeof newItem.size === 'string') {
+                        newItem.size = newItem.size.trim() === '' ? null : parseInt(newItem.size, 10);
+                    }
+                    return newItem;
+                });
                 await prisma[table].createMany({
-                    data: data,
+                    data: processedData,
                     skipDuplicates: true,
                 });
                 console.log(`✅ Đã nhập dữ liệu vào bảng ${table}`);
