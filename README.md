@@ -56,3 +56,15 @@ Optimize-VHD -Path "C:\Users\Admin\AppData\Local\Docker\wsl\disk\docker_data.vhd
 
 ### promt
 tạo mindmap admin,spa,academy,cosmetics
+
+
+
+Kích hoạt và reload
+cd /etc/nginx/sites-available
+sudo ln -s /etc/nginx/sites-available/hethong.tazagroup.vn /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+
+(Tuỳ chọn) Thêm HTTPS với Certbot
+sudo certbot --nginx -d hethong.tazagroup.vn -d apihethong.tazagroup.vn
+sudo certbot renew --dry-run

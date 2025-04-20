@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
-  APIURL: 'http://localhost:3001',
-  // APIURL: 'https://v3api.tazagroup.vn',
+  //APIURL: 'http://localhost:3100',
+  APIURL: 'https://apihethong.tazagroup.vn',
   ImageURL: 'http://localhost:4303',
   app_id: '1416835846626859002',
   secret_key: 'HLBWj23hToA9fuiQvQY4',

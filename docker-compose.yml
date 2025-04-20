@@ -68,7 +68,7 @@ services:
     container_name: shared_api
     environment:
       NODE_ENV: development
-      PORT: 3000
+      PORT: 3100
       DATABASE_URL: ${SHARED_DATABASE_URL}
       REDIS_HOST: redis
       REDIS_PORT: 6379
