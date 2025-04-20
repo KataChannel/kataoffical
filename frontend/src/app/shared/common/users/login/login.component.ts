@@ -78,7 +78,7 @@ export class LoginComponent implements OnInit {
         console.log('Token from URL:', token);
         this.validateToken(token); // Validate the token
       } else {
-        this.router.navigate(['/admin/donhang']);
+        this.router.navigate(['/admin/account']);
         console.error('Token not found in URL');
       }
     });
@@ -99,7 +99,7 @@ export class LoginComponent implements OnInit {
             window.location.reload(); // Reload the page
           }
           else {
-            this.router.navigate(['/404',{ queryParams: {data:{ code:403,title:'Bạn không có quyền truy cập liên hệ admin' }}}]);
+            this.router.navigate(['/lienheadmin']);
           }
 
         }

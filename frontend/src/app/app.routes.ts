@@ -4,10 +4,14 @@ import { AuthGuard } from './shared/common/users/guards/auth.guard';
 import { GuestGuard } from './shared/common/users/guards/guest.guard';
 import { PermissionGuard } from './shared/common/users/guards/permission.guard';
 export const routes: Routes = [
-    { path: '', redirectTo: 'admin/dashboard', pathMatch: 'full' },
+    { path: '', redirectTo: 'admin/account', pathMatch: 'full' },
     {
       path: '404',
       loadComponent: () => import('./site/notfound/notfound.component').then((c) => c.NotfoundComponent),
+    },
+    {
+      path: 'lienheadmin',
+      loadComponent: () => import('./site/lienheadmin/lienheadmin.component').then((c) => c.LienheadminComponent),
     },
     {
       path: 'admin',

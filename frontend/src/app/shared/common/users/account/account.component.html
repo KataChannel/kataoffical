@@ -26,8 +26,8 @@
       <div class="border-t p-2 flex items-center justify-between">
         <div class="flex flex-row items-center flex-wrap gap-2"> 
           <div *ngFor="let item of AccountMenus; let i=index">
-            <a mat-flat-button [routerLink]="item.link" routerLinkActive="!bg-blue-500 !text-white" class="flex items-center">
-              <mat-icon>{{item.icon}}</mat-icon> 
+            <a mat-flat-button [routerLink]="item.link" routerLinkActive="!bg-[#0B9444] !text-white" class="flex items-center">
+              <mat-icon>{{item.icon}}</mat-icon>
               <span class="whitespace-nowrap">{{item.title}}</span>
             </a>        
           </div>
