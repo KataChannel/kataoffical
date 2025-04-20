@@ -9,5 +9,5 @@ COPY ./dist/frontend /app/dist/frontend
 # COPY ./package.json /app/package.json
 
 # Run SSR application with Bun
-EXPOSE 4000
+EXPOSE 4400
 CMD ["bun", "dist/frontend/server/server.mjs"]
