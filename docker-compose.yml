@@ -69,7 +69,6 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3100
-      DATABASE_URL: ${SHARED_DATABASE_URL}
       REDIS_HOST: redis
       REDIS_PORT: 6379
       JWT_SECRET: ${JWT_SECRET}
