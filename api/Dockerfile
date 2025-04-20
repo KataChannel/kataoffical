@@ -1,6 +1,6 @@
 # Use the official BunJS image
 FROM oven/bun:latest AS builder
-
+RUN apt-get update -y && apt-get install -y openssl libssl-dev
 # Set the working directory
 WORKDIR /app
 
@@ -23,7 +23,7 @@ RUN bun prisma generate
 
 # Use a smaller runtime image
 FROM oven/bun:latest
-
+RUN apt-get update -y && apt-get install -y openssl libssl-dev
 # Set the working directory
 WORKDIR /app
 
