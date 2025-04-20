@@ -1,4 +1,5 @@
 FROM oven/bun:latest AS builder
+# Set the working directory in the container
 RUN apt-get update -y && apt-get install -y openssl
 WORKDIR /app
 COPY package.json bun.lock ./
