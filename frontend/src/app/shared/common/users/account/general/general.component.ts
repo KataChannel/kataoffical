@@ -1,12 +1,14 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { NgxFileDropEntry, NgxFileDropModule } from 'ngx-file-drop';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../../../admin/user/user.service';
-import { UploadService } from '../../../../uploadfile/uploadfile.service';
-import { DynamicformComponent } from '../../../dynamicform/dynamicform.component';
+import { DynamicformComponent } from '../../../../../shared/common/dynamicform/dynamicform.component';
+import { UploadService } from '../../../../../shared/uploadfile/uploadfile.service';
+import { MatButtonModule, MatIconButton } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-general',
@@ -14,64 +16,34 @@ import { DynamicformComponent } from '../../../dynamicform/dynamicform.component
     NgxFileDropModule,
     MatFormFieldModule,
     MatInputModule,
+    MatButtonModule,
     FormsModule,
-    DynamicformComponent
+    MatIconModule,
   ],
   templateUrl: './general.component.html',
-  styleUrl: './general.component.scss'
+  styleUrls: ['./general.component.scss']
 })
 export class GeneralComponent {
   isLoading:boolean = false;
   account: any = {};
   isEditAvatar:boolean=false
   public files: NgxFileDropEntry[] = [];
+  profile = signal<any>({})
+  hideCurrentPassword = true;
+  hideNewPassword = true;
+  hideConfirmPassword = true;
+  user: any = {
+    oldpass: '',
+    newpass: '',
+    confirmnewpass: ''
+  };
   _UserService:UserService = inject(UserService)
   _uploadService:UploadService = inject(UploadService)
   Detail:any={}
   constructor(
     private sanitizer: DomSanitizer,
   ) { 
-     this.Detail={
-        Data:{
-          "id": "8efd5ba3-d073-4baf-ab89-31180ee7471d",
-          "ref_id": "0",
-          "gid": "",
-          "fid": "",
-          "zid": "",
-          "pid": "",
-          "SDT": "098765421",
-          "idGroup": "",
-          "Code": "751221",
-          "Hoten": "test1",
-          "Avatar": "",
-          "Ngaysinh": null,
-          "email": "test1@gmail.com",
-          "Gioitinh": "",
-          "EditChinhanhs": [],
-          "Diachi": [],
-          "ListImage": [],
-          "Profile": [],
-          "Role": "user",
-          "Phanquyen": [],
-          "Menu": [],
-          "fcmToken": [],
-          "Type": "",
-          "Ordering": 1,
-          "idDelete": false,
-          "Status": 0,
-          "CreateAt": "10:11:52 11/12/2024",
-          "UpdateAt": "2024-12-11T03:11:52.074Z",
-          "DeleteAt": null,
-          "idCreate": null
-      },
-        Forms:[
-          {id:1,Title:'Họ Tên',value:'Hoten',Type:'text',required:true},
-          {id:2,Title:'Email',value:'email',Type:'text',required:true},
-          {id:3,Title:'SDT',value:'SDT',Type:'text',required:false},
-          {id:4,Title:'Mật Khẩu',value:'password',Type:'text',required:true},  
-          {id:5,Title:'Trạng Thái',value:'Status',Type:'text',required:true},  
-        ]
-      }
+
   }
   getTrustUrl(url: string) {
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
@@ -120,6 +92,40 @@ export class GeneralComponent {
           });
         });
       }
+    }
+  }
+  ChangePass()
+  {
+    console.log(this.user);
+    
+    if(this.user.oldpass==''||this.user.newpass==''||this.user.confirmnewpass=='')
+    {
+  //    this._NotifierService.notify('error',"Vui lòng điền đủ thông tin")
+    }
+    else if(this.user.newpass!=this.user.confirmnewpass)
+    {
+    //  this._NotifierService.notify('error',"Xác Nhận Mật Khẩu Mới Không Giống Nhau")
+    }
+    else{
+        const data = {
+          id:this._UserService.profile().id,
+          oldpass:this.user.oldpass,
+          newpass:this.user.newpass,
+        }
+        this._UserService.changepass(data).then((data)=>{
+          if(data[0]==200)
+          {
+          //  this._NotifierService.notify('success',data[1])
+            this.user = {
+              oldpass: '',
+              newpass: '',
+              confirmnewpass: ''
+            };
+          }
+         else {          
+         // this._NotifierService.notify('error',data[1])
+         }
+        })
     }
   }
 }

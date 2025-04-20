@@ -21,7 +21,6 @@ import { StorageService } from '../../../utils/storage.service';
     MatButtonModule,
     FormsModule,
     MatIconModule,
-    RouterLink
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'

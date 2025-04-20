@@ -40,8 +40,13 @@ export class AccountComponent implements OnInit {
    await this._UserService.getProfile()
    this.profile = this._UserService.profile
    console.log( this.profile);
-   
   }
+  AccountMenus:any[]=[
+    {id:1,title:'Tài Khoản',link:'general',icon:'account_circle'},
+    // {id:2,title:'Thông Báo',link:'notifications',icon:'notifications'},
+    // {id:4,title:'Thanh Toán',link:'billing',icon:'receipt'},
+    // {id:3,title:'Bảo Mật',link:'security',icon:'lock'},
+  ]
   Update()
   {
     this._UserService.updateUser(this.profile()).then(()=>{
