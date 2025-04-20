@@ -87,85 +87,85 @@ services:
     #   - app-network
     restart: unless-stopped
 
-  academy-api:
-    build:
-      context: ./backend/academy
-      dockerfile: Dockerfile
-    container_name: academy_api
-    environment:
-      NODE_ENV: development
-      PORT: 3101
-      DATABASE_URL: ${ACADEMY_DATABASE_URL}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      SHARED_CORE_API_URL: http://shared-core-api:3101
-      JWT_SECRET: ${JWT_SECRET}
-    ports:
-      - "3101:3101"
-    # depends_on:
-    #   postgres:
-    #     condition: service_healthy
-    #   redis:
-    #     condition: service_healthy
-    #   shared-core-api:
-    #     condition: service_started
-    # networks:
-    #   - app-network
-    # command: bun run start:dev
-    restart: unless-stopped
+  # academy-api:
+  #   build:
+  #     context: ./backend/academy
+  #     dockerfile: Dockerfile
+  #   container_name: academy_api
+  #   environment:
+  #     NODE_ENV: development
+  #     PORT: 3101
+  #     DATABASE_URL: ${ACADEMY_DATABASE_URL}
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: 6379
+  #     SHARED_CORE_API_URL: http://shared-core-api:3101
+  #     JWT_SECRET: ${JWT_SECRET}
+  #   ports:
+  #     - "3101:3101"
+  #   # depends_on:
+  #   #   postgres:
+  #   #     condition: service_healthy
+  #   #   redis:
+  #   #     condition: service_healthy
+  #   #   shared-core-api:
+  #   #     condition: service_started
+  #   # networks:
+  #   #   - app-network
+  #   # command: bun run start:dev
+  #   restart: unless-stopped
 
-  cosmetics-api:
-    build:
-      context: ./backend/cosmetics
-      dockerfile: Dockerfile
-    container_name: cosmetics_api
-    environment:
-      NODE_ENV: development
-      PORT: 3102
-      DATABASE_URL: ${COSMETICS_DATABASE_URL}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      SHARED_CORE_API_URL: http://shared-core-api:3100
-      JWT_SECRET: ${JWT_SECRET}
-    ports:
-      - "3102:3102"
-    # depends_on:
-    #   postgres:
-    #     condition: service_healthy
-    #   redis:
-    #     condition: service_healthy
-    #   shared-core-api:
-    #     condition: service_started
-    # networks:
-    #   - app-network
-    # command: bun run start:dev
-    restart: unless-stopped
+  # cosmetics-api:
+  #   build:
+  #     context: ./backend/cosmetics
+  #     dockerfile: Dockerfile
+  #   container_name: cosmetics_api
+  #   environment:
+  #     NODE_ENV: development
+  #     PORT: 3102
+  #     DATABASE_URL: ${COSMETICS_DATABASE_URL}
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: 6379
+  #     SHARED_CORE_API_URL: http://shared-core-api:3100
+  #     JWT_SECRET: ${JWT_SECRET}
+  #   ports:
+  #     - "3102:3102"
+  #   # depends_on:
+  #   #   postgres:
+  #   #     condition: service_healthy
+  #   #   redis:
+  #   #     condition: service_healthy
+  #   #   shared-core-api:
+  #   #     condition: service_started
+  #   # networks:
+  #   #   - app-network
+  #   # command: bun run start:dev
+  #   restart: unless-stopped
 
-  spa-api:
-    build:
-      context: ./backend/spa
-      dockerfile: Dockerfile
-    container_name: spa_api
-    environment:
-      NODE_ENV: development
-      PORT: 3103
-      DATABASE_URL: ${SPA_DATABASE_URL}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      SHARED_CORE_API_URL: http://shared-core-api:3100
-      JWT_SECRET: ${JWT_SECRET}
-    ports:
-      - "3103:3103"
-    # depends_on:
-    #   postgres:
-    #     condition: service_healthy
-    #   redis:
-    #     condition: service_healthy
-    #   shared-core-api:
-    #     condition: service_started
-    # networks:
-    #   - app-network
-    restart: unless-stopped
+  # spa-api:
+  #   build:
+  #     context: ./backend/spa
+  #     dockerfile: Dockerfile
+  #   container_name: spa_api
+  #   environment:
+  #     NODE_ENV: development
+  #     PORT: 3103
+  #     DATABASE_URL: ${SPA_DATABASE_URL}
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: 6379
+  #     SHARED_CORE_API_URL: http://shared-core-api:3100
+  #     JWT_SECRET: ${JWT_SECRET}
+  #   ports:
+  #     - "3103:3103"
+  #   # depends_on:
+  #   #   postgres:
+  #   #     condition: service_healthy
+  #   #   redis:
+  #   #     condition: service_healthy
+  #   #   shared-core-api:
+  #   #     condition: service_started
+  #   # networks:
+  #   #   - app-network
+  #   restart: unless-stopped
 
   # --- Frontend Services ---
   admin-ui:
@@ -182,65 +182,65 @@ services:
     #   - app-network
     restart: unless-stopped
 
-  academy-ui:
-    build:
-      context: ./frontend/academy
-      dockerfile: Dockerfile
-    container_name: academy_ui
-    # volumes:
-    #   - ./frontend/academy:/usr/src/app
-    #   - /usr/src/app/node_modules
-    ports:
-      - "4401:4401"
-    # depends_on:
-    #   academy-api:
-    #     condition: service_started
-    #   shared-core-api:
-    #     condition: service_started
-    # networks:
-    #   - app-network
-    # command: ng serve --host 0.0.0.0 --port 4200
-    restart: unless-stopped
+  # academy-ui:
+  #   build:
+  #     context: ./frontend/academy
+  #     dockerfile: Dockerfile
+  #   container_name: academy_ui
+  #   # volumes:
+  #   #   - ./frontend/academy:/usr/src/app
+  #   #   - /usr/src/app/node_modules
+  #   ports:
+  #     - "4401:4401"
+  #   # depends_on:
+  #   #   academy-api:
+  #   #     condition: service_started
+  #   #   shared-core-api:
+  #   #     condition: service_started
+  #   # networks:
+  #   #   - app-network
+  #   # command: ng serve --host 0.0.0.0 --port 4200
+  #   restart: unless-stopped
 
-  cosmetics-ui:
-    build:
-      context: ./frontend/cosmetics
-      dockerfile: Dockerfile
-    container_name: cosmetics_ui
-    # volumes:
-    #   - ./frontend/cosmetics:/usr/src/app
-    #   - /usr/src/app/node_modules
-    ports:
-      - "4402:4402"
-    # depends_on:
-    #   cosmetics-api:
-    #     condition: service_started
-    #   shared-core-api:
-    #     condition: service_started
-    # networks:
-    #   - app-network
-    # command: ng serve --host 0.0.0.0 --port 4200
-    restart: unless-stopped
+  # cosmetics-ui:
+  #   build:
+  #     context: ./frontend/cosmetics
+  #     dockerfile: Dockerfile
+  #   container_name: cosmetics_ui
+  #   # volumes:
+  #   #   - ./frontend/cosmetics:/usr/src/app
+  #   #   - /usr/src/app/node_modules
+  #   ports:
+  #     - "4402:4402"
+  #   # depends_on:
+  #   #   cosmetics-api:
+  #   #     condition: service_started
+  #   #   shared-core-api:
+  #   #     condition: service_started
+  #   # networks:
+  #   #   - app-network
+  #   # command: ng serve --host 0.0.0.0 --port 4200
+  #   restart: unless-stopped
 
-  spa-ui:
-    build:
-      context: ./frontend/spa
-      dockerfile: Dockerfile
-    container_name: spa_ui
-    # volumes:
-    #   - ./frontend/spa:/usr/src/app
-    #   - /usr/src/app/node_modules
-    ports:
-      - "4403:4403"
-    # depends_on:
-    #   spa-api:
-    #     condition: service_started
-    #   shared-core-api:
-    #     condition: service_started
-    # networks:
-    #   - app-network
-    # command: ng serve --host 0.0.0.0 --port 4200
-    restart: unless-stopped
+  # spa-ui:
+  #   build:
+  #     context: ./frontend/spa
+  #     dockerfile: Dockerfile
+  #   container_name: spa_ui
+  #   # volumes:
+  #   #   - ./frontend/spa:/usr/src/app
+  #   #   - /usr/src/app/node_modules
+  #   ports:
+  #     - "4403:4403"
+  #   # depends_on:
+  #   #   spa-api:
+  #   #     condition: service_started
+  #   #   shared-core-api:
+  #   #     condition: service_started
+  #   # networks:
+  #   #   - app-network
+  #   # command: ng serve --host 0.0.0.0 --port 4200
+  #   restart: unless-stopped
 
   # --- Nginx Reverse Proxy ---
   # nginx:
