@@ -78,7 +78,7 @@ export class LoginComponent implements OnInit {
         console.log('Token from URL:', token);
         this.validateToken(token); // Validate the token
       } else {
-        this.router.navigate(['/admin/account']);
+        this.router.navigate(['/admin/lienheadmin']);
         console.error('Token not found in URL');
       }
     });
@@ -99,7 +99,7 @@ export class LoginComponent implements OnInit {
             window.location.reload(); // Reload the page
           }
           else {
-            this.router.navigate(['/lienheadmin']);
+            this.router.navigate(['/admin/lienheadmin']);
           }
 
         }

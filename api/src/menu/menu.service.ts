@@ -29,9 +29,9 @@ export class MenuService {
   }
 
   async getTree(data:any){   
-    if(Object.entries(data).length === 0){
-      data =['donhang.view'];
-    }
+    // if(Object.entries(data).length === 0){
+    //   data =['donhang.view'];
+    // }
     const menus = await this.findAll();  
     const filteredMenus = menus.filter(v => {
       const path = v.slug;
@@ -47,6 +47,7 @@ export class MenuService {
     return this.buildTree(menus).sort((a:any,b:any) => a.order - b.order);
   }
 
+  
   private buildTree(menus: any[], parentId: string | null = null) {
     return menus
       .filter(menu => menu.parentId === parentId)

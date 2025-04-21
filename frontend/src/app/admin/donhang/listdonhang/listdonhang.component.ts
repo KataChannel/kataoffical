@@ -28,6 +28,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import {
   readExcelFile,
   writeExcelFile,
+  writeExcelFileWithSheets,
 } from '../../../shared/utils/exceldrive.utils';
 import {
   ConvertDriveData,
@@ -42,6 +43,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { MatTabsModule } from '@angular/material/tabs';
+import { KhachhangService } from '../../khachhang/khachhang.service';
+import { BanggiaService } from '../../banggia/banggia.service';
+import { SanphamService } from '../../sanpham/sanpham.service';
 @Component({
   selector: 'app-listdonhang',
   templateUrl: './listdonhang.component.html',
@@ -102,6 +106,9 @@ export class ListDonhangComponent {
   private _DonhangService: DonhangService = inject(DonhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
+  private _KhachhangService: KhachhangService = inject(KhachhangService);
+  private _BanggiaService: BanggiaService = inject(BanggiaService);
+  private _SanphamService: SanphamService = inject(SanphamService);
   private _router: Router = inject(Router);
   Listdonhang: any = this._DonhangService.ListDonhang;
   dataSource = new MatTableDataSource([]);
@@ -498,8 +505,25 @@ export class ListDonhangComponent {
     //  
    // this.DoImportData(data);
   }
-  ExportExcel(data: any, title: any) {
-    writeExcelFile(data, title);
+
+  async ExportExcel(data: any, title: any) {
+   await this._KhachhangService.getAllKhachhang()
+   await this._SanphamService.getAllSanpham()
+   await this._BanggiaService.getAllBanggia()  
+    const Sheet1 = this._KhachhangService.ListKhachhang().map((v: any) => ({
+      makh: v.makh,
+      name: v.name,
+      banggia: v.banggia[0]?.mabanggia,
+    }));
+    const Sheet2 = this._SanphamService.ListSanpham().map((v: any) => ({
+      masp: v.masp,
+      title: v.title,
+    }));
+    const Sheet3 = this._BanggiaService.ListBanggia().map((v: any) => ({
+      mabanggia: v.mabanggia,
+      title: v.title,
+    }));
+    writeExcelFileWithSheets({Sheet1, Sheet2, Sheet3}, title);
   }
   printContent()
   {

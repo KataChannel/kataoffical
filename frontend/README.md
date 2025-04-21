@@ -19,3 +19,4 @@ npx ng g c congnokhachhang --skip-tests --standalone
 npx ng g c congnoncc --skip-tests --standalone
 npx ng g c searchfilter --skip-tests --standalone
 npx ng g c dashboardblock --skip-tests --standalone
+npx ng g c lienheadmin --skip-tests --standalone

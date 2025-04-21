@@ -1388,7 +1388,7 @@ License: "MIT"
 
 
 --------------------------------------------------------------------------------
-Package: xlsx
+Package: xlsx-js-style
 License: "Apache-2.0"
 
                                  Apache License

@@ -35,9 +35,6 @@ let MenuService = class MenuService {
         return this.prisma.menu.delete({ where: { id } });
     }
     async getTree(data) {
-        if (Object.entries(data).length === 0) {
-            data = ['donhang.view'];
-        }
         const menus = await this.findAll();
         const filteredMenus = menus.filter(v => {
             const path = v.slug;

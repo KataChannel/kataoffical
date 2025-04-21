@@ -1,5 +1,6 @@
 import moment from 'moment';
-import * as XLSX from 'xlsx';
+// import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx-js-style';   
 export function writeExcelFile(
   data: any,
   title: string,
@@ -22,6 +23,83 @@ export function writeExcelFile(
     SheetNames: ['Sheet1'],
   };
 
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array',
+  });
+
+  saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
+}
+
+export function writeExcelFileWithSheets(
+  sheetsData: { [sheetName: string]: any[] },
+  title: string = 'Excel_Export'
+): void {
+  const workbook: XLSX.WorkBook = { Sheets: {}, SheetNames: [] };
+
+  // Thêm các sheet dữ liệu gốc
+  Object.keys(sheetsData).forEach(sheetName => {
+    const worksheet = XLSX.utils.json_to_sheet(sheetsData[sheetName]);
+    workbook.SheetNames.push(sheetName);
+    workbook.Sheets[sheetName] = worksheet;
+  });
+
+  // ✅ Tạo dữ liệu cho sheet summary đúng như ảnh
+  const summaryData: any[][] = [
+    ['ngay', 'makh', 'tenkh', 'mabangia', 'masp','tensp' ,'sldat', 'slgiao', 'slnhan'],
+    ['Ngày', 'Khách hàng', 'Tên Khách Hàng', 'Bảng Giá', 'Mã Sản Phẩm','Tên Sản Phẩm', 'SL Đặt', 'SL Giao', 'SL Nhận'],
+    [moment().format('DD/MM/YYYY'), 'KS00163', '', '', 'I100001', '', '1', '', ''],
+    ['', '', '', '', '', '', '', '', ''],
+  ];
+
+  const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+
+
+  // Define cell styling constants for reuse
+  const redFontStyle = { font: { color: { rgb: 'FF0000' } } };
+
+  // Define formula cell configurations for clarity
+  const formulaCells = [
+    { cell: 'C3', formula: 'VLOOKUP(B3,Sheet1!A:C,2,0)', type: 's' },
+    { cell: 'D3', formula: 'VLOOKUP(B3,Sheet1!A:C,3,0)', type: 's' },
+    { cell: 'F3', formula: 'VLOOKUP(E3,Sheet2!A:B,2,0)', type: 's' },
+    { cell: 'H3', formula: 'G3', type: 'n' },
+    { cell: 'I3', formula: 'G3', type: 'n' },
+
+    { cell: 'A4', formula: 'A3', type: 's' },
+    { cell: 'B4', formula: 'B3', type: 's' },
+    { cell: 'C4', formula: 'VLOOKUP(B4,Sheet1!A:C,2,0)', type: 's' },
+    { cell: 'D4', formula: 'VLOOKUP(B4,Sheet1!A:C,3,0)', type: 's' },
+    { cell: 'F4', formula: 'VLOOKUP(E4,Sheet2!A:B,2,0)', type: 's' },
+    { cell: 'H4', formula: 'G4', type: 'n' },
+    { cell: 'I4', formula: 'G4', type: 'n' }
+  ];
+  
+  formulaCells.forEach(({ cell, formula, type }) => {
+    summarySheet[cell] = {
+      f: formula,
+      t: type,
+      s: redFontStyle
+    };
+  });
+
+  const summarySheetName = 'Donhang';
+  // const redStyle = {
+  //   font: { color: { rgb: 'FF0000' } }, // Màu đỏ
+  // };
+
+  // for (let row = 0; row < 3; row++) {
+  //   for (let col = 0; col < 8; col++) {
+  //     const cellRef = XLSX.utils.encode_cell({ r: row, c: col });
+  //     if (summarySheet[cellRef]) {
+  //       summarySheet[cellRef].s = redStyle;
+  //     }
+  //   }
+  // }
+  workbook.SheetNames.push(summarySheetName);
+  workbook.Sheets[summarySheetName] = summarySheet;
+
+  // Ghi file excel
   const excelBuffer: any = XLSX.write(workbook, {
     bookType: 'xlsx',
     type: 'array',
