@@ -419,7 +419,6 @@ export const routes: Routes = [
           },
         ],
       },
-
       {
         path: 'account',
         redirectTo: 'account/general',

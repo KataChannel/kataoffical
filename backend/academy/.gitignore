@@ -1,0 +1,8 @@
+node_modules
+backups_json
+# Add this line to your .gitignore
+# .env
+
+# # You might also want to ignore all .env variations
+# .env.*
+# !.env.example

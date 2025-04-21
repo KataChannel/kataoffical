@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+datasource postgres {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Menu {
+  id        String   @id @default(uuid())
+  title     String
+  icon      String?  // Optional icon for menu
+  slug      String?  // URL of the menu item
+  parentId  String?  // Reference to parent menu (null if root)
+  parent    Menu?    @relation("MenuChildren", fields: [parentId], references: [id])
+  children  Menu[]   @relation("MenuChildren")
+  order     Int?      // For sorting menus
+  isActive  Boolean  @default(false) // Enable/Disable menu
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ChatAIMessage {
+  id        String  @id @default(uuid())
+  userId    String
+  message   String
+  reply     String
+  createdAt DateTime @default(now())
+}
+model ChatAIHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  message   String
+  sender    String   // 'user' hoặc 'bot'
+  createdAt DateTime @default(now())
+}
+
+model ErrorLog {
+  id        String   @id @default(uuid())
+  timestamp DateTime
+  message   String
+  details   Json?    // Lưu thông tin bổ sung dưới dạng JSON
+  source    String   // "client" hoặc "server" để phân biệt nguồn lỗi
+  createdAt DateTime @default(now())
+}
+model Lead {
+  id          String   @id @default(uuid())
+  name        String
+  code        String?  @unique
+  phone       String?  @unique
+  email       String?  @unique
+  order       Int?      
+  status      String   @default("new") // new, contacted, converted, rejected
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  logs        LeadLog[]
+  callLogs    CallLog[]
+  tags        LeadTag[]
+}
+
+model LeadLog {
+  id        String   @id @default(uuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  action    String   // create, update, status_change
+  note      String?
+  createdAt DateTime @default(now())
+}
+
+model CallLog {
+  id        String   @id @default(uuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  callTime  DateTime @default(now())
+  duration  Int      // in seconds
+  outcome   String   // success, failed, no answer
+  note      String?
+}
+
+model LeadTag {
+  id     String @id @default(uuid())
+  leadId String
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  tag    String
+}
+
+model AuditLog {
+  id         String      @id @default(uuid())
+  userId     String
+  action     String?
+  entity     String?
+  entityId   String?
+  oldValue   Json?
+  newValue   Json?
+  createdAt  DateTime @default(now())
+}
+
+model LandingPage {
+  id            String    @id @default(uuid())
+  title         String
+  slug          String    @unique // URL thân thiện, ví dụ: "chien-dich-thang-4"
+  description   String?
+  thumbnail      String?   // Hình ảnh thumbnail cho trang
+  status        String    @default("draft") // "draft", "published", "archived"
+  // --- Phần quan trọng: Lưu trữ nội dung trang ---
+  // Option 1: Lưu cấu trúc dạng JSON (Khuyến nghị cho editor phức tạp)
+  contentJson   Json?
+  // Option 2: Lưu HTML trực tiếp (Đơn giản hơn cho editor cơ bản)
+  contentHtml   String?
+  // Lưu CSS tùy chỉnh nếu cần tách riêng
+  customCss     String?
+  // Lưu JS tùy chỉnh nếu cần
+  customJs      String?
+  // SEO metadata
+  seoTitle      String?
+  seoDescription String?
+  seoKeywords   String?   // Có thể là String[]
+  ownerId       String?   // User quản lý trang này
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  affiliateLinks AffiliateLink[]
+  // Nếu bạn muốn lưu log các lượt submit form riêng biệt
+  formSubmissions FormSubmission[]
+  codeId      String @unique // Mã đề xuất duy nhất
+  order      Int? @default(1)
+  isActive  Boolean @default(true)
+}
+
+// (Tùy chọn) Model để lưu chi tiết các lượt submit form từ LandingPage nội bộ
+model FormSubmission {
+  id              String    @id @default(uuid())
+  landingPageId   String
+  landingPage     LandingPage @relation(fields: [landingPageId], references: [id])
+  affiliateLinkId String?   // Link affiliate nào dẫn đến submit này (quan trọng!)
+  affiliateLink   AffiliateLink? @relation(fields: [affiliateLinkId], references: [id])
+  formData        Json      // Lưu dữ liệu người dùng nhập vào form
+  submittedAt     DateTime  @default(now())
+  ipAddress       String?
+  userAgent       String?
+  processed       Boolean   @default(false)
+}
+model AffiliateLink {
+  id            String    @id @default(uuid())
+  title         String?    // Tiêu đề của link affiliate
+  landingPageId String    // Vẫn là ID của LandingPage nội bộ
+  landingPage   LandingPage @relation(fields: [landingPageId], references: [id])
+  createdAt     DateTime  @default(now())
+  trackingEvents TrackingEvent[]
+  registrations Registration[]
+  formSubmissions FormSubmission[] // Liên kết đến các form submit qua link này
+  codeId      String @unique // Mã đề xuất duy nhất
+  order      Int? @default(1)
+  isActive  Boolean @default(true)
+  createdById String
+  updatedAt DateTime @updatedAt
+}
+
+// Lưu lại các sự kiện tracking
+model TrackingEvent {
+  id              String    @id @default(uuid())
+  affiliateLinkId String    // Link affiliate nào được sử dụng
+  affiliateLink   AffiliateLink @relation(fields: [affiliateLinkId], references: [id])
+  type            String    // Loại sự kiện: "view", "click_form", "submit_form"
+  ipAddress       String?
+  userAgent       String?
+  timestamp       DateTime  @default(now())
+  triggeredByUserId String?
+  updatedAt DateTime @updatedAt
+}
+model Registration {
+  id              String    @id @default(uuid())
+  registeredUserId String    @unique // ID của User mới đăng ký
+  affiliateLinkId String    // Link affiliate dẫn đến đăng ký này
+  affiliateLink   AffiliateLink @relation(fields: [affiliateLinkId], references: [id])
+  timestamp       DateTime  @default(now())
+}
