@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import { PrismaService } from 'prisma/prisma.service';
-import { permission } from 'process';
-import { Role } from 'src/role/entities/role.entity';
 import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
@@ -12,14 +11,14 @@ export class UserService {
   ) {}
 
   async createUser(dto: any) {
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
     return this.prisma.user.create({
       data: {
         email: dto.email,
-        password: dto.password, // Hash password in real app
+        password: hashedPassword, // Hash password in real app
       },
     });
   }
-
   async getUsers() {
     const users = await this.prisma.user.findMany({
       include: {
@@ -112,6 +111,10 @@ export class UserService {
     this._SocketGateway.senduserUpdate();
     delete data.roles;
     delete data.permissions;
+    if (data.password) {
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+      data.password = hashedPassword;
+    }
     return this.prisma.user.update({ where: { id }, data });
   }
 
