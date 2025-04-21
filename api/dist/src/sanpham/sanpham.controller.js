@@ -22,6 +22,9 @@ let SanphamController = class SanphamController {
     create(createSanphamDto) {
         return this.sanphamService.create(createSanphamDto);
     }
+    findby(param) {
+        return this.sanphamService.findby(param);
+    }
     findAll() {
         return this.sanphamService.findAll();
     }
@@ -52,6 +55,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], SanphamController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('findby'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], SanphamController.prototype, "findby", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

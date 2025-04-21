@@ -22,6 +22,26 @@ export declare class SanphamController {
         haohut: number;
         order: number | null;
     }>;
+    findby(param: any): Promise<{
+        id: string;
+        subtitle: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        title2: string | null;
+        slug: string | null;
+        masp: string;
+        giagoc: number;
+        dvt: string | null;
+        hinhanh: string | null;
+        loadpoint: number | null;
+        soluong: number;
+        soluongkho: number;
+        haohut: number;
+        order: number | null;
+    } | null>;
     findAll(): Promise<{
         id: string;
         subtitle: string | null;

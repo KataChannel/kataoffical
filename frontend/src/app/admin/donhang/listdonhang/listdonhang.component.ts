@@ -466,6 +466,7 @@ export class ListDonhangComponent {
         const item1 = { ...item, ...v };
         await this._DonhangService.updateDonhang(item1);
       } else {
+
         await this._DonhangService.CreateDonhang(v);
       }
     });
@@ -488,22 +489,121 @@ export class ListDonhangComponent {
   }
   ListImportExcel: any[] = []
   async ImporExcel(event: any) {
-    for (const file of event.target.files) {
-      const data = await readExcelFile(file,'TEMPLATE');   
-      const item ={title:file.name, data: data};
-      this.ListImportExcel.push(item);     
-      console.log(this.ListImportExcel.map((v:any)=>({title:v.title})));
-       
-    } 
-      this.dialogCreateRef = this.dialog.open(this.dialogImportExcel, {
-        hasBackdrop: true,
-        disableClose: true,
+    const files = Array.from(event.target.files) as File[];
+    
+    for (let i = 0; i < files.length; i++) {
+      try {
+      const file = files[i];
+      const data = await readExcelFile(file, 'Donhang');
+      
+      // Import one file at a time and wait for it to complete
+      await this.ImporDonhang(data);
+      
+      this._snackBar.open(`Đã Tạo Đơn ${i + 1}/${files.length}: ${file.name}`, '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
       });
-      console.log(this.ListImportExcel);
+      } catch (error) {
+      console.error(`Lỗi khi Tạo Đơn ${i + 1}:`, error);
+      this._snackBar.open(`Lỗi khi Tạo Đơn ${i + 1}`, '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+      }
+    }
+    
+    if (files.length > 0) {
+      this.dialogCreateRef?.close();
+      this.ngOnInit(); // Refresh the data after all imports
+    }
+  }
+
+  async ImporDonhang(items: any[]): Promise<void> {
+    items = items.slice(1); // Remove the first row (header)
+    console.log(items);
+    
+    if (!items || !items.length) {
+      this._snackBar.open('Không có dữ liệu để nhập', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+      return;
+    }
+
+    try {
+      // Validate required field in first item
+      const firstItem = items[0];
+      if (!firstItem.makh) {
+        throw new Error('Mã khách hàng không được để trống');
+      }
+
+      // Find customer
+      const khachhang = await this._KhachhangService.getKhachhangBy({ makh: firstItem.makh });
+      if (!khachhang) {
+        throw new Error(`Không tìm thấy khách hàng với mã ${firstItem.makh}`);
+      }
+
+      // Process products with error handling
+      const sanpham = await Promise.all(
+        items.map(async (item) => {
+          if (!item.masp) {
+            throw new Error('Mã sản phẩm không được để trống');
+          }
+
+          const sp = await this._SanphamService.getSanphamby({ masp: item.masp });
+          if (!sp) {
+            throw new Error(`Không tìm thấy sản phẩm với mã ${item.masp}`);
+          }
+
+          return {
+            ...sp,
+            sldat: Number(item.sldat) || 0,
+            slgiao: Number(item.slgiao) || 0,
+            slnhan: Number(item.slnhan) || 0,
+          };
+        })
+      );
+
+      // Create order data
+      const donhangData = {
+        title: `Đơn hàng ${GenId(4, false)}`,
+        type: 'donsi',
+        ngaygiao: firstItem.ngay || moment().format('YYYY-MM-DD'),
+        khachhangId: khachhang.id,
+        khachhang: khachhang,
+        sanpham: sanpham,
+        status: 'new',
+        createdAt: new Date(),
+      };
+
+      // Create order
+      await this._DonhangService.CreateDonhang(donhangData);
       
+      this._snackBar.open('Nhập đơn hàng thành công', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
       
-    //  
-   // this.DoImportData(data);
+      // Refresh data
+      this.ngOnInit();
+      
+    } catch (error: any) {
+      console.error('Error importing order:', error);
+      this._snackBar.open(`Lỗi: ${error.message || 'Không thể nhập đơn hàng'}`, '', {
+        duration: 5000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
   }
 
   async ExportExcel(data: any, title: any) {

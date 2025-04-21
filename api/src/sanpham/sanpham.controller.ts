@@ -9,7 +9,10 @@ export class SanphamController {
   create(@Body() createSanphamDto: any) {
     return this.sanphamService.create(createSanphamDto);
   }
-
+  @Post('findby')
+  findby(@Body() param: any) {
+    return this.sanphamService.findby(param);
+  }
   @Get()
   findAll() {
     return this.sanphamService.findAll();

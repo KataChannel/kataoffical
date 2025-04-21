@@ -165,6 +165,27 @@ export class KhachhangService {
     await tx.done;
   }
 
+  async getKhachhangBy(param: any) {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+        body: JSON.stringify(param),
+      };
+      const response = await fetch(`${environment.APIURL}/khachhang/findby`, options);      
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      const data = await response.json();      
+      return data 
+    } catch (error) {
+      return console.error(error);
+    }
+  }
+
   async getKhachhangByid(id: any) {
     try {
       const options = {

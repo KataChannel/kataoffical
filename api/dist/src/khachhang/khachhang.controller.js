@@ -25,6 +25,9 @@ let KhachhangController = class KhachhangController {
     create(createKhachhangDto) {
         return this.khachhangService.create(createKhachhangDto);
     }
+    findby(param) {
+        return this.khachhangService.findby(param);
+    }
     async searchfield(searchParams) {
         return this.khachhangService.searchfield(searchParams);
     }
@@ -56,6 +59,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], KhachhangController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('findby'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], KhachhangController.prototype, "findby", null);
 __decorate([
     (0, common_1.Post)('searchfield'),
     __param(0, (0, common_1.Body)()),

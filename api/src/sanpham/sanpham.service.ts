@@ -104,7 +104,16 @@ export class SanphamService {
       throw error;
     }
   }
-
+  async findby(param: any) {
+    try {
+      const sanpham = await this.prisma.sanpham.findUnique({
+        where: param,
+      });
+      return sanpham;
+    } catch (error) {
+      throw error;
+    }
+  }
   async findOne(id: string) {
     const sanpham = await this.prisma.sanpham.findUnique({
       where: { id },

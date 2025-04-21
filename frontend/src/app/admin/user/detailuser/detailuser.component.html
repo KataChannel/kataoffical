@@ -40,6 +40,10 @@
         <mat-label>Số Điện Thoại</mat-label>
         <input matInput [(ngModel)]="DetailUser().SDT" [disabled]="!isEdit()" placeholder="Vui lòng nhập Số Điện Thoại" />
       </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Mật Khẩu </mat-label>
+        <input matInput type="password" [(ngModel)]="DetailUser().password" [disabled]="!isEdit()" placeholder="Vui lòng nhập Số Điện Thoại" />
+      </mat-form-field>
       <div class="w-full flex flex-wrap gap-2 space-x-2 ">
         <button mat-flat-button [disabled]="!isEdit()" color="primary" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
           Thêm Nhóm

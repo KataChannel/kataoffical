@@ -36,4 +36,38 @@ export class StorageService {
       localStorage.clear();
     }
   }
+
+ async clearAllIndexedDB() {
+    try {
+        // Get all database names
+        const databases = await window.indexedDB.databases();
+        
+        // Delete each database
+        for (const dbInfo of databases) {
+            if (dbInfo.name) {
+                await new Promise<void>((resolve, reject) => {
+                    const request = window.indexedDB.deleteDatabase(dbInfo.name as string);
+                    
+                    request.onsuccess = () => {
+                        console.log(`Database ${dbInfo.name} deleted`);
+                        resolve();
+                    };
+                    
+                    request.onerror = (event) => {
+                        console.error(`Error deleting ${dbInfo.name}:`, event);
+                        reject(event);
+                    };
+                    
+                    request.onblocked = () => {
+                        console.warn(`Deletion of ${dbInfo.name} blocked`);
+                        reject(new Error(`Deletion of ${dbInfo.name} blocked`));
+                    };
+                });
+            }
+        }
+        console.log('All IndexedDB databases cleared');
+    } catch (error) {
+        console.error('Failed to clear all IndexedDB databases:', error);
+    }
+}
 }

@@ -75,16 +75,17 @@ export class SanphamService {
     
     // 🛑 Kiểm tra cache từ IndexedDB trước
     const cachedData = await db.getAll('sanphams');
-    const updatedAtCache = this._StorageService.getItem('sanphams_updatedAt') || '0';
+    const updatedAtCache = this._StorageService.getItem('sanphams_updatedAt') || 0;
     
     // ✅ Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
     if (cachedData.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) { // 5 phút cache TTL
       this.ListSanpham.set(cachedData);
       return cachedData;
     }
-  
+    
     try {
       // ✅ Gọi API chỉ để lấy `updatedAt` mới nhất
+      
       const options = {
         method: 'GET',
         headers: {
@@ -95,15 +96,16 @@ export class SanphamService {
       
       const lastUpdatedResponse = await fetch(`${environment.APIURL}/last-updated?table=sanpham`, options);
       if (!lastUpdatedResponse.ok) {
-        this.handleError(lastUpdatedResponse.status);
-        return cachedData;
+        this.handleError(lastUpdatedResponse.status);        
+        //return cachedData;
       }    
-      const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
+      const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();     
       // ✅ Nếu cache vẫn mới, không cần tải lại dữ liệu
       if (updatedAtServer <= updatedAtCache) {
         this.ListSanpham.set(cachedData);
         return cachedData;
       }
+
       console.log(updatedAtServer, updatedAtCache); 
       // ✅ Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
       const response = await fetch(`${environment.APIURL}/sanpham`, options);
@@ -183,6 +185,29 @@ export class SanphamService {
       return console.error(error);
     }
   }
+
+  async getSanphamby(param: any) {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+        body: JSON.stringify(param),
+      };
+      const response = await fetch(`${environment.APIURL}/sanpham/findby`, options);      
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      const data = await response.json();      
+      return data 
+    } catch (error) {
+      return console.error(error);
+    }
+  }
+
+
   async updateSanpham(dulieu: any) {
     try {
       const options = {

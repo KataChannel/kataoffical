@@ -60,7 +60,17 @@ export class KhachhangService {
       include: {banggia: true}
     });
   }
-
+  async findby(param: any) {
+    try {
+      const khachhang = await this.prisma.khachhang.findUnique({
+        where: param,
+      });
+      return khachhang;
+    } catch (error) {
+      console.error('Error finding item:', error);
+      throw error;
+    }
+  }
   async findOne(id: string) {
     const khachhang = await this.prisma.khachhang.findUnique({ where: { id },    
       include:{

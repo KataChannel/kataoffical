@@ -12,6 +12,10 @@ export class KhachhangController {
   create(@Body() createKhachhangDto: any) {
     return this.khachhangService.create(createKhachhangDto);
   }
+  @Post('findby')
+  findby(@Body() param: any) {
+    return this.khachhangService.findby(param);
+  }
   @Post('searchfield')
   async searchfield(@Body() searchParams: Record<string, any>) {
     return this.khachhangService.searchfield(searchParams);

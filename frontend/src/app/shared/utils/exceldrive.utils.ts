@@ -48,7 +48,7 @@ export function writeExcelFileWithSheets(
   const summaryData: any[][] = [
     ['ngay', 'makh', 'tenkh', 'mabangia', 'masp','tensp' ,'sldat', 'slgiao', 'slnhan'],
     ['Ngày', 'Khách hàng', 'Tên Khách Hàng', 'Bảng Giá', 'Mã Sản Phẩm','Tên Sản Phẩm', 'SL Đặt', 'SL Giao', 'SL Nhận'],
-    [moment().format('DD/MM/YYYY'), 'KS00163', '', '', 'I100001', '', '1', '', ''],
+    [moment().format('DD/MM/YYYY'), 'TG-KS00001', '', '', 'I100001', '', '1', '', ''],
     ['', '', '', '', '', '', '', '', ''],
   ];
 
@@ -131,14 +131,19 @@ export function readExcelFile(event: any,sheetName?:any): Promise<any> {
         const worksheet = workbook.Sheets[sn];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
         const result = jsonData.map((item: any) => {
-          if (item.ItemCode === undefined || item.Quantity === undefined) {
+          if (item.ngay === undefined || item.makh === undefined || item.masp === undefined || item.sldat === undefined) {
             return null; // Hoặc xử lý theo cách bạn muốn
           }
           return {
-            masp:item.ItemCode,
-            sldat:item.Quantity,
-            slgiao:item.Quantity,  
-            slnhan:item.Quantity
+            ngay: moment(item.ngay, "DD/MM/YYYY").toDate(),
+            makh: item.makh,
+            tenkh: item.tenkh,  
+            mabangia: item.mabangia,
+            masp: item.masp,
+            tensp: item.tensp,
+            sldat: item.sldat,
+            slgiao: item.sldat,
+            slnhan: item.sldat,
           }
         }).filter(item => item !== null);
         resolve(result);

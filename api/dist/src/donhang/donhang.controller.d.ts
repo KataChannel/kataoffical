@@ -23,7 +23,7 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
+        title: string | null;
         order: number | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
@@ -62,7 +62,7 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
+        title: string | null;
         order: number | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
@@ -83,7 +83,7 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
+        title: string | null;
         order: number | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
@@ -121,7 +121,7 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
+        title: string | null;
         order: number | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
@@ -186,7 +186,7 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
+        title: string | null;
         order: number | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
@@ -249,7 +249,7 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
+        title: string | null;
         order: number | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
@@ -338,7 +338,7 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
+        title: string | null;
         order: number | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
@@ -368,7 +368,7 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
+        title: string | null;
         order: number | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
@@ -398,7 +398,7 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
+        title: string | null;
         order: number | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
@@ -413,7 +413,7 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string;
+        title: string | null;
         order: number | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
