@@ -610,20 +610,22 @@ export class ListDonhangComponent {
    await this._KhachhangService.getAllKhachhang()
    await this._SanphamService.getAllSanpham()
    await this._BanggiaService.getAllBanggia()  
-    const Sheet1 = this._KhachhangService.ListKhachhang().map((v: any) => ({
+    const KH = this._KhachhangService.ListKhachhang().map((v: any) => ({
       makh: v.makh,
       name: v.name,
       banggia: v.banggia[0]?.mabanggia,
     }));
-    const Sheet2 = this._SanphamService.ListSanpham().map((v: any) => ({
+    const SP = this._SanphamService.ListSanpham().map((v: any) => ({
+      subtitle: v.subtitle,
       masp: v.masp,
       title: v.title,
+      dvt: v.dvt,
     }));
-    const Sheet3 = this._BanggiaService.ListBanggia().map((v: any) => ({
+    const BG = this._BanggiaService.ListBanggia().map((v: any) => ({
       mabanggia: v.mabanggia,
       title: v.title,
     }));
-    writeExcelFileWithSheets({Sheet1, Sheet2, Sheet3}, title);
+    writeExcelFileWithSheets({SP, KH, BG}, title);
   }
   printContent()
   {

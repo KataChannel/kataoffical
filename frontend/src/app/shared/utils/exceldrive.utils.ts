@@ -60,17 +60,17 @@ export function writeExcelFileWithSheets(
 
   // Define formula cell configurations for clarity
   const formulaCells = [
-    { cell: 'C3', formula: 'VLOOKUP(B3,Sheet1!A:C,2,0)', type: 's' },
-    { cell: 'D3', formula: 'VLOOKUP(B3,Sheet1!A:C,3,0)', type: 's' },
-    { cell: 'F3', formula: 'VLOOKUP(E3,Sheet2!A:B,2,0)', type: 's' },
+    { cell: 'C3', formula: 'VLOOKUP(B3,KH!A:D,2,0)', type: 's' },
+    { cell: 'D3', formula: 'VLOOKUP(B3,KH!A:D,3,0)', type: 's' },
+    { cell: 'F3', formula: 'VLOOKUP(E3,SP!B:D,2,0)', type: 's' },
     { cell: 'H3', formula: 'G3', type: 'n' },
     { cell: 'I3', formula: 'G3', type: 'n' },
 
     { cell: 'A4', formula: 'A3', type: 's' },
     { cell: 'B4', formula: 'B3', type: 's' },
-    { cell: 'C4', formula: 'VLOOKUP(B4,Sheet1!A:C,2,0)', type: 's' },
-    { cell: 'D4', formula: 'VLOOKUP(B4,Sheet1!A:C,3,0)', type: 's' },
-    { cell: 'F4', formula: 'VLOOKUP(E4,Sheet2!A:B,2,0)', type: 's' },
+    { cell: 'C4', formula: 'VLOOKUP(B4,KH!A:C,2,0)', type: 's' },
+    { cell: 'D4', formula: 'VLOOKUP(B4,KH!A:C,3,0)', type: 's' },
+    { cell: 'F4', formula: 'VLOOKUP(E4,SP!B:D,2,0)', type: 's' },
     { cell: 'H4', formula: 'G4', type: 'n' },
     { cell: 'I4', formula: 'G4', type: 'n' }
   ];
