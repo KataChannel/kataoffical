@@ -1,5 +1,5 @@
 {
-  "name": "@kata/katashared",
+  "name": "kata/katashared",
   "version": "0.0.4",
   "scripts": {
     "ng": "ng",
