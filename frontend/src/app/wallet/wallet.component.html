@@ -1,0 +1,14 @@
+<div>
+    <h2>Wallet</h2>
+    <div>
+        <input [(ngModel)]="walletAddress" placeholder="TON Testnet Address (EQ...)" />
+        <button (click)="connectWallet()">Connect Wallet</button>
+    </div>
+    <div>
+        <button (click)="deposit()">Deposit 2 TON Testnet (Demo)</button>
+    </div>
+    <div>
+        <input [(ngModel)]="withdrawAmount" type="number" placeholder="Amount to withdraw" />
+        <button (click)="withdraw()">Withdraw</button>
+    </div>
+</div>

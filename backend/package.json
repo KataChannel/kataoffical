@@ -1,0 +1,26 @@
+{
+        "name": "ngu-hanh-farm-backend",
+        "version": "1.0.0",
+        "scripts": {
+                "start": "nest start",
+                "start:prod": "node dist/main",
+                "prisma:generate": "prisma generate",
+                "prisma:migrate": "prisma migrate dev"
+        },
+        "dependencies": {
+                "@nestjs/common": "^11.0.0",
+                "@nestjs/core": "^11.0.0",
+                "@nestjs/platform-express": "^11.0.0",
+                "@prisma/client": "^5.20.0",
+                "dotenv": "^16.4.5",
+                "node-telegram-bot-api": "^0.66.0",
+                "rxjs": "^7.8.1",
+                "tonweb": "^0.0.66"
+        },
+        "devDependencies": {
+                "@nestjs/cli": "^11.0.0",
+                "@nestjs/schematics": "^11.0.0",
+                "prisma": "^5.20.0",
+                "typescript": "^5.5.0"
+        }
+}

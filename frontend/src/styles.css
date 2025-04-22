@@ -1,0 +1,73 @@
+/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+@layer components {
+
+  [data-tooltip] {
+    @apply relative; /* Tương đương position: relative */
+  }
+
+  [data-tooltip]::after {
+    content: attr(data-tooltip);
+    @apply absolute bottom-full left-1/2 mb-1; /* Vị trí trên element, cách 1 margin-bottom */
+    @apply transform -translate-x-1/2; /* Căn giữa tooltip */
+    @apply bg-gray-800 text-white text-xs font-medium; /* Màu nền, chữ */
+    @apply px-2 py-1 rounded shadow-md; /* Padding, bo góc, đổ bóng */
+    @apply whitespace-nowrap; /* Không xuống dòng */
+    @apply opacity-0 invisible group-hover:opacity-100 group-hover:visible; /* Ẩn/hiện khi hover vào parent có class 'group' */
+    @apply transition-all duration-200 ease-in-out; /* Hiệu ứng mượt */
+    @apply pointer-events-none z-10; /* Không bắt sự kiện, luôn ở trên */
+  }
+}
+
+@layer utilities {
+    /* Hiệu ứng tưới nước */
+    .watering-effect {
+      opacity: 0;
+      background: radial-gradient(circle, rgba(52, 152, 219, 0.5) 0%, rgba(52, 152, 219, 0) 70%);
+      transform: scale(0);
+      transition: transform 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.2), opacity 0.6s ease-out; /* cubic-bezier cho hiệu ứng nảy nhẹ */
+    }
+    .watering-effect.active {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+  
+    /* Hiệu ứng thu hoạch cho ảnh cây */
+    .harvesting-effect-img {
+      animation: harvest-img-anim 0.8s ease-out forwards;
+    }
+  
+    /* Hiệu ứng bay lên cho điểm thưởng */
+    .harvest-reward-effect {
+      animation: harvest-reward-anim 0.8s ease-out forwards;
+    }
+  
+    /* Keyframes cho animation */
+    @keyframes harvest-img-anim {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.5) translateY(20px); /* Nhỏ lại và đi xuống nhẹ */
+      }
+    }
+  
+    @keyframes harvest-reward-anim {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 10px) scale(0.8); /* Bắt đầu từ dưới, hơi nhỏ */
+      }
+      30%, 70% {
+        opacity: 1;
+        transform: translate(-50%, -15px) scale(1.1); /* Bay lên, phóng to */
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -30px) scale(1); /* Tiếp tục bay lên và mờ dần */
+      }
+    }
+  }

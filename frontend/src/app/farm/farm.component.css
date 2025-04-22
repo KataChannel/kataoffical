@@ -1,0 +1,24 @@
+/* farm.component.css */
+.farm-bg { background-color: #f0f8e0; }
+.bg-white\/90 { background-color: rgba(255, 255, 255, 0.9); }
+.border-farm-earth { border-color: #8b4513; }
+.border-farm-secondary { border-color: #f4a261; }
+.ring-farm-secondary { --tw-ring-color: #f4a261; }
+.ring-offset-2 { --tw-ring-offset-width: 2px; }
+.bg-farm-primary { background-color: #2a9d8f; }
+.bg-farm-secondary { background-color: #f4a261; }
+.watering-effect.active { 
+  background: rgba(0, 150, 255, 0.3); 
+  animation: pulse 0.6s ease-out; 
+}
+.harvesting-effect-img { 
+  animation: harvest 0.8s ease-out; 
+}
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes harvest {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-20px); opacity: 0; }
+}
