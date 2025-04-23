@@ -59,7 +59,7 @@ import { MatMenuModule } from '@angular/material/menu';
           this._router.navigate(['/admin/user', "0"]);
         }
         else{
-            await this._UserService.getUserBy({id:id});
+            await this._UserService.getUserBy({id: id });
             this._ListuserComponent.drawer.open();
             this._router.navigate(['/admin/user', id]);
         }
@@ -70,10 +70,17 @@ import { MatMenuModule } from '@angular/material/menu';
     isDelete = signal(false);  
     userId:any = this._UserService.userId
     ListRole:any = []
+    FilterRole:any = []
     async ngOnInit() {    
       await this._RoleService.getAllRole();
       this.ListRole = this._RoleService.ListRole();
-      console.log(this.ListRole);
+      this.FilterRole = this.ListRole.filter((v:any)=>
+        this.DetailUser() && this.DetailUser().roles && 
+        !this.DetailUser().roles.some((r:any)=>r.id === v.id)
+      );
+      console.log( this.ListRole);
+      console.log(this.DetailUser().roles);
+      console.log(this.FilterRole);
       
     }
     async handleUserAction() {
@@ -151,15 +158,39 @@ import { MatMenuModule } from '@angular/material/menu';
       })
     }
     doFilterHederColumn(event:any){
-      this.ListRole = this._RoleService.ListRole().filter((v:any)=>v.name.toLowerCase().includes(event.target.value.toLowerCase()));
+      this.FilterRole = this.ListRole.ListRole().filter((v:any)=>v.name.toLowerCase().includes(event.target.value.toLowerCase()));
     }
     handleAddRole(item:any){
       console.log(item);
-      this.ListRole.push(item);
-      // this._UserService.assignRoleToUser({userId:this.DetailUser().id,roleId:item.id});
+      console.log( this.DetailUser().roles);
+      
+      this.DetailUser.update((v:any)=>{
+        const exits = v.roles.find((r:any)=>r.id === item.id);
+        console.log(exits);
+        
+        if(!exits) {
+          v.roles.push(item);
+        }
+        return v;
+      })
+      this._UserService.assignRoleToUser({userId:this.DetailUser().id,roleId:item.id});
+      this.ngOnInit();
+      this._snackBar.open('Thêm Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
     }
     handleRemoveRole(item:any){
-      this.ListRole = this.ListRole.filter((v:any)=>v.id !== item.id);
-      // this._UserService.removeRoleFromUser({userId:item.userId,roleId:item.roleId});
+      // this.ListRole = this.ListRole.filter((v:any)=>v.id !== item.id);
+      this._UserService.removeRoleFromUser({userId:this.DetailUser().id,roleId:item.id})
+      this.ngOnInit();
+      this._snackBar.open('Xóa Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
     }
   }

@@ -1,6 +1,6 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, computed, effect, inject, signal, TemplateRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
@@ -8,11 +8,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule, MatDrawer } from '@angular/material/sidenav';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router, RouterOutlet } from '@angular/router';
@@ -23,7 +23,11 @@ import { GoogleSheetService } from '../../../../shared/googlesheets/googlesheets
 import { readExcelFile, writeExcelFile } from '../../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData } from '../../../../shared/utils/shared.utils';
 import { QuanlydriveService } from '../../quanlydrive.service';
-  
+import {MatProgressBarModule} from '@angular/material/progress-bar';  
+import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatDatepickerModule } from '@angular/material/datepicker';
   @Component({
     selector: 'app-listdrivelocal',
     templateUrl: './listdrivelocal.component.html',
@@ -44,32 +48,44 @@ import { QuanlydriveService } from '../../quanlydrive.service';
       FormsModule,
       MatTooltipModule,
       MatDialogModule,
-      SearchfilterComponent,
-      KtableComponent
+      // SearchfilterComponent,
+      KtableComponent,
+      MatProgressBarModule,
+      ScrollingModule,
+      MatProgressSpinnerModule,
+      MatDatepickerModule
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
   })
   export class ListDrivelocalComponent {
     displayedColumns: string[] = [];
     ColumnName: any = {
-      title: 'Tên Sản Phẩm',
-      masp: 'Mã Sản Phẩm',
-      giagoc: 'Giá Gốc',
-      dvt: 'Đơn Vị Tính',
-      soluong: 'SL',
-      soluongkho: 'SL Kho',
-      haohut: 'Hao Hụt',
-      ghichu: 'Ghi Chú',
-      createdAt: 'Ngày Tạo'
+      name: 'Tên',
+      path: 'Đường Dẫn',
+      size: 'Dung Lượng',
+      modifiedTime: 'Ngày Tạo Drive',
+      createdTime:'Ngày Cập Nhật Drive',
     };
     FilterColumns: any[] = JSON.parse(
       localStorage.getItem('DrivelocalColFilter') || '[]'
     );
     Columns: any[] = [];
     totalItems = 0;
-    pageSize = 10;
-    currentPage = 1;
     totalPages = 1;
+    params:any ={
+        name: "",
+        type: "",
+        mimeType: "",
+        parentId: "",
+        size: { min: 0, max: 100 },
+        modifiedTime: { 
+          from: new Date(), 
+          to: new Date() 
+        },
+        // modifiedTime: new Date("2024-01-01T00:00:00Z"),
+        page: 1,
+        pageSize: 1000
+    }
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
     @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
@@ -78,7 +94,6 @@ import { QuanlydriveService } from '../../quanlydrive.service';
     private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
     private _router: Router = inject(Router);
     private _dialog: MatDialog = inject(MatDialog);
-    Listdrivelocal:any = this._DrivelocalService.ListQuanlydrive;
     EditList:any=[];
     dataSource = new MatTableDataSource([]);
     drivelocalId:any = this._DrivelocalService.quanlydriveId;
@@ -86,14 +101,30 @@ import { QuanlydriveService } from '../../quanlydrive.service';
     CountItem: any = 0;
     isSearch: boolean = false;
     constructor() {
-      effect(() => {
-        this.dataSource.data = this.Listdrivelocal();
-        console.log(this.Listdrivelocal());
-        
-        this.totalItems = this.Listdrivelocal().length;
-        this.calculateTotalPages();
+      effect(async () => {
+        this.SearchItems = await this._DrivelocalService.SearchQuanlydriveBy(this.params);
+        this.dataSource.data = this.SearchItems.data;
+        this.totalItems = this.SearchItems.data.length; // Update totalItems with the length of ListItem
+        this.progress = this._DrivelocalService.progress;
+        this.totalRecords = this._DrivelocalService.totalRecords;
       });
     }
+  progress = signal<any>(0);
+  totalRecords = signal<any>(0);
+  status = 'Idle';
+  ListItem:any = [];
+  SearchItems:any = {
+     data: [],
+      pagination: {
+          total: 0,
+      }
+  };
+  currentPage = 1;
+  pageSize = 10; // Có thể lấy từ localStorage hoặc cấu hình
+  async syncRecords(){
+    await this._DrivelocalService.syncRecords();
+    }
+    
     applyFilter(event: Event) {
       const filterValue = (event.target as HTMLInputElement).value;
       this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -103,15 +134,38 @@ import { QuanlydriveService } from '../../quanlydrive.service';
     }
     async ngOnInit(): Promise<void> {    
       this._DrivelocalService.listenQuanlydriveUpdates();
-      await this._DrivelocalService.getAllDrivelocal();
+      this.SearchItems = await this._DrivelocalService.SearchQuanlydriveBy(this.params);
       this.displayedColumns = Object.keys(this.ColumnName)
-      console.log(this.displayedColumns);
-      this.updateDisplayData();
-      this.dataSource = new MatTableDataSource(this.Listdrivelocal());
+      // this.updateDisplayData();
+      this.dataSource = new MatTableDataSource(this.SearchItems.data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.initializeColumns();
       this.setupDrawer();
+    }
+    async DoTimKiem(isReset?: boolean) {
+      if (isReset) {
+        this.params.pageSize = 1000;
+        this.params.page = 1;
+      }
+      this.SearchItems = await this._DrivelocalService.SearchQuanlydriveBy(this.params);
+      this.dataSource.data = this.SearchItems.data;
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    }
+    titleMB(item:any){
+      const OneMB = 1048576
+      const OneGB = 1024*OneMB
+      if(Number(item)>OneGB)
+      {
+        return (Number(item) / OneGB).toFixed(2) + ' GB';
+      }
+      else {
+        return `${(Number(item) / OneMB).toFixed(2)} MB`;
+      }
+    }
+    getPath(item:any){
+     return item.replace(/\/\*\//g, '<span class="text-red-600 font-bold"> / </span>'); // Fixed syntax error
     }
     private initializeColumns(): void {
       this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -162,7 +216,7 @@ import { QuanlydriveService } from '../../quanlydrive.service';
     }
     @Debounce(300)
     doFilterHederColumn(event: any, column: any): void {
-      this.dataSource.filteredData = this.Listdrivelocal().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+      this.dataSource.filteredData = this.SearchItems.data.filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
       const query = event.target.value.toLowerCase();  
     }
     ListFilter:any[] =[]
@@ -193,10 +247,7 @@ import { QuanlydriveService } from '../../quanlydrive.service';
     }
     ResetFilter()
     {
-      this.ListFilter = this.Listdrivelocal();
-      // this.dataSource.data = this.Listdrivelocal();
-      // this.dataSource.paginator = this.paginator;
-      // this.dataSource.sort = this.sort;
+      this.ListFilter = this.SearchItems.data;
     }
     EmptyFiter()
     {
@@ -208,7 +259,7 @@ import { QuanlydriveService } from '../../quanlydrive.service';
     }
     ApplyFilterColum(menu:any)
     {    
-      this.dataSource.data = this.Listdrivelocal().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+      this.dataSource.data = this.SearchItems.data.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       menu.closeMenu();
@@ -330,52 +381,39 @@ import { QuanlydriveService } from '../../quanlydrive.service';
       return item.id; // Use a unique identifier
     }
   
-  
-  
-  
-  
-  
-  calculateTotalPages() {
-    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-  }
-  
-  onPageSizeChange(size: number,menuHienthi:any) {
-    if(size>this.Listdrivelocal().length){
-      this.pageSize = this.Listdrivelocal().length;
-      this._snackBar.open(`Số lượng tối đa ${this.Listdrivelocal().length}`, '', {
+  onPageSizeChange(menuHienthi:any) {
+    if(this.params.pageSize > this.SearchItems.pagination.total){
+      this.params.pageSize  = this.SearchItems.pagination.total;
+      this._snackBar.open(`Số lượng tối đa ${this.SearchItems.pagination.total}`, '', {
         duration: 1000,
         horizontalPosition: "end",
         verticalPosition: "top",
         panelClass: ['snackbar-success'],
       });
     }
-    else {
-      this.pageSize = size;
-    }
-    this.currentPage = 1; // Reset to first page when changing page size
-    this.calculateTotalPages();
-    this.updateDisplayData();
+    this.params.page = 1; // Reset to first page when changing page size
+    this.DoTimKiem();
     menuHienthi.closeMenu();
   }
   
   onPreviousPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.updateDisplayData();
+    if (this.params.page > 1) {
+      this.params.page = this.params.page - 1;
+      this.DoTimKiem();
     }
   }
   
   onNextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.updateDisplayData();
+    if (this.params.page < this.SearchItems.pagination.totalPages) {
+      this.params.page = this.params.page + 1;
+      this.DoTimKiem();
     }
   }
   
   updateDisplayData() {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
-    const pageData = this.Listdrivelocal().slice(startIndex, endIndex);
+    const pageData = this.SearchItems.data.slice(startIndex, endIndex);
     this.dataSource.data = pageData;
     }
   }

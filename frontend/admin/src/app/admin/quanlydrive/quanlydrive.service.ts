@@ -5,6 +5,8 @@ import { StorageService } from '../../shared/utils/storage.service';
 import { io } from 'socket.io-client';
 import { openDB } from 'idb';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
+import { BehaviorSubject, Observable } from 'rxjs';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,6 +23,95 @@ export class QuanlydriveService {
     this.quanlydriveId.set(id);
   }
   private socket = io(`${environment.APIURL}`);
+
+
+  // Tiến trình tải
+  progress = signal<any>(0);
+  totalRecords = signal<any>(0);
+  status = new BehaviorSubject<string>('Idle');
+
+  async saveToIndexedDB(records: any[], batchId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const worker = new Worker(new URL('/indexeddb.worker', import.meta.url));
+      worker.postMessage({ records, batchId });
+      worker.onmessage = ({ data }) => {
+        if (data.status === 'success') {
+          resolve();
+        } else {
+          reject(new Error(`Batch ${data.batchId} failed: ${data.error}`));
+        }
+      };
+      worker.onerror = (err) => reject(err);
+    });
+  }
+  async getTotalRecords() {
+    const options = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+      },
+    };
+    const countResponse = await fetch(`${environment.APIURL}/quanlydrive/count`, options);
+    if (!countResponse.ok) {
+      this.handleError(countResponse.status);
+      return 0;
+    }   
+    const data = await countResponse.json();
+    return data.count;
+  }
+  async syncRecords(): Promise<void> {
+    try {
+      this.status.next('Starting...');
+      const pageSize = 10000; // 10,000 bản ghi mỗi batch
+      const total = await this.getTotalRecords();
+      this.totalRecords.set(total);
+
+      let page = 1;
+      let processed = 0;
+
+      while (processed < total) {
+        this.status.next(`Fetching batch ${page}...`);
+        const records = await this.SearchQuanlydriveBy({ page, pageSize });
+        if (records.data.length === 0) break;
+
+        this.status.next(`Saving batch ${page} to IndexedDB...`);
+        await this.saveToIndexedDB(records.data, page);
+
+        processed += records.data.length;
+        this.progress.set((processed / total) * 100);
+        console.log(this.progress());
+        page++;
+      }
+      this.status.next('Completed!');
+    } catch (error:any) {
+      this.status.next(`Error: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async SearchQuanlydriveBy(params:any): Promise<any> {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+        body: JSON.stringify(params),
+      };
+      const response = await fetch(`${environment.APIURL}/quanlydrive/search`, options);      
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      const data = await response.json();    
+      return data; // Trả về danh sách bản ghi
+    } catch (error) {
+      this._ErrorLogService.logError('Failed to getQuanlydriveBy', error);
+      return console.error(error);
+    }
+  }
+
   async CreateQuanlydrive(dulieu: any) {
     try {
       const options = {
@@ -146,6 +237,8 @@ export class QuanlydriveService {
       return cachedData;
     }
   }
+
+
 
 
   //Lắng nghe cập nhật từ WebSocket

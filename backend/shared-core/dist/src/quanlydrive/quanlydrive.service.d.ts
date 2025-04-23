@@ -21,6 +21,7 @@ export declare class QuanlydriveService {
             updatedAt: Date;
             parentId: string | null;
             mimeType: string | null;
+            path: string | null;
             size: bigint | null;
             createdTime: Date | null;
             modifiedTime: Date | null;
@@ -54,6 +55,7 @@ export declare class QuanlydriveService {
         updatedAt: Date;
         parentId: string | null;
         mimeType: string | null;
+        path: string | null;
         size: bigint | null;
         createdTime: Date | null;
         modifiedTime: Date | null;
@@ -79,8 +81,7 @@ export declare class QuanlydriveService {
         pageSize?: number;
     }): Promise<{
         data: {
-            size: string | null;
-            path: string;
+            size: number;
             permissions: {
                 role: string;
                 type: string;
@@ -101,6 +102,7 @@ export declare class QuanlydriveService {
             updatedAt: Date;
             parentId: string | null;
             mimeType: string | null;
+            path: string | null;
             createdTime: Date | null;
             modifiedTime: Date | null;
         }[];
@@ -114,6 +116,7 @@ export declare class QuanlydriveService {
     private buildPath;
     findAll(driveId?: string): Promise<any>;
     private buildTree;
+    count(): Promise<number>;
     findby(param: any): Promise<{
         type: import(".prisma/client").$Enums.DriveItemType;
         id: string;
@@ -123,6 +126,7 @@ export declare class QuanlydriveService {
         updatedAt: Date;
         parentId: string | null;
         mimeType: string | null;
+        path: string | null;
         size: bigint | null;
         createdTime: Date | null;
         modifiedTime: Date | null;
@@ -136,6 +140,7 @@ export declare class QuanlydriveService {
         updatedAt: Date;
         parentId: string | null;
         mimeType: string | null;
+        path: string | null;
         size: bigint | null;
         createdTime: Date | null;
         modifiedTime: Date | null;
@@ -149,6 +154,7 @@ export declare class QuanlydriveService {
         updatedAt: Date;
         parentId: string | null;
         mimeType: string | null;
+        path: string | null;
         size: bigint | null;
         createdTime: Date | null;
         modifiedTime: Date | null;

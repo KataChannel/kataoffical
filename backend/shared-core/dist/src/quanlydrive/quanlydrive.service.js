@@ -196,11 +196,13 @@ let QuanlydriveService = class QuanlydriveService {
                     whereClause.size = size;
                 }
                 else {
-                    whereClause.size = {};
-                    if (size.min !== undefined)
-                        whereClause.size.gte = size.min;
-                    if (size.max !== undefined)
-                        whereClause.size.lte = size.max;
+                    if (!(size.min === 0 && size.max === 0)) {
+                        whereClause.size = {};
+                        if (size.min !== undefined)
+                            whereClause.size.gte = size.min * 1048576;
+                        if (size.max !== undefined)
+                            whereClause.size.lte = size.max * 1048576;
+                    }
                 }
             }
             if (createdTime) {
@@ -227,16 +229,17 @@ let QuanlydriveService = class QuanlydriveService {
                         whereClause.modifiedTime.lte = modifiedTime.to;
                 }
             }
-            const skip = (page - 1) * pageSize;
             const [results, totalCount] = await Promise.all([
                 this.prisma.driveItem.findMany({
                     where: whereClause,
                     include: { permissions: true },
                     orderBy: { name: 'asc' },
-                    skip,
-                    take: pageSize,
+                    ...(pageSize > 0 && {
+                        skip: (page - 1) * pageSize,
+                        take: pageSize
+                    })
                 }),
-                this.prisma.driveItem.count({ where: whereClause }),
+                this.prisma.driveItem.count({ where: whereClause })
             ]);
             const allItems = await this.prisma.driveItem.findMany({
                 select: { googleId: true, name: true, parentId: true }
@@ -244,8 +247,7 @@ let QuanlydriveService = class QuanlydriveService {
             const itemMap = new Map(allItems.map(item => [item.googleId, item]));
             const resultsWithPath = results.map(item => ({
                 ...item,
-                size: item.size ? item.size.toString() : null,
-                path: this.buildPath(item.googleId, itemMap),
+                size: item.size ? Number(item.size) : 0,
             }));
             return {
                 data: resultsWithPath,
@@ -278,7 +280,7 @@ let QuanlydriveService = class QuanlydriveService {
             parentId = parent.parentId;
             iterations++;
         }
-        return pathParts.join('/');
+        return pathParts.join('/*/');
     }
     async findAll(driveId = '0AKQL50NKsue5Uk9PVA') {
         try {
@@ -299,6 +301,16 @@ let QuanlydriveService = class QuanlydriveService {
             ...item,
             children: this.buildTree(items, item.googleId),
         }));
+    }
+    async count() {
+        try {
+            const count = await this.prisma.driveItem.count();
+            return count;
+        }
+        catch (error) {
+            this._ErrorlogService.logError('count', error);
+            throw error;
+        }
     }
     async findby(param) {
         try {

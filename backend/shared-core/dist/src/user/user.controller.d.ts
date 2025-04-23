@@ -26,6 +26,19 @@ export declare class UserController {
         referrerId: string | null;
     }>;
     findby(param: any): Promise<{
+        roles: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
+        permissions: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+        }[];
         id: string;
         name: string | null;
         avatar: string | null;
@@ -36,7 +49,6 @@ export declare class UserController {
         zaloId: string | null;
         facebookId: string | null;
         googleId: string | null;
-        password: string | null;
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
@@ -295,7 +307,6 @@ export declare class UserController {
         zaloId: string | null;
         facebookId: string | null;
         googleId: string | null;
-        password: string | null;
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;

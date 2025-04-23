@@ -3,6 +3,9 @@ export declare class QuanlydriveController {
     private readonly quanlydriveService;
     constructor(quanlydriveService: QuanlydriveService);
     uploadFile(file: Express.Multer.File): Promise<void>;
+    count(): Promise<{
+        count: number;
+    }>;
     queryFolders(query: any): Promise<any[]>;
     listUsersFolder(query: any): Promise<({
         driveItem: {
@@ -14,6 +17,7 @@ export declare class QuanlydriveController {
             updatedAt: Date;
             parentId: string | null;
             mimeType: string | null;
+            path: string | null;
             size: bigint | null;
             createdTime: Date | null;
             modifiedTime: Date | null;
@@ -41,8 +45,7 @@ export declare class QuanlydriveController {
     }>;
     search(searchParams: any): Promise<{
         data: {
-            size: string | null;
-            path: string;
+            size: number;
             permissions: {
                 role: string;
                 type: string;
@@ -63,6 +66,7 @@ export declare class QuanlydriveController {
             updatedAt: Date;
             parentId: string | null;
             mimeType: string | null;
+            path: string | null;
             createdTime: Date | null;
             modifiedTime: Date | null;
         }[];
@@ -82,6 +86,7 @@ export declare class QuanlydriveController {
         updatedAt: Date;
         parentId: string | null;
         mimeType: string | null;
+        path: string | null;
         size: bigint | null;
         createdTime: Date | null;
         modifiedTime: Date | null;
@@ -95,6 +100,7 @@ export declare class QuanlydriveController {
         updatedAt: Date;
         parentId: string | null;
         mimeType: string | null;
+        path: string | null;
         size: bigint | null;
         createdTime: Date | null;
         modifiedTime: Date | null;
@@ -109,6 +115,7 @@ export declare class QuanlydriveController {
         updatedAt: Date;
         parentId: string | null;
         mimeType: string | null;
+        path: string | null;
         size: bigint | null;
         createdTime: Date | null;
         modifiedTime: Date | null;
@@ -122,6 +129,7 @@ export declare class QuanlydriveController {
         updatedAt: Date;
         parentId: string | null;
         mimeType: string | null;
+        path: string | null;
         size: bigint | null;
         createdTime: Date | null;
         modifiedTime: Date | null;

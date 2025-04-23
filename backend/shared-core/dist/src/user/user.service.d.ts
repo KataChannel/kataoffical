@@ -97,6 +97,19 @@ export declare class UserService {
         referrerId: string | null;
     }[]>;
     findby(param: any): Promise<{
+        roles: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
+        permissions: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+        }[];
         id: string;
         name: string | null;
         avatar: string | null;
@@ -107,7 +120,6 @@ export declare class UserService {
         zaloId: string | null;
         facebookId: string | null;
         googleId: string | null;
-        password: string | null;
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
@@ -234,7 +246,7 @@ export declare class UserService {
         affiliateCode: string | null;
         referrerId: string | null;
     }>;
-    update(id: string, data: any): Promise<{
+    update(id: string, data: Partial<Omit<any, 'id' | 'roles' | 'permissions'>>): Promise<{
         id: string;
         name: string | null;
         avatar: string | null;
@@ -245,7 +257,6 @@ export declare class UserService {
         zaloId: string | null;
         facebookId: string | null;
         googleId: string | null;
-        password: string | null;
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;

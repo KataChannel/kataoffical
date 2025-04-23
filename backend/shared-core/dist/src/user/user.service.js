@@ -13,6 +13,7 @@ exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const errorlog_service_1 = require("../errorlog/errorlog.service");
+const bcrypt = require("bcryptjs");
 const socket_gateway_1 = require("../socket.gateway");
 let UserService = class UserService {
     constructor(prisma, _SocketGateway, _ErrorlogService) {
@@ -35,10 +36,11 @@ let UserService = class UserService {
         }
     }
     async createUser(dto) {
+        const hashedPassword = await bcrypt.hash(dto.password, 10);
         return this.prisma.user.create({
             data: {
                 email: dto.email,
-                password: dto.password,
+                password: hashedPassword,
             },
         });
     }
@@ -91,10 +93,33 @@ let UserService = class UserService {
     }
     async findby(param) {
         try {
-            const user = await this.prisma.user.findUnique({ where: param });
+            const user = await this.prisma.user.findUnique({
+                where: param,
+                include: {
+                    roles: {
+                        include: {
+                            role: {
+                                include: {
+                                    permissions: { include: { permission: true } },
+                                },
+                            },
+                        },
+                    },
+                },
+            });
             if (!user)
                 throw new common_1.NotFoundException('User not found');
-            return user;
+            const { password, roles, ...userWithoutPassword } = user;
+            const formattedRoles = roles.map(({ role }) => {
+                const { permissions, ...roleWithoutPermissions } = role;
+                return roleWithoutPermissions;
+            });
+            const permissions = Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission))));
+            return {
+                ...userWithoutPassword,
+                roles: formattedRoles,
+                permissions,
+            };
         }
         catch (error) {
             this._ErrorlogService.logError('findby', error);
@@ -167,10 +192,26 @@ let UserService = class UserService {
         };
     }
     async update(id, data) {
-        this._SocketGateway.senduserUpdate();
-        delete data.roles;
-        delete data.permissions;
-        return this.prisma.user.update({ where: { id }, data });
+        try {
+            const { roles, permissions, ...updateData } = data;
+            if (updateData.password) {
+                updateData.password = await bcrypt.hash(updateData.password, 10);
+            }
+            const updatedUser = await this.prisma.user.update({
+                where: { id },
+                data: updateData
+            });
+            this._SocketGateway.senduserUpdate();
+            const { password, ...userWithoutPassword } = updatedUser;
+            return userWithoutPassword;
+        }
+        catch (error) {
+            this._ErrorlogService.logError('update', error);
+            if (error.code === 'P2025') {
+                throw new common_1.NotFoundException(`User with ID ${id} not found`);
+            }
+            throw error;
+        }
     }
     async remove(id) {
         return this.prisma.user.delete({ where: { id } });

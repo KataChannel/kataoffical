@@ -241,9 +241,12 @@ export class QuanlydriveService {
         if (typeof size === 'number') {
           whereClause.size = size;
         } else {
-          whereClause.size = {};
-          if (size.min !== undefined) whereClause.size.gte = size.min;
-          if (size.max !== undefined) whereClause.size.lte = size.max;
+          // Check if both min and max are 0, if yes, don't add size filter
+          if (!(size.min === 0 && size.max === 0)) {
+            whereClause.size = {};
+            if (size.min !== undefined) whereClause.size.gte = size.min*1048576;
+            if (size.max !== undefined) whereClause.size.lte = size.max*1048576;
+          }
         }
       }
       
@@ -268,21 +271,20 @@ export class QuanlydriveService {
           if (modifiedTime.to) whereClause.modifiedTime.lte = modifiedTime.to;
         }
       }
-      
-      // Calculate pagination
-      const skip = (page - 1) * pageSize;
-      
-      // Query the database with pagination
+      // Execute query with proper pagination
       const [results, totalCount] = await Promise.all([
         this.prisma.driveItem.findMany({
           where: whereClause,
           include: { permissions: true },
           orderBy: { name: 'asc' },
-          skip,
-          take: pageSize,
+          ...(pageSize > 0 && {
+            skip: (page - 1) * pageSize,
+            take: pageSize
+          })
         }),
-        this.prisma.driveItem.count({ where: whereClause }),
+        this.prisma.driveItem.count({ where: whereClause })
       ]);
+
       
       // Get all necessary items for building paths
       const allItems = await this.prisma.driveItem.findMany({
@@ -295,9 +297,13 @@ export class QuanlydriveService {
       // Convert BigInt to string and add path to each result
       const resultsWithPath = results.map(item => ({
         ...item,
-        size: item.size ? item.size.toString() : null,
-        path: this.buildPath(item.googleId, itemMap),
+        size: item.size ? Number(item.size) : 0,
+   //     path: this.buildPath(item.googleId, itemMap),
       }));
+      // resultsWithPath.forEach(async (item:any) => {
+      //   delete item.permissions;
+      //   await this.update(item.id, item);
+      // });
       
       return {
         data: resultsWithPath,
@@ -335,8 +341,7 @@ export class QuanlydriveService {
       parentId = parent.parentId;
       iterations++;
     }
-    
-    return pathParts.join('/');
+    return pathParts.join('/*/');
   }
 
   async findAll(driveId: string='0AKQL50NKsue5Uk9PVA') {
@@ -357,6 +362,16 @@ export class QuanlydriveService {
         ...item,
         children: this.buildTree(items, item.googleId),
       }));
+  }
+
+  async count() {
+    try {
+      const count = await this.prisma.driveItem.count();
+      return count;
+    } catch (error) {
+      this._ErrorlogService.logError('count', error);
+      throw error;
+    }
   }
 
   async findby(param: any) {

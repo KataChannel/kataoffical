@@ -198,6 +198,7 @@ model DriveItem {
   type        DriveItemType
   parentId    String?
   mimeType    String?
+  path        String?
   size        BigInt?
   createdTime  DateTime?
   modifiedTime DateTime?

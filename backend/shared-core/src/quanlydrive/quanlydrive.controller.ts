@@ -17,6 +17,10 @@ export class QuanlydriveController {
     // });
     // return savedFile;
   }
+  @Get('count')
+  async count() {
+    return { count: await this.quanlydriveService.count() };
+  }
   @Get('queryfolder')
   async queryFolders(@Query('query') query:any) {    
     return this.quanlydriveService.queryFolders(query);

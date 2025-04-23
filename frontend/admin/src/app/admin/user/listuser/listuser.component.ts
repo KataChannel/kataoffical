@@ -84,9 +84,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
     isSearch: boolean = false;
     constructor() {
       effect(() => {
-        this.dataSource.data = this.Listuser();
-        console.log(this.Listuser());
-        
+        this.dataSource.data = this.Listuser();       
         this.totalItems = this.Listuser().length;
         this.calculateTotalPages();
       });
@@ -102,7 +100,6 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
       this._UserService.listenUserUpdates();
       await this._UserService.getAllUser();
       this.displayedColumns = Object.keys(this.ColumnName)
-      console.log(this.displayedColumns);
       this.updateDisplayData();
       this.dataSource = new MatTableDataSource(this.Listuser());
       this.dataSource.paginator = this.paginator;
@@ -305,15 +302,8 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
       };
      const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
      this.ImportIteam = ConvertDriveData(result.values);
-    //  console.log(result.values[0]);
-    //  console.log(result.values[1]);
      this.ImportColumnName = Object.fromEntries(result.values[0].map((key:any, i:any) => [key, result.values[1][i]]));
      this.ImportdisplayedColumns = result.values[0]
-    //  console.log(this.ImportColumnName);
-    //  console.log(this.ImportdisplayedColumns);
-    //  console.log(this.ImportIteam);
-     
-    //  this.DoImportData(data);
     }
   
     async DoImportData(data: any) {

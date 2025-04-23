@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { profile } from 'console';
 import { PrismaService } from 'prisma/prisma.service';
 import { permission } from 'process';
 import { ErrorlogService } from 'src/errorlog/errorlog.service';
-import { Role } from 'src/role/entities/role.entity';
+import * as bcrypt from 'bcryptjs';
 import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
@@ -28,10 +27,11 @@ export class UserService {
   }
 
   async createUser(dto: any) {
+    const hashedPassword = await bcrypt.hash(dto.password, 10);
     return this.prisma.user.create({
       data: {
         email: dto.email,
-        password: dto.password, // Hash password in real app
+        password: hashedPassword, // Hash password in real app
       },
     });
   }
@@ -91,9 +91,37 @@ export class UserService {
   }
   async findby(param: any) {
     try {
-      const user = await this.prisma.user.findUnique({ where: param });
+      const user = await this.prisma.user.findUnique({
+        where:param ,
+        include: {
+          roles: {
+            include: {
+              role: {
+                include: {
+                  permissions: { include: { permission: true } },
+                },
+              },
+            },
+          },
+        },
+      }); 
       if (!user) throw new NotFoundException('User not found');
-      return user
+      // Loại bỏ password một cách an toàn bằng destructuring
+      const { password, roles, ...userWithoutPassword } = user; 
+      // Lấy danh sách role nhưng bỏ đi permissions
+      const formattedRoles = roles.map(({ role }) => {
+        const { permissions, ...roleWithoutPermissions } = role;
+        return roleWithoutPermissions;
+      });
+      // Lấy danh sách permissions duy nhất
+      const permissions = Array.from(
+        new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission)))
+      ); 
+      return {
+        ...userWithoutPassword,
+        roles: formattedRoles,
+        permissions,
+      };
     } catch (error) {
       this._ErrorlogService.logError('findby',error);
       throw error;
@@ -178,11 +206,38 @@ export class UserService {
     };
   }
 
-  async update(id: string, data: any) {
-    this._SocketGateway.senduserUpdate();
-    delete data.roles;
-    delete data.permissions;
-    return this.prisma.user.update({ where: { id }, data });
+
+  async update(id: string, data: Partial<Omit<any, 'id' | 'roles' | 'permissions'>>) {
+    try {
+      // Remove sensitive properties that shouldn't be directly updated
+      const { roles, permissions, ...updateData } = data;
+
+      // Hash password if provided
+      if (updateData.password) {
+        updateData.password = await bcrypt.hash(updateData.password, 10);
+      }
+
+      // Update user in database
+      const updatedUser = await this.prisma.user.update({ 
+        where: { id }, 
+        data: updateData 
+      });
+
+      // Notify clients about the update
+      this._SocketGateway.senduserUpdate();
+
+      // Return user without password
+      const { password, ...userWithoutPassword } = updatedUser;
+      return userWithoutPassword;
+    } catch (error) {
+      this._ErrorlogService.logError('update', error);
+      
+      // Improve error handling with more specific errors
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`User with ID ${id} not found`);
+      }
+      throw error;
+    }
   }
 
   async remove(id: string) {

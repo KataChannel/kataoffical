@@ -18,6 +18,7 @@ import { TreemenuComponent } from '../../shared/common/treemenu/treemenu.compone
 import { UserService } from '../user/user.service';
 import moment from 'moment';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
+import { StorageService } from '../../shared/utils/storage.service';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -78,6 +79,7 @@ export class AdminmainComponent {
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   @ViewChild('drawer1', { static: true }) drawer1!: MatDrawer;
   _snackBar:MatSnackBar = inject(MatSnackBar)
+  _StorageService:StorageService = inject(StorageService)
   ListMenu:any[] = []
   async ngOnInit() {
     await this._UserService.getProfile().then(async (res: any) => {
@@ -110,21 +112,22 @@ export class AdminmainComponent {
       }
     });
   }
-  async ClearCache(){
-    const token = localStorage.getItem('token');
-    const permissions = localStorage.getItem('permissions');
-    localStorage.clear();
+  async ClearCache(): Promise<void> {
+    const token = this._StorageService.getItem('token');
+    const permissions = this._StorageService.getItem('permissions');
+    this._StorageService.clearAllIndexedDB()
+    this._StorageService.clear()
     if (token) {
-      localStorage.setItem('token', token);
+      this._StorageService.setItem('token', token);
     }
     if (permissions) {
-      localStorage.setItem('permissions', permissions);
+      this._StorageService.setItem('permissions', permissions);
     }
     await this._ErrorLogService.ClearRedisCache()
-    this._snackBar.open('Xoá Cache Thành Công', '', {
+    this._snackBar.open('Xóa Cache Thành Công', '', {
       duration: 1000,
-      horizontalPosition: "end",
-      verticalPosition: "top",
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
       panelClass: ['snackbar-success'],
     });
   }

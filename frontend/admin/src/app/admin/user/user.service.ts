@@ -183,7 +183,46 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
         return console.error(error);
       }
     }
-    
+    async assignRoleToUser(dulieu: any) {
+      try {
+        const options = {
+            method:'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dulieu),
+          };
+          const response = await fetch(`${environment.APIURL}/users/assign`, options);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          if (!response.ok) {
+            this.handleError(response.status);
+          }
+          await this.getUserBy({id: dulieu.userId});
+      } catch (error) {
+          return console.error(error);
+      }
+    }
+    async removeRoleFromUser(dulieu:any) {    
+      try {
+          const options = {
+              method:'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(dulieu),
+            };
+            const response = await fetch(`${environment.APIURL}/users/remove`, options);
+            if (!response.ok) {
+                // this.handleError(response.status);
+            }            
+            await this.getUserBy({id: dulieu.userId});
+        } catch (error) {
+            return console.error(error);
+        }
+    }
     async updateUser(dulieu: any) {
       try {
         const options = {

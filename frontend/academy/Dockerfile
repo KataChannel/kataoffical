@@ -1,8 +1,13 @@
-# Dockerfile (Angular Frontend - Development)
-FROM node:18-alpine As development
-WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install
-COPY . .
-EXPOSE 4200
-CMD [ "npm", "run", "start" ] # Ensure start script uses '--host 0.0.0.0 --port 4200'
+# Stage 1: Run SSR with Bun.js
+FROM oven/bun:1 AS runtime
+
+WORKDIR /app
+
+# Copy build from local into Docker image
+COPY ./dist/frontend /app/dist/frontend
+# COPY ./node_modules /app/node_modules
+# COPY ./package.json /app/package.json
+
+# Run SSR application with Bun
+EXPOSE 4401
+CMD ["bun", "dist/frontend/server/server.mjs"]

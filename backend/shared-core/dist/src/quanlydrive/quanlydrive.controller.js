@@ -25,6 +25,9 @@ let QuanlydriveController = class QuanlydriveController {
         const fileUrl = await this.quanlydriveService.uploadFile(file);
         console.log(fileUrl);
     }
+    async count() {
+        return { count: await this.quanlydriveService.count() };
+    }
     async queryFolders(query) {
         return this.quanlydriveService.queryFolders(query);
     }
@@ -68,6 +71,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], QuanlydriveController.prototype, "uploadFile", null);
+__decorate([
+    (0, common_1.Get)('count'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], QuanlydriveController.prototype, "count", null);
 __decorate([
     (0, common_1.Get)('queryfolder'),
     __param(0, (0, common_1.Query)('query')),
