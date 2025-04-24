@@ -200,6 +200,7 @@ model DriveItem {
   mimeType    String?
   path        String?
   size        BigInt?
+  isDelete     Boolean? @default(false)
   createdTime  DateTime?
   modifiedTime DateTime?
   permissions PermissionDrive[]

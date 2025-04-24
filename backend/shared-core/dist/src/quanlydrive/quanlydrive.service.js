@@ -176,6 +176,7 @@ let QuanlydriveService = class QuanlydriveService {
         try {
             const { name, type, mimeType, parentId, size, createdTime, modifiedTime, page = 1, pageSize = 20 } = searchParams;
             const whereClause = {};
+            whereClause.isDelete = false;
             if (name) {
                 whereClause.name = {
                     contains: name,
@@ -232,7 +233,9 @@ let QuanlydriveService = class QuanlydriveService {
             const [results, totalCount] = await Promise.all([
                 this.prisma.driveItem.findMany({
                     where: whereClause,
-                    include: { permissions: true },
+                    include: {
+                        permissions: true,
+                    },
                     orderBy: { name: 'asc' },
                     ...(pageSize > 0 && {
                         skip: (page - 1) * pageSize,

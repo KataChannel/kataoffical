@@ -85,7 +85,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
         },
         // modifiedTime: new Date("2024-01-01T00:00:00Z"),
         page: 1,
-        pageSize: 1000
+        pageSize: 100
     }
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
@@ -118,6 +118,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
      data: [],
       pagination: {
           total: 0,
+          page:0
       }
   };
   currentPage = 1;
@@ -144,16 +145,26 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
       this.initializeColumns();
       this.setupDrawer();
     }
+
+    isLoading = signal<boolean>(false);
+
     async DoTimKiem(isReset?: boolean) {
-      if (isReset) {
-        this.params.pageSize = 1000;
-        this.params.page = 1;
-      }
-      this.SearchItems = await this._DrivelocalService.SearchQuanlydriveBy(this.params);
-      this.dataSource.data = this.SearchItems.data;
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      this.SearchItems.pagination.page = 0     
+      this.isLoading.set(true);
+        if (isReset) {
+          this.params.pageSize = 100;
+          this.params.page = 1;
+        }
+        this.SearchItems = await this._DrivelocalService.SearchQuanlydriveBy(this.params);      
+        this.dataSource.data = this.SearchItems.data;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        if(this.SearchItems.pagination.page > 0){
+          this.isLoading.set(false);
+        }
+
     }
+
     titleMB(item:any){
       const OneMB = 1048576
       const OneGB = 1024*OneMB
@@ -304,7 +315,45 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
         });
     }
     DeleteListItem(): void {
+      const itemCount = this.EditList.length;
+      if (itemCount === 0) {
+        this._snackBar.open('Không có mục nào được chọn để xóa', '', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning']
+        });
+        return;
+      }
 
+      let processedCount = 0;
+      const deletePromises = this.EditList.map(async (item: any) => {
+        item.isDelete = true;
+        await this._DrivelocalService.updateQuanlydrive(item);
+        processedCount++;
+        return true;
+      });
+
+      Promise.all(deletePromises)
+        .then(() => {
+          this._snackBar.open(`Đã xóa thành công ${itemCount} mục`, '', {
+            duration: 2000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-success']
+          });
+          this.EditList = []; // Reset selection
+          this.DoTimKiem(true); // Reload with fresh data
+        })
+        .catch(error => {
+          console.error('Error during deletion:', error);
+          this._snackBar.open('Có lỗi xảy ra khi xóa dữ liệu', '', {
+            duration: 2000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error']
+          });
+        });
     }
     AddToEdit(item: any): void {
       const existingItem = this.EditList.find((v: any) => v.id === item.id);

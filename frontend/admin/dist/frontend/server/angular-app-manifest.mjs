@@ -749,8 +749,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72766, hash: 'c26d51deb7ddb87d7c9d053b6e2364d9bb582c542b24c371c355791e04fd4827', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24057, hash: '40365c8e7679cbe21698ddb06753e1e65d1bc1e3ca7e4cb01f072cb92cea9295', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 72766, hash: 'be8b581d4304a6e5e72117c54b4f320f8293f12bde0ed15583512b188e8b84c1', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24057, hash: '75feac6524a66952f96ec579a10156a1df5d79f60b21cd0f4ac5770bacc3e39c', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-SANUHRZF.css': {size: 140499, hash: 'Fn7x161+Qz0', text: () => import('./assets-chunks/styles-SANUHRZF_css.mjs').then(m => m.default)}
   },
 };

@@ -19,6 +19,7 @@ export declare class QuanlydriveController {
             mimeType: string | null;
             path: string | null;
             size: bigint | null;
+            isDelete: boolean | null;
             createdTime: Date | null;
             modifiedTime: Date | null;
         };
@@ -67,6 +68,7 @@ export declare class QuanlydriveController {
             parentId: string | null;
             mimeType: string | null;
             path: string | null;
+            isDelete: boolean | null;
             createdTime: Date | null;
             modifiedTime: Date | null;
         }[];
@@ -88,6 +90,7 @@ export declare class QuanlydriveController {
         mimeType: string | null;
         path: string | null;
         size: bigint | null;
+        isDelete: boolean | null;
         createdTime: Date | null;
         modifiedTime: Date | null;
     }>;
@@ -102,6 +105,7 @@ export declare class QuanlydriveController {
         mimeType: string | null;
         path: string | null;
         size: bigint | null;
+        isDelete: boolean | null;
         createdTime: Date | null;
         modifiedTime: Date | null;
     } | null>;
@@ -117,6 +121,7 @@ export declare class QuanlydriveController {
         mimeType: string | null;
         path: string | null;
         size: bigint | null;
+        isDelete: boolean | null;
         createdTime: Date | null;
         modifiedTime: Date | null;
     }>;
@@ -131,6 +136,7 @@ export declare class QuanlydriveController {
         mimeType: string | null;
         path: string | null;
         size: bigint | null;
+        isDelete: boolean | null;
         createdTime: Date | null;
         modifiedTime: Date | null;
     }>;

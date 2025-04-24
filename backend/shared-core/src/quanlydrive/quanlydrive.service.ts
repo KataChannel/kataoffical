@@ -216,7 +216,7 @@ export class QuanlydriveService {
       
       // Build the where clause based on provided parameters
       const whereClause: any = {};
-      
+      whereClause.isDelete = false; // Exclude deleted items
       if (name) {
         whereClause.name = {
           contains: name,
@@ -277,7 +277,9 @@ export class QuanlydriveService {
       const [results, totalCount] = await Promise.all([
         this.prisma.driveItem.findMany({
           where: whereClause,
-          include: { permissions: true },
+          include: { 
+            permissions: true,
+          },
           orderBy: { name: 'asc' },
           ...(pageSize > 0 && {
             skip: (page - 1) * pageSize,
