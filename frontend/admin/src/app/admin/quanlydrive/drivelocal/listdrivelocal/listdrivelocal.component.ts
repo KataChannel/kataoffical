@@ -156,7 +156,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
           this.params.page = 1;
         }
         this.SearchItems = await this._DrivelocalService.SearchQuanlydriveBy(this.params);      
-        this.dataSource.data = this.SearchItems.data;
+        this.dataSource = new MatTableDataSource(this.SearchItems.data);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         if(this.SearchItems.pagination.page > 0){
@@ -329,6 +329,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
       let processedCount = 0;
       const deletePromises = this.EditList.map(async (item: any) => {
         item.isDelete = true;
+        delete item.permissions;
         await this._DrivelocalService.updateQuanlydrive(item);
         processedCount++;
         return true;
