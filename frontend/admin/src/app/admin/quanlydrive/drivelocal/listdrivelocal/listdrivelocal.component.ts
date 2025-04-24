@@ -104,7 +104,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     constructor() {
       effect(async () => {
         this.SearchItems = await this._DrivelocalService.SearchQuanlydriveBy(this.params);
-        this.dataSource.data = this.SearchItems.data;
         this.totalItems = this.SearchItems.data.length; // Update totalItems with the length of ListItem
         this.progress = this._DrivelocalService.progress;
         this.totalRecords = this._DrivelocalService.totalRecords;
@@ -138,7 +137,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
       this._DrivelocalService.listenQuanlydriveUpdates();
       this.SearchItems = await this._DrivelocalService.SearchQuanlydriveBy(this.params);
       this.displayedColumns = Object.keys(this.ColumnName)
-      // this.updateDisplayData();
       this.dataSource = new MatTableDataSource(this.SearchItems.data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -162,7 +160,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
         if(this.SearchItems.pagination.page > 0){
           this.isLoading.set(false);
         }
-
     }
 
     titleMB(item:any){
