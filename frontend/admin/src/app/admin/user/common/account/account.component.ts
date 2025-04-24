@@ -39,7 +39,6 @@ export class AccountComponent implements OnInit {
   async ngOnInit() {
    await this._UserService.getProfile()
    this.profile = this._UserService.profile
-   console.log( this.profile);
   }
   AccountMenus:any[]=[
     {id:1,title:'Tài Khoản',link:'general',icon:'account_circle'},

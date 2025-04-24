@@ -69,9 +69,10 @@ async register(data: any, affiliateCode?: string) {
   }
 
   async changePassword(userId: string, oldPassword: string, newPassword: string) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const user:any = await this.prisma.user.findUnique({ where: { id: userId } });
+   
     if (!user || !user.password || !(await bcrypt.compare(oldPassword, user.password))) {
-      throw new UnauthorizedException('Old password is incorrect');
+      throw new UnauthorizedException('Mật Khẩu Cũ Không Đúng');
     }
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     return this.prisma.user.update({

@@ -72,7 +72,7 @@ let AuthService = class AuthService {
     async changePassword(userId, oldPassword, newPassword) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
         if (!user || !user.password || !(await bcrypt.compare(oldPassword, user.password))) {
-            throw new common_1.UnauthorizedException('Old password is incorrect');
+            throw new common_1.UnauthorizedException('Mật Khẩu Cũ Không Đúng');
         }
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         return this.prisma.user.update({

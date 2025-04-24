@@ -59,16 +59,17 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
-  changePassword(
+  async changePassword(
     @Req() req,
-    @Body() body: { oldPassword: string; newPassword: string },
+    @Body() body: { newpass: string; oldpass: string },
   ) {
-    return this.authService.changePassword(req.user.id, body.oldPassword, body.newPassword);
+    const result = await this.authService.changePassword(req.user.id, body.oldpass, body.newpass);
+    return { statusCode: HttpStatus.OK, message: 'Cập Nhật Thành Công', result };
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('random-password')
-  randomPassword(@Req() req) {
+  async randomPassword(@Req() req) {
     return this.authService.generateRandomPassword(req.user.id);
   }
   

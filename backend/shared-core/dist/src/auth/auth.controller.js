@@ -51,10 +51,11 @@ let AuthController = class AuthController {
         console.log(body);
         return this.authService.login(body.SDT, body.email, body.password);
     }
-    changePassword(req, body) {
-        return this.authService.changePassword(req.user.id, body.oldPassword, body.newPassword);
+    async changePassword(req, body) {
+        const result = await this.authService.changePassword(req.user.id, body.oldpass, body.newpass);
+        return { statusCode: common_1.HttpStatus.OK, message: 'Cập Nhật Thành Công', result };
     }
-    randomPassword(req) {
+    async randomPassword(req) {
         return this.authService.generateRandomPassword(req.user.id);
     }
 };
@@ -124,7 +125,7 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AuthController.prototype, "changePassword", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
@@ -132,7 +133,7 @@ __decorate([
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AuthController.prototype, "randomPassword", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),

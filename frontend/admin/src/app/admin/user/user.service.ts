@@ -69,6 +69,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
             method:'POST',
             headers: {
               'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this._StorageService.getItem('token')}`
             },
             body: JSON.stringify(dulieu),
           };
@@ -272,12 +273,14 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
         body: JSON.stringify(data),
       };
-      const response = await fetch(`${environment.APIURL}/users/changepass`, options);
+      const response = await fetch(`${environment.APIURL}/auth/change-password`, options);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // throw new Error(`HTTP error! status: ${response.status}`);
+        this.handleError(response.status);
       }
       const result = await response.json();
       return result
@@ -291,16 +294,17 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
         body: JSON.stringify(data),
       };
-      const response = await fetch(`${environment.APIURL}/auth/randompass`, options);
+      const response = await fetch(`${environment.APIURL}/auth/random-password`, options);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      // const data = await response.json();
-      console.log(data);
-      return data
+      const result = await response.json();
+      console.log(result);
+      return result;
     } catch (error) {
       return console.error(error);
     }
@@ -353,6 +357,12 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
           break;
         case 401:
           message = 'Vui lòng đăng nhập lại';
+          this._snackBar.open(message, '', {
+            duration: 1000,
+            horizontalPosition: "end",
+            verticalPosition: "top",
+            panelClass: ['snackbar-error'],
+          });
           // this._StorageService.removeItem('token');
           // this._StorageService.removeItem('permissions');
           // this.router.navigate(['/login']);
