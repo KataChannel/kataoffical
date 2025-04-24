@@ -63,6 +63,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
       name: 'Tên',
       path: 'Đường Dẫn',
       size: 'Dung Lượng',
+      type: 'Loại',
       modifiedTime: 'Ngày Tạo Drive',
       createdTime:'Ngày Cập Nhật Drive',
     };
