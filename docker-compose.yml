@@ -1,45 +1,96 @@
 services:
-  # --- Database and Cache Services ---
-  # postgres:
-  #   image: postgres:15-alpine
-  #   container_name: postgres_db
-  #   environment:
-  #     POSTGRES_USER: ${POSTGRES_USER:-user}
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-  #     POSTGRES_DB: ${SHARED_DATABASE_NAME:-shared_db}
-  #     ACADEMY_DATABASE_NAME: ${ACADEMY_DATABASE_NAME:-academy_db}
-  #     COSMETICS_DATABASE_NAME: ${COSMETICS_DATABASE_NAME:-cosmetics_db}
-  #     SPA_DATABASE_NAME: ${SPA_DATABASE_NAME:-spa_db}
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #     - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
-  #   ports:
-  #     - "5432:5432"
-  #   networks:
-  #     - app-network
-  #   restart: unless-stopped
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${SHARED_DATABASE_NAME:-shared_db}"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: AWois79wFA1bxMK
+      POSTGRES_PASSWORD: 7bhNHJcSEbWln9v
+      POSTGRES_DB: rausachv2
+    ports:
+      - "5432:5432"
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@rausachtrangia.com
+      PGADMIN_DEFAULT_PASSWORD: 7bhNHJcSEbWln9v
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres 
 
-  # pgadmin:
-  #   image: dpage/pgadmin4:latest
-  #   container_name: pgadmin_gui
-  #   environment:
-  #     PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
-  #     PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
-  #   volumes:
-  #     - pgadmin_data:/var/lib/pgadmin
-  #   ports:
-  #     - "5050:80"
-  #   networks:
-  #     - app-network
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   restart: unless-stopped
+  postgres_taza:
+    image: postgres:15
+    container_name: postgres_taza
+    restart: always
+    environment:
+      POSTGRES_USER: tazagroup
+      POSTGRES_PASSWORD: /TazaGroup*2025
+      POSTGRES_DB: datavttech
+    ports:
+      - "5433:5432"
+  pgadmin_taza:
+    image: dpage/pgadmin4
+    container_name: pgadmin_taza
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@tazagroup.com
+      PGADMIN_DEFAULT_PASSWORD: /TazaGroup*2025
+    ports:
+      - "5051:80"
+    depends_on:
+      - postgres_taza 
+  datalake_storage:
+      image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
+      container_name: datalake_minio
+      command: server /data --console-address ":9090"
+      ports:
+        - "9000:9000"
+        - "9090:9090"
+      environment:
+        # User/Pass MinIO thường vẫn cần dưới dạng biến môi trường trực tiếp
+        # Hoặc bạn cần custom entrypoint để đọc từ file.
+        # Cách an toàn hơn là tạo Access Key/Secret Key riêng cho service thay vì dùng Root User/Pass.
+        # Giả sử dùng Root cho ví dụ này (CẨN THẬN!)
+        MINIO_ROOT_USER: admin
+        MINIO_ROOT_PASSWORD: password
+      volumes:
+        - minio_data:/data
+        # Mount file secrets vào container
+        - ./secrets/minio_user.txt:/run/secrets/minio_user:ro
+        - ./secrets/minio_password.txt:/run/secrets/minio_password:ro
+      healthcheck:
+        test: ["CMD", "mc", "ready", "local"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+        start_period: 5s
+  processing_service:
+    build: ./processing_service # Trỏ tới thư mục chứa Dockerfile và code xử lý
+    container_name: data_processor
+    depends_on:
+      datalake_storage:
+        condition: service_healthy # Chờ MinIO sẵn sàng
+    environment:
+      # Thông tin kết nối MinIO (Data Lake)
+      - MINIO_ENDPOINT=http://datalake_storage:9000
+      - MINIO_ACCESS_KEY=changeme_minio_user    # !!! Dùng user đã khai báo ở MinIO !!!
+      - MINIO_SECRET_KEY=changeme_minio_password # !!! Dùng password đã khai báo ở MinIO !!!
+      - MINIO_BUCKET_NAME=raw-data           # !!! Tên bucket chứa dữ liệu thô, ví dụ !!!
+      # Thông tin kết nối PostgreSQL (Operational DB)
+      - DB_HOST=operational_db
+      - DB_PORT=5432
+      - DB_USER=changeme_db_user            # !!! Dùng user đã khai báo ở Postgres !!!
+      - DB_PASSWORD=changeme_db_password    # !!! Dùng password đã khai báo ở Postgres !!!
+      - DB_NAME=myappdb                     # !!! Dùng DB name đã khai báo ở Postgres !!!
+    # --- Cách chạy service này ---
+    # Option 1: Chạy 1 lần khi `docker-compose up` (ví dụ: xử lý batch ban đầu)
+    # command: ["node", "process.js"]
+    # Option 2: Để service chạy liên tục (ví dụ: nếu là worker xử lý message queue hoặc chạy cron bên trong)
+    # command: ["node", "worker.js"]
+    # Option 3: Không chạy tự động, dùng `docker-compose run processing_service` để chạy khi cần
+
 
   # redis:
   #   image: redis:7-alpine
@@ -59,6 +110,17 @@ services:
   #     retries: 5
 
   # --- Backend Services ---
+  data-vttech:
+    build:
+      context: ./backend/shared-core
+      dockerfile: Dockerfile
+    container_name: data-vttech
+    environment:
+      NODE_ENV: development
+      PORT: 3200
+    ports:
+      - "3200:3200"
+    restart: unless-stopped
   shared-core-api:
     build:
       context: ./backend/shared-core
@@ -268,7 +330,8 @@ services:
 #     driver: local
 #   redis_data:
 #     driver: local
-
+volumes:
+  minio_data:
 # networks:
 #   app-network:
 #     driver: bridge

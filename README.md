@@ -24,6 +24,12 @@ docker image prune -a -f
 docker volume prune -a -f
 
 
+# prisma
+npx bun prisma migrate dev --name hethong1.7 --skip-generate
+npx prisma db push
+npx bun prisma generate 
+
+
 npx create-nx-workspace@latest kataoffical --preset=angular-nest
 
 npx bun add @prisma/client

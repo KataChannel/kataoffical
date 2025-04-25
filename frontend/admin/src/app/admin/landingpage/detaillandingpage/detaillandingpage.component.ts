@@ -13,6 +13,7 @@ import { ListLandingpageComponent } from '../listlandingpage/listlandingpage.com
 import { LandingpageService } from '../landingpage.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
+import { EditorComponent } from '../editor/editor.component';
   @Component({
     selector: 'app-detaillandingpage',
     imports: [
@@ -24,7 +25,8 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       MatSelectModule,
       MatDialogModule,
       CommonModule,
-      MatSlideToggleModule
+      MatSlideToggleModule,
+      EditorComponent
     ],
     templateUrl: './detaillandingpage.component.html',
     styleUrl: './detaillandingpage.component.scss'

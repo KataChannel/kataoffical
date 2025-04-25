@@ -1,0 +1,41 @@
+<section class="block section-block"
+         id="block?.id"
+         [ngStyle]="block?.styles"
+         cdkDropList
+         [cdkDropListData]="childBlocks" [id]="dropListId" [cdkDropListConnectedTo]="editorComponent?.allDropListsIds || []"
+         (cdkDropListDropped)="drop($event)">
+
+  <div class="section-content">
+    <div *ngFor="let nestedBlock of childBlocks"
+          class="nested-block-wrapper section-nested"
+          [class.selected]="nestedBlock.id === editorComponent?.selectedBlock?.id"
+          (click)="selectNestedBlock(nestedBlock, $event)"
+          cdkDrag [cdkDragData]="nestedBlock">
+
+       <div class="drag-handle nested-drag-handle" cdkDragHandle>
+         <svg width="18px" fill="currentColor" viewBox="0 0 24 24"><path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg>
+       </div>
+
+       <ng-container [ngSwitch]="nestedBlock.type">
+          <app-text-block *ngSwitchCase="'text'" [block]="nestedBlock"></app-text-block>
+          <app-image-block *ngSwitchCase="'image'" [block]="nestedBlock"></app-image-block>
+          <app-button-block *ngSwitchCase="'button'" [block]="nestedBlock"></app-button-block>
+          <app-columns-block *ngSwitchCase="'columns'" [block]="nestedBlock"></app-columns-block>
+          <app-container-block *ngSwitchCase="'container'" [block]="nestedBlock"></app-container-block>
+          <div *ngSwitchDefault class="unknown-block nested">
+             Unknown nested block type: {{ nestedBlock.type }}
+          </div>
+       </ng-container>
+
+       <div class="block-actions nested-actions">
+           <button title="Xóa" (click)="requestDeleteNestedBlock(nestedBlock.id, $event)">🗑️</button>
+       </div>
+
+       <div *cdkDragPlaceholder class="block-placeholder nested-placeholder"></div>
+    </div>
+
+    <div *ngIf="childBlocks.length === 0" class="empty-placeholder">
+      Thả khối vào Section này
+    </div>
+  </div>
+</section>

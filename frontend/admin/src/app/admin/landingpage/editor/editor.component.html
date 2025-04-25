@@ -1,0 +1,65 @@
+<div class="editor-layout">
+
+  <div class="navigator-panel-wrapper">
+    <h3>Navigator</h3>
+    <app-navigator-panel [blocks]="pageBlocks"></app-navigator-panel>
+  </div>
+
+  <div class="editor-canvas-wrapper">
+    <h2>Editor Canvas</h2>
+    <div class="editor-canvas" (click)="deselectBlock($event)">
+       <div class="block-list"
+            cdkDropList
+            [id]="mainDropListId"
+            [cdkDropListData]="getBlocksByParentId(null)" [cdkDropListConnectedTo]="allDropListsIds"
+            (cdkDropListDropped)="drop($event)">
+
+        <div *ngFor="let block of getBlocksByParentId(null); let i = index"
+             class="block-container"
+             [class.selected]="block.id === selectedBlock?.id"
+             (click)="selectBlock(block, $event)"
+             cdkDrag [cdkDragData]="block">
+
+          <div class="drag-handle" cdkDragHandle>
+             <svg width="24px" fill="currentColor" viewBox="0 0 24 24"><path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg>
+          </div>
+
+          <ng-container [ngSwitch]="block.type">
+             <app-text-block *ngSwitchCase="'text'" [block]="block"></app-text-block>
+             <app-image-block *ngSwitchCase="'image'" [block]="block"></app-image-block>
+             <app-button-block *ngSwitchCase="'button'" [block]="block"></app-button-block>
+             <app-columns-block *ngSwitchCase="'columns'" [block]="block"></app-columns-block>
+             <app-section-block *ngSwitchCase="'section'" [block]="block"></app-section-block>
+             <app-container-block *ngSwitchCase="'container'" [block]="block"></app-container-block>
+             <div *ngSwitchDefault class="unknown-block">
+                Unknown block type: {{ block.type }}
+             </div>
+          </ng-container>
+
+          <div class="block-actions">
+               <button title="Xóa" (click)="requestDeleteBlock(block.id, $event)">🗑️</button>
+           </div>
+
+           <div *cdkDragPlaceholder class="block-placeholder"></div>
+        </div>
+         <div *ngIf="getBlocksByParentId(null).length === 0" class="empty-placeholder main-empty">
+             Thả khối vào đây hoặc thêm khối mới từ Palette.
+          </div>
+       </div>
+    </div>
+    <div class="block-palette">
+        <h4>Thêm Block Mới</h4>
+        <button (click)="addBlock('section')">Thêm Section</button>
+        <button (click)="addBlock('container')">Thêm Container</button>
+        <button (click)="addBlock('columns')">Thêm Columns</button>
+        <button (click)="addBlock('text')">Thêm Text</button>
+        <button (click)="addBlock('image')">Thêm Image</button>
+        <button (click)="addBlock('button')">Thêm Button</button>
+     </div>
+  </div>
+
+
+  <div class="inspector-panel">
+     </div>
+
+</div>

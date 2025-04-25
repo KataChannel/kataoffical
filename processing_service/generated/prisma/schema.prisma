@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ProcessedPost {
+  id             Int      @id @default(autoincrement()) // Hoặc dùng CUID/UUID
+  source_id      Int      @unique // ID gốc từ API, đảm bảo không trùng
+  title          String? // Cho phép null nếu có thể
+  content_length Int
+  user_ref       Int?
+  extracted_at   DateTime @default(now())
+  processed_at   DateTime @updatedAt // Tự động cập nhật khi bản ghi thay đổi
+
+  @@map("processed_posts") // Đặt tên bảng trong DB (tùy chọn)
+}
