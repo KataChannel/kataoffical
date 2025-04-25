@@ -10,7 +10,8 @@ docker compose -f 'docker-compose.yml' up -d --build
 docker compose -f 'docker-compose.yml' up -d --build 'shared-core-api'
 docker compose -f 'docker-compose.yml' up -d --build 'admin-ui'
 docker compose -f 'docker-compose.yml' up -d --build 'academy-api'
-docker compose -f 'docker-compose.yml' up -d --build 'academy-api'
+docker compose -f 'docker-compose.yml' up -d --build 'postgres_taza'
+docker compose -f 'docker-compose.yml' up -d --build 'pgadmin_taza'
 docker compose down rausachsandbox1-berausachsanbox1
 Xoá Tất Cả
 docker system prune -a --volumes -f
@@ -80,3 +81,25 @@ sudo systemctl reload nginx
 sudo certbot --nginx -d hethong.tazagroup.vn -d apihethong.tazagroup.vn
 sudo certbot --nginx -d hethong.timona.edu.vn -d apihethong.timona.edu.vn
 sudo certbot renew --dry-run
+
+
+# Ubuntu
+sudo ufw status
+sudo firewall-cmd --state
+
+sudo ufw allow 6379/tcp
+sudo ufw allow 443/tcp
+sudo ufw allow 22/tcp  # 
+
+sudo ufw allow 4200/tcp
+sudo ufw allow 5050/tcp
+sudo ufw allow 3000/tcp
+sudo ufw allow 5555/tcp
+sudo ufw allow 4301/tcp
+sudo ufw allow 3331/tcp
+sudo ufw allow 4400/tcp
+sudo ufw allow 3100/tcp
+sudo ufw reload
+
+sudo crontab -e
+sudo crontab -l

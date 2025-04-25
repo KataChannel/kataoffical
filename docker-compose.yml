@@ -29,7 +29,7 @@ services:
       POSTGRES_PASSWORD: /TazaGroup*2025
       POSTGRES_DB: datavttech
     ports:
-      - "5433:5432"
+      - "5434:5432"
   pgadmin_taza:
     image: dpage/pgadmin4
     container_name: pgadmin_taza
@@ -38,7 +38,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@tazagroup.com
       PGADMIN_DEFAULT_PASSWORD: /TazaGroup*2025
     ports:
-      - "5051:80"
+      - "5052:80"
     depends_on:
       - postgres_taza 
   datalake_storage:
