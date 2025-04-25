@@ -127,6 +127,48 @@ exports.Prisma.ProcessedPostScalarFieldEnum = {
   processed_at: 'processed_at'
 };
 
+exports.Prisma.CustomerScalarFieldEnum = {
+  id: 'id',
+  source_id: 'source_id',
+  name: 'name',
+  code: 'code',
+  codeOld: 'codeOld',
+  docCode: 'docCode',
+  email: 'email',
+  phone: 'phone',
+  phone2: 'phone2',
+  birthday: 'birthday',
+  gender: 'gender',
+  address: 'address',
+  commune: 'commune',
+  district: 'district',
+  city: 'city',
+  citizenIdentity: 'citizenIdentity',
+  identityGrantDate: 'identityGrantDate',
+  identityIssuedBy: 'identityIssuedBy',
+  customerSource: 'customerSource',
+  customerGroup: 'customerGroup',
+  branchId: 'branchId',
+  firstPaidDate: 'firstPaidDate',
+  firstCheckinDate: 'firstCheckinDate',
+  firstTreatmentDate: 'firstTreatmentDate',
+  lastTreatmentDate: 'lastTreatmentDate',
+  lastCheckinDate: 'lastCheckinDate',
+  ccStaffId: 'ccStaffId',
+  caringStaffCode: 'caringStaffCode',
+  marStaffId: 'marStaffId',
+  marStaffCode: 'marStaffCode',
+  staffId: 'staffId',
+  staffCode: 'staffCode',
+  gclid: 'gclid',
+  state: 'state',
+  createdDate: 'createdDate',
+  createdBy: 'createdBy',
+  modifiedDate: 'modifiedDate',
+  modifiedBy: 'modifiedBy',
+  extractedAt: 'extractedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -144,7 +186,8 @@ exports.Prisma.NullsOrder = {
 
 
 exports.Prisma.ModelName = {
-  ProcessedPost: 'ProcessedPost'
+  ProcessedPost: 'ProcessedPost',
+  Customer: 'Customer'
 };
 
 /**

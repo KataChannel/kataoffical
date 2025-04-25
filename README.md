@@ -12,6 +12,7 @@ docker compose -f 'docker-compose.yml' up -d --build 'admin-ui'
 docker compose -f 'docker-compose.yml' up -d --build 'academy-api'
 docker compose -f 'docker-compose.yml' up -d --build 'postgres_taza'
 docker compose -f 'docker-compose.yml' up -d --build 'pgadmin_taza'
+docker compose -f 'docker-compose.yml' up -d --build 'datalake_storage'
 docker compose down rausachsandbox1-berausachsanbox1
 Xoá Tất Cả
 docker system prune -a --volumes -f
@@ -99,6 +100,7 @@ sudo ufw allow 4301/tcp
 sudo ufw allow 3331/tcp
 sudo ufw allow 4400/tcp
 sudo ufw allow 3100/tcp
+sudo ufw allow 5052/tcp
 sudo ufw reload
 
 sudo crontab -e

@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  // output   = "../generated/prisma"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -16,4 +16,50 @@ datasource db {
       extracted_at   DateTime @default(now())
       processed_at   DateTime @updatedAt // Tự động cập nhật khi bản ghi thay đổi
       @@map("processed_posts") // Đặt tên bảng trong DB (tùy chọn)
-   }
+  }
+
+  model Customer {
+    id              Int       @id @default(autoincrement())
+    source_id       String?   @unique // ID from external source
+    name            String?
+    code            String?   @unique
+    codeOld         String?
+    docCode         String?
+    email           String?
+    phone           String?
+    phone2          String?
+    birthday        DateTime?
+    gender          String?
+    address         String?
+    commune         String?
+    district        String?
+    city            String?  
+    // Citizen Identity
+    citizenIdentity String?
+    identityGrantDate DateTime?
+    identityIssuedBy  String?
+    customerSource  String?
+    customerGroup   String?
+    branchId        Int?
+    // Dates
+    firstPaidDate      DateTime?
+    firstCheckinDate   DateTime?
+    firstTreatmentDate DateTime?
+    lastTreatmentDate  DateTime?
+    lastCheckinDate    DateTime?
+    // Staff references
+    ccStaffId       Int?
+    caringStaffCode String?
+    marStaffId      Int?
+    marStaffCode    String?
+    staffId         Int?
+    staffCode       String?
+    gclid           String?
+    state           Int?
+    createdDate     DateTime @default(now())
+    createdBy       String?
+    modifiedDate    DateTime @updatedAt
+    modifiedBy      String?
+    extractedAt   DateTime @default(now())
+    @@map("customers")
+  }

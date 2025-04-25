@@ -13,14 +13,20 @@ const errorPrefix = 'error/';     // Prefix cho file lỗi
 
 // --- Cấu hình API ---
 const externalApiUrl = process.env.EXTERNAL_API_URL;
-const apiAuthUrl = 'https://apismsvtt.vttechsolution.com/api/Client/Autho'; // Hardcoded from process.js
-const apiCustomerListUrl = 'https://tmtaza.vttechsolution.com/Customer/ListCustomer/?handler=LoadData?dateFrom=2025-04-25+00%3A00%3A00&dateTo=2025-04-25+00%3A00%3A00&branchID=7&type=1&BeginID=0&Limit=500'; // Hardcoded from process.js - Consider making this dynamic or moving parameters to ENV
+console.log(process.env.EXTERNAL_API_URL);
+
+const apiAuthUrl = externalApiUrl + 'Client/Autho'; // Hardcoded from process.js
+console.log(apiAuthUrl);
+
+const apiCustomerListUrl = externalApiUrl + 'Customer/GetList';
+console.log(apiCustomerListUrl);
+
 
 // --- Cấu hình Cron ---
 const cronSchedule = process.env.CRON_SCHEDULE || '*/30 * * * * *'; // Mặc định chạy mỗi 30 giây để test
 
 // --- Kiểm tra biến môi trường thiết yếu ---
-if (!minioEndpoint || !minioAccessKey || !minioSecretKey || !dataLakeBucket || !externalApiUrl) {
+if (!minioEndpoint || !minioAccessKey || !minioSecretKey || !dataLakeBucket || !externalApiUrl || !apiAuthUrl || !apiCustomerListUrl) {
   console.error('Missing critical environment variables (MinIO or API). Exiting.');
   process.exit(1);
 }
@@ -38,9 +44,9 @@ module.exports = {
         forcePathStyle: true // Giữ lại từ code gốc
     },
     apiConfig: {
-        apiUrl: externalApiUrl, // URL chính từ ENV (được dùng trong task)
-        authUrl: apiAuthUrl, // URL xác thực (có thể không dùng trong task hiện tại nhưng tách ra cho rõ)
-        customerListUrl: apiCustomerListUrl, // URL danh sách KH (được dùng trong task)
+        externalApiUrl: externalApiUrl, // URL chính từ ENV (được dùng trong task)
+        apiAuthUrl: apiAuthUrl, // URL xác thực (có thể không dùng trong task hiện tại nhưng tách ra cho rõ)
+        apiCustomerListUrl: apiCustomerListUrl, // URL danh sách KH (được dùng trong task)
         timeout: 30000 // Timeout từ code gốc
     },
     dbConfig: {

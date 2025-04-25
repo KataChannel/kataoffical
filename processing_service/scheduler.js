@@ -12,17 +12,21 @@ if (!cron.validate(schedulerConfig.cronSchedule)) {
     process.exit(1);
 }
 
-// --- Schedule Task ---
-cron.schedule(schedulerConfig.cronSchedule, () => {
-    console.log(`\nCron job triggered at ${new Date().toISOString()}`);
-    runPeriodicTask().catch(error => {
-        // Thêm .catch để bắt lỗi không mong muốn từ taskRunner không bị crash scheduler
-        console.error("Unhandled error during scheduled task execution:", error);
-    });
-}, {
-    scheduled: true,
-    timezone: schedulerConfig.timezone
+runPeriodicTask().catch(error => {
+    // Thêm .catch để bắt lỗi không mong muốn từ taskRunner không bị crash scheduler
+    console.error("Unhandled error during scheduled task execution:", error);
 });
+// --- Schedule Task ---
+// cron.schedule(schedulerConfig.cronSchedule, () => {
+//     console.log(`\nCron job triggered at ${new Date().toISOString()}`);
+//     runPeriodicTask().catch(error => {
+//         // Thêm .catch để bắt lỗi không mong muốn từ taskRunner không bị crash scheduler
+//         console.error("Unhandled error during scheduled task execution:", error);
+//     });
+// }, {
+//     scheduled: true,
+//     timezone: schedulerConfig.timezone
+// });
 
 console.log(`Scheduler started. Waiting for job trigger based on schedule: "${schedulerConfig.cronSchedule}" in timezone "${schedulerConfig.timezone}".`);
 

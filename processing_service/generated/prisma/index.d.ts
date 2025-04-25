@@ -18,6 +18,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  * 
  */
 export type ProcessedPost = $Result.DefaultSelection<Prisma.$ProcessedPostPayload>
+/**
+ * Model Customer
+ * 
+ */
+export type Customer = $Result.DefaultSelection<Prisma.$CustomerPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -153,6 +158,16 @@ export class PrismaClient<
     * ```
     */
   get processedPost(): Prisma.ProcessedPostDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.customer`: Exposes CRUD operations for the **Customer** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Customers
+    * const customers = await prisma.customer.findMany()
+    * ```
+    */
+  get customer(): Prisma.CustomerDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -593,7 +608,8 @@ export namespace Prisma {
 
 
   export const ModelName: {
-    ProcessedPost: 'ProcessedPost'
+    ProcessedPost: 'ProcessedPost',
+    Customer: 'Customer'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -612,7 +628,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "processedPost"
+      modelProps: "processedPost" | "customer"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -687,6 +703,80 @@ export namespace Prisma {
           count: {
             args: Prisma.ProcessedPostCountArgs<ExtArgs>
             result: $Utils.Optional<ProcessedPostCountAggregateOutputType> | number
+          }
+        }
+      }
+      Customer: {
+        payload: Prisma.$CustomerPayload<ExtArgs>
+        fields: Prisma.CustomerFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CustomerFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CustomerFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPayload>
+          }
+          findFirst: {
+            args: Prisma.CustomerFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CustomerFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPayload>
+          }
+          findMany: {
+            args: Prisma.CustomerFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPayload>[]
+          }
+          create: {
+            args: Prisma.CustomerCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPayload>
+          }
+          createMany: {
+            args: Prisma.CustomerCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CustomerCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPayload>[]
+          }
+          delete: {
+            args: Prisma.CustomerDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPayload>
+          }
+          update: {
+            args: Prisma.CustomerUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPayload>
+          }
+          deleteMany: {
+            args: Prisma.CustomerDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CustomerUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CustomerUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPayload>[]
+          }
+          upsert: {
+            args: Prisma.CustomerUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerPayload>
+          }
+          aggregate: {
+            args: Prisma.CustomerAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCustomer>
+          }
+          groupBy: {
+            args: Prisma.CustomerGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CustomerGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CustomerCountArgs<ExtArgs>
+            result: $Utils.Optional<CustomerCountAggregateOutputType> | number
           }
         }
       }
@@ -775,6 +865,7 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     processedPost?: ProcessedPostOmit
+    customer?: CustomerOmit
   }
 
   /* Types for Logging */
@@ -1937,6 +2028,1497 @@ export namespace Prisma {
 
 
   /**
+   * Model Customer
+   */
+
+  export type AggregateCustomer = {
+    _count: CustomerCountAggregateOutputType | null
+    _avg: CustomerAvgAggregateOutputType | null
+    _sum: CustomerSumAggregateOutputType | null
+    _min: CustomerMinAggregateOutputType | null
+    _max: CustomerMaxAggregateOutputType | null
+  }
+
+  export type CustomerAvgAggregateOutputType = {
+    id: number | null
+    branchId: number | null
+    ccStaffId: number | null
+    marStaffId: number | null
+    staffId: number | null
+    state: number | null
+  }
+
+  export type CustomerSumAggregateOutputType = {
+    id: number | null
+    branchId: number | null
+    ccStaffId: number | null
+    marStaffId: number | null
+    staffId: number | null
+    state: number | null
+  }
+
+  export type CustomerMinAggregateOutputType = {
+    id: number | null
+    source_id: string | null
+    name: string | null
+    code: string | null
+    codeOld: string | null
+    docCode: string | null
+    email: string | null
+    phone: string | null
+    phone2: string | null
+    birthday: Date | null
+    gender: string | null
+    address: string | null
+    commune: string | null
+    district: string | null
+    city: string | null
+    citizenIdentity: string | null
+    identityGrantDate: Date | null
+    identityIssuedBy: string | null
+    customerSource: string | null
+    customerGroup: string | null
+    branchId: number | null
+    firstPaidDate: Date | null
+    firstCheckinDate: Date | null
+    firstTreatmentDate: Date | null
+    lastTreatmentDate: Date | null
+    lastCheckinDate: Date | null
+    ccStaffId: number | null
+    caringStaffCode: string | null
+    marStaffId: number | null
+    marStaffCode: string | null
+    staffId: number | null
+    staffCode: string | null
+    gclid: string | null
+    state: number | null
+    createdDate: Date | null
+    createdBy: string | null
+    modifiedDate: Date | null
+    modifiedBy: string | null
+    extractedAt: Date | null
+  }
+
+  export type CustomerMaxAggregateOutputType = {
+    id: number | null
+    source_id: string | null
+    name: string | null
+    code: string | null
+    codeOld: string | null
+    docCode: string | null
+    email: string | null
+    phone: string | null
+    phone2: string | null
+    birthday: Date | null
+    gender: string | null
+    address: string | null
+    commune: string | null
+    district: string | null
+    city: string | null
+    citizenIdentity: string | null
+    identityGrantDate: Date | null
+    identityIssuedBy: string | null
+    customerSource: string | null
+    customerGroup: string | null
+    branchId: number | null
+    firstPaidDate: Date | null
+    firstCheckinDate: Date | null
+    firstTreatmentDate: Date | null
+    lastTreatmentDate: Date | null
+    lastCheckinDate: Date | null
+    ccStaffId: number | null
+    caringStaffCode: string | null
+    marStaffId: number | null
+    marStaffCode: string | null
+    staffId: number | null
+    staffCode: string | null
+    gclid: string | null
+    state: number | null
+    createdDate: Date | null
+    createdBy: string | null
+    modifiedDate: Date | null
+    modifiedBy: string | null
+    extractedAt: Date | null
+  }
+
+  export type CustomerCountAggregateOutputType = {
+    id: number
+    source_id: number
+    name: number
+    code: number
+    codeOld: number
+    docCode: number
+    email: number
+    phone: number
+    phone2: number
+    birthday: number
+    gender: number
+    address: number
+    commune: number
+    district: number
+    city: number
+    citizenIdentity: number
+    identityGrantDate: number
+    identityIssuedBy: number
+    customerSource: number
+    customerGroup: number
+    branchId: number
+    firstPaidDate: number
+    firstCheckinDate: number
+    firstTreatmentDate: number
+    lastTreatmentDate: number
+    lastCheckinDate: number
+    ccStaffId: number
+    caringStaffCode: number
+    marStaffId: number
+    marStaffCode: number
+    staffId: number
+    staffCode: number
+    gclid: number
+    state: number
+    createdDate: number
+    createdBy: number
+    modifiedDate: number
+    modifiedBy: number
+    extractedAt: number
+    _all: number
+  }
+
+
+  export type CustomerAvgAggregateInputType = {
+    id?: true
+    branchId?: true
+    ccStaffId?: true
+    marStaffId?: true
+    staffId?: true
+    state?: true
+  }
+
+  export type CustomerSumAggregateInputType = {
+    id?: true
+    branchId?: true
+    ccStaffId?: true
+    marStaffId?: true
+    staffId?: true
+    state?: true
+  }
+
+  export type CustomerMinAggregateInputType = {
+    id?: true
+    source_id?: true
+    name?: true
+    code?: true
+    codeOld?: true
+    docCode?: true
+    email?: true
+    phone?: true
+    phone2?: true
+    birthday?: true
+    gender?: true
+    address?: true
+    commune?: true
+    district?: true
+    city?: true
+    citizenIdentity?: true
+    identityGrantDate?: true
+    identityIssuedBy?: true
+    customerSource?: true
+    customerGroup?: true
+    branchId?: true
+    firstPaidDate?: true
+    firstCheckinDate?: true
+    firstTreatmentDate?: true
+    lastTreatmentDate?: true
+    lastCheckinDate?: true
+    ccStaffId?: true
+    caringStaffCode?: true
+    marStaffId?: true
+    marStaffCode?: true
+    staffId?: true
+    staffCode?: true
+    gclid?: true
+    state?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    modifiedBy?: true
+    extractedAt?: true
+  }
+
+  export type CustomerMaxAggregateInputType = {
+    id?: true
+    source_id?: true
+    name?: true
+    code?: true
+    codeOld?: true
+    docCode?: true
+    email?: true
+    phone?: true
+    phone2?: true
+    birthday?: true
+    gender?: true
+    address?: true
+    commune?: true
+    district?: true
+    city?: true
+    citizenIdentity?: true
+    identityGrantDate?: true
+    identityIssuedBy?: true
+    customerSource?: true
+    customerGroup?: true
+    branchId?: true
+    firstPaidDate?: true
+    firstCheckinDate?: true
+    firstTreatmentDate?: true
+    lastTreatmentDate?: true
+    lastCheckinDate?: true
+    ccStaffId?: true
+    caringStaffCode?: true
+    marStaffId?: true
+    marStaffCode?: true
+    staffId?: true
+    staffCode?: true
+    gclid?: true
+    state?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    modifiedBy?: true
+    extractedAt?: true
+  }
+
+  export type CustomerCountAggregateInputType = {
+    id?: true
+    source_id?: true
+    name?: true
+    code?: true
+    codeOld?: true
+    docCode?: true
+    email?: true
+    phone?: true
+    phone2?: true
+    birthday?: true
+    gender?: true
+    address?: true
+    commune?: true
+    district?: true
+    city?: true
+    citizenIdentity?: true
+    identityGrantDate?: true
+    identityIssuedBy?: true
+    customerSource?: true
+    customerGroup?: true
+    branchId?: true
+    firstPaidDate?: true
+    firstCheckinDate?: true
+    firstTreatmentDate?: true
+    lastTreatmentDate?: true
+    lastCheckinDate?: true
+    ccStaffId?: true
+    caringStaffCode?: true
+    marStaffId?: true
+    marStaffCode?: true
+    staffId?: true
+    staffCode?: true
+    gclid?: true
+    state?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    modifiedBy?: true
+    extractedAt?: true
+    _all?: true
+  }
+
+  export type CustomerAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Customer to aggregate.
+     */
+    where?: CustomerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Customers to fetch.
+     */
+    orderBy?: CustomerOrderByWithRelationInput | CustomerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CustomerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Customers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Customers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Customers
+    **/
+    _count?: true | CustomerCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CustomerAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CustomerSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CustomerMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CustomerMaxAggregateInputType
+  }
+
+  export type GetCustomerAggregateType<T extends CustomerAggregateArgs> = {
+        [P in keyof T & keyof AggregateCustomer]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCustomer[P]>
+      : GetScalarType<T[P], AggregateCustomer[P]>
+  }
+
+
+
+
+  export type CustomerGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CustomerWhereInput
+    orderBy?: CustomerOrderByWithAggregationInput | CustomerOrderByWithAggregationInput[]
+    by: CustomerScalarFieldEnum[] | CustomerScalarFieldEnum
+    having?: CustomerScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CustomerCountAggregateInputType | true
+    _avg?: CustomerAvgAggregateInputType
+    _sum?: CustomerSumAggregateInputType
+    _min?: CustomerMinAggregateInputType
+    _max?: CustomerMaxAggregateInputType
+  }
+
+  export type CustomerGroupByOutputType = {
+    id: number
+    source_id: string | null
+    name: string | null
+    code: string | null
+    codeOld: string | null
+    docCode: string | null
+    email: string | null
+    phone: string | null
+    phone2: string | null
+    birthday: Date | null
+    gender: string | null
+    address: string | null
+    commune: string | null
+    district: string | null
+    city: string | null
+    citizenIdentity: string | null
+    identityGrantDate: Date | null
+    identityIssuedBy: string | null
+    customerSource: string | null
+    customerGroup: string | null
+    branchId: number | null
+    firstPaidDate: Date | null
+    firstCheckinDate: Date | null
+    firstTreatmentDate: Date | null
+    lastTreatmentDate: Date | null
+    lastCheckinDate: Date | null
+    ccStaffId: number | null
+    caringStaffCode: string | null
+    marStaffId: number | null
+    marStaffCode: string | null
+    staffId: number | null
+    staffCode: string | null
+    gclid: string | null
+    state: number | null
+    createdDate: Date
+    createdBy: string | null
+    modifiedDate: Date
+    modifiedBy: string | null
+    extractedAt: Date
+    _count: CustomerCountAggregateOutputType | null
+    _avg: CustomerAvgAggregateOutputType | null
+    _sum: CustomerSumAggregateOutputType | null
+    _min: CustomerMinAggregateOutputType | null
+    _max: CustomerMaxAggregateOutputType | null
+  }
+
+  type GetCustomerGroupByPayload<T extends CustomerGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CustomerGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CustomerGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CustomerGroupByOutputType[P]>
+            : GetScalarType<T[P], CustomerGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CustomerSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    name?: boolean
+    code?: boolean
+    codeOld?: boolean
+    docCode?: boolean
+    email?: boolean
+    phone?: boolean
+    phone2?: boolean
+    birthday?: boolean
+    gender?: boolean
+    address?: boolean
+    commune?: boolean
+    district?: boolean
+    city?: boolean
+    citizenIdentity?: boolean
+    identityGrantDate?: boolean
+    identityIssuedBy?: boolean
+    customerSource?: boolean
+    customerGroup?: boolean
+    branchId?: boolean
+    firstPaidDate?: boolean
+    firstCheckinDate?: boolean
+    firstTreatmentDate?: boolean
+    lastTreatmentDate?: boolean
+    lastCheckinDate?: boolean
+    ccStaffId?: boolean
+    caringStaffCode?: boolean
+    marStaffId?: boolean
+    marStaffCode?: boolean
+    staffId?: boolean
+    staffCode?: boolean
+    gclid?: boolean
+    state?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["customer"]>
+
+  export type CustomerSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    name?: boolean
+    code?: boolean
+    codeOld?: boolean
+    docCode?: boolean
+    email?: boolean
+    phone?: boolean
+    phone2?: boolean
+    birthday?: boolean
+    gender?: boolean
+    address?: boolean
+    commune?: boolean
+    district?: boolean
+    city?: boolean
+    citizenIdentity?: boolean
+    identityGrantDate?: boolean
+    identityIssuedBy?: boolean
+    customerSource?: boolean
+    customerGroup?: boolean
+    branchId?: boolean
+    firstPaidDate?: boolean
+    firstCheckinDate?: boolean
+    firstTreatmentDate?: boolean
+    lastTreatmentDate?: boolean
+    lastCheckinDate?: boolean
+    ccStaffId?: boolean
+    caringStaffCode?: boolean
+    marStaffId?: boolean
+    marStaffCode?: boolean
+    staffId?: boolean
+    staffCode?: boolean
+    gclid?: boolean
+    state?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["customer"]>
+
+  export type CustomerSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    name?: boolean
+    code?: boolean
+    codeOld?: boolean
+    docCode?: boolean
+    email?: boolean
+    phone?: boolean
+    phone2?: boolean
+    birthday?: boolean
+    gender?: boolean
+    address?: boolean
+    commune?: boolean
+    district?: boolean
+    city?: boolean
+    citizenIdentity?: boolean
+    identityGrantDate?: boolean
+    identityIssuedBy?: boolean
+    customerSource?: boolean
+    customerGroup?: boolean
+    branchId?: boolean
+    firstPaidDate?: boolean
+    firstCheckinDate?: boolean
+    firstTreatmentDate?: boolean
+    lastTreatmentDate?: boolean
+    lastCheckinDate?: boolean
+    ccStaffId?: boolean
+    caringStaffCode?: boolean
+    marStaffId?: boolean
+    marStaffCode?: boolean
+    staffId?: boolean
+    staffCode?: boolean
+    gclid?: boolean
+    state?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["customer"]>
+
+  export type CustomerSelectScalar = {
+    id?: boolean
+    source_id?: boolean
+    name?: boolean
+    code?: boolean
+    codeOld?: boolean
+    docCode?: boolean
+    email?: boolean
+    phone?: boolean
+    phone2?: boolean
+    birthday?: boolean
+    gender?: boolean
+    address?: boolean
+    commune?: boolean
+    district?: boolean
+    city?: boolean
+    citizenIdentity?: boolean
+    identityGrantDate?: boolean
+    identityIssuedBy?: boolean
+    customerSource?: boolean
+    customerGroup?: boolean
+    branchId?: boolean
+    firstPaidDate?: boolean
+    firstCheckinDate?: boolean
+    firstTreatmentDate?: boolean
+    lastTreatmentDate?: boolean
+    lastCheckinDate?: boolean
+    ccStaffId?: boolean
+    caringStaffCode?: boolean
+    marStaffId?: boolean
+    marStaffCode?: boolean
+    staffId?: boolean
+    staffCode?: boolean
+    gclid?: boolean
+    state?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    extractedAt?: boolean
+  }
+
+  export type CustomerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "source_id" | "name" | "code" | "codeOld" | "docCode" | "email" | "phone" | "phone2" | "birthday" | "gender" | "address" | "commune" | "district" | "city" | "citizenIdentity" | "identityGrantDate" | "identityIssuedBy" | "customerSource" | "customerGroup" | "branchId" | "firstPaidDate" | "firstCheckinDate" | "firstTreatmentDate" | "lastTreatmentDate" | "lastCheckinDate" | "ccStaffId" | "caringStaffCode" | "marStaffId" | "marStaffCode" | "staffId" | "staffCode" | "gclid" | "state" | "createdDate" | "createdBy" | "modifiedDate" | "modifiedBy" | "extractedAt", ExtArgs["result"]["customer"]>
+
+  export type $CustomerPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Customer"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      source_id: string | null
+      name: string | null
+      code: string | null
+      codeOld: string | null
+      docCode: string | null
+      email: string | null
+      phone: string | null
+      phone2: string | null
+      birthday: Date | null
+      gender: string | null
+      address: string | null
+      commune: string | null
+      district: string | null
+      city: string | null
+      citizenIdentity: string | null
+      identityGrantDate: Date | null
+      identityIssuedBy: string | null
+      customerSource: string | null
+      customerGroup: string | null
+      branchId: number | null
+      firstPaidDate: Date | null
+      firstCheckinDate: Date | null
+      firstTreatmentDate: Date | null
+      lastTreatmentDate: Date | null
+      lastCheckinDate: Date | null
+      ccStaffId: number | null
+      caringStaffCode: string | null
+      marStaffId: number | null
+      marStaffCode: string | null
+      staffId: number | null
+      staffCode: string | null
+      gclid: string | null
+      state: number | null
+      createdDate: Date
+      createdBy: string | null
+      modifiedDate: Date
+      modifiedBy: string | null
+      extractedAt: Date
+    }, ExtArgs["result"]["customer"]>
+    composites: {}
+  }
+
+  type CustomerGetPayload<S extends boolean | null | undefined | CustomerDefaultArgs> = $Result.GetResult<Prisma.$CustomerPayload, S>
+
+  type CustomerCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CustomerFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CustomerCountAggregateInputType | true
+    }
+
+  export interface CustomerDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Customer'], meta: { name: 'Customer' } }
+    /**
+     * Find zero or one Customer that matches the filter.
+     * @param {CustomerFindUniqueArgs} args - Arguments to find a Customer
+     * @example
+     * // Get one Customer
+     * const customer = await prisma.customer.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CustomerFindUniqueArgs>(args: SelectSubset<T, CustomerFindUniqueArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Customer that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CustomerFindUniqueOrThrowArgs} args - Arguments to find a Customer
+     * @example
+     * // Get one Customer
+     * const customer = await prisma.customer.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CustomerFindUniqueOrThrowArgs>(args: SelectSubset<T, CustomerFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Customer that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerFindFirstArgs} args - Arguments to find a Customer
+     * @example
+     * // Get one Customer
+     * const customer = await prisma.customer.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CustomerFindFirstArgs>(args?: SelectSubset<T, CustomerFindFirstArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Customer that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerFindFirstOrThrowArgs} args - Arguments to find a Customer
+     * @example
+     * // Get one Customer
+     * const customer = await prisma.customer.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CustomerFindFirstOrThrowArgs>(args?: SelectSubset<T, CustomerFindFirstOrThrowArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Customers that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Customers
+     * const customers = await prisma.customer.findMany()
+     * 
+     * // Get first 10 Customers
+     * const customers = await prisma.customer.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const customerWithIdOnly = await prisma.customer.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CustomerFindManyArgs>(args?: SelectSubset<T, CustomerFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Customer.
+     * @param {CustomerCreateArgs} args - Arguments to create a Customer.
+     * @example
+     * // Create one Customer
+     * const Customer = await prisma.customer.create({
+     *   data: {
+     *     // ... data to create a Customer
+     *   }
+     * })
+     * 
+     */
+    create<T extends CustomerCreateArgs>(args: SelectSubset<T, CustomerCreateArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Customers.
+     * @param {CustomerCreateManyArgs} args - Arguments to create many Customers.
+     * @example
+     * // Create many Customers
+     * const customer = await prisma.customer.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CustomerCreateManyArgs>(args?: SelectSubset<T, CustomerCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Customers and returns the data saved in the database.
+     * @param {CustomerCreateManyAndReturnArgs} args - Arguments to create many Customers.
+     * @example
+     * // Create many Customers
+     * const customer = await prisma.customer.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Customers and only return the `id`
+     * const customerWithIdOnly = await prisma.customer.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CustomerCreateManyAndReturnArgs>(args?: SelectSubset<T, CustomerCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Customer.
+     * @param {CustomerDeleteArgs} args - Arguments to delete one Customer.
+     * @example
+     * // Delete one Customer
+     * const Customer = await prisma.customer.delete({
+     *   where: {
+     *     // ... filter to delete one Customer
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CustomerDeleteArgs>(args: SelectSubset<T, CustomerDeleteArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Customer.
+     * @param {CustomerUpdateArgs} args - Arguments to update one Customer.
+     * @example
+     * // Update one Customer
+     * const customer = await prisma.customer.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CustomerUpdateArgs>(args: SelectSubset<T, CustomerUpdateArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Customers.
+     * @param {CustomerDeleteManyArgs} args - Arguments to filter Customers to delete.
+     * @example
+     * // Delete a few Customers
+     * const { count } = await prisma.customer.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CustomerDeleteManyArgs>(args?: SelectSubset<T, CustomerDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Customers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Customers
+     * const customer = await prisma.customer.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CustomerUpdateManyArgs>(args: SelectSubset<T, CustomerUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Customers and returns the data updated in the database.
+     * @param {CustomerUpdateManyAndReturnArgs} args - Arguments to update many Customers.
+     * @example
+     * // Update many Customers
+     * const customer = await prisma.customer.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Customers and only return the `id`
+     * const customerWithIdOnly = await prisma.customer.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CustomerUpdateManyAndReturnArgs>(args: SelectSubset<T, CustomerUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Customer.
+     * @param {CustomerUpsertArgs} args - Arguments to update or create a Customer.
+     * @example
+     * // Update or create a Customer
+     * const customer = await prisma.customer.upsert({
+     *   create: {
+     *     // ... data to create a Customer
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Customer we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CustomerUpsertArgs>(args: SelectSubset<T, CustomerUpsertArgs<ExtArgs>>): Prisma__CustomerClient<$Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Customers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerCountArgs} args - Arguments to filter Customers to count.
+     * @example
+     * // Count the number of Customers
+     * const count = await prisma.customer.count({
+     *   where: {
+     *     // ... the filter for the Customers we want to count
+     *   }
+     * })
+    **/
+    count<T extends CustomerCountArgs>(
+      args?: Subset<T, CustomerCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CustomerCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Customer.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CustomerAggregateArgs>(args: Subset<T, CustomerAggregateArgs>): Prisma.PrismaPromise<GetCustomerAggregateType<T>>
+
+    /**
+     * Group by Customer.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CustomerGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CustomerGroupByArgs['orderBy'] }
+        : { orderBy?: CustomerGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CustomerGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCustomerGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Customer model
+   */
+  readonly fields: CustomerFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Customer.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CustomerClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Customer model
+   */
+  interface CustomerFieldRefs {
+    readonly id: FieldRef<"Customer", 'Int'>
+    readonly source_id: FieldRef<"Customer", 'String'>
+    readonly name: FieldRef<"Customer", 'String'>
+    readonly code: FieldRef<"Customer", 'String'>
+    readonly codeOld: FieldRef<"Customer", 'String'>
+    readonly docCode: FieldRef<"Customer", 'String'>
+    readonly email: FieldRef<"Customer", 'String'>
+    readonly phone: FieldRef<"Customer", 'String'>
+    readonly phone2: FieldRef<"Customer", 'String'>
+    readonly birthday: FieldRef<"Customer", 'DateTime'>
+    readonly gender: FieldRef<"Customer", 'String'>
+    readonly address: FieldRef<"Customer", 'String'>
+    readonly commune: FieldRef<"Customer", 'String'>
+    readonly district: FieldRef<"Customer", 'String'>
+    readonly city: FieldRef<"Customer", 'String'>
+    readonly citizenIdentity: FieldRef<"Customer", 'String'>
+    readonly identityGrantDate: FieldRef<"Customer", 'DateTime'>
+    readonly identityIssuedBy: FieldRef<"Customer", 'String'>
+    readonly customerSource: FieldRef<"Customer", 'String'>
+    readonly customerGroup: FieldRef<"Customer", 'String'>
+    readonly branchId: FieldRef<"Customer", 'Int'>
+    readonly firstPaidDate: FieldRef<"Customer", 'DateTime'>
+    readonly firstCheckinDate: FieldRef<"Customer", 'DateTime'>
+    readonly firstTreatmentDate: FieldRef<"Customer", 'DateTime'>
+    readonly lastTreatmentDate: FieldRef<"Customer", 'DateTime'>
+    readonly lastCheckinDate: FieldRef<"Customer", 'DateTime'>
+    readonly ccStaffId: FieldRef<"Customer", 'Int'>
+    readonly caringStaffCode: FieldRef<"Customer", 'String'>
+    readonly marStaffId: FieldRef<"Customer", 'Int'>
+    readonly marStaffCode: FieldRef<"Customer", 'String'>
+    readonly staffId: FieldRef<"Customer", 'Int'>
+    readonly staffCode: FieldRef<"Customer", 'String'>
+    readonly gclid: FieldRef<"Customer", 'String'>
+    readonly state: FieldRef<"Customer", 'Int'>
+    readonly createdDate: FieldRef<"Customer", 'DateTime'>
+    readonly createdBy: FieldRef<"Customer", 'String'>
+    readonly modifiedDate: FieldRef<"Customer", 'DateTime'>
+    readonly modifiedBy: FieldRef<"Customer", 'String'>
+    readonly extractedAt: FieldRef<"Customer", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Customer findUnique
+   */
+  export type CustomerFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Customer
+     */
+    omit?: CustomerOmit<ExtArgs> | null
+    /**
+     * Filter, which Customer to fetch.
+     */
+    where: CustomerWhereUniqueInput
+  }
+
+  /**
+   * Customer findUniqueOrThrow
+   */
+  export type CustomerFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Customer
+     */
+    omit?: CustomerOmit<ExtArgs> | null
+    /**
+     * Filter, which Customer to fetch.
+     */
+    where: CustomerWhereUniqueInput
+  }
+
+  /**
+   * Customer findFirst
+   */
+  export type CustomerFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Customer
+     */
+    omit?: CustomerOmit<ExtArgs> | null
+    /**
+     * Filter, which Customer to fetch.
+     */
+    where?: CustomerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Customers to fetch.
+     */
+    orderBy?: CustomerOrderByWithRelationInput | CustomerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Customers.
+     */
+    cursor?: CustomerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Customers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Customers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Customers.
+     */
+    distinct?: CustomerScalarFieldEnum | CustomerScalarFieldEnum[]
+  }
+
+  /**
+   * Customer findFirstOrThrow
+   */
+  export type CustomerFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Customer
+     */
+    omit?: CustomerOmit<ExtArgs> | null
+    /**
+     * Filter, which Customer to fetch.
+     */
+    where?: CustomerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Customers to fetch.
+     */
+    orderBy?: CustomerOrderByWithRelationInput | CustomerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Customers.
+     */
+    cursor?: CustomerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Customers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Customers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Customers.
+     */
+    distinct?: CustomerScalarFieldEnum | CustomerScalarFieldEnum[]
+  }
+
+  /**
+   * Customer findMany
+   */
+  export type CustomerFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Customer
+     */
+    omit?: CustomerOmit<ExtArgs> | null
+    /**
+     * Filter, which Customers to fetch.
+     */
+    where?: CustomerWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Customers to fetch.
+     */
+    orderBy?: CustomerOrderByWithRelationInput | CustomerOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Customers.
+     */
+    cursor?: CustomerWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Customers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Customers.
+     */
+    skip?: number
+    distinct?: CustomerScalarFieldEnum | CustomerScalarFieldEnum[]
+  }
+
+  /**
+   * Customer create
+   */
+  export type CustomerCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Customer
+     */
+    omit?: CustomerOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Customer.
+     */
+    data: XOR<CustomerCreateInput, CustomerUncheckedCreateInput>
+  }
+
+  /**
+   * Customer createMany
+   */
+  export type CustomerCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Customers.
+     */
+    data: CustomerCreateManyInput | CustomerCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Customer createManyAndReturn
+   */
+  export type CustomerCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Customer
+     */
+    omit?: CustomerOmit<ExtArgs> | null
+    /**
+     * The data used to create many Customers.
+     */
+    data: CustomerCreateManyInput | CustomerCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Customer update
+   */
+  export type CustomerUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Customer
+     */
+    omit?: CustomerOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Customer.
+     */
+    data: XOR<CustomerUpdateInput, CustomerUncheckedUpdateInput>
+    /**
+     * Choose, which Customer to update.
+     */
+    where: CustomerWhereUniqueInput
+  }
+
+  /**
+   * Customer updateMany
+   */
+  export type CustomerUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Customers.
+     */
+    data: XOR<CustomerUpdateManyMutationInput, CustomerUncheckedUpdateManyInput>
+    /**
+     * Filter which Customers to update
+     */
+    where?: CustomerWhereInput
+    /**
+     * Limit how many Customers to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Customer updateManyAndReturn
+   */
+  export type CustomerUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Customer
+     */
+    omit?: CustomerOmit<ExtArgs> | null
+    /**
+     * The data used to update Customers.
+     */
+    data: XOR<CustomerUpdateManyMutationInput, CustomerUncheckedUpdateManyInput>
+    /**
+     * Filter which Customers to update
+     */
+    where?: CustomerWhereInput
+    /**
+     * Limit how many Customers to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Customer upsert
+   */
+  export type CustomerUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Customer
+     */
+    omit?: CustomerOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Customer to update in case it exists.
+     */
+    where: CustomerWhereUniqueInput
+    /**
+     * In case the Customer found by the `where` argument doesn't exist, create a new Customer with this data.
+     */
+    create: XOR<CustomerCreateInput, CustomerUncheckedCreateInput>
+    /**
+     * In case the Customer was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CustomerUpdateInput, CustomerUncheckedUpdateInput>
+  }
+
+  /**
+   * Customer delete
+   */
+  export type CustomerDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Customer
+     */
+    omit?: CustomerOmit<ExtArgs> | null
+    /**
+     * Filter which Customer to delete.
+     */
+    where: CustomerWhereUniqueInput
+  }
+
+  /**
+   * Customer deleteMany
+   */
+  export type CustomerDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Customers to delete
+     */
+    where?: CustomerWhereInput
+    /**
+     * Limit how many Customers to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Customer without action
+   */
+  export type CustomerDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Customer
+     */
+    select?: CustomerSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Customer
+     */
+    omit?: CustomerOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -1961,6 +3543,51 @@ export namespace Prisma {
   };
 
   export type ProcessedPostScalarFieldEnum = (typeof ProcessedPostScalarFieldEnum)[keyof typeof ProcessedPostScalarFieldEnum]
+
+
+  export const CustomerScalarFieldEnum: {
+    id: 'id',
+    source_id: 'source_id',
+    name: 'name',
+    code: 'code',
+    codeOld: 'codeOld',
+    docCode: 'docCode',
+    email: 'email',
+    phone: 'phone',
+    phone2: 'phone2',
+    birthday: 'birthday',
+    gender: 'gender',
+    address: 'address',
+    commune: 'commune',
+    district: 'district',
+    city: 'city',
+    citizenIdentity: 'citizenIdentity',
+    identityGrantDate: 'identityGrantDate',
+    identityIssuedBy: 'identityIssuedBy',
+    customerSource: 'customerSource',
+    customerGroup: 'customerGroup',
+    branchId: 'branchId',
+    firstPaidDate: 'firstPaidDate',
+    firstCheckinDate: 'firstCheckinDate',
+    firstTreatmentDate: 'firstTreatmentDate',
+    lastTreatmentDate: 'lastTreatmentDate',
+    lastCheckinDate: 'lastCheckinDate',
+    ccStaffId: 'ccStaffId',
+    caringStaffCode: 'caringStaffCode',
+    marStaffId: 'marStaffId',
+    marStaffCode: 'marStaffCode',
+    staffId: 'staffId',
+    staffCode: 'staffCode',
+    gclid: 'gclid',
+    state: 'state',
+    createdDate: 'createdDate',
+    createdBy: 'createdBy',
+    modifiedDate: 'modifiedDate',
+    modifiedBy: 'modifiedBy',
+    extractedAt: 'extractedAt'
+  };
+
+  export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -2115,6 +3742,230 @@ export namespace Prisma {
     processed_at?: DateTimeWithAggregatesFilter<"ProcessedPost"> | Date | string
   }
 
+  export type CustomerWhereInput = {
+    AND?: CustomerWhereInput | CustomerWhereInput[]
+    OR?: CustomerWhereInput[]
+    NOT?: CustomerWhereInput | CustomerWhereInput[]
+    id?: IntFilter<"Customer"> | number
+    source_id?: StringNullableFilter<"Customer"> | string | null
+    name?: StringNullableFilter<"Customer"> | string | null
+    code?: StringNullableFilter<"Customer"> | string | null
+    codeOld?: StringNullableFilter<"Customer"> | string | null
+    docCode?: StringNullableFilter<"Customer"> | string | null
+    email?: StringNullableFilter<"Customer"> | string | null
+    phone?: StringNullableFilter<"Customer"> | string | null
+    phone2?: StringNullableFilter<"Customer"> | string | null
+    birthday?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    gender?: StringNullableFilter<"Customer"> | string | null
+    address?: StringNullableFilter<"Customer"> | string | null
+    commune?: StringNullableFilter<"Customer"> | string | null
+    district?: StringNullableFilter<"Customer"> | string | null
+    city?: StringNullableFilter<"Customer"> | string | null
+    citizenIdentity?: StringNullableFilter<"Customer"> | string | null
+    identityGrantDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    identityIssuedBy?: StringNullableFilter<"Customer"> | string | null
+    customerSource?: StringNullableFilter<"Customer"> | string | null
+    customerGroup?: StringNullableFilter<"Customer"> | string | null
+    branchId?: IntNullableFilter<"Customer"> | number | null
+    firstPaidDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    firstCheckinDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    firstTreatmentDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    lastTreatmentDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    lastCheckinDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    ccStaffId?: IntNullableFilter<"Customer"> | number | null
+    caringStaffCode?: StringNullableFilter<"Customer"> | string | null
+    marStaffId?: IntNullableFilter<"Customer"> | number | null
+    marStaffCode?: StringNullableFilter<"Customer"> | string | null
+    staffId?: IntNullableFilter<"Customer"> | number | null
+    staffCode?: StringNullableFilter<"Customer"> | string | null
+    gclid?: StringNullableFilter<"Customer"> | string | null
+    state?: IntNullableFilter<"Customer"> | number | null
+    createdDate?: DateTimeFilter<"Customer"> | Date | string
+    createdBy?: StringNullableFilter<"Customer"> | string | null
+    modifiedDate?: DateTimeFilter<"Customer"> | Date | string
+    modifiedBy?: StringNullableFilter<"Customer"> | string | null
+    extractedAt?: DateTimeFilter<"Customer"> | Date | string
+  }
+
+  export type CustomerOrderByWithRelationInput = {
+    id?: SortOrder
+    source_id?: SortOrderInput | SortOrder
+    name?: SortOrderInput | SortOrder
+    code?: SortOrderInput | SortOrder
+    codeOld?: SortOrderInput | SortOrder
+    docCode?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    phone2?: SortOrderInput | SortOrder
+    birthday?: SortOrderInput | SortOrder
+    gender?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    commune?: SortOrderInput | SortOrder
+    district?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    citizenIdentity?: SortOrderInput | SortOrder
+    identityGrantDate?: SortOrderInput | SortOrder
+    identityIssuedBy?: SortOrderInput | SortOrder
+    customerSource?: SortOrderInput | SortOrder
+    customerGroup?: SortOrderInput | SortOrder
+    branchId?: SortOrderInput | SortOrder
+    firstPaidDate?: SortOrderInput | SortOrder
+    firstCheckinDate?: SortOrderInput | SortOrder
+    firstTreatmentDate?: SortOrderInput | SortOrder
+    lastTreatmentDate?: SortOrderInput | SortOrder
+    lastCheckinDate?: SortOrderInput | SortOrder
+    ccStaffId?: SortOrderInput | SortOrder
+    caringStaffCode?: SortOrderInput | SortOrder
+    marStaffId?: SortOrderInput | SortOrder
+    marStaffCode?: SortOrderInput | SortOrder
+    staffId?: SortOrderInput | SortOrder
+    staffCode?: SortOrderInput | SortOrder
+    gclid?: SortOrderInput | SortOrder
+    state?: SortOrderInput | SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrderInput | SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type CustomerWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    source_id?: string
+    code?: string
+    AND?: CustomerWhereInput | CustomerWhereInput[]
+    OR?: CustomerWhereInput[]
+    NOT?: CustomerWhereInput | CustomerWhereInput[]
+    name?: StringNullableFilter<"Customer"> | string | null
+    codeOld?: StringNullableFilter<"Customer"> | string | null
+    docCode?: StringNullableFilter<"Customer"> | string | null
+    email?: StringNullableFilter<"Customer"> | string | null
+    phone?: StringNullableFilter<"Customer"> | string | null
+    phone2?: StringNullableFilter<"Customer"> | string | null
+    birthday?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    gender?: StringNullableFilter<"Customer"> | string | null
+    address?: StringNullableFilter<"Customer"> | string | null
+    commune?: StringNullableFilter<"Customer"> | string | null
+    district?: StringNullableFilter<"Customer"> | string | null
+    city?: StringNullableFilter<"Customer"> | string | null
+    citizenIdentity?: StringNullableFilter<"Customer"> | string | null
+    identityGrantDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    identityIssuedBy?: StringNullableFilter<"Customer"> | string | null
+    customerSource?: StringNullableFilter<"Customer"> | string | null
+    customerGroup?: StringNullableFilter<"Customer"> | string | null
+    branchId?: IntNullableFilter<"Customer"> | number | null
+    firstPaidDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    firstCheckinDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    firstTreatmentDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    lastTreatmentDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    lastCheckinDate?: DateTimeNullableFilter<"Customer"> | Date | string | null
+    ccStaffId?: IntNullableFilter<"Customer"> | number | null
+    caringStaffCode?: StringNullableFilter<"Customer"> | string | null
+    marStaffId?: IntNullableFilter<"Customer"> | number | null
+    marStaffCode?: StringNullableFilter<"Customer"> | string | null
+    staffId?: IntNullableFilter<"Customer"> | number | null
+    staffCode?: StringNullableFilter<"Customer"> | string | null
+    gclid?: StringNullableFilter<"Customer"> | string | null
+    state?: IntNullableFilter<"Customer"> | number | null
+    createdDate?: DateTimeFilter<"Customer"> | Date | string
+    createdBy?: StringNullableFilter<"Customer"> | string | null
+    modifiedDate?: DateTimeFilter<"Customer"> | Date | string
+    modifiedBy?: StringNullableFilter<"Customer"> | string | null
+    extractedAt?: DateTimeFilter<"Customer"> | Date | string
+  }, "id" | "source_id" | "code">
+
+  export type CustomerOrderByWithAggregationInput = {
+    id?: SortOrder
+    source_id?: SortOrderInput | SortOrder
+    name?: SortOrderInput | SortOrder
+    code?: SortOrderInput | SortOrder
+    codeOld?: SortOrderInput | SortOrder
+    docCode?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    phone2?: SortOrderInput | SortOrder
+    birthday?: SortOrderInput | SortOrder
+    gender?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    commune?: SortOrderInput | SortOrder
+    district?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    citizenIdentity?: SortOrderInput | SortOrder
+    identityGrantDate?: SortOrderInput | SortOrder
+    identityIssuedBy?: SortOrderInput | SortOrder
+    customerSource?: SortOrderInput | SortOrder
+    customerGroup?: SortOrderInput | SortOrder
+    branchId?: SortOrderInput | SortOrder
+    firstPaidDate?: SortOrderInput | SortOrder
+    firstCheckinDate?: SortOrderInput | SortOrder
+    firstTreatmentDate?: SortOrderInput | SortOrder
+    lastTreatmentDate?: SortOrderInput | SortOrder
+    lastCheckinDate?: SortOrderInput | SortOrder
+    ccStaffId?: SortOrderInput | SortOrder
+    caringStaffCode?: SortOrderInput | SortOrder
+    marStaffId?: SortOrderInput | SortOrder
+    marStaffCode?: SortOrderInput | SortOrder
+    staffId?: SortOrderInput | SortOrder
+    staffCode?: SortOrderInput | SortOrder
+    gclid?: SortOrderInput | SortOrder
+    state?: SortOrderInput | SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrderInput | SortOrder
+    extractedAt?: SortOrder
+    _count?: CustomerCountOrderByAggregateInput
+    _avg?: CustomerAvgOrderByAggregateInput
+    _max?: CustomerMaxOrderByAggregateInput
+    _min?: CustomerMinOrderByAggregateInput
+    _sum?: CustomerSumOrderByAggregateInput
+  }
+
+  export type CustomerScalarWhereWithAggregatesInput = {
+    AND?: CustomerScalarWhereWithAggregatesInput | CustomerScalarWhereWithAggregatesInput[]
+    OR?: CustomerScalarWhereWithAggregatesInput[]
+    NOT?: CustomerScalarWhereWithAggregatesInput | CustomerScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Customer"> | number
+    source_id?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    name?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    code?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    codeOld?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    docCode?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    email?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    phone2?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    birthday?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    gender?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    address?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    commune?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    district?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    city?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    citizenIdentity?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    identityGrantDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    identityIssuedBy?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    customerSource?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    customerGroup?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    branchId?: IntNullableWithAggregatesFilter<"Customer"> | number | null
+    firstPaidDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    firstCheckinDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    firstTreatmentDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    lastTreatmentDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    lastCheckinDate?: DateTimeNullableWithAggregatesFilter<"Customer"> | Date | string | null
+    ccStaffId?: IntNullableWithAggregatesFilter<"Customer"> | number | null
+    caringStaffCode?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    marStaffId?: IntNullableWithAggregatesFilter<"Customer"> | number | null
+    marStaffCode?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    staffId?: IntNullableWithAggregatesFilter<"Customer"> | number | null
+    staffCode?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    gclid?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    state?: IntNullableWithAggregatesFilter<"Customer"> | number | null
+    createdDate?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
+    createdBy?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    modifiedDate?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
+    modifiedBy?: StringNullableWithAggregatesFilter<"Customer"> | string | null
+    extractedAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
+  }
+
   export type ProcessedPostCreateInput = {
     source_id: number
     title?: string | null
@@ -2180,6 +4031,297 @@ export namespace Prisma {
     user_ref?: NullableIntFieldUpdateOperationsInput | number | null
     extracted_at?: DateTimeFieldUpdateOperationsInput | Date | string
     processed_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerCreateInput = {
+    source_id?: string | null
+    name?: string | null
+    code?: string | null
+    codeOld?: string | null
+    docCode?: string | null
+    email?: string | null
+    phone?: string | null
+    phone2?: string | null
+    birthday?: Date | string | null
+    gender?: string | null
+    address?: string | null
+    commune?: string | null
+    district?: string | null
+    city?: string | null
+    citizenIdentity?: string | null
+    identityGrantDate?: Date | string | null
+    identityIssuedBy?: string | null
+    customerSource?: string | null
+    customerGroup?: string | null
+    branchId?: number | null
+    firstPaidDate?: Date | string | null
+    firstCheckinDate?: Date | string | null
+    firstTreatmentDate?: Date | string | null
+    lastTreatmentDate?: Date | string | null
+    lastCheckinDate?: Date | string | null
+    ccStaffId?: number | null
+    caringStaffCode?: string | null
+    marStaffId?: number | null
+    marStaffCode?: string | null
+    staffId?: number | null
+    staffCode?: string | null
+    gclid?: string | null
+    state?: number | null
+    createdDate?: Date | string
+    createdBy?: string | null
+    modifiedDate?: Date | string
+    modifiedBy?: string | null
+    extractedAt?: Date | string
+  }
+
+  export type CustomerUncheckedCreateInput = {
+    id?: number
+    source_id?: string | null
+    name?: string | null
+    code?: string | null
+    codeOld?: string | null
+    docCode?: string | null
+    email?: string | null
+    phone?: string | null
+    phone2?: string | null
+    birthday?: Date | string | null
+    gender?: string | null
+    address?: string | null
+    commune?: string | null
+    district?: string | null
+    city?: string | null
+    citizenIdentity?: string | null
+    identityGrantDate?: Date | string | null
+    identityIssuedBy?: string | null
+    customerSource?: string | null
+    customerGroup?: string | null
+    branchId?: number | null
+    firstPaidDate?: Date | string | null
+    firstCheckinDate?: Date | string | null
+    firstTreatmentDate?: Date | string | null
+    lastTreatmentDate?: Date | string | null
+    lastCheckinDate?: Date | string | null
+    ccStaffId?: number | null
+    caringStaffCode?: string | null
+    marStaffId?: number | null
+    marStaffCode?: string | null
+    staffId?: number | null
+    staffCode?: string | null
+    gclid?: string | null
+    state?: number | null
+    createdDate?: Date | string
+    createdBy?: string | null
+    modifiedDate?: Date | string
+    modifiedBy?: string | null
+    extractedAt?: Date | string
+  }
+
+  export type CustomerUpdateInput = {
+    source_id?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    codeOld?: NullableStringFieldUpdateOperationsInput | string | null
+    docCode?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    commune?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    citizenIdentity?: NullableStringFieldUpdateOperationsInput | string | null
+    identityGrantDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    identityIssuedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    customerSource?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGroup?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    firstPaidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstCheckinDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstTreatmentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastTreatmentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckinDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ccStaffId?: NullableIntFieldUpdateOperationsInput | number | null
+    caringStaffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    marStaffId?: NullableIntFieldUpdateOperationsInput | number | null
+    marStaffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    staffId?: NullableIntFieldUpdateOperationsInput | number | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    gclid?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableIntFieldUpdateOperationsInput | number | null
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    modifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    source_id?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    codeOld?: NullableStringFieldUpdateOperationsInput | string | null
+    docCode?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    commune?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    citizenIdentity?: NullableStringFieldUpdateOperationsInput | string | null
+    identityGrantDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    identityIssuedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    customerSource?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGroup?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    firstPaidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstCheckinDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstTreatmentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastTreatmentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckinDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ccStaffId?: NullableIntFieldUpdateOperationsInput | number | null
+    caringStaffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    marStaffId?: NullableIntFieldUpdateOperationsInput | number | null
+    marStaffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    staffId?: NullableIntFieldUpdateOperationsInput | number | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    gclid?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableIntFieldUpdateOperationsInput | number | null
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    modifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerCreateManyInput = {
+    id?: number
+    source_id?: string | null
+    name?: string | null
+    code?: string | null
+    codeOld?: string | null
+    docCode?: string | null
+    email?: string | null
+    phone?: string | null
+    phone2?: string | null
+    birthday?: Date | string | null
+    gender?: string | null
+    address?: string | null
+    commune?: string | null
+    district?: string | null
+    city?: string | null
+    citizenIdentity?: string | null
+    identityGrantDate?: Date | string | null
+    identityIssuedBy?: string | null
+    customerSource?: string | null
+    customerGroup?: string | null
+    branchId?: number | null
+    firstPaidDate?: Date | string | null
+    firstCheckinDate?: Date | string | null
+    firstTreatmentDate?: Date | string | null
+    lastTreatmentDate?: Date | string | null
+    lastCheckinDate?: Date | string | null
+    ccStaffId?: number | null
+    caringStaffCode?: string | null
+    marStaffId?: number | null
+    marStaffCode?: string | null
+    staffId?: number | null
+    staffCode?: string | null
+    gclid?: string | null
+    state?: number | null
+    createdDate?: Date | string
+    createdBy?: string | null
+    modifiedDate?: Date | string
+    modifiedBy?: string | null
+    extractedAt?: Date | string
+  }
+
+  export type CustomerUpdateManyMutationInput = {
+    source_id?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    codeOld?: NullableStringFieldUpdateOperationsInput | string | null
+    docCode?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    commune?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    citizenIdentity?: NullableStringFieldUpdateOperationsInput | string | null
+    identityGrantDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    identityIssuedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    customerSource?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGroup?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    firstPaidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstCheckinDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstTreatmentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastTreatmentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckinDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ccStaffId?: NullableIntFieldUpdateOperationsInput | number | null
+    caringStaffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    marStaffId?: NullableIntFieldUpdateOperationsInput | number | null
+    marStaffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    staffId?: NullableIntFieldUpdateOperationsInput | number | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    gclid?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableIntFieldUpdateOperationsInput | number | null
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    modifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    source_id?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    codeOld?: NullableStringFieldUpdateOperationsInput | string | null
+    docCode?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    commune?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    citizenIdentity?: NullableStringFieldUpdateOperationsInput | string | null
+    identityGrantDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    identityIssuedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    customerSource?: NullableStringFieldUpdateOperationsInput | string | null
+    customerGroup?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    firstPaidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstCheckinDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firstTreatmentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastTreatmentDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastCheckinDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ccStaffId?: NullableIntFieldUpdateOperationsInput | number | null
+    caringStaffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    marStaffId?: NullableIntFieldUpdateOperationsInput | number | null
+    marStaffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    staffId?: NullableIntFieldUpdateOperationsInput | number | null
+    staffCode?: NullableStringFieldUpdateOperationsInput | string | null
+    gclid?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: NullableIntFieldUpdateOperationsInput | number | null
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    modifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -2343,6 +4485,175 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type CustomerCountOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    codeOld?: SortOrder
+    docCode?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    phone2?: SortOrder
+    birthday?: SortOrder
+    gender?: SortOrder
+    address?: SortOrder
+    commune?: SortOrder
+    district?: SortOrder
+    city?: SortOrder
+    citizenIdentity?: SortOrder
+    identityGrantDate?: SortOrder
+    identityIssuedBy?: SortOrder
+    customerSource?: SortOrder
+    customerGroup?: SortOrder
+    branchId?: SortOrder
+    firstPaidDate?: SortOrder
+    firstCheckinDate?: SortOrder
+    firstTreatmentDate?: SortOrder
+    lastTreatmentDate?: SortOrder
+    lastCheckinDate?: SortOrder
+    ccStaffId?: SortOrder
+    caringStaffCode?: SortOrder
+    marStaffId?: SortOrder
+    marStaffCode?: SortOrder
+    staffId?: SortOrder
+    staffCode?: SortOrder
+    gclid?: SortOrder
+    state?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type CustomerAvgOrderByAggregateInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    ccStaffId?: SortOrder
+    marStaffId?: SortOrder
+    staffId?: SortOrder
+    state?: SortOrder
+  }
+
+  export type CustomerMaxOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    codeOld?: SortOrder
+    docCode?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    phone2?: SortOrder
+    birthday?: SortOrder
+    gender?: SortOrder
+    address?: SortOrder
+    commune?: SortOrder
+    district?: SortOrder
+    city?: SortOrder
+    citizenIdentity?: SortOrder
+    identityGrantDate?: SortOrder
+    identityIssuedBy?: SortOrder
+    customerSource?: SortOrder
+    customerGroup?: SortOrder
+    branchId?: SortOrder
+    firstPaidDate?: SortOrder
+    firstCheckinDate?: SortOrder
+    firstTreatmentDate?: SortOrder
+    lastTreatmentDate?: SortOrder
+    lastCheckinDate?: SortOrder
+    ccStaffId?: SortOrder
+    caringStaffCode?: SortOrder
+    marStaffId?: SortOrder
+    marStaffCode?: SortOrder
+    staffId?: SortOrder
+    staffCode?: SortOrder
+    gclid?: SortOrder
+    state?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type CustomerMinOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    codeOld?: SortOrder
+    docCode?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    phone2?: SortOrder
+    birthday?: SortOrder
+    gender?: SortOrder
+    address?: SortOrder
+    commune?: SortOrder
+    district?: SortOrder
+    city?: SortOrder
+    citizenIdentity?: SortOrder
+    identityGrantDate?: SortOrder
+    identityIssuedBy?: SortOrder
+    customerSource?: SortOrder
+    customerGroup?: SortOrder
+    branchId?: SortOrder
+    firstPaidDate?: SortOrder
+    firstCheckinDate?: SortOrder
+    firstTreatmentDate?: SortOrder
+    lastTreatmentDate?: SortOrder
+    lastCheckinDate?: SortOrder
+    ccStaffId?: SortOrder
+    caringStaffCode?: SortOrder
+    marStaffId?: SortOrder
+    marStaffCode?: SortOrder
+    staffId?: SortOrder
+    staffCode?: SortOrder
+    gclid?: SortOrder
+    state?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type CustomerSumOrderByAggregateInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    ccStaffId?: SortOrder
+    marStaffId?: SortOrder
+    staffId?: SortOrder
+    state?: SortOrder
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -2365,6 +4676,10 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -2497,6 +4812,31 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
 

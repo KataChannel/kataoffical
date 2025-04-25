@@ -3,7 +3,7 @@ const prisma = require('./databaseClient');
 const { s3Client, moveObject, PutObjectCommand, GetObjectCommand, bucketName } = require('./minioClient');
 const { streamToString } = require('./utils');
 const { apiConfig, minioConfig } = require('./config');
-const { getKhachhang } = require('./apiClient'); // Import hàm gọi API khách hàng
+const { getAllKhachhang } = require('./apiClient'); // Import hàm gọi API khách hàng
 
 /**
  * Thực hiện quy trình lấy dữ liệu, lưu trữ, xử lý và lưu vào DB.
@@ -17,11 +17,15 @@ async function runPeriodicTask() {
     try {
         // === Bước 1: Gọi API ===
         console.log(`[${taskId}] Fetching data using apiClient...`);
-        // Sử dụng hàm getKhachhang từ apiClient thay vì gọi axios trực tiếp
+        // Sử dụng hàm getAllKhachhang từ apiClient thay vì gọi axios trực tiếp
         // rawData = await axios.get(apiConfig.apiUrl, { headers: { 'Accept': 'application/json' }, timeout: apiConfig.timeout });
-        rawData = await getKhachhang(); // Gọi hàm đã tách biệt
-        console.log(`[${taskId}] Successfully fetched data via apiClient.`);
+        rawData = await getAllKhachhang(); // Gọi hàm đã tách biệt
+        
 
+
+        console.log(`[${taskId}] Successfully fetched data via apiClient.`);
+        console.log(`[${taskId}] Raw data:`, rawData); // Log dữ liệu gốc (có thể cần điều chỉnh để không quá dài)
+        
         // Logic kiểm tra dữ liệu rỗng (cần điều chỉnh dựa trên cấu trúc data thực tế)
         if (!rawData || (Array.isArray(rawData) && rawData.length === 0) || (typeof rawData === 'object' && Object.keys(rawData).length === 0)) {
             console.log(`[${taskId}] API returned no data or empty data. Task finished.`);
@@ -35,14 +39,33 @@ async function runPeriodicTask() {
         const day = String(now.getDate()).padStart(2, '0');
         const timestamp = now.toISOString().replace(/[:.]/g, '-');
         // Lấy source name từ URL thực tế đã gọi (apiConfig.customerListUrl)
-        const sourceName = new URL(apiConfig.customerListUrl).hostname.replace(/\./g, '_') || 'unknown_source';
-        objectKey = `${sourceName}/${year}/${month}/${day}/${timestamp}_customer_data.json`; // Đổi tên file rõ ràng hơn
+        const sourceName = new URL(apiConfig.apiCustomerListUrl).hostname.replace(/\./g, '_') || 'unknown_source';
+        // objectKey = `${sourceName}/${year}/${month}/${day}/${timestamp}_customer_data.json`; // Đổi tên file rõ ràng hơn
+        objectKey = `${sourceName}/${year}_${month}_${day}_${timestamp}_customer_data.json`; // Đổi tên file rõ ràng hơn
 
         const dataString = JSON.stringify(rawData);
         const putObjectParams = { Bucket: bucketName, Key: objectKey, Body: dataString, ContentType: 'application/json' };
-
         console.log(`[${taskId}] Uploading raw data to MinIO: ${objectKey}`);
-        await s3Client.send(new PutObjectCommand(putObjectParams));
+         try {
+            // --- Bọc lệnh send trong try...catch riêng ---
+            const uploadResult = await s3Client.send(new PutObjectCommand(putObjectParams));
+            console.log(`[${taskId}] Successfully uploaded raw data to MinIO. Result ETag: ${uploadResult.ETag}`); // Log thêm thông tin thành công nếu có (ETag)
+        } catch (uploadError) {
+            // --- Xử lý lỗi upload cụ thể ---
+            console.error(`[${taskId}] !!! ERROR during MinIO upload !!!`);
+            console.error(`[${taskId}] Failed to upload object: ${objectKey}`);
+            console.error(`[${taskId}] Bucket: ${bucketName}`);
+            console.error(`[${taskId}] Error Details:`, uploadError); // Log toàn bộ đối tượng lỗi để xem chi tiết
+
+            // Bạn có thể quyết định dừng Task tại đây bằng cách throw lỗi ra ngoài
+            // để khối catch lớn hơn của runPeriodicTask xử lý (ví dụ: di chuyển vào thư mục error)
+            throw new Error(`MinIO upload failed for ${objectKey}: ${uploadError.message}`);
+
+            // Hoặc bạn có thể xử lý khác, ví dụ: thử lại, ghi log đặc biệt, rồi tiếp tục các bước khác (ít phổ biến)
+            // console.log(`[${taskId}] Skipping further processing for this task due to upload error.`);
+            // return; // Kết thúc sớm hàm runPeriodicTask
+        }
+
         console.log(`[${taskId}] Successfully uploaded raw data to MinIO.`);
 
         // === Bước 3: Đọc lại dữ liệu từ MinIO (Tùy chọn, có thể xử lý rawData trực tiếp) ===
@@ -57,40 +80,53 @@ async function runPeriodicTask() {
 
         // === Bước 4: Transform Dữ liệu ===
         // !!! Quan trọng: Logic transform này dựa trên ví dụ gốc (posts)
-        // !!! Bạn cần thay đổi hoàn toàn logic này để phù hợp với dữ liệu khách hàng thực tế từ API getKhachhang()
+        // !!! Bạn cần thay đổi hoàn toàn logic này để phù hợp với dữ liệu khách hàng thực tế từ API getAllKhachhang()
         console.log(`[${taskId}] Transforming data...`);
         const transformedRecords = [];
         if (Array.isArray(dataToProcess)) { // Kiểm tra xem dataToProcess có phải là array không
              dataToProcess.forEach(item => {
-                 // --- LOGIC TRANSFORM CHO DỮ LIỆU KHÁCH HÀNG ---
-                 // Ví dụ giả định (thay thế bằng các trường thực tế):
-                 // if (!item.customer_id || !item.name) {
-                 //     console.warn(`[${taskId}] Skipping record due to missing required fields:`, item);
-                 //     return;
-                 // }
-                 // const record = {
-                 //     source_customer_id: String(item.customer_id), // Đảm bảo kiểu dữ liệu phù hợp với schema
-                 //     customer_name: item.name,
-                 //     phone_number: item.phone || null,
-                 //     address: item.address || null,
-                 //     // Thêm các trường khác từ item vào record
-                 //     extracted_at: now
-                 // };
-                 // transformedRecords.push(record);
+                const record = {
+                    source_id: item.ID.toString(), // Primary key for upsert
+                    name: item.Name,
+                    code: item.Code,
+                    codeOld: item.CodeOld || null,
+                    docCode: item.DocCode || null,
+                    email: item.Email || null,
+                    phone: item.Phone || null,
+                    phone2: item.Phone2 || null,
+                    birthday: item.Birthday ? new Date(item.Birthday) : null,
+                    gender: item.Gender || null,
+                    address: item.Address || null,
+                    commune: item.Commune || null,
+                    district: item.District || null,
+                    city: item.City || null,
+                    citizenIdentity: item.CitizenIdentity?.CitizenIdentity || null,
+                    identityGrantDate: item.CitizenIdentity?.GrantDate ? new Date(item.CitizenIdentity.GrantDate) : null,
+                    identityIssuedBy: item.CitizenIdentity?.IssuedBy || null,
+                    customerSource: item.CustomerSource || null,
+                    customerGroup: item.CustomerGroup || null,
+                    branchId: item.BranchID,
+                    firstPaidDate: item.DateOf?.FirstPaid ? new Date(item.DateOf.FirstPaid) : null,
+                    firstCheckinDate: item.DateOf?.FirstCheckin ? new Date(item.DateOf.FirstCheckin) : null,
+                    firstTreatmentDate: item.DateOf?.FirstTreatment ? new Date(item.DateOf.FirstTreatment) : null,
+                    lastTreatmentDate: item.DateOf?.LastTreatment ? new Date(item.DateOf.LastTreatment) : null,
+                    lastCheckinDate: item.DateOf?.LastCheckin ? new Date(item.DateOf.LastCheckin) : null,
+                    ccStaffId: item.CCStaffID || null,
+                    caringStaffCode: item.CaringStaffCode || null,
+                    marStaffId: item.MarStaffID || null,
+                    marStaffCode: item.MarStaffCode || null,
+                    staffId: item.StaffID || null,
+                    staffCode: item.StaffCode || null,
+                    gclid: item.Gclid || null,
+                    createdDate: item.CreatedDate ? new Date(item.CreatedDate) : null,
+                    createdBy: item.CreatedBy || null,
+                    modifiedDate: item.ModifiedDate ? new Date(item.ModifiedDate) : null,
+                    modifiedBy: item.ModifiedBy || null,
+                    state: item.State,
+                    extractedAt: new Date()
+                };
 
-                 // --- Logic cũ cho posts (cần xóa/thay thế) ---
-                 if (typeof item.id !== 'number' || typeof item.userId !== 'number') {
-                      console.warn(`[${taskId}] Skipping record due to invalid id or userId:`, item);
-                      return;
-                 }
-                 const record = {
-                     source_id: item.id, // Đổi tên trường này trong DB nếu cần
-                     title: item.title || null,
-                     content_length: item.body ? String(item.body).length : 0,
-                     user_ref: item.userId, // Đổi tên trường này trong DB nếu cần
-                     extracted_at: now
-                 };
-                 transformedRecords.push(record);
+                transformedRecords.push(record);
              });
          } else if (typeof dataToProcess === 'object' && dataToProcess !== null) {
              // Xử lý trường hợp API trả về một object đơn lẻ hoặc object chứa list
@@ -119,14 +155,47 @@ async function runPeriodicTask() {
                 const promises = batch.map(record =>
                     // !!! Thay 'processedPost' bằng tên model Prisma đúng
                     // !!! Thay 'source_id' bằng unique key đúng cho dữ liệu khách hàng (vd: source_customer_id)
-                    prisma.processedPost.upsert({
+                    prisma.Customer.upsert({
                         where: { source_id: record.source_id }, // Cập nhật unique key
-                        update: { // Các trường cần cập nhật nếu tồn tại
-                            title: record.title,
-                            content_length: record.content_length,
-                            user_ref: record.user_ref,
-                            // extracted_at thường không cần update
-                        },
+                        update: {     
+                            name: record.name,
+                            code: record.code,
+                            codeOld: record.codeOld,
+                            docCode: record.docCode,
+                            email: record.email,
+                            phone: record.phone,
+                            phone2: record.phone2,
+                            birthday: record.birthday,
+                            gender: record.gender,
+                            address: record.address,
+                            commune: record.commune,
+                            district: record.district,
+                            city: record.city,
+                            citizenIdentity: record.citizenIdentity,
+                            identityGrantDate: record.identityGrantDate,
+                            identityIssuedBy: record.identityIssuedBy,
+                            customerSource: record.customerSource,
+                            customerGroup: record.customerGroup,
+                            branchId: record.branchId,
+                            firstPaidDate: record.firstPaidDate,
+                            firstCheckinDate: record.firstCheckinDate,
+                            firstTreatmentDate: record.firstTreatmentDate,
+                            lastTreatmentDate: record.lastTreatmentDate,
+                            lastCheckinDate: record.lastCheckinDate,
+                            ccStaffId: record.ccStaffId,
+                            caringStaffCode: record.caringStaffCode,
+                            marStaffId: record.marStaffId,
+                            marStaffCode: record.marStaffCode,
+                            staffId: record.staffId,
+                            staffCode: record.staffCode,
+                            gclid: record.gclid,
+                            createdDate: record.createdDate,
+                            createdBy: record.createdBy,
+                            modifiedDate: record.modifiedDate,
+                            modifiedBy: record.modifiedBy,
+                            state: record.state,
+                            extractedAt: record.extractedAt
+                            },
                         create: record, // Dữ liệu tạo mới
                     })
                 );
