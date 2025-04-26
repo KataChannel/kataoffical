@@ -126,7 +126,7 @@ async function getAllDieutri(startDate = '2025-01-01', endDate = '2025-12-31', b
         }
         console.log("Initial authentication successful.");
 
-        const start = moment(startDate);
+        const start = moment();
         const today = moment(endDate); // Use current date as the end point
         let allCustomers = []; // Array to store all fetched customer records
 

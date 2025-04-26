@@ -126,7 +126,7 @@ async function getAllLichhen(startDate = '2019-01-01', batchSize = 100, delayBet
         }
         console.log("Initial authentication successful.");
 
-        const start = moment(startDate);
+        const start = moment();
         const today = moment(); // Use current date as the end point
         let allCustomers = []; // Array to store all fetched customer records
 

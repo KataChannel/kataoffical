@@ -30,6 +30,11 @@ docker exec pgadmin_taza ls -l /var/lib/pgadmin/storage/admin_tazagroup.com/data
 docker exec postgres_taza ls -l /var/lib/postgresql/data/backups/ 
 docker exec pgadmin_taza find / -name "datavttech26_04_2025"
 docker cp pgadmin_taza:/var/lib/pgadmin/storage/admin_tazagroup.com/datavttech26_04_2025 /
+
+
+docker exec -it processing_service /bin/sh
+apt-get update -y && apt-get install -y openssl
+
 # prisma
 npx bun prisma migrate dev --name hethong1.7 --skip-generate
 npx prisma db push

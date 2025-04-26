@@ -77,7 +77,7 @@ async function getAllKhachhang(startDate = '2019-01-01', batchSize = 100, delayB
             throw new Error('Authentication failed: Invalid token data');
         }
 
-        const start = moment(startDate);
+        const start = moment();
         const today = moment();
         let allCustomers = [];
 
