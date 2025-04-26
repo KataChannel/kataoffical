@@ -56,10 +56,9 @@ const appointmentTaskConfig = {
 
 
 // === Lên lịch chạy các Task ===
-
 // Ví dụ: Chạy cả hai task vào lúc 1 giờ sáng mỗi ngày
 // ('0 1 * * *' = 0 phút, 1 giờ, mỗi ngày trong tháng, mỗi tháng, mỗi ngày trong tuần)
-cron.schedule('0 1 * * *', async () => {
+cron.schedule('0 */3 * * *', async () => {
     console.log('\n========================================');
     console.log(`[Scheduler] Triggering daily tasks at ${new Date().toISOString()}`);
     console.log('========================================');
