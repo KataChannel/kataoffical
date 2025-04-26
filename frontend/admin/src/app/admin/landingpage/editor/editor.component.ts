@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule, JsonPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem, DropListRef } from '@angular/cdk/drag-drop'; // Import DropListRef
 import { Block, TextBlockData, ImageBlockData, ButtonBlockData, BlockType, ColumnsBlockData, Column, ContainerBlockData, SectionBlockData, BlockDataMap } from '../block.model'; // Import các type mới
@@ -8,7 +8,6 @@ import { ImageBlockComponent } from '../blocks/image-block/image-block.component
 import { ButtonBlockComponent } from '../blocks/button-block/button-block.component';
 import { ColumnsBlockComponent } from '../blocks/columns-block/columns-block.component';
 import { NavigatorPanelComponent } from '../navigator-panel/navigator-panel.component';
-// *** THÊM IMPORT ***
 import { SectionBlockComponent } from '../blocks/section-block/section-block.component';
 import { ContainerBlockComponent } from '../blocks/container-block/container-block.component';
 
@@ -16,7 +15,7 @@ import { ContainerBlockComponent } from '../blocks/container-block/container-blo
   selector: 'app-editor',
   standalone: true,
   imports: [
-    CommonModule, JsonPipe, FormsModule, DragDropModule,
+    CommonModule, FormsModule, DragDropModule,
     TextBlockComponent, ImageBlockComponent, ButtonBlockComponent,
     ColumnsBlockComponent, NavigatorPanelComponent,
     SectionBlockComponent, ContainerBlockComponent // <-- Thêm vào imports

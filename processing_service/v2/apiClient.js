@@ -68,7 +68,7 @@ async function getToken(credentials) {
  * @param {number} delayBetweenRequests - Delay in ms between requests (default: 1000)
  * @returns {Promise<Array>} Complete array of customer data
  */
-async function getAllKhachhang(startDate = '2018-01-01', batchSize = 100, delayBetweenRequests = 1000) {
+async function getAllKhachhang(startDate = '2019-01-01', batchSize = 100, delayBetweenRequests = 1000) {
     try {
         // Get authentication tokens
         // Sửa: Sử dụng let thay vì const để có thể gán lại giá trị

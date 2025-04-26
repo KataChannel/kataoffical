@@ -23,6 +23,21 @@ export type ProcessedPost = $Result.DefaultSelection<Prisma.$ProcessedPostPayloa
  * 
  */
 export type Customer = $Result.DefaultSelection<Prisma.$CustomerPayload>
+/**
+ * Model Revenue
+ * 
+ */
+export type Revenue = $Result.DefaultSelection<Prisma.$RevenuePayload>
+/**
+ * Model Treat
+ * 
+ */
+export type Treat = $Result.DefaultSelection<Prisma.$TreatPayload>
+/**
+ * Model Appointment
+ * 
+ */
+export type Appointment = $Result.DefaultSelection<Prisma.$AppointmentPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -168,6 +183,36 @@ export class PrismaClient<
     * ```
     */
   get customer(): Prisma.CustomerDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.revenue`: Exposes CRUD operations for the **Revenue** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Revenues
+    * const revenues = await prisma.revenue.findMany()
+    * ```
+    */
+  get revenue(): Prisma.RevenueDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.treat`: Exposes CRUD operations for the **Treat** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Treats
+    * const treats = await prisma.treat.findMany()
+    * ```
+    */
+  get treat(): Prisma.TreatDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.appointment`: Exposes CRUD operations for the **Appointment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Appointments
+    * const appointments = await prisma.appointment.findMany()
+    * ```
+    */
+  get appointment(): Prisma.AppointmentDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -609,7 +654,10 @@ export namespace Prisma {
 
   export const ModelName: {
     ProcessedPost: 'ProcessedPost',
-    Customer: 'Customer'
+    Customer: 'Customer',
+    Revenue: 'Revenue',
+    Treat: 'Treat',
+    Appointment: 'Appointment'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -628,7 +676,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "processedPost" | "customer"
+      modelProps: "processedPost" | "customer" | "revenue" | "treat" | "appointment"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -780,6 +828,228 @@ export namespace Prisma {
           }
         }
       }
+      Revenue: {
+        payload: Prisma.$RevenuePayload<ExtArgs>
+        fields: Prisma.RevenueFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RevenueFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RevenuePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RevenueFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RevenuePayload>
+          }
+          findFirst: {
+            args: Prisma.RevenueFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RevenuePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RevenueFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RevenuePayload>
+          }
+          findMany: {
+            args: Prisma.RevenueFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RevenuePayload>[]
+          }
+          create: {
+            args: Prisma.RevenueCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RevenuePayload>
+          }
+          createMany: {
+            args: Prisma.RevenueCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RevenueCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RevenuePayload>[]
+          }
+          delete: {
+            args: Prisma.RevenueDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RevenuePayload>
+          }
+          update: {
+            args: Prisma.RevenueUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RevenuePayload>
+          }
+          deleteMany: {
+            args: Prisma.RevenueDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RevenueUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RevenueUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RevenuePayload>[]
+          }
+          upsert: {
+            args: Prisma.RevenueUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RevenuePayload>
+          }
+          aggregate: {
+            args: Prisma.RevenueAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRevenue>
+          }
+          groupBy: {
+            args: Prisma.RevenueGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RevenueGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RevenueCountArgs<ExtArgs>
+            result: $Utils.Optional<RevenueCountAggregateOutputType> | number
+          }
+        }
+      }
+      Treat: {
+        payload: Prisma.$TreatPayload<ExtArgs>
+        fields: Prisma.TreatFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TreatFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TreatFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatPayload>
+          }
+          findFirst: {
+            args: Prisma.TreatFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TreatFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatPayload>
+          }
+          findMany: {
+            args: Prisma.TreatFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatPayload>[]
+          }
+          create: {
+            args: Prisma.TreatCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatPayload>
+          }
+          createMany: {
+            args: Prisma.TreatCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TreatCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatPayload>[]
+          }
+          delete: {
+            args: Prisma.TreatDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatPayload>
+          }
+          update: {
+            args: Prisma.TreatUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatPayload>
+          }
+          deleteMany: {
+            args: Prisma.TreatDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TreatUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TreatUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatPayload>[]
+          }
+          upsert: {
+            args: Prisma.TreatUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatPayload>
+          }
+          aggregate: {
+            args: Prisma.TreatAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTreat>
+          }
+          groupBy: {
+            args: Prisma.TreatGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TreatGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TreatCountArgs<ExtArgs>
+            result: $Utils.Optional<TreatCountAggregateOutputType> | number
+          }
+        }
+      }
+      Appointment: {
+        payload: Prisma.$AppointmentPayload<ExtArgs>
+        fields: Prisma.AppointmentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AppointmentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppointmentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AppointmentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppointmentPayload>
+          }
+          findFirst: {
+            args: Prisma.AppointmentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppointmentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AppointmentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppointmentPayload>
+          }
+          findMany: {
+            args: Prisma.AppointmentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppointmentPayload>[]
+          }
+          create: {
+            args: Prisma.AppointmentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppointmentPayload>
+          }
+          createMany: {
+            args: Prisma.AppointmentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AppointmentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppointmentPayload>[]
+          }
+          delete: {
+            args: Prisma.AppointmentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppointmentPayload>
+          }
+          update: {
+            args: Prisma.AppointmentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppointmentPayload>
+          }
+          deleteMany: {
+            args: Prisma.AppointmentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AppointmentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AppointmentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppointmentPayload>[]
+          }
+          upsert: {
+            args: Prisma.AppointmentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppointmentPayload>
+          }
+          aggregate: {
+            args: Prisma.AppointmentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAppointment>
+          }
+          groupBy: {
+            args: Prisma.AppointmentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AppointmentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AppointmentCountArgs<ExtArgs>
+            result: $Utils.Optional<AppointmentCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -866,6 +1136,9 @@ export namespace Prisma {
   export type GlobalOmitConfig = {
     processedPost?: ProcessedPostOmit
     customer?: CustomerOmit
+    revenue?: RevenueOmit
+    treat?: TreatOmit
+    appointment?: AppointmentOmit
   }
 
   /* Types for Logging */
@@ -3519,6 +3792,4874 @@ export namespace Prisma {
 
 
   /**
+   * Model Revenue
+   */
+
+  export type AggregateRevenue = {
+    _count: RevenueCountAggregateOutputType | null
+    _avg: RevenueAvgAggregateOutputType | null
+    _sum: RevenueSumAggregateOutputType | null
+    _min: RevenueMinAggregateOutputType | null
+    _max: RevenueMaxAggregateOutputType | null
+  }
+
+  export type RevenueAvgAggregateOutputType = {
+    id: number | null
+    branchId: number | null
+    depositId: number | null
+    paidAmount: number | null
+    discountAmount: number | null
+    depositAmountUsing: number | null
+    totalPaid: number | null
+    debtAmount: number | null
+    serviceId: number | null
+    isProduct: number | null
+    quantity: number | null
+    priceRoot: number | null
+    priceUnit: number | null
+    price: number | null
+    amount: number | null
+    timeToTreatment: number | null
+    percentOfService: number | null
+    treatIndex: number | null
+    consultId1: number | null
+    consultId2: number | null
+    consultId3: number | null
+    consultId4: number | null
+    techId: number | null
+    tele1: number | null
+    tele2: number | null
+    state: number | null
+  }
+
+  export type RevenueSumAggregateOutputType = {
+    id: number | null
+    branchId: number | null
+    depositId: number | null
+    paidAmount: number | null
+    discountAmount: number | null
+    depositAmountUsing: number | null
+    totalPaid: number | null
+    debtAmount: number | null
+    serviceId: number | null
+    isProduct: number | null
+    quantity: number | null
+    priceRoot: number | null
+    priceUnit: number | null
+    price: number | null
+    amount: number | null
+    timeToTreatment: number | null
+    percentOfService: number | null
+    treatIndex: number | null
+    consultId1: number | null
+    consultId2: number | null
+    consultId3: number | null
+    consultId4: number | null
+    techId: number | null
+    tele1: number | null
+    tele2: number | null
+    state: number | null
+  }
+
+  export type RevenueMinAggregateOutputType = {
+    id: number | null
+    source_id: string | null
+    code: string | null
+    branchId: number | null
+    custCode: string | null
+    custName: string | null
+    custPhone: string | null
+    custAddress: string | null
+    custBirthday: Date | null
+    depositId: number | null
+    paidAmount: number | null
+    discountAmount: number | null
+    depositAmountUsing: number | null
+    totalPaid: number | null
+    debtAmount: number | null
+    methodName: string | null
+    content: string | null
+    serviceId: number | null
+    isProduct: number | null
+    quantity: number | null
+    priceRoot: number | null
+    priceUnit: number | null
+    price: number | null
+    amount: number | null
+    timeToTreatment: number | null
+    percentOfService: number | null
+    treatIndex: number | null
+    type: string | null
+    typeName: string | null
+    consultId1: number | null
+    consultId2: number | null
+    consultId3: number | null
+    consultId4: number | null
+    techId: number | null
+    tele1: number | null
+    tele2: number | null
+    createdDate: Date | null
+    createdBy: string | null
+    modifiedDate: Date | null
+    state: number | null
+    extractedAt: Date | null
+  }
+
+  export type RevenueMaxAggregateOutputType = {
+    id: number | null
+    source_id: string | null
+    code: string | null
+    branchId: number | null
+    custCode: string | null
+    custName: string | null
+    custPhone: string | null
+    custAddress: string | null
+    custBirthday: Date | null
+    depositId: number | null
+    paidAmount: number | null
+    discountAmount: number | null
+    depositAmountUsing: number | null
+    totalPaid: number | null
+    debtAmount: number | null
+    methodName: string | null
+    content: string | null
+    serviceId: number | null
+    isProduct: number | null
+    quantity: number | null
+    priceRoot: number | null
+    priceUnit: number | null
+    price: number | null
+    amount: number | null
+    timeToTreatment: number | null
+    percentOfService: number | null
+    treatIndex: number | null
+    type: string | null
+    typeName: string | null
+    consultId1: number | null
+    consultId2: number | null
+    consultId3: number | null
+    consultId4: number | null
+    techId: number | null
+    tele1: number | null
+    tele2: number | null
+    createdDate: Date | null
+    createdBy: string | null
+    modifiedDate: Date | null
+    state: number | null
+    extractedAt: Date | null
+  }
+
+  export type RevenueCountAggregateOutputType = {
+    id: number
+    source_id: number
+    code: number
+    branchId: number
+    custCode: number
+    custName: number
+    custPhone: number
+    custAddress: number
+    custBirthday: number
+    depositId: number
+    paidAmount: number
+    discountAmount: number
+    depositAmountUsing: number
+    totalPaid: number
+    debtAmount: number
+    methodName: number
+    content: number
+    serviceId: number
+    isProduct: number
+    quantity: number
+    priceRoot: number
+    priceUnit: number
+    price: number
+    amount: number
+    timeToTreatment: number
+    percentOfService: number
+    treatIndex: number
+    type: number
+    typeName: number
+    consultId1: number
+    consultId2: number
+    consultId3: number
+    consultId4: number
+    techId: number
+    tele1: number
+    tele2: number
+    createdDate: number
+    createdBy: number
+    modifiedDate: number
+    state: number
+    extractedAt: number
+    _all: number
+  }
+
+
+  export type RevenueAvgAggregateInputType = {
+    id?: true
+    branchId?: true
+    depositId?: true
+    paidAmount?: true
+    discountAmount?: true
+    depositAmountUsing?: true
+    totalPaid?: true
+    debtAmount?: true
+    serviceId?: true
+    isProduct?: true
+    quantity?: true
+    priceRoot?: true
+    priceUnit?: true
+    price?: true
+    amount?: true
+    timeToTreatment?: true
+    percentOfService?: true
+    treatIndex?: true
+    consultId1?: true
+    consultId2?: true
+    consultId3?: true
+    consultId4?: true
+    techId?: true
+    tele1?: true
+    tele2?: true
+    state?: true
+  }
+
+  export type RevenueSumAggregateInputType = {
+    id?: true
+    branchId?: true
+    depositId?: true
+    paidAmount?: true
+    discountAmount?: true
+    depositAmountUsing?: true
+    totalPaid?: true
+    debtAmount?: true
+    serviceId?: true
+    isProduct?: true
+    quantity?: true
+    priceRoot?: true
+    priceUnit?: true
+    price?: true
+    amount?: true
+    timeToTreatment?: true
+    percentOfService?: true
+    treatIndex?: true
+    consultId1?: true
+    consultId2?: true
+    consultId3?: true
+    consultId4?: true
+    techId?: true
+    tele1?: true
+    tele2?: true
+    state?: true
+  }
+
+  export type RevenueMinAggregateInputType = {
+    id?: true
+    source_id?: true
+    code?: true
+    branchId?: true
+    custCode?: true
+    custName?: true
+    custPhone?: true
+    custAddress?: true
+    custBirthday?: true
+    depositId?: true
+    paidAmount?: true
+    discountAmount?: true
+    depositAmountUsing?: true
+    totalPaid?: true
+    debtAmount?: true
+    methodName?: true
+    content?: true
+    serviceId?: true
+    isProduct?: true
+    quantity?: true
+    priceRoot?: true
+    priceUnit?: true
+    price?: true
+    amount?: true
+    timeToTreatment?: true
+    percentOfService?: true
+    treatIndex?: true
+    type?: true
+    typeName?: true
+    consultId1?: true
+    consultId2?: true
+    consultId3?: true
+    consultId4?: true
+    techId?: true
+    tele1?: true
+    tele2?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    state?: true
+    extractedAt?: true
+  }
+
+  export type RevenueMaxAggregateInputType = {
+    id?: true
+    source_id?: true
+    code?: true
+    branchId?: true
+    custCode?: true
+    custName?: true
+    custPhone?: true
+    custAddress?: true
+    custBirthday?: true
+    depositId?: true
+    paidAmount?: true
+    discountAmount?: true
+    depositAmountUsing?: true
+    totalPaid?: true
+    debtAmount?: true
+    methodName?: true
+    content?: true
+    serviceId?: true
+    isProduct?: true
+    quantity?: true
+    priceRoot?: true
+    priceUnit?: true
+    price?: true
+    amount?: true
+    timeToTreatment?: true
+    percentOfService?: true
+    treatIndex?: true
+    type?: true
+    typeName?: true
+    consultId1?: true
+    consultId2?: true
+    consultId3?: true
+    consultId4?: true
+    techId?: true
+    tele1?: true
+    tele2?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    state?: true
+    extractedAt?: true
+  }
+
+  export type RevenueCountAggregateInputType = {
+    id?: true
+    source_id?: true
+    code?: true
+    branchId?: true
+    custCode?: true
+    custName?: true
+    custPhone?: true
+    custAddress?: true
+    custBirthday?: true
+    depositId?: true
+    paidAmount?: true
+    discountAmount?: true
+    depositAmountUsing?: true
+    totalPaid?: true
+    debtAmount?: true
+    methodName?: true
+    content?: true
+    serviceId?: true
+    isProduct?: true
+    quantity?: true
+    priceRoot?: true
+    priceUnit?: true
+    price?: true
+    amount?: true
+    timeToTreatment?: true
+    percentOfService?: true
+    treatIndex?: true
+    type?: true
+    typeName?: true
+    consultId1?: true
+    consultId2?: true
+    consultId3?: true
+    consultId4?: true
+    techId?: true
+    tele1?: true
+    tele2?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    state?: true
+    extractedAt?: true
+    _all?: true
+  }
+
+  export type RevenueAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Revenue to aggregate.
+     */
+    where?: RevenueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Revenues to fetch.
+     */
+    orderBy?: RevenueOrderByWithRelationInput | RevenueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RevenueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Revenues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Revenues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Revenues
+    **/
+    _count?: true | RevenueCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: RevenueAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: RevenueSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RevenueMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RevenueMaxAggregateInputType
+  }
+
+  export type GetRevenueAggregateType<T extends RevenueAggregateArgs> = {
+        [P in keyof T & keyof AggregateRevenue]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRevenue[P]>
+      : GetScalarType<T[P], AggregateRevenue[P]>
+  }
+
+
+
+
+  export type RevenueGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RevenueWhereInput
+    orderBy?: RevenueOrderByWithAggregationInput | RevenueOrderByWithAggregationInput[]
+    by: RevenueScalarFieldEnum[] | RevenueScalarFieldEnum
+    having?: RevenueScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RevenueCountAggregateInputType | true
+    _avg?: RevenueAvgAggregateInputType
+    _sum?: RevenueSumAggregateInputType
+    _min?: RevenueMinAggregateInputType
+    _max?: RevenueMaxAggregateInputType
+  }
+
+  export type RevenueGroupByOutputType = {
+    id: number
+    source_id: string
+    code: string | null
+    branchId: number | null
+    custCode: string | null
+    custName: string | null
+    custPhone: string | null
+    custAddress: string | null
+    custBirthday: Date | null
+    depositId: number | null
+    paidAmount: number | null
+    discountAmount: number
+    depositAmountUsing: number
+    totalPaid: number
+    debtAmount: number
+    methodName: string | null
+    content: string | null
+    serviceId: number
+    isProduct: number
+    quantity: number
+    priceRoot: number
+    priceUnit: number
+    price: number
+    amount: number
+    timeToTreatment: number
+    percentOfService: number
+    treatIndex: number
+    type: string | null
+    typeName: string | null
+    consultId1: number
+    consultId2: number
+    consultId3: number
+    consultId4: number
+    techId: number
+    tele1: number
+    tele2: number
+    createdDate: Date | null
+    createdBy: string | null
+    modifiedDate: Date | null
+    state: number | null
+    extractedAt: Date
+    _count: RevenueCountAggregateOutputType | null
+    _avg: RevenueAvgAggregateOutputType | null
+    _sum: RevenueSumAggregateOutputType | null
+    _min: RevenueMinAggregateOutputType | null
+    _max: RevenueMaxAggregateOutputType | null
+  }
+
+  type GetRevenueGroupByPayload<T extends RevenueGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RevenueGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RevenueGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RevenueGroupByOutputType[P]>
+            : GetScalarType<T[P], RevenueGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RevenueSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    code?: boolean
+    branchId?: boolean
+    custCode?: boolean
+    custName?: boolean
+    custPhone?: boolean
+    custAddress?: boolean
+    custBirthday?: boolean
+    depositId?: boolean
+    paidAmount?: boolean
+    discountAmount?: boolean
+    depositAmountUsing?: boolean
+    totalPaid?: boolean
+    debtAmount?: boolean
+    methodName?: boolean
+    content?: boolean
+    serviceId?: boolean
+    isProduct?: boolean
+    quantity?: boolean
+    priceRoot?: boolean
+    priceUnit?: boolean
+    price?: boolean
+    amount?: boolean
+    timeToTreatment?: boolean
+    percentOfService?: boolean
+    treatIndex?: boolean
+    type?: boolean
+    typeName?: boolean
+    consultId1?: boolean
+    consultId2?: boolean
+    consultId3?: boolean
+    consultId4?: boolean
+    techId?: boolean
+    tele1?: boolean
+    tele2?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    state?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["revenue"]>
+
+  export type RevenueSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    code?: boolean
+    branchId?: boolean
+    custCode?: boolean
+    custName?: boolean
+    custPhone?: boolean
+    custAddress?: boolean
+    custBirthday?: boolean
+    depositId?: boolean
+    paidAmount?: boolean
+    discountAmount?: boolean
+    depositAmountUsing?: boolean
+    totalPaid?: boolean
+    debtAmount?: boolean
+    methodName?: boolean
+    content?: boolean
+    serviceId?: boolean
+    isProduct?: boolean
+    quantity?: boolean
+    priceRoot?: boolean
+    priceUnit?: boolean
+    price?: boolean
+    amount?: boolean
+    timeToTreatment?: boolean
+    percentOfService?: boolean
+    treatIndex?: boolean
+    type?: boolean
+    typeName?: boolean
+    consultId1?: boolean
+    consultId2?: boolean
+    consultId3?: boolean
+    consultId4?: boolean
+    techId?: boolean
+    tele1?: boolean
+    tele2?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    state?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["revenue"]>
+
+  export type RevenueSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    code?: boolean
+    branchId?: boolean
+    custCode?: boolean
+    custName?: boolean
+    custPhone?: boolean
+    custAddress?: boolean
+    custBirthday?: boolean
+    depositId?: boolean
+    paidAmount?: boolean
+    discountAmount?: boolean
+    depositAmountUsing?: boolean
+    totalPaid?: boolean
+    debtAmount?: boolean
+    methodName?: boolean
+    content?: boolean
+    serviceId?: boolean
+    isProduct?: boolean
+    quantity?: boolean
+    priceRoot?: boolean
+    priceUnit?: boolean
+    price?: boolean
+    amount?: boolean
+    timeToTreatment?: boolean
+    percentOfService?: boolean
+    treatIndex?: boolean
+    type?: boolean
+    typeName?: boolean
+    consultId1?: boolean
+    consultId2?: boolean
+    consultId3?: boolean
+    consultId4?: boolean
+    techId?: boolean
+    tele1?: boolean
+    tele2?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    state?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["revenue"]>
+
+  export type RevenueSelectScalar = {
+    id?: boolean
+    source_id?: boolean
+    code?: boolean
+    branchId?: boolean
+    custCode?: boolean
+    custName?: boolean
+    custPhone?: boolean
+    custAddress?: boolean
+    custBirthday?: boolean
+    depositId?: boolean
+    paidAmount?: boolean
+    discountAmount?: boolean
+    depositAmountUsing?: boolean
+    totalPaid?: boolean
+    debtAmount?: boolean
+    methodName?: boolean
+    content?: boolean
+    serviceId?: boolean
+    isProduct?: boolean
+    quantity?: boolean
+    priceRoot?: boolean
+    priceUnit?: boolean
+    price?: boolean
+    amount?: boolean
+    timeToTreatment?: boolean
+    percentOfService?: boolean
+    treatIndex?: boolean
+    type?: boolean
+    typeName?: boolean
+    consultId1?: boolean
+    consultId2?: boolean
+    consultId3?: boolean
+    consultId4?: boolean
+    techId?: boolean
+    tele1?: boolean
+    tele2?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    state?: boolean
+    extractedAt?: boolean
+  }
+
+  export type RevenueOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "source_id" | "code" | "branchId" | "custCode" | "custName" | "custPhone" | "custAddress" | "custBirthday" | "depositId" | "paidAmount" | "discountAmount" | "depositAmountUsing" | "totalPaid" | "debtAmount" | "methodName" | "content" | "serviceId" | "isProduct" | "quantity" | "priceRoot" | "priceUnit" | "price" | "amount" | "timeToTreatment" | "percentOfService" | "treatIndex" | "type" | "typeName" | "consultId1" | "consultId2" | "consultId3" | "consultId4" | "techId" | "tele1" | "tele2" | "createdDate" | "createdBy" | "modifiedDate" | "state" | "extractedAt", ExtArgs["result"]["revenue"]>
+
+  export type $RevenuePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Revenue"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      source_id: string
+      code: string | null
+      branchId: number | null
+      custCode: string | null
+      custName: string | null
+      custPhone: string | null
+      custAddress: string | null
+      custBirthday: Date | null
+      depositId: number | null
+      paidAmount: number | null
+      discountAmount: number
+      depositAmountUsing: number
+      totalPaid: number
+      debtAmount: number
+      methodName: string | null
+      content: string | null
+      serviceId: number
+      isProduct: number
+      quantity: number
+      priceRoot: number
+      priceUnit: number
+      price: number
+      amount: number
+      timeToTreatment: number
+      percentOfService: number
+      treatIndex: number
+      type: string | null
+      typeName: string | null
+      consultId1: number
+      consultId2: number
+      consultId3: number
+      consultId4: number
+      techId: number
+      tele1: number
+      tele2: number
+      createdDate: Date | null
+      createdBy: string | null
+      modifiedDate: Date | null
+      state: number | null
+      extractedAt: Date
+    }, ExtArgs["result"]["revenue"]>
+    composites: {}
+  }
+
+  type RevenueGetPayload<S extends boolean | null | undefined | RevenueDefaultArgs> = $Result.GetResult<Prisma.$RevenuePayload, S>
+
+  type RevenueCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RevenueFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RevenueCountAggregateInputType | true
+    }
+
+  export interface RevenueDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Revenue'], meta: { name: 'Revenue' } }
+    /**
+     * Find zero or one Revenue that matches the filter.
+     * @param {RevenueFindUniqueArgs} args - Arguments to find a Revenue
+     * @example
+     * // Get one Revenue
+     * const revenue = await prisma.revenue.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RevenueFindUniqueArgs>(args: SelectSubset<T, RevenueFindUniqueArgs<ExtArgs>>): Prisma__RevenueClient<$Result.GetResult<Prisma.$RevenuePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Revenue that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RevenueFindUniqueOrThrowArgs} args - Arguments to find a Revenue
+     * @example
+     * // Get one Revenue
+     * const revenue = await prisma.revenue.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RevenueFindUniqueOrThrowArgs>(args: SelectSubset<T, RevenueFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RevenueClient<$Result.GetResult<Prisma.$RevenuePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Revenue that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RevenueFindFirstArgs} args - Arguments to find a Revenue
+     * @example
+     * // Get one Revenue
+     * const revenue = await prisma.revenue.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RevenueFindFirstArgs>(args?: SelectSubset<T, RevenueFindFirstArgs<ExtArgs>>): Prisma__RevenueClient<$Result.GetResult<Prisma.$RevenuePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Revenue that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RevenueFindFirstOrThrowArgs} args - Arguments to find a Revenue
+     * @example
+     * // Get one Revenue
+     * const revenue = await prisma.revenue.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RevenueFindFirstOrThrowArgs>(args?: SelectSubset<T, RevenueFindFirstOrThrowArgs<ExtArgs>>): Prisma__RevenueClient<$Result.GetResult<Prisma.$RevenuePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Revenues that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RevenueFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Revenues
+     * const revenues = await prisma.revenue.findMany()
+     * 
+     * // Get first 10 Revenues
+     * const revenues = await prisma.revenue.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const revenueWithIdOnly = await prisma.revenue.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RevenueFindManyArgs>(args?: SelectSubset<T, RevenueFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RevenuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Revenue.
+     * @param {RevenueCreateArgs} args - Arguments to create a Revenue.
+     * @example
+     * // Create one Revenue
+     * const Revenue = await prisma.revenue.create({
+     *   data: {
+     *     // ... data to create a Revenue
+     *   }
+     * })
+     * 
+     */
+    create<T extends RevenueCreateArgs>(args: SelectSubset<T, RevenueCreateArgs<ExtArgs>>): Prisma__RevenueClient<$Result.GetResult<Prisma.$RevenuePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Revenues.
+     * @param {RevenueCreateManyArgs} args - Arguments to create many Revenues.
+     * @example
+     * // Create many Revenues
+     * const revenue = await prisma.revenue.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RevenueCreateManyArgs>(args?: SelectSubset<T, RevenueCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Revenues and returns the data saved in the database.
+     * @param {RevenueCreateManyAndReturnArgs} args - Arguments to create many Revenues.
+     * @example
+     * // Create many Revenues
+     * const revenue = await prisma.revenue.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Revenues and only return the `id`
+     * const revenueWithIdOnly = await prisma.revenue.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RevenueCreateManyAndReturnArgs>(args?: SelectSubset<T, RevenueCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RevenuePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Revenue.
+     * @param {RevenueDeleteArgs} args - Arguments to delete one Revenue.
+     * @example
+     * // Delete one Revenue
+     * const Revenue = await prisma.revenue.delete({
+     *   where: {
+     *     // ... filter to delete one Revenue
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RevenueDeleteArgs>(args: SelectSubset<T, RevenueDeleteArgs<ExtArgs>>): Prisma__RevenueClient<$Result.GetResult<Prisma.$RevenuePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Revenue.
+     * @param {RevenueUpdateArgs} args - Arguments to update one Revenue.
+     * @example
+     * // Update one Revenue
+     * const revenue = await prisma.revenue.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RevenueUpdateArgs>(args: SelectSubset<T, RevenueUpdateArgs<ExtArgs>>): Prisma__RevenueClient<$Result.GetResult<Prisma.$RevenuePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Revenues.
+     * @param {RevenueDeleteManyArgs} args - Arguments to filter Revenues to delete.
+     * @example
+     * // Delete a few Revenues
+     * const { count } = await prisma.revenue.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RevenueDeleteManyArgs>(args?: SelectSubset<T, RevenueDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Revenues.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RevenueUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Revenues
+     * const revenue = await prisma.revenue.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RevenueUpdateManyArgs>(args: SelectSubset<T, RevenueUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Revenues and returns the data updated in the database.
+     * @param {RevenueUpdateManyAndReturnArgs} args - Arguments to update many Revenues.
+     * @example
+     * // Update many Revenues
+     * const revenue = await prisma.revenue.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Revenues and only return the `id`
+     * const revenueWithIdOnly = await prisma.revenue.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RevenueUpdateManyAndReturnArgs>(args: SelectSubset<T, RevenueUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RevenuePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Revenue.
+     * @param {RevenueUpsertArgs} args - Arguments to update or create a Revenue.
+     * @example
+     * // Update or create a Revenue
+     * const revenue = await prisma.revenue.upsert({
+     *   create: {
+     *     // ... data to create a Revenue
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Revenue we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RevenueUpsertArgs>(args: SelectSubset<T, RevenueUpsertArgs<ExtArgs>>): Prisma__RevenueClient<$Result.GetResult<Prisma.$RevenuePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Revenues.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RevenueCountArgs} args - Arguments to filter Revenues to count.
+     * @example
+     * // Count the number of Revenues
+     * const count = await prisma.revenue.count({
+     *   where: {
+     *     // ... the filter for the Revenues we want to count
+     *   }
+     * })
+    **/
+    count<T extends RevenueCountArgs>(
+      args?: Subset<T, RevenueCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RevenueCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Revenue.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RevenueAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RevenueAggregateArgs>(args: Subset<T, RevenueAggregateArgs>): Prisma.PrismaPromise<GetRevenueAggregateType<T>>
+
+    /**
+     * Group by Revenue.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RevenueGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RevenueGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RevenueGroupByArgs['orderBy'] }
+        : { orderBy?: RevenueGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RevenueGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRevenueGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Revenue model
+   */
+  readonly fields: RevenueFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Revenue.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RevenueClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Revenue model
+   */
+  interface RevenueFieldRefs {
+    readonly id: FieldRef<"Revenue", 'Int'>
+    readonly source_id: FieldRef<"Revenue", 'String'>
+    readonly code: FieldRef<"Revenue", 'String'>
+    readonly branchId: FieldRef<"Revenue", 'Int'>
+    readonly custCode: FieldRef<"Revenue", 'String'>
+    readonly custName: FieldRef<"Revenue", 'String'>
+    readonly custPhone: FieldRef<"Revenue", 'String'>
+    readonly custAddress: FieldRef<"Revenue", 'String'>
+    readonly custBirthday: FieldRef<"Revenue", 'DateTime'>
+    readonly depositId: FieldRef<"Revenue", 'Int'>
+    readonly paidAmount: FieldRef<"Revenue", 'Float'>
+    readonly discountAmount: FieldRef<"Revenue", 'Float'>
+    readonly depositAmountUsing: FieldRef<"Revenue", 'Float'>
+    readonly totalPaid: FieldRef<"Revenue", 'Float'>
+    readonly debtAmount: FieldRef<"Revenue", 'Float'>
+    readonly methodName: FieldRef<"Revenue", 'String'>
+    readonly content: FieldRef<"Revenue", 'String'>
+    readonly serviceId: FieldRef<"Revenue", 'Int'>
+    readonly isProduct: FieldRef<"Revenue", 'Int'>
+    readonly quantity: FieldRef<"Revenue", 'Float'>
+    readonly priceRoot: FieldRef<"Revenue", 'Float'>
+    readonly priceUnit: FieldRef<"Revenue", 'Float'>
+    readonly price: FieldRef<"Revenue", 'Float'>
+    readonly amount: FieldRef<"Revenue", 'Float'>
+    readonly timeToTreatment: FieldRef<"Revenue", 'Int'>
+    readonly percentOfService: FieldRef<"Revenue", 'Float'>
+    readonly treatIndex: FieldRef<"Revenue", 'Int'>
+    readonly type: FieldRef<"Revenue", 'String'>
+    readonly typeName: FieldRef<"Revenue", 'String'>
+    readonly consultId1: FieldRef<"Revenue", 'Int'>
+    readonly consultId2: FieldRef<"Revenue", 'Int'>
+    readonly consultId3: FieldRef<"Revenue", 'Int'>
+    readonly consultId4: FieldRef<"Revenue", 'Int'>
+    readonly techId: FieldRef<"Revenue", 'Int'>
+    readonly tele1: FieldRef<"Revenue", 'Int'>
+    readonly tele2: FieldRef<"Revenue", 'Int'>
+    readonly createdDate: FieldRef<"Revenue", 'DateTime'>
+    readonly createdBy: FieldRef<"Revenue", 'String'>
+    readonly modifiedDate: FieldRef<"Revenue", 'DateTime'>
+    readonly state: FieldRef<"Revenue", 'Int'>
+    readonly extractedAt: FieldRef<"Revenue", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Revenue findUnique
+   */
+  export type RevenueFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Revenue
+     */
+    select?: RevenueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Revenue
+     */
+    omit?: RevenueOmit<ExtArgs> | null
+    /**
+     * Filter, which Revenue to fetch.
+     */
+    where: RevenueWhereUniqueInput
+  }
+
+  /**
+   * Revenue findUniqueOrThrow
+   */
+  export type RevenueFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Revenue
+     */
+    select?: RevenueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Revenue
+     */
+    omit?: RevenueOmit<ExtArgs> | null
+    /**
+     * Filter, which Revenue to fetch.
+     */
+    where: RevenueWhereUniqueInput
+  }
+
+  /**
+   * Revenue findFirst
+   */
+  export type RevenueFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Revenue
+     */
+    select?: RevenueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Revenue
+     */
+    omit?: RevenueOmit<ExtArgs> | null
+    /**
+     * Filter, which Revenue to fetch.
+     */
+    where?: RevenueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Revenues to fetch.
+     */
+    orderBy?: RevenueOrderByWithRelationInput | RevenueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Revenues.
+     */
+    cursor?: RevenueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Revenues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Revenues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Revenues.
+     */
+    distinct?: RevenueScalarFieldEnum | RevenueScalarFieldEnum[]
+  }
+
+  /**
+   * Revenue findFirstOrThrow
+   */
+  export type RevenueFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Revenue
+     */
+    select?: RevenueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Revenue
+     */
+    omit?: RevenueOmit<ExtArgs> | null
+    /**
+     * Filter, which Revenue to fetch.
+     */
+    where?: RevenueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Revenues to fetch.
+     */
+    orderBy?: RevenueOrderByWithRelationInput | RevenueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Revenues.
+     */
+    cursor?: RevenueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Revenues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Revenues.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Revenues.
+     */
+    distinct?: RevenueScalarFieldEnum | RevenueScalarFieldEnum[]
+  }
+
+  /**
+   * Revenue findMany
+   */
+  export type RevenueFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Revenue
+     */
+    select?: RevenueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Revenue
+     */
+    omit?: RevenueOmit<ExtArgs> | null
+    /**
+     * Filter, which Revenues to fetch.
+     */
+    where?: RevenueWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Revenues to fetch.
+     */
+    orderBy?: RevenueOrderByWithRelationInput | RevenueOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Revenues.
+     */
+    cursor?: RevenueWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Revenues from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Revenues.
+     */
+    skip?: number
+    distinct?: RevenueScalarFieldEnum | RevenueScalarFieldEnum[]
+  }
+
+  /**
+   * Revenue create
+   */
+  export type RevenueCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Revenue
+     */
+    select?: RevenueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Revenue
+     */
+    omit?: RevenueOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Revenue.
+     */
+    data: XOR<RevenueCreateInput, RevenueUncheckedCreateInput>
+  }
+
+  /**
+   * Revenue createMany
+   */
+  export type RevenueCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Revenues.
+     */
+    data: RevenueCreateManyInput | RevenueCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Revenue createManyAndReturn
+   */
+  export type RevenueCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Revenue
+     */
+    select?: RevenueSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Revenue
+     */
+    omit?: RevenueOmit<ExtArgs> | null
+    /**
+     * The data used to create many Revenues.
+     */
+    data: RevenueCreateManyInput | RevenueCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Revenue update
+   */
+  export type RevenueUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Revenue
+     */
+    select?: RevenueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Revenue
+     */
+    omit?: RevenueOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Revenue.
+     */
+    data: XOR<RevenueUpdateInput, RevenueUncheckedUpdateInput>
+    /**
+     * Choose, which Revenue to update.
+     */
+    where: RevenueWhereUniqueInput
+  }
+
+  /**
+   * Revenue updateMany
+   */
+  export type RevenueUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Revenues.
+     */
+    data: XOR<RevenueUpdateManyMutationInput, RevenueUncheckedUpdateManyInput>
+    /**
+     * Filter which Revenues to update
+     */
+    where?: RevenueWhereInput
+    /**
+     * Limit how many Revenues to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Revenue updateManyAndReturn
+   */
+  export type RevenueUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Revenue
+     */
+    select?: RevenueSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Revenue
+     */
+    omit?: RevenueOmit<ExtArgs> | null
+    /**
+     * The data used to update Revenues.
+     */
+    data: XOR<RevenueUpdateManyMutationInput, RevenueUncheckedUpdateManyInput>
+    /**
+     * Filter which Revenues to update
+     */
+    where?: RevenueWhereInput
+    /**
+     * Limit how many Revenues to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Revenue upsert
+   */
+  export type RevenueUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Revenue
+     */
+    select?: RevenueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Revenue
+     */
+    omit?: RevenueOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Revenue to update in case it exists.
+     */
+    where: RevenueWhereUniqueInput
+    /**
+     * In case the Revenue found by the `where` argument doesn't exist, create a new Revenue with this data.
+     */
+    create: XOR<RevenueCreateInput, RevenueUncheckedCreateInput>
+    /**
+     * In case the Revenue was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RevenueUpdateInput, RevenueUncheckedUpdateInput>
+  }
+
+  /**
+   * Revenue delete
+   */
+  export type RevenueDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Revenue
+     */
+    select?: RevenueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Revenue
+     */
+    omit?: RevenueOmit<ExtArgs> | null
+    /**
+     * Filter which Revenue to delete.
+     */
+    where: RevenueWhereUniqueInput
+  }
+
+  /**
+   * Revenue deleteMany
+   */
+  export type RevenueDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Revenues to delete
+     */
+    where?: RevenueWhereInput
+    /**
+     * Limit how many Revenues to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Revenue without action
+   */
+  export type RevenueDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Revenue
+     */
+    select?: RevenueSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Revenue
+     */
+    omit?: RevenueOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Treat
+   */
+
+  export type AggregateTreat = {
+    _count: TreatCountAggregateOutputType | null
+    _avg: TreatAvgAggregateOutputType | null
+    _sum: TreatSumAggregateOutputType | null
+    _min: TreatMinAggregateOutputType | null
+    _max: TreatMaxAggregateOutputType | null
+  }
+
+  export type TreatAvgAggregateOutputType = {
+    id: number | null
+    serviceId: number | null
+    serviceTypeId: number | null
+    tabId: number | null
+    comboId: number | null
+    timeToTreatment: number | null
+    priceUnit: number | null
+    quantity: number | null
+    discount: number | null
+    priceRoot: number | null
+    priceDiscounted: number | null
+    doctor: number | null
+    doctor2: number | null
+    doctor3: number | null
+    doctor4: number | null
+    assistant: number | null
+    assistant2: number | null
+    assistant3: number | null
+    assistant4: number | null
+    technician: number | null
+    technician2: number | null
+    timeTreatIndex: number | null
+    percent: number | null
+    percentNew: number | null
+    percentStage: number | null
+    percentNewStage: number | null
+    branchId: number | null
+    modifiedBy: number | null
+    state: number | null
+  }
+
+  export type TreatSumAggregateOutputType = {
+    id: number | null
+    serviceId: number | null
+    serviceTypeId: number | null
+    tabId: number | null
+    comboId: number | null
+    timeToTreatment: number | null
+    priceUnit: number | null
+    quantity: number | null
+    discount: number | null
+    priceRoot: number | null
+    priceDiscounted: number | null
+    doctor: number | null
+    doctor2: number | null
+    doctor3: number | null
+    doctor4: number | null
+    assistant: number | null
+    assistant2: number | null
+    assistant3: number | null
+    assistant4: number | null
+    technician: number | null
+    technician2: number | null
+    timeTreatIndex: number | null
+    percent: number | null
+    percentNew: number | null
+    percentStage: number | null
+    percentNewStage: number | null
+    branchId: number | null
+    modifiedBy: number | null
+    state: number | null
+  }
+
+  export type TreatMinAggregateOutputType = {
+    id: number | null
+    source_id: string | null
+    name: string | null
+    code: string | null
+    codeOld: string | null
+    docCode: string | null
+    email: string | null
+    phone: string | null
+    phone2: string | null
+    birthday: Date | null
+    gender: string | null
+    address: string | null
+    commune: string | null
+    district: string | null
+    city: string | null
+    serviceId: number | null
+    serviceTypeId: number | null
+    serviceCode: string | null
+    tabId: number | null
+    tabCode: string | null
+    comboId: number | null
+    comboCode: string | null
+    serviceName: string | null
+    timeIndex: string | null
+    timeToTreatment: number | null
+    teethChoosing: string | null
+    priceUnit: number | null
+    quantity: number | null
+    discount: number | null
+    priceRoot: number | null
+    priceDiscounted: number | null
+    doctor: number | null
+    doctor2: number | null
+    doctor3: number | null
+    doctor4: number | null
+    assistant: number | null
+    assistant2: number | null
+    assistant3: number | null
+    assistant4: number | null
+    technician: number | null
+    technician2: number | null
+    timeTreatIndex: number | null
+    percent: number | null
+    percentNew: number | null
+    percentStage: number | null
+    percentNewStage: number | null
+    note: string | null
+    content: string | null
+    contentNext: string | null
+    symptoms: string | null
+    treatDateNext: Date | null
+    branchId: number | null
+    createdDate: Date | null
+    createdBy: string | null
+    modifiedDate: Date | null
+    modifiedBy: number | null
+    state: number | null
+    extractedAt: Date | null
+  }
+
+  export type TreatMaxAggregateOutputType = {
+    id: number | null
+    source_id: string | null
+    name: string | null
+    code: string | null
+    codeOld: string | null
+    docCode: string | null
+    email: string | null
+    phone: string | null
+    phone2: string | null
+    birthday: Date | null
+    gender: string | null
+    address: string | null
+    commune: string | null
+    district: string | null
+    city: string | null
+    serviceId: number | null
+    serviceTypeId: number | null
+    serviceCode: string | null
+    tabId: number | null
+    tabCode: string | null
+    comboId: number | null
+    comboCode: string | null
+    serviceName: string | null
+    timeIndex: string | null
+    timeToTreatment: number | null
+    teethChoosing: string | null
+    priceUnit: number | null
+    quantity: number | null
+    discount: number | null
+    priceRoot: number | null
+    priceDiscounted: number | null
+    doctor: number | null
+    doctor2: number | null
+    doctor3: number | null
+    doctor4: number | null
+    assistant: number | null
+    assistant2: number | null
+    assistant3: number | null
+    assistant4: number | null
+    technician: number | null
+    technician2: number | null
+    timeTreatIndex: number | null
+    percent: number | null
+    percentNew: number | null
+    percentStage: number | null
+    percentNewStage: number | null
+    note: string | null
+    content: string | null
+    contentNext: string | null
+    symptoms: string | null
+    treatDateNext: Date | null
+    branchId: number | null
+    createdDate: Date | null
+    createdBy: string | null
+    modifiedDate: Date | null
+    modifiedBy: number | null
+    state: number | null
+    extractedAt: Date | null
+  }
+
+  export type TreatCountAggregateOutputType = {
+    id: number
+    source_id: number
+    name: number
+    code: number
+    codeOld: number
+    docCode: number
+    email: number
+    phone: number
+    phone2: number
+    birthday: number
+    gender: number
+    address: number
+    commune: number
+    district: number
+    city: number
+    serviceId: number
+    serviceTypeId: number
+    serviceCode: number
+    tabId: number
+    tabCode: number
+    comboId: number
+    comboCode: number
+    serviceName: number
+    timeIndex: number
+    timeToTreatment: number
+    teethChoosing: number
+    priceUnit: number
+    quantity: number
+    discount: number
+    priceRoot: number
+    priceDiscounted: number
+    doctor: number
+    doctor2: number
+    doctor3: number
+    doctor4: number
+    assistant: number
+    assistant2: number
+    assistant3: number
+    assistant4: number
+    technician: number
+    technician2: number
+    timeTreatIndex: number
+    percent: number
+    percentNew: number
+    percentStage: number
+    percentNewStage: number
+    note: number
+    content: number
+    contentNext: number
+    symptoms: number
+    treatDateNext: number
+    branchId: number
+    createdDate: number
+    createdBy: number
+    modifiedDate: number
+    modifiedBy: number
+    state: number
+    extractedAt: number
+    _all: number
+  }
+
+
+  export type TreatAvgAggregateInputType = {
+    id?: true
+    serviceId?: true
+    serviceTypeId?: true
+    tabId?: true
+    comboId?: true
+    timeToTreatment?: true
+    priceUnit?: true
+    quantity?: true
+    discount?: true
+    priceRoot?: true
+    priceDiscounted?: true
+    doctor?: true
+    doctor2?: true
+    doctor3?: true
+    doctor4?: true
+    assistant?: true
+    assistant2?: true
+    assistant3?: true
+    assistant4?: true
+    technician?: true
+    technician2?: true
+    timeTreatIndex?: true
+    percent?: true
+    percentNew?: true
+    percentStage?: true
+    percentNewStage?: true
+    branchId?: true
+    modifiedBy?: true
+    state?: true
+  }
+
+  export type TreatSumAggregateInputType = {
+    id?: true
+    serviceId?: true
+    serviceTypeId?: true
+    tabId?: true
+    comboId?: true
+    timeToTreatment?: true
+    priceUnit?: true
+    quantity?: true
+    discount?: true
+    priceRoot?: true
+    priceDiscounted?: true
+    doctor?: true
+    doctor2?: true
+    doctor3?: true
+    doctor4?: true
+    assistant?: true
+    assistant2?: true
+    assistant3?: true
+    assistant4?: true
+    technician?: true
+    technician2?: true
+    timeTreatIndex?: true
+    percent?: true
+    percentNew?: true
+    percentStage?: true
+    percentNewStage?: true
+    branchId?: true
+    modifiedBy?: true
+    state?: true
+  }
+
+  export type TreatMinAggregateInputType = {
+    id?: true
+    source_id?: true
+    name?: true
+    code?: true
+    codeOld?: true
+    docCode?: true
+    email?: true
+    phone?: true
+    phone2?: true
+    birthday?: true
+    gender?: true
+    address?: true
+    commune?: true
+    district?: true
+    city?: true
+    serviceId?: true
+    serviceTypeId?: true
+    serviceCode?: true
+    tabId?: true
+    tabCode?: true
+    comboId?: true
+    comboCode?: true
+    serviceName?: true
+    timeIndex?: true
+    timeToTreatment?: true
+    teethChoosing?: true
+    priceUnit?: true
+    quantity?: true
+    discount?: true
+    priceRoot?: true
+    priceDiscounted?: true
+    doctor?: true
+    doctor2?: true
+    doctor3?: true
+    doctor4?: true
+    assistant?: true
+    assistant2?: true
+    assistant3?: true
+    assistant4?: true
+    technician?: true
+    technician2?: true
+    timeTreatIndex?: true
+    percent?: true
+    percentNew?: true
+    percentStage?: true
+    percentNewStage?: true
+    note?: true
+    content?: true
+    contentNext?: true
+    symptoms?: true
+    treatDateNext?: true
+    branchId?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    modifiedBy?: true
+    state?: true
+    extractedAt?: true
+  }
+
+  export type TreatMaxAggregateInputType = {
+    id?: true
+    source_id?: true
+    name?: true
+    code?: true
+    codeOld?: true
+    docCode?: true
+    email?: true
+    phone?: true
+    phone2?: true
+    birthday?: true
+    gender?: true
+    address?: true
+    commune?: true
+    district?: true
+    city?: true
+    serviceId?: true
+    serviceTypeId?: true
+    serviceCode?: true
+    tabId?: true
+    tabCode?: true
+    comboId?: true
+    comboCode?: true
+    serviceName?: true
+    timeIndex?: true
+    timeToTreatment?: true
+    teethChoosing?: true
+    priceUnit?: true
+    quantity?: true
+    discount?: true
+    priceRoot?: true
+    priceDiscounted?: true
+    doctor?: true
+    doctor2?: true
+    doctor3?: true
+    doctor4?: true
+    assistant?: true
+    assistant2?: true
+    assistant3?: true
+    assistant4?: true
+    technician?: true
+    technician2?: true
+    timeTreatIndex?: true
+    percent?: true
+    percentNew?: true
+    percentStage?: true
+    percentNewStage?: true
+    note?: true
+    content?: true
+    contentNext?: true
+    symptoms?: true
+    treatDateNext?: true
+    branchId?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    modifiedBy?: true
+    state?: true
+    extractedAt?: true
+  }
+
+  export type TreatCountAggregateInputType = {
+    id?: true
+    source_id?: true
+    name?: true
+    code?: true
+    codeOld?: true
+    docCode?: true
+    email?: true
+    phone?: true
+    phone2?: true
+    birthday?: true
+    gender?: true
+    address?: true
+    commune?: true
+    district?: true
+    city?: true
+    serviceId?: true
+    serviceTypeId?: true
+    serviceCode?: true
+    tabId?: true
+    tabCode?: true
+    comboId?: true
+    comboCode?: true
+    serviceName?: true
+    timeIndex?: true
+    timeToTreatment?: true
+    teethChoosing?: true
+    priceUnit?: true
+    quantity?: true
+    discount?: true
+    priceRoot?: true
+    priceDiscounted?: true
+    doctor?: true
+    doctor2?: true
+    doctor3?: true
+    doctor4?: true
+    assistant?: true
+    assistant2?: true
+    assistant3?: true
+    assistant4?: true
+    technician?: true
+    technician2?: true
+    timeTreatIndex?: true
+    percent?: true
+    percentNew?: true
+    percentStage?: true
+    percentNewStage?: true
+    note?: true
+    content?: true
+    contentNext?: true
+    symptoms?: true
+    treatDateNext?: true
+    branchId?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    modifiedBy?: true
+    state?: true
+    extractedAt?: true
+    _all?: true
+  }
+
+  export type TreatAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Treat to aggregate.
+     */
+    where?: TreatWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Treats to fetch.
+     */
+    orderBy?: TreatOrderByWithRelationInput | TreatOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TreatWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Treats from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Treats.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Treats
+    **/
+    _count?: true | TreatCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TreatAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TreatSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TreatMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TreatMaxAggregateInputType
+  }
+
+  export type GetTreatAggregateType<T extends TreatAggregateArgs> = {
+        [P in keyof T & keyof AggregateTreat]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTreat[P]>
+      : GetScalarType<T[P], AggregateTreat[P]>
+  }
+
+
+
+
+  export type TreatGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TreatWhereInput
+    orderBy?: TreatOrderByWithAggregationInput | TreatOrderByWithAggregationInput[]
+    by: TreatScalarFieldEnum[] | TreatScalarFieldEnum
+    having?: TreatScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TreatCountAggregateInputType | true
+    _avg?: TreatAvgAggregateInputType
+    _sum?: TreatSumAggregateInputType
+    _min?: TreatMinAggregateInputType
+    _max?: TreatMaxAggregateInputType
+  }
+
+  export type TreatGroupByOutputType = {
+    id: number
+    source_id: string
+    name: string | null
+    code: string | null
+    codeOld: string | null
+    docCode: string | null
+    email: string | null
+    phone: string | null
+    phone2: string | null
+    birthday: Date | null
+    gender: string | null
+    address: string | null
+    commune: string | null
+    district: string | null
+    city: string | null
+    serviceId: number
+    serviceTypeId: number
+    serviceCode: string | null
+    tabId: number
+    tabCode: string | null
+    comboId: number
+    comboCode: string | null
+    serviceName: string | null
+    timeIndex: string | null
+    timeToTreatment: number
+    teethChoosing: string | null
+    priceUnit: number
+    quantity: number
+    discount: number
+    priceRoot: number
+    priceDiscounted: number
+    doctor: number
+    doctor2: number
+    doctor3: number
+    doctor4: number
+    assistant: number
+    assistant2: number
+    assistant3: number
+    assistant4: number
+    technician: number
+    technician2: number
+    timeTreatIndex: number
+    percent: number
+    percentNew: number
+    percentStage: number
+    percentNewStage: number
+    note: string | null
+    content: string | null
+    contentNext: string | null
+    symptoms: string | null
+    treatDateNext: Date | null
+    branchId: number
+    createdDate: Date | null
+    createdBy: string | null
+    modifiedDate: Date | null
+    modifiedBy: number | null
+    state: number
+    extractedAt: Date
+    _count: TreatCountAggregateOutputType | null
+    _avg: TreatAvgAggregateOutputType | null
+    _sum: TreatSumAggregateOutputType | null
+    _min: TreatMinAggregateOutputType | null
+    _max: TreatMaxAggregateOutputType | null
+  }
+
+  type GetTreatGroupByPayload<T extends TreatGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TreatGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TreatGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TreatGroupByOutputType[P]>
+            : GetScalarType<T[P], TreatGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TreatSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    name?: boolean
+    code?: boolean
+    codeOld?: boolean
+    docCode?: boolean
+    email?: boolean
+    phone?: boolean
+    phone2?: boolean
+    birthday?: boolean
+    gender?: boolean
+    address?: boolean
+    commune?: boolean
+    district?: boolean
+    city?: boolean
+    serviceId?: boolean
+    serviceTypeId?: boolean
+    serviceCode?: boolean
+    tabId?: boolean
+    tabCode?: boolean
+    comboId?: boolean
+    comboCode?: boolean
+    serviceName?: boolean
+    timeIndex?: boolean
+    timeToTreatment?: boolean
+    teethChoosing?: boolean
+    priceUnit?: boolean
+    quantity?: boolean
+    discount?: boolean
+    priceRoot?: boolean
+    priceDiscounted?: boolean
+    doctor?: boolean
+    doctor2?: boolean
+    doctor3?: boolean
+    doctor4?: boolean
+    assistant?: boolean
+    assistant2?: boolean
+    assistant3?: boolean
+    assistant4?: boolean
+    technician?: boolean
+    technician2?: boolean
+    timeTreatIndex?: boolean
+    percent?: boolean
+    percentNew?: boolean
+    percentStage?: boolean
+    percentNewStage?: boolean
+    note?: boolean
+    content?: boolean
+    contentNext?: boolean
+    symptoms?: boolean
+    treatDateNext?: boolean
+    branchId?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    state?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["treat"]>
+
+  export type TreatSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    name?: boolean
+    code?: boolean
+    codeOld?: boolean
+    docCode?: boolean
+    email?: boolean
+    phone?: boolean
+    phone2?: boolean
+    birthday?: boolean
+    gender?: boolean
+    address?: boolean
+    commune?: boolean
+    district?: boolean
+    city?: boolean
+    serviceId?: boolean
+    serviceTypeId?: boolean
+    serviceCode?: boolean
+    tabId?: boolean
+    tabCode?: boolean
+    comboId?: boolean
+    comboCode?: boolean
+    serviceName?: boolean
+    timeIndex?: boolean
+    timeToTreatment?: boolean
+    teethChoosing?: boolean
+    priceUnit?: boolean
+    quantity?: boolean
+    discount?: boolean
+    priceRoot?: boolean
+    priceDiscounted?: boolean
+    doctor?: boolean
+    doctor2?: boolean
+    doctor3?: boolean
+    doctor4?: boolean
+    assistant?: boolean
+    assistant2?: boolean
+    assistant3?: boolean
+    assistant4?: boolean
+    technician?: boolean
+    technician2?: boolean
+    timeTreatIndex?: boolean
+    percent?: boolean
+    percentNew?: boolean
+    percentStage?: boolean
+    percentNewStage?: boolean
+    note?: boolean
+    content?: boolean
+    contentNext?: boolean
+    symptoms?: boolean
+    treatDateNext?: boolean
+    branchId?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    state?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["treat"]>
+
+  export type TreatSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    name?: boolean
+    code?: boolean
+    codeOld?: boolean
+    docCode?: boolean
+    email?: boolean
+    phone?: boolean
+    phone2?: boolean
+    birthday?: boolean
+    gender?: boolean
+    address?: boolean
+    commune?: boolean
+    district?: boolean
+    city?: boolean
+    serviceId?: boolean
+    serviceTypeId?: boolean
+    serviceCode?: boolean
+    tabId?: boolean
+    tabCode?: boolean
+    comboId?: boolean
+    comboCode?: boolean
+    serviceName?: boolean
+    timeIndex?: boolean
+    timeToTreatment?: boolean
+    teethChoosing?: boolean
+    priceUnit?: boolean
+    quantity?: boolean
+    discount?: boolean
+    priceRoot?: boolean
+    priceDiscounted?: boolean
+    doctor?: boolean
+    doctor2?: boolean
+    doctor3?: boolean
+    doctor4?: boolean
+    assistant?: boolean
+    assistant2?: boolean
+    assistant3?: boolean
+    assistant4?: boolean
+    technician?: boolean
+    technician2?: boolean
+    timeTreatIndex?: boolean
+    percent?: boolean
+    percentNew?: boolean
+    percentStage?: boolean
+    percentNewStage?: boolean
+    note?: boolean
+    content?: boolean
+    contentNext?: boolean
+    symptoms?: boolean
+    treatDateNext?: boolean
+    branchId?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    state?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["treat"]>
+
+  export type TreatSelectScalar = {
+    id?: boolean
+    source_id?: boolean
+    name?: boolean
+    code?: boolean
+    codeOld?: boolean
+    docCode?: boolean
+    email?: boolean
+    phone?: boolean
+    phone2?: boolean
+    birthday?: boolean
+    gender?: boolean
+    address?: boolean
+    commune?: boolean
+    district?: boolean
+    city?: boolean
+    serviceId?: boolean
+    serviceTypeId?: boolean
+    serviceCode?: boolean
+    tabId?: boolean
+    tabCode?: boolean
+    comboId?: boolean
+    comboCode?: boolean
+    serviceName?: boolean
+    timeIndex?: boolean
+    timeToTreatment?: boolean
+    teethChoosing?: boolean
+    priceUnit?: boolean
+    quantity?: boolean
+    discount?: boolean
+    priceRoot?: boolean
+    priceDiscounted?: boolean
+    doctor?: boolean
+    doctor2?: boolean
+    doctor3?: boolean
+    doctor4?: boolean
+    assistant?: boolean
+    assistant2?: boolean
+    assistant3?: boolean
+    assistant4?: boolean
+    technician?: boolean
+    technician2?: boolean
+    timeTreatIndex?: boolean
+    percent?: boolean
+    percentNew?: boolean
+    percentStage?: boolean
+    percentNewStage?: boolean
+    note?: boolean
+    content?: boolean
+    contentNext?: boolean
+    symptoms?: boolean
+    treatDateNext?: boolean
+    branchId?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    state?: boolean
+    extractedAt?: boolean
+  }
+
+  export type TreatOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "source_id" | "name" | "code" | "codeOld" | "docCode" | "email" | "phone" | "phone2" | "birthday" | "gender" | "address" | "commune" | "district" | "city" | "serviceId" | "serviceTypeId" | "serviceCode" | "tabId" | "tabCode" | "comboId" | "comboCode" | "serviceName" | "timeIndex" | "timeToTreatment" | "teethChoosing" | "priceUnit" | "quantity" | "discount" | "priceRoot" | "priceDiscounted" | "doctor" | "doctor2" | "doctor3" | "doctor4" | "assistant" | "assistant2" | "assistant3" | "assistant4" | "technician" | "technician2" | "timeTreatIndex" | "percent" | "percentNew" | "percentStage" | "percentNewStage" | "note" | "content" | "contentNext" | "symptoms" | "treatDateNext" | "branchId" | "createdDate" | "createdBy" | "modifiedDate" | "modifiedBy" | "state" | "extractedAt", ExtArgs["result"]["treat"]>
+
+  export type $TreatPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Treat"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      source_id: string
+      name: string | null
+      code: string | null
+      codeOld: string | null
+      docCode: string | null
+      email: string | null
+      phone: string | null
+      phone2: string | null
+      birthday: Date | null
+      gender: string | null
+      address: string | null
+      commune: string | null
+      district: string | null
+      city: string | null
+      serviceId: number
+      serviceTypeId: number
+      serviceCode: string | null
+      tabId: number
+      tabCode: string | null
+      comboId: number
+      comboCode: string | null
+      serviceName: string | null
+      timeIndex: string | null
+      timeToTreatment: number
+      teethChoosing: string | null
+      priceUnit: number
+      quantity: number
+      discount: number
+      priceRoot: number
+      priceDiscounted: number
+      doctor: number
+      doctor2: number
+      doctor3: number
+      doctor4: number
+      assistant: number
+      assistant2: number
+      assistant3: number
+      assistant4: number
+      technician: number
+      technician2: number
+      timeTreatIndex: number
+      percent: number
+      percentNew: number
+      percentStage: number
+      percentNewStage: number
+      note: string | null
+      content: string | null
+      contentNext: string | null
+      symptoms: string | null
+      treatDateNext: Date | null
+      branchId: number
+      createdDate: Date | null
+      createdBy: string | null
+      modifiedDate: Date | null
+      modifiedBy: number | null
+      state: number
+      extractedAt: Date
+    }, ExtArgs["result"]["treat"]>
+    composites: {}
+  }
+
+  type TreatGetPayload<S extends boolean | null | undefined | TreatDefaultArgs> = $Result.GetResult<Prisma.$TreatPayload, S>
+
+  type TreatCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TreatFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TreatCountAggregateInputType | true
+    }
+
+  export interface TreatDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Treat'], meta: { name: 'Treat' } }
+    /**
+     * Find zero or one Treat that matches the filter.
+     * @param {TreatFindUniqueArgs} args - Arguments to find a Treat
+     * @example
+     * // Get one Treat
+     * const treat = await prisma.treat.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TreatFindUniqueArgs>(args: SelectSubset<T, TreatFindUniqueArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Treat that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TreatFindUniqueOrThrowArgs} args - Arguments to find a Treat
+     * @example
+     * // Get one Treat
+     * const treat = await prisma.treat.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TreatFindUniqueOrThrowArgs>(args: SelectSubset<T, TreatFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Treat that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreatFindFirstArgs} args - Arguments to find a Treat
+     * @example
+     * // Get one Treat
+     * const treat = await prisma.treat.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TreatFindFirstArgs>(args?: SelectSubset<T, TreatFindFirstArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Treat that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreatFindFirstOrThrowArgs} args - Arguments to find a Treat
+     * @example
+     * // Get one Treat
+     * const treat = await prisma.treat.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TreatFindFirstOrThrowArgs>(args?: SelectSubset<T, TreatFindFirstOrThrowArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Treats that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreatFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Treats
+     * const treats = await prisma.treat.findMany()
+     * 
+     * // Get first 10 Treats
+     * const treats = await prisma.treat.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const treatWithIdOnly = await prisma.treat.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TreatFindManyArgs>(args?: SelectSubset<T, TreatFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Treat.
+     * @param {TreatCreateArgs} args - Arguments to create a Treat.
+     * @example
+     * // Create one Treat
+     * const Treat = await prisma.treat.create({
+     *   data: {
+     *     // ... data to create a Treat
+     *   }
+     * })
+     * 
+     */
+    create<T extends TreatCreateArgs>(args: SelectSubset<T, TreatCreateArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Treats.
+     * @param {TreatCreateManyArgs} args - Arguments to create many Treats.
+     * @example
+     * // Create many Treats
+     * const treat = await prisma.treat.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TreatCreateManyArgs>(args?: SelectSubset<T, TreatCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Treats and returns the data saved in the database.
+     * @param {TreatCreateManyAndReturnArgs} args - Arguments to create many Treats.
+     * @example
+     * // Create many Treats
+     * const treat = await prisma.treat.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Treats and only return the `id`
+     * const treatWithIdOnly = await prisma.treat.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TreatCreateManyAndReturnArgs>(args?: SelectSubset<T, TreatCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Treat.
+     * @param {TreatDeleteArgs} args - Arguments to delete one Treat.
+     * @example
+     * // Delete one Treat
+     * const Treat = await prisma.treat.delete({
+     *   where: {
+     *     // ... filter to delete one Treat
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TreatDeleteArgs>(args: SelectSubset<T, TreatDeleteArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Treat.
+     * @param {TreatUpdateArgs} args - Arguments to update one Treat.
+     * @example
+     * // Update one Treat
+     * const treat = await prisma.treat.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TreatUpdateArgs>(args: SelectSubset<T, TreatUpdateArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Treats.
+     * @param {TreatDeleteManyArgs} args - Arguments to filter Treats to delete.
+     * @example
+     * // Delete a few Treats
+     * const { count } = await prisma.treat.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TreatDeleteManyArgs>(args?: SelectSubset<T, TreatDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Treats.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreatUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Treats
+     * const treat = await prisma.treat.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TreatUpdateManyArgs>(args: SelectSubset<T, TreatUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Treats and returns the data updated in the database.
+     * @param {TreatUpdateManyAndReturnArgs} args - Arguments to update many Treats.
+     * @example
+     * // Update many Treats
+     * const treat = await prisma.treat.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Treats and only return the `id`
+     * const treatWithIdOnly = await prisma.treat.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TreatUpdateManyAndReturnArgs>(args: SelectSubset<T, TreatUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Treat.
+     * @param {TreatUpsertArgs} args - Arguments to update or create a Treat.
+     * @example
+     * // Update or create a Treat
+     * const treat = await prisma.treat.upsert({
+     *   create: {
+     *     // ... data to create a Treat
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Treat we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TreatUpsertArgs>(args: SelectSubset<T, TreatUpsertArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Treats.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreatCountArgs} args - Arguments to filter Treats to count.
+     * @example
+     * // Count the number of Treats
+     * const count = await prisma.treat.count({
+     *   where: {
+     *     // ... the filter for the Treats we want to count
+     *   }
+     * })
+    **/
+    count<T extends TreatCountArgs>(
+      args?: Subset<T, TreatCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TreatCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Treat.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreatAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TreatAggregateArgs>(args: Subset<T, TreatAggregateArgs>): Prisma.PrismaPromise<GetTreatAggregateType<T>>
+
+    /**
+     * Group by Treat.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TreatGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TreatGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TreatGroupByArgs['orderBy'] }
+        : { orderBy?: TreatGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TreatGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTreatGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Treat model
+   */
+  readonly fields: TreatFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Treat.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TreatClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Treat model
+   */
+  interface TreatFieldRefs {
+    readonly id: FieldRef<"Treat", 'Int'>
+    readonly source_id: FieldRef<"Treat", 'String'>
+    readonly name: FieldRef<"Treat", 'String'>
+    readonly code: FieldRef<"Treat", 'String'>
+    readonly codeOld: FieldRef<"Treat", 'String'>
+    readonly docCode: FieldRef<"Treat", 'String'>
+    readonly email: FieldRef<"Treat", 'String'>
+    readonly phone: FieldRef<"Treat", 'String'>
+    readonly phone2: FieldRef<"Treat", 'String'>
+    readonly birthday: FieldRef<"Treat", 'DateTime'>
+    readonly gender: FieldRef<"Treat", 'String'>
+    readonly address: FieldRef<"Treat", 'String'>
+    readonly commune: FieldRef<"Treat", 'String'>
+    readonly district: FieldRef<"Treat", 'String'>
+    readonly city: FieldRef<"Treat", 'String'>
+    readonly serviceId: FieldRef<"Treat", 'Int'>
+    readonly serviceTypeId: FieldRef<"Treat", 'Int'>
+    readonly serviceCode: FieldRef<"Treat", 'String'>
+    readonly tabId: FieldRef<"Treat", 'Int'>
+    readonly tabCode: FieldRef<"Treat", 'String'>
+    readonly comboId: FieldRef<"Treat", 'Int'>
+    readonly comboCode: FieldRef<"Treat", 'String'>
+    readonly serviceName: FieldRef<"Treat", 'String'>
+    readonly timeIndex: FieldRef<"Treat", 'String'>
+    readonly timeToTreatment: FieldRef<"Treat", 'Int'>
+    readonly teethChoosing: FieldRef<"Treat", 'String'>
+    readonly priceUnit: FieldRef<"Treat", 'Float'>
+    readonly quantity: FieldRef<"Treat", 'Float'>
+    readonly discount: FieldRef<"Treat", 'Float'>
+    readonly priceRoot: FieldRef<"Treat", 'Float'>
+    readonly priceDiscounted: FieldRef<"Treat", 'Float'>
+    readonly doctor: FieldRef<"Treat", 'Int'>
+    readonly doctor2: FieldRef<"Treat", 'Int'>
+    readonly doctor3: FieldRef<"Treat", 'Int'>
+    readonly doctor4: FieldRef<"Treat", 'Int'>
+    readonly assistant: FieldRef<"Treat", 'Int'>
+    readonly assistant2: FieldRef<"Treat", 'Int'>
+    readonly assistant3: FieldRef<"Treat", 'Int'>
+    readonly assistant4: FieldRef<"Treat", 'Int'>
+    readonly technician: FieldRef<"Treat", 'Int'>
+    readonly technician2: FieldRef<"Treat", 'Int'>
+    readonly timeTreatIndex: FieldRef<"Treat", 'Int'>
+    readonly percent: FieldRef<"Treat", 'Float'>
+    readonly percentNew: FieldRef<"Treat", 'Float'>
+    readonly percentStage: FieldRef<"Treat", 'Float'>
+    readonly percentNewStage: FieldRef<"Treat", 'Float'>
+    readonly note: FieldRef<"Treat", 'String'>
+    readonly content: FieldRef<"Treat", 'String'>
+    readonly contentNext: FieldRef<"Treat", 'String'>
+    readonly symptoms: FieldRef<"Treat", 'String'>
+    readonly treatDateNext: FieldRef<"Treat", 'DateTime'>
+    readonly branchId: FieldRef<"Treat", 'Int'>
+    readonly createdDate: FieldRef<"Treat", 'DateTime'>
+    readonly createdBy: FieldRef<"Treat", 'String'>
+    readonly modifiedDate: FieldRef<"Treat", 'DateTime'>
+    readonly modifiedBy: FieldRef<"Treat", 'Int'>
+    readonly state: FieldRef<"Treat", 'Int'>
+    readonly extractedAt: FieldRef<"Treat", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Treat findUnique
+   */
+  export type TreatFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Treat
+     */
+    select?: TreatSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Treat
+     */
+    omit?: TreatOmit<ExtArgs> | null
+    /**
+     * Filter, which Treat to fetch.
+     */
+    where: TreatWhereUniqueInput
+  }
+
+  /**
+   * Treat findUniqueOrThrow
+   */
+  export type TreatFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Treat
+     */
+    select?: TreatSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Treat
+     */
+    omit?: TreatOmit<ExtArgs> | null
+    /**
+     * Filter, which Treat to fetch.
+     */
+    where: TreatWhereUniqueInput
+  }
+
+  /**
+   * Treat findFirst
+   */
+  export type TreatFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Treat
+     */
+    select?: TreatSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Treat
+     */
+    omit?: TreatOmit<ExtArgs> | null
+    /**
+     * Filter, which Treat to fetch.
+     */
+    where?: TreatWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Treats to fetch.
+     */
+    orderBy?: TreatOrderByWithRelationInput | TreatOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Treats.
+     */
+    cursor?: TreatWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Treats from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Treats.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Treats.
+     */
+    distinct?: TreatScalarFieldEnum | TreatScalarFieldEnum[]
+  }
+
+  /**
+   * Treat findFirstOrThrow
+   */
+  export type TreatFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Treat
+     */
+    select?: TreatSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Treat
+     */
+    omit?: TreatOmit<ExtArgs> | null
+    /**
+     * Filter, which Treat to fetch.
+     */
+    where?: TreatWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Treats to fetch.
+     */
+    orderBy?: TreatOrderByWithRelationInput | TreatOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Treats.
+     */
+    cursor?: TreatWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Treats from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Treats.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Treats.
+     */
+    distinct?: TreatScalarFieldEnum | TreatScalarFieldEnum[]
+  }
+
+  /**
+   * Treat findMany
+   */
+  export type TreatFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Treat
+     */
+    select?: TreatSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Treat
+     */
+    omit?: TreatOmit<ExtArgs> | null
+    /**
+     * Filter, which Treats to fetch.
+     */
+    where?: TreatWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Treats to fetch.
+     */
+    orderBy?: TreatOrderByWithRelationInput | TreatOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Treats.
+     */
+    cursor?: TreatWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Treats from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Treats.
+     */
+    skip?: number
+    distinct?: TreatScalarFieldEnum | TreatScalarFieldEnum[]
+  }
+
+  /**
+   * Treat create
+   */
+  export type TreatCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Treat
+     */
+    select?: TreatSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Treat
+     */
+    omit?: TreatOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Treat.
+     */
+    data: XOR<TreatCreateInput, TreatUncheckedCreateInput>
+  }
+
+  /**
+   * Treat createMany
+   */
+  export type TreatCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Treats.
+     */
+    data: TreatCreateManyInput | TreatCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Treat createManyAndReturn
+   */
+  export type TreatCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Treat
+     */
+    select?: TreatSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Treat
+     */
+    omit?: TreatOmit<ExtArgs> | null
+    /**
+     * The data used to create many Treats.
+     */
+    data: TreatCreateManyInput | TreatCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Treat update
+   */
+  export type TreatUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Treat
+     */
+    select?: TreatSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Treat
+     */
+    omit?: TreatOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Treat.
+     */
+    data: XOR<TreatUpdateInput, TreatUncheckedUpdateInput>
+    /**
+     * Choose, which Treat to update.
+     */
+    where: TreatWhereUniqueInput
+  }
+
+  /**
+   * Treat updateMany
+   */
+  export type TreatUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Treats.
+     */
+    data: XOR<TreatUpdateManyMutationInput, TreatUncheckedUpdateManyInput>
+    /**
+     * Filter which Treats to update
+     */
+    where?: TreatWhereInput
+    /**
+     * Limit how many Treats to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Treat updateManyAndReturn
+   */
+  export type TreatUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Treat
+     */
+    select?: TreatSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Treat
+     */
+    omit?: TreatOmit<ExtArgs> | null
+    /**
+     * The data used to update Treats.
+     */
+    data: XOR<TreatUpdateManyMutationInput, TreatUncheckedUpdateManyInput>
+    /**
+     * Filter which Treats to update
+     */
+    where?: TreatWhereInput
+    /**
+     * Limit how many Treats to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Treat upsert
+   */
+  export type TreatUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Treat
+     */
+    select?: TreatSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Treat
+     */
+    omit?: TreatOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Treat to update in case it exists.
+     */
+    where: TreatWhereUniqueInput
+    /**
+     * In case the Treat found by the `where` argument doesn't exist, create a new Treat with this data.
+     */
+    create: XOR<TreatCreateInput, TreatUncheckedCreateInput>
+    /**
+     * In case the Treat was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TreatUpdateInput, TreatUncheckedUpdateInput>
+  }
+
+  /**
+   * Treat delete
+   */
+  export type TreatDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Treat
+     */
+    select?: TreatSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Treat
+     */
+    omit?: TreatOmit<ExtArgs> | null
+    /**
+     * Filter which Treat to delete.
+     */
+    where: TreatWhereUniqueInput
+  }
+
+  /**
+   * Treat deleteMany
+   */
+  export type TreatDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Treats to delete
+     */
+    where?: TreatWhereInput
+    /**
+     * Limit how many Treats to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Treat without action
+   */
+  export type TreatDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Treat
+     */
+    select?: TreatSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Treat
+     */
+    omit?: TreatOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Appointment
+   */
+
+  export type AggregateAppointment = {
+    _count: AppointmentCountAggregateOutputType | null
+    _avg: AppointmentAvgAggregateOutputType | null
+    _sum: AppointmentSumAggregateOutputType | null
+    _min: AppointmentMinAggregateOutputType | null
+    _max: AppointmentMaxAggregateOutputType | null
+  }
+
+  export type AppointmentAvgAggregateOutputType = {
+    id: number | null
+    statusId: number | null
+    isCancel: number | null
+    branchId: number | null
+    consultId: number | null
+    doctorId: number | null
+    doctorId2: number | null
+    assistantId: number | null
+    roomId: number | null
+    reasonCancelId: number | null
+    typeId: number | null
+    typeDetailId: number | null
+    state: number | null
+  }
+
+  export type AppointmentSumAggregateOutputType = {
+    id: number | null
+    statusId: number | null
+    isCancel: number | null
+    branchId: number | null
+    consultId: number | null
+    doctorId: number | null
+    doctorId2: number | null
+    assistantId: number | null
+    roomId: number | null
+    reasonCancelId: number | null
+    typeId: number | null
+    typeDetailId: number | null
+    state: number | null
+  }
+
+  export type AppointmentMinAggregateOutputType = {
+    id: number | null
+    source_id: string | null
+    custId: string | null
+    custCode: string | null
+    custName: string | null
+    dateFrom: Date | null
+    statusId: number | null
+    statusName: string | null
+    statusTime: Date | null
+    isCancel: number | null
+    branchId: number | null
+    branchName: string | null
+    content: string | null
+    note: string | null
+    noteForBranch: string | null
+    consultId: number | null
+    doctorId: number | null
+    doctorId2: number | null
+    assistantId: number | null
+    roomId: number | null
+    room: string | null
+    remindContent: string | null
+    reasonCancelId: number | null
+    typeId: number | null
+    typeDetailId: number | null
+    serviceCareId: string | null
+    serviceCare: string | null
+    state: number | null
+    createdDate: Date | null
+    createdBy: string | null
+    modifiedDate: Date | null
+    modifiedBy: string | null
+    extractedAt: Date | null
+  }
+
+  export type AppointmentMaxAggregateOutputType = {
+    id: number | null
+    source_id: string | null
+    custId: string | null
+    custCode: string | null
+    custName: string | null
+    dateFrom: Date | null
+    statusId: number | null
+    statusName: string | null
+    statusTime: Date | null
+    isCancel: number | null
+    branchId: number | null
+    branchName: string | null
+    content: string | null
+    note: string | null
+    noteForBranch: string | null
+    consultId: number | null
+    doctorId: number | null
+    doctorId2: number | null
+    assistantId: number | null
+    roomId: number | null
+    room: string | null
+    remindContent: string | null
+    reasonCancelId: number | null
+    typeId: number | null
+    typeDetailId: number | null
+    serviceCareId: string | null
+    serviceCare: string | null
+    state: number | null
+    createdDate: Date | null
+    createdBy: string | null
+    modifiedDate: Date | null
+    modifiedBy: string | null
+    extractedAt: Date | null
+  }
+
+  export type AppointmentCountAggregateOutputType = {
+    id: number
+    source_id: number
+    custId: number
+    custCode: number
+    custName: number
+    dateFrom: number
+    statusId: number
+    statusName: number
+    statusTime: number
+    isCancel: number
+    branchId: number
+    branchName: number
+    content: number
+    note: number
+    noteForBranch: number
+    consultId: number
+    doctorId: number
+    doctorId2: number
+    assistantId: number
+    roomId: number
+    room: number
+    remindContent: number
+    reasonCancelId: number
+    typeId: number
+    typeDetailId: number
+    serviceCareId: number
+    serviceCare: number
+    state: number
+    createdDate: number
+    createdBy: number
+    modifiedDate: number
+    modifiedBy: number
+    extractedAt: number
+    _all: number
+  }
+
+
+  export type AppointmentAvgAggregateInputType = {
+    id?: true
+    statusId?: true
+    isCancel?: true
+    branchId?: true
+    consultId?: true
+    doctorId?: true
+    doctorId2?: true
+    assistantId?: true
+    roomId?: true
+    reasonCancelId?: true
+    typeId?: true
+    typeDetailId?: true
+    state?: true
+  }
+
+  export type AppointmentSumAggregateInputType = {
+    id?: true
+    statusId?: true
+    isCancel?: true
+    branchId?: true
+    consultId?: true
+    doctorId?: true
+    doctorId2?: true
+    assistantId?: true
+    roomId?: true
+    reasonCancelId?: true
+    typeId?: true
+    typeDetailId?: true
+    state?: true
+  }
+
+  export type AppointmentMinAggregateInputType = {
+    id?: true
+    source_id?: true
+    custId?: true
+    custCode?: true
+    custName?: true
+    dateFrom?: true
+    statusId?: true
+    statusName?: true
+    statusTime?: true
+    isCancel?: true
+    branchId?: true
+    branchName?: true
+    content?: true
+    note?: true
+    noteForBranch?: true
+    consultId?: true
+    doctorId?: true
+    doctorId2?: true
+    assistantId?: true
+    roomId?: true
+    room?: true
+    remindContent?: true
+    reasonCancelId?: true
+    typeId?: true
+    typeDetailId?: true
+    serviceCareId?: true
+    serviceCare?: true
+    state?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    modifiedBy?: true
+    extractedAt?: true
+  }
+
+  export type AppointmentMaxAggregateInputType = {
+    id?: true
+    source_id?: true
+    custId?: true
+    custCode?: true
+    custName?: true
+    dateFrom?: true
+    statusId?: true
+    statusName?: true
+    statusTime?: true
+    isCancel?: true
+    branchId?: true
+    branchName?: true
+    content?: true
+    note?: true
+    noteForBranch?: true
+    consultId?: true
+    doctorId?: true
+    doctorId2?: true
+    assistantId?: true
+    roomId?: true
+    room?: true
+    remindContent?: true
+    reasonCancelId?: true
+    typeId?: true
+    typeDetailId?: true
+    serviceCareId?: true
+    serviceCare?: true
+    state?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    modifiedBy?: true
+    extractedAt?: true
+  }
+
+  export type AppointmentCountAggregateInputType = {
+    id?: true
+    source_id?: true
+    custId?: true
+    custCode?: true
+    custName?: true
+    dateFrom?: true
+    statusId?: true
+    statusName?: true
+    statusTime?: true
+    isCancel?: true
+    branchId?: true
+    branchName?: true
+    content?: true
+    note?: true
+    noteForBranch?: true
+    consultId?: true
+    doctorId?: true
+    doctorId2?: true
+    assistantId?: true
+    roomId?: true
+    room?: true
+    remindContent?: true
+    reasonCancelId?: true
+    typeId?: true
+    typeDetailId?: true
+    serviceCareId?: true
+    serviceCare?: true
+    state?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    modifiedBy?: true
+    extractedAt?: true
+    _all?: true
+  }
+
+  export type AppointmentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Appointment to aggregate.
+     */
+    where?: AppointmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Appointments to fetch.
+     */
+    orderBy?: AppointmentOrderByWithRelationInput | AppointmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AppointmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Appointments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Appointments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Appointments
+    **/
+    _count?: true | AppointmentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AppointmentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AppointmentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AppointmentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AppointmentMaxAggregateInputType
+  }
+
+  export type GetAppointmentAggregateType<T extends AppointmentAggregateArgs> = {
+        [P in keyof T & keyof AggregateAppointment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAppointment[P]>
+      : GetScalarType<T[P], AggregateAppointment[P]>
+  }
+
+
+
+
+  export type AppointmentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AppointmentWhereInput
+    orderBy?: AppointmentOrderByWithAggregationInput | AppointmentOrderByWithAggregationInput[]
+    by: AppointmentScalarFieldEnum[] | AppointmentScalarFieldEnum
+    having?: AppointmentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AppointmentCountAggregateInputType | true
+    _avg?: AppointmentAvgAggregateInputType
+    _sum?: AppointmentSumAggregateInputType
+    _min?: AppointmentMinAggregateInputType
+    _max?: AppointmentMaxAggregateInputType
+  }
+
+  export type AppointmentGroupByOutputType = {
+    id: number
+    source_id: string
+    custId: string | null
+    custCode: string | null
+    custName: string | null
+    dateFrom: Date | null
+    statusId: number
+    statusName: string | null
+    statusTime: Date | null
+    isCancel: number
+    branchId: number
+    branchName: string | null
+    content: string | null
+    note: string | null
+    noteForBranch: string | null
+    consultId: number
+    doctorId: number
+    doctorId2: number
+    assistantId: number
+    roomId: number
+    room: string | null
+    remindContent: string | null
+    reasonCancelId: number
+    typeId: number
+    typeDetailId: number
+    serviceCareId: string | null
+    serviceCare: string | null
+    state: number
+    createdDate: Date | null
+    createdBy: string | null
+    modifiedDate: Date | null
+    modifiedBy: string | null
+    extractedAt: Date
+    _count: AppointmentCountAggregateOutputType | null
+    _avg: AppointmentAvgAggregateOutputType | null
+    _sum: AppointmentSumAggregateOutputType | null
+    _min: AppointmentMinAggregateOutputType | null
+    _max: AppointmentMaxAggregateOutputType | null
+  }
+
+  type GetAppointmentGroupByPayload<T extends AppointmentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AppointmentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AppointmentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AppointmentGroupByOutputType[P]>
+            : GetScalarType<T[P], AppointmentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AppointmentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    custId?: boolean
+    custCode?: boolean
+    custName?: boolean
+    dateFrom?: boolean
+    statusId?: boolean
+    statusName?: boolean
+    statusTime?: boolean
+    isCancel?: boolean
+    branchId?: boolean
+    branchName?: boolean
+    content?: boolean
+    note?: boolean
+    noteForBranch?: boolean
+    consultId?: boolean
+    doctorId?: boolean
+    doctorId2?: boolean
+    assistantId?: boolean
+    roomId?: boolean
+    room?: boolean
+    remindContent?: boolean
+    reasonCancelId?: boolean
+    typeId?: boolean
+    typeDetailId?: boolean
+    serviceCareId?: boolean
+    serviceCare?: boolean
+    state?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["appointment"]>
+
+  export type AppointmentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    custId?: boolean
+    custCode?: boolean
+    custName?: boolean
+    dateFrom?: boolean
+    statusId?: boolean
+    statusName?: boolean
+    statusTime?: boolean
+    isCancel?: boolean
+    branchId?: boolean
+    branchName?: boolean
+    content?: boolean
+    note?: boolean
+    noteForBranch?: boolean
+    consultId?: boolean
+    doctorId?: boolean
+    doctorId2?: boolean
+    assistantId?: boolean
+    roomId?: boolean
+    room?: boolean
+    remindContent?: boolean
+    reasonCancelId?: boolean
+    typeId?: boolean
+    typeDetailId?: boolean
+    serviceCareId?: boolean
+    serviceCare?: boolean
+    state?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["appointment"]>
+
+  export type AppointmentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    custId?: boolean
+    custCode?: boolean
+    custName?: boolean
+    dateFrom?: boolean
+    statusId?: boolean
+    statusName?: boolean
+    statusTime?: boolean
+    isCancel?: boolean
+    branchId?: boolean
+    branchName?: boolean
+    content?: boolean
+    note?: boolean
+    noteForBranch?: boolean
+    consultId?: boolean
+    doctorId?: boolean
+    doctorId2?: boolean
+    assistantId?: boolean
+    roomId?: boolean
+    room?: boolean
+    remindContent?: boolean
+    reasonCancelId?: boolean
+    typeId?: boolean
+    typeDetailId?: boolean
+    serviceCareId?: boolean
+    serviceCare?: boolean
+    state?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["appointment"]>
+
+  export type AppointmentSelectScalar = {
+    id?: boolean
+    source_id?: boolean
+    custId?: boolean
+    custCode?: boolean
+    custName?: boolean
+    dateFrom?: boolean
+    statusId?: boolean
+    statusName?: boolean
+    statusTime?: boolean
+    isCancel?: boolean
+    branchId?: boolean
+    branchName?: boolean
+    content?: boolean
+    note?: boolean
+    noteForBranch?: boolean
+    consultId?: boolean
+    doctorId?: boolean
+    doctorId2?: boolean
+    assistantId?: boolean
+    roomId?: boolean
+    room?: boolean
+    remindContent?: boolean
+    reasonCancelId?: boolean
+    typeId?: boolean
+    typeDetailId?: boolean
+    serviceCareId?: boolean
+    serviceCare?: boolean
+    state?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    extractedAt?: boolean
+  }
+
+  export type AppointmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "source_id" | "custId" | "custCode" | "custName" | "dateFrom" | "statusId" | "statusName" | "statusTime" | "isCancel" | "branchId" | "branchName" | "content" | "note" | "noteForBranch" | "consultId" | "doctorId" | "doctorId2" | "assistantId" | "roomId" | "room" | "remindContent" | "reasonCancelId" | "typeId" | "typeDetailId" | "serviceCareId" | "serviceCare" | "state" | "createdDate" | "createdBy" | "modifiedDate" | "modifiedBy" | "extractedAt", ExtArgs["result"]["appointment"]>
+
+  export type $AppointmentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Appointment"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      source_id: string
+      custId: string | null
+      custCode: string | null
+      custName: string | null
+      dateFrom: Date | null
+      statusId: number
+      statusName: string | null
+      statusTime: Date | null
+      isCancel: number
+      branchId: number
+      branchName: string | null
+      content: string | null
+      note: string | null
+      noteForBranch: string | null
+      consultId: number
+      doctorId: number
+      doctorId2: number
+      assistantId: number
+      roomId: number
+      room: string | null
+      remindContent: string | null
+      reasonCancelId: number
+      typeId: number
+      typeDetailId: number
+      serviceCareId: string | null
+      serviceCare: string | null
+      state: number
+      createdDate: Date | null
+      createdBy: string | null
+      modifiedDate: Date | null
+      modifiedBy: string | null
+      extractedAt: Date
+    }, ExtArgs["result"]["appointment"]>
+    composites: {}
+  }
+
+  type AppointmentGetPayload<S extends boolean | null | undefined | AppointmentDefaultArgs> = $Result.GetResult<Prisma.$AppointmentPayload, S>
+
+  type AppointmentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AppointmentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AppointmentCountAggregateInputType | true
+    }
+
+  export interface AppointmentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Appointment'], meta: { name: 'Appointment' } }
+    /**
+     * Find zero or one Appointment that matches the filter.
+     * @param {AppointmentFindUniqueArgs} args - Arguments to find a Appointment
+     * @example
+     * // Get one Appointment
+     * const appointment = await prisma.appointment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AppointmentFindUniqueArgs>(args: SelectSubset<T, AppointmentFindUniqueArgs<ExtArgs>>): Prisma__AppointmentClient<$Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Appointment that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AppointmentFindUniqueOrThrowArgs} args - Arguments to find a Appointment
+     * @example
+     * // Get one Appointment
+     * const appointment = await prisma.appointment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AppointmentFindUniqueOrThrowArgs>(args: SelectSubset<T, AppointmentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AppointmentClient<$Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Appointment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppointmentFindFirstArgs} args - Arguments to find a Appointment
+     * @example
+     * // Get one Appointment
+     * const appointment = await prisma.appointment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AppointmentFindFirstArgs>(args?: SelectSubset<T, AppointmentFindFirstArgs<ExtArgs>>): Prisma__AppointmentClient<$Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Appointment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppointmentFindFirstOrThrowArgs} args - Arguments to find a Appointment
+     * @example
+     * // Get one Appointment
+     * const appointment = await prisma.appointment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AppointmentFindFirstOrThrowArgs>(args?: SelectSubset<T, AppointmentFindFirstOrThrowArgs<ExtArgs>>): Prisma__AppointmentClient<$Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Appointments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppointmentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Appointments
+     * const appointments = await prisma.appointment.findMany()
+     * 
+     * // Get first 10 Appointments
+     * const appointments = await prisma.appointment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const appointmentWithIdOnly = await prisma.appointment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AppointmentFindManyArgs>(args?: SelectSubset<T, AppointmentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Appointment.
+     * @param {AppointmentCreateArgs} args - Arguments to create a Appointment.
+     * @example
+     * // Create one Appointment
+     * const Appointment = await prisma.appointment.create({
+     *   data: {
+     *     // ... data to create a Appointment
+     *   }
+     * })
+     * 
+     */
+    create<T extends AppointmentCreateArgs>(args: SelectSubset<T, AppointmentCreateArgs<ExtArgs>>): Prisma__AppointmentClient<$Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Appointments.
+     * @param {AppointmentCreateManyArgs} args - Arguments to create many Appointments.
+     * @example
+     * // Create many Appointments
+     * const appointment = await prisma.appointment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AppointmentCreateManyArgs>(args?: SelectSubset<T, AppointmentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Appointments and returns the data saved in the database.
+     * @param {AppointmentCreateManyAndReturnArgs} args - Arguments to create many Appointments.
+     * @example
+     * // Create many Appointments
+     * const appointment = await prisma.appointment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Appointments and only return the `id`
+     * const appointmentWithIdOnly = await prisma.appointment.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AppointmentCreateManyAndReturnArgs>(args?: SelectSubset<T, AppointmentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Appointment.
+     * @param {AppointmentDeleteArgs} args - Arguments to delete one Appointment.
+     * @example
+     * // Delete one Appointment
+     * const Appointment = await prisma.appointment.delete({
+     *   where: {
+     *     // ... filter to delete one Appointment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AppointmentDeleteArgs>(args: SelectSubset<T, AppointmentDeleteArgs<ExtArgs>>): Prisma__AppointmentClient<$Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Appointment.
+     * @param {AppointmentUpdateArgs} args - Arguments to update one Appointment.
+     * @example
+     * // Update one Appointment
+     * const appointment = await prisma.appointment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AppointmentUpdateArgs>(args: SelectSubset<T, AppointmentUpdateArgs<ExtArgs>>): Prisma__AppointmentClient<$Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Appointments.
+     * @param {AppointmentDeleteManyArgs} args - Arguments to filter Appointments to delete.
+     * @example
+     * // Delete a few Appointments
+     * const { count } = await prisma.appointment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AppointmentDeleteManyArgs>(args?: SelectSubset<T, AppointmentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Appointments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppointmentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Appointments
+     * const appointment = await prisma.appointment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AppointmentUpdateManyArgs>(args: SelectSubset<T, AppointmentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Appointments and returns the data updated in the database.
+     * @param {AppointmentUpdateManyAndReturnArgs} args - Arguments to update many Appointments.
+     * @example
+     * // Update many Appointments
+     * const appointment = await prisma.appointment.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Appointments and only return the `id`
+     * const appointmentWithIdOnly = await prisma.appointment.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AppointmentUpdateManyAndReturnArgs>(args: SelectSubset<T, AppointmentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Appointment.
+     * @param {AppointmentUpsertArgs} args - Arguments to update or create a Appointment.
+     * @example
+     * // Update or create a Appointment
+     * const appointment = await prisma.appointment.upsert({
+     *   create: {
+     *     // ... data to create a Appointment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Appointment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AppointmentUpsertArgs>(args: SelectSubset<T, AppointmentUpsertArgs<ExtArgs>>): Prisma__AppointmentClient<$Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Appointments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppointmentCountArgs} args - Arguments to filter Appointments to count.
+     * @example
+     * // Count the number of Appointments
+     * const count = await prisma.appointment.count({
+     *   where: {
+     *     // ... the filter for the Appointments we want to count
+     *   }
+     * })
+    **/
+    count<T extends AppointmentCountArgs>(
+      args?: Subset<T, AppointmentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AppointmentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Appointment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppointmentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AppointmentAggregateArgs>(args: Subset<T, AppointmentAggregateArgs>): Prisma.PrismaPromise<GetAppointmentAggregateType<T>>
+
+    /**
+     * Group by Appointment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppointmentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AppointmentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AppointmentGroupByArgs['orderBy'] }
+        : { orderBy?: AppointmentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AppointmentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAppointmentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Appointment model
+   */
+  readonly fields: AppointmentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Appointment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AppointmentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Appointment model
+   */
+  interface AppointmentFieldRefs {
+    readonly id: FieldRef<"Appointment", 'Int'>
+    readonly source_id: FieldRef<"Appointment", 'String'>
+    readonly custId: FieldRef<"Appointment", 'String'>
+    readonly custCode: FieldRef<"Appointment", 'String'>
+    readonly custName: FieldRef<"Appointment", 'String'>
+    readonly dateFrom: FieldRef<"Appointment", 'DateTime'>
+    readonly statusId: FieldRef<"Appointment", 'Int'>
+    readonly statusName: FieldRef<"Appointment", 'String'>
+    readonly statusTime: FieldRef<"Appointment", 'DateTime'>
+    readonly isCancel: FieldRef<"Appointment", 'Int'>
+    readonly branchId: FieldRef<"Appointment", 'Int'>
+    readonly branchName: FieldRef<"Appointment", 'String'>
+    readonly content: FieldRef<"Appointment", 'String'>
+    readonly note: FieldRef<"Appointment", 'String'>
+    readonly noteForBranch: FieldRef<"Appointment", 'String'>
+    readonly consultId: FieldRef<"Appointment", 'Int'>
+    readonly doctorId: FieldRef<"Appointment", 'Int'>
+    readonly doctorId2: FieldRef<"Appointment", 'Int'>
+    readonly assistantId: FieldRef<"Appointment", 'Int'>
+    readonly roomId: FieldRef<"Appointment", 'Int'>
+    readonly room: FieldRef<"Appointment", 'String'>
+    readonly remindContent: FieldRef<"Appointment", 'String'>
+    readonly reasonCancelId: FieldRef<"Appointment", 'Int'>
+    readonly typeId: FieldRef<"Appointment", 'Int'>
+    readonly typeDetailId: FieldRef<"Appointment", 'Int'>
+    readonly serviceCareId: FieldRef<"Appointment", 'String'>
+    readonly serviceCare: FieldRef<"Appointment", 'String'>
+    readonly state: FieldRef<"Appointment", 'Int'>
+    readonly createdDate: FieldRef<"Appointment", 'DateTime'>
+    readonly createdBy: FieldRef<"Appointment", 'String'>
+    readonly modifiedDate: FieldRef<"Appointment", 'DateTime'>
+    readonly modifiedBy: FieldRef<"Appointment", 'String'>
+    readonly extractedAt: FieldRef<"Appointment", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Appointment findUnique
+   */
+  export type AppointmentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Appointment
+     */
+    select?: AppointmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Appointment
+     */
+    omit?: AppointmentOmit<ExtArgs> | null
+    /**
+     * Filter, which Appointment to fetch.
+     */
+    where: AppointmentWhereUniqueInput
+  }
+
+  /**
+   * Appointment findUniqueOrThrow
+   */
+  export type AppointmentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Appointment
+     */
+    select?: AppointmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Appointment
+     */
+    omit?: AppointmentOmit<ExtArgs> | null
+    /**
+     * Filter, which Appointment to fetch.
+     */
+    where: AppointmentWhereUniqueInput
+  }
+
+  /**
+   * Appointment findFirst
+   */
+  export type AppointmentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Appointment
+     */
+    select?: AppointmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Appointment
+     */
+    omit?: AppointmentOmit<ExtArgs> | null
+    /**
+     * Filter, which Appointment to fetch.
+     */
+    where?: AppointmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Appointments to fetch.
+     */
+    orderBy?: AppointmentOrderByWithRelationInput | AppointmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Appointments.
+     */
+    cursor?: AppointmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Appointments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Appointments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Appointments.
+     */
+    distinct?: AppointmentScalarFieldEnum | AppointmentScalarFieldEnum[]
+  }
+
+  /**
+   * Appointment findFirstOrThrow
+   */
+  export type AppointmentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Appointment
+     */
+    select?: AppointmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Appointment
+     */
+    omit?: AppointmentOmit<ExtArgs> | null
+    /**
+     * Filter, which Appointment to fetch.
+     */
+    where?: AppointmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Appointments to fetch.
+     */
+    orderBy?: AppointmentOrderByWithRelationInput | AppointmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Appointments.
+     */
+    cursor?: AppointmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Appointments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Appointments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Appointments.
+     */
+    distinct?: AppointmentScalarFieldEnum | AppointmentScalarFieldEnum[]
+  }
+
+  /**
+   * Appointment findMany
+   */
+  export type AppointmentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Appointment
+     */
+    select?: AppointmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Appointment
+     */
+    omit?: AppointmentOmit<ExtArgs> | null
+    /**
+     * Filter, which Appointments to fetch.
+     */
+    where?: AppointmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Appointments to fetch.
+     */
+    orderBy?: AppointmentOrderByWithRelationInput | AppointmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Appointments.
+     */
+    cursor?: AppointmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Appointments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Appointments.
+     */
+    skip?: number
+    distinct?: AppointmentScalarFieldEnum | AppointmentScalarFieldEnum[]
+  }
+
+  /**
+   * Appointment create
+   */
+  export type AppointmentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Appointment
+     */
+    select?: AppointmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Appointment
+     */
+    omit?: AppointmentOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Appointment.
+     */
+    data: XOR<AppointmentCreateInput, AppointmentUncheckedCreateInput>
+  }
+
+  /**
+   * Appointment createMany
+   */
+  export type AppointmentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Appointments.
+     */
+    data: AppointmentCreateManyInput | AppointmentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Appointment createManyAndReturn
+   */
+  export type AppointmentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Appointment
+     */
+    select?: AppointmentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Appointment
+     */
+    omit?: AppointmentOmit<ExtArgs> | null
+    /**
+     * The data used to create many Appointments.
+     */
+    data: AppointmentCreateManyInput | AppointmentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Appointment update
+   */
+  export type AppointmentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Appointment
+     */
+    select?: AppointmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Appointment
+     */
+    omit?: AppointmentOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Appointment.
+     */
+    data: XOR<AppointmentUpdateInput, AppointmentUncheckedUpdateInput>
+    /**
+     * Choose, which Appointment to update.
+     */
+    where: AppointmentWhereUniqueInput
+  }
+
+  /**
+   * Appointment updateMany
+   */
+  export type AppointmentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Appointments.
+     */
+    data: XOR<AppointmentUpdateManyMutationInput, AppointmentUncheckedUpdateManyInput>
+    /**
+     * Filter which Appointments to update
+     */
+    where?: AppointmentWhereInput
+    /**
+     * Limit how many Appointments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Appointment updateManyAndReturn
+   */
+  export type AppointmentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Appointment
+     */
+    select?: AppointmentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Appointment
+     */
+    omit?: AppointmentOmit<ExtArgs> | null
+    /**
+     * The data used to update Appointments.
+     */
+    data: XOR<AppointmentUpdateManyMutationInput, AppointmentUncheckedUpdateManyInput>
+    /**
+     * Filter which Appointments to update
+     */
+    where?: AppointmentWhereInput
+    /**
+     * Limit how many Appointments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Appointment upsert
+   */
+  export type AppointmentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Appointment
+     */
+    select?: AppointmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Appointment
+     */
+    omit?: AppointmentOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Appointment to update in case it exists.
+     */
+    where: AppointmentWhereUniqueInput
+    /**
+     * In case the Appointment found by the `where` argument doesn't exist, create a new Appointment with this data.
+     */
+    create: XOR<AppointmentCreateInput, AppointmentUncheckedCreateInput>
+    /**
+     * In case the Appointment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AppointmentUpdateInput, AppointmentUncheckedUpdateInput>
+  }
+
+  /**
+   * Appointment delete
+   */
+  export type AppointmentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Appointment
+     */
+    select?: AppointmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Appointment
+     */
+    omit?: AppointmentOmit<ExtArgs> | null
+    /**
+     * Filter which Appointment to delete.
+     */
+    where: AppointmentWhereUniqueInput
+  }
+
+  /**
+   * Appointment deleteMany
+   */
+  export type AppointmentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Appointments to delete
+     */
+    where?: AppointmentWhereInput
+    /**
+     * Limit how many Appointments to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Appointment without action
+   */
+  export type AppointmentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Appointment
+     */
+    select?: AppointmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Appointment
+     */
+    omit?: AppointmentOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -3588,6 +8729,156 @@ export namespace Prisma {
   };
 
   export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
+
+
+  export const RevenueScalarFieldEnum: {
+    id: 'id',
+    source_id: 'source_id',
+    code: 'code',
+    branchId: 'branchId',
+    custCode: 'custCode',
+    custName: 'custName',
+    custPhone: 'custPhone',
+    custAddress: 'custAddress',
+    custBirthday: 'custBirthday',
+    depositId: 'depositId',
+    paidAmount: 'paidAmount',
+    discountAmount: 'discountAmount',
+    depositAmountUsing: 'depositAmountUsing',
+    totalPaid: 'totalPaid',
+    debtAmount: 'debtAmount',
+    methodName: 'methodName',
+    content: 'content',
+    serviceId: 'serviceId',
+    isProduct: 'isProduct',
+    quantity: 'quantity',
+    priceRoot: 'priceRoot',
+    priceUnit: 'priceUnit',
+    price: 'price',
+    amount: 'amount',
+    timeToTreatment: 'timeToTreatment',
+    percentOfService: 'percentOfService',
+    treatIndex: 'treatIndex',
+    type: 'type',
+    typeName: 'typeName',
+    consultId1: 'consultId1',
+    consultId2: 'consultId2',
+    consultId3: 'consultId3',
+    consultId4: 'consultId4',
+    techId: 'techId',
+    tele1: 'tele1',
+    tele2: 'tele2',
+    createdDate: 'createdDate',
+    createdBy: 'createdBy',
+    modifiedDate: 'modifiedDate',
+    state: 'state',
+    extractedAt: 'extractedAt'
+  };
+
+  export type RevenueScalarFieldEnum = (typeof RevenueScalarFieldEnum)[keyof typeof RevenueScalarFieldEnum]
+
+
+  export const TreatScalarFieldEnum: {
+    id: 'id',
+    source_id: 'source_id',
+    name: 'name',
+    code: 'code',
+    codeOld: 'codeOld',
+    docCode: 'docCode',
+    email: 'email',
+    phone: 'phone',
+    phone2: 'phone2',
+    birthday: 'birthday',
+    gender: 'gender',
+    address: 'address',
+    commune: 'commune',
+    district: 'district',
+    city: 'city',
+    serviceId: 'serviceId',
+    serviceTypeId: 'serviceTypeId',
+    serviceCode: 'serviceCode',
+    tabId: 'tabId',
+    tabCode: 'tabCode',
+    comboId: 'comboId',
+    comboCode: 'comboCode',
+    serviceName: 'serviceName',
+    timeIndex: 'timeIndex',
+    timeToTreatment: 'timeToTreatment',
+    teethChoosing: 'teethChoosing',
+    priceUnit: 'priceUnit',
+    quantity: 'quantity',
+    discount: 'discount',
+    priceRoot: 'priceRoot',
+    priceDiscounted: 'priceDiscounted',
+    doctor: 'doctor',
+    doctor2: 'doctor2',
+    doctor3: 'doctor3',
+    doctor4: 'doctor4',
+    assistant: 'assistant',
+    assistant2: 'assistant2',
+    assistant3: 'assistant3',
+    assistant4: 'assistant4',
+    technician: 'technician',
+    technician2: 'technician2',
+    timeTreatIndex: 'timeTreatIndex',
+    percent: 'percent',
+    percentNew: 'percentNew',
+    percentStage: 'percentStage',
+    percentNewStage: 'percentNewStage',
+    note: 'note',
+    content: 'content',
+    contentNext: 'contentNext',
+    symptoms: 'symptoms',
+    treatDateNext: 'treatDateNext',
+    branchId: 'branchId',
+    createdDate: 'createdDate',
+    createdBy: 'createdBy',
+    modifiedDate: 'modifiedDate',
+    modifiedBy: 'modifiedBy',
+    state: 'state',
+    extractedAt: 'extractedAt'
+  };
+
+  export type TreatScalarFieldEnum = (typeof TreatScalarFieldEnum)[keyof typeof TreatScalarFieldEnum]
+
+
+  export const AppointmentScalarFieldEnum: {
+    id: 'id',
+    source_id: 'source_id',
+    custId: 'custId',
+    custCode: 'custCode',
+    custName: 'custName',
+    dateFrom: 'dateFrom',
+    statusId: 'statusId',
+    statusName: 'statusName',
+    statusTime: 'statusTime',
+    isCancel: 'isCancel',
+    branchId: 'branchId',
+    branchName: 'branchName',
+    content: 'content',
+    note: 'note',
+    noteForBranch: 'noteForBranch',
+    consultId: 'consultId',
+    doctorId: 'doctorId',
+    doctorId2: 'doctorId2',
+    assistantId: 'assistantId',
+    roomId: 'roomId',
+    room: 'room',
+    remindContent: 'remindContent',
+    reasonCancelId: 'reasonCancelId',
+    typeId: 'typeId',
+    typeDetailId: 'typeDetailId',
+    serviceCareId: 'serviceCareId',
+    serviceCare: 'serviceCare',
+    state: 'state',
+    createdDate: 'createdDate',
+    createdBy: 'createdBy',
+    modifiedDate: 'modifiedDate',
+    modifiedBy: 'modifiedBy',
+    extractedAt: 'extractedAt'
+  };
+
+  export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -3966,6 +9257,753 @@ export namespace Prisma {
     extractedAt?: DateTimeWithAggregatesFilter<"Customer"> | Date | string
   }
 
+  export type RevenueWhereInput = {
+    AND?: RevenueWhereInput | RevenueWhereInput[]
+    OR?: RevenueWhereInput[]
+    NOT?: RevenueWhereInput | RevenueWhereInput[]
+    id?: IntFilter<"Revenue"> | number
+    source_id?: StringFilter<"Revenue"> | string
+    code?: StringNullableFilter<"Revenue"> | string | null
+    branchId?: IntNullableFilter<"Revenue"> | number | null
+    custCode?: StringNullableFilter<"Revenue"> | string | null
+    custName?: StringNullableFilter<"Revenue"> | string | null
+    custPhone?: StringNullableFilter<"Revenue"> | string | null
+    custAddress?: StringNullableFilter<"Revenue"> | string | null
+    custBirthday?: DateTimeNullableFilter<"Revenue"> | Date | string | null
+    depositId?: IntNullableFilter<"Revenue"> | number | null
+    paidAmount?: FloatNullableFilter<"Revenue"> | number | null
+    discountAmount?: FloatFilter<"Revenue"> | number
+    depositAmountUsing?: FloatFilter<"Revenue"> | number
+    totalPaid?: FloatFilter<"Revenue"> | number
+    debtAmount?: FloatFilter<"Revenue"> | number
+    methodName?: StringNullableFilter<"Revenue"> | string | null
+    content?: StringNullableFilter<"Revenue"> | string | null
+    serviceId?: IntFilter<"Revenue"> | number
+    isProduct?: IntFilter<"Revenue"> | number
+    quantity?: FloatFilter<"Revenue"> | number
+    priceRoot?: FloatFilter<"Revenue"> | number
+    priceUnit?: FloatFilter<"Revenue"> | number
+    price?: FloatFilter<"Revenue"> | number
+    amount?: FloatFilter<"Revenue"> | number
+    timeToTreatment?: IntFilter<"Revenue"> | number
+    percentOfService?: FloatFilter<"Revenue"> | number
+    treatIndex?: IntFilter<"Revenue"> | number
+    type?: StringNullableFilter<"Revenue"> | string | null
+    typeName?: StringNullableFilter<"Revenue"> | string | null
+    consultId1?: IntFilter<"Revenue"> | number
+    consultId2?: IntFilter<"Revenue"> | number
+    consultId3?: IntFilter<"Revenue"> | number
+    consultId4?: IntFilter<"Revenue"> | number
+    techId?: IntFilter<"Revenue"> | number
+    tele1?: IntFilter<"Revenue"> | number
+    tele2?: IntFilter<"Revenue"> | number
+    createdDate?: DateTimeNullableFilter<"Revenue"> | Date | string | null
+    createdBy?: StringNullableFilter<"Revenue"> | string | null
+    modifiedDate?: DateTimeNullableFilter<"Revenue"> | Date | string | null
+    state?: IntNullableFilter<"Revenue"> | number | null
+    extractedAt?: DateTimeFilter<"Revenue"> | Date | string
+  }
+
+  export type RevenueOrderByWithRelationInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    code?: SortOrderInput | SortOrder
+    branchId?: SortOrderInput | SortOrder
+    custCode?: SortOrderInput | SortOrder
+    custName?: SortOrderInput | SortOrder
+    custPhone?: SortOrderInput | SortOrder
+    custAddress?: SortOrderInput | SortOrder
+    custBirthday?: SortOrderInput | SortOrder
+    depositId?: SortOrderInput | SortOrder
+    paidAmount?: SortOrderInput | SortOrder
+    discountAmount?: SortOrder
+    depositAmountUsing?: SortOrder
+    totalPaid?: SortOrder
+    debtAmount?: SortOrder
+    methodName?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
+    serviceId?: SortOrder
+    isProduct?: SortOrder
+    quantity?: SortOrder
+    priceRoot?: SortOrder
+    priceUnit?: SortOrder
+    price?: SortOrder
+    amount?: SortOrder
+    timeToTreatment?: SortOrder
+    percentOfService?: SortOrder
+    treatIndex?: SortOrder
+    type?: SortOrderInput | SortOrder
+    typeName?: SortOrderInput | SortOrder
+    consultId1?: SortOrder
+    consultId2?: SortOrder
+    consultId3?: SortOrder
+    consultId4?: SortOrder
+    techId?: SortOrder
+    tele1?: SortOrder
+    tele2?: SortOrder
+    createdDate?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    modifiedDate?: SortOrderInput | SortOrder
+    state?: SortOrderInput | SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type RevenueWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    source_id?: string
+    AND?: RevenueWhereInput | RevenueWhereInput[]
+    OR?: RevenueWhereInput[]
+    NOT?: RevenueWhereInput | RevenueWhereInput[]
+    code?: StringNullableFilter<"Revenue"> | string | null
+    branchId?: IntNullableFilter<"Revenue"> | number | null
+    custCode?: StringNullableFilter<"Revenue"> | string | null
+    custName?: StringNullableFilter<"Revenue"> | string | null
+    custPhone?: StringNullableFilter<"Revenue"> | string | null
+    custAddress?: StringNullableFilter<"Revenue"> | string | null
+    custBirthday?: DateTimeNullableFilter<"Revenue"> | Date | string | null
+    depositId?: IntNullableFilter<"Revenue"> | number | null
+    paidAmount?: FloatNullableFilter<"Revenue"> | number | null
+    discountAmount?: FloatFilter<"Revenue"> | number
+    depositAmountUsing?: FloatFilter<"Revenue"> | number
+    totalPaid?: FloatFilter<"Revenue"> | number
+    debtAmount?: FloatFilter<"Revenue"> | number
+    methodName?: StringNullableFilter<"Revenue"> | string | null
+    content?: StringNullableFilter<"Revenue"> | string | null
+    serviceId?: IntFilter<"Revenue"> | number
+    isProduct?: IntFilter<"Revenue"> | number
+    quantity?: FloatFilter<"Revenue"> | number
+    priceRoot?: FloatFilter<"Revenue"> | number
+    priceUnit?: FloatFilter<"Revenue"> | number
+    price?: FloatFilter<"Revenue"> | number
+    amount?: FloatFilter<"Revenue"> | number
+    timeToTreatment?: IntFilter<"Revenue"> | number
+    percentOfService?: FloatFilter<"Revenue"> | number
+    treatIndex?: IntFilter<"Revenue"> | number
+    type?: StringNullableFilter<"Revenue"> | string | null
+    typeName?: StringNullableFilter<"Revenue"> | string | null
+    consultId1?: IntFilter<"Revenue"> | number
+    consultId2?: IntFilter<"Revenue"> | number
+    consultId3?: IntFilter<"Revenue"> | number
+    consultId4?: IntFilter<"Revenue"> | number
+    techId?: IntFilter<"Revenue"> | number
+    tele1?: IntFilter<"Revenue"> | number
+    tele2?: IntFilter<"Revenue"> | number
+    createdDate?: DateTimeNullableFilter<"Revenue"> | Date | string | null
+    createdBy?: StringNullableFilter<"Revenue"> | string | null
+    modifiedDate?: DateTimeNullableFilter<"Revenue"> | Date | string | null
+    state?: IntNullableFilter<"Revenue"> | number | null
+    extractedAt?: DateTimeFilter<"Revenue"> | Date | string
+  }, "id" | "source_id">
+
+  export type RevenueOrderByWithAggregationInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    code?: SortOrderInput | SortOrder
+    branchId?: SortOrderInput | SortOrder
+    custCode?: SortOrderInput | SortOrder
+    custName?: SortOrderInput | SortOrder
+    custPhone?: SortOrderInput | SortOrder
+    custAddress?: SortOrderInput | SortOrder
+    custBirthday?: SortOrderInput | SortOrder
+    depositId?: SortOrderInput | SortOrder
+    paidAmount?: SortOrderInput | SortOrder
+    discountAmount?: SortOrder
+    depositAmountUsing?: SortOrder
+    totalPaid?: SortOrder
+    debtAmount?: SortOrder
+    methodName?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
+    serviceId?: SortOrder
+    isProduct?: SortOrder
+    quantity?: SortOrder
+    priceRoot?: SortOrder
+    priceUnit?: SortOrder
+    price?: SortOrder
+    amount?: SortOrder
+    timeToTreatment?: SortOrder
+    percentOfService?: SortOrder
+    treatIndex?: SortOrder
+    type?: SortOrderInput | SortOrder
+    typeName?: SortOrderInput | SortOrder
+    consultId1?: SortOrder
+    consultId2?: SortOrder
+    consultId3?: SortOrder
+    consultId4?: SortOrder
+    techId?: SortOrder
+    tele1?: SortOrder
+    tele2?: SortOrder
+    createdDate?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    modifiedDate?: SortOrderInput | SortOrder
+    state?: SortOrderInput | SortOrder
+    extractedAt?: SortOrder
+    _count?: RevenueCountOrderByAggregateInput
+    _avg?: RevenueAvgOrderByAggregateInput
+    _max?: RevenueMaxOrderByAggregateInput
+    _min?: RevenueMinOrderByAggregateInput
+    _sum?: RevenueSumOrderByAggregateInput
+  }
+
+  export type RevenueScalarWhereWithAggregatesInput = {
+    AND?: RevenueScalarWhereWithAggregatesInput | RevenueScalarWhereWithAggregatesInput[]
+    OR?: RevenueScalarWhereWithAggregatesInput[]
+    NOT?: RevenueScalarWhereWithAggregatesInput | RevenueScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Revenue"> | number
+    source_id?: StringWithAggregatesFilter<"Revenue"> | string
+    code?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
+    branchId?: IntNullableWithAggregatesFilter<"Revenue"> | number | null
+    custCode?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
+    custName?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
+    custPhone?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
+    custAddress?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
+    custBirthday?: DateTimeNullableWithAggregatesFilter<"Revenue"> | Date | string | null
+    depositId?: IntNullableWithAggregatesFilter<"Revenue"> | number | null
+    paidAmount?: FloatNullableWithAggregatesFilter<"Revenue"> | number | null
+    discountAmount?: FloatWithAggregatesFilter<"Revenue"> | number
+    depositAmountUsing?: FloatWithAggregatesFilter<"Revenue"> | number
+    totalPaid?: FloatWithAggregatesFilter<"Revenue"> | number
+    debtAmount?: FloatWithAggregatesFilter<"Revenue"> | number
+    methodName?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
+    content?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
+    serviceId?: IntWithAggregatesFilter<"Revenue"> | number
+    isProduct?: IntWithAggregatesFilter<"Revenue"> | number
+    quantity?: FloatWithAggregatesFilter<"Revenue"> | number
+    priceRoot?: FloatWithAggregatesFilter<"Revenue"> | number
+    priceUnit?: FloatWithAggregatesFilter<"Revenue"> | number
+    price?: FloatWithAggregatesFilter<"Revenue"> | number
+    amount?: FloatWithAggregatesFilter<"Revenue"> | number
+    timeToTreatment?: IntWithAggregatesFilter<"Revenue"> | number
+    percentOfService?: FloatWithAggregatesFilter<"Revenue"> | number
+    treatIndex?: IntWithAggregatesFilter<"Revenue"> | number
+    type?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
+    typeName?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
+    consultId1?: IntWithAggregatesFilter<"Revenue"> | number
+    consultId2?: IntWithAggregatesFilter<"Revenue"> | number
+    consultId3?: IntWithAggregatesFilter<"Revenue"> | number
+    consultId4?: IntWithAggregatesFilter<"Revenue"> | number
+    techId?: IntWithAggregatesFilter<"Revenue"> | number
+    tele1?: IntWithAggregatesFilter<"Revenue"> | number
+    tele2?: IntWithAggregatesFilter<"Revenue"> | number
+    createdDate?: DateTimeNullableWithAggregatesFilter<"Revenue"> | Date | string | null
+    createdBy?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
+    modifiedDate?: DateTimeNullableWithAggregatesFilter<"Revenue"> | Date | string | null
+    state?: IntNullableWithAggregatesFilter<"Revenue"> | number | null
+    extractedAt?: DateTimeWithAggregatesFilter<"Revenue"> | Date | string
+  }
+
+  export type TreatWhereInput = {
+    AND?: TreatWhereInput | TreatWhereInput[]
+    OR?: TreatWhereInput[]
+    NOT?: TreatWhereInput | TreatWhereInput[]
+    id?: IntFilter<"Treat"> | number
+    source_id?: StringFilter<"Treat"> | string
+    name?: StringNullableFilter<"Treat"> | string | null
+    code?: StringNullableFilter<"Treat"> | string | null
+    codeOld?: StringNullableFilter<"Treat"> | string | null
+    docCode?: StringNullableFilter<"Treat"> | string | null
+    email?: StringNullableFilter<"Treat"> | string | null
+    phone?: StringNullableFilter<"Treat"> | string | null
+    phone2?: StringNullableFilter<"Treat"> | string | null
+    birthday?: DateTimeNullableFilter<"Treat"> | Date | string | null
+    gender?: StringNullableFilter<"Treat"> | string | null
+    address?: StringNullableFilter<"Treat"> | string | null
+    commune?: StringNullableFilter<"Treat"> | string | null
+    district?: StringNullableFilter<"Treat"> | string | null
+    city?: StringNullableFilter<"Treat"> | string | null
+    serviceId?: IntFilter<"Treat"> | number
+    serviceTypeId?: IntFilter<"Treat"> | number
+    serviceCode?: StringNullableFilter<"Treat"> | string | null
+    tabId?: IntFilter<"Treat"> | number
+    tabCode?: StringNullableFilter<"Treat"> | string | null
+    comboId?: IntFilter<"Treat"> | number
+    comboCode?: StringNullableFilter<"Treat"> | string | null
+    serviceName?: StringNullableFilter<"Treat"> | string | null
+    timeIndex?: StringNullableFilter<"Treat"> | string | null
+    timeToTreatment?: IntFilter<"Treat"> | number
+    teethChoosing?: StringNullableFilter<"Treat"> | string | null
+    priceUnit?: FloatFilter<"Treat"> | number
+    quantity?: FloatFilter<"Treat"> | number
+    discount?: FloatFilter<"Treat"> | number
+    priceRoot?: FloatFilter<"Treat"> | number
+    priceDiscounted?: FloatFilter<"Treat"> | number
+    doctor?: IntFilter<"Treat"> | number
+    doctor2?: IntFilter<"Treat"> | number
+    doctor3?: IntFilter<"Treat"> | number
+    doctor4?: IntFilter<"Treat"> | number
+    assistant?: IntFilter<"Treat"> | number
+    assistant2?: IntFilter<"Treat"> | number
+    assistant3?: IntFilter<"Treat"> | number
+    assistant4?: IntFilter<"Treat"> | number
+    technician?: IntFilter<"Treat"> | number
+    technician2?: IntFilter<"Treat"> | number
+    timeTreatIndex?: IntFilter<"Treat"> | number
+    percent?: FloatFilter<"Treat"> | number
+    percentNew?: FloatFilter<"Treat"> | number
+    percentStage?: FloatFilter<"Treat"> | number
+    percentNewStage?: FloatFilter<"Treat"> | number
+    note?: StringNullableFilter<"Treat"> | string | null
+    content?: StringNullableFilter<"Treat"> | string | null
+    contentNext?: StringNullableFilter<"Treat"> | string | null
+    symptoms?: StringNullableFilter<"Treat"> | string | null
+    treatDateNext?: DateTimeNullableFilter<"Treat"> | Date | string | null
+    branchId?: IntFilter<"Treat"> | number
+    createdDate?: DateTimeNullableFilter<"Treat"> | Date | string | null
+    createdBy?: StringNullableFilter<"Treat"> | string | null
+    modifiedDate?: DateTimeNullableFilter<"Treat"> | Date | string | null
+    modifiedBy?: IntNullableFilter<"Treat"> | number | null
+    state?: IntFilter<"Treat"> | number
+    extractedAt?: DateTimeFilter<"Treat"> | Date | string
+  }
+
+  export type TreatOrderByWithRelationInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    name?: SortOrderInput | SortOrder
+    code?: SortOrderInput | SortOrder
+    codeOld?: SortOrderInput | SortOrder
+    docCode?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    phone2?: SortOrderInput | SortOrder
+    birthday?: SortOrderInput | SortOrder
+    gender?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    commune?: SortOrderInput | SortOrder
+    district?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    serviceCode?: SortOrderInput | SortOrder
+    tabId?: SortOrder
+    tabCode?: SortOrderInput | SortOrder
+    comboId?: SortOrder
+    comboCode?: SortOrderInput | SortOrder
+    serviceName?: SortOrderInput | SortOrder
+    timeIndex?: SortOrderInput | SortOrder
+    timeToTreatment?: SortOrder
+    teethChoosing?: SortOrderInput | SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    note?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
+    contentNext?: SortOrderInput | SortOrder
+    symptoms?: SortOrderInput | SortOrder
+    treatDateNext?: SortOrderInput | SortOrder
+    branchId?: SortOrder
+    createdDate?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    modifiedDate?: SortOrderInput | SortOrder
+    modifiedBy?: SortOrderInput | SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type TreatWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    source_id?: string
+    AND?: TreatWhereInput | TreatWhereInput[]
+    OR?: TreatWhereInput[]
+    NOT?: TreatWhereInput | TreatWhereInput[]
+    name?: StringNullableFilter<"Treat"> | string | null
+    code?: StringNullableFilter<"Treat"> | string | null
+    codeOld?: StringNullableFilter<"Treat"> | string | null
+    docCode?: StringNullableFilter<"Treat"> | string | null
+    email?: StringNullableFilter<"Treat"> | string | null
+    phone?: StringNullableFilter<"Treat"> | string | null
+    phone2?: StringNullableFilter<"Treat"> | string | null
+    birthday?: DateTimeNullableFilter<"Treat"> | Date | string | null
+    gender?: StringNullableFilter<"Treat"> | string | null
+    address?: StringNullableFilter<"Treat"> | string | null
+    commune?: StringNullableFilter<"Treat"> | string | null
+    district?: StringNullableFilter<"Treat"> | string | null
+    city?: StringNullableFilter<"Treat"> | string | null
+    serviceId?: IntFilter<"Treat"> | number
+    serviceTypeId?: IntFilter<"Treat"> | number
+    serviceCode?: StringNullableFilter<"Treat"> | string | null
+    tabId?: IntFilter<"Treat"> | number
+    tabCode?: StringNullableFilter<"Treat"> | string | null
+    comboId?: IntFilter<"Treat"> | number
+    comboCode?: StringNullableFilter<"Treat"> | string | null
+    serviceName?: StringNullableFilter<"Treat"> | string | null
+    timeIndex?: StringNullableFilter<"Treat"> | string | null
+    timeToTreatment?: IntFilter<"Treat"> | number
+    teethChoosing?: StringNullableFilter<"Treat"> | string | null
+    priceUnit?: FloatFilter<"Treat"> | number
+    quantity?: FloatFilter<"Treat"> | number
+    discount?: FloatFilter<"Treat"> | number
+    priceRoot?: FloatFilter<"Treat"> | number
+    priceDiscounted?: FloatFilter<"Treat"> | number
+    doctor?: IntFilter<"Treat"> | number
+    doctor2?: IntFilter<"Treat"> | number
+    doctor3?: IntFilter<"Treat"> | number
+    doctor4?: IntFilter<"Treat"> | number
+    assistant?: IntFilter<"Treat"> | number
+    assistant2?: IntFilter<"Treat"> | number
+    assistant3?: IntFilter<"Treat"> | number
+    assistant4?: IntFilter<"Treat"> | number
+    technician?: IntFilter<"Treat"> | number
+    technician2?: IntFilter<"Treat"> | number
+    timeTreatIndex?: IntFilter<"Treat"> | number
+    percent?: FloatFilter<"Treat"> | number
+    percentNew?: FloatFilter<"Treat"> | number
+    percentStage?: FloatFilter<"Treat"> | number
+    percentNewStage?: FloatFilter<"Treat"> | number
+    note?: StringNullableFilter<"Treat"> | string | null
+    content?: StringNullableFilter<"Treat"> | string | null
+    contentNext?: StringNullableFilter<"Treat"> | string | null
+    symptoms?: StringNullableFilter<"Treat"> | string | null
+    treatDateNext?: DateTimeNullableFilter<"Treat"> | Date | string | null
+    branchId?: IntFilter<"Treat"> | number
+    createdDate?: DateTimeNullableFilter<"Treat"> | Date | string | null
+    createdBy?: StringNullableFilter<"Treat"> | string | null
+    modifiedDate?: DateTimeNullableFilter<"Treat"> | Date | string | null
+    modifiedBy?: IntNullableFilter<"Treat"> | number | null
+    state?: IntFilter<"Treat"> | number
+    extractedAt?: DateTimeFilter<"Treat"> | Date | string
+  }, "id" | "source_id">
+
+  export type TreatOrderByWithAggregationInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    name?: SortOrderInput | SortOrder
+    code?: SortOrderInput | SortOrder
+    codeOld?: SortOrderInput | SortOrder
+    docCode?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    phone2?: SortOrderInput | SortOrder
+    birthday?: SortOrderInput | SortOrder
+    gender?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    commune?: SortOrderInput | SortOrder
+    district?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    serviceCode?: SortOrderInput | SortOrder
+    tabId?: SortOrder
+    tabCode?: SortOrderInput | SortOrder
+    comboId?: SortOrder
+    comboCode?: SortOrderInput | SortOrder
+    serviceName?: SortOrderInput | SortOrder
+    timeIndex?: SortOrderInput | SortOrder
+    timeToTreatment?: SortOrder
+    teethChoosing?: SortOrderInput | SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    note?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
+    contentNext?: SortOrderInput | SortOrder
+    symptoms?: SortOrderInput | SortOrder
+    treatDateNext?: SortOrderInput | SortOrder
+    branchId?: SortOrder
+    createdDate?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    modifiedDate?: SortOrderInput | SortOrder
+    modifiedBy?: SortOrderInput | SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+    _count?: TreatCountOrderByAggregateInput
+    _avg?: TreatAvgOrderByAggregateInput
+    _max?: TreatMaxOrderByAggregateInput
+    _min?: TreatMinOrderByAggregateInput
+    _sum?: TreatSumOrderByAggregateInput
+  }
+
+  export type TreatScalarWhereWithAggregatesInput = {
+    AND?: TreatScalarWhereWithAggregatesInput | TreatScalarWhereWithAggregatesInput[]
+    OR?: TreatScalarWhereWithAggregatesInput[]
+    NOT?: TreatScalarWhereWithAggregatesInput | TreatScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Treat"> | number
+    source_id?: StringWithAggregatesFilter<"Treat"> | string
+    name?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    code?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    codeOld?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    docCode?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    email?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    phone2?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    birthday?: DateTimeNullableWithAggregatesFilter<"Treat"> | Date | string | null
+    gender?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    address?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    commune?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    district?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    city?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    serviceId?: IntWithAggregatesFilter<"Treat"> | number
+    serviceTypeId?: IntWithAggregatesFilter<"Treat"> | number
+    serviceCode?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    tabId?: IntWithAggregatesFilter<"Treat"> | number
+    tabCode?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    comboId?: IntWithAggregatesFilter<"Treat"> | number
+    comboCode?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    serviceName?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    timeIndex?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    timeToTreatment?: IntWithAggregatesFilter<"Treat"> | number
+    teethChoosing?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    priceUnit?: FloatWithAggregatesFilter<"Treat"> | number
+    quantity?: FloatWithAggregatesFilter<"Treat"> | number
+    discount?: FloatWithAggregatesFilter<"Treat"> | number
+    priceRoot?: FloatWithAggregatesFilter<"Treat"> | number
+    priceDiscounted?: FloatWithAggregatesFilter<"Treat"> | number
+    doctor?: IntWithAggregatesFilter<"Treat"> | number
+    doctor2?: IntWithAggregatesFilter<"Treat"> | number
+    doctor3?: IntWithAggregatesFilter<"Treat"> | number
+    doctor4?: IntWithAggregatesFilter<"Treat"> | number
+    assistant?: IntWithAggregatesFilter<"Treat"> | number
+    assistant2?: IntWithAggregatesFilter<"Treat"> | number
+    assistant3?: IntWithAggregatesFilter<"Treat"> | number
+    assistant4?: IntWithAggregatesFilter<"Treat"> | number
+    technician?: IntWithAggregatesFilter<"Treat"> | number
+    technician2?: IntWithAggregatesFilter<"Treat"> | number
+    timeTreatIndex?: IntWithAggregatesFilter<"Treat"> | number
+    percent?: FloatWithAggregatesFilter<"Treat"> | number
+    percentNew?: FloatWithAggregatesFilter<"Treat"> | number
+    percentStage?: FloatWithAggregatesFilter<"Treat"> | number
+    percentNewStage?: FloatWithAggregatesFilter<"Treat"> | number
+    note?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    content?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    contentNext?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    symptoms?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    treatDateNext?: DateTimeNullableWithAggregatesFilter<"Treat"> | Date | string | null
+    branchId?: IntWithAggregatesFilter<"Treat"> | number
+    createdDate?: DateTimeNullableWithAggregatesFilter<"Treat"> | Date | string | null
+    createdBy?: StringNullableWithAggregatesFilter<"Treat"> | string | null
+    modifiedDate?: DateTimeNullableWithAggregatesFilter<"Treat"> | Date | string | null
+    modifiedBy?: IntNullableWithAggregatesFilter<"Treat"> | number | null
+    state?: IntWithAggregatesFilter<"Treat"> | number
+    extractedAt?: DateTimeWithAggregatesFilter<"Treat"> | Date | string
+  }
+
+  export type AppointmentWhereInput = {
+    AND?: AppointmentWhereInput | AppointmentWhereInput[]
+    OR?: AppointmentWhereInput[]
+    NOT?: AppointmentWhereInput | AppointmentWhereInput[]
+    id?: IntFilter<"Appointment"> | number
+    source_id?: StringFilter<"Appointment"> | string
+    custId?: StringNullableFilter<"Appointment"> | string | null
+    custCode?: StringNullableFilter<"Appointment"> | string | null
+    custName?: StringNullableFilter<"Appointment"> | string | null
+    dateFrom?: DateTimeNullableFilter<"Appointment"> | Date | string | null
+    statusId?: IntFilter<"Appointment"> | number
+    statusName?: StringNullableFilter<"Appointment"> | string | null
+    statusTime?: DateTimeNullableFilter<"Appointment"> | Date | string | null
+    isCancel?: IntFilter<"Appointment"> | number
+    branchId?: IntFilter<"Appointment"> | number
+    branchName?: StringNullableFilter<"Appointment"> | string | null
+    content?: StringNullableFilter<"Appointment"> | string | null
+    note?: StringNullableFilter<"Appointment"> | string | null
+    noteForBranch?: StringNullableFilter<"Appointment"> | string | null
+    consultId?: IntFilter<"Appointment"> | number
+    doctorId?: IntFilter<"Appointment"> | number
+    doctorId2?: IntFilter<"Appointment"> | number
+    assistantId?: IntFilter<"Appointment"> | number
+    roomId?: IntFilter<"Appointment"> | number
+    room?: StringNullableFilter<"Appointment"> | string | null
+    remindContent?: StringNullableFilter<"Appointment"> | string | null
+    reasonCancelId?: IntFilter<"Appointment"> | number
+    typeId?: IntFilter<"Appointment"> | number
+    typeDetailId?: IntFilter<"Appointment"> | number
+    serviceCareId?: StringNullableFilter<"Appointment"> | string | null
+    serviceCare?: StringNullableFilter<"Appointment"> | string | null
+    state?: IntFilter<"Appointment"> | number
+    createdDate?: DateTimeNullableFilter<"Appointment"> | Date | string | null
+    createdBy?: StringNullableFilter<"Appointment"> | string | null
+    modifiedDate?: DateTimeNullableFilter<"Appointment"> | Date | string | null
+    modifiedBy?: StringNullableFilter<"Appointment"> | string | null
+    extractedAt?: DateTimeFilter<"Appointment"> | Date | string
+  }
+
+  export type AppointmentOrderByWithRelationInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    custId?: SortOrderInput | SortOrder
+    custCode?: SortOrderInput | SortOrder
+    custName?: SortOrderInput | SortOrder
+    dateFrom?: SortOrderInput | SortOrder
+    statusId?: SortOrder
+    statusName?: SortOrderInput | SortOrder
+    statusTime?: SortOrderInput | SortOrder
+    isCancel?: SortOrder
+    branchId?: SortOrder
+    branchName?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
+    note?: SortOrderInput | SortOrder
+    noteForBranch?: SortOrderInput | SortOrder
+    consultId?: SortOrder
+    doctorId?: SortOrder
+    doctorId2?: SortOrder
+    assistantId?: SortOrder
+    roomId?: SortOrder
+    room?: SortOrderInput | SortOrder
+    remindContent?: SortOrderInput | SortOrder
+    reasonCancelId?: SortOrder
+    typeId?: SortOrder
+    typeDetailId?: SortOrder
+    serviceCareId?: SortOrderInput | SortOrder
+    serviceCare?: SortOrderInput | SortOrder
+    state?: SortOrder
+    createdDate?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    modifiedDate?: SortOrderInput | SortOrder
+    modifiedBy?: SortOrderInput | SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type AppointmentWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    source_id?: string
+    AND?: AppointmentWhereInput | AppointmentWhereInput[]
+    OR?: AppointmentWhereInput[]
+    NOT?: AppointmentWhereInput | AppointmentWhereInput[]
+    custId?: StringNullableFilter<"Appointment"> | string | null
+    custCode?: StringNullableFilter<"Appointment"> | string | null
+    custName?: StringNullableFilter<"Appointment"> | string | null
+    dateFrom?: DateTimeNullableFilter<"Appointment"> | Date | string | null
+    statusId?: IntFilter<"Appointment"> | number
+    statusName?: StringNullableFilter<"Appointment"> | string | null
+    statusTime?: DateTimeNullableFilter<"Appointment"> | Date | string | null
+    isCancel?: IntFilter<"Appointment"> | number
+    branchId?: IntFilter<"Appointment"> | number
+    branchName?: StringNullableFilter<"Appointment"> | string | null
+    content?: StringNullableFilter<"Appointment"> | string | null
+    note?: StringNullableFilter<"Appointment"> | string | null
+    noteForBranch?: StringNullableFilter<"Appointment"> | string | null
+    consultId?: IntFilter<"Appointment"> | number
+    doctorId?: IntFilter<"Appointment"> | number
+    doctorId2?: IntFilter<"Appointment"> | number
+    assistantId?: IntFilter<"Appointment"> | number
+    roomId?: IntFilter<"Appointment"> | number
+    room?: StringNullableFilter<"Appointment"> | string | null
+    remindContent?: StringNullableFilter<"Appointment"> | string | null
+    reasonCancelId?: IntFilter<"Appointment"> | number
+    typeId?: IntFilter<"Appointment"> | number
+    typeDetailId?: IntFilter<"Appointment"> | number
+    serviceCareId?: StringNullableFilter<"Appointment"> | string | null
+    serviceCare?: StringNullableFilter<"Appointment"> | string | null
+    state?: IntFilter<"Appointment"> | number
+    createdDate?: DateTimeNullableFilter<"Appointment"> | Date | string | null
+    createdBy?: StringNullableFilter<"Appointment"> | string | null
+    modifiedDate?: DateTimeNullableFilter<"Appointment"> | Date | string | null
+    modifiedBy?: StringNullableFilter<"Appointment"> | string | null
+    extractedAt?: DateTimeFilter<"Appointment"> | Date | string
+  }, "id" | "source_id">
+
+  export type AppointmentOrderByWithAggregationInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    custId?: SortOrderInput | SortOrder
+    custCode?: SortOrderInput | SortOrder
+    custName?: SortOrderInput | SortOrder
+    dateFrom?: SortOrderInput | SortOrder
+    statusId?: SortOrder
+    statusName?: SortOrderInput | SortOrder
+    statusTime?: SortOrderInput | SortOrder
+    isCancel?: SortOrder
+    branchId?: SortOrder
+    branchName?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
+    note?: SortOrderInput | SortOrder
+    noteForBranch?: SortOrderInput | SortOrder
+    consultId?: SortOrder
+    doctorId?: SortOrder
+    doctorId2?: SortOrder
+    assistantId?: SortOrder
+    roomId?: SortOrder
+    room?: SortOrderInput | SortOrder
+    remindContent?: SortOrderInput | SortOrder
+    reasonCancelId?: SortOrder
+    typeId?: SortOrder
+    typeDetailId?: SortOrder
+    serviceCareId?: SortOrderInput | SortOrder
+    serviceCare?: SortOrderInput | SortOrder
+    state?: SortOrder
+    createdDate?: SortOrderInput | SortOrder
+    createdBy?: SortOrderInput | SortOrder
+    modifiedDate?: SortOrderInput | SortOrder
+    modifiedBy?: SortOrderInput | SortOrder
+    extractedAt?: SortOrder
+    _count?: AppointmentCountOrderByAggregateInput
+    _avg?: AppointmentAvgOrderByAggregateInput
+    _max?: AppointmentMaxOrderByAggregateInput
+    _min?: AppointmentMinOrderByAggregateInput
+    _sum?: AppointmentSumOrderByAggregateInput
+  }
+
+  export type AppointmentScalarWhereWithAggregatesInput = {
+    AND?: AppointmentScalarWhereWithAggregatesInput | AppointmentScalarWhereWithAggregatesInput[]
+    OR?: AppointmentScalarWhereWithAggregatesInput[]
+    NOT?: AppointmentScalarWhereWithAggregatesInput | AppointmentScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Appointment"> | number
+    source_id?: StringWithAggregatesFilter<"Appointment"> | string
+    custId?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    custCode?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    custName?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    dateFrom?: DateTimeNullableWithAggregatesFilter<"Appointment"> | Date | string | null
+    statusId?: IntWithAggregatesFilter<"Appointment"> | number
+    statusName?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    statusTime?: DateTimeNullableWithAggregatesFilter<"Appointment"> | Date | string | null
+    isCancel?: IntWithAggregatesFilter<"Appointment"> | number
+    branchId?: IntWithAggregatesFilter<"Appointment"> | number
+    branchName?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    content?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    note?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    noteForBranch?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    consultId?: IntWithAggregatesFilter<"Appointment"> | number
+    doctorId?: IntWithAggregatesFilter<"Appointment"> | number
+    doctorId2?: IntWithAggregatesFilter<"Appointment"> | number
+    assistantId?: IntWithAggregatesFilter<"Appointment"> | number
+    roomId?: IntWithAggregatesFilter<"Appointment"> | number
+    room?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    remindContent?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    reasonCancelId?: IntWithAggregatesFilter<"Appointment"> | number
+    typeId?: IntWithAggregatesFilter<"Appointment"> | number
+    typeDetailId?: IntWithAggregatesFilter<"Appointment"> | number
+    serviceCareId?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    serviceCare?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    state?: IntWithAggregatesFilter<"Appointment"> | number
+    createdDate?: DateTimeNullableWithAggregatesFilter<"Appointment"> | Date | string | null
+    createdBy?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    modifiedDate?: DateTimeNullableWithAggregatesFilter<"Appointment"> | Date | string | null
+    modifiedBy?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
+    extractedAt?: DateTimeWithAggregatesFilter<"Appointment"> | Date | string
+  }
+
   export type ProcessedPostCreateInput = {
     source_id: number
     title?: string | null
@@ -4324,6 +10362,984 @@ export namespace Prisma {
     extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type RevenueCreateInput = {
+    source_id: string
+    code?: string | null
+    branchId?: number | null
+    custCode?: string | null
+    custName?: string | null
+    custPhone?: string | null
+    custAddress?: string | null
+    custBirthday?: Date | string | null
+    depositId?: number | null
+    paidAmount?: number | null
+    discountAmount?: number
+    depositAmountUsing?: number
+    totalPaid?: number
+    debtAmount?: number
+    methodName?: string | null
+    content?: string | null
+    serviceId?: number
+    isProduct?: number
+    quantity?: number
+    priceRoot?: number
+    priceUnit?: number
+    price?: number
+    amount?: number
+    timeToTreatment?: number
+    percentOfService?: number
+    treatIndex?: number
+    type?: string | null
+    typeName?: string | null
+    consultId1?: number
+    consultId2?: number
+    consultId3?: number
+    consultId4?: number
+    techId?: number
+    tele1?: number
+    tele2?: number
+    createdDate?: Date | string | null
+    createdBy?: string | null
+    modifiedDate?: Date | string | null
+    state?: number | null
+    extractedAt?: Date | string
+  }
+
+  export type RevenueUncheckedCreateInput = {
+    id?: number
+    source_id: string
+    code?: string | null
+    branchId?: number | null
+    custCode?: string | null
+    custName?: string | null
+    custPhone?: string | null
+    custAddress?: string | null
+    custBirthday?: Date | string | null
+    depositId?: number | null
+    paidAmount?: number | null
+    discountAmount?: number
+    depositAmountUsing?: number
+    totalPaid?: number
+    debtAmount?: number
+    methodName?: string | null
+    content?: string | null
+    serviceId?: number
+    isProduct?: number
+    quantity?: number
+    priceRoot?: number
+    priceUnit?: number
+    price?: number
+    amount?: number
+    timeToTreatment?: number
+    percentOfService?: number
+    treatIndex?: number
+    type?: string | null
+    typeName?: string | null
+    consultId1?: number
+    consultId2?: number
+    consultId3?: number
+    consultId4?: number
+    techId?: number
+    tele1?: number
+    tele2?: number
+    createdDate?: Date | string | null
+    createdBy?: string | null
+    modifiedDate?: Date | string | null
+    state?: number | null
+    extractedAt?: Date | string
+  }
+
+  export type RevenueUpdateInput = {
+    source_id?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    custCode?: NullableStringFieldUpdateOperationsInput | string | null
+    custName?: NullableStringFieldUpdateOperationsInput | string | null
+    custPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    custAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    custBirthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    depositId?: NullableIntFieldUpdateOperationsInput | number | null
+    paidAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    depositAmountUsing?: FloatFieldUpdateOperationsInput | number
+    totalPaid?: FloatFieldUpdateOperationsInput | number
+    debtAmount?: FloatFieldUpdateOperationsInput | number
+    methodName?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: IntFieldUpdateOperationsInput | number
+    isProduct?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
+    priceRoot?: FloatFieldUpdateOperationsInput | number
+    priceUnit?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
+    timeToTreatment?: IntFieldUpdateOperationsInput | number
+    percentOfService?: FloatFieldUpdateOperationsInput | number
+    treatIndex?: IntFieldUpdateOperationsInput | number
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    typeName?: NullableStringFieldUpdateOperationsInput | string | null
+    consultId1?: IntFieldUpdateOperationsInput | number
+    consultId2?: IntFieldUpdateOperationsInput | number
+    consultId3?: IntFieldUpdateOperationsInput | number
+    consultId4?: IntFieldUpdateOperationsInput | number
+    techId?: IntFieldUpdateOperationsInput | number
+    tele1?: IntFieldUpdateOperationsInput | number
+    tele2?: IntFieldUpdateOperationsInput | number
+    createdDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    state?: NullableIntFieldUpdateOperationsInput | number | null
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RevenueUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    source_id?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    custCode?: NullableStringFieldUpdateOperationsInput | string | null
+    custName?: NullableStringFieldUpdateOperationsInput | string | null
+    custPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    custAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    custBirthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    depositId?: NullableIntFieldUpdateOperationsInput | number | null
+    paidAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    depositAmountUsing?: FloatFieldUpdateOperationsInput | number
+    totalPaid?: FloatFieldUpdateOperationsInput | number
+    debtAmount?: FloatFieldUpdateOperationsInput | number
+    methodName?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: IntFieldUpdateOperationsInput | number
+    isProduct?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
+    priceRoot?: FloatFieldUpdateOperationsInput | number
+    priceUnit?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
+    timeToTreatment?: IntFieldUpdateOperationsInput | number
+    percentOfService?: FloatFieldUpdateOperationsInput | number
+    treatIndex?: IntFieldUpdateOperationsInput | number
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    typeName?: NullableStringFieldUpdateOperationsInput | string | null
+    consultId1?: IntFieldUpdateOperationsInput | number
+    consultId2?: IntFieldUpdateOperationsInput | number
+    consultId3?: IntFieldUpdateOperationsInput | number
+    consultId4?: IntFieldUpdateOperationsInput | number
+    techId?: IntFieldUpdateOperationsInput | number
+    tele1?: IntFieldUpdateOperationsInput | number
+    tele2?: IntFieldUpdateOperationsInput | number
+    createdDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    state?: NullableIntFieldUpdateOperationsInput | number | null
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RevenueCreateManyInput = {
+    id?: number
+    source_id: string
+    code?: string | null
+    branchId?: number | null
+    custCode?: string | null
+    custName?: string | null
+    custPhone?: string | null
+    custAddress?: string | null
+    custBirthday?: Date | string | null
+    depositId?: number | null
+    paidAmount?: number | null
+    discountAmount?: number
+    depositAmountUsing?: number
+    totalPaid?: number
+    debtAmount?: number
+    methodName?: string | null
+    content?: string | null
+    serviceId?: number
+    isProduct?: number
+    quantity?: number
+    priceRoot?: number
+    priceUnit?: number
+    price?: number
+    amount?: number
+    timeToTreatment?: number
+    percentOfService?: number
+    treatIndex?: number
+    type?: string | null
+    typeName?: string | null
+    consultId1?: number
+    consultId2?: number
+    consultId3?: number
+    consultId4?: number
+    techId?: number
+    tele1?: number
+    tele2?: number
+    createdDate?: Date | string | null
+    createdBy?: string | null
+    modifiedDate?: Date | string | null
+    state?: number | null
+    extractedAt?: Date | string
+  }
+
+  export type RevenueUpdateManyMutationInput = {
+    source_id?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    custCode?: NullableStringFieldUpdateOperationsInput | string | null
+    custName?: NullableStringFieldUpdateOperationsInput | string | null
+    custPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    custAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    custBirthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    depositId?: NullableIntFieldUpdateOperationsInput | number | null
+    paidAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    depositAmountUsing?: FloatFieldUpdateOperationsInput | number
+    totalPaid?: FloatFieldUpdateOperationsInput | number
+    debtAmount?: FloatFieldUpdateOperationsInput | number
+    methodName?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: IntFieldUpdateOperationsInput | number
+    isProduct?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
+    priceRoot?: FloatFieldUpdateOperationsInput | number
+    priceUnit?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
+    timeToTreatment?: IntFieldUpdateOperationsInput | number
+    percentOfService?: FloatFieldUpdateOperationsInput | number
+    treatIndex?: IntFieldUpdateOperationsInput | number
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    typeName?: NullableStringFieldUpdateOperationsInput | string | null
+    consultId1?: IntFieldUpdateOperationsInput | number
+    consultId2?: IntFieldUpdateOperationsInput | number
+    consultId3?: IntFieldUpdateOperationsInput | number
+    consultId4?: IntFieldUpdateOperationsInput | number
+    techId?: IntFieldUpdateOperationsInput | number
+    tele1?: IntFieldUpdateOperationsInput | number
+    tele2?: IntFieldUpdateOperationsInput | number
+    createdDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    state?: NullableIntFieldUpdateOperationsInput | number | null
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RevenueUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    source_id?: StringFieldUpdateOperationsInput | string
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    branchId?: NullableIntFieldUpdateOperationsInput | number | null
+    custCode?: NullableStringFieldUpdateOperationsInput | string | null
+    custName?: NullableStringFieldUpdateOperationsInput | string | null
+    custPhone?: NullableStringFieldUpdateOperationsInput | string | null
+    custAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    custBirthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    depositId?: NullableIntFieldUpdateOperationsInput | number | null
+    paidAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    discountAmount?: FloatFieldUpdateOperationsInput | number
+    depositAmountUsing?: FloatFieldUpdateOperationsInput | number
+    totalPaid?: FloatFieldUpdateOperationsInput | number
+    debtAmount?: FloatFieldUpdateOperationsInput | number
+    methodName?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: IntFieldUpdateOperationsInput | number
+    isProduct?: IntFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
+    priceRoot?: FloatFieldUpdateOperationsInput | number
+    priceUnit?: FloatFieldUpdateOperationsInput | number
+    price?: FloatFieldUpdateOperationsInput | number
+    amount?: FloatFieldUpdateOperationsInput | number
+    timeToTreatment?: IntFieldUpdateOperationsInput | number
+    percentOfService?: FloatFieldUpdateOperationsInput | number
+    treatIndex?: IntFieldUpdateOperationsInput | number
+    type?: NullableStringFieldUpdateOperationsInput | string | null
+    typeName?: NullableStringFieldUpdateOperationsInput | string | null
+    consultId1?: IntFieldUpdateOperationsInput | number
+    consultId2?: IntFieldUpdateOperationsInput | number
+    consultId3?: IntFieldUpdateOperationsInput | number
+    consultId4?: IntFieldUpdateOperationsInput | number
+    techId?: IntFieldUpdateOperationsInput | number
+    tele1?: IntFieldUpdateOperationsInput | number
+    tele2?: IntFieldUpdateOperationsInput | number
+    createdDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    state?: NullableIntFieldUpdateOperationsInput | number | null
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreatCreateInput = {
+    source_id: string
+    name?: string | null
+    code?: string | null
+    codeOld?: string | null
+    docCode?: string | null
+    email?: string | null
+    phone?: string | null
+    phone2?: string | null
+    birthday?: Date | string | null
+    gender?: string | null
+    address?: string | null
+    commune?: string | null
+    district?: string | null
+    city?: string | null
+    serviceId?: number
+    serviceTypeId?: number
+    serviceCode?: string | null
+    tabId?: number
+    tabCode?: string | null
+    comboId?: number
+    comboCode?: string | null
+    serviceName?: string | null
+    timeIndex?: string | null
+    timeToTreatment?: number
+    teethChoosing?: string | null
+    priceUnit?: number
+    quantity?: number
+    discount?: number
+    priceRoot?: number
+    priceDiscounted?: number
+    doctor?: number
+    doctor2?: number
+    doctor3?: number
+    doctor4?: number
+    assistant?: number
+    assistant2?: number
+    assistant3?: number
+    assistant4?: number
+    technician?: number
+    technician2?: number
+    timeTreatIndex?: number
+    percent?: number
+    percentNew?: number
+    percentStage?: number
+    percentNewStage?: number
+    note?: string | null
+    content?: string | null
+    contentNext?: string | null
+    symptoms?: string | null
+    treatDateNext?: Date | string | null
+    branchId?: number
+    createdDate?: Date | string | null
+    createdBy?: string | null
+    modifiedDate?: Date | string | null
+    modifiedBy?: number | null
+    state?: number
+    extractedAt?: Date | string
+  }
+
+  export type TreatUncheckedCreateInput = {
+    id?: number
+    source_id: string
+    name?: string | null
+    code?: string | null
+    codeOld?: string | null
+    docCode?: string | null
+    email?: string | null
+    phone?: string | null
+    phone2?: string | null
+    birthday?: Date | string | null
+    gender?: string | null
+    address?: string | null
+    commune?: string | null
+    district?: string | null
+    city?: string | null
+    serviceId?: number
+    serviceTypeId?: number
+    serviceCode?: string | null
+    tabId?: number
+    tabCode?: string | null
+    comboId?: number
+    comboCode?: string | null
+    serviceName?: string | null
+    timeIndex?: string | null
+    timeToTreatment?: number
+    teethChoosing?: string | null
+    priceUnit?: number
+    quantity?: number
+    discount?: number
+    priceRoot?: number
+    priceDiscounted?: number
+    doctor?: number
+    doctor2?: number
+    doctor3?: number
+    doctor4?: number
+    assistant?: number
+    assistant2?: number
+    assistant3?: number
+    assistant4?: number
+    technician?: number
+    technician2?: number
+    timeTreatIndex?: number
+    percent?: number
+    percentNew?: number
+    percentStage?: number
+    percentNewStage?: number
+    note?: string | null
+    content?: string | null
+    contentNext?: string | null
+    symptoms?: string | null
+    treatDateNext?: Date | string | null
+    branchId?: number
+    createdDate?: Date | string | null
+    createdBy?: string | null
+    modifiedDate?: Date | string | null
+    modifiedBy?: number | null
+    state?: number
+    extractedAt?: Date | string
+  }
+
+  export type TreatUpdateInput = {
+    source_id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    codeOld?: NullableStringFieldUpdateOperationsInput | string | null
+    docCode?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    commune?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: IntFieldUpdateOperationsInput | number
+    serviceTypeId?: IntFieldUpdateOperationsInput | number
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    tabId?: IntFieldUpdateOperationsInput | number
+    tabCode?: NullableStringFieldUpdateOperationsInput | string | null
+    comboId?: IntFieldUpdateOperationsInput | number
+    comboCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    timeIndex?: NullableStringFieldUpdateOperationsInput | string | null
+    timeToTreatment?: IntFieldUpdateOperationsInput | number
+    teethChoosing?: NullableStringFieldUpdateOperationsInput | string | null
+    priceUnit?: FloatFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    priceRoot?: FloatFieldUpdateOperationsInput | number
+    priceDiscounted?: FloatFieldUpdateOperationsInput | number
+    doctor?: IntFieldUpdateOperationsInput | number
+    doctor2?: IntFieldUpdateOperationsInput | number
+    doctor3?: IntFieldUpdateOperationsInput | number
+    doctor4?: IntFieldUpdateOperationsInput | number
+    assistant?: IntFieldUpdateOperationsInput | number
+    assistant2?: IntFieldUpdateOperationsInput | number
+    assistant3?: IntFieldUpdateOperationsInput | number
+    assistant4?: IntFieldUpdateOperationsInput | number
+    technician?: IntFieldUpdateOperationsInput | number
+    technician2?: IntFieldUpdateOperationsInput | number
+    timeTreatIndex?: IntFieldUpdateOperationsInput | number
+    percent?: FloatFieldUpdateOperationsInput | number
+    percentNew?: FloatFieldUpdateOperationsInput | number
+    percentStage?: FloatFieldUpdateOperationsInput | number
+    percentNewStage?: FloatFieldUpdateOperationsInput | number
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentNext?: NullableStringFieldUpdateOperationsInput | string | null
+    symptoms?: NullableStringFieldUpdateOperationsInput | string | null
+    treatDateNext?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branchId?: IntFieldUpdateOperationsInput | number
+    createdDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    modifiedBy?: NullableIntFieldUpdateOperationsInput | number | null
+    state?: IntFieldUpdateOperationsInput | number
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreatUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    source_id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    codeOld?: NullableStringFieldUpdateOperationsInput | string | null
+    docCode?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    commune?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: IntFieldUpdateOperationsInput | number
+    serviceTypeId?: IntFieldUpdateOperationsInput | number
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    tabId?: IntFieldUpdateOperationsInput | number
+    tabCode?: NullableStringFieldUpdateOperationsInput | string | null
+    comboId?: IntFieldUpdateOperationsInput | number
+    comboCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    timeIndex?: NullableStringFieldUpdateOperationsInput | string | null
+    timeToTreatment?: IntFieldUpdateOperationsInput | number
+    teethChoosing?: NullableStringFieldUpdateOperationsInput | string | null
+    priceUnit?: FloatFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    priceRoot?: FloatFieldUpdateOperationsInput | number
+    priceDiscounted?: FloatFieldUpdateOperationsInput | number
+    doctor?: IntFieldUpdateOperationsInput | number
+    doctor2?: IntFieldUpdateOperationsInput | number
+    doctor3?: IntFieldUpdateOperationsInput | number
+    doctor4?: IntFieldUpdateOperationsInput | number
+    assistant?: IntFieldUpdateOperationsInput | number
+    assistant2?: IntFieldUpdateOperationsInput | number
+    assistant3?: IntFieldUpdateOperationsInput | number
+    assistant4?: IntFieldUpdateOperationsInput | number
+    technician?: IntFieldUpdateOperationsInput | number
+    technician2?: IntFieldUpdateOperationsInput | number
+    timeTreatIndex?: IntFieldUpdateOperationsInput | number
+    percent?: FloatFieldUpdateOperationsInput | number
+    percentNew?: FloatFieldUpdateOperationsInput | number
+    percentStage?: FloatFieldUpdateOperationsInput | number
+    percentNewStage?: FloatFieldUpdateOperationsInput | number
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentNext?: NullableStringFieldUpdateOperationsInput | string | null
+    symptoms?: NullableStringFieldUpdateOperationsInput | string | null
+    treatDateNext?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branchId?: IntFieldUpdateOperationsInput | number
+    createdDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    modifiedBy?: NullableIntFieldUpdateOperationsInput | number | null
+    state?: IntFieldUpdateOperationsInput | number
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreatCreateManyInput = {
+    id?: number
+    source_id: string
+    name?: string | null
+    code?: string | null
+    codeOld?: string | null
+    docCode?: string | null
+    email?: string | null
+    phone?: string | null
+    phone2?: string | null
+    birthday?: Date | string | null
+    gender?: string | null
+    address?: string | null
+    commune?: string | null
+    district?: string | null
+    city?: string | null
+    serviceId?: number
+    serviceTypeId?: number
+    serviceCode?: string | null
+    tabId?: number
+    tabCode?: string | null
+    comboId?: number
+    comboCode?: string | null
+    serviceName?: string | null
+    timeIndex?: string | null
+    timeToTreatment?: number
+    teethChoosing?: string | null
+    priceUnit?: number
+    quantity?: number
+    discount?: number
+    priceRoot?: number
+    priceDiscounted?: number
+    doctor?: number
+    doctor2?: number
+    doctor3?: number
+    doctor4?: number
+    assistant?: number
+    assistant2?: number
+    assistant3?: number
+    assistant4?: number
+    technician?: number
+    technician2?: number
+    timeTreatIndex?: number
+    percent?: number
+    percentNew?: number
+    percentStage?: number
+    percentNewStage?: number
+    note?: string | null
+    content?: string | null
+    contentNext?: string | null
+    symptoms?: string | null
+    treatDateNext?: Date | string | null
+    branchId?: number
+    createdDate?: Date | string | null
+    createdBy?: string | null
+    modifiedDate?: Date | string | null
+    modifiedBy?: number | null
+    state?: number
+    extractedAt?: Date | string
+  }
+
+  export type TreatUpdateManyMutationInput = {
+    source_id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    codeOld?: NullableStringFieldUpdateOperationsInput | string | null
+    docCode?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    commune?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: IntFieldUpdateOperationsInput | number
+    serviceTypeId?: IntFieldUpdateOperationsInput | number
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    tabId?: IntFieldUpdateOperationsInput | number
+    tabCode?: NullableStringFieldUpdateOperationsInput | string | null
+    comboId?: IntFieldUpdateOperationsInput | number
+    comboCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    timeIndex?: NullableStringFieldUpdateOperationsInput | string | null
+    timeToTreatment?: IntFieldUpdateOperationsInput | number
+    teethChoosing?: NullableStringFieldUpdateOperationsInput | string | null
+    priceUnit?: FloatFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    priceRoot?: FloatFieldUpdateOperationsInput | number
+    priceDiscounted?: FloatFieldUpdateOperationsInput | number
+    doctor?: IntFieldUpdateOperationsInput | number
+    doctor2?: IntFieldUpdateOperationsInput | number
+    doctor3?: IntFieldUpdateOperationsInput | number
+    doctor4?: IntFieldUpdateOperationsInput | number
+    assistant?: IntFieldUpdateOperationsInput | number
+    assistant2?: IntFieldUpdateOperationsInput | number
+    assistant3?: IntFieldUpdateOperationsInput | number
+    assistant4?: IntFieldUpdateOperationsInput | number
+    technician?: IntFieldUpdateOperationsInput | number
+    technician2?: IntFieldUpdateOperationsInput | number
+    timeTreatIndex?: IntFieldUpdateOperationsInput | number
+    percent?: FloatFieldUpdateOperationsInput | number
+    percentNew?: FloatFieldUpdateOperationsInput | number
+    percentStage?: FloatFieldUpdateOperationsInput | number
+    percentNewStage?: FloatFieldUpdateOperationsInput | number
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentNext?: NullableStringFieldUpdateOperationsInput | string | null
+    symptoms?: NullableStringFieldUpdateOperationsInput | string | null
+    treatDateNext?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branchId?: IntFieldUpdateOperationsInput | number
+    createdDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    modifiedBy?: NullableIntFieldUpdateOperationsInput | number | null
+    state?: IntFieldUpdateOperationsInput | number
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TreatUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    source_id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    codeOld?: NullableStringFieldUpdateOperationsInput | string | null
+    docCode?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    commune?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: IntFieldUpdateOperationsInput | number
+    serviceTypeId?: IntFieldUpdateOperationsInput | number
+    serviceCode?: NullableStringFieldUpdateOperationsInput | string | null
+    tabId?: IntFieldUpdateOperationsInput | number
+    tabCode?: NullableStringFieldUpdateOperationsInput | string | null
+    comboId?: IntFieldUpdateOperationsInput | number
+    comboCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: NullableStringFieldUpdateOperationsInput | string | null
+    timeIndex?: NullableStringFieldUpdateOperationsInput | string | null
+    timeToTreatment?: IntFieldUpdateOperationsInput | number
+    teethChoosing?: NullableStringFieldUpdateOperationsInput | string | null
+    priceUnit?: FloatFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    priceRoot?: FloatFieldUpdateOperationsInput | number
+    priceDiscounted?: FloatFieldUpdateOperationsInput | number
+    doctor?: IntFieldUpdateOperationsInput | number
+    doctor2?: IntFieldUpdateOperationsInput | number
+    doctor3?: IntFieldUpdateOperationsInput | number
+    doctor4?: IntFieldUpdateOperationsInput | number
+    assistant?: IntFieldUpdateOperationsInput | number
+    assistant2?: IntFieldUpdateOperationsInput | number
+    assistant3?: IntFieldUpdateOperationsInput | number
+    assistant4?: IntFieldUpdateOperationsInput | number
+    technician?: IntFieldUpdateOperationsInput | number
+    technician2?: IntFieldUpdateOperationsInput | number
+    timeTreatIndex?: IntFieldUpdateOperationsInput | number
+    percent?: FloatFieldUpdateOperationsInput | number
+    percentNew?: FloatFieldUpdateOperationsInput | number
+    percentStage?: FloatFieldUpdateOperationsInput | number
+    percentNewStage?: FloatFieldUpdateOperationsInput | number
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentNext?: NullableStringFieldUpdateOperationsInput | string | null
+    symptoms?: NullableStringFieldUpdateOperationsInput | string | null
+    treatDateNext?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branchId?: IntFieldUpdateOperationsInput | number
+    createdDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    modifiedBy?: NullableIntFieldUpdateOperationsInput | number | null
+    state?: IntFieldUpdateOperationsInput | number
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AppointmentCreateInput = {
+    source_id: string
+    custId?: string | null
+    custCode?: string | null
+    custName?: string | null
+    dateFrom?: Date | string | null
+    statusId?: number
+    statusName?: string | null
+    statusTime?: Date | string | null
+    isCancel?: number
+    branchId?: number
+    branchName?: string | null
+    content?: string | null
+    note?: string | null
+    noteForBranch?: string | null
+    consultId?: number
+    doctorId?: number
+    doctorId2?: number
+    assistantId?: number
+    roomId?: number
+    room?: string | null
+    remindContent?: string | null
+    reasonCancelId?: number
+    typeId?: number
+    typeDetailId?: number
+    serviceCareId?: string | null
+    serviceCare?: string | null
+    state?: number
+    createdDate?: Date | string | null
+    createdBy?: string | null
+    modifiedDate?: Date | string | null
+    modifiedBy?: string | null
+    extractedAt?: Date | string
+  }
+
+  export type AppointmentUncheckedCreateInput = {
+    id?: number
+    source_id: string
+    custId?: string | null
+    custCode?: string | null
+    custName?: string | null
+    dateFrom?: Date | string | null
+    statusId?: number
+    statusName?: string | null
+    statusTime?: Date | string | null
+    isCancel?: number
+    branchId?: number
+    branchName?: string | null
+    content?: string | null
+    note?: string | null
+    noteForBranch?: string | null
+    consultId?: number
+    doctorId?: number
+    doctorId2?: number
+    assistantId?: number
+    roomId?: number
+    room?: string | null
+    remindContent?: string | null
+    reasonCancelId?: number
+    typeId?: number
+    typeDetailId?: number
+    serviceCareId?: string | null
+    serviceCare?: string | null
+    state?: number
+    createdDate?: Date | string | null
+    createdBy?: string | null
+    modifiedDate?: Date | string | null
+    modifiedBy?: string | null
+    extractedAt?: Date | string
+  }
+
+  export type AppointmentUpdateInput = {
+    source_id?: StringFieldUpdateOperationsInput | string
+    custId?: NullableStringFieldUpdateOperationsInput | string | null
+    custCode?: NullableStringFieldUpdateOperationsInput | string | null
+    custName?: NullableStringFieldUpdateOperationsInput | string | null
+    dateFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    statusId?: IntFieldUpdateOperationsInput | number
+    statusName?: NullableStringFieldUpdateOperationsInput | string | null
+    statusTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isCancel?: IntFieldUpdateOperationsInput | number
+    branchId?: IntFieldUpdateOperationsInput | number
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    noteForBranch?: NullableStringFieldUpdateOperationsInput | string | null
+    consultId?: IntFieldUpdateOperationsInput | number
+    doctorId?: IntFieldUpdateOperationsInput | number
+    doctorId2?: IntFieldUpdateOperationsInput | number
+    assistantId?: IntFieldUpdateOperationsInput | number
+    roomId?: IntFieldUpdateOperationsInput | number
+    room?: NullableStringFieldUpdateOperationsInput | string | null
+    remindContent?: NullableStringFieldUpdateOperationsInput | string | null
+    reasonCancelId?: IntFieldUpdateOperationsInput | number
+    typeId?: IntFieldUpdateOperationsInput | number
+    typeDetailId?: IntFieldUpdateOperationsInput | number
+    serviceCareId?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceCare?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: IntFieldUpdateOperationsInput | number
+    createdDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    modifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AppointmentUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    source_id?: StringFieldUpdateOperationsInput | string
+    custId?: NullableStringFieldUpdateOperationsInput | string | null
+    custCode?: NullableStringFieldUpdateOperationsInput | string | null
+    custName?: NullableStringFieldUpdateOperationsInput | string | null
+    dateFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    statusId?: IntFieldUpdateOperationsInput | number
+    statusName?: NullableStringFieldUpdateOperationsInput | string | null
+    statusTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isCancel?: IntFieldUpdateOperationsInput | number
+    branchId?: IntFieldUpdateOperationsInput | number
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    noteForBranch?: NullableStringFieldUpdateOperationsInput | string | null
+    consultId?: IntFieldUpdateOperationsInput | number
+    doctorId?: IntFieldUpdateOperationsInput | number
+    doctorId2?: IntFieldUpdateOperationsInput | number
+    assistantId?: IntFieldUpdateOperationsInput | number
+    roomId?: IntFieldUpdateOperationsInput | number
+    room?: NullableStringFieldUpdateOperationsInput | string | null
+    remindContent?: NullableStringFieldUpdateOperationsInput | string | null
+    reasonCancelId?: IntFieldUpdateOperationsInput | number
+    typeId?: IntFieldUpdateOperationsInput | number
+    typeDetailId?: IntFieldUpdateOperationsInput | number
+    serviceCareId?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceCare?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: IntFieldUpdateOperationsInput | number
+    createdDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    modifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AppointmentCreateManyInput = {
+    id?: number
+    source_id: string
+    custId?: string | null
+    custCode?: string | null
+    custName?: string | null
+    dateFrom?: Date | string | null
+    statusId?: number
+    statusName?: string | null
+    statusTime?: Date | string | null
+    isCancel?: number
+    branchId?: number
+    branchName?: string | null
+    content?: string | null
+    note?: string | null
+    noteForBranch?: string | null
+    consultId?: number
+    doctorId?: number
+    doctorId2?: number
+    assistantId?: number
+    roomId?: number
+    room?: string | null
+    remindContent?: string | null
+    reasonCancelId?: number
+    typeId?: number
+    typeDetailId?: number
+    serviceCareId?: string | null
+    serviceCare?: string | null
+    state?: number
+    createdDate?: Date | string | null
+    createdBy?: string | null
+    modifiedDate?: Date | string | null
+    modifiedBy?: string | null
+    extractedAt?: Date | string
+  }
+
+  export type AppointmentUpdateManyMutationInput = {
+    source_id?: StringFieldUpdateOperationsInput | string
+    custId?: NullableStringFieldUpdateOperationsInput | string | null
+    custCode?: NullableStringFieldUpdateOperationsInput | string | null
+    custName?: NullableStringFieldUpdateOperationsInput | string | null
+    dateFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    statusId?: IntFieldUpdateOperationsInput | number
+    statusName?: NullableStringFieldUpdateOperationsInput | string | null
+    statusTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isCancel?: IntFieldUpdateOperationsInput | number
+    branchId?: IntFieldUpdateOperationsInput | number
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    noteForBranch?: NullableStringFieldUpdateOperationsInput | string | null
+    consultId?: IntFieldUpdateOperationsInput | number
+    doctorId?: IntFieldUpdateOperationsInput | number
+    doctorId2?: IntFieldUpdateOperationsInput | number
+    assistantId?: IntFieldUpdateOperationsInput | number
+    roomId?: IntFieldUpdateOperationsInput | number
+    room?: NullableStringFieldUpdateOperationsInput | string | null
+    remindContent?: NullableStringFieldUpdateOperationsInput | string | null
+    reasonCancelId?: IntFieldUpdateOperationsInput | number
+    typeId?: IntFieldUpdateOperationsInput | number
+    typeDetailId?: IntFieldUpdateOperationsInput | number
+    serviceCareId?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceCare?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: IntFieldUpdateOperationsInput | number
+    createdDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    modifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AppointmentUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    source_id?: StringFieldUpdateOperationsInput | string
+    custId?: NullableStringFieldUpdateOperationsInput | string | null
+    custCode?: NullableStringFieldUpdateOperationsInput | string | null
+    custName?: NullableStringFieldUpdateOperationsInput | string | null
+    dateFrom?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    statusId?: IntFieldUpdateOperationsInput | number
+    statusName?: NullableStringFieldUpdateOperationsInput | string | null
+    statusTime?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isCancel?: IntFieldUpdateOperationsInput | number
+    branchId?: IntFieldUpdateOperationsInput | number
+    branchName?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    noteForBranch?: NullableStringFieldUpdateOperationsInput | string | null
+    consultId?: IntFieldUpdateOperationsInput | number
+    doctorId?: IntFieldUpdateOperationsInput | number
+    doctorId2?: IntFieldUpdateOperationsInput | number
+    assistantId?: IntFieldUpdateOperationsInput | number
+    roomId?: IntFieldUpdateOperationsInput | number
+    room?: NullableStringFieldUpdateOperationsInput | string | null
+    remindContent?: NullableStringFieldUpdateOperationsInput | string | null
+    reasonCancelId?: IntFieldUpdateOperationsInput | number
+    typeId?: IntFieldUpdateOperationsInput | number
+    typeDetailId?: IntFieldUpdateOperationsInput | number
+    serviceCareId?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceCare?: NullableStringFieldUpdateOperationsInput | string | null
+    state?: IntFieldUpdateOperationsInput | number
+    createdDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
+    modifiedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    modifiedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -4654,6 +11670,670 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
+  export type StringFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringFilter<$PrismaModel> | string
+  }
+
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type FloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
+  }
+
+  export type RevenueCountOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    code?: SortOrder
+    branchId?: SortOrder
+    custCode?: SortOrder
+    custName?: SortOrder
+    custPhone?: SortOrder
+    custAddress?: SortOrder
+    custBirthday?: SortOrder
+    depositId?: SortOrder
+    paidAmount?: SortOrder
+    discountAmount?: SortOrder
+    depositAmountUsing?: SortOrder
+    totalPaid?: SortOrder
+    debtAmount?: SortOrder
+    methodName?: SortOrder
+    content?: SortOrder
+    serviceId?: SortOrder
+    isProduct?: SortOrder
+    quantity?: SortOrder
+    priceRoot?: SortOrder
+    priceUnit?: SortOrder
+    price?: SortOrder
+    amount?: SortOrder
+    timeToTreatment?: SortOrder
+    percentOfService?: SortOrder
+    treatIndex?: SortOrder
+    type?: SortOrder
+    typeName?: SortOrder
+    consultId1?: SortOrder
+    consultId2?: SortOrder
+    consultId3?: SortOrder
+    consultId4?: SortOrder
+    techId?: SortOrder
+    tele1?: SortOrder
+    tele2?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type RevenueAvgOrderByAggregateInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    depositId?: SortOrder
+    paidAmount?: SortOrder
+    discountAmount?: SortOrder
+    depositAmountUsing?: SortOrder
+    totalPaid?: SortOrder
+    debtAmount?: SortOrder
+    serviceId?: SortOrder
+    isProduct?: SortOrder
+    quantity?: SortOrder
+    priceRoot?: SortOrder
+    priceUnit?: SortOrder
+    price?: SortOrder
+    amount?: SortOrder
+    timeToTreatment?: SortOrder
+    percentOfService?: SortOrder
+    treatIndex?: SortOrder
+    consultId1?: SortOrder
+    consultId2?: SortOrder
+    consultId3?: SortOrder
+    consultId4?: SortOrder
+    techId?: SortOrder
+    tele1?: SortOrder
+    tele2?: SortOrder
+    state?: SortOrder
+  }
+
+  export type RevenueMaxOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    code?: SortOrder
+    branchId?: SortOrder
+    custCode?: SortOrder
+    custName?: SortOrder
+    custPhone?: SortOrder
+    custAddress?: SortOrder
+    custBirthday?: SortOrder
+    depositId?: SortOrder
+    paidAmount?: SortOrder
+    discountAmount?: SortOrder
+    depositAmountUsing?: SortOrder
+    totalPaid?: SortOrder
+    debtAmount?: SortOrder
+    methodName?: SortOrder
+    content?: SortOrder
+    serviceId?: SortOrder
+    isProduct?: SortOrder
+    quantity?: SortOrder
+    priceRoot?: SortOrder
+    priceUnit?: SortOrder
+    price?: SortOrder
+    amount?: SortOrder
+    timeToTreatment?: SortOrder
+    percentOfService?: SortOrder
+    treatIndex?: SortOrder
+    type?: SortOrder
+    typeName?: SortOrder
+    consultId1?: SortOrder
+    consultId2?: SortOrder
+    consultId3?: SortOrder
+    consultId4?: SortOrder
+    techId?: SortOrder
+    tele1?: SortOrder
+    tele2?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type RevenueMinOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    code?: SortOrder
+    branchId?: SortOrder
+    custCode?: SortOrder
+    custName?: SortOrder
+    custPhone?: SortOrder
+    custAddress?: SortOrder
+    custBirthday?: SortOrder
+    depositId?: SortOrder
+    paidAmount?: SortOrder
+    discountAmount?: SortOrder
+    depositAmountUsing?: SortOrder
+    totalPaid?: SortOrder
+    debtAmount?: SortOrder
+    methodName?: SortOrder
+    content?: SortOrder
+    serviceId?: SortOrder
+    isProduct?: SortOrder
+    quantity?: SortOrder
+    priceRoot?: SortOrder
+    priceUnit?: SortOrder
+    price?: SortOrder
+    amount?: SortOrder
+    timeToTreatment?: SortOrder
+    percentOfService?: SortOrder
+    treatIndex?: SortOrder
+    type?: SortOrder
+    typeName?: SortOrder
+    consultId1?: SortOrder
+    consultId2?: SortOrder
+    consultId3?: SortOrder
+    consultId4?: SortOrder
+    techId?: SortOrder
+    tele1?: SortOrder
+    tele2?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type RevenueSumOrderByAggregateInput = {
+    id?: SortOrder
+    branchId?: SortOrder
+    depositId?: SortOrder
+    paidAmount?: SortOrder
+    discountAmount?: SortOrder
+    depositAmountUsing?: SortOrder
+    totalPaid?: SortOrder
+    debtAmount?: SortOrder
+    serviceId?: SortOrder
+    isProduct?: SortOrder
+    quantity?: SortOrder
+    priceRoot?: SortOrder
+    priceUnit?: SortOrder
+    price?: SortOrder
+    amount?: SortOrder
+    timeToTreatment?: SortOrder
+    percentOfService?: SortOrder
+    treatIndex?: SortOrder
+    consultId1?: SortOrder
+    consultId2?: SortOrder
+    consultId3?: SortOrder
+    consultId4?: SortOrder
+    techId?: SortOrder
+    tele1?: SortOrder
+    tele2?: SortOrder
+    state?: SortOrder
+  }
+
+  export type StringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
+  }
+
+  export type TreatCountOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    codeOld?: SortOrder
+    docCode?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    phone2?: SortOrder
+    birthday?: SortOrder
+    gender?: SortOrder
+    address?: SortOrder
+    commune?: SortOrder
+    district?: SortOrder
+    city?: SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    serviceCode?: SortOrder
+    tabId?: SortOrder
+    tabCode?: SortOrder
+    comboId?: SortOrder
+    comboCode?: SortOrder
+    serviceName?: SortOrder
+    timeIndex?: SortOrder
+    timeToTreatment?: SortOrder
+    teethChoosing?: SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    note?: SortOrder
+    content?: SortOrder
+    contentNext?: SortOrder
+    symptoms?: SortOrder
+    treatDateNext?: SortOrder
+    branchId?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type TreatAvgOrderByAggregateInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    tabId?: SortOrder
+    comboId?: SortOrder
+    timeToTreatment?: SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    branchId?: SortOrder
+    modifiedBy?: SortOrder
+    state?: SortOrder
+  }
+
+  export type TreatMaxOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    codeOld?: SortOrder
+    docCode?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    phone2?: SortOrder
+    birthday?: SortOrder
+    gender?: SortOrder
+    address?: SortOrder
+    commune?: SortOrder
+    district?: SortOrder
+    city?: SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    serviceCode?: SortOrder
+    tabId?: SortOrder
+    tabCode?: SortOrder
+    comboId?: SortOrder
+    comboCode?: SortOrder
+    serviceName?: SortOrder
+    timeIndex?: SortOrder
+    timeToTreatment?: SortOrder
+    teethChoosing?: SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    note?: SortOrder
+    content?: SortOrder
+    contentNext?: SortOrder
+    symptoms?: SortOrder
+    treatDateNext?: SortOrder
+    branchId?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type TreatMinOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    codeOld?: SortOrder
+    docCode?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    phone2?: SortOrder
+    birthday?: SortOrder
+    gender?: SortOrder
+    address?: SortOrder
+    commune?: SortOrder
+    district?: SortOrder
+    city?: SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    serviceCode?: SortOrder
+    tabId?: SortOrder
+    tabCode?: SortOrder
+    comboId?: SortOrder
+    comboCode?: SortOrder
+    serviceName?: SortOrder
+    timeIndex?: SortOrder
+    timeToTreatment?: SortOrder
+    teethChoosing?: SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    note?: SortOrder
+    content?: SortOrder
+    contentNext?: SortOrder
+    symptoms?: SortOrder
+    treatDateNext?: SortOrder
+    branchId?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type TreatSumOrderByAggregateInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    tabId?: SortOrder
+    comboId?: SortOrder
+    timeToTreatment?: SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    branchId?: SortOrder
+    modifiedBy?: SortOrder
+    state?: SortOrder
+  }
+
+  export type AppointmentCountOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    custId?: SortOrder
+    custCode?: SortOrder
+    custName?: SortOrder
+    dateFrom?: SortOrder
+    statusId?: SortOrder
+    statusName?: SortOrder
+    statusTime?: SortOrder
+    isCancel?: SortOrder
+    branchId?: SortOrder
+    branchName?: SortOrder
+    content?: SortOrder
+    note?: SortOrder
+    noteForBranch?: SortOrder
+    consultId?: SortOrder
+    doctorId?: SortOrder
+    doctorId2?: SortOrder
+    assistantId?: SortOrder
+    roomId?: SortOrder
+    room?: SortOrder
+    remindContent?: SortOrder
+    reasonCancelId?: SortOrder
+    typeId?: SortOrder
+    typeDetailId?: SortOrder
+    serviceCareId?: SortOrder
+    serviceCare?: SortOrder
+    state?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type AppointmentAvgOrderByAggregateInput = {
+    id?: SortOrder
+    statusId?: SortOrder
+    isCancel?: SortOrder
+    branchId?: SortOrder
+    consultId?: SortOrder
+    doctorId?: SortOrder
+    doctorId2?: SortOrder
+    assistantId?: SortOrder
+    roomId?: SortOrder
+    reasonCancelId?: SortOrder
+    typeId?: SortOrder
+    typeDetailId?: SortOrder
+    state?: SortOrder
+  }
+
+  export type AppointmentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    custId?: SortOrder
+    custCode?: SortOrder
+    custName?: SortOrder
+    dateFrom?: SortOrder
+    statusId?: SortOrder
+    statusName?: SortOrder
+    statusTime?: SortOrder
+    isCancel?: SortOrder
+    branchId?: SortOrder
+    branchName?: SortOrder
+    content?: SortOrder
+    note?: SortOrder
+    noteForBranch?: SortOrder
+    consultId?: SortOrder
+    doctorId?: SortOrder
+    doctorId2?: SortOrder
+    assistantId?: SortOrder
+    roomId?: SortOrder
+    room?: SortOrder
+    remindContent?: SortOrder
+    reasonCancelId?: SortOrder
+    typeId?: SortOrder
+    typeDetailId?: SortOrder
+    serviceCareId?: SortOrder
+    serviceCare?: SortOrder
+    state?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type AppointmentMinOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    custId?: SortOrder
+    custCode?: SortOrder
+    custName?: SortOrder
+    dateFrom?: SortOrder
+    statusId?: SortOrder
+    statusName?: SortOrder
+    statusTime?: SortOrder
+    isCancel?: SortOrder
+    branchId?: SortOrder
+    branchName?: SortOrder
+    content?: SortOrder
+    note?: SortOrder
+    noteForBranch?: SortOrder
+    consultId?: SortOrder
+    doctorId?: SortOrder
+    doctorId2?: SortOrder
+    assistantId?: SortOrder
+    roomId?: SortOrder
+    room?: SortOrder
+    remindContent?: SortOrder
+    reasonCancelId?: SortOrder
+    typeId?: SortOrder
+    typeDetailId?: SortOrder
+    serviceCareId?: SortOrder
+    serviceCare?: SortOrder
+    state?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type AppointmentSumOrderByAggregateInput = {
+    id?: SortOrder
+    statusId?: SortOrder
+    isCancel?: SortOrder
+    branchId?: SortOrder
+    consultId?: SortOrder
+    doctorId?: SortOrder
+    doctorId2?: SortOrder
+    assistantId?: SortOrder
+    roomId?: SortOrder
+    reasonCancelId?: SortOrder
+    typeId?: SortOrder
+    typeDetailId?: SortOrder
+    state?: SortOrder
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -4680,6 +12360,26 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type StringFieldUpdateOperationsInput = {
+    set?: string
+  }
+
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type FloatFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -4837,6 +12537,69 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedStringFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringFilter<$PrismaModel> | string
+  }
+
+  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
 
 

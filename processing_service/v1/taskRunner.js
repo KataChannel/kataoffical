@@ -3,7 +3,8 @@ const prisma = require('./databaseClient');
 const { s3Client, moveObject, PutObjectCommand, GetObjectCommand, bucketName } = require('./minioClient');
 const { streamToString } = require('./utils');
 const { apiConfig, minioConfig } = require('./config');
-const { getAllKhachhang } = require('./apiClient'); // Import hàm gọi API khách hàng
+const { getAllKhachhang } = require('./customer.js'); // Import hàm gọi API khách hàng
+
 
 /**
  * Thực hiện quy trình lấy dữ liệu, lưu trữ, xử lý và lưu vào DB.
@@ -17,13 +18,8 @@ async function runPeriodicTask() {
     try {
         // === Bước 1: Gọi API ===
         console.log(`[${taskId}] Fetching data using apiClient...`);
-        // Sử dụng hàm getAllKhachhang từ apiClient thay vì gọi axios trực tiếp
-        // rawData = await axios.get(apiConfig.apiUrl, { headers: { 'Accept': 'application/json' }, timeout: apiConfig.timeout });
         rawData = await getAllKhachhang(); // Gọi hàm đã tách biệt
-        
-
-
-        console.log(`[${taskId}] Successfully fetched data via apiClient.`);
+        console.log(`[${taskId}] Successfully fetched data via customer.js.`);
         console.log(`[${taskId}] Raw data:`, rawData); // Log dữ liệu gốc (có thể cần điều chỉnh để không quá dài)
         
         // Logic kiểm tra dữ liệu rỗng (cần điều chỉnh dựa trên cấu trúc data thực tế)

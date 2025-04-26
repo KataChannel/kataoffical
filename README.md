@@ -36,7 +36,7 @@ npx create-nx-workspace@latest kataoffical --preset=angular-nest
 
 npx bun add @prisma/client
 npx bun add -d prisma
-npx bun prisma migrate dev --name all1.1 --skip-generate
+npx bun prisma migrate dev --name process1.2 --skip-generate
 npx prisma db push
 npx bun prisma generate 
 npx ts-node prisma/scriptdb/exportData.ts
