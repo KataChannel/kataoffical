@@ -68,25 +68,19 @@ services:
         start_period: 5s
   processing_service:
     build: ./processing_service # Trỏ tới thư mục chứa Dockerfile và code xử lý
-    container_name: data_processor
-    depends_on:
-      datalake_storage:
-        condition: service_healthy # Chờ MinIO sẵn sàng
-
-
-        
+    container_name: processing_service
     environment:
-      MINIO_ENDPOINT = 'http://116.118.49.243:9000'
-      MINIO_ACCESS_KEY = 'Abgp9Bkds2lTrthAb4LV'
-      MINIO_SECRET_KEY = 'ndAmGT8jv8dxOzGPbntO1GCmA3w6SWpYsjM55qZJ'
-      MINIO_BUCKET_NAME = 'datavttech'
-      EXTERNAL_API_URL = 'https://apismsvtt.vttechsolution.com/api/'
-      DB_HOST = 'postgres_taza'
-      DB_PORT = 5432
-      DB_USER = 'tazagroup'
-      DB_PASSWORD = '/TazaGroup*2025'
-      DB_NAME = 'datavttech'
-      DATABASE_URL="postgresql://tazagroup:%2FTazaGroup%2A2025@116.118.49.243:5434/datavttech?schema=public"
+      MINIO_ENDPOINT: 'http://116.118.49.243:9000'
+      MINIO_ACCESS_KEY: 'Abgp9Bkds2lTrthAb4LV'
+      MINIO_SECRET_KEY: 'ndAmGT8jv8dxOzGPbntO1GCmA3w6SWpYsjM55qZJ'
+      MINIO_BUCKET_NAME: 'datavttech'
+      EXTERNAL_API_URL: 'https://apismsvtt.vttechsolution.com/api/'
+      DB_HOST: 'postgres_taza'
+      DB_PORT: 5432
+      DB_USER: 'tazagroup'
+      DB_PASSWORD: '/TazaGroup*2025'
+      DB_NAME: 'datavttech'
+      DATABASE_URL: "postgresql://tazagroup:%2FTazaGroup%2A2025@116.118.49.243:5434/datavttech?schema=public"
 
     # --- Cách chạy service này ---
     # Option 1: Chạy 1 lần khi `docker-compose up` (ví dụ: xử lý batch ban đầu)
