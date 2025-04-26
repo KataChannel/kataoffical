@@ -72,18 +72,22 @@ services:
     depends_on:
       datalake_storage:
         condition: service_healthy # Chờ MinIO sẵn sàng
+
+
+        
     environment:
-      # Thông tin kết nối MinIO (Data Lake)
-      - MINIO_ENDPOINT=http://datalake_storage:9000
-      - MINIO_ACCESS_KEY=changeme_minio_user    # !!! Dùng user đã khai báo ở MinIO !!!
-      - MINIO_SECRET_KEY=changeme_minio_password # !!! Dùng password đã khai báo ở MinIO !!!
-      - MINIO_BUCKET_NAME=raw-data           # !!! Tên bucket chứa dữ liệu thô, ví dụ !!!
-      # Thông tin kết nối PostgreSQL (Operational DB)
-      - DB_HOST=operational_db
-      - DB_PORT=5432
-      - DB_USER=changeme_db_user            # !!! Dùng user đã khai báo ở Postgres !!!
-      - DB_PASSWORD=changeme_db_password    # !!! Dùng password đã khai báo ở Postgres !!!
-      - DB_NAME=myappdb                     # !!! Dùng DB name đã khai báo ở Postgres !!!
+      MINIO_ENDPOINT = 'http://116.118.49.243:9000'
+      MINIO_ACCESS_KEY = 'Abgp9Bkds2lTrthAb4LV'
+      MINIO_SECRET_KEY = 'ndAmGT8jv8dxOzGPbntO1GCmA3w6SWpYsjM55qZJ'
+      MINIO_BUCKET_NAME = 'datavttech'
+      EXTERNAL_API_URL = 'https://apismsvtt.vttechsolution.com/api/'
+      DB_HOST = 'postgres_taza'
+      DB_PORT = 5432
+      DB_USER = 'tazagroup'
+      DB_PASSWORD = '/TazaGroup*2025'
+      DB_NAME = 'datavttech'
+      DATABASE_URL="postgresql://tazagroup:%2FTazaGroup%2A2025@116.118.49.243:5434/datavttech?schema=public"
+
     # --- Cách chạy service này ---
     # Option 1: Chạy 1 lần khi `docker-compose up` (ví dụ: xử lý batch ban đầu)
     # command: ["node", "process.js"]
