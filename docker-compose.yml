@@ -69,6 +69,7 @@ services:
   processing_service:
     build: ./processing_service # Trỏ tới thư mục chứa Dockerfile và code xử lý
     container_name: processing_service
+    restart: always
     environment:
       MINIO_ENDPOINT: 'http://116.118.49.243:9000'
       MINIO_ACCESS_KEY: 'Abgp9Bkds2lTrthAb4LV'
