@@ -25,7 +25,10 @@ docker builder prune -af
 docker image prune -a -f
 docker volume prune -a -f
 
-
+docker exec pgadmin_taza ls -l /var/lib/pgadmin/storage/admin_tazagroup.com/datavttech26_04_2025
+docker exec postgres_taza ls -l /var/lib/postgresql/data/backups/ 
+docker exec pgadmin_taza find / -name "datavttech26_04_2025"
+docker cp pgadmin_taza:/var/lib/pgadmin/storage/admin_tazagroup.com/datavttech26_04_2025 /
 # prisma
 npx bun prisma migrate dev --name hethong1.7 --skip-generate
 npx prisma db push
@@ -36,7 +39,7 @@ npx create-nx-workspace@latest kataoffical --preset=angular-nest
 
 npx bun add @prisma/client
 npx bun add -d prisma
-npx bun prisma migrate dev --name process1.2 --skip-generate
+npx bun prisma migrate dev --name process1.6 --skip-generate
 npx prisma db push
 npx bun prisma generate 
 npx ts-node prisma/scriptdb/exportData.ts

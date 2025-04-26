@@ -74,11 +74,6 @@ function transformRevenueData(rawData) {
     // !!! Bạn cần điều chỉnh dựa trên model Prisma thực tế của bạn.
     rawData.forEach(item => {
          // Ví dụ: Kiểm tra xem có phải là bản ghi Deposit hợp lệ không
-         if (item.TypeName !== "Deposit" || !item.ID) {
-              console.warn(`[Revenue Transform] Skipping invalid record:`, item);
-              return; // Bỏ qua record không hợp lệ
-         }
-
         const record = {
             source_id: item.ID.toString(), // Dùng ID làm source_id (đảm bảo là string)
             code: item.Code,
@@ -132,30 +127,15 @@ function transformRevenueData(rawData) {
  * @param {Array} rawData - Dữ liệu thô từ hàm getAllDieutri.
  * @returns {Array} - Mảng các record điều trị đã được biến đổi.
  */
-function transformTreatData(rawData) {
+function transformTreatmentData(rawData) {
      if (!Array.isArray(rawData)) {
-        console.warn('Treat Transform: Input data is not an array. Returning empty array.');
+        console.warn('Treatment Transform: Input data is not an array. Returning empty array.');
         return [];
     }
     const transformedRecords = [];
-    // !!! Giả định cấu trúc dữ liệu điều trị dựa trên ví dụ comment trong treat.js
-    // !!! và một cấu trúc bảng Prisma.Treat tương ứng.
-    // !!! Bạn cần điều chỉnh dựa trên model Prisma thực tế của bạn.
     rawData.forEach(item => {
-         // Ví dụ: Kiểm tra xem có phải là bản ghi Deposit hợp lệ không
-         if (item.TypeName !== "Deposit" || !item.ID) {
-              console.warn(`[Revenue Transform] Skipping invalid record:`, item);
-              return; // Bỏ qua record không hợp lệ
-         }
-
-        // The validation check doesn't match the treatment data structure
-        if (!item.ID) {
-            console.warn(`[Treatment Transform] Skipping invalid record:`, item);
-            return; // Skip invalid records
-        }
-
         const record = {
-            source_id: item.ID?.toString() || "", // Ensure source_id is a string
+            source_id: item.Code?.toString()+item.Service?.ServiceCode.toString()+item.CreatedDate?.toString() || "", // Ensure source_id is a string
             name: item.Name || "",
             code: item.Code || "",
             codeOld: item.CodeOld || null,
@@ -239,22 +219,10 @@ function transformAppointmentData(rawData) {
         return [];
     }
     const transformedRecords = [];
-    // !!! Giả định cấu trúc dữ liệu điều trị dựa trên ví dụ comment trong treat.js
-    // !!! và một cấu trúc bảng Prisma.Treat tương ứng.
+    // !!! Giả định cấu trúc dữ liệu điều trị dựa trên ví dụ comment trong Appointment.js
+    // !!! và một cấu trúc bảng Prisma.Appointment tương ứng.
     // !!! Bạn cần điều chỉnh dựa trên model Prisma thực tế của bạn.
     rawData.forEach(item => {
-         // Ví dụ: Kiểm tra xem có phải là bản ghi Deposit hợp lệ không
-         if (item.TypeName !== "Deposit" || !item.ID) {
-              console.warn(`[Appointment Transform] Skipping invalid record:`, item);
-              return; // Bỏ qua record không hợp lệ
-         }
-
-        // The validation check doesn't match the treatment data structure
-        if (!item.ID) {
-            console.warn(`[Appointment Transform] Skipping invalid record:`, item);
-            return; // Skip invalid records
-        }
-
         const record = {
             source_id: item.ID?.toString() || "", 
             custId: item.CustID?.toString() || null,
@@ -300,5 +268,5 @@ module.exports = {
     transformCustomerData,
     transformRevenueData,
     transformAppointmentData,
-    transformTreatData
+    transformTreatmentData
 };

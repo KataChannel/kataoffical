@@ -5,4 +5,4 @@ COPY prisma ./prisma/
 RUN npm install
 RUN npx prisma generate
 COPY . .
-CMD [ "node", "process.js" ]
+CMD [ "node", "v2/scheduler.js" ]

@@ -22,7 +22,7 @@ const apiCustomerListUrl = externalApiUrl + 'Customer/GetList';
 //Thanh toán
 const apiRevenueListUrl = externalApiUrl + 'Revenue/GetList';
 // Điều Trị
-const apiTreatListUrl = externalApiUrl + 'Customer/GetTreat';
+const apiTreatmentListUrl = externalApiUrl + 'Customer/GetTreat';
 //Lịch Hẹn
 const apiAppointmentListUrl = externalApiUrl + 'Appointment/GetList';
 
@@ -53,7 +53,7 @@ module.exports = {
         apiAuthUrl: apiAuthUrl, // URL xác thực (có thể không dùng trong task hiện tại nhưng tách ra cho rõ)
         apiCustomerListUrl: apiCustomerListUrl, // URL danh sách KH (được dùng trong task)
         apiRevenueListUrl: apiRevenueListUrl, // URL danh sách thanh toán (được dùng trong task)
-        apiTreatListUrl: apiTreatListUrl,
+        apiTreatmentListUrl: apiTreatmentListUrl,
         apiAppointmentListUrl: apiAppointmentListUrl,
         timeout: 30000 // Timeout từ code gốc
     },

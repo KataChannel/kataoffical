@@ -82,6 +82,7 @@ async function runGenericTask(config) {
         // === Bước 3: Đọc lại dữ liệu từ MinIO (Tùy chọn) ===
         console.log(`[${taskId}] Reading data back from MinIO: ${objectKey}`);
         const getParams = { Bucket: bucketName, Key: objectKey };
+        // const getParams = { Bucket: bucketName, Key: objectKey };
         const objectData = await s3Client.send(new GetObjectCommand(getParams));
         if (!objectData.Body) throw new Error(`[${taskId}] Object ${objectKey} body is empty after get.`);
         const rawDataStringFromMinio = await streamToString(objectData.Body); //

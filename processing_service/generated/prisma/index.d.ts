@@ -29,10 +29,10 @@ export type Customer = $Result.DefaultSelection<Prisma.$CustomerPayload>
  */
 export type Revenue = $Result.DefaultSelection<Prisma.$RevenuePayload>
 /**
- * Model Treat
+ * Model Treatment
  * 
  */
-export type Treat = $Result.DefaultSelection<Prisma.$TreatPayload>
+export type Treatment = $Result.DefaultSelection<Prisma.$TreatmentPayload>
 /**
  * Model Appointment
  * 
@@ -195,14 +195,14 @@ export class PrismaClient<
   get revenue(): Prisma.RevenueDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.treat`: Exposes CRUD operations for the **Treat** model.
+   * `prisma.treatment`: Exposes CRUD operations for the **Treatment** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more Treats
-    * const treats = await prisma.treat.findMany()
+    * // Fetch zero or more Treatments
+    * const treatments = await prisma.treatment.findMany()
     * ```
     */
-  get treat(): Prisma.TreatDelegate<ExtArgs, ClientOptions>;
+  get treatment(): Prisma.TreatmentDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.appointment`: Exposes CRUD operations for the **Appointment** model.
@@ -656,7 +656,7 @@ export namespace Prisma {
     ProcessedPost: 'ProcessedPost',
     Customer: 'Customer',
     Revenue: 'Revenue',
-    Treat: 'Treat',
+    Treatment: 'Treatment',
     Appointment: 'Appointment'
   };
 
@@ -676,7 +676,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "processedPost" | "customer" | "revenue" | "treat" | "appointment"
+      modelProps: "processedPost" | "customer" | "revenue" | "treatment" | "appointment"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -902,77 +902,77 @@ export namespace Prisma {
           }
         }
       }
-      Treat: {
-        payload: Prisma.$TreatPayload<ExtArgs>
-        fields: Prisma.TreatFieldRefs
+      Treatment: {
+        payload: Prisma.$TreatmentPayload<ExtArgs>
+        fields: Prisma.TreatmentFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.TreatFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TreatPayload> | null
+            args: Prisma.TreatmentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatmentPayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.TreatFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TreatPayload>
+            args: Prisma.TreatmentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatmentPayload>
           }
           findFirst: {
-            args: Prisma.TreatFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TreatPayload> | null
+            args: Prisma.TreatmentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatmentPayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.TreatFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TreatPayload>
+            args: Prisma.TreatmentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatmentPayload>
           }
           findMany: {
-            args: Prisma.TreatFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TreatPayload>[]
+            args: Prisma.TreatmentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatmentPayload>[]
           }
           create: {
-            args: Prisma.TreatCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TreatPayload>
+            args: Prisma.TreatmentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatmentPayload>
           }
           createMany: {
-            args: Prisma.TreatCreateManyArgs<ExtArgs>
+            args: Prisma.TreatmentCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.TreatCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TreatPayload>[]
+            args: Prisma.TreatmentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatmentPayload>[]
           }
           delete: {
-            args: Prisma.TreatDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TreatPayload>
+            args: Prisma.TreatmentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatmentPayload>
           }
           update: {
-            args: Prisma.TreatUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TreatPayload>
+            args: Prisma.TreatmentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatmentPayload>
           }
           deleteMany: {
-            args: Prisma.TreatDeleteManyArgs<ExtArgs>
+            args: Prisma.TreatmentDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.TreatUpdateManyArgs<ExtArgs>
+            args: Prisma.TreatmentUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.TreatUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TreatPayload>[]
+            args: Prisma.TreatmentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatmentPayload>[]
           }
           upsert: {
-            args: Prisma.TreatUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$TreatPayload>
+            args: Prisma.TreatmentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TreatmentPayload>
           }
           aggregate: {
-            args: Prisma.TreatAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateTreat>
+            args: Prisma.TreatmentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTreatment>
           }
           groupBy: {
-            args: Prisma.TreatGroupByArgs<ExtArgs>
-            result: $Utils.Optional<TreatGroupByOutputType>[]
+            args: Prisma.TreatmentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TreatmentGroupByOutputType>[]
           }
           count: {
-            args: Prisma.TreatCountArgs<ExtArgs>
-            result: $Utils.Optional<TreatCountAggregateOutputType> | number
+            args: Prisma.TreatmentCountArgs<ExtArgs>
+            result: $Utils.Optional<TreatmentCountAggregateOutputType> | number
           }
         }
       }
@@ -1137,7 +1137,7 @@ export namespace Prisma {
     processedPost?: ProcessedPostOmit
     customer?: CustomerOmit
     revenue?: RevenueOmit
-    treat?: TreatOmit
+    treatment?: TreatmentOmit
     appointment?: AppointmentOmit
   }
 
@@ -5389,18 +5389,18 @@ export namespace Prisma {
 
 
   /**
-   * Model Treat
+   * Model Treatment
    */
 
-  export type AggregateTreat = {
-    _count: TreatCountAggregateOutputType | null
-    _avg: TreatAvgAggregateOutputType | null
-    _sum: TreatSumAggregateOutputType | null
-    _min: TreatMinAggregateOutputType | null
-    _max: TreatMaxAggregateOutputType | null
+  export type AggregateTreatment = {
+    _count: TreatmentCountAggregateOutputType | null
+    _avg: TreatmentAvgAggregateOutputType | null
+    _sum: TreatmentSumAggregateOutputType | null
+    _min: TreatmentMinAggregateOutputType | null
+    _max: TreatmentMaxAggregateOutputType | null
   }
 
-  export type TreatAvgAggregateOutputType = {
+  export type TreatmentAvgAggregateOutputType = {
     id: number | null
     serviceId: number | null
     serviceTypeId: number | null
@@ -5432,7 +5432,7 @@ export namespace Prisma {
     state: number | null
   }
 
-  export type TreatSumAggregateOutputType = {
+  export type TreatmentSumAggregateOutputType = {
     id: number | null
     serviceId: number | null
     serviceTypeId: number | null
@@ -5464,68 +5464,7 @@ export namespace Prisma {
     state: number | null
   }
 
-  export type TreatMinAggregateOutputType = {
-    id: number | null
-    source_id: string | null
-    name: string | null
-    code: string | null
-    codeOld: string | null
-    docCode: string | null
-    email: string | null
-    phone: string | null
-    phone2: string | null
-    birthday: Date | null
-    gender: string | null
-    address: string | null
-    commune: string | null
-    district: string | null
-    city: string | null
-    serviceId: number | null
-    serviceTypeId: number | null
-    serviceCode: string | null
-    tabId: number | null
-    tabCode: string | null
-    comboId: number | null
-    comboCode: string | null
-    serviceName: string | null
-    timeIndex: string | null
-    timeToTreatment: number | null
-    teethChoosing: string | null
-    priceUnit: number | null
-    quantity: number | null
-    discount: number | null
-    priceRoot: number | null
-    priceDiscounted: number | null
-    doctor: number | null
-    doctor2: number | null
-    doctor3: number | null
-    doctor4: number | null
-    assistant: number | null
-    assistant2: number | null
-    assistant3: number | null
-    assistant4: number | null
-    technician: number | null
-    technician2: number | null
-    timeTreatIndex: number | null
-    percent: number | null
-    percentNew: number | null
-    percentStage: number | null
-    percentNewStage: number | null
-    note: string | null
-    content: string | null
-    contentNext: string | null
-    symptoms: string | null
-    treatDateNext: Date | null
-    branchId: number | null
-    createdDate: Date | null
-    createdBy: string | null
-    modifiedDate: Date | null
-    modifiedBy: number | null
-    state: number | null
-    extractedAt: Date | null
-  }
-
-  export type TreatMaxAggregateOutputType = {
+  export type TreatmentMinAggregateOutputType = {
     id: number | null
     source_id: string | null
     name: string | null
@@ -5586,7 +5525,68 @@ export namespace Prisma {
     extractedAt: Date | null
   }
 
-  export type TreatCountAggregateOutputType = {
+  export type TreatmentMaxAggregateOutputType = {
+    id: number | null
+    source_id: string | null
+    name: string | null
+    code: string | null
+    codeOld: string | null
+    docCode: string | null
+    email: string | null
+    phone: string | null
+    phone2: string | null
+    birthday: Date | null
+    gender: string | null
+    address: string | null
+    commune: string | null
+    district: string | null
+    city: string | null
+    serviceId: number | null
+    serviceTypeId: number | null
+    serviceCode: string | null
+    tabId: number | null
+    tabCode: string | null
+    comboId: number | null
+    comboCode: string | null
+    serviceName: string | null
+    timeIndex: string | null
+    timeToTreatment: number | null
+    teethChoosing: string | null
+    priceUnit: number | null
+    quantity: number | null
+    discount: number | null
+    priceRoot: number | null
+    priceDiscounted: number | null
+    doctor: number | null
+    doctor2: number | null
+    doctor3: number | null
+    doctor4: number | null
+    assistant: number | null
+    assistant2: number | null
+    assistant3: number | null
+    assistant4: number | null
+    technician: number | null
+    technician2: number | null
+    timeTreatIndex: number | null
+    percent: number | null
+    percentNew: number | null
+    percentStage: number | null
+    percentNewStage: number | null
+    note: string | null
+    content: string | null
+    contentNext: string | null
+    symptoms: string | null
+    treatDateNext: Date | null
+    branchId: number | null
+    createdDate: Date | null
+    createdBy: string | null
+    modifiedDate: Date | null
+    modifiedBy: number | null
+    state: number | null
+    extractedAt: Date | null
+  }
+
+  export type TreatmentCountAggregateOutputType = {
     id: number
     source_id: number
     name: number
@@ -5649,7 +5649,7 @@ export namespace Prisma {
   }
 
 
-  export type TreatAvgAggregateInputType = {
+  export type TreatmentAvgAggregateInputType = {
     id?: true
     serviceId?: true
     serviceTypeId?: true
@@ -5681,7 +5681,7 @@ export namespace Prisma {
     state?: true
   }
 
-  export type TreatSumAggregateInputType = {
+  export type TreatmentSumAggregateInputType = {
     id?: true
     serviceId?: true
     serviceTypeId?: true
@@ -5713,68 +5713,7 @@ export namespace Prisma {
     state?: true
   }
 
-  export type TreatMinAggregateInputType = {
-    id?: true
-    source_id?: true
-    name?: true
-    code?: true
-    codeOld?: true
-    docCode?: true
-    email?: true
-    phone?: true
-    phone2?: true
-    birthday?: true
-    gender?: true
-    address?: true
-    commune?: true
-    district?: true
-    city?: true
-    serviceId?: true
-    serviceTypeId?: true
-    serviceCode?: true
-    tabId?: true
-    tabCode?: true
-    comboId?: true
-    comboCode?: true
-    serviceName?: true
-    timeIndex?: true
-    timeToTreatment?: true
-    teethChoosing?: true
-    priceUnit?: true
-    quantity?: true
-    discount?: true
-    priceRoot?: true
-    priceDiscounted?: true
-    doctor?: true
-    doctor2?: true
-    doctor3?: true
-    doctor4?: true
-    assistant?: true
-    assistant2?: true
-    assistant3?: true
-    assistant4?: true
-    technician?: true
-    technician2?: true
-    timeTreatIndex?: true
-    percent?: true
-    percentNew?: true
-    percentStage?: true
-    percentNewStage?: true
-    note?: true
-    content?: true
-    contentNext?: true
-    symptoms?: true
-    treatDateNext?: true
-    branchId?: true
-    createdDate?: true
-    createdBy?: true
-    modifiedDate?: true
-    modifiedBy?: true
-    state?: true
-    extractedAt?: true
-  }
-
-  export type TreatMaxAggregateInputType = {
+  export type TreatmentMinAggregateInputType = {
     id?: true
     source_id?: true
     name?: true
@@ -5835,7 +5774,68 @@ export namespace Prisma {
     extractedAt?: true
   }
 
-  export type TreatCountAggregateInputType = {
+  export type TreatmentMaxAggregateInputType = {
+    id?: true
+    source_id?: true
+    name?: true
+    code?: true
+    codeOld?: true
+    docCode?: true
+    email?: true
+    phone?: true
+    phone2?: true
+    birthday?: true
+    gender?: true
+    address?: true
+    commune?: true
+    district?: true
+    city?: true
+    serviceId?: true
+    serviceTypeId?: true
+    serviceCode?: true
+    tabId?: true
+    tabCode?: true
+    comboId?: true
+    comboCode?: true
+    serviceName?: true
+    timeIndex?: true
+    timeToTreatment?: true
+    teethChoosing?: true
+    priceUnit?: true
+    quantity?: true
+    discount?: true
+    priceRoot?: true
+    priceDiscounted?: true
+    doctor?: true
+    doctor2?: true
+    doctor3?: true
+    doctor4?: true
+    assistant?: true
+    assistant2?: true
+    assistant3?: true
+    assistant4?: true
+    technician?: true
+    technician2?: true
+    timeTreatIndex?: true
+    percent?: true
+    percentNew?: true
+    percentStage?: true
+    percentNewStage?: true
+    note?: true
+    content?: true
+    contentNext?: true
+    symptoms?: true
+    treatDateNext?: true
+    branchId?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    modifiedBy?: true
+    state?: true
+    extractedAt?: true
+  }
+
+  export type TreatmentCountAggregateInputType = {
     id?: true
     source_id?: true
     name?: true
@@ -5897,93 +5897,93 @@ export namespace Prisma {
     _all?: true
   }
 
-  export type TreatAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which Treat to aggregate.
+     * Filter which Treatment to aggregate.
      */
-    where?: TreatWhereInput
+    where?: TreatmentWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Treats to fetch.
+     * Determine the order of Treatments to fetch.
      */
-    orderBy?: TreatOrderByWithRelationInput | TreatOrderByWithRelationInput[]
+    orderBy?: TreatmentOrderByWithRelationInput | TreatmentOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: TreatWhereUniqueInput
+    cursor?: TreatmentWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Treats from the position of the cursor.
+     * Take `±n` Treatments from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Treats.
+     * Skip the first `n` Treatments.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned Treats
+     * Count returned Treatments
     **/
-    _count?: true | TreatCountAggregateInputType
+    _count?: true | TreatmentCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: TreatAvgAggregateInputType
+    _avg?: TreatmentAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: TreatSumAggregateInputType
+    _sum?: TreatmentSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: TreatMinAggregateInputType
+    _min?: TreatmentMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: TreatMaxAggregateInputType
+    _max?: TreatmentMaxAggregateInputType
   }
 
-  export type GetTreatAggregateType<T extends TreatAggregateArgs> = {
-        [P in keyof T & keyof AggregateTreat]: P extends '_count' | 'count'
+  export type GetTreatmentAggregateType<T extends TreatmentAggregateArgs> = {
+        [P in keyof T & keyof AggregateTreatment]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateTreat[P]>
-      : GetScalarType<T[P], AggregateTreat[P]>
+        : GetScalarType<T[P], AggregateTreatment[P]>
+      : GetScalarType<T[P], AggregateTreatment[P]>
   }
 
 
 
 
-  export type TreatGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: TreatWhereInput
-    orderBy?: TreatOrderByWithAggregationInput | TreatOrderByWithAggregationInput[]
-    by: TreatScalarFieldEnum[] | TreatScalarFieldEnum
-    having?: TreatScalarWhereWithAggregatesInput
+  export type TreatmentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TreatmentWhereInput
+    orderBy?: TreatmentOrderByWithAggregationInput | TreatmentOrderByWithAggregationInput[]
+    by: TreatmentScalarFieldEnum[] | TreatmentScalarFieldEnum
+    having?: TreatmentScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: TreatCountAggregateInputType | true
-    _avg?: TreatAvgAggregateInputType
-    _sum?: TreatSumAggregateInputType
-    _min?: TreatMinAggregateInputType
-    _max?: TreatMaxAggregateInputType
+    _count?: TreatmentCountAggregateInputType | true
+    _avg?: TreatmentAvgAggregateInputType
+    _sum?: TreatmentSumAggregateInputType
+    _min?: TreatmentMinAggregateInputType
+    _max?: TreatmentMaxAggregateInputType
   }
 
-  export type TreatGroupByOutputType = {
+  export type TreatmentGroupByOutputType = {
     id: number
     source_id: string
     name: string | null
@@ -6042,28 +6042,28 @@ export namespace Prisma {
     modifiedBy: number | null
     state: number
     extractedAt: Date
-    _count: TreatCountAggregateOutputType | null
-    _avg: TreatAvgAggregateOutputType | null
-    _sum: TreatSumAggregateOutputType | null
-    _min: TreatMinAggregateOutputType | null
-    _max: TreatMaxAggregateOutputType | null
+    _count: TreatmentCountAggregateOutputType | null
+    _avg: TreatmentAvgAggregateOutputType | null
+    _sum: TreatmentSumAggregateOutputType | null
+    _min: TreatmentMinAggregateOutputType | null
+    _max: TreatmentMaxAggregateOutputType | null
   }
 
-  type GetTreatGroupByPayload<T extends TreatGroupByArgs> = Prisma.PrismaPromise<
+  type GetTreatmentGroupByPayload<T extends TreatmentGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<TreatGroupByOutputType, T['by']> &
+      PickEnumerable<TreatmentGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof TreatGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof TreatmentGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], TreatGroupByOutputType[P]>
-            : GetScalarType<T[P], TreatGroupByOutputType[P]>
+              : GetScalarType<T[P], TreatmentGroupByOutputType[P]>
+            : GetScalarType<T[P], TreatmentGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type TreatSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type TreatmentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     source_id?: boolean
     name?: boolean
@@ -6122,9 +6122,9 @@ export namespace Prisma {
     modifiedBy?: boolean
     state?: boolean
     extractedAt?: boolean
-  }, ExtArgs["result"]["treat"]>
+  }, ExtArgs["result"]["treatment"]>
 
-  export type TreatSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type TreatmentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     source_id?: boolean
     name?: boolean
@@ -6183,9 +6183,9 @@ export namespace Prisma {
     modifiedBy?: boolean
     state?: boolean
     extractedAt?: boolean
-  }, ExtArgs["result"]["treat"]>
+  }, ExtArgs["result"]["treatment"]>
 
-  export type TreatSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type TreatmentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     source_id?: boolean
     name?: boolean
@@ -6244,9 +6244,9 @@ export namespace Prisma {
     modifiedBy?: boolean
     state?: boolean
     extractedAt?: boolean
-  }, ExtArgs["result"]["treat"]>
+  }, ExtArgs["result"]["treatment"]>
 
-  export type TreatSelectScalar = {
+  export type TreatmentSelectScalar = {
     id?: boolean
     source_id?: boolean
     name?: boolean
@@ -6307,10 +6307,10 @@ export namespace Prisma {
     extractedAt?: boolean
   }
 
-  export type TreatOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "source_id" | "name" | "code" | "codeOld" | "docCode" | "email" | "phone" | "phone2" | "birthday" | "gender" | "address" | "commune" | "district" | "city" | "serviceId" | "serviceTypeId" | "serviceCode" | "tabId" | "tabCode" | "comboId" | "comboCode" | "serviceName" | "timeIndex" | "timeToTreatment" | "teethChoosing" | "priceUnit" | "quantity" | "discount" | "priceRoot" | "priceDiscounted" | "doctor" | "doctor2" | "doctor3" | "doctor4" | "assistant" | "assistant2" | "assistant3" | "assistant4" | "technician" | "technician2" | "timeTreatIndex" | "percent" | "percentNew" | "percentStage" | "percentNewStage" | "note" | "content" | "contentNext" | "symptoms" | "treatDateNext" | "branchId" | "createdDate" | "createdBy" | "modifiedDate" | "modifiedBy" | "state" | "extractedAt", ExtArgs["result"]["treat"]>
+  export type TreatmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "source_id" | "name" | "code" | "codeOld" | "docCode" | "email" | "phone" | "phone2" | "birthday" | "gender" | "address" | "commune" | "district" | "city" | "serviceId" | "serviceTypeId" | "serviceCode" | "tabId" | "tabCode" | "comboId" | "comboCode" | "serviceName" | "timeIndex" | "timeToTreatment" | "teethChoosing" | "priceUnit" | "quantity" | "discount" | "priceRoot" | "priceDiscounted" | "doctor" | "doctor2" | "doctor3" | "doctor4" | "assistant" | "assistant2" | "assistant3" | "assistant4" | "technician" | "technician2" | "timeTreatIndex" | "percent" | "percentNew" | "percentStage" | "percentNewStage" | "note" | "content" | "contentNext" | "symptoms" | "treatDateNext" | "branchId" | "createdDate" | "createdBy" | "modifiedDate" | "modifiedBy" | "state" | "extractedAt", ExtArgs["result"]["treatment"]>
 
-  export type $TreatPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Treat"
+  export type $TreatmentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Treatment"
     objects: {}
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -6371,136 +6371,136 @@ export namespace Prisma {
       modifiedBy: number | null
       state: number
       extractedAt: Date
-    }, ExtArgs["result"]["treat"]>
+    }, ExtArgs["result"]["treatment"]>
     composites: {}
   }
 
-  type TreatGetPayload<S extends boolean | null | undefined | TreatDefaultArgs> = $Result.GetResult<Prisma.$TreatPayload, S>
+  type TreatmentGetPayload<S extends boolean | null | undefined | TreatmentDefaultArgs> = $Result.GetResult<Prisma.$TreatmentPayload, S>
 
-  type TreatCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<TreatFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: TreatCountAggregateInputType | true
+  type TreatmentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TreatmentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TreatmentCountAggregateInputType | true
     }
 
-  export interface TreatDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Treat'], meta: { name: 'Treat' } }
+  export interface TreatmentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Treatment'], meta: { name: 'Treatment' } }
     /**
-     * Find zero or one Treat that matches the filter.
-     * @param {TreatFindUniqueArgs} args - Arguments to find a Treat
+     * Find zero or one Treatment that matches the filter.
+     * @param {TreatmentFindUniqueArgs} args - Arguments to find a Treatment
      * @example
-     * // Get one Treat
-     * const treat = await prisma.treat.findUnique({
+     * // Get one Treatment
+     * const treatment = await prisma.treatment.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends TreatFindUniqueArgs>(args: SelectSubset<T, TreatFindUniqueArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends TreatmentFindUniqueArgs>(args: SelectSubset<T, TreatmentFindUniqueArgs<ExtArgs>>): Prisma__TreatmentClient<$Result.GetResult<Prisma.$TreatmentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one Treat that matches the filter or throw an error with `error.code='P2025'`
+     * Find one Treatment that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {TreatFindUniqueOrThrowArgs} args - Arguments to find a Treat
+     * @param {TreatmentFindUniqueOrThrowArgs} args - Arguments to find a Treatment
      * @example
-     * // Get one Treat
-     * const treat = await prisma.treat.findUniqueOrThrow({
+     * // Get one Treatment
+     * const treatment = await prisma.treatment.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends TreatFindUniqueOrThrowArgs>(args: SelectSubset<T, TreatFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends TreatmentFindUniqueOrThrowArgs>(args: SelectSubset<T, TreatmentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TreatmentClient<$Result.GetResult<Prisma.$TreatmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first Treat that matches the filter.
+     * Find the first Treatment that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TreatFindFirstArgs} args - Arguments to find a Treat
+     * @param {TreatmentFindFirstArgs} args - Arguments to find a Treatment
      * @example
-     * // Get one Treat
-     * const treat = await prisma.treat.findFirst({
+     * // Get one Treatment
+     * const treatment = await prisma.treatment.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends TreatFindFirstArgs>(args?: SelectSubset<T, TreatFindFirstArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends TreatmentFindFirstArgs>(args?: SelectSubset<T, TreatmentFindFirstArgs<ExtArgs>>): Prisma__TreatmentClient<$Result.GetResult<Prisma.$TreatmentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first Treat that matches the filter or
+     * Find the first Treatment that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TreatFindFirstOrThrowArgs} args - Arguments to find a Treat
+     * @param {TreatmentFindFirstOrThrowArgs} args - Arguments to find a Treatment
      * @example
-     * // Get one Treat
-     * const treat = await prisma.treat.findFirstOrThrow({
+     * // Get one Treatment
+     * const treatment = await prisma.treatment.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends TreatFindFirstOrThrowArgs>(args?: SelectSubset<T, TreatFindFirstOrThrowArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends TreatmentFindFirstOrThrowArgs>(args?: SelectSubset<T, TreatmentFindFirstOrThrowArgs<ExtArgs>>): Prisma__TreatmentClient<$Result.GetResult<Prisma.$TreatmentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more Treats that matches the filter.
+     * Find zero or more Treatments that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TreatFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {TreatmentFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all Treats
-     * const treats = await prisma.treat.findMany()
+     * // Get all Treatments
+     * const treatments = await prisma.treatment.findMany()
      * 
-     * // Get first 10 Treats
-     * const treats = await prisma.treat.findMany({ take: 10 })
+     * // Get first 10 Treatments
+     * const treatments = await prisma.treatment.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const treatWithIdOnly = await prisma.treat.findMany({ select: { id: true } })
+     * const treatmentWithIdOnly = await prisma.treatment.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends TreatFindManyArgs>(args?: SelectSubset<T, TreatFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends TreatmentFindManyArgs>(args?: SelectSubset<T, TreatmentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreatmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a Treat.
-     * @param {TreatCreateArgs} args - Arguments to create a Treat.
+     * Create a Treatment.
+     * @param {TreatmentCreateArgs} args - Arguments to create a Treatment.
      * @example
-     * // Create one Treat
-     * const Treat = await prisma.treat.create({
+     * // Create one Treatment
+     * const Treatment = await prisma.treatment.create({
      *   data: {
-     *     // ... data to create a Treat
+     *     // ... data to create a Treatment
      *   }
      * })
      * 
      */
-    create<T extends TreatCreateArgs>(args: SelectSubset<T, TreatCreateArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends TreatmentCreateArgs>(args: SelectSubset<T, TreatmentCreateArgs<ExtArgs>>): Prisma__TreatmentClient<$Result.GetResult<Prisma.$TreatmentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many Treats.
-     * @param {TreatCreateManyArgs} args - Arguments to create many Treats.
+     * Create many Treatments.
+     * @param {TreatmentCreateManyArgs} args - Arguments to create many Treatments.
      * @example
-     * // Create many Treats
-     * const treat = await prisma.treat.createMany({
+     * // Create many Treatments
+     * const treatment = await prisma.treatment.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends TreatCreateManyArgs>(args?: SelectSubset<T, TreatCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends TreatmentCreateManyArgs>(args?: SelectSubset<T, TreatmentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many Treats and returns the data saved in the database.
-     * @param {TreatCreateManyAndReturnArgs} args - Arguments to create many Treats.
+     * Create many Treatments and returns the data saved in the database.
+     * @param {TreatmentCreateManyAndReturnArgs} args - Arguments to create many Treatments.
      * @example
-     * // Create many Treats
-     * const treat = await prisma.treat.createManyAndReturn({
+     * // Create many Treatments
+     * const treatment = await prisma.treatment.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many Treats and only return the `id`
-     * const treatWithIdOnly = await prisma.treat.createManyAndReturn({
+     * // Create many Treatments and only return the `id`
+     * const treatmentWithIdOnly = await prisma.treatment.createManyAndReturn({
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -6510,28 +6510,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends TreatCreateManyAndReturnArgs>(args?: SelectSubset<T, TreatCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends TreatmentCreateManyAndReturnArgs>(args?: SelectSubset<T, TreatmentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreatmentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a Treat.
-     * @param {TreatDeleteArgs} args - Arguments to delete one Treat.
+     * Delete a Treatment.
+     * @param {TreatmentDeleteArgs} args - Arguments to delete one Treatment.
      * @example
-     * // Delete one Treat
-     * const Treat = await prisma.treat.delete({
+     * // Delete one Treatment
+     * const Treatment = await prisma.treatment.delete({
      *   where: {
-     *     // ... filter to delete one Treat
+     *     // ... filter to delete one Treatment
      *   }
      * })
      * 
      */
-    delete<T extends TreatDeleteArgs>(args: SelectSubset<T, TreatDeleteArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends TreatmentDeleteArgs>(args: SelectSubset<T, TreatmentDeleteArgs<ExtArgs>>): Prisma__TreatmentClient<$Result.GetResult<Prisma.$TreatmentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one Treat.
-     * @param {TreatUpdateArgs} args - Arguments to update one Treat.
+     * Update one Treatment.
+     * @param {TreatmentUpdateArgs} args - Arguments to update one Treatment.
      * @example
-     * // Update one Treat
-     * const treat = await prisma.treat.update({
+     * // Update one Treatment
+     * const treatment = await prisma.treatment.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -6541,30 +6541,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends TreatUpdateArgs>(args: SelectSubset<T, TreatUpdateArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends TreatmentUpdateArgs>(args: SelectSubset<T, TreatmentUpdateArgs<ExtArgs>>): Prisma__TreatmentClient<$Result.GetResult<Prisma.$TreatmentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more Treats.
-     * @param {TreatDeleteManyArgs} args - Arguments to filter Treats to delete.
+     * Delete zero or more Treatments.
+     * @param {TreatmentDeleteManyArgs} args - Arguments to filter Treatments to delete.
      * @example
-     * // Delete a few Treats
-     * const { count } = await prisma.treat.deleteMany({
+     * // Delete a few Treatments
+     * const { count } = await prisma.treatment.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends TreatDeleteManyArgs>(args?: SelectSubset<T, TreatDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends TreatmentDeleteManyArgs>(args?: SelectSubset<T, TreatmentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more Treats.
+     * Update zero or more Treatments.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TreatUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {TreatmentUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many Treats
-     * const treat = await prisma.treat.updateMany({
+     * // Update many Treatments
+     * const treatment = await prisma.treatment.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -6574,14 +6574,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends TreatUpdateManyArgs>(args: SelectSubset<T, TreatUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends TreatmentUpdateManyArgs>(args: SelectSubset<T, TreatmentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more Treats and returns the data updated in the database.
-     * @param {TreatUpdateManyAndReturnArgs} args - Arguments to update many Treats.
+     * Update zero or more Treatments and returns the data updated in the database.
+     * @param {TreatmentUpdateManyAndReturnArgs} args - Arguments to update many Treatments.
      * @example
-     * // Update many Treats
-     * const treat = await prisma.treat.updateManyAndReturn({
+     * // Update many Treatments
+     * const treatment = await prisma.treatment.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -6590,8 +6590,8 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more Treats and only return the `id`
-     * const treatWithIdOnly = await prisma.treat.updateManyAndReturn({
+     * // Update zero or more Treatments and only return the `id`
+     * const treatmentWithIdOnly = await prisma.treatment.updateManyAndReturn({
      *   select: { id: true },
      *   where: {
      *     // ... provide filter here
@@ -6604,56 +6604,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends TreatUpdateManyAndReturnArgs>(args: SelectSubset<T, TreatUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends TreatmentUpdateManyAndReturnArgs>(args: SelectSubset<T, TreatmentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TreatmentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one Treat.
-     * @param {TreatUpsertArgs} args - Arguments to update or create a Treat.
+     * Create or update one Treatment.
+     * @param {TreatmentUpsertArgs} args - Arguments to update or create a Treatment.
      * @example
-     * // Update or create a Treat
-     * const treat = await prisma.treat.upsert({
+     * // Update or create a Treatment
+     * const treatment = await prisma.treatment.upsert({
      *   create: {
-     *     // ... data to create a Treat
+     *     // ... data to create a Treatment
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the Treat we want to update
+     *     // ... the filter for the Treatment we want to update
      *   }
      * })
      */
-    upsert<T extends TreatUpsertArgs>(args: SelectSubset<T, TreatUpsertArgs<ExtArgs>>): Prisma__TreatClient<$Result.GetResult<Prisma.$TreatPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends TreatmentUpsertArgs>(args: SelectSubset<T, TreatmentUpsertArgs<ExtArgs>>): Prisma__TreatmentClient<$Result.GetResult<Prisma.$TreatmentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of Treats.
+     * Count the number of Treatments.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TreatCountArgs} args - Arguments to filter Treats to count.
+     * @param {TreatmentCountArgs} args - Arguments to filter Treatments to count.
      * @example
-     * // Count the number of Treats
-     * const count = await prisma.treat.count({
+     * // Count the number of Treatments
+     * const count = await prisma.treatment.count({
      *   where: {
-     *     // ... the filter for the Treats we want to count
+     *     // ... the filter for the Treatments we want to count
      *   }
      * })
     **/
-    count<T extends TreatCountArgs>(
-      args?: Subset<T, TreatCountArgs>,
+    count<T extends TreatmentCountArgs>(
+      args?: Subset<T, TreatmentCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], TreatCountAggregateOutputType>
+          : GetScalarType<T['select'], TreatmentCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a Treat.
+     * Allows you to perform aggregations operations on a Treatment.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TreatAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {TreatmentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -6673,13 +6673,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends TreatAggregateArgs>(args: Subset<T, TreatAggregateArgs>): Prisma.PrismaPromise<GetTreatAggregateType<T>>
+    aggregate<T extends TreatmentAggregateArgs>(args: Subset<T, TreatmentAggregateArgs>): Prisma.PrismaPromise<GetTreatmentAggregateType<T>>
 
     /**
-     * Group by Treat.
+     * Group by Treatment.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TreatGroupByArgs} args - Group by arguments.
+     * @param {TreatmentGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -6694,14 +6694,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends TreatGroupByArgs,
+      T extends TreatmentGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: TreatGroupByArgs['orderBy'] }
-        : { orderBy?: TreatGroupByArgs['orderBy'] },
+        ? { orderBy: TreatmentGroupByArgs['orderBy'] }
+        : { orderBy?: TreatmentGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -6750,20 +6750,20 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, TreatGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTreatGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, TreatmentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTreatmentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the Treat model
+   * Fields of the Treatment model
    */
-  readonly fields: TreatFieldRefs;
+  readonly fields: TreatmentFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for Treat.
+   * The delegate class that acts as a "Promise-like" for Treatment.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__TreatClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__TreatmentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6791,430 +6791,430 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the Treat model
+   * Fields of the Treatment model
    */
-  interface TreatFieldRefs {
-    readonly id: FieldRef<"Treat", 'Int'>
-    readonly source_id: FieldRef<"Treat", 'String'>
-    readonly name: FieldRef<"Treat", 'String'>
-    readonly code: FieldRef<"Treat", 'String'>
-    readonly codeOld: FieldRef<"Treat", 'String'>
-    readonly docCode: FieldRef<"Treat", 'String'>
-    readonly email: FieldRef<"Treat", 'String'>
-    readonly phone: FieldRef<"Treat", 'String'>
-    readonly phone2: FieldRef<"Treat", 'String'>
-    readonly birthday: FieldRef<"Treat", 'DateTime'>
-    readonly gender: FieldRef<"Treat", 'String'>
-    readonly address: FieldRef<"Treat", 'String'>
-    readonly commune: FieldRef<"Treat", 'String'>
-    readonly district: FieldRef<"Treat", 'String'>
-    readonly city: FieldRef<"Treat", 'String'>
-    readonly serviceId: FieldRef<"Treat", 'Int'>
-    readonly serviceTypeId: FieldRef<"Treat", 'Int'>
-    readonly serviceCode: FieldRef<"Treat", 'String'>
-    readonly tabId: FieldRef<"Treat", 'Int'>
-    readonly tabCode: FieldRef<"Treat", 'String'>
-    readonly comboId: FieldRef<"Treat", 'Int'>
-    readonly comboCode: FieldRef<"Treat", 'String'>
-    readonly serviceName: FieldRef<"Treat", 'String'>
-    readonly timeIndex: FieldRef<"Treat", 'String'>
-    readonly timeToTreatment: FieldRef<"Treat", 'Int'>
-    readonly teethChoosing: FieldRef<"Treat", 'String'>
-    readonly priceUnit: FieldRef<"Treat", 'Float'>
-    readonly quantity: FieldRef<"Treat", 'Float'>
-    readonly discount: FieldRef<"Treat", 'Float'>
-    readonly priceRoot: FieldRef<"Treat", 'Float'>
-    readonly priceDiscounted: FieldRef<"Treat", 'Float'>
-    readonly doctor: FieldRef<"Treat", 'Int'>
-    readonly doctor2: FieldRef<"Treat", 'Int'>
-    readonly doctor3: FieldRef<"Treat", 'Int'>
-    readonly doctor4: FieldRef<"Treat", 'Int'>
-    readonly assistant: FieldRef<"Treat", 'Int'>
-    readonly assistant2: FieldRef<"Treat", 'Int'>
-    readonly assistant3: FieldRef<"Treat", 'Int'>
-    readonly assistant4: FieldRef<"Treat", 'Int'>
-    readonly technician: FieldRef<"Treat", 'Int'>
-    readonly technician2: FieldRef<"Treat", 'Int'>
-    readonly timeTreatIndex: FieldRef<"Treat", 'Int'>
-    readonly percent: FieldRef<"Treat", 'Float'>
-    readonly percentNew: FieldRef<"Treat", 'Float'>
-    readonly percentStage: FieldRef<"Treat", 'Float'>
-    readonly percentNewStage: FieldRef<"Treat", 'Float'>
-    readonly note: FieldRef<"Treat", 'String'>
-    readonly content: FieldRef<"Treat", 'String'>
-    readonly contentNext: FieldRef<"Treat", 'String'>
-    readonly symptoms: FieldRef<"Treat", 'String'>
-    readonly treatDateNext: FieldRef<"Treat", 'DateTime'>
-    readonly branchId: FieldRef<"Treat", 'Int'>
-    readonly createdDate: FieldRef<"Treat", 'DateTime'>
-    readonly createdBy: FieldRef<"Treat", 'String'>
-    readonly modifiedDate: FieldRef<"Treat", 'DateTime'>
-    readonly modifiedBy: FieldRef<"Treat", 'Int'>
-    readonly state: FieldRef<"Treat", 'Int'>
-    readonly extractedAt: FieldRef<"Treat", 'DateTime'>
+  interface TreatmentFieldRefs {
+    readonly id: FieldRef<"Treatment", 'Int'>
+    readonly source_id: FieldRef<"Treatment", 'String'>
+    readonly name: FieldRef<"Treatment", 'String'>
+    readonly code: FieldRef<"Treatment", 'String'>
+    readonly codeOld: FieldRef<"Treatment", 'String'>
+    readonly docCode: FieldRef<"Treatment", 'String'>
+    readonly email: FieldRef<"Treatment", 'String'>
+    readonly phone: FieldRef<"Treatment", 'String'>
+    readonly phone2: FieldRef<"Treatment", 'String'>
+    readonly birthday: FieldRef<"Treatment", 'DateTime'>
+    readonly gender: FieldRef<"Treatment", 'String'>
+    readonly address: FieldRef<"Treatment", 'String'>
+    readonly commune: FieldRef<"Treatment", 'String'>
+    readonly district: FieldRef<"Treatment", 'String'>
+    readonly city: FieldRef<"Treatment", 'String'>
+    readonly serviceId: FieldRef<"Treatment", 'Int'>
+    readonly serviceTypeId: FieldRef<"Treatment", 'Int'>
+    readonly serviceCode: FieldRef<"Treatment", 'String'>
+    readonly tabId: FieldRef<"Treatment", 'Int'>
+    readonly tabCode: FieldRef<"Treatment", 'String'>
+    readonly comboId: FieldRef<"Treatment", 'Int'>
+    readonly comboCode: FieldRef<"Treatment", 'String'>
+    readonly serviceName: FieldRef<"Treatment", 'String'>
+    readonly timeIndex: FieldRef<"Treatment", 'String'>
+    readonly timeToTreatment: FieldRef<"Treatment", 'Int'>
+    readonly teethChoosing: FieldRef<"Treatment", 'String'>
+    readonly priceUnit: FieldRef<"Treatment", 'Float'>
+    readonly quantity: FieldRef<"Treatment", 'Float'>
+    readonly discount: FieldRef<"Treatment", 'Float'>
+    readonly priceRoot: FieldRef<"Treatment", 'Float'>
+    readonly priceDiscounted: FieldRef<"Treatment", 'Float'>
+    readonly doctor: FieldRef<"Treatment", 'Int'>
+    readonly doctor2: FieldRef<"Treatment", 'Int'>
+    readonly doctor3: FieldRef<"Treatment", 'Int'>
+    readonly doctor4: FieldRef<"Treatment", 'Int'>
+    readonly assistant: FieldRef<"Treatment", 'Int'>
+    readonly assistant2: FieldRef<"Treatment", 'Int'>
+    readonly assistant3: FieldRef<"Treatment", 'Int'>
+    readonly assistant4: FieldRef<"Treatment", 'Int'>
+    readonly technician: FieldRef<"Treatment", 'Int'>
+    readonly technician2: FieldRef<"Treatment", 'Int'>
+    readonly timeTreatIndex: FieldRef<"Treatment", 'Int'>
+    readonly percent: FieldRef<"Treatment", 'Float'>
+    readonly percentNew: FieldRef<"Treatment", 'Float'>
+    readonly percentStage: FieldRef<"Treatment", 'Float'>
+    readonly percentNewStage: FieldRef<"Treatment", 'Float'>
+    readonly note: FieldRef<"Treatment", 'String'>
+    readonly content: FieldRef<"Treatment", 'String'>
+    readonly contentNext: FieldRef<"Treatment", 'String'>
+    readonly symptoms: FieldRef<"Treatment", 'String'>
+    readonly treatDateNext: FieldRef<"Treatment", 'DateTime'>
+    readonly branchId: FieldRef<"Treatment", 'Int'>
+    readonly createdDate: FieldRef<"Treatment", 'DateTime'>
+    readonly createdBy: FieldRef<"Treatment", 'String'>
+    readonly modifiedDate: FieldRef<"Treatment", 'DateTime'>
+    readonly modifiedBy: FieldRef<"Treatment", 'Int'>
+    readonly state: FieldRef<"Treatment", 'Int'>
+    readonly extractedAt: FieldRef<"Treatment", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * Treat findUnique
+   * Treatment findUnique
    */
-  export type TreatFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Treat
+     * Select specific fields to fetch from the Treatment
      */
-    select?: TreatSelect<ExtArgs> | null
+    select?: TreatmentSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Treat
+     * Omit specific fields from the Treatment
      */
-    omit?: TreatOmit<ExtArgs> | null
+    omit?: TreatmentOmit<ExtArgs> | null
     /**
-     * Filter, which Treat to fetch.
+     * Filter, which Treatment to fetch.
      */
-    where: TreatWhereUniqueInput
+    where: TreatmentWhereUniqueInput
   }
 
   /**
-   * Treat findUniqueOrThrow
+   * Treatment findUniqueOrThrow
    */
-  export type TreatFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Treat
+     * Select specific fields to fetch from the Treatment
      */
-    select?: TreatSelect<ExtArgs> | null
+    select?: TreatmentSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Treat
+     * Omit specific fields from the Treatment
      */
-    omit?: TreatOmit<ExtArgs> | null
+    omit?: TreatmentOmit<ExtArgs> | null
     /**
-     * Filter, which Treat to fetch.
+     * Filter, which Treatment to fetch.
      */
-    where: TreatWhereUniqueInput
+    where: TreatmentWhereUniqueInput
   }
 
   /**
-   * Treat findFirst
+   * Treatment findFirst
    */
-  export type TreatFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Treat
+     * Select specific fields to fetch from the Treatment
      */
-    select?: TreatSelect<ExtArgs> | null
+    select?: TreatmentSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Treat
+     * Omit specific fields from the Treatment
      */
-    omit?: TreatOmit<ExtArgs> | null
+    omit?: TreatmentOmit<ExtArgs> | null
     /**
-     * Filter, which Treat to fetch.
+     * Filter, which Treatment to fetch.
      */
-    where?: TreatWhereInput
+    where?: TreatmentWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Treats to fetch.
+     * Determine the order of Treatments to fetch.
      */
-    orderBy?: TreatOrderByWithRelationInput | TreatOrderByWithRelationInput[]
+    orderBy?: TreatmentOrderByWithRelationInput | TreatmentOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Treats.
+     * Sets the position for searching for Treatments.
      */
-    cursor?: TreatWhereUniqueInput
+    cursor?: TreatmentWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Treats from the position of the cursor.
+     * Take `±n` Treatments from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Treats.
+     * Skip the first `n` Treatments.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Treats.
+     * Filter by unique combinations of Treatments.
      */
-    distinct?: TreatScalarFieldEnum | TreatScalarFieldEnum[]
+    distinct?: TreatmentScalarFieldEnum | TreatmentScalarFieldEnum[]
   }
 
   /**
-   * Treat findFirstOrThrow
+   * Treatment findFirstOrThrow
    */
-  export type TreatFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Treat
+     * Select specific fields to fetch from the Treatment
      */
-    select?: TreatSelect<ExtArgs> | null
+    select?: TreatmentSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Treat
+     * Omit specific fields from the Treatment
      */
-    omit?: TreatOmit<ExtArgs> | null
+    omit?: TreatmentOmit<ExtArgs> | null
     /**
-     * Filter, which Treat to fetch.
+     * Filter, which Treatment to fetch.
      */
-    where?: TreatWhereInput
+    where?: TreatmentWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Treats to fetch.
+     * Determine the order of Treatments to fetch.
      */
-    orderBy?: TreatOrderByWithRelationInput | TreatOrderByWithRelationInput[]
+    orderBy?: TreatmentOrderByWithRelationInput | TreatmentOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for Treats.
+     * Sets the position for searching for Treatments.
      */
-    cursor?: TreatWhereUniqueInput
+    cursor?: TreatmentWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Treats from the position of the cursor.
+     * Take `±n` Treatments from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Treats.
+     * Skip the first `n` Treatments.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of Treats.
+     * Filter by unique combinations of Treatments.
      */
-    distinct?: TreatScalarFieldEnum | TreatScalarFieldEnum[]
+    distinct?: TreatmentScalarFieldEnum | TreatmentScalarFieldEnum[]
   }
 
   /**
-   * Treat findMany
+   * Treatment findMany
    */
-  export type TreatFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Treat
+     * Select specific fields to fetch from the Treatment
      */
-    select?: TreatSelect<ExtArgs> | null
+    select?: TreatmentSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Treat
+     * Omit specific fields from the Treatment
      */
-    omit?: TreatOmit<ExtArgs> | null
+    omit?: TreatmentOmit<ExtArgs> | null
     /**
-     * Filter, which Treats to fetch.
+     * Filter, which Treatments to fetch.
      */
-    where?: TreatWhereInput
+    where?: TreatmentWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of Treats to fetch.
+     * Determine the order of Treatments to fetch.
      */
-    orderBy?: TreatOrderByWithRelationInput | TreatOrderByWithRelationInput[]
+    orderBy?: TreatmentOrderByWithRelationInput | TreatmentOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing Treats.
+     * Sets the position for listing Treatments.
      */
-    cursor?: TreatWhereUniqueInput
+    cursor?: TreatmentWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` Treats from the position of the cursor.
+     * Take `±n` Treatments from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` Treats.
+     * Skip the first `n` Treatments.
      */
     skip?: number
-    distinct?: TreatScalarFieldEnum | TreatScalarFieldEnum[]
+    distinct?: TreatmentScalarFieldEnum | TreatmentScalarFieldEnum[]
   }
 
   /**
-   * Treat create
+   * Treatment create
    */
-  export type TreatCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Treat
+     * Select specific fields to fetch from the Treatment
      */
-    select?: TreatSelect<ExtArgs> | null
+    select?: TreatmentSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Treat
+     * Omit specific fields from the Treatment
      */
-    omit?: TreatOmit<ExtArgs> | null
+    omit?: TreatmentOmit<ExtArgs> | null
     /**
-     * The data needed to create a Treat.
+     * The data needed to create a Treatment.
      */
-    data: XOR<TreatCreateInput, TreatUncheckedCreateInput>
+    data: XOR<TreatmentCreateInput, TreatmentUncheckedCreateInput>
   }
 
   /**
-   * Treat createMany
+   * Treatment createMany
    */
-  export type TreatCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many Treats.
+     * The data used to create many Treatments.
      */
-    data: TreatCreateManyInput | TreatCreateManyInput[]
+    data: TreatmentCreateManyInput | TreatmentCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * Treat createManyAndReturn
+   * Treatment createManyAndReturn
    */
-  export type TreatCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Treat
+     * Select specific fields to fetch from the Treatment
      */
-    select?: TreatSelectCreateManyAndReturn<ExtArgs> | null
+    select?: TreatmentSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the Treat
+     * Omit specific fields from the Treatment
      */
-    omit?: TreatOmit<ExtArgs> | null
+    omit?: TreatmentOmit<ExtArgs> | null
     /**
-     * The data used to create many Treats.
+     * The data used to create many Treatments.
      */
-    data: TreatCreateManyInput | TreatCreateManyInput[]
+    data: TreatmentCreateManyInput | TreatmentCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * Treat update
+   * Treatment update
    */
-  export type TreatUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Treat
+     * Select specific fields to fetch from the Treatment
      */
-    select?: TreatSelect<ExtArgs> | null
+    select?: TreatmentSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Treat
+     * Omit specific fields from the Treatment
      */
-    omit?: TreatOmit<ExtArgs> | null
+    omit?: TreatmentOmit<ExtArgs> | null
     /**
-     * The data needed to update a Treat.
+     * The data needed to update a Treatment.
      */
-    data: XOR<TreatUpdateInput, TreatUncheckedUpdateInput>
+    data: XOR<TreatmentUpdateInput, TreatmentUncheckedUpdateInput>
     /**
-     * Choose, which Treat to update.
+     * Choose, which Treatment to update.
      */
-    where: TreatWhereUniqueInput
+    where: TreatmentWhereUniqueInput
   }
 
   /**
-   * Treat updateMany
+   * Treatment updateMany
    */
-  export type TreatUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update Treats.
+     * The data used to update Treatments.
      */
-    data: XOR<TreatUpdateManyMutationInput, TreatUncheckedUpdateManyInput>
+    data: XOR<TreatmentUpdateManyMutationInput, TreatmentUncheckedUpdateManyInput>
     /**
-     * Filter which Treats to update
+     * Filter which Treatments to update
      */
-    where?: TreatWhereInput
+    where?: TreatmentWhereInput
     /**
-     * Limit how many Treats to update.
+     * Limit how many Treatments to update.
      */
     limit?: number
   }
 
   /**
-   * Treat updateManyAndReturn
+   * Treatment updateManyAndReturn
    */
-  export type TreatUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Treat
+     * Select specific fields to fetch from the Treatment
      */
-    select?: TreatSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: TreatmentSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the Treat
+     * Omit specific fields from the Treatment
      */
-    omit?: TreatOmit<ExtArgs> | null
+    omit?: TreatmentOmit<ExtArgs> | null
     /**
-     * The data used to update Treats.
+     * The data used to update Treatments.
      */
-    data: XOR<TreatUpdateManyMutationInput, TreatUncheckedUpdateManyInput>
+    data: XOR<TreatmentUpdateManyMutationInput, TreatmentUncheckedUpdateManyInput>
     /**
-     * Filter which Treats to update
+     * Filter which Treatments to update
      */
-    where?: TreatWhereInput
+    where?: TreatmentWhereInput
     /**
-     * Limit how many Treats to update.
+     * Limit how many Treatments to update.
      */
     limit?: number
   }
 
   /**
-   * Treat upsert
+   * Treatment upsert
    */
-  export type TreatUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Treat
+     * Select specific fields to fetch from the Treatment
      */
-    select?: TreatSelect<ExtArgs> | null
+    select?: TreatmentSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Treat
+     * Omit specific fields from the Treatment
      */
-    omit?: TreatOmit<ExtArgs> | null
+    omit?: TreatmentOmit<ExtArgs> | null
     /**
-     * The filter to search for the Treat to update in case it exists.
+     * The filter to search for the Treatment to update in case it exists.
      */
-    where: TreatWhereUniqueInput
+    where: TreatmentWhereUniqueInput
     /**
-     * In case the Treat found by the `where` argument doesn't exist, create a new Treat with this data.
+     * In case the Treatment found by the `where` argument doesn't exist, create a new Treatment with this data.
      */
-    create: XOR<TreatCreateInput, TreatUncheckedCreateInput>
+    create: XOR<TreatmentCreateInput, TreatmentUncheckedCreateInput>
     /**
-     * In case the Treat was found with the provided `where` argument, update it with this data.
+     * In case the Treatment was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<TreatUpdateInput, TreatUncheckedUpdateInput>
+    update: XOR<TreatmentUpdateInput, TreatmentUncheckedUpdateInput>
   }
 
   /**
-   * Treat delete
+   * Treatment delete
    */
-  export type TreatDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Treat
+     * Select specific fields to fetch from the Treatment
      */
-    select?: TreatSelect<ExtArgs> | null
+    select?: TreatmentSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Treat
+     * Omit specific fields from the Treatment
      */
-    omit?: TreatOmit<ExtArgs> | null
+    omit?: TreatmentOmit<ExtArgs> | null
     /**
-     * Filter which Treat to delete.
+     * Filter which Treatment to delete.
      */
-    where: TreatWhereUniqueInput
+    where: TreatmentWhereUniqueInput
   }
 
   /**
-   * Treat deleteMany
+   * Treatment deleteMany
    */
-  export type TreatDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which Treats to delete
+     * Filter which Treatments to delete
      */
-    where?: TreatWhereInput
+    where?: TreatmentWhereInput
     /**
-     * Limit how many Treats to delete.
+     * Limit how many Treatments to delete.
      */
     limit?: number
   }
 
   /**
-   * Treat without action
+   * Treatment without action
    */
-  export type TreatDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TreatmentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the Treat
+     * Select specific fields to fetch from the Treatment
      */
-    select?: TreatSelect<ExtArgs> | null
+    select?: TreatmentSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the Treat
+     * Omit specific fields from the Treatment
      */
-    omit?: TreatOmit<ExtArgs> | null
+    omit?: TreatmentOmit<ExtArgs> | null
   }
 
 
@@ -8778,7 +8778,7 @@ export namespace Prisma {
   export type RevenueScalarFieldEnum = (typeof RevenueScalarFieldEnum)[keyof typeof RevenueScalarFieldEnum]
 
 
-  export const TreatScalarFieldEnum: {
+  export const TreatmentScalarFieldEnum: {
     id: 'id',
     source_id: 'source_id',
     name: 'name',
@@ -8839,7 +8839,7 @@ export namespace Prisma {
     extractedAt: 'extractedAt'
   };
 
-  export type TreatScalarFieldEnum = (typeof TreatScalarFieldEnum)[keyof typeof TreatScalarFieldEnum]
+  export type TreatmentScalarFieldEnum = (typeof TreatmentScalarFieldEnum)[keyof typeof TreatmentScalarFieldEnum]
 
 
   export const AppointmentScalarFieldEnum: {
@@ -9491,71 +9491,71 @@ export namespace Prisma {
     extractedAt?: DateTimeWithAggregatesFilter<"Revenue"> | Date | string
   }
 
-  export type TreatWhereInput = {
-    AND?: TreatWhereInput | TreatWhereInput[]
-    OR?: TreatWhereInput[]
-    NOT?: TreatWhereInput | TreatWhereInput[]
-    id?: IntFilter<"Treat"> | number
-    source_id?: StringFilter<"Treat"> | string
-    name?: StringNullableFilter<"Treat"> | string | null
-    code?: StringNullableFilter<"Treat"> | string | null
-    codeOld?: StringNullableFilter<"Treat"> | string | null
-    docCode?: StringNullableFilter<"Treat"> | string | null
-    email?: StringNullableFilter<"Treat"> | string | null
-    phone?: StringNullableFilter<"Treat"> | string | null
-    phone2?: StringNullableFilter<"Treat"> | string | null
-    birthday?: DateTimeNullableFilter<"Treat"> | Date | string | null
-    gender?: StringNullableFilter<"Treat"> | string | null
-    address?: StringNullableFilter<"Treat"> | string | null
-    commune?: StringNullableFilter<"Treat"> | string | null
-    district?: StringNullableFilter<"Treat"> | string | null
-    city?: StringNullableFilter<"Treat"> | string | null
-    serviceId?: IntFilter<"Treat"> | number
-    serviceTypeId?: IntFilter<"Treat"> | number
-    serviceCode?: StringNullableFilter<"Treat"> | string | null
-    tabId?: IntFilter<"Treat"> | number
-    tabCode?: StringNullableFilter<"Treat"> | string | null
-    comboId?: IntFilter<"Treat"> | number
-    comboCode?: StringNullableFilter<"Treat"> | string | null
-    serviceName?: StringNullableFilter<"Treat"> | string | null
-    timeIndex?: StringNullableFilter<"Treat"> | string | null
-    timeToTreatment?: IntFilter<"Treat"> | number
-    teethChoosing?: StringNullableFilter<"Treat"> | string | null
-    priceUnit?: FloatFilter<"Treat"> | number
-    quantity?: FloatFilter<"Treat"> | number
-    discount?: FloatFilter<"Treat"> | number
-    priceRoot?: FloatFilter<"Treat"> | number
-    priceDiscounted?: FloatFilter<"Treat"> | number
-    doctor?: IntFilter<"Treat"> | number
-    doctor2?: IntFilter<"Treat"> | number
-    doctor3?: IntFilter<"Treat"> | number
-    doctor4?: IntFilter<"Treat"> | number
-    assistant?: IntFilter<"Treat"> | number
-    assistant2?: IntFilter<"Treat"> | number
-    assistant3?: IntFilter<"Treat"> | number
-    assistant4?: IntFilter<"Treat"> | number
-    technician?: IntFilter<"Treat"> | number
-    technician2?: IntFilter<"Treat"> | number
-    timeTreatIndex?: IntFilter<"Treat"> | number
-    percent?: FloatFilter<"Treat"> | number
-    percentNew?: FloatFilter<"Treat"> | number
-    percentStage?: FloatFilter<"Treat"> | number
-    percentNewStage?: FloatFilter<"Treat"> | number
-    note?: StringNullableFilter<"Treat"> | string | null
-    content?: StringNullableFilter<"Treat"> | string | null
-    contentNext?: StringNullableFilter<"Treat"> | string | null
-    symptoms?: StringNullableFilter<"Treat"> | string | null
-    treatDateNext?: DateTimeNullableFilter<"Treat"> | Date | string | null
-    branchId?: IntFilter<"Treat"> | number
-    createdDate?: DateTimeNullableFilter<"Treat"> | Date | string | null
-    createdBy?: StringNullableFilter<"Treat"> | string | null
-    modifiedDate?: DateTimeNullableFilter<"Treat"> | Date | string | null
-    modifiedBy?: IntNullableFilter<"Treat"> | number | null
-    state?: IntFilter<"Treat"> | number
-    extractedAt?: DateTimeFilter<"Treat"> | Date | string
+  export type TreatmentWhereInput = {
+    AND?: TreatmentWhereInput | TreatmentWhereInput[]
+    OR?: TreatmentWhereInput[]
+    NOT?: TreatmentWhereInput | TreatmentWhereInput[]
+    id?: IntFilter<"Treatment"> | number
+    source_id?: StringFilter<"Treatment"> | string
+    name?: StringNullableFilter<"Treatment"> | string | null
+    code?: StringNullableFilter<"Treatment"> | string | null
+    codeOld?: StringNullableFilter<"Treatment"> | string | null
+    docCode?: StringNullableFilter<"Treatment"> | string | null
+    email?: StringNullableFilter<"Treatment"> | string | null
+    phone?: StringNullableFilter<"Treatment"> | string | null
+    phone2?: StringNullableFilter<"Treatment"> | string | null
+    birthday?: DateTimeNullableFilter<"Treatment"> | Date | string | null
+    gender?: StringNullableFilter<"Treatment"> | string | null
+    address?: StringNullableFilter<"Treatment"> | string | null
+    commune?: StringNullableFilter<"Treatment"> | string | null
+    district?: StringNullableFilter<"Treatment"> | string | null
+    city?: StringNullableFilter<"Treatment"> | string | null
+    serviceId?: IntFilter<"Treatment"> | number
+    serviceTypeId?: IntFilter<"Treatment"> | number
+    serviceCode?: StringNullableFilter<"Treatment"> | string | null
+    tabId?: IntFilter<"Treatment"> | number
+    tabCode?: StringNullableFilter<"Treatment"> | string | null
+    comboId?: IntFilter<"Treatment"> | number
+    comboCode?: StringNullableFilter<"Treatment"> | string | null
+    serviceName?: StringNullableFilter<"Treatment"> | string | null
+    timeIndex?: StringNullableFilter<"Treatment"> | string | null
+    timeToTreatment?: IntFilter<"Treatment"> | number
+    teethChoosing?: StringNullableFilter<"Treatment"> | string | null
+    priceUnit?: FloatFilter<"Treatment"> | number
+    quantity?: FloatFilter<"Treatment"> | number
+    discount?: FloatFilter<"Treatment"> | number
+    priceRoot?: FloatFilter<"Treatment"> | number
+    priceDiscounted?: FloatFilter<"Treatment"> | number
+    doctor?: IntFilter<"Treatment"> | number
+    doctor2?: IntFilter<"Treatment"> | number
+    doctor3?: IntFilter<"Treatment"> | number
+    doctor4?: IntFilter<"Treatment"> | number
+    assistant?: IntFilter<"Treatment"> | number
+    assistant2?: IntFilter<"Treatment"> | number
+    assistant3?: IntFilter<"Treatment"> | number
+    assistant4?: IntFilter<"Treatment"> | number
+    technician?: IntFilter<"Treatment"> | number
+    technician2?: IntFilter<"Treatment"> | number
+    timeTreatIndex?: IntFilter<"Treatment"> | number
+    percent?: FloatFilter<"Treatment"> | number
+    percentNew?: FloatFilter<"Treatment"> | number
+    percentStage?: FloatFilter<"Treatment"> | number
+    percentNewStage?: FloatFilter<"Treatment"> | number
+    note?: StringNullableFilter<"Treatment"> | string | null
+    content?: StringNullableFilter<"Treatment"> | string | null
+    contentNext?: StringNullableFilter<"Treatment"> | string | null
+    symptoms?: StringNullableFilter<"Treatment"> | string | null
+    treatDateNext?: DateTimeNullableFilter<"Treatment"> | Date | string | null
+    branchId?: IntFilter<"Treatment"> | number
+    createdDate?: DateTimeNullableFilter<"Treatment"> | Date | string | null
+    createdBy?: StringNullableFilter<"Treatment"> | string | null
+    modifiedDate?: DateTimeNullableFilter<"Treatment"> | Date | string | null
+    modifiedBy?: IntNullableFilter<"Treatment"> | number | null
+    state?: IntFilter<"Treatment"> | number
+    extractedAt?: DateTimeFilter<"Treatment"> | Date | string
   }
 
-  export type TreatOrderByWithRelationInput = {
+  export type TreatmentOrderByWithRelationInput = {
     id?: SortOrder
     source_id?: SortOrder
     name?: SortOrderInput | SortOrder
@@ -9616,71 +9616,72 @@ export namespace Prisma {
     extractedAt?: SortOrder
   }
 
-  export type TreatWhereUniqueInput = Prisma.AtLeast<{
+  export type TreatmentWhereUniqueInput = Prisma.AtLeast<{
     id?: number
     source_id?: string
-    AND?: TreatWhereInput | TreatWhereInput[]
-    OR?: TreatWhereInput[]
-    NOT?: TreatWhereInput | TreatWhereInput[]
-    name?: StringNullableFilter<"Treat"> | string | null
-    code?: StringNullableFilter<"Treat"> | string | null
-    codeOld?: StringNullableFilter<"Treat"> | string | null
-    docCode?: StringNullableFilter<"Treat"> | string | null
-    email?: StringNullableFilter<"Treat"> | string | null
-    phone?: StringNullableFilter<"Treat"> | string | null
-    phone2?: StringNullableFilter<"Treat"> | string | null
-    birthday?: DateTimeNullableFilter<"Treat"> | Date | string | null
-    gender?: StringNullableFilter<"Treat"> | string | null
-    address?: StringNullableFilter<"Treat"> | string | null
-    commune?: StringNullableFilter<"Treat"> | string | null
-    district?: StringNullableFilter<"Treat"> | string | null
-    city?: StringNullableFilter<"Treat"> | string | null
-    serviceId?: IntFilter<"Treat"> | number
-    serviceTypeId?: IntFilter<"Treat"> | number
-    serviceCode?: StringNullableFilter<"Treat"> | string | null
-    tabId?: IntFilter<"Treat"> | number
-    tabCode?: StringNullableFilter<"Treat"> | string | null
-    comboId?: IntFilter<"Treat"> | number
-    comboCode?: StringNullableFilter<"Treat"> | string | null
-    serviceName?: StringNullableFilter<"Treat"> | string | null
-    timeIndex?: StringNullableFilter<"Treat"> | string | null
-    timeToTreatment?: IntFilter<"Treat"> | number
-    teethChoosing?: StringNullableFilter<"Treat"> | string | null
-    priceUnit?: FloatFilter<"Treat"> | number
-    quantity?: FloatFilter<"Treat"> | number
-    discount?: FloatFilter<"Treat"> | number
-    priceRoot?: FloatFilter<"Treat"> | number
-    priceDiscounted?: FloatFilter<"Treat"> | number
-    doctor?: IntFilter<"Treat"> | number
-    doctor2?: IntFilter<"Treat"> | number
-    doctor3?: IntFilter<"Treat"> | number
-    doctor4?: IntFilter<"Treat"> | number
-    assistant?: IntFilter<"Treat"> | number
-    assistant2?: IntFilter<"Treat"> | number
-    assistant3?: IntFilter<"Treat"> | number
-    assistant4?: IntFilter<"Treat"> | number
-    technician?: IntFilter<"Treat"> | number
-    technician2?: IntFilter<"Treat"> | number
-    timeTreatIndex?: IntFilter<"Treat"> | number
-    percent?: FloatFilter<"Treat"> | number
-    percentNew?: FloatFilter<"Treat"> | number
-    percentStage?: FloatFilter<"Treat"> | number
-    percentNewStage?: FloatFilter<"Treat"> | number
-    note?: StringNullableFilter<"Treat"> | string | null
-    content?: StringNullableFilter<"Treat"> | string | null
-    contentNext?: StringNullableFilter<"Treat"> | string | null
-    symptoms?: StringNullableFilter<"Treat"> | string | null
-    treatDateNext?: DateTimeNullableFilter<"Treat"> | Date | string | null
-    branchId?: IntFilter<"Treat"> | number
-    createdDate?: DateTimeNullableFilter<"Treat"> | Date | string | null
-    createdBy?: StringNullableFilter<"Treat"> | string | null
-    modifiedDate?: DateTimeNullableFilter<"Treat"> | Date | string | null
-    modifiedBy?: IntNullableFilter<"Treat"> | number | null
-    state?: IntFilter<"Treat"> | number
-    extractedAt?: DateTimeFilter<"Treat"> | Date | string
-  }, "id" | "source_id">
+    code_serviceCode_createdDate?: TreatmentCodeServiceCodeCreatedDateCompoundUniqueInput
+    AND?: TreatmentWhereInput | TreatmentWhereInput[]
+    OR?: TreatmentWhereInput[]
+    NOT?: TreatmentWhereInput | TreatmentWhereInput[]
+    name?: StringNullableFilter<"Treatment"> | string | null
+    code?: StringNullableFilter<"Treatment"> | string | null
+    codeOld?: StringNullableFilter<"Treatment"> | string | null
+    docCode?: StringNullableFilter<"Treatment"> | string | null
+    email?: StringNullableFilter<"Treatment"> | string | null
+    phone?: StringNullableFilter<"Treatment"> | string | null
+    phone2?: StringNullableFilter<"Treatment"> | string | null
+    birthday?: DateTimeNullableFilter<"Treatment"> | Date | string | null
+    gender?: StringNullableFilter<"Treatment"> | string | null
+    address?: StringNullableFilter<"Treatment"> | string | null
+    commune?: StringNullableFilter<"Treatment"> | string | null
+    district?: StringNullableFilter<"Treatment"> | string | null
+    city?: StringNullableFilter<"Treatment"> | string | null
+    serviceId?: IntFilter<"Treatment"> | number
+    serviceTypeId?: IntFilter<"Treatment"> | number
+    serviceCode?: StringNullableFilter<"Treatment"> | string | null
+    tabId?: IntFilter<"Treatment"> | number
+    tabCode?: StringNullableFilter<"Treatment"> | string | null
+    comboId?: IntFilter<"Treatment"> | number
+    comboCode?: StringNullableFilter<"Treatment"> | string | null
+    serviceName?: StringNullableFilter<"Treatment"> | string | null
+    timeIndex?: StringNullableFilter<"Treatment"> | string | null
+    timeToTreatment?: IntFilter<"Treatment"> | number
+    teethChoosing?: StringNullableFilter<"Treatment"> | string | null
+    priceUnit?: FloatFilter<"Treatment"> | number
+    quantity?: FloatFilter<"Treatment"> | number
+    discount?: FloatFilter<"Treatment"> | number
+    priceRoot?: FloatFilter<"Treatment"> | number
+    priceDiscounted?: FloatFilter<"Treatment"> | number
+    doctor?: IntFilter<"Treatment"> | number
+    doctor2?: IntFilter<"Treatment"> | number
+    doctor3?: IntFilter<"Treatment"> | number
+    doctor4?: IntFilter<"Treatment"> | number
+    assistant?: IntFilter<"Treatment"> | number
+    assistant2?: IntFilter<"Treatment"> | number
+    assistant3?: IntFilter<"Treatment"> | number
+    assistant4?: IntFilter<"Treatment"> | number
+    technician?: IntFilter<"Treatment"> | number
+    technician2?: IntFilter<"Treatment"> | number
+    timeTreatIndex?: IntFilter<"Treatment"> | number
+    percent?: FloatFilter<"Treatment"> | number
+    percentNew?: FloatFilter<"Treatment"> | number
+    percentStage?: FloatFilter<"Treatment"> | number
+    percentNewStage?: FloatFilter<"Treatment"> | number
+    note?: StringNullableFilter<"Treatment"> | string | null
+    content?: StringNullableFilter<"Treatment"> | string | null
+    contentNext?: StringNullableFilter<"Treatment"> | string | null
+    symptoms?: StringNullableFilter<"Treatment"> | string | null
+    treatDateNext?: DateTimeNullableFilter<"Treatment"> | Date | string | null
+    branchId?: IntFilter<"Treatment"> | number
+    createdDate?: DateTimeNullableFilter<"Treatment"> | Date | string | null
+    createdBy?: StringNullableFilter<"Treatment"> | string | null
+    modifiedDate?: DateTimeNullableFilter<"Treatment"> | Date | string | null
+    modifiedBy?: IntNullableFilter<"Treatment"> | number | null
+    state?: IntFilter<"Treatment"> | number
+    extractedAt?: DateTimeFilter<"Treatment"> | Date | string
+  }, "id" | "source_id" | "code_serviceCode_createdDate">
 
-  export type TreatOrderByWithAggregationInput = {
+  export type TreatmentOrderByWithAggregationInput = {
     id?: SortOrder
     source_id?: SortOrder
     name?: SortOrderInput | SortOrder
@@ -9739,75 +9740,75 @@ export namespace Prisma {
     modifiedBy?: SortOrderInput | SortOrder
     state?: SortOrder
     extractedAt?: SortOrder
-    _count?: TreatCountOrderByAggregateInput
-    _avg?: TreatAvgOrderByAggregateInput
-    _max?: TreatMaxOrderByAggregateInput
-    _min?: TreatMinOrderByAggregateInput
-    _sum?: TreatSumOrderByAggregateInput
+    _count?: TreatmentCountOrderByAggregateInput
+    _avg?: TreatmentAvgOrderByAggregateInput
+    _max?: TreatmentMaxOrderByAggregateInput
+    _min?: TreatmentMinOrderByAggregateInput
+    _sum?: TreatmentSumOrderByAggregateInput
   }
 
-  export type TreatScalarWhereWithAggregatesInput = {
-    AND?: TreatScalarWhereWithAggregatesInput | TreatScalarWhereWithAggregatesInput[]
-    OR?: TreatScalarWhereWithAggregatesInput[]
-    NOT?: TreatScalarWhereWithAggregatesInput | TreatScalarWhereWithAggregatesInput[]
-    id?: IntWithAggregatesFilter<"Treat"> | number
-    source_id?: StringWithAggregatesFilter<"Treat"> | string
-    name?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    code?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    codeOld?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    docCode?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    email?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    phone?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    phone2?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    birthday?: DateTimeNullableWithAggregatesFilter<"Treat"> | Date | string | null
-    gender?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    address?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    commune?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    district?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    city?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    serviceId?: IntWithAggregatesFilter<"Treat"> | number
-    serviceTypeId?: IntWithAggregatesFilter<"Treat"> | number
-    serviceCode?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    tabId?: IntWithAggregatesFilter<"Treat"> | number
-    tabCode?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    comboId?: IntWithAggregatesFilter<"Treat"> | number
-    comboCode?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    serviceName?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    timeIndex?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    timeToTreatment?: IntWithAggregatesFilter<"Treat"> | number
-    teethChoosing?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    priceUnit?: FloatWithAggregatesFilter<"Treat"> | number
-    quantity?: FloatWithAggregatesFilter<"Treat"> | number
-    discount?: FloatWithAggregatesFilter<"Treat"> | number
-    priceRoot?: FloatWithAggregatesFilter<"Treat"> | number
-    priceDiscounted?: FloatWithAggregatesFilter<"Treat"> | number
-    doctor?: IntWithAggregatesFilter<"Treat"> | number
-    doctor2?: IntWithAggregatesFilter<"Treat"> | number
-    doctor3?: IntWithAggregatesFilter<"Treat"> | number
-    doctor4?: IntWithAggregatesFilter<"Treat"> | number
-    assistant?: IntWithAggregatesFilter<"Treat"> | number
-    assistant2?: IntWithAggregatesFilter<"Treat"> | number
-    assistant3?: IntWithAggregatesFilter<"Treat"> | number
-    assistant4?: IntWithAggregatesFilter<"Treat"> | number
-    technician?: IntWithAggregatesFilter<"Treat"> | number
-    technician2?: IntWithAggregatesFilter<"Treat"> | number
-    timeTreatIndex?: IntWithAggregatesFilter<"Treat"> | number
-    percent?: FloatWithAggregatesFilter<"Treat"> | number
-    percentNew?: FloatWithAggregatesFilter<"Treat"> | number
-    percentStage?: FloatWithAggregatesFilter<"Treat"> | number
-    percentNewStage?: FloatWithAggregatesFilter<"Treat"> | number
-    note?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    content?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    contentNext?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    symptoms?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    treatDateNext?: DateTimeNullableWithAggregatesFilter<"Treat"> | Date | string | null
-    branchId?: IntWithAggregatesFilter<"Treat"> | number
-    createdDate?: DateTimeNullableWithAggregatesFilter<"Treat"> | Date | string | null
-    createdBy?: StringNullableWithAggregatesFilter<"Treat"> | string | null
-    modifiedDate?: DateTimeNullableWithAggregatesFilter<"Treat"> | Date | string | null
-    modifiedBy?: IntNullableWithAggregatesFilter<"Treat"> | number | null
-    state?: IntWithAggregatesFilter<"Treat"> | number
-    extractedAt?: DateTimeWithAggregatesFilter<"Treat"> | Date | string
+  export type TreatmentScalarWhereWithAggregatesInput = {
+    AND?: TreatmentScalarWhereWithAggregatesInput | TreatmentScalarWhereWithAggregatesInput[]
+    OR?: TreatmentScalarWhereWithAggregatesInput[]
+    NOT?: TreatmentScalarWhereWithAggregatesInput | TreatmentScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Treatment"> | number
+    source_id?: StringWithAggregatesFilter<"Treatment"> | string
+    name?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    code?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    codeOld?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    docCode?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    email?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    phone2?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    birthday?: DateTimeNullableWithAggregatesFilter<"Treatment"> | Date | string | null
+    gender?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    address?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    commune?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    district?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    city?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    serviceId?: IntWithAggregatesFilter<"Treatment"> | number
+    serviceTypeId?: IntWithAggregatesFilter<"Treatment"> | number
+    serviceCode?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    tabId?: IntWithAggregatesFilter<"Treatment"> | number
+    tabCode?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    comboId?: IntWithAggregatesFilter<"Treatment"> | number
+    comboCode?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    serviceName?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    timeIndex?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    timeToTreatment?: IntWithAggregatesFilter<"Treatment"> | number
+    teethChoosing?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    priceUnit?: FloatWithAggregatesFilter<"Treatment"> | number
+    quantity?: FloatWithAggregatesFilter<"Treatment"> | number
+    discount?: FloatWithAggregatesFilter<"Treatment"> | number
+    priceRoot?: FloatWithAggregatesFilter<"Treatment"> | number
+    priceDiscounted?: FloatWithAggregatesFilter<"Treatment"> | number
+    doctor?: IntWithAggregatesFilter<"Treatment"> | number
+    doctor2?: IntWithAggregatesFilter<"Treatment"> | number
+    doctor3?: IntWithAggregatesFilter<"Treatment"> | number
+    doctor4?: IntWithAggregatesFilter<"Treatment"> | number
+    assistant?: IntWithAggregatesFilter<"Treatment"> | number
+    assistant2?: IntWithAggregatesFilter<"Treatment"> | number
+    assistant3?: IntWithAggregatesFilter<"Treatment"> | number
+    assistant4?: IntWithAggregatesFilter<"Treatment"> | number
+    technician?: IntWithAggregatesFilter<"Treatment"> | number
+    technician2?: IntWithAggregatesFilter<"Treatment"> | number
+    timeTreatIndex?: IntWithAggregatesFilter<"Treatment"> | number
+    percent?: FloatWithAggregatesFilter<"Treatment"> | number
+    percentNew?: FloatWithAggregatesFilter<"Treatment"> | number
+    percentStage?: FloatWithAggregatesFilter<"Treatment"> | number
+    percentNewStage?: FloatWithAggregatesFilter<"Treatment"> | number
+    note?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    content?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    contentNext?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    symptoms?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    treatDateNext?: DateTimeNullableWithAggregatesFilter<"Treatment"> | Date | string | null
+    branchId?: IntWithAggregatesFilter<"Treatment"> | number
+    createdDate?: DateTimeNullableWithAggregatesFilter<"Treatment"> | Date | string | null
+    createdBy?: StringNullableWithAggregatesFilter<"Treatment"> | string | null
+    modifiedDate?: DateTimeNullableWithAggregatesFilter<"Treatment"> | Date | string | null
+    modifiedBy?: IntNullableWithAggregatesFilter<"Treatment"> | number | null
+    state?: IntWithAggregatesFilter<"Treatment"> | number
+    extractedAt?: DateTimeWithAggregatesFilter<"Treatment"> | Date | string
   }
 
   export type AppointmentWhereInput = {
@@ -10667,7 +10668,7 @@ export namespace Prisma {
     extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type TreatCreateInput = {
+  export type TreatmentCreateInput = {
     source_id: string
     name?: string | null
     code?: string | null
@@ -10727,7 +10728,7 @@ export namespace Prisma {
     extractedAt?: Date | string
   }
 
-  export type TreatUncheckedCreateInput = {
+  export type TreatmentUncheckedCreateInput = {
     id?: number
     source_id: string
     name?: string | null
@@ -10788,7 +10789,7 @@ export namespace Prisma {
     extractedAt?: Date | string
   }
 
-  export type TreatUpdateInput = {
+  export type TreatmentUpdateInput = {
     source_id?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     code?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10848,7 +10849,7 @@ export namespace Prisma {
     extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type TreatUncheckedUpdateInput = {
+  export type TreatmentUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     source_id?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
@@ -10909,7 +10910,7 @@ export namespace Prisma {
     extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type TreatCreateManyInput = {
+  export type TreatmentCreateManyInput = {
     id?: number
     source_id: string
     name?: string | null
@@ -10970,7 +10971,7 @@ export namespace Prisma {
     extractedAt?: Date | string
   }
 
-  export type TreatUpdateManyMutationInput = {
+  export type TreatmentUpdateManyMutationInput = {
     source_id?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     code?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11030,7 +11031,7 @@ export namespace Prisma {
     extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type TreatUncheckedUpdateManyInput = {
+  export type TreatmentUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     source_id?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11947,7 +11948,13 @@ export namespace Prisma {
     _max?: NestedFloatFilter<$PrismaModel>
   }
 
-  export type TreatCountOrderByAggregateInput = {
+  export type TreatmentCodeServiceCodeCreatedDateCompoundUniqueInput = {
+    code: string
+    serviceCode: string
+    createdDate: Date | string
+  }
+
+  export type TreatmentCountOrderByAggregateInput = {
     id?: SortOrder
     source_id?: SortOrder
     name?: SortOrder
@@ -12008,7 +12015,7 @@ export namespace Prisma {
     extractedAt?: SortOrder
   }
 
-  export type TreatAvgOrderByAggregateInput = {
+  export type TreatmentAvgOrderByAggregateInput = {
     id?: SortOrder
     serviceId?: SortOrder
     serviceTypeId?: SortOrder
@@ -12040,68 +12047,7 @@ export namespace Prisma {
     state?: SortOrder
   }
 
-  export type TreatMaxOrderByAggregateInput = {
-    id?: SortOrder
-    source_id?: SortOrder
-    name?: SortOrder
-    code?: SortOrder
-    codeOld?: SortOrder
-    docCode?: SortOrder
-    email?: SortOrder
-    phone?: SortOrder
-    phone2?: SortOrder
-    birthday?: SortOrder
-    gender?: SortOrder
-    address?: SortOrder
-    commune?: SortOrder
-    district?: SortOrder
-    city?: SortOrder
-    serviceId?: SortOrder
-    serviceTypeId?: SortOrder
-    serviceCode?: SortOrder
-    tabId?: SortOrder
-    tabCode?: SortOrder
-    comboId?: SortOrder
-    comboCode?: SortOrder
-    serviceName?: SortOrder
-    timeIndex?: SortOrder
-    timeToTreatment?: SortOrder
-    teethChoosing?: SortOrder
-    priceUnit?: SortOrder
-    quantity?: SortOrder
-    discount?: SortOrder
-    priceRoot?: SortOrder
-    priceDiscounted?: SortOrder
-    doctor?: SortOrder
-    doctor2?: SortOrder
-    doctor3?: SortOrder
-    doctor4?: SortOrder
-    assistant?: SortOrder
-    assistant2?: SortOrder
-    assistant3?: SortOrder
-    assistant4?: SortOrder
-    technician?: SortOrder
-    technician2?: SortOrder
-    timeTreatIndex?: SortOrder
-    percent?: SortOrder
-    percentNew?: SortOrder
-    percentStage?: SortOrder
-    percentNewStage?: SortOrder
-    note?: SortOrder
-    content?: SortOrder
-    contentNext?: SortOrder
-    symptoms?: SortOrder
-    treatDateNext?: SortOrder
-    branchId?: SortOrder
-    createdDate?: SortOrder
-    createdBy?: SortOrder
-    modifiedDate?: SortOrder
-    modifiedBy?: SortOrder
-    state?: SortOrder
-    extractedAt?: SortOrder
-  }
-
-  export type TreatMinOrderByAggregateInput = {
+  export type TreatmentMaxOrderByAggregateInput = {
     id?: SortOrder
     source_id?: SortOrder
     name?: SortOrder
@@ -12162,7 +12108,68 @@ export namespace Prisma {
     extractedAt?: SortOrder
   }
 
-  export type TreatSumOrderByAggregateInput = {
+  export type TreatmentMinOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    codeOld?: SortOrder
+    docCode?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    phone2?: SortOrder
+    birthday?: SortOrder
+    gender?: SortOrder
+    address?: SortOrder
+    commune?: SortOrder
+    district?: SortOrder
+    city?: SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    serviceCode?: SortOrder
+    tabId?: SortOrder
+    tabCode?: SortOrder
+    comboId?: SortOrder
+    comboCode?: SortOrder
+    serviceName?: SortOrder
+    timeIndex?: SortOrder
+    timeToTreatment?: SortOrder
+    teethChoosing?: SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    note?: SortOrder
+    content?: SortOrder
+    contentNext?: SortOrder
+    symptoms?: SortOrder
+    treatDateNext?: SortOrder
+    branchId?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type TreatmentSumOrderByAggregateInput = {
     id?: SortOrder
     serviceId?: SortOrder
     serviceTypeId?: SortOrder

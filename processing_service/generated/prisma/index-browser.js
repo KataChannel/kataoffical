@@ -213,7 +213,7 @@ exports.Prisma.RevenueScalarFieldEnum = {
   extractedAt: 'extractedAt'
 };
 
-exports.Prisma.TreatScalarFieldEnum = {
+exports.Prisma.TreatmentScalarFieldEnum = {
   id: 'id',
   source_id: 'source_id',
   name: 'name',
@@ -330,7 +330,7 @@ exports.Prisma.ModelName = {
   ProcessedPost: 'ProcessedPost',
   Customer: 'Customer',
   Revenue: 'Revenue',
-  Treat: 'Treat',
+  Treatment: 'Treatment',
   Appointment: 'Appointment'
 };
 

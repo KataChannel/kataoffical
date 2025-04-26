@@ -110,7 +110,7 @@ datasource db {
   }
 
 
-  model Treat {
+  model Treatment {
     id              Int       @id @default(autoincrement())
     source_id       String    @unique
     name            String?
@@ -177,8 +177,8 @@ datasource db {
     modifiedBy      Int?      @default(0)
     state           Int       @default(0)
     extractedAt     DateTime  @default(now())
-
-    @@map("treats")
+    @@unique([code, serviceCode, createdDate])
+    @@map("treatment")
   }
 
   model Appointment {
