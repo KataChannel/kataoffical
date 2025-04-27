@@ -4,12 +4,18 @@ import { KeyfiguresComponent } from './keyfigures/keyfigures.component';
 import { Sanphams } from '../../shared/mockdata/sanpham';
 import { Reviews } from '../../shared/mockdata/review';
 import { Baiviets } from '../../shared/mockdata/baiviet';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   imports: [
-    SwiperComponent,
-    KeyfiguresComponent,
+    MatButtonModule,
+    MatMenuModule,
+    RouterLink,
+    RouterLinkActive,
+    RouterOutlet
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'

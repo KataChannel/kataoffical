@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { ListMenuComponent } from '../listmenu/listmenu.component';
 import { MenuService } from '../menu.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
-import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
+import { convertToSlug, GenId } from '../../../shared/utils/shared.utils';
   @Component({
     selector: 'app-detailmenu',
     imports: [
@@ -30,7 +30,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     styleUrl: './detailmenu.component.scss'
   })
   export class DetailMenuComponent {
-    _ListMenuComponent:ListMenuComponent = inject(ListMenuComponent)
+    _ListmenuComponent:ListMenuComponent = inject(ListMenuComponent)
     _MenuService:MenuService = inject(MenuService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
@@ -39,26 +39,27 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     constructor(){
       this._route.paramMap.subscribe(async (params) => {
         const id = params.get('id');
-        this._MenuService.setMenuId(id);
-        await this._MenuService.getAllMenu();
-        this.ListMenu = this._MenuService.ListMenu();
+         this._MenuService.setMenuId(id);
+         await this._MenuService.getAllMenu();
+         this.ListMenu = this._MenuService.ListMenu();
       });
   
       effect(async () => {
         const id = this._MenuService.menuId();
+      
         if (!id){
           this._router.navigate(['/admin/menu']);
-          this._ListMenuComponent.drawer.close();
+          this._ListmenuComponent.drawer.close();
         }
-        if(id === 'new'){
-          this.DetailMenu.set({});
-          this._ListMenuComponent.drawer.open();
+        if(id === '0'){
+          this.DetailMenu.set({ title: GenId(8, false), slug: GenId(8, false) });
+          this._ListmenuComponent.drawer.open();
           this.isEdit.update(value => !value);
-          this._router.navigate(['/admin/menu', "new"]);
+          this._router.navigate(['/admin/menu', "0"]);
         }
         else{
-            await this._MenuService.getMenuBy({id:id});
-            this._ListMenuComponent.drawer.open();
+            await this._MenuService.getMenuByid(id);
+            this._ListmenuComponent.drawer.open();
             this._router.navigate(['/admin/menu', id]);
         }
       });
@@ -70,7 +71,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     async ngOnInit() {       
     }
     async handleMenuAction() {
-      if (this.menuId() === 'new') {
+      if (this.menuId() === '0') {
         await this.createMenu();
       }
       else {
@@ -94,6 +95,10 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 
     private async updateMenu() {
       try {
+        this.DetailMenu.update((v: any) => {
+          const { children, ...rest } = v;
+          return rest;
+        });
         await this._MenuService.updateMenu(this.DetailMenu());
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,
@@ -125,7 +130,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     }
     goBack(){
       this._router.navigate(['/admin/menu'])
-      this._ListMenuComponent.drawer.close();
+      this._ListmenuComponent.drawer.close();
     }
     trackByFn(index: number, item: any): any {
       return item.id;

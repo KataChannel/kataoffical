@@ -1,4 +1,3 @@
-<kata-login></kata-login>
 @defer {
   <div class="relative w-screen h-screen overflow-hidden flex flex-col bg-slate-100">
     <img *ngIf="Config?.Backgroup?.url" [src]="Config.Backgroup.url" [alt]="Config.Backgroup.alt" class="object-cover absolute top-0 right-0 w-full h-full">
@@ -24,7 +23,7 @@
                 <a routerLink="/register" class="text-blue-500 cursor-pointer font-bold">Đăng ký</a>
               </div> -->
   
-              <div (click)="Dangnhap()" (keyup.enter)="Dangnhap()" class="cursor-pointer lg:w-64 w-full flex space-x-2 border items-center justify-center p-4 rounded-lg bg-slate-100 hover:bg-white">
+              <div (click)="Dangnhap()" (keyup.enter)="Dangnhap()" class="text-white cursor-pointer lg:w-64 w-full flex space-x-2 border items-center justify-center p-4 rounded-lg bg-blue-400 hover:bg-blue-600">
                   <span>Đăng nhập tài khoản</span>   
               </div>
   

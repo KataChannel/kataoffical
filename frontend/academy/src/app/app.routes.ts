@@ -4,7 +4,7 @@ import { AuthGuard } from './admin/user/common/guards/auth.guard';
 import { GuestGuard } from './admin/user/common/guards/guest.guard';
 import { PermissionGuard } from './admin/user/common/guards/permission.guard';
 export const routes: Routes = [
-  { path: '', redirectTo: 'admin/profile', pathMatch: 'full' },
+  // { path: '', redirectTo: 'admin/profile', pathMatch: 'full' },
   {
     path: '404',
     loadComponent: () =>
@@ -56,6 +56,22 @@ export const routes: Routes = [
               import('./admin/menu/detailmenu/detailmenu.component').then(
                 (c) => c.DetailMenuComponent
               ),
+          },
+        ],
+      },
+      {
+        path: 'quanlyctv',
+        canActivate: [PermissionGuard],
+        data: { permission: 'quanlyctv.view' },
+        loadComponent: () => import('./admin/quanlyctv/listquanlyctv/listquanlyctv.component').then((c) => c.ListQuanlyctvComponent),
+        children: [
+          {
+       path: '',
+       loadComponent: () => import('./admin/quanlyctv/listquanlyctv/listquanlyctv.component').then((c) => c.ListQuanlyctvComponent),
+          },
+          {
+       path: ':id',
+       loadComponent: () => import('./admin/quanlyctv/detailquanlyctv/detailquanlyctv.component').then((c) => c.DetailQuanlyctvComponent),
           },
         ],
       },
@@ -339,10 +355,34 @@ export const routes: Routes = [
     // loadComponent: () =>import('./admin/vantay/vantay.component').then((c) => c.VantayComponent),
     //loadComponent: () =>import('./admin/facecomparison/facecomparison.component').then((c) => c.FacecomparisonComponent),
     children: [
+      { path: '', redirectTo: 'gioithieuctv', pathMatch: 'full' },
       {
         path: '',
         loadComponent: () =>
           import('./site/home/home.component').then((c) => c.HomeComponent),
+        children: [
+          {
+            path:'gioithieuctv',
+            loadComponent: () =>
+              import('./site/home/gioithieuctv/gioithieuctv.component').then(
+                (c) => c.GioithieuctvComponent
+              ),
+          },
+          {
+            path: 'dangkyctv',
+            loadComponent: () =>
+              import('./site/home/dangkyctv/dangkyctv.component').then((c) => c.DangkyctvComponent),
+          },
+          {
+            path :'hotroctv',
+            loadComponent: () =>
+              import('./site/home/hotroctv/hotroctv.component').then((c) => c.HotroctvComponent),
+         },
+          {path:'faqctv',
+            loadComponent: () =>
+              import('./site/home/faqctv/faqctv.component').then((c) => c.FaqctvComponent),
+          }
+        ],
       },
       {
         path: 'lien-he',

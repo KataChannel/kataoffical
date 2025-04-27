@@ -77,6 +77,13 @@ docker run -it tazagroup-admin-ui /bin/bash
 Optimize-VHD -Path "C:\Users\Admin\AppData\Local\Docker\wsl\disk\docker_data.vhdx" -Mode Full
 
 
+
+# Angular
+npx ng g c dangkyctv --skip-tests --standalone
+npx ng g c hotroctv --skip-tests --standalone
+npx ng g c faqctv --skip-tests --standalone
+
+
 ### promt
 tạo mindmap admin,spa,academy,cosmetics
 

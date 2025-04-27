@@ -1,246 +1,230 @@
-import { inject, Inject, Injectable, signal, Signal } from '@angular/core';
-  import { Router } from '@angular/router';
-  import { environment } from '../../../environments/environment.development';
-  import { StorageService } from '../../shared/utils/storage.service';
-  import { io } from 'socket.io-client';
-  import { openDB } from 'idb';
-  import { ErrorLogService } from '../../shared/services/errorlog.service';
-  import { MatSnackBar } from '@angular/material/snack-bar';
-  @Injectable({
-    providedIn: 'root'
-  })
-  export class MenuService {
-    constructor(
-      private _StorageService: StorageService,
-      private router: Router,
-      private _ErrorLogService: ErrorLogService,
-    ) { }
-    private _snackBar:MatSnackBar = inject(MatSnackBar);
-    ListMenu = signal<any[]>([]);
-    DetailMenu = signal<any>({});
-    menuId = signal<string | null>(null);
-    setMenuId(id: string | null) {
-      this.menuId.set(id);
-    }
-      private socket = io(`${environment.SHARED_APIURL}`,{
-      transports: ['websocket'],
-      reconnectionAttempts: 5,
-      timeout: 5000,
-    });
-    async CreateMenu(dulieu: any) {
-      try {
-        const options = {
-            method:'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(dulieu),
-          };
-          const response = await fetch(`${environment.SHARED_APIURL}/menu`, options);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const data = await response.json();
-          if (!response.ok) {
-            this.handleError(response.status);
-          }
-          this.getAllMenu()
-          this.menuId.set(data.id)
-      } catch (error) {
-          this._ErrorLogService.logError('Failed to CreateMenu', error);
-          return console.error(error);
-      }
-    }
-  
-    async getAllMenu() {
-      const db = await this.initDB();
-      const cachedData = await db.getAll('menus');
-      const updatedAtCache = this._StorageService.getItem('menus_updatedAt') || '0';
-      // Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
-      if (cachedData.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) { // 5 phút cache TTL
-        this.ListMenu.set(cachedData);
-        return cachedData;
-      }
-      try {
-        const options = {
-          method: 'GET',
+import { Inject, Injectable, signal,Signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { StorageService } from '../../shared/utils/storage.service';
+import { environment } from '../../../environments/environment.development';
+@Injectable({
+  providedIn: 'root'
+})
+export class MenuService {
+  constructor(
+    private _StorageService: StorageService,
+    private router: Router,
+  ) { }
+  ListMenu = signal<any[]>([]);
+  DetailMenu = signal<any>({});
+  menuId = signal<string | null>(null);
+  setMenuId(id: string | null) {
+    this.menuId.set(id);
+  }
+  // getListMenu(): Signal<any[]> {    
+  //   return this.ListMenu;
+  // }
+  // getDetailMenu(): Signal<any | null> {
+  //   return this.DetailMenu;
+  // }
+  async CreateMenu(dulieu: any) {
+    try {
+      const options = {
+          method:'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
           },
+          body: JSON.stringify(dulieu),
         };
-        const lastUpdatedResponse = await fetch(`${environment.SHARED_APIURL}/menu/last-updated`, options);
-        if (!lastUpdatedResponse.ok) {
-          this.handleError(lastUpdatedResponse.status);
-          return cachedData;
-        }    
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-        //Nếu cache vẫn mới, không cần tải lại dữ liệu
-        if (updatedAtServer <= updatedAtCache) {
-          this.ListMenu.set(cachedData);
-          return cachedData;
-        }
-        console.log(updatedAtServer, updatedAtCache); 
-        //Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
-        const response = await fetch(`${environment.SHARED_APIURL}/menu`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/menu`, options);
         if (!response.ok) {
-          this.handleError(response.status);
-          return cachedData;
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        await this.saveMenus(data);
-        this._StorageService.setItem('menus_updatedAt', updatedAtServer);
-        this.ListMenu.set(data);
-        return data;
-      } catch (error) {
-        this._ErrorLogService.logError('Failed to create getAllMenu', error);
-        console.error(error);
-        return cachedData;
-      }
+        if (!response.ok) {
+          if (response.status === 401) {
+            const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            // this.Dangxuat()
+          } else if (response.status === 403) {
+            const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            // this.Dangxuat()
+          } else if (response.status === 500) {
+            const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            // this.Dangxuat()
+          } else {
+            const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          }
+        }
+        this.getAllMenu()
+        this.menuId.set(data.id)
+    } catch (error) {
+        return console.error(error);
     }
-  
-  
-    //Lắng nghe cập nhật từ WebSocket
-    listenMenuUpdates() {
-      this.socket.on('menu-updated', async () => {
-        console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-        this._StorageService.removeItem('menus_updatedAt');
-        await this.getAllMenu();
-      });
-    }
-    //Khởi tạo IndexedDB
-    private async initDB() {
-      return await openDB('MenuDB', 1, {
-        upgrade(db) {
-          db.createObjectStore('menus', { keyPath: 'id' });
+  }
+
+  async getAllMenu() {
+    try {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer '+this._StorageService.getItem('token')
         },
-      });
+      };
+      const response = await fetch(`${environment.ACADEMY_APIURL}/menu`, options);
+      if (!response.ok) {
+        if (response.status === 401) {
+          const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          // this.Dangxuat()
+        } else if (response.status === 403) {
+          const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          // this.Dangxuat()
+        } else if (response.status === 500) {
+          const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+        } else {
+          const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+        }
+      }
+      const data = await response.json();           
+      this.ListMenu.set(data)
+    } catch (error) {
+      return console.error(error);
     }
-    // Lưu vào IndexedDB
-    private async saveMenus(data: any[]) {
-      const db = await this.initDB();
-      const tx = db.transaction('menus', 'readwrite');
-      const store = tx.objectStore('menus');
-      await store.clear(); // Xóa dữ liệu cũ
-      data.forEach(item => store.put(item));
-      await tx.done;
+  }
+  async getTreeMenu(permissions:any) {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(permissions),
+      };
+      const response = await fetch(`${environment.ACADEMY_APIURL}/menu/tree`, options);
+      if (!response.ok) {
+        if (response.status === 401) {
+          const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          // this.Dangxuat()
+        } else if (response.status === 403) {
+          const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          // this.Dangxuat()
+        } else if (response.status === 500) {
+          const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+        } else {
+          const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+        }
+      }
+      const data = await response.json();           
+      this.ListMenu.set(data)
+    } catch (error) {
+      return console.error(error);
     }
-  
-    async getMenuBy(param: any) {
-      try {
-        const options = {
-          method: 'POST',
+  }
+  async getMenuByid(id: any) {
+    try {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+      const response = await fetch(`${environment.ACADEMY_APIURL}/menu/${id}`, options);      
+      if (!response.ok) {
+        if (response.status === 401) {
+          const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          // this.Dangxuat()
+        } else if (response.status === 403) {
+          const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          // this.Dangxuat()
+        } else if (response.status === 500) {
+          const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          // this.Dangxuat()
+        } else {
+          const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
+          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+        }
+      }
+      const data = await response.json();      
+      this.DetailMenu.set(data)
+    } catch (error) {
+      return console.error(error);
+    }
+  }
+  async updateMenu(dulieu: any) {
+    try {
+      const options = {
+          method:'PATCH',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
           },
-          body: JSON.stringify(param),
+          body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/menu/findby`, options);      
+        const response = await fetch(`${environment.ACADEMY_APIURL}/menu/${dulieu.id}`, options);
         if (!response.ok) {
-          this.handleError(response.status);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();      
-        this.DetailMenu.set(data)
-      } catch (error) {
-        this._ErrorLogService.logError('Failed to getMenuBy', error);
+        const data = await response.json();
+        if (!response.ok) {
+          if (response.status === 401) {
+            const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            // this.Dangxuat()
+          } else if (response.status === 403) {
+            const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            // this.Dangxuat()
+          } else if (response.status === 500) {
+            const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            // this.Dangxuat()
+          } else {
+            const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
+            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+          }
+        }
+        this.getAllMenu()
+        this.getMenuByid(dulieu.id)
+    } catch (error) {
         return console.error(error);
-      }
     }
-    async updateMenu(dulieu: any) {
-      try {
+  }
+  async DeleteMenu(item:any) {    
+    try {
         const options = {
-            method:'PATCH',
+            method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(dulieu),
           };
-          const response = await fetch(`${environment.SHARED_APIURL}/menu/${dulieu.id}`, options);
+          const response = await fetch(`${environment.ACADEMY_APIURL}/menu/${item.id}`, options);
           if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const data = await response.json();
-          if (!response.ok) {
-            this.handleError(response.status);
+            if (response.status === 401) {
+              const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
+              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            } else if (response.status === 403) {
+              const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
+              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            } else if (response.status === 500) {
+              const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
+              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            } else {
+              const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
+              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
+            }
           }
           this.getAllMenu()
-          this.getMenuBy({id:data.id})
       } catch (error) {
-        this._ErrorLogService.logError('Failed to updateMenu', error);
           return console.error(error);
       }
-    }
-    async DeleteMenu(item:any) {    
-      try {
-          const options = {
-              method:'DELETE',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            };
-            const response = await fetch(`${environment.SHARED_APIURL}/menu/${item.id}`, options);
-            if (!response.ok) {
-              this.handleError(response.status);
-            }
-            this.getAllMenu()
-        } catch (error) {
-          this._ErrorLogService.logError('Failed to DeleteMenu', error);
-            return console.error(error);
-        }
-    }
-    private handleError(status: number) {
-      let message = 'Lỗi không xác định';
-      switch (status) {
-        case 400:
-          message = 'Thông tin đã tồn tại';
-          this._snackBar.open(message, '', {
-            duration: 1000,
-            horizontalPosition: "end",
-            verticalPosition: "top",
-            panelClass: ['snackbar-error'],
-          });
-          break;
-        case 404:
-          message = 'Vui lòng đăng nhập lại';
-          // this._StorageService.removeItem('token');
-          // this._StorageService.removeItem('permissions');
-          // this.router.navigate(['/login']);
-          break;
-        case 401:
-          message = 'Vui lòng đăng nhập lại';
-          // this._StorageService.removeItem('token');
-          // this._StorageService.removeItem('permissions');
-          // this.router.navigate(['/login']);
-          break;
-        case 403:
-          message = 'Bạn không có quyền truy cập';
-          this._snackBar.open(message, '', {
-            duration: 1000,
-            horizontalPosition: "end",
-            verticalPosition: "top",
-            panelClass: ['snackbar-error'],
-          });
-          break;
-        case 500:
-          message = 'Lỗi máy chủ, vui lòng thử lại sau';
-            this._snackBar.open(message, '', {
-            duration: 1000,
-            horizontalPosition: "end",
-            verticalPosition: "top",
-            panelClass: ['snackbar-error'],
-          });
-          break;
-        default:
-          this._snackBar.open(message, '', {
-            duration: 1000,
-            horizontalPosition: "end",
-            verticalPosition: "top",
-            panelClass: ['snackbar-error'],
-          });
-          break;
-      }
-      const result = JSON.stringify({ code: status, title: message });
-      // this.router.navigate(['/errorserver'], { queryParams: { data: result } });
-    }
   }
+}

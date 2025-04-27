@@ -1,33 +1,32 @@
-<div class="flex flex-col space-y-16 justify-center text-center">
-<app-swiper class="bg-[#3154A1]/50" />
-<app-keyfigures class="container mx-auto" />
-<!-- <div class="bg-[#F3E5AB] w-full">
-    <app-gioithieu class="container mx-auto" />
-</div> -->
-<!-- <app-products class="container mx-auto" /> -->
+<div class="flex flex-col space-y-2 justify-center">
+    <div class="bg-white shadow-md sticky bottom-0 h-[100px]">
+        <div class="container mx-auto flex justify-between items-center py-4">
+            <a [href]="'/'" class="relative flex flex-col space-y-2 p-2">
+                <img [src]="'images/logo-timona-moi.webp'" class="m-auto h-10 object-cover" alt="Logo">
+            </a>
+            <!-- <ul class="flex space-x-6">
+                <li><a href="/" class="text-gray-800 hover:text-primary">Trang Chủ</a></li>
+                <li><a href="/about" class="text-gray-800 hover:text-primary">Đăng Ký CTV</a></li>
+                <li><a href="/products" class="text-gray-800 hover:text-primary">Hỗ Trợ</a></li>
+                <li><a href="/contact" class="text-gray-800 hover:text-primary">FAQ</a></li>
+            </ul> -->
+            <div class="flex space-x-2">
+            <button [routerLink]="['/gioithieuctv']" routerLinkActive="!bg-blue-200"  mat-flat-button>Trang Chủ</button>
+            <button [routerLink]="['/dangkyctv']" routerLinkActive="!bg-blue-200" mat-flat-button>Đăng Ký CTV</button>
+            <button [routerLink]="['/hotroctv']" routerLinkActive="!bg-blue-200" mat-flat-button>Hỗ Trợ</button>
+            <button [routerLink]="['/faqctv']" routerLinkActive="!bg-blue-200" mat-flat-button>FAQ</button>
+        </div>
+            <button mat-flat-button color="primary">Đăng Nhập</button>
+        </div>
+    </div> <!-- Fixed missing closing tag for div -->
 
-<div class="container m-auto flex flex-col space-y-2 rounded-lg bg-white py-8">
-    <h2 class="text-center !text-2xl text-primary !mb-0 font-bold text-gray-800 uppercase">Sản Phẩm Nổi Bật</h2>
-    <app-swiper [Type]="'sanpham'" [Config]="SanphamNoibatConfig" [slides]="ListSanpham"/>
-</div>
+    <router-outlet></router-outlet>
+    
 
-
-<div class="flex flex-col space-y-2 rounded-lg bg-white">
-    <h2 class="text-center !text-2xl text-primary !mb-0 font-bold text-gray-800 ">CHUYÊN GIA DA LIỄU HÀNG ĐẦU NÓI GÌ VỀ Taza Group</h2>
-    <app-swiper [Config]="ChuyenGiaConfig" [Type]="'review'" [slides]="ListReview"/>
-</div>
-<div class="w-full relative lg:!-my-16">
-    <img src="/demo/dangkydemo.png" class="opacity-50 w-full object-cover" alt="Banner">
-    <div class="max-w-md absolute top-1/2 lg:left-1/2 transform lg:-translate-x-1/2 -translate-y-1/2 text-center">
-    <h2 class="lg:block hidden text-2xl font-bold text-[#3154A1]">ĐĂNG KÝ DEMO SẢN PHẨM Taza Group</h2>
-    <button class="px-6 py-2 bg-[#3154A1] text-white font-bold rounded-full">GỬI TIN NHẮN NGAY</button>
-    <p class="text-[#3154A1] text-sm !mt-4">* Lưu ý: Chương trình chỉ áp dụng cho đối tác chủ spa/ chuyên gia/ bác sĩ trong ngành y khoa thẩm mỹ và làm đẹp.</p>
-</div>
-
-</div>
-<div class="container m-auto flex flex-col space-y-2 rounded-lg bg-white py-8">
-    <h2 class="text-center !text-2xl text-primary !mb-0 font-bold text-gray-800 uppercase">Tin Tức Sự Kiện</h2>
-    <app-swiper [Config]="BaivietConfig" [Type]="'Baiviet'" [slides]="ListBaiviet"/>
-</div>
-<!-- <app-contactform class="container mx-auto py-4"/> -->
+    <footer class="bg-gray-800 text-white py-4 mt-16">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2023 Timona. All rights reserved.</p>
+        </div>
+    </footer>
+    
 </div>

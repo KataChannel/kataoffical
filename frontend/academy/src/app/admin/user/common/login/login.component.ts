@@ -19,7 +19,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from '../../../../admin/user/user.service';
 import { StorageService } from '../../../../shared/utils/storage.service';
-import { KataLoginComponent } from '@kataoffical/shared-auth';
 
 @Component({
   selector: 'app-login',
@@ -31,7 +30,6 @@ import { KataLoginComponent } from '@kataoffical/shared-auth';
     FormsModule,
     MatIconModule,
     CommonModule,
-    KataLoginComponent,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
