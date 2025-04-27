@@ -10,6 +10,7 @@ docker compose -f 'docker-compose.yml' up -d --build
 docker compose -f 'docker-compose.yml' up -d --build 'shared-core-api'
 docker compose -f 'docker-compose.yml' up -d --build 'admin-ui'
 docker compose -f 'docker-compose.yml' up -d --build 'academy-api'
+docker compose -f 'docker-compose.yml' up -d --build 'academy-ui'
 docker compose -f 'docker-compose.yml' up -d --build 'postgres_taza'
 docker compose -f 'docker-compose.yml' up -d --build 'pgadmin_taza'
 docker compose -f 'docker-compose.yml' up -d --build 'datalake_storage'
@@ -46,8 +47,9 @@ npx create-nx-workspace@latest kataoffical --preset=angular-nest
 npx bun add @prisma/client
 npx bun add -d prisma
 npx bun prisma migrate dev --name process1.6 --skip-generate
+npx prisma migrate dev --name process1.6
 npx prisma db push
-npx bun prisma generate 
+npx prisma generate 
 npx ts-node prisma/scriptdb/exportData.ts
 npx ts-node prisma/scriptdb/seed.ts
 npx ts-node prisma/scriptdb/backup.ts

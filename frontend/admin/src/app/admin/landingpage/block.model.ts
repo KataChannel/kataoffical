@@ -1,13 +1,24 @@
 // src/app/models/block.model.ts
-export type BlockType = 'text' | 'image' | 'button' | 'columns' | 'section' | 'container'; // <-- Thêm section, container
+export type BlockType = 'text' | 'image' | 'button' | 'columns' | 'section' | 'container';
+
+// --- Định nghĩa cấu trúc cho một tương tác ---
+export interface Interaction {
+  id: string; // ID duy nhất cho tương tác
+  trigger: 'hover' | 'click'; // Sự kiện kích hoạt
+  action: 'addClass'; // Hành động thực hiện (hiện tại chỉ hỗ trợ thêm class)
+  // Có thể mở rộng action: removeClass, toggleClass, runAnimation, goToUrl,...
+  className: string; // Tên lớp CSS sẽ được thêm
+  // target?: string; // 'self' hoặc selector con (cho các action phức tạp hơn)
+}
 
 export interface Block {
   id: string;
   type: BlockType;
   order: number;
-  data: BlockDataMap[BlockType] | any; // Sử dụng kiểu Map để rõ ràng hơn
+  data: BlockDataMap[BlockType] | any;
   styles?: { [key: string]: string };
   parentId?: string | null; // ID của drop list chứa khối này (vd: main-drop-list, col-xyz, section-abc, container-def)
+  interactions?: Interaction[]; // Mảng interactions (tùy chọn)
 }
 
 // Định nghĩa kiểu dữ liệu cụ thể cho từng loại khối
@@ -16,31 +27,22 @@ export interface ImageBlockData { src: string; alt?: string; }
 export interface ButtonBlockData { text: string; link?: string; variant?: 'primary' | 'secondary'; }
 export interface Column { // Định nghĩa một Cột
   id: string; // ID duy nhất cho drop list của cột này
-  blocks: Block[]; // Mảng các khối nằm trong cột này
-  styles?: { [key: string]: string }; // Kiểu dáng riêng cho cột (ví dụ: width)
+  blocks: Block[]; // **Quan trọng**: Mảng này không còn dùng để lưu trữ con trực tiếp, thay vào đó dùng parentId
+  styles?: { [key: string]: string };
 }
 export interface ColumnsBlockData {
-  columns: Column[]; // Mảng các cột
-  // Có thể thêm các tùy chọn khác như khoảng cách giữa các cột (gap)
-  gap?: string; // ví dụ: '10px'
+  columns: Omit<Column, 'blocks'>[]; // Chỉ lưu thông tin cột (id, styles), không lưu blocks lồng nhau ở đây
+  gap?: string;
 }
-// --- Dữ liệu cho các khối mới ---
-export interface SectionBlockData {
-  // Có thể thêm các thuộc tính như tag (section, div, etc.), id riêng cho section...
-  // Hiện tại chỉ cần để phân biệt loại khối
-}
-export interface ContainerBlockData {
-  // Container cũng không lưu block con trong data, mà dùng parentId
-  // Có thể thêm các tùy chọn layout sau này (vd: max-width, background...)
-}
+export interface SectionBlockData { } // Không lưu con trong data
+export interface ContainerBlockData { } // Không lưu con trong data
 
 // Tạo một kiểu Map để liên kết BlockType với kiểu Data tương ứng
-// Giúp type checking tốt hơn trong component và template
 export interface BlockDataMap {
   text: TextBlockData;
   image: ImageBlockData;
   button: ButtonBlockData;
   columns: ColumnsBlockData;
-  section: SectionBlockData; // Section không trực tiếp chứa 'blocks' trong data
-  container: ContainerBlockData; // Container không trực tiếp chứa 'blocks' trong data
+  section: SectionBlockData;
+  container: ContainerBlockData;
 }

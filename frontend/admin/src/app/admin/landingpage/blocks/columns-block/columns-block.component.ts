@@ -29,7 +29,7 @@ export class ColumnsBlockComponent implements OnInit {
   // Inject EditorComponent để có thể tương tác với danh sách khối tổng và trạng thái selectedBlock
   public editorComponent = inject(EditorComponent, { optional: true }); // Để public để template có thể truy cập
 
-  get data(): ColumnsBlockData | undefined {
+  get data(): ColumnsBlockData | any {
     if (this.block?.type === 'columns') {
        return this.block?.data as ColumnsBlockData;
     }
@@ -38,7 +38,7 @@ export class ColumnsBlockComponent implements OnInit {
 
   // Lấy danh sách ID của các drop list trong component này (mỗi cột là một drop list)
   get columnDropListIds(): string[] {
-    return this.data?.columns.map(col => col.id) || [];
+    return this.data?.columns.map((col:any) => col.id) || [];
   }
 
   ngOnInit(): void {
@@ -51,7 +51,7 @@ export class ColumnsBlockComponent implements OnInit {
           { id: `col-${this.block.id}-2`, blocks: [], styles: { flex: '1' } }
         ],
         gap: '10px'
-      } as ColumnsBlockData;
+      } as unknown as ColumnsBlockData;
        // Đảm bảo parentId của các block con được cập nhật (nếu load từ dữ liệu có sẵn)
        this.updateAllNestedParentIds();
     } else if (this.block?.type === 'columns') {
@@ -63,8 +63,8 @@ export class ColumnsBlockComponent implements OnInit {
    // Hàm cập nhật parentId cho tất cả các khối con trực tiếp của ColumnsBlock này
    updateAllNestedParentIds() {
        if (this.data?.columns) {
-           this.data.columns.forEach(col => {
-               col.blocks.forEach(nestedBlock => {
+           this.data.columns.forEach((col:any) => {
+               col.blocks.forEach((nestedBlock:any) => {
                    nestedBlock.parentId = col.id;
                    // **Quan trọng**: Không gọi đệ quy ở đây để tránh vòng lặp vô hạn
                    // Việc cập nhật parentId cho cấp sâu hơn sẽ do component con đảm nhiệm khi nó init

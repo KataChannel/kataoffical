@@ -1,48 +1,47 @@
 <div class="navigator-panel-content">
-    <ul>
-      <ng-container *ngTemplateOutlet="blockListTemplate; context: { blocks: editorComponent?.getBlocksByParentId(null) || [], level: 0 }"></ng-container>
+  <ul>
+    <ng-container *ngTemplateOutlet="blockListTemplate; context: { blocks: blocks, level: 0 }"></ng-container>
+  </ul>
+</div>
+
+<ng-template #blockListTemplate let-blockList="blocks" let-level="level">
+  <li *ngFor="let block of blockList | sort:'order'"
+      class="navigator-item level-{{level}}"
+      [class.selected]="block.id === editorComponent?.selectedBlock?.id"
+      (click)="selectBlock(block, $event)">
+
+    <div class="navigator-item-content">
+      <span class="indent" [style.padding-left.px]="level * 15"></span>
+      <span class="icon">{{ getBlockIcon(block.type) }}</span>
+      <span class="name">{{ getBlockDisplayName(block) }}</span>
+    </div>
+
+    <ul *ngIf="block.type === 'container' || block.type === 'section'">
+        <ng-container *ngTemplateOutlet="blockListTemplate; context: { blocks: getChildBlocks(block), level: level + 1 }"></ng-container>
+        <div *ngIf="getChildBlocks(block).length === 0" class="empty-placeholder-in-nav level-{{level + 1}}">
+            <span class="indent" [style.padding-left.px]="(level + 1) * 15"></span>
+            <i>(Empty {{ block.type }})</i>
+        </div>
     </ul>
-  </div>
-  
-  <ng-template #blockListTemplate let-blockList="blocks" let-level="level">
-    <li *ngFor="let block of blockList"
-        class="navigator-item level-{{level}}"
-        [class.selected]="block.id === editorComponent?.selectedBlock?.id"
-        (click)="selectBlock(block, $event)">
-  
-      <div class="navigator-item-content">
-        <span class="indent" [style.padding-left.px]="level * 15"></span>
-        <span class="icon">{{ getBlockIcon(block.type) }}</span>
-        <span class="name">{{ getBlockDisplayName(block) }}</span>
-      </div>
-  
-      <ul *ngIf="block.type === 'container' || block.type === 'section'">
-          <ng-container *ngTemplateOutlet="blockListTemplate; context: { blocks: getChildBlocks(block), level: level + 1 }"></ng-container>
-          <div *ngIf="getChildBlocks(block).length === 0" class="empty-column-in-nav level-{{level + 1}}">
-              <span class="indent" [style.padding-left.px]="(level + 1) * 15"></span>
-              <i>(Empty {{ block.type }})</i>
-          </div>
-      </ul>
-  
-  
-      <ul *ngIf="block.type === 'columns' && block.data?.columns?.length > 0">
-        <ng-container *ngFor="let column of block.data.columns; let colIndex = index">
-           <li class="navigator-item column-node level-{{level + 1}}">
-              <div class="navigator-item-content">
-                 <span class="indent" [style.padding-left.px]="(level + 1) * 15"></span>
-                 <span class="icon">▍</span>
-                 <span class="name">Column {{ colIndex + 1 }}</span>
+
+    <ul *ngIf="block.type === 'columns' && block.data?.columns?.length > 0">
+      <ng-container *ngFor="let column of block.data.columns; let colIndex = index">
+         <li class="navigator-item column-node level-{{level + 1}}">
+            <div class="navigator-item-content">
+               <span class="indent" [style.padding-left.px]="(level + 1) * 15"></span>
+               <span class="icon">▍</span>
+               <span class="name">Column {{ colIndex + 1 }}</span>
+            </div>
+             <ul *ngIf="getColumnChildBlocks(column.id).length > 0">
+                 <ng-container *ngTemplateOutlet="blockListTemplate; context: { blocks: getColumnChildBlocks(column.id), level: level + 2 }"></ng-container>
+             </ul>
+              <div *ngIf="getColumnChildBlocks(column.id).length === 0" class="empty-placeholder-in-nav level-{{level + 2}}">
+                 <span class="indent" [style.padding-left.px]="(level + 2) * 15"></span>
+                 <i>(Empty)</i>
               </div>
-               <ul *ngIf="getColumnChildBlocks(column.id).length > 0">
-                   <ng-container *ngTemplateOutlet="blockListTemplate; context: { blocks: getColumnChildBlocks(column.id), level: level + 2 }"></ng-container>
-               </ul>
-                <div *ngIf="getColumnChildBlocks(column.id).length === 0" class="empty-column-in-nav level-{{level + 2}}">
-                   <span class="indent" [style.padding-left.px]="(level + 2) * 15"></span>
-                   <i>(Empty)</i>
-                </div>
-           </li>
-        </ng-container>
-      </ul>
-  
-    </li>
-  </ng-template>
+         </li>
+      </ng-container>
+    </ul>
+
+  </li>
+</ng-template>
