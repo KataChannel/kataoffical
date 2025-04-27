@@ -2,6 +2,7 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, NgZone, AfterViewInit } from '@angular/core';
 import Phaser from 'phaser';
 import { MainScene } from './main.scene'; // Đảm bảo import MainScene
+import { GameStateService } from './game-state.service';
 
 type IslandType = 'hoa' | 'kim' | 'moc' | 'thuy' | 'tho';
 
@@ -14,12 +15,14 @@ type IslandType = 'hoa' | 'kim' | 'moc' | 'thuy' | 'tho';
 })
 export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('gameContainer', { static: true }) gameContainer!: ElementRef;
+  @ViewChild('gameContainer1', { static: true }) gameContainer1!: ElementRef;
+  @ViewChild('gameContainer2', { static: true }) gameContainer2!: ElementRef;
   gameInstance: Phaser.Game | null = null;
   selectedIsland: IslandType = 'hoa';
 
   // --- Các phần khác giữ nguyên ---
 
-  constructor(private ngZone: NgZone) {}
+  constructor(private ngZone: NgZone, private gameStateService: GameStateService) {}
 
   ngOnInit(): void {}
 
@@ -60,8 +63,62 @@ export class GameComponent implements OnInit, OnDestroy, AfterViewInit {
             },
             // backgroundColor: '#2d2d2d' // Màu nền tạm thời để dễ thấy khung
         });
-        this.gameInstance.scene.add('MainScene', MainScene, true, { islandType: this.selectedIsland });
+        this.gameInstance.scene.add('MainScene', MainScene, true, { islandType: this.selectedIsland, gameStateService: this.gameStateService });
     });
+
+    //  this.ngZone.runOutsideAngular(() => {
+    //     this.gameInstance = new Phaser.Game({
+    //         type: Phaser.AUTO,
+    //         width: 1500, // Giữ kích thước cố định cho game logic
+    //         height: 1500,
+    //         pixelArt: true,
+    //         parent: this.gameContainer1.nativeElement,
+    //         scene: [],
+    //         physics: {
+    //             default: 'arcade',
+    //             arcade: {
+    //                 gravity: { x: 0, y: 0 },
+    //                 debug: true // Tắt debug khi không cần
+    //             }
+    //         },
+    //         scale: {
+    //             mode: Phaser.Scale.FIT, // FIT sẽ giữ tỷ lệ và thu nhỏ/phóng to để vừa container
+    //             autoCenter: Phaser.Scale.CENTER_BOTH, // Tự động căn giữa
+    //             parent: 'gameContainerId1', // Đảm bảo scale theo parent div
+    //             width: '100%', // Chiều rộng theo parent
+    //             height: '100%' // Chiều cao theo parent
+    //         },
+    //         // backgroundColor: '#2d2d2d' // Màu nền tạm thời để dễ thấy khung
+    //     });
+    //     this.gameInstance.scene.add('MainScene', MainScene, true, { islandType: this.selectedIsland, gameStateService: this.gameStateService });
+    // });
+
+    //  this.ngZone.runOutsideAngular(() => {
+    //     this.gameInstance = new Phaser.Game({
+    //         type: Phaser.AUTO,
+    //         width: 1500, // Giữ kích thước cố định cho game logic
+    //         height: 1500,
+    //         pixelArt: true,
+    //         parent: this.gameContainer2.nativeElement,
+    //         scene: [],
+    //         physics: {
+    //             default: 'arcade',
+    //             arcade: {
+    //                 gravity: { x: 0, y: 0 },
+    //                 debug: true // Tắt debug khi không cần
+    //             }
+    //         },
+    //         scale: {
+    //             mode: Phaser.Scale.FIT, // FIT sẽ giữ tỷ lệ và thu nhỏ/phóng to để vừa container
+    //             autoCenter: Phaser.Scale.CENTER_BOTH, // Tự động căn giữa
+    //             parent: 'gameContainerId2', // Đảm bảo scale theo parent div
+    //             width: '100%', // Chiều rộng theo parent
+    //             height: '100%' // Chiều cao theo parent
+    //         },
+    //         // backgroundColor: '#2d2d2d' // Màu nền tạm thời để dễ thấy khung
+    //     });
+    //     this.gameInstance.scene.add('MainScene', MainScene, true, { islandType: this.selectedIsland, gameStateService: this.gameStateService });
+    // });
   }
 
   destroyGame(): void {
