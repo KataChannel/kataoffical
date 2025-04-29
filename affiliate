@@ -13,7 +13,7 @@ server {
 
 server {
     listen 80;
-    server_name apiaffiliate.timona.edu.vn;
+    server_name apiaffiliate.tazagroup.vn;
 
     location / {
         proxy_pass http://116.118.49.243:3105;

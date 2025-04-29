@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   SHARED_APIURL: 'http://localhost:3100',
-  ACADEMY_APIURL: 'http://localhost:3101',
+  ACADEMY_APIURL: 'http://localhost:3105',
   ImageURL: 'http://localhost:4303',
   app_id: '1416835846626859002',
   secret_key: 'HLBWj23hToA9fuiQvQY4',

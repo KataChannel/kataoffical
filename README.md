@@ -9,6 +9,7 @@ git pull
 docker compose -f 'docker-compose.yml' up -d --build 
 docker compose -f 'docker-compose.yml' up -d --build 'shared-core-api'
 docker compose -f 'docker-compose.yml' up -d --build 'admin-ui'
+docker compose -f 'docker-compose.yml' up -d --build 'affiliate-api'
 docker compose -f 'docker-compose.yml' up -d --build 'academy-api'
 docker compose -f 'docker-compose.yml' up -d --build 'academy-ui'
 docker compose -f 'docker-compose.yml' up -d --build 'postgres_taza'
@@ -93,12 +94,14 @@ Kích hoạt và reload
 cd /etc/nginx/sites-available
 sudo ln -s /etc/nginx/sites-available/hethong.tazagroup.vn /etc/nginx/sites-enabled/
 sudo ln -s /etc/nginx/sites-available/hethong.timona.edu.vn /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/affiliate /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 
 (Tuỳ chọn) Thêm HTTPS với Certbot
 sudo certbot --nginx -d hethong.tazagroup.vn -d apihethong.tazagroup.vn
-sudo certbot --nginx -d affiliate.timona.edu.vn -d apihethong.timona.edu.vn
+sudo certbot --nginx -d affiliate.timona.edu.vn -d apiaffiliate.tazagroup.vn
+sudo certbot --nginx -d hethong.timona.edu.vn -d apihethong.timona.edu.vn
 sudo certbot renew --dry-run
 
 

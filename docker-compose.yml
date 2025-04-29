@@ -226,16 +226,16 @@ services:
     #   - app-network
     restart: unless-stopped
 
-  academy-ui:
+  academy-affiliate:
     build:
       context: ./frontend/academy
       dockerfile: Dockerfile
-    container_name: academy_ui
+    container_name: academy_affiliate
     # volumes:
     #   - ./frontend/academy:/usr/src/app
     #   - /usr/src/app/node_modules
     ports:
-      - "4401:4401"
+      - "4405:4405"
     # depends_on:
     #   academy-api:
     #     condition: service_started
