@@ -1,0 +1,289 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+datasource postgres {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+model User {
+  id        String   @id @default(uuid())
+  name        String?
+  avatar      String?
+  gender      Gender?
+  email       String?   @unique
+  SDT        String?   @unique
+  phone         String?  @unique
+  zaloId        String?  @unique
+  facebookId    String?  @unique
+  googleId    String?  @unique
+  password      String?
+  provider  String?  // "google", "facebook", "zalo"
+  providerId String? @unique
+  isSuperAdmin Boolean @default(false)
+  roles     UserRole[]
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  audits    AuditLog[]
+  Notification Notification[]
+  Dexuat Dexuat[]
+  LandingPage LandingPage[]
+  affiliateCode String?   @unique // Mã affiliate riêng của user này
+  referrerId    String?   // ID của user đã giới thiệu user này
+  referrer      User?     @relation("Referrals", fields: [referrerId], references: [id])
+  referrals     User[]    @relation("Referrals")
+}
+
+model Role {
+  id          String         @id @default(uuid())
+  name        String         @unique
+  permissions RolePermission[]
+  users       UserRole[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model UserRole {
+  id      String @id @default(uuid())
+  userId  String
+  roleId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role    Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+}
+
+
+model Permission {
+  id          String         @id @default(uuid())
+  name        String         @unique
+  description String?
+  roles       RolePermission[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+}
+
+model Menu {
+  id        String   @id @default(uuid())
+  title     String
+  icon      String?  // Optional icon for menu
+  slug      String?  // URL of the menu item
+  parentId  String?  // Reference to parent menu (null if root)
+  parent    Menu?    @relation("MenuChildren", fields: [parentId], references: [id])
+  children  Menu[]   @relation("MenuChildren")
+  order     Int?      // For sorting menus
+  isActive  Boolean  @default(false) // Enable/Disable menu
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Khachhang {
+  id           String   @id @default(uuid())
+  name         String?
+  namenn       String?
+  makh         String   @unique
+  diachi       String?
+  sdt          String?
+  mst          String?
+  gionhanhang  String?
+  quan         String?
+  email        String? 
+  phone        String?
+  address      String?
+  loaikh       String?
+  ghichu       String?
+  hiengia     Boolean  @default(false)
+  isActive     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  nhomkhachhang Nhomkhachhang[] @relation("KhachhangNhom")
+}
+model Nhomkhachhang {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  khachhang   Khachhang[]  @relation("KhachhangNhom")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model ChatAIMessage {
+  id        String  @id @default(uuid())
+  userId    String
+  message   String
+  reply     String
+  createdAt DateTime @default(now())
+}
+
+model ChatAIHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  message   String
+  sender    String   // 'user' hoặc 'bot'
+  createdAt DateTime @default(now())
+}
+
+model ErrorLog {
+  id        String   @id @default(uuid())
+  timestamp DateTime
+  message   String
+  details   Json?    // Lưu thông tin bổ sung dưới dạng JSON
+  source    String   // "client" hoặc "server" để phân biệt nguồn lỗi
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id         String      @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  action     String?
+  entity     String?
+  entityId   String?
+  oldValue   Json?
+  newValue   Json?
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id        String      @id @default(uuid())
+  message   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Quanlyqrcode {
+  id        String   @id @default(uuid())
+  title     String?   // Tiêu đề của QR code
+  slug      String?   // URL thân thiện, ví dụ: "chien-dich-thang-4"
+  qrcode    String   @unique
+  code      String   @unique
+  name      String?   // Họ Tên khách mời
+  phone     String?   // Số Điện Thoại
+  email     String?   // Email
+  isSentEmail      Boolean  @default(false)
+  isSentZalo      Boolean  @default(false)
+  order      Int? @default(1)
+  isActive  Boolean @default(true)
+  checkedAt DateTime?  // Null nếu chưa check-in, lưu thời gian nếu đã check-in
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([slug, phone, email], name: "Quanlyqrcode_slug_phone_email_key")
+}
+
+
+enum DriveItemType {
+  folder
+  file
+}
+model DriveItem {
+  id          String           @id @default(uuid())
+  googleId    String           @unique
+  name        String
+  type        DriveItemType
+  parentId    String?
+  mimeType    String?
+  path        String?
+  size        BigInt?
+  isDelete     Boolean? @default(false)
+  createdTime  DateTime?
+  modifiedTime DateTime?
+  permissions PermissionDrive[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([type,parentId])
+}
+
+model PermissionDrive {
+  id           String    @id @default(uuid())
+  userIdDrive  String
+  type         String    // "user" hoặc "group"
+  kind         String    // "drive#permission"
+  emailAddress String?
+  role         String    // "reader", "writer", "commenter", "owner"
+  driveId      String
+  googleId     String
+  driveItem    DriveItem @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([userIdDrive, driveId,googleId], name: "uniqueUserDriveItemPermission")
+}
+
+model Dexuat {
+  id            String    @id @default(uuid()) // ID tự động sinh
+  title         String
+  chitiet       ChitietDexuat[] @relation("DexuatToChitiet")
+  tienbangchu   String?
+  tongtien      Int?
+  tongchi       Int?
+  ngaytao       DateTime? @default(now())
+  nguoinhan     String?
+  truongbophan  String?
+  nguoidexuat   String?
+  bophan        String?
+  vitri         String?
+  tamung        Int? @default(0)
+  codeId      String @unique // Mã đề xuất duy nhất
+  order      Int? @default(1)
+  isActive  Boolean @default(true)
+  createdById String
+  createdBy  User?  @relation(fields: [createdById], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ChitietDexuat {
+  id       String  @id @default(uuid()) 
+  dexuatId String  
+  dexuat   Dexuat  @relation("DexuatToChitiet", fields: [dexuatId], references: [id], onDelete: Cascade)
+  title    String  
+  thanhtien Int?    
+  ghichu   String? 
+  order      Int? @default(1)
+  isActive  Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LandingPage {
+  id            String    @id @default(uuid())
+  title         String
+  slug          String    @unique // URL thân thiện, ví dụ: "chien-dich-thang-4"
+  description   String?
+  thumbnail      String?   // Hình ảnh thumbnail cho trang
+  status        String    @default("draft") // "draft", "published", "archived"
+  contentJson   Json
+  contentHtml   String?
+  customCss     String?
+  customJs      String?
+  seoTitle      String?
+  seoDescription String?
+  seoKeywords   String?   // Có thể là String[]
+  ownerId       String?   // User quản lý trang này
+  owner         User?     @relation(fields: [ownerId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  codeId      String @unique // Mã đề xuất duy nhất
+  order      Int? @default(1)
+  isActive  Boolean @default(true)
+}
+
+

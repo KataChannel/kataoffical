@@ -120,30 +120,17 @@ services:
     ports:
       - "3200:3200"
     restart: unless-stopped
-  shared-core-api:
+
+  affiliate-api:
     build:
-      context: ./backend/shared-core
+      context: ./backend/affiliate
       dockerfile: Dockerfile
-    container_name: shared_api
+    container_name: affiliate_api
     environment:
       NODE_ENV: development
-      PORT: 3100
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      JWT_SECRET: ${JWT_SECRET}
-      ACADEMY_API_INTERNAL_URL: http://academy-api:3000
-      COSMETICS_API_INTERNAL_URL: http://cosmetics-api:3000
-      SPA_API_INTERNAL_URL: http://spa-api:3000
+      PORT: 3105
     ports:
-      - "3100:3100"
-    # depends_on:
-    #   postgres:
-    #     condition: service_healthy
-    #   redis:
-    #     condition: service_healthy
-    # networks:
-    #   - app-network
-    restart: unless-stopped
+      - "3105:3105"
 
   academy-api:
     build:
