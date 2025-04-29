@@ -378,6 +378,16 @@ export const routes: Routes = [
             loadComponent: () =>
               import('./site/home/hotroctv/hotroctv.component').then((c) => c.HotroctvComponent),
          },
+          {
+            path :'leaderboard',
+            loadComponent: () =>
+              import('./site/home/leaderboard/leaderboard.component').then((c) => c.LeaderboardComponent),
+         },
+          {
+            path :'taikhoanctv',
+            loadComponent: () =>
+              import('./site/home/taikhoanctv/taikhoanctv.component').then((c) => c.TaikhoanctvComponent),
+         },
           {path:'faqctv',
             loadComponent: () =>
               import('./site/home/faqctv/faqctv.component').then((c) => c.FaqctvComponent),

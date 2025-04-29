@@ -98,7 +98,7 @@ sudo systemctl reload nginx
 
 (Tuỳ chọn) Thêm HTTPS với Certbot
 sudo certbot --nginx -d hethong.tazagroup.vn -d apihethong.tazagroup.vn
-sudo certbot --nginx -d hethong.timona.edu.vn -d apihethong.timona.edu.vn
+sudo certbot --nginx -d affiliate.timona.edu.vn -d apihethong.timona.edu.vn
 sudo certbot renew --dry-run
 
 

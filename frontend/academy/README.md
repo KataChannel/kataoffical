@@ -33,3 +33,5 @@ npx ng g c landingpage --skip-tests --standalone
 npx ng g c affiliate --skip-tests --standalone
 npx ng g c newsfeed --skip-tests --standalone
 npx ng g c notifications --skip-tests --standalone
+npx ng g c taikhoanctv --skip-tests --standalone
+npx ng g c leaderboard --skip-tests --standalone

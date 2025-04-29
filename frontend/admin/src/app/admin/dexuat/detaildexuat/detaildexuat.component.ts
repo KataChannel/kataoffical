@@ -15,6 +15,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ListType } from '../../hotro/listhotro/listhotro';
+import { toVietnameseWords } from '../../../shared/utils/tiente.utils';
   @Component({
     selector: 'app-detaildexuat',
     imports: [
@@ -79,6 +80,10 @@ import { ListType } from '../../hotro/listhotro/listhotro';
       }
     }
     private async createDexuat() {
+      this.DetailDexuat.update((v:any)=>{
+        v.tienbangchu = toVietnameseWords(v.tongchi);
+        return v;
+      })
       try {
         await this._DexuatService.CreateDexuat(this.DetailDexuat());
         this._snackBar.open('Tạo Mới Thành Công', '', {
@@ -93,7 +98,13 @@ import { ListType } from '../../hotro/listhotro/listhotro';
       }
     }
     RemoveItem(index: number) {
-      this.DetailDexuat.Chitiet.splice(index, 1);
+      // this.DetailDexuat().Chitiet.splice(index, 1);
+      console.log(this.DetailDexuat());
+      
+      this.DetailDexuat.update((v:any)=>{
+          v.chitiet.splice(index, 1);
+          return v;
+      })
     }
     saveContent() {
 
@@ -170,6 +181,10 @@ import { ListType } from '../../hotro/listhotro/listhotro';
     }
     private async updateDexuat() {
       try {
+        this.DetailDexuat.update((v:any)=>{
+          v.tienbangchu = toVietnameseWords(v.tongchi);
+          return v;
+        })
         await this._DexuatService.updateDexuat(this.DetailDexuat());
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,

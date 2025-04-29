@@ -1,0 +1,217 @@
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Tài khoản CTV cá nhân</h1>
+        
+        <!-- Referral Link Section -->
+        <div class="bg-white shadow rounded-lg p-6 mb-8">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-medium text-gray-900 flex items-center gap-2">
+                        <span class="material-icons text-blue-500">content_copy</span>
+                        Link giới thiệu
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-500">Chia sẻ link này để nhận hoa hồng</p>
+                </div>
+                <div class="w-full sm:w-auto flex-1 sm:flex-none">
+                    <div class="flex rounded-md shadow-sm">
+                        <input
+                            type="text"
+                            id="referralLink"
+                            readonly
+                            value="https://example.com/ref/CTV12345"
+                            class="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        />
+                        <button
+                            onclick="copyToClipboard()"
+                            id="copyButton"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        >
+                            Sao chép
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Stats -->
+        <div class="bg-white shadow rounded-lg p-6 mb-8">
+            <h2 class="text-lg font-medium text-gray-900 flex items-center gap-2 mb-6">
+                <span class="material-icons text-blue-500">bar_chart</span>
+                Thống kê hiệu suất
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Total Clicks -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 rounded-full bg-blue-100 text-blue-600">
+                            <span class="material-icons">groups</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Tổng số click</p>
+                            <p class="text-2xl font-semibold text-gray-900">1,245</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Successful Registrations -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 rounded-full bg-green-100 text-green-600">
+                            <span class="material-icons">check_circle</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Lượt đăng ký thành công</p>
+                            <p class="text-2xl font-semibold text-gray-900">89</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Purchases -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 rounded-full bg-purple-100 text-purple-600">
+                            <span class="material-icons">menu_book</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Người phát sinh khóa học</p>
+                            <p class="text-2xl font-semibold text-gray-900">42</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Commission -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 rounded-full bg-yellow-100 text-yellow-600">
+                            <span class="material-icons">hourglass_empty</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Hoa hồng đang chờ</p>
+                            <p class="text-2xl font-semibold text-gray-900">12,500,000 VND</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Withdrawn Commission -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 rounded-full bg-green-100 text-green-600">
+                            <span class="material-icons">attach_money</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Hoa hồng đã rút</p>
+                            <p class="text-2xl font-semibold text-gray-900">37,500,000 VND</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Processing Commission -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 rounded-full bg-blue-100 text-blue-600">
+                            <span class="material-icons">hourglass_top</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Hoa hồng đang xử lý</p>
+                            <p class="text-2xl font-semibold text-gray-900">5,000,000 VND</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversion Rate -->
+            <div class="mt-6 bg-gray-50 p-4 rounded-lg">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-full bg-indigo-100 text-indigo-600">
+                        <span class="material-icons">bar_chart</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Tỉ lệ chuyển đổi</p>
+                        <p class="text-2xl font-semibold text-gray-900">3.4%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs for additional views -->
+        <div class="bg-white shadow rounded-lg overflow-hidden mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex">
+                    <button
+                        onclick="setActiveTab('overview')"
+                        id="overviewTab"
+                        class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm border-blue-500 text-blue-600"
+                    >
+                        Tổng quan
+                    </button>
+                    <button
+                        onclick="setActiveTab('conversion')"
+                        id="conversionTab"
+                        class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    >
+                        Chuyển đổi theo nguồn
+                    </button>
+                    <button
+                        onclick="setActiveTab('timeline')"
+                        id="timelineTab"
+                        class="whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    >
+                        Theo thời gian
+                    </button>
+                </nav>
+            </div>
+            <div class="p-6">
+                <div id="overviewContent">
+                    <p class="text-gray-500">Bảng tổng quan hiệu suất sẽ hiển thị tại đây</p>
+                </div>
+                <div id="conversionContent" class="hidden">
+                    <p class="text-gray-500">Thống kê chuyển đổi theo nguồn traffic sẽ hiển thị tại đây</p>
+                </div>
+                <div id="timelineContent" class="hidden">
+                    <p class="text-gray-500">Biểu đồ hiệu suất theo thời gian sẽ hiển thị tại đây</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Copy to clipboard function
+        function copyToClipboard() {
+            const referralLink = document.getElementById('referralLink');
+            navigator.clipboard.writeText(referralLink.value);
+            
+            const copyButton = document.getElementById('copyButton');
+            copyButton.textContent = 'Đã sao chép!';
+            copyButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            copyButton.classList.add('bg-green-600', 'hover:bg-green-700');
+            
+            setTimeout(() => {
+                copyButton.textContent = 'Sao chép';
+                copyButton.classList.remove('bg-green-600', 'hover:bg-green-700');
+                copyButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            }, 2000);
+        }
+
+        // Tab switching function
+        function setActiveTab(tabName) {
+            // Hide all content
+            document.getElementById('overviewContent').classList.add('hidden');
+            document.getElementById('conversionContent').classList.add('hidden');
+            document.getElementById('timelineContent').classList.add('hidden');
+            
+            // Reset all tabs
+            document.getElementById('overviewTab').classList.remove('border-blue-500', 'text-blue-600');
+            document.getElementById('overviewTab').classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            document.getElementById('conversionTab').classList.remove('border-blue-500', 'text-blue-600');
+            document.getElementById('conversionTab').classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            document.getElementById('timelineTab').classList.remove('border-blue-500', 'text-blue-600');
+            document.getElementById('timelineTab').classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            
+            // Show selected content and update tab style
+            document.getElementById(`${tabName}Content`).classList.remove('hidden');
+            document.getElementById(`${tabName}Tab`).classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            document.getElementById(`${tabName}Tab`).classList.add('border-blue-500', 'text-blue-600');
+        }
+    </script>
+</div>

@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name hethong.timona.edu.vn;
+    server_name affiliate.timona.edu.vn;
 
     location / {
         proxy_pass http://116.118.49.243:4401;
