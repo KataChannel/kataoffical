@@ -18,6 +18,9 @@ import { TreemenuComponent } from '../../shared/common/treemenu/treemenu.compone
 import { UserService } from '../user/user.service';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { StorageService } from '../../shared/utils/storage.service';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -34,9 +37,11 @@ import { StorageService } from '../../shared/utils/storage.service';
     RouterLink,
     // RouterLinkActive,
     TreemenuComponent,
+    MatInputModule,
+    MatFormFieldModule
   ],
   templateUrl: './adminmain.component.html',
-  styleUrl: './adminmain.component.scss'
+  styleUrls: ['./adminmain.component.scss']
 })
 export class AdminmainComponent {
   isFullscreen:boolean=false
@@ -78,13 +83,14 @@ export class AdminmainComponent {
   _snackBar:MatSnackBar = inject(MatSnackBar)
   _StorageService:StorageService = inject(StorageService)
   ListMenu:any[] = []
+  FilterListMenu:any[] = []
   async ngOnInit() {
     await this._UserService.getProfile().then(async (res: any) => {
       if(res){
         this.User = res;  
         const permissions = this.User?.permissions?.map((v:any)=>v.name);     
         await this._MenuService.getTreeMenu(permissions)
-        this.ListMenu = this._MenuService.ListMenu()    
+        this.ListMenu = this.FilterListMenu = this._MenuService.ListMenu()    
         this.dataSource.data = this._MenuService.ListMenu()
       } 
     });
@@ -108,6 +114,16 @@ export class AdminmainComponent {
         }, 100);
       }
     });
+  }
+  searchFunction(event: any) {
+    this.FilterListMenu = this.ListMenu.filter((item: any) => {
+      return removeVietnameseAccents(item.title).toLowerCase().includes(event.target.value.toLowerCase()) 
+      || item.title.toLowerCase().includes(event.target.value.toLowerCase())
+      || item?.children?.some((child: any) => 
+        removeVietnameseAccents(child.title).toLowerCase().includes(event.target.value.toLowerCase())
+      || child.title.toLowerCase().includes(event.target.value.toLowerCase())
+    );
+    })  
   }
   async ClearCache(): Promise<void> {
     const token = this._StorageService.getItem('token');

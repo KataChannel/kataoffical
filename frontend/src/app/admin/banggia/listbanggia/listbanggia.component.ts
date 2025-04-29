@@ -21,6 +21,7 @@ import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/sh
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import moment from 'moment';
+import { SanphamService } from '../../sanpham/sanpham.service';
 @Component({
   selector: 'app-listbanggia',
   templateUrl: './listbanggia.component.html',
@@ -76,6 +77,7 @@ export class ListBanggiaComponent {
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
   private _BanggiaService: BanggiaService = inject(BanggiaService);
+  private _SanphamService: SanphamService = inject(SanphamService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
@@ -304,9 +306,33 @@ export class ListBanggiaComponent {
   const data = await readExcelFile(event)
   this.DoImportData(data);
   }   
-  ExportExcel(data:any,title:any) {
-    writeExcelFile(data,title);
+  async ExportExcel(data:any,title:any) {
+    await this._SanphamService.getAllSanpham()
+    const ListSP = this._SanphamService.ListSanpham()
+    const result = this.convertToData3(data,ListSP)
+    writeExcelFile(result,title);
   }
+
+  convertToData3(data: any, data2: any) {
+    const pricingTables = new Set(data.map((item: any) => item.mabanggia));
+    return data2.map((product: any) => ({
+      masp: product.masp,
+      title: product.title,
+      giagoc: product.giagoc.toString(),
+      ...Array.from(pricingTables).reduce((acc: Record<string, string>, table:any) => {
+        acc[table] = product.giagoc.toString();
+        return acc;
+      }, {} as Record<string, string>)
+    }));
+  }
+
+// // Execute conversion
+// const data3 = convertToData3(data, data2);
+
+// // Output result (for demonstration)
+// console.log(JSON.stringify(data3, null, 2));
+
+
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }

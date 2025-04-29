@@ -101,7 +101,7 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter/searc
         }
         if(id === '0'){
           this.DetailBanggia.set({ 
-            title: GenId(8, false),   
+            title: `BG - ${moment().format('DD/MM/YYYY')}`,   
             status: 'baogia',
             type:'bansi',   
             batdau: moment().startOf('month').toDate(),
@@ -123,6 +123,10 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter/searc
     isEdit = signal(false);
     isDelete = signal(false);  
     banggiaId:any = this._BanggiaService.banggiaId
+    async ngOnInit(): Promise<void> {
+      await this._KhachhangService.getAllKhachhang();
+      this.filterKhachhang = this._KhachhangService.ListKhachhang().filter(v=>v.isActive);
+    }
     ngAfterViewInit() {
       setTimeout(() => {
         if (this.paginator) {
@@ -364,9 +368,9 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter/searc
           const transformedData = data.data.map((v: any) => ({
             masp: v.masp?.trim()||'',
             giaban: Number(v.giaban)||0,
-         }));
+         })); 
           writeExcelFile(transformedData,title);
-        }
+      }
         DoImportData(data:any)
         {
             const transformedData = data.map((v: any) => ({

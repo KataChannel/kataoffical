@@ -94,7 +94,7 @@
           <app-searchfilter
           [isEdit]="isEdit"
           [title]="'Sản Phẩm'"
-          [ListFilter]="this.DetailBanggia().sanpham"
+          [ListFilter]="this.DetailBanggia()?.sanpham ||[]"
           [filterItem]="filterSanpham"
           [CountItems]="dataSource().filteredData.length"
           [fieldsearch]="'title'"
@@ -107,9 +107,9 @@
           <app-searchfilter
           [isEdit]="isEdit"
           [title]="'Khách Hàng'"
-          [ListFilter]="this.DetailBanggia().khachhang"
+          [ListFilter]="this.DetailBanggia()?.khachhang || []"
           [filterItem]="filterKhachhang"
-          [CountItems]="this.DetailBanggia().khachhang.length"
+          [CountItems]="this.DetailBanggia()?.khachhang?.length"
           [fieldsearch]="'name'"
           [ListItem]="_KhachhangService.ListKhachhang()"
           (OutFilter)="DoOutKhachhang($event)"

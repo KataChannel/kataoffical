@@ -51,11 +51,7 @@ export class BanggiaService {
     const db = await this.initDB();
     const cachedData = await db.getAll('banggias');
     const updatedAtCache = this._StorageService.getItem('banggias_updatedAt') || '0'; 
-    console.log((Date.now() - updatedAtCache)/(60*1000));
-    console.log(Date.now());
-    console.log(updatedAtCache);
-    
-      
+          
     if (cachedData.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) { // 5 phút cache TTL
       this.ListBanggia.set(cachedData);
       return cachedData;
