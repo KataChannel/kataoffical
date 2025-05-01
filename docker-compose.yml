@@ -60,7 +60,7 @@ services:
   backend-shop:
     # Build image từ Dockerfile trong thư mục hiện tại (.)
     build:
-      context: ./apishop
+      context: ./beshop
       dockerfile: Dockerfile
     container_name: beshop
     restart: unless-stopped
