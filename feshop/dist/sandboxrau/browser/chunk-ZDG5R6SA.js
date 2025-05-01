@@ -1,0 +1,1 @@
+import{zb as t}from"./chunk-QJD4TKMG.js";import"./chunk-EU2KAMEK.js";import"./chunk-66YHNWRR.js";var o=class e{static \u0275fac=function(n){return new(n||e)};static \u0275cmp=t({type:e,selectors:[["app-listdonle"]],decls:0,vars:0,template:function(n,i){},encapsulation:2})};export{o as ListdonleComponent};
