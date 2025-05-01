@@ -9,6 +9,8 @@ git pull
 docker compose -f 'docker-compose.yml' up -d --build 'ferausach'
 docker compose -f 'docker-compose.yml' up -d --build 'berausach'
 docker compose -f 'docker-compose.yml' up -d --build 'redis'
+docker compose -f 'docker-compose.yml' up -d --build 'backend-shop'
+docker compose -f 'docker-compose.yml' up -d --build 'frontend-shop'
 
 Xoá Tất Cả
 docker system prune -a --volumes -f

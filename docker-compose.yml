@@ -68,23 +68,6 @@ services:
     ports:
       # Map cổng 3200 của container ra cổng 3200 của máy host
       - "3500:3200"
-    environment:
-      # --- Cấu hình kết nối Database ---
-      # Sử dụng tên service 'db' làm host. Docker Compose sẽ tự phân giải DNS.
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_USERNAME: ${MYSQL_USER} # Lấy từ file .env
-      DB_PASSWORD: ${MYSQL_PASSWORD} # Lấy từ file .env
-      DB_DATABASE: ${MYSQL_DATABASE} # Lấy từ file .env
-
-      # --- Cấu hình khác cho ứng dụng ---
-      PORT: 3200 # Cổng ứng dụng lắng nghe bên trong container
-      NODE_ENV: production # Đảm bảo chạy ở chế độ production
-      # !!! THÊM CÁC BIẾN MÔI TRƯỜNG KHÁC Ở ĐÂY (ví dụ: JWT_SECRET, API_KEYS...)
-      # JWT_SECRET: ${JWT_SECRET} # Ví dụ lấy từ file .env
-    networks:
-      # Kết nối service này vào network 'app-network'
-      - app-network
     volumes:
       # Mount named volume 'uploads_data' vào thư mục /app/uploads trong container
       # để lưu trữ file upload bền bỉ và khắc phục lỗi EACCES
