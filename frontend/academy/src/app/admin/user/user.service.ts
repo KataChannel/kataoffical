@@ -29,15 +29,15 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
     setUserId(id: string | null) {
       this.userId.set(id);
     }
-      private socket = io(`${environment.SHARED_APIURL}`,{
+      private socket = io(`${environment.ACADEMY_APIURL}`,{
       transports: ['websocket'],
       reconnectionAttempts: 5,
       timeout: 5000,
     });
     private readonly _secret: any;
     private _authenticated: boolean = false;
-    private APIURL: string = environment.SHARED_APIURL;
-    private BASE_URL = `${environment.SHARED_APIURL}/auth`
+    private APIURL: string = environment.ACADEMY_APIURL;
+    private BASE_URL = `${environment.ACADEMY_APIURL}/auth`
     profile = signal<any>({});
     private permissionsSubject = new BehaviorSubject<string[]>([]);
     public permissions$ = this.permissionsSubject.asObservable();
@@ -49,7 +49,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
             'Content-Type': 'application/json',
           },
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/users/get/admin`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/users/get/admin`, options);
         const data = await response.json();
         // this._users.next(data)
         return data;
@@ -72,7 +72,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
             },
             body: JSON.stringify(dulieu),
           };
-          const response = await fetch(`${environment.SHARED_APIURL}/users`, options);
+          const response = await fetch(`${environment.ACADEMY_APIURL}/users`, options);
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
@@ -105,7 +105,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
             'Authorization': `Bearer ${this._StorageService.getItem('token')}`
           },
         };
-        const lastUpdatedResponse = await fetch(`${environment.SHARED_APIURL}/users/last-updated`, options);
+        const lastUpdatedResponse = await fetch(`${environment.ACADEMY_APIURL}/users/last-updated`, options);
         if (!lastUpdatedResponse.ok) {
           this.handleError(lastUpdatedResponse.status);
           return cachedData;
@@ -118,7 +118,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
         }
         console.log(updatedAtServer, updatedAtCache); 
         //Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
-        const response = await fetch(`${environment.SHARED_APIURL}/users`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/users`, options);
         if (!response.ok) {
           this.handleError(response.status);
           return cachedData;
@@ -172,7 +172,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
           },
           body: JSON.stringify(param),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/users/findby`, options);      
+        const response = await fetch(`${environment.ACADEMY_APIURL}/users/findby`, options);      
         if (!response.ok) {
           this.handleError(response.status);
         }
@@ -193,7 +193,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
             },
             body: JSON.stringify(dulieu),
           };
-          const response = await fetch(`${environment.SHARED_APIURL}/users/${dulieu.id}`, options);
+          const response = await fetch(`${environment.ACADEMY_APIURL}/users/${dulieu.id}`, options);
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
@@ -216,7 +216,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
                 'Content-Type': 'application/json',
               },
             };
-            const response = await fetch(`${environment.SHARED_APIURL}/users/${item.id}`, options);
+            const response = await fetch(`${environment.ACADEMY_APIURL}/users/${item.id}`, options);
             if (!response.ok) {
               this.handleError(response.status);
             }
@@ -236,7 +236,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
         },
         body: JSON.stringify(data),
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/users/changepass`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/users/changepass`, options);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -255,7 +255,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
         },
         body: JSON.stringify(data),
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/auth/randompass`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/auth/randompass`, options);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -275,7 +275,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
           'Authorization': 'Bearer '+ this._StorageService.getItem('token')
         },
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/users/profile`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/users/profile`, options);
       if (!response.ok) {
         console.log(response.status);
         this.handleError(response.status);
@@ -373,7 +373,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
         },
         body: JSON.stringify(user),
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/auth/login`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/auth/login`, options);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -412,7 +412,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
         },
         body: JSON.stringify(user),
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/auth/register`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/auth/register`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -435,7 +435,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
         },
         body: JSON.stringify(user),
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/users/loginbygoogle`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/users/loginbygoogle`, options);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

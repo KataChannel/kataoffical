@@ -73,23 +73,46 @@ export class MenuService {
     }
   }
 
-  async getTree(data:any){   
-    if(Object.entries(data).length === 0){
-      data =['donhang.view'];
+  async getTree(data: any) {
+    // Default permissions if none provided
+    const permissions = Array.isArray(data.permissions) && data.permissions.length > 0
+      ? data.permissions
+      : ['welcome.view'];
+
+    // Build menu query
+    const where: any = { isActive: true };
+    if (data?.serviceType) {
+      where.serviceType = data.serviceType;
     }
-    const menus = await this.findAll();  
-    const filteredMenus = menus.filter(v => {
-      const path = v.slug;
-      const result = `${path?.split("/").pop()}.view`;
-      v.isActive = data?.includes(result);
-      return v.isActive;
+
+    // Fetch all menus
+    const menus = await this.prisma.menu.findMany({
+      where,
+      include: { children: true },
+      orderBy: { order: 'asc' },
     });
-    const parentIds = new Set(filteredMenus.map(v => v.parentId).filter(id => id));
-    const parents = menus.filter(v => parentIds.has(v.id));
-    filteredMenus.push(...parents);
-    menus.length = 0;
-    menus.push(...filteredMenus);    
-    return this.buildTree(menus);
+
+    console.log('menu', menus);
+    
+    // Filter menus by permissions
+    const filteredMenus = menus.filter(menu => {
+      const slug = menu.slug;
+      const permission = `${slug?.split('/').pop()}.view`;
+      menu.isActive = permissions.includes(permission);
+      return menu.isActive;
+    });
+
+    // Ensure parent menus are included
+    const parentIds = new Set(filteredMenus.map(menu => menu.parentId).filter(Boolean));
+    const parentMenus = menus.filter(menu => parentIds.has(menu.id));
+    const finalMenus = [...filteredMenus, ...parentMenus];
+
+    // Remove duplicates by id
+    const uniqueMenus = Array.from(
+      new Map(finalMenus.map(menu => [menu.id, menu])).values()
+    );
+
+    return this.buildTree(uniqueMenus);
   }
 
   private buildTree(menus: any[], parentId: string | null = null) {

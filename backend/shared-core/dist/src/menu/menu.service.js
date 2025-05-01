@@ -82,22 +82,30 @@ let MenuService = class MenuService {
         }
     }
     async getTree(data) {
-        if (Object.entries(data).length === 0) {
-            data = ['donhang.view'];
+        const permissions = Array.isArray(data.permissions) && data.permissions.length > 0
+            ? data.permissions
+            : ['welcome.view'];
+        const where = { isActive: true };
+        if (data?.serviceType) {
+            where.serviceType = data.serviceType;
         }
-        const menus = await this.findAll();
-        const filteredMenus = menus.filter(v => {
-            const path = v.slug;
-            const result = `${path?.split("/").pop()}.view`;
-            v.isActive = data?.includes(result);
-            return v.isActive;
+        const menus = await this.prisma.menu.findMany({
+            where,
+            include: { children: true },
+            orderBy: { order: 'asc' },
         });
-        const parentIds = new Set(filteredMenus.map(v => v.parentId).filter(id => id));
-        const parents = menus.filter(v => parentIds.has(v.id));
-        filteredMenus.push(...parents);
-        menus.length = 0;
-        menus.push(...filteredMenus);
-        return this.buildTree(menus);
+        console.log('menu', menus);
+        const filteredMenus = menus.filter(menu => {
+            const slug = menu.slug;
+            const permission = `${slug?.split('/').pop()}.view`;
+            menu.isActive = permissions.includes(permission);
+            return menu.isActive;
+        });
+        const parentIds = new Set(filteredMenus.map(menu => menu.parentId).filter(Boolean));
+        const parentMenus = menus.filter(menu => parentIds.has(menu.id));
+        const finalMenus = [...filteredMenus, ...parentMenus];
+        const uniqueMenus = Array.from(new Map(finalMenus.map(menu => [menu.id, menu])).values());
+        return this.buildTree(uniqueMenus);
     }
     buildTree(menus, parentId = null) {
         return menus

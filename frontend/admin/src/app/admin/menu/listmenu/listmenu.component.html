@@ -105,6 +105,11 @@
               {{ row[column]}}%
             </span>
             }
+            @case ('serviceType') {
+            <span class="max-w-40 line-clamp-4">
+              {{ serviceType[row[column]]}}
+            </span>
+            }
             @case ('isActive') {
             <span class="max-w-40 line-clamp-4">
               @if (row[column]) {

@@ -1,0 +1,184 @@
+<div class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="bg-blue-600 py-4 px-6">
+                <h1 class="text-white text-2xl font-bold">Đăng ký làm Cộng tác viên</h1>
+            </div>
+            
+            <form class="p-6 space-y-6">
+                <!-- Personal Information Section -->
+                <div class="space-y-4">
+                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2">Thông tin cá nhân</h2>
+                    
+                    <div>
+                        <label for="fullname" class="block text-sm font-medium text-gray-700 mb-1">Họ và tên *</label>
+                        <input 
+                            type="text" 
+                            id="fullname" 
+                            name="fullname" 
+                            required
+                            class="form-input w-full px-4 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Nhập họ và tên đầy đủ"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại *</label>
+                        <input 
+                            type="tel" 
+                            id="phone" 
+                            name="phone" 
+                            required
+                            class="form-input w-full px-4 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Nhập số điện thoại"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            required
+                            class="form-input w-full px-4 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Nhập địa chỉ email"
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="zalo" class="block text-sm font-medium text-gray-700 mb-1">Zalo</label>
+                        <input 
+                            type="text" 
+                            id="zalo" 
+                            name="zalo" 
+                            class="form-input w-full px-4 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Nhập số Zalo hoặc ID Zalo"
+                        >
+                    </div>
+                </div>
+                
+                <!-- Payment Information Section -->
+                <div class="space-y-4">
+                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2">Thông tin thanh toán</h2>
+                    
+                    <div>
+                        <label for="bank_account" class="block text-sm font-medium text-gray-700 mb-1">Tài khoản nhận hoa hồng *</label>
+                        <input 
+                            type="text" 
+                            id="bank_account" 
+                            name="bank_account" 
+                            required
+                            class="form-input w-full px-4 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Số tài khoản MBbank, Momo, v.v."
+                        >
+                    </div>
+                    
+                    <div>
+                        <label for="bank_name" class="block text-sm font-medium text-gray-700 mb-1">Ngân hàng *</label>
+                        <input 
+                            type="text" 
+                            id="bank_name" 
+                            name="bank_name" 
+                            required
+                            class="form-input w-full px-4 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Tên ngân hàng (VD: MBbank, Momo)"
+                        >
+                    </div>
+                </div>
+                
+                <!-- Channel Information Section -->
+                <div class="space-y-4">
+                    <h2 class="text-lg font-semibold text-gray-800 border-b pb-2">Kênh tiếp thị</h2>
+                    
+                    <div>
+                        <label for="marketing_channel" class="block text-sm font-medium text-gray-700 mb-1">Kênh CTV dự định dùng để giới thiệu *</label>
+                        <select 
+                            id="marketing_channel" 
+                            name="marketing_channel" 
+                            required
+                            class="form-input w-full px-4 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
+                        >
+                            <option value="" disabled selected>Chọn kênh tiếp thị</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="facebook">Facebook</option>
+                            <option value="zalo">Zalo</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+                    
+                    <div id="other_channel_container" class="hidden">
+                        <label for="other_channel" class="block text-sm font-medium text-gray-700 mb-1">Vui lòng chỉ rõ kênh khác</label>
+                        <input 
+                            type="text" 
+                            id="other_channel" 
+                            name="other_channel" 
+                            class="form-input w-full px-4 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
+                            placeholder="Nhập tên kênh tiếp thị"
+                        >
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button 
+                        type="submit" 
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-md transition duration-300"
+                    >
+                        Đăng ký làm CTV
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Show/hide other channel input based on selection
+        const marketingChannel = document.getElementById('marketing_channel');
+        const otherChannelContainer = document.getElementById('other_channel_container');
+        
+        marketingChannel.addEventListener('change', function() {
+            if (this.value === 'other') {
+                otherChannelContainer.classList.remove('hidden');
+                document.getElementById('other_channel').required = true;
+            } else {
+                otherChannelContainer.classList.add('hidden');
+                document.getElementById('other_channel').required = false;
+            }
+        });
+        
+        // Form validation and submission
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate form
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('border-red-500');
+                    isValid = false;
+                } else {
+                    field.classList.remove('border-red-500');
+                }
+            });
+            
+            if (isValid) {
+                // Form is valid, proceed with submission
+                alert('Đăng ký thành công! Chúng tôi sẽ liên hệ với bạn sớm.');
+                form.reset();
+            } else {
+                alert('Vui lòng điền đầy đủ các trường bắt buộc.');
+            }
+        });
+        
+        // Add input validation for phone number
+        const phoneInput = document.getElementById('phone');
+        phoneInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</div>

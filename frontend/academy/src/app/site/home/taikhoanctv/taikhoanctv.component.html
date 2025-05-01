@@ -1,35 +1,24 @@
 <div class="min-h-screen bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 class="text-2xl font-bold text-gray-900 mb-6">Tài khoản CTV cá nhân</h1>
-        
+        <div class="flex flex-row gap-2 justify-between py-2">
+            <h1 class="text-2xl font-bold text-gray-900 mb-6">Tài khoản CTV cá nhân</h1>
+            <button (click)="logout()" mat-icon-button color="primary"><mat-icon>logout</mat-icon></button>
+        </div>
+
         <!-- Referral Link Section -->
         <div class="bg-white shadow rounded-lg p-6 mb-8">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-lg font-medium text-gray-900 flex items-center gap-2">
                         <span class="material-icons text-blue-500">content_copy</span>
-                        Link giới thiệu
+                        Chia sẻ link này để nhận hoa hồng
                     </h2>
-                    <p class="mt-1 text-sm text-gray-500">Chia sẻ link này để nhận hoa hồng</p>
                 </div>
-                <div class="w-full sm:w-auto flex-1 sm:flex-none">
-                    <div class="flex rounded-md shadow-sm">
-                        <input
-                            type="text"
-                            id="referralLink"
-                            readonly
-                            value="https://example.com/ref/CTV12345"
-                            class="flex-1 min-w-0 block w-full px-3 py-2 rounded-l-md border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        />
-                        <button
-                            onclick="copyToClipboard()"
-                            id="copyButton"
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                        >
-                            Sao chép
-                        </button>
-                    </div>
-                </div>
+                <mat-form-field appearance="outline" class="lg:w-1/2" subscriptSizing="dynamic">
+                    <mat-label>Link giới thiệu</mat-label>
+                    <input matInput disabled="true" class="w-full" [(ngModel)]="inviteLink" placeholder="Placeholder">
+                    <button matSuffix mat-icon-button color="primary" [cdkCopyToClipboard]="inviteLink"><mat-icon>content_copy</mat-icon></button>
+                  </mat-form-field>
             </div>
         </div>
 

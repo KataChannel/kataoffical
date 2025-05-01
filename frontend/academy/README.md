@@ -35,3 +35,6 @@ npx ng g c newsfeed --skip-tests --standalone
 npx ng g c notifications --skip-tests --standalone
 npx ng g c taikhoanctv --skip-tests --standalone
 npx ng g c leaderboard --skip-tests --standalone
+npx ng g c ladictv --skip-tests --standalone
+npx ng g c loginctv --skip-tests --standalone
+npx ng g c thongkectv --skip-tests --standalone

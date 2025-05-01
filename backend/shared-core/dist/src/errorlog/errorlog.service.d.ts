@@ -8,7 +8,7 @@ export declare class ErrorlogService {
         createdAt: Date;
         timestamp: Date;
         message: string;
-        details: import("@prisma/client/runtime/library").JsonValue | null;
+        details: import(".prisma/client/runtime/library").JsonValue | null;
         source: string;
     }>;
     findAll(): Promise<{
@@ -16,7 +16,7 @@ export declare class ErrorlogService {
         createdAt: Date;
         timestamp: Date;
         message: string;
-        details: import("@prisma/client/runtime/library").JsonValue | null;
+        details: import(".prisma/client/runtime/library").JsonValue | null;
         source: string;
     }[]>;
     findOne(id: string): Promise<{
@@ -24,7 +24,7 @@ export declare class ErrorlogService {
         createdAt: Date;
         timestamp: Date;
         message: string;
-        details: import("@prisma/client/runtime/library").JsonValue | null;
+        details: import(".prisma/client/runtime/library").JsonValue | null;
         source: string;
     }>;
     update(id: string, data: any): Promise<{
@@ -32,7 +32,7 @@ export declare class ErrorlogService {
         createdAt: Date;
         timestamp: Date;
         message: string;
-        details: import("@prisma/client/runtime/library").JsonValue | null;
+        details: import(".prisma/client/runtime/library").JsonValue | null;
         source: string;
     }>;
     remove(id: string): Promise<{
@@ -40,7 +40,7 @@ export declare class ErrorlogService {
         createdAt: Date;
         timestamp: Date;
         message: string;
-        details: import("@prisma/client/runtime/library").JsonValue | null;
+        details: import(".prisma/client/runtime/library").JsonValue | null;
         source: string;
     }>;
 }

@@ -18,7 +18,7 @@ export class PermissionGuard implements CanActivate {
         verticalPosition: "top",
         panelClass: ['snackbar-warning'],
       }); 
-      this.router.navigate(['/login']);
+      this.router.navigate(['/loginctv']);
       return false;
     }else {
       return true;

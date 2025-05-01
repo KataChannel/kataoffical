@@ -19,7 +19,6 @@ export declare class landingPageService {
         title: string;
         slug: string;
         order: number | null;
-        codeId: string;
         thumbnail: string | null;
         status: string;
         contentHtml: string | null;
@@ -29,6 +28,7 @@ export declare class landingPageService {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
+        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
     reorderlandingPages(landingPageIds: string[]): Promise<void>;
@@ -41,7 +41,6 @@ export declare class landingPageService {
         title: string;
         slug: string;
         order: number | null;
-        codeId: string;
         thumbnail: string | null;
         status: string;
         contentHtml: string | null;
@@ -51,6 +50,7 @@ export declare class landingPageService {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
+        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue;
     }[]>;
     findby(param: any): Promise<{
@@ -62,7 +62,6 @@ export declare class landingPageService {
         title: string;
         slug: string;
         order: number | null;
-        codeId: string;
         thumbnail: string | null;
         status: string;
         contentHtml: string | null;
@@ -72,6 +71,7 @@ export declare class landingPageService {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
+        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
     findOne(id: string): Promise<{
@@ -83,7 +83,6 @@ export declare class landingPageService {
         title: string;
         slug: string;
         order: number | null;
-        codeId: string;
         thumbnail: string | null;
         status: string;
         contentHtml: string | null;
@@ -93,6 +92,7 @@ export declare class landingPageService {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
+        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
     update(id: string, data: any): Promise<{
@@ -104,7 +104,6 @@ export declare class landingPageService {
         title: string;
         slug: string;
         order: number | null;
-        codeId: string;
         thumbnail: string | null;
         status: string;
         contentHtml: string | null;
@@ -114,6 +113,7 @@ export declare class landingPageService {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
+        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
     remove(id: string): Promise<{
@@ -125,7 +125,6 @@ export declare class landingPageService {
         title: string;
         slug: string;
         order: number | null;
-        codeId: string;
         thumbnail: string | null;
         status: string;
         contentHtml: string | null;
@@ -135,6 +134,7 @@ export declare class landingPageService {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
+        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
 }

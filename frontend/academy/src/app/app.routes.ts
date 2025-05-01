@@ -3,6 +3,7 @@ import { DynamicComponentResolver } from './dynamic-component.resolver';
 import { AuthGuard } from './admin/user/common/guards/auth.guard';
 import { GuestGuard } from './admin/user/common/guards/guest.guard';
 import { PermissionGuard } from './admin/user/common/guards/permission.guard';
+import { AuthAdminGuard } from './admin/user/common/guards/auth.guardadmin';
 export const routes: Routes = [
   // { path: '', redirectTo: 'admin/profile', pathMatch: 'full' },
   {
@@ -14,7 +15,12 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    canActivate: [AuthGuard],
+    redirectTo: 'admin/thongkectv', 
+    pathMatch: 'full'
+  },
+  {
+    path: 'admin',
+    canActivate: [AuthAdminGuard],
     loadComponent: () =>
       import('./admin/adminmain/adminmain.component').then(
         (c) => c.AdminmainComponent
@@ -74,6 +80,12 @@ export const routes: Routes = [
        loadComponent: () => import('./admin/quanlyctv/detailquanlyctv/detailquanlyctv.component').then((c) => c.DetailQuanlyctvComponent),
           },
         ],
+      },
+      {
+        path: 'thongkectv',
+        canActivate: [PermissionGuard],
+        data: { permission: 'thongkectv.view' },
+        loadComponent: () => import('./admin/thongkectv/thongkectv.component').then((c) => c.ThongkectvComponent),
       },
       {
         path: 'landingpage',
@@ -232,99 +244,6 @@ export const routes: Routes = [
           },
         ],
       },
-      {
-        path: 'profile',
-        redirectTo: 'profile/newsfeed',
-        pathMatch: 'full',
-      },
-      {
-        path: 'profile',
-        canActivate: [PermissionGuard],
-        data: { permission: 'profile.view' },
-        loadComponent: () =>
-          import('./admin/user/common/profile/profile.component').then(
-            (c) => c.ProfileComponent
-          ),
-        children: [
-          {
-            path: 'newsfeed',
-            loadComponent: () =>
-              import(
-                './admin/user/common/profile/newsfeed/newsfeed.component'
-              ).then((c) => c.NewsfeedComponent),
-          },
-          {
-            path: 'socialpage',
-            loadComponent: () =>
-              import(
-                './admin/user/common/profile/social/social.component'
-              ).then((c) => c.SocialComponent),
-          },
-          {
-            path: 'activity',
-            loadComponent: () =>
-              import(
-                './admin/user/common/profile/activity/activity.component'
-              ).then((c) => c.ActivityComponent),
-          },
-          {
-            path: 'gallery',
-            loadComponent: () =>
-              import(
-                './admin/user/common/profile/gallery/gallery.component'
-              ).then((c) => c.GalleryComponent),
-          },
-        ],
-      },
-      {
-        path: 'account',
-        redirectTo: 'account/general',
-        pathMatch: 'full',
-      },
-      {
-        path: 'account',
-        loadComponent: () =>
-          import('./admin/user/common/account/account.component').then(
-            (c) => c.AccountComponent
-          ),
-        children: [
-          {
-            path: 'password',
-            loadComponent: () =>
-              import(
-                './admin/user/common/account/password/password.component'
-              ).then((c) => c.PasswordComponent),
-          },
-          {
-            path: 'general',
-            loadComponent: () =>
-              import(
-                './admin/user/common/account/general/general.component'
-              ).then((c) => c.GeneralComponent),
-          },
-          {
-            path: 'notifications',
-            loadComponent: () =>
-              import(
-                './admin/user/common/account/notifications/notifications.component'
-              ).then((c) => c.NotificationsComponent),
-          },
-          {
-            path: 'billing',
-            loadComponent: () =>
-              import(
-                './admin/user/common/account/billing/billing.component'
-              ).then((c) => c.BillingComponent),
-          },
-          {
-            path: 'security',
-            loadComponent: () =>
-              import(
-                './admin/user/common/account/security/security.component'
-              ).then((c) => c.SecurityComponent),
-          },
-        ],
-      },
     ],
   },
   {
@@ -336,6 +255,16 @@ export const routes: Routes = [
         (c) => c.LoginComponent
       ),
   },
+  {
+    path: 'loginctv',
+    canActivate: [GuestGuard],
+    canActivateChild: [GuestGuard],
+    loadComponent: () =>
+      import('./admin/user/common/loginctv/loginctv.component').then(
+        (c) => c.LoginctvComponent
+      ),
+  },
+  
   {
     path: 'register',
     canActivate: [GuestGuard],
@@ -370,6 +299,7 @@ export const routes: Routes = [
           },
           {
             path: 'dangkyctv',
+            canActivate: [GuestGuard],
             loadComponent: () =>
               import('./site/home/dangkyctv/dangkyctv.component').then((c) => c.DangkyctvComponent),
           },
@@ -377,6 +307,11 @@ export const routes: Routes = [
             path :'hotroctv',
             loadComponent: () =>
               import('./site/home/hotroctv/hotroctv.component').then((c) => c.HotroctvComponent),
+         },
+          {
+            path :'ladictv',
+            loadComponent: () =>
+              import('./site/home/ladictv/ladictv.component').then((c) => c.LadictvComponent),
          },
           {
             path :'leaderboard',
@@ -391,7 +326,100 @@ export const routes: Routes = [
           {path:'faqctv',
             loadComponent: () =>
               import('./site/home/faqctv/faqctv.component').then((c) => c.FaqctvComponent),
-          }
+          },
+          {
+            path: 'profile',
+            redirectTo: 'profile/newsfeed',
+            pathMatch: 'full',
+          },
+          {
+            path: 'profile',
+            canActivate: [PermissionGuard],
+            data: { permission: 'profile.view' },
+            loadComponent: () =>
+              import('./admin/user/common/profile/profile.component').then(
+                (c) => c.ProfileComponent
+              ),
+            children: [
+              {
+                path: 'newsfeed',
+                loadComponent: () =>
+                  import(
+                    './admin/user/common/profile/newsfeed/newsfeed.component'
+                  ).then((c) => c.NewsfeedComponent),
+              },
+              {
+                path: 'socialpage',
+                loadComponent: () =>
+                  import(
+                    './admin/user/common/profile/social/social.component'
+                  ).then((c) => c.SocialComponent),
+              },
+              {
+                path: 'activity',
+                loadComponent: () =>
+                  import(
+                    './admin/user/common/profile/activity/activity.component'
+                  ).then((c) => c.ActivityComponent),
+              },
+              {
+                path: 'gallery',
+                loadComponent: () =>
+                  import(
+                    './admin/user/common/profile/gallery/gallery.component'
+                  ).then((c) => c.GalleryComponent),
+              },
+            ],
+          },
+          {
+            path: 'account',
+            redirectTo: 'account/general',
+            pathMatch: 'full',
+          },
+          {
+            path: 'account',
+            loadComponent: () =>
+              import('./admin/user/common/account/account.component').then(
+                (c) => c.AccountComponent
+              ),
+            children: [
+              {
+                path: 'password',
+                loadComponent: () =>
+                  import(
+                    './admin/user/common/account/password/password.component'
+                  ).then((c) => c.PasswordComponent),
+              },
+              {
+                path: 'general',
+                loadComponent: () =>
+                  import(
+                    './admin/user/common/account/general/general.component'
+                  ).then((c) => c.GeneralComponent),
+              },
+              {
+                path: 'notifications',
+                loadComponent: () =>
+                  import(
+                    './admin/user/common/account/notifications/notifications.component'
+                  ).then((c) => c.NotificationsComponent),
+              },
+              {
+                path: 'billing',
+                loadComponent: () =>
+                  import(
+                    './admin/user/common/account/billing/billing.component'
+                  ).then((c) => c.BillingComponent),
+              },
+              {
+                path: 'security',
+                loadComponent: () =>
+                  import(
+                    './admin/user/common/account/security/security.component'
+                  ).then((c) => c.SecurityComponent),
+              },
+            ],
+          },
         ],
       },
       {

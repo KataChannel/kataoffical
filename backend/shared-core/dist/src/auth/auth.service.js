@@ -46,11 +46,12 @@ let AuthService = class AuthService {
     }
     async login(phone, email, password) {
         const user = await this.prisma.user.findFirst({
-            where: { OR: [{ email }, { phone }, { SDT: phone }] },
+            where: { OR: [{ email }, { phone }] },
             include: {
                 roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } },
             },
         });
+        console.log(user);
         if (!user || !(await bcrypt.compare(password, user.password))) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }

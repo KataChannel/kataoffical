@@ -4,40 +4,33 @@
   </button>
   <div class="font-bold">{{ DetailMenu()?.title || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
-    <mat-slide-toggle [(ngModel)]="DetailMenu().isActive" [disabled]="!isEdit()">{{DetailMenu().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleMenuAction()">
       <mat-icon>save</mat-icon>
     </button>
     <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
-    <!-- <button mat-icon-button color="warn" (click)="toggleDelete()">
-      <mat-icon>delete</mat-icon>
-    </button> -->
   </div>
 </div>
 
 <div class="relative flex flex-col w-full p-4 overflow-auto">
-  <ng-container *ngIf="isDelete()">
-    <div class="flex flex-col space-y-4 items-center justify-center">
-      <div class="font-bold text-2xl">Bạn chắc chắn muốn xoá không?</div>
-      <div class="flex flex-row space-x-2 items-center justify-center">
-        <button mat-flat-button color="primary" (click)="DeleteData()">Đồng Ý</button>
-        <button mat-flat-button color="warn" (click)="toggleDelete()">Huỷ Bỏ</button>
-      </div>
-    </div>
-  </ng-container>
-
-  <ng-container *ngIf="!isDelete()">
-    <div class="w-full flex flex-col space-y-2">
-      <mat-form-field appearance="outline">
+    <div class="w-full flex flex-col gap-2">
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
         <mat-label>Tiêu Đề</mat-label>
         <input matInput [(ngModel)]="DetailMenu().title" (input)="FillSlug()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
       </mat-form-field>
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
         <mat-label>Slug</mat-label>
         <input matInput [(ngModel)]="DetailMenu().slug" [disabled]="!isEdit()" placeholder="Vui lòng nhập Slug"/>
       </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>Loại Menu</mat-label>
+        <mat-select [(ngModel)]="DetailMenu().serviceType" [disabled]="!isEdit()">
+                <mat-option *ngFor="let item of serviceType|keyvalue" [value]="item.key">{{item.value}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
       @defer () {
         <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
           <mat-label>Thư Mục Cha</mat-label>
@@ -66,5 +59,4 @@
       <mat-slide-toggle [(ngModel)]="DetailMenu().isActive" [disabled]="!isEdit()">{{DetailMenu().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
         
     </div>
-  </ng-container>
 </div>

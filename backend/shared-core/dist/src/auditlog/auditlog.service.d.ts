@@ -9,7 +9,7 @@ export declare class AuditLogService {
         action: string | null;
         entity: string | null;
         entityId: string | null;
-        oldValue: import("@prisma/client/runtime/library").JsonValue | null;
-        newValue: import("@prisma/client/runtime/library").JsonValue | null;
+        oldValue: import(".prisma/client/runtime/library").JsonValue | null;
+        newValue: import(".prisma/client/runtime/library").JsonValue | null;
     }[]>;
 }

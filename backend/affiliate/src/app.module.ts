@@ -6,18 +6,11 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PrismaService } from '../prisma/prisma.service';
 import { MenuModule } from './menu/menu.module';
-import { KhachhangModule } from './khachhang/khachhang.module';
 import { AuthMiddleware } from './middleware/auth.middleware';
 import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
-import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { AuditLogModule } from './auditlog/auditlog.module';
-import { MailModule } from './mail/mail.module';
-import { QuanlyqrcodeModule } from './quanlyqrcode/quanlyqrcode.module';
-import { QuanlydriveModule } from './quanlydrive/quanlydrive.module';
-import { GooglesheetModule } from './googlesheet/googlesheet.module';
-import { DexuatModule } from './dexuat/dexuat.module';
 import { LandingPageModule } from './landingpage/landingpage.module';
 @Module({
   imports: [
@@ -25,17 +18,10 @@ import { LandingPageModule } from './landingpage/landingpage.module';
     UserModule,
     PrismaModule,
     MenuModule,
-    KhachhangModule,
-    NhomkhachhangModule,
     RoleModule,
     PermissionModule,
     ChatbotModule,
     AuditLogModule,
-    QuanlyqrcodeModule,
-    MailModule,
-    QuanlydriveModule,
-    GooglesheetModule,
-    DexuatModule,
     LandingPageModule,
   ],
   controllers: [AppController],

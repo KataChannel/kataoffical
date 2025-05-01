@@ -6,7 +6,7 @@ git push
 npx bun add @nestjs/config @nestjs/jwt @nestjs/passport passport passport-jwt bcryptjs
 npx bun add @prisma/client
 npx bun add -d prisma
-npx bun prisma migrate dev --name hethong1.7 --skip-generate
+npx bun prisma migrate dev --name hethong1.8 --skip-generate
 npx prisma db push
 npx bun prisma generate 
 npx ts-node prisma/scriptdb/exportData.ts
@@ -14,6 +14,7 @@ npx ts-node prisma/scriptdb/seed.ts
 npx ts-node prisma/scriptdb/backup.ts
 npx ts-node prisma/scriptdb/restore.ts
 npx ts-node prisma/scriptdb/user.ts
+npx ts-node prisma/scriptdb/updatephone.ts
 node createmodule.js
 
 npx prisma db seed

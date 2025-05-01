@@ -20,6 +20,7 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
     }
     async register(data, affiliateCode) {
+        console.log(data, affiliateCode);
         const existingUser = await this.prisma.user.findFirst({
             where: {
                 OR: [

@@ -36,6 +36,15 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
     ListMenu:any[]= []
+    serviceType: any = {
+      core:'Admin',
+      spa:'Spa',
+      cms:'CMS',
+      academy:'Học Viện',
+      affiliate:'Affiliate',
+      cosmetics:'Mỹ Phẩm',
+      ecommerce:'Thương Mại Điện Tử'     
+    }
     constructor(){
       this._route.paramMap.subscribe(async (params) => {
         const id = params.get('id');

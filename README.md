@@ -95,6 +95,7 @@ cd /etc/nginx/sites-available
 sudo ln -s /etc/nginx/sites-available/hethong.tazagroup.vn /etc/nginx/sites-enabled/
 sudo ln -s /etc/nginx/sites-available/hethong.timona.edu.vn /etc/nginx/sites-enabled/
 sudo ln -s /etc/nginx/sites-available/affiliate /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/shoprausach /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 
@@ -102,6 +103,7 @@ sudo systemctl reload nginx
 sudo certbot --nginx -d hethong.tazagroup.vn -d apihethong.tazagroup.vn
 sudo certbot --nginx -d affiliate.timona.edu.vn -d apiaffiliate.tazagroup.vn
 sudo certbot --nginx -d hethong.timona.edu.vn -d apihethong.timona.edu.vn
+sudo certbot --nginx -d shop.rausachtrangia.com -d api.rausachtrangia.com
 sudo certbot renew --dry-run
 
 

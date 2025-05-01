@@ -94,14 +94,14 @@ export class MenuService {
       return console.error(error);
     }
   }
-  async getTreeMenu(permissions:any) {
+  async getTreeMenu(params:any) {
     try {
       const options = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(permissions),
+        body: JSON.stringify(params),
       };
       const response = await fetch(`${environment.APIURL}/menu/tree`, options);
       if (!response.ok) {

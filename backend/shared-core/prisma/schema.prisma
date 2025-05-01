@@ -13,6 +13,15 @@ enum Gender {
   FEMALE
   OTHER
 }
+enum serviceType {
+  core
+  spa
+  cms
+  academy
+  affiliate
+  cosmetics
+  ecommerce
+}
 model User {
   id        String   @id @default(uuid())
   name        String?
@@ -78,17 +87,18 @@ model RolePermission {
 }
 
 model Menu {
-  id        String   @id @default(uuid())
-  title     String
-  icon      String?  // Optional icon for menu
-  slug      String?  // URL of the menu item
-  parentId  String?  // Reference to parent menu (null if root)
-  parent    Menu?    @relation("MenuChildren", fields: [parentId], references: [id])
-  children  Menu[]   @relation("MenuChildren")
-  order     Int?      // For sorting menus
-  isActive  Boolean  @default(false) // Enable/Disable menu
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  title       String
+  icon        String?  // Optional icon for menu
+  slug        String?  // URL of the menu item
+  parentId    String?  // Reference to parent menu (null if root)
+  parent      Menu?    @relation("MenuChildren", fields: [parentId], references: [id])
+  children    Menu[]   @relation("MenuChildren")
+  order       Int?     // For sorting menus
+  isActive    Boolean  @default(false) // Enable/Disable menu
+  serviceType serviceType?  @default(core) // Field to classify service type (e.g., spa, cms, academy, affiliate)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Khachhang {

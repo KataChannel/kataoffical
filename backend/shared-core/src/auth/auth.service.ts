@@ -44,11 +44,13 @@ async register(data: any, affiliateCode?: string) {
 
   async login(phone:string,email: string, password: string) {   
     const user:any = await this.prisma.user.findFirst({ 
-      where: { OR: [{ email }, { phone }, { SDT: phone }] },
+      where: { OR: [{ email }, { phone }] },
       include: {
       roles: { include: { role: { include: { permissions: {include:{permission:true}} } } } },
       },
      });    
+     console.log(user);
+     
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }

@@ -14,10 +14,10 @@ import { CommonModule } from '@angular/common';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TreemenuComponent } from '../../shared/common/treemenu/treemenu.component';
-import { UserService } from '../user/user.service';
 import moment from 'moment';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { MenuService } from '../menu/menu.service';
+import { UserAdminService } from '../user/useradmin.service';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -32,7 +32,6 @@ import { MenuService } from '../menu/menu.service';
     MatListModule,
     CommonModule,
     RouterLink,
-    // RouterLinkActive,
     TreemenuComponent,
   ],
   templateUrl: './adminmain.component.html',
@@ -70,7 +69,7 @@ export class AdminmainComponent {
   _MenuService:MenuService = inject(MenuService)
   constructor(
     private _breakpointObserver:BreakpointObserver,
-    private _UserService:UserService,
+    private _UserService:UserAdminService,
     private _ErrorLogService:ErrorLogService,
   ) {}
 
@@ -83,8 +82,9 @@ export class AdminmainComponent {
     await this._UserService.getProfile().then(async (res: any) => {
       if(res){
         this.User = res;  
-        const permissions = this.User?.permissions?.map((v:any)=>v.name);     
-        await this._MenuService.getTreeMenu(permissions)
+        const permissions = this.User?.permissions?.map((v:any)=>v.name);   
+        const params = {permissions:permissions,serviceType:'affiliate'}     
+        await this._MenuService.getTreeMenu(params)
         this.ListMenu = this._MenuService.ListMenu()    
         this.dataSource.data = this._MenuService.ListMenu()
       } 

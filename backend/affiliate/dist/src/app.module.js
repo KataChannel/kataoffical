@@ -15,18 +15,11 @@ const user_module_1 = require("./user/user.module");
 const prisma_module_1 = require("../prisma/prisma.module");
 const prisma_service_1 = require("../prisma/prisma.service");
 const menu_module_1 = require("./menu/menu.module");
-const khachhang_module_1 = require("./khachhang/khachhang.module");
 const auth_middleware_1 = require("./middleware/auth.middleware");
 const role_module_1 = require("./role/role.module");
 const permission_module_1 = require("./permission/permission.module");
-const nhomkhachhang_module_1 = require("./nhomkhachhang/nhomkhachhang.module");
 const chatbot_module_1 = require("./chatbot/chatbot.module");
 const auditlog_module_1 = require("./auditlog/auditlog.module");
-const mail_module_1 = require("./mail/mail.module");
-const quanlyqrcode_module_1 = require("./quanlyqrcode/quanlyqrcode.module");
-const quanlydrive_module_1 = require("./quanlydrive/quanlydrive.module");
-const googlesheet_module_1 = require("./googlesheet/googlesheet.module");
-const dexuat_module_1 = require("./dexuat/dexuat.module");
 const landingpage_module_1 = require("./landingpage/landingpage.module");
 let AppModule = class AppModule {
     configure(consumer) {
@@ -41,17 +34,10 @@ exports.AppModule = AppModule = __decorate([
             user_module_1.UserModule,
             prisma_module_1.PrismaModule,
             menu_module_1.MenuModule,
-            khachhang_module_1.KhachhangModule,
-            nhomkhachhang_module_1.NhomkhachhangModule,
             role_module_1.RoleModule,
             permission_module_1.PermissionModule,
             chatbot_module_1.ChatbotModule,
             auditlog_module_1.AuditLogModule,
-            quanlyqrcode_module_1.QuanlyqrcodeModule,
-            mail_module_1.MailModule,
-            quanlydrive_module_1.QuanlydriveModule,
-            googlesheet_module_1.GooglesheetModule,
-            dexuat_module_1.DexuatModule,
             landingpage_module_1.LandingPageModule,
         ],
         controllers: [app_controller_1.AppController],

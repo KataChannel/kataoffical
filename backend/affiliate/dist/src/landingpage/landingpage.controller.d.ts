@@ -11,7 +11,6 @@ export declare class LandingpageController {
         title: string;
         slug: string;
         order: number | null;
-        codeId: string;
         thumbnail: string | null;
         status: string;
         contentHtml: string | null;
@@ -21,6 +20,7 @@ export declare class LandingpageController {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
+        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
     findby(param: any): Promise<{
@@ -32,7 +32,6 @@ export declare class LandingpageController {
         title: string;
         slug: string;
         order: number | null;
-        codeId: string;
         thumbnail: string | null;
         status: string;
         contentHtml: string | null;
@@ -42,6 +41,7 @@ export declare class LandingpageController {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
+        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
     findAll(): Promise<{
@@ -53,7 +53,6 @@ export declare class LandingpageController {
         title: string;
         slug: string;
         order: number | null;
-        codeId: string;
         thumbnail: string | null;
         status: string;
         contentHtml: string | null;
@@ -63,6 +62,7 @@ export declare class LandingpageController {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
+        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue;
     }[]>;
     findOne(id: string): Promise<{
@@ -74,7 +74,6 @@ export declare class LandingpageController {
         title: string;
         slug: string;
         order: number | null;
-        codeId: string;
         thumbnail: string | null;
         status: string;
         contentHtml: string | null;
@@ -84,6 +83,7 @@ export declare class LandingpageController {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
+        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
     update(id: string, data: any): Promise<{
@@ -95,7 +95,6 @@ export declare class LandingpageController {
         title: string;
         slug: string;
         order: number | null;
-        codeId: string;
         thumbnail: string | null;
         status: string;
         contentHtml: string | null;
@@ -105,6 +104,7 @@ export declare class LandingpageController {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
+        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
     remove(id: string): Promise<{
@@ -116,7 +116,6 @@ export declare class LandingpageController {
         title: string;
         slug: string;
         order: number | null;
-        codeId: string;
         thumbnail: string | null;
         status: string;
         contentHtml: string | null;
@@ -126,6 +125,7 @@ export declare class LandingpageController {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
+        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
     reorder(body: {

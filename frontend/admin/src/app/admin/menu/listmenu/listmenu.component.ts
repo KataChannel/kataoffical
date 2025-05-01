@@ -51,10 +51,20 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
   })
   export class ListMenuComponent {
     displayedColumns: string[] = [];
+    serviceType: any = {
+      core:'Admin',
+      spa:'Spa',
+      cms:'CMS',
+      academy:'Học Viện',
+      affiliate:'Affiliate',
+      cosmetics:'Mỹ Phẩm',
+      ecommerce:'Thương Mại Điện Tử'     
+    }
     ColumnName: any = {
       title: 'Tiêu Đề',
       slug: 'Đường Dẫn',
       parent: 'Menu Cha',
+      serviceType: 'Loại Menu',
       order: 'Thứ Tự',
       isActive: 'Trạng Thái',
       createdAt:'Ngày Tạo',

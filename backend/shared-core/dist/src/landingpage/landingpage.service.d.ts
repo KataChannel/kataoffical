@@ -29,7 +29,7 @@ export declare class landingPageService {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
-        contentJson: import("@prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
     reorderlandingPages(landingPageIds: string[]): Promise<void>;
     findAll(): Promise<{
@@ -51,7 +51,7 @@ export declare class landingPageService {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
-        contentJson: import("@prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue;
     }[]>;
     findby(param: any): Promise<{
         id: string;
@@ -72,7 +72,7 @@ export declare class landingPageService {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
-        contentJson: import("@prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
     findOne(id: string): Promise<{
         id: string;
@@ -93,7 +93,7 @@ export declare class landingPageService {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
-        contentJson: import("@prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -114,7 +114,7 @@ export declare class landingPageService {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
-        contentJson: import("@prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -135,6 +135,6 @@ export declare class landingPageService {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
-        contentJson: import("@prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue;
     }>;
 }

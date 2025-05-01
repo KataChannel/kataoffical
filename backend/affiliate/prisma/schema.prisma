@@ -8,247 +8,155 @@ datasource postgres {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-// --- Enums ---
-
-enum AffiliateStatus {
-  PENDING   // Chờ duyệt
-  APPROVED  // Đã duyệt (chưa hoạt động)
-  ACTIVE    // Đang hoạt động
-  REJECTED  // Bị từ chối
-  INACTIVE  // Ngừng hoạt động
-  BANNED    // Bị cấm
-}
-
-enum CommissionType {
-  PERCENTAGE        // Theo phần trăm
-  FIXED_RATE        // Số tiền cố định
-  // Add more complex types if needed:
-  // TIERED_PERCENTAGE
-  // TIERED_FIXED
-  // RECURRING_PERCENTAGE
-  // RECURRING_FIXED
-}
-
-enum ConversionStatus {
-  PENDING   // Chờ xử lý/duyệt
-  APPROVED  // Đã duyệt (sẵn sàng tính hoa hồng)
-  REJECTED  // Bị từ chối (ví dụ: đơn hàng bị hủy, lead không chất lượng)
-  // PAID is usually tracked on CommissionLedger/Payout
-}
-
-enum PayoutStatus {
-  PENDING     // Chờ xử lý thanh toán
-  PROCESSING  // Đang xử lý
-  PAID        // Đã thanh toán
-  FAILED      // Thanh toán thất bại
-  CANCELLED   // Đã hủy
-}
-
-enum PayoutMethod { // Có thể dùng String hoặc bảng Lookup nếu cần nhiều phương thức hơn
-  BANK_TRANSFER
-  PAYPAL
-  WISE
+enum Gender {
+  MALE
+  FEMALE
   OTHER
 }
-
-// --- Core Models ---
-
-model AffiliatePartner {
-  id              String          @id @default(uuid())
-  firstName       String?
-  lastName        String?
-  companyName     String?         // Tên công ty (nếu là doanh nghiệp)
-  email           String          @unique // Email đăng nhập Affiliate Portal / liên hệ chính
-  passwordHash    String?         // Hash mật khẩu nếu hệ thống tự quản lý login affiliate
-  phone           String?
-  website         String?         // Website chính của affiliate
-  status          AffiliateStatus @default(PENDING)
-  trackingCode    String          @unique @default(uuid()) // Mã tracking duy nhất cho affiliate này
-  approvedAt      DateTime?
-  notes           String?         // Ghi chú nội bộ về partner
-
-  // Payout Information
-  payoutMethod    PayoutMethod?   // Hoặc String
-  payoutDetails   Json?           // Lưu thông tin chi tiết tùy theo phương thức (PayPal email, Bank Account info - Cần mã hóa!)
-
-  // Logical Foreign Keys to Shared Core DB
-  userId          String?         @unique /// FK to shared_db.users.id (Logical, if partner is also an employee)
-  customerId      String?         @unique /// FK to shared_db.customers.id (Logical, if partner is also a customer)
-
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-
-  // Relations
-  trackingLinks   TrackingLink[]    // Các link tracking của partner này
-  conversions     ConversionEvent[] // Các conversion được attribute cho partner này
-  commissionLedgers CommissionLedger[] // Sổ cái hoa hồng
-  payouts         Payout[]          // Các đợt thanh toán
-
-  @@index([status])
-  @@index([userId])   // Index logical keys if queried often
-  @@index([customerId])
-  @@map("affiliate_partners")
+model User {
+  id        String   @id @default(uuid())
+  name        String?
+  avatar      String?
+  gender      Gender?
+  email       String?   @unique
+  SDT        String?   @unique
+  phone         String?  @unique
+  zaloId        String?  @unique
+  facebookId    String?  @unique
+  googleId    String?  @unique
+  password      String?
+  provider  String?  // "google", "facebook", "zalo"
+  providerId String? @unique
+  isSuperAdmin Boolean @default(false)
+  roles     UserRole[]
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  audits    AuditLog[]
+  Notification Notification[]
+  LandingPage LandingPage[]
+  affiliateCode String?   @unique // Mã affiliate riêng của user này
+  referrerId    String?   // ID của user đã giới thiệu user này
+  referrer      User?     @relation("Referrals", fields: [referrerId], references: [id])
+  referrals     User[]    @relation("Referrals")
 }
 
-model Campaign { // Optional: Quản lý chiến dịch affiliate
-  id           String   @id @default(uuid())
-  name         String   @unique
-  description  String?
-  startDate    DateTime?
-  endDate      DateTime?
-  isActive     Boolean  @default(true)
-  // targetBusinessUnits String[] @default([]) // e.g., ["ACADEMY", "SPA"]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  trackingLinks  TrackingLink[]
-  commissionRules CommissionRule[]
-
-  @@map("affiliate_campaigns")
+model Role {
+  id          String         @id @default(uuid())
+  name        String         @unique
+  permissions RolePermission[]
+  users       UserRole[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
 
-model TrackingLink {
-  id              String    @id @default(uuid())
-  affiliatePartnerId String
-  partner         AffiliatePartner @relation(fields: [affiliatePartnerId], references: [id], onDelete: Cascade) // Link to partner
-  campaignId      String?
-  campaign        Campaign? @relation(fields: [campaignId], references: [id], onDelete: SetNull)
-  name            String?   // Tên gợi nhớ cho link (e.g., "Facebook Ad Link")
-  destinationUrl  String    // URL gốc mà link sẽ trỏ tới (e.g., landing page)
-  generatedUrl    String    @unique // URL tracking đầy đủ duy nhất (e.g., yourdomain.com/track?code=XYZ&...)
-  notes           String?
-  clickCount      Int       @default(0) // Optional: Basic click count
-  conversionCount Int       @default(0) // Optional: Basic conversion count
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  conversions     ConversionEvent[] // Conversions associated with this link click (indirectly via clickId or cookie)
-
-  @@index([affiliatePartnerId])
-  @@index([campaignId])
-  @@map("tracking_links")
+model UserRole {
+  id      String @id @default(uuid())
+  userId  String
+  roleId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role    Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
 }
 
-// Optional: Store click events if needed for advanced analysis / debugging attribution
-// model ClickEvent { ... }
 
-model ConversionEvent {
-  id                    String            @id @default(uuid())
-  externalConversionId  String            // ID duy nhất của conversion từ service nghiệp vụ (e.g., order ID, application ID)
-  businessUnit          String            // "ACADEMY", "COSMETICS", "SPA" - Để phân biệt nguồn
-  conversionType        String            // Loại conversion (e.g., "lead", "sale", "booking", "enrollment")
-  conversionAmount      Decimal?          // Giá trị của conversion (e.g., giá trị đơn hàng)
-  currency              String?           @default("VND")
-  conversionTimestamp   DateTime          // Thời điểm conversion xảy ra ở service nghiệp vụ
-  reportingTimestamp    DateTime          @default(now()) // Thời điểm báo cáo vào hệ thống affiliate
-
-  // Data for Attribution
-  clickId               String?           // ID của click dẫn đến conversion (e.g., tap_s) - Rất quan trọng
-  trackingLinkId        String?           // Link tracking liên quan (nếu có)
-  link                  TrackingLink?     @relation(fields: [trackingLinkId], references: [id], onDelete: SetNull)
-  affiliatePartnerId    String            // ID của Affiliate Partner được attribute cho conversion này
-  partner               AffiliatePartner  @relation(fields: [affiliatePartnerId], references: [id], onDelete: Restrict) // Conversion vẫn giữ lại dù partner bị xóa?
-  customerId            String?           /// FK to shared_db.customers.id (Logical) - Khách hàng thực hiện conversion
-
-  // Status & Commission Processing
-  status                ConversionStatus @default(PENDING)
-  processedForCommission Boolean          @default(false) // Đã xử lý để tính hoa hồng chưa?
-  rejectionReason       String?           // Lý do bị từ chối (nếu status = REJECTED)
-  notes                 String?
-
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
-
-  commissionLedgerEntry CommissionLedger? // Entry hoa hồng tương ứng (One-to-One)
-
-  @@unique([externalConversionId, businessUnit]) // Ensure unique conversion report per BU
-  @@index([affiliatePartnerId])
-  @@index([status])
-  @@index([clickId])
-  @@index([processedForCommission])
-  @@map("conversion_events")
+model Permission {
+  id          String         @id @default(uuid())
+  name        String         @unique
+  description String?
+  roles       RolePermission[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
 
-model CommissionRule {
-  id                      String         @id @default(uuid())
-  name                    String         // Tên quy tắc (e.g., "10% for Academy Leads", "5% for Cosmetics First Sale")
-  description             String?
-  commissionType          CommissionType // Loại hoa hồng (Percentage, Fixed Rate...)
-  value                   Decimal        // Giá trị hoa hồng (% hoặc số tiền)
-  // --- Conditions ---
-  appliesToBusinessUnit   String?        // Áp dụng cho BU nào ("ACADEMY", "SPA", "COSMETICS", or null for all)
-  appliesToProductSku     String?        // Áp dụng cho SKU sản phẩm cụ thể?
-  appliesToCourseCode     String?        // Áp dụng cho mã khóa học cụ thể?
-  appliesToServiceCode    String?        // Áp dụng cho mã dịch vụ spa cụ thể?
-  appliesToConversionType String?        // Chỉ áp dụng cho loại conversion nào? (e.g., "sale")
-  // appliesToAffiliateGroup String?     // Áp dụng cho nhóm affiliate nào?
-  campaignId              String?        // Chỉ áp dụng cho campaign nào?
-  campaign                Campaign?      @relation(fields: [campaignId], references: [id], onDelete: SetNull)
-  // requiresFirstPurchase Boolean       @default(false) // Chỉ cho đơn hàng đầu tiên?
-  // --- Validity ---
-  startDate               DateTime?
-  endDate                 DateTime?
-  priority                Int            @default(0) // Độ ưu tiên nếu nhiều rule khớp
-  isActive                Boolean        @default(true)
-
-  createdAt               DateTime       @default(now())
-  updatedAt               DateTime       @updatedAt
-
-  ledgerEntries           CommissionLedger[] // Các entry ledger áp dụng rule này
-
-  @@index([isActive, startDate, endDate])
-  @@index([appliesToBusinessUnit])
-  @@index([appliesToConversionType])
-  @@index([campaignId])
-  @@map("commission_rules")
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 }
 
-model CommissionLedger {
-  id                  String            @id @default(uuid())
-  affiliatePartnerId  String
-  partner             AffiliatePartner  @relation(fields: [affiliatePartnerId], references: [id], onDelete: Restrict)
-  conversionEventId   String            @unique // Mỗi conversion chỉ có 1 entry ledger
-  conversion          ConversionEvent   @relation(fields: [conversionEventId], references: [id], onDelete: Cascade) // Xóa ledger nếu conversion bị xóa
-  commissionRuleId    String?           // Rule đã được áp dụng
-  rule                CommissionRule?   @relation(fields: [commissionRuleId], references: [id], onDelete: SetNull)
-  amount              Decimal           // Số tiền hoa hồng được tính
-  currency            String            @default("VND")
-  status              ConversionStatus  // Trạng thái của hoa hồng này (PENDING, APPROVED, REJECTED, PAID)
-  payoutId            String?           // Thuộc về đợt thanh toán nào?
-  payout              Payout?           @relation(fields: [payoutId], references: [id], onDelete: SetNull)
-  createdAt           DateTime          @default(now()) // Thời điểm hoa hồng được ghi nhận
-  updatedAt           DateTime          @updatedAt       // Thời điểm trạng thái được cập nhật (approved, paid...)
-
-  @@index([affiliatePartnerId, status])
-  @@index([payoutId])
-  @@index([commissionRuleId])
-  @@map("commission_ledger")
+model Menu {
+  id        String   @id @default(uuid())
+  title     String
+  icon      String?  // Optional icon for menu
+  slug      String?  // URL of the menu item
+  parentId  String?  // Reference to parent menu (null if root)
+  parent    Menu?    @relation("MenuChildren", fields: [parentId], references: [id])
+  children  Menu[]   @relation("MenuChildren")
+  order     Int?      // For sorting menus
+  isActive  Boolean  @default(false) // Enable/Disable menu
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Payout {
-  id                    String        @id @default(uuid())
-  affiliatePartnerId    String
-  partner               AffiliatePartner @relation(fields: [affiliatePartnerId], references: [id], onDelete: Restrict)
-  payoutDate            DateTime      // Ngày dự kiến/thực hiện thanh toán
-  periodStartDate       DateTime      // Ngày bắt đầu của kỳ hoa hồng được thanh toán
-  periodEndDate         DateTime      // Ngày kết thúc của kỳ hoa hồng
-  totalAmount           Decimal       // Tổng số tiền thanh toán
-  currency              String        @default("VND")
-  status                PayoutStatus  @default(PENDING)
-  payoutMethod          PayoutMethod? // Phương thức đã dùng
-  transactionReference  String?       // Mã giao dịch thanh toán (nếu có)
-  notes                 String?       // Ghi chú của admin/kế toán
-  generatedAt           DateTime      @default(now()) // Ngày tạo lệnh thanh toán
-  processedAt           DateTime?     // Ngày xử lý thanh toán
-
-  commissionLedgers     CommissionLedger[] // Các mục hoa hồng được thanh toán trong đợt này
-
-  @@index([affiliatePartnerId, status])
-  @@index([payoutDate])
-  @@map("payouts")
+model ChatAIMessage {
+  id        String  @id @default(uuid())
+  userId    String
+  message   String
+  reply     String
+  createdAt DateTime @default(now())
 }
 
-// Optional: Marketing Creatives
-// model Creative { ... }
-// model AffiliateCreative { ... } // Link partner to creative
+model ChatAIHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  message   String
+  sender    String   // 'user' hoặc 'bot'
+  createdAt DateTime @default(now())
+}
+
+model ErrorLog {
+  id        String   @id @default(uuid())
+  timestamp DateTime
+  message   String
+  details   Json?    // Lưu thông tin bổ sung dưới dạng JSON
+  source    String   // "client" hoặc "server" để phân biệt nguồn lỗi
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id         String      @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  action     String?
+  entity     String?
+  entityId   String?
+  oldValue   Json?
+  newValue   Json?
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id        String      @id @default(uuid())
+  message   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model LandingPage {
+  id            String    @id @default(uuid())
+  title         String
+  slug          String    @unique // URL thân thiện, ví dụ: "chien-dich-thang-4"
+  description   String?
+  thumbnail      String?   // Hình ảnh thumbnail cho trang
+  status        String    @default("draft") // "draft", "published", "archived"
+  contentJson   Json
+  contentHtml   String?
+  customCss     String?
+  customJs      String?
+  seoTitle      String?
+  seoDescription String?
+  seoKeywords   String?   // Có thể là String[]
+  ownerId       String?   // User quản lý trang này
+  owner         User?     @relation(fields: [ownerId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  codeId      String @unique // Mã đề xuất duy nhất
+  order      Int? @default(1)
+  isActive  Boolean @default(true)
+}
+
+

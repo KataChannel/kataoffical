@@ -19,6 +19,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from '../../../../admin/user/user.service';
 import { StorageService } from '../../../../shared/utils/storage.service';
+import { UserAdminService } from '../../useradmin.service';
 
 @Component({
   selector: 'app-login',
@@ -35,9 +36,9 @@ import { StorageService } from '../../../../shared/utils/storage.service';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
-  token: any;
+  tokenadmin: any;
   gotonew: any = 'translate-x-0';
-  _UserService: UserService = inject(UserService);
+  _UserService: UserAdminService = inject(UserAdminService);
   _StorageService: StorageService = inject(StorageService);
   Config: any = Config;
   order1: any = 'order-1';
@@ -54,7 +55,7 @@ export class LoginComponent implements OnInit {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     if (isPlatformBrowser(this.platformId)) {
-      this.token = localStorage.getItem('token') || null;
+      this.tokenadmin = localStorage.getItem('tokenadmin') || null;
     }
   }
   private _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -84,22 +85,22 @@ export class LoginComponent implements OnInit {
   }
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      const token = params['token'];
-      if (token) {
-        this.validateToken(token); // Validate the token
+      const tokenadmin = params['tokenadmin'];
+      if (tokenadmin) {
+        this.validatetokenadmin(tokenadmin); // Validate the tokenadmin
       } else {
         this.router.navigate(['/admin/profile']);
       }
     });
   }
-  validateToken(token: string) {
-    // Decode the token (if it's a JWT)
+  validatetokenadmin(tokenadmin: string) {
+    // Decode the tokenadmin (if it's a JWT)
     try {
-      const payload = JSON.parse(atob(token.split('.')[1])); // Decode the payload
-      // Check if the token is expired (if it has an `exp` field)
+      const payload = JSON.parse(atob(tokenadmin.split('.')[1])); // Decode the payload
+      // Check if the tokenadmin is expired (if it has an `exp` field)
       if (payload.exp && payload.exp < Date.now() / 1000) {
       } else {
-        this._StorageService.setItem('token', token); // Store the token
+        this._StorageService.setItem('tokenadmin', tokenadmin); // Store the tokenadmin
         this._UserService.getProfile().then((res: any) => {
           if (res) {
             if (res.permissions > 0) {
@@ -138,14 +139,6 @@ export class LoginComponent implements OnInit {
             setTimeout(() => {
               window.location.reload();
             }, 100);
-            //  console.log(data);
-            // this.postMessage(data[1]);
-            // if (isPlatformBrowser(this.platformId)) {
-            //   this.postMessage(data[1]);
-            //   setTimeout(() => {
-            //     window.location.reload();
-            //   }, 100);
-            // }
           } else {
             this._snackBar.open('Thông Tin Đăng Nhập Chưa Đúng', '', {
               duration: 1000,
@@ -207,18 +200,4 @@ export class LoginComponent implements OnInit {
   loginZalo() {
     this._UserService.loginWithZalo();
   }
-
-  // async postMessage(authToken: string) {
-  //   if (window.opener) {
-  //   const targetOrigin = "http://localhost:4300";
-  //   const targetOrigin1 = "https://zalo.tazaskinclinic.com";
-  //   //const targetOrigin = "http://localhost:4300/";
-  //   const targetOrigin2 = "https://timona.edu.vn";
-
-  //   window.opener.postMessage({ type: "AUTH_SUCCESS", token: authToken }, targetOrigin);
-  //   window.opener.postMessage({ type: "AUTH_SUCCESS", token: authToken }, targetOrigin1);
-  //   window.opener.postMessage({ type: "AUTH_SUCCESS", token: authToken }, targetOrigin2);
-  //   }
-
-  // }
 }

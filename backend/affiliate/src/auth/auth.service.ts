@@ -9,6 +9,8 @@ export class AuthService {
 
 
 async register(data: any, affiliateCode?: string) {
+  console.log(data, affiliateCode);
+  
   // Kiểm tra xem người dùng đã tồn tại chưa
   const existingUser = await this.prisma.user.findFirst({
     where: {
@@ -20,8 +22,7 @@ async register(data: any, affiliateCode?: string) {
         { googleId: data.googleId || undefined },
       ],
     },
-  });
-
+  }); 
   if (existingUser) {
     throw new UnauthorizedException('User already exists');
   }
