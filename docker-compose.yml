@@ -121,6 +121,16 @@ services:
       - "3200:3200"
     restart: unless-stopped
 
+  shared-api:
+    build:
+      context: ./backend/shared-core
+      dockerfile: Dockerfile
+    container_name: shared-api
+    environment:
+      NODE_ENV: development
+      PORT: 3100
+    ports:
+      - "3100:3100"
   affiliate-api:
     build:
       context: ./backend/affiliate
