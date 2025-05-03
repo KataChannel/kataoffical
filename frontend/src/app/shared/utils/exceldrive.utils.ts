@@ -135,7 +135,7 @@ export function readExcelFile(event: any,sheetName?:any): Promise<any> {
             return null; // Hoặc xử lý theo cách bạn muốn
           }
           return {
-            ngay: moment(item.ngay, "DD/MM/YYYY").toDate(),
+            ngay: moment(excelSerialDateToJSDate(item.ngay)).toDate(),
             makh: item.makh,
             tenkh: item.tenkh,  
             mabangia: item.mabangia,
@@ -156,4 +156,13 @@ export function readExcelFile(event: any,sheetName?:any): Promise<any> {
     };
     fileReader.readAsArrayBuffer(file);
   });
+}
+
+function excelSerialDateToJSDate(serial:any) {
+  const excelEpochOffset = 25569;
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+  const daysSinceUnixEpoch = serial - excelEpochOffset;
+  const utcMilliseconds = daysSinceUnixEpoch * millisecondsPerDay;
+  const date = new Date(utcMilliseconds);
+  return date;
 }

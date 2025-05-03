@@ -103,6 +103,7 @@ model Khachhang {
   namenn       String?
   subtitle      String?
   makh         String   @unique
+  makhold      String?
   diachi       String?
   sdt          String?
   mst          String?

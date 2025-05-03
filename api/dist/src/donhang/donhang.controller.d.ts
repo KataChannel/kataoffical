@@ -40,6 +40,7 @@ export declare class DonhangController {
             namenn: string | null;
             subtitle: string | null;
             makh: string;
+            makhold: string | null;
             diachi: string | null;
             sdt: string | null;
             mst: string | null;
@@ -100,6 +101,7 @@ export declare class DonhangController {
             namenn: string | null;
             subtitle: string | null;
             makh: string;
+            makhold: string | null;
             diachi: string | null;
             sdt: string | null;
             mst: string | null;
@@ -165,6 +167,7 @@ export declare class DonhangController {
             namenn: string | null;
             subtitle: string | null;
             makh: string;
+            makhold: string | null;
             diachi: string | null;
             sdt: string | null;
             mst: string | null;
@@ -228,6 +231,7 @@ export declare class DonhangController {
             namenn: string | null;
             subtitle: string | null;
             makh: string;
+            makhold: string | null;
             diachi: string | null;
             sdt: string | null;
             mst: string | null;
@@ -317,6 +321,7 @@ export declare class DonhangController {
             namenn: string | null;
             subtitle: string | null;
             makh: string;
+            makhold: string | null;
             diachi: string | null;
             sdt: string | null;
             mst: string | null;

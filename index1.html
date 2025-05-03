@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Sheet1 to Sheet2 Real-time Conversion</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 15px; }
+        .container { display: flex; gap: 20px; flex-wrap: wrap;}
+        table { border-collapse: collapse; font-size: 12px; width: 100%;}
+        th, td { border: 1px solid #ccc; padding: 5px 8px; text-align: left; white-space: nowrap;}
+        th { background-color: #f2f2f2; position: sticky; top: 0; z-index: 1;}
+        td[contenteditable="true"] { background-color: #ffffdd; }
+        .table-section { flex: 1; min-width: 100%;}
+        .table-container { max-height: 70vh; overflow: auto; border: 1px solid #ccc; margin-top: 10px;}
+        #uploadSection { margin-bottom: 20px; padding: 10px; border: 1px dashed #ccc; background-color: #f9f9f9;}
+        label { font-weight: bold; margin-right: 10px;}
+         #status { margin-top: 10px; font-style: italic; color: #555; }
+    </style>
+</head>
+<body>
+
+<h1>Chuyển đổi Sheet1 (Excel) sang Sheet2</h1>
+
+<div id="uploadSection">
+    <label for="excelFileInput">Chọn file Sheet1 (.xlsx, .xls):</label>
+    <input type="file" id="excelFileInput" accept=".xlsx, .xls, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+    <div id="status">Vui lòng chọn một file Excel để bắt đầu.</div>
+</div>
+
+<div class="container">
+    <div class="table-section">
+        <h2>Input (Sheet1 Format - Editable)</h2>
+        <div class="table-container">
+            <table id="sheet1Table">
+                <thead>
+                    <tr>
+                        <th>NGÀY</th>
+                        <th>MÃ KHÁCH HÀNG</th>
+                        <th>TÊN KHÁCH HÀNG</th>
+                        <th>MÃ ĐƠN HÀNG</th>
+                        <th>TỔNG TIỀN</th>
+                        <th>MÃ HÀNG</th>
+                        <th>TÊN HÀNG</th>
+                        <th>ĐVT</th>
+                        <th>SỐ LƯỢNG</th>
+                        <th>ĐƠN GIÁ</th>
+                        <th>THÀNH TIỀN</th>
+                        <th>GHI CHÚ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <h2>Output (Sheet2 Format - Real-time)</h2>
+         <div class="table-container">
+            <table id="sheet2Table">
+                <thead>
+                    <tr>
+                        <th>NGÀY</th>
+                        <th>MÃ KHÁCH HÀNG</th>
+                        <th>TÊN KHÁCH HÀNG</th>
+                        <th>MÃ HÀNG</th>
+                        <th>TÊN HÀNG</th>
+                        <th>ĐVT</th>
+                        <th>SỐ LƯỢNG</th>
+                        <th>GHI CHÚ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Make sure XLSX object is available from SheetJS library
+    if (typeof XLSX === 'undefined') {
+        alert("Lỗi: Không thể tải thư viện SheetJS (XLSX). Vui lòng kiểm tra kết nối mạng hoặc liên kết CDN.");
+        // You might want to disable the file input here
+    }
+
+    const excelFileInput = document.getElementById('excelFileInput');
+    const sheet1TableBody = document.getElementById('sheet1Table').querySelector('tbody');
+    const sheet2TableBody = document.getElementById('sheet2Table').querySelector('tbody');
+    const statusDiv = document.getElementById('status');
+    let tableInputListenerAttached = false; // Flag to track if listener is attached
+
+    // --- Date Formatting Helper ---
+    function formatDate(dateInput) {
+        // Check if it's an Excel serial number (a number)
+        if (typeof dateInput === 'number') {
+            try {
+                // Attempt conversion using SheetJS date parsing logic
+                // Note: This requires careful handling of timezones and Excel date quirks (like 1900 leap year bug)
+                // SheetJS `cellDates: true` often handles this better during initial read.
+                // If cellDates:true worked, it should already be a Date object.
+                // If it's still a number, it might be a non-date number or conversion failed.
+                 const date = XLSX.SSF.parse_date_code(dateInput);
+                 if (date) {
+                    // Format date part only
+                     const year = date.y;
+                     const month = date.m.toString().padStart(2, '0');
+                     const day = date.d.toString().padStart(2, '0');
+                     return `${year}-${month}-${day}`;
+                 } else {
+                     return dateInput.toString(); // Return original number as string if not a valid date code
+                 }
+
+            } catch (e) {
+                console.warn("Could not format potential Excel date number:", dateInput, e);
+                return dateInput.toString(); // Return as string if error
+            }
+        } else if (dateInput instanceof Date) {
+             // If it's already a Date object (likely from cellDates: true)
+             if (isNaN(dateInput.getTime())) return ""; // Handle invalid dates
+             const year = dateInput.getFullYear();
+             const month = (dateInput.getMonth() + 1).toString().padStart(2, '0'); // Months are 0-indexed
+             const day = dateInput.getDate().toString().padStart(2, '0');
+             return `${year}-${month}-${day}`;
+        } else {
+            // Otherwise, assume it's already a string or other type, return as is or empty
+            return dateInput ? dateInput.toString() : "";
+        }
+    }
+
+
+    // --- Populate Sheet1 Table ---
+    function populateSheet1(data) {
+        sheet1TableBody.innerHTML = ''; // Clear existing rows
+        if (!data || data.length === 0) {
+            statusDiv.textContent = 'Lỗi: Không tìm thấy dữ liệu trong sheet đầu tiên hoặc file trống.';
+             updateSheet2(); // Clear sheet 2 as well
+            return;
+        }
+
+        data.forEach((rowData, rowIndex) => {
+            const row = sheet1TableBody.insertRow();
+            // Ensure rowData has the expected number of columns (12 for Sheet1)
+            // Pad with empty strings if necessary
+             const fullRowData = Array(12).fill('');
+             rowData.forEach((cellData, index) => {
+                 if (index < 12) {
+                     // Format the date column (index 0) specifically
+                     if (index === 0) {
+                         fullRowData[index] = formatDate(cellData);
+                     } else {
+                         // Convert null/undefined to empty string, otherwise use toString()
+                         fullRowData[index] = (cellData === null || typeof cellData === 'undefined') ? '' : cellData.toString();
+                     }
+                 }
+             });
+
+            fullRowData.forEach((cellText) => {
+                const cell = row.insertCell();
+                cell.textContent = cellText;
+                cell.setAttribute('contenteditable', 'true'); // Make all cells editable
+            });
+        });
+
+        // Attach the input listener only once after the first population
+        if (!tableInputListenerAttached) {
+            sheet1TableBody.addEventListener('input', debounce(updateSheet2, 300));
+            tableInputListenerAttached = true;
+             console.log("Real-time update listener attached.");
+        }
+         statusDiv.textContent = `Đã tải thành công ${data.length} dòng dữ liệu từ sheet đầu tiên. Bảng Input có thể chỉnh sửa.`;
+    }
+
+
+    // --- Transformation and Sheet2 Update Logic ---
+    // (This function remains the same as it reads from the populated HTML table)
+    function updateSheet2() {
+        const sheet1Rows = sheet1TableBody.querySelectorAll('tr');
+        const sheet2Data = [];
+        let currentNgay = '';
+        let currentMaKH = '';
+        let currentTenKH = '';
+
+        sheet1Rows.forEach(row => {
+            const cells = Array.from(row.querySelectorAll('td')).map(td => td.textContent.trim());
+
+             // Ensure we have enough cells before accessing indices
+            if (cells.length < 12) {
+                console.warn("Skipping row with insufficient cells:", cells);
+                return; // Skip processing this row if it doesn't have enough columns
+            }
+
+            // If the first cell (NGÀY) has data, it's a new order header
+            if (cells[0]) {
+                currentNgay = cells[0];
+                currentMaKH = cells[1];
+                currentTenKH = cells[2];
+            }
+
+            // Extract item details
+            const maHang = cells[5];
+            const tenHang = cells[6];
+            const dvt = cells[7];
+            const soLuong = cells[8];
+            const ghiChu = cells[11];
+
+            // Add row to Sheet2 data
+            sheet2Data.push([
+                currentNgay,
+                currentMaKH,
+                currentTenKH,
+                maHang,
+                tenHang,
+                dvt,
+                soLuong,
+                ghiChu
+            ]);
+        });
+
+        // --- Populate Sheet2 Table ---
+        sheet2TableBody.innerHTML = ''; // Clear existing rows
+        sheet2Data.forEach(rowData => {
+            const row = sheet2TableBody.insertRow();
+            rowData.forEach(cellData => {
+                const cell = row.insertCell();
+                cell.textContent = cellData;
+            });
+        });
+         console.log("Sheet2 Updated");
+    }
+
+     // --- Debounce Function ---
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // --- File Input Event Listener ---
+    excelFileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) {
+            statusDiv.textContent = 'Chưa chọn file nào.';
+            return;
+        }
+
+        // Basic check using file extension (more robust check happens during parsing)
+        const allowedExtensions = /(\.xlsx|\.xls)$/i;
+         if (!allowedExtensions.exec(file.name)) {
+             statusDiv.textContent = 'Lỗi: Vui lòng chỉ chọn file Excel (.xlsx hoặc .xls).';
+             excelFileInput.value = ''; // Reset file input
+             // Clear tables
+             sheet1TableBody.innerHTML = '';
+             sheet2TableBody.innerHTML = '';
+             return;
+         }
+
+
+        statusDiv.textContent = 'Đang đọc file Excel...';
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+            try {
+                const data = e.target.result; // This should be an ArrayBuffer
+                // Parse the Excel file data
+                // Use cellDates: true to try parsing dates automatically by SheetJS
+                // Use type: 'array' because FileReader gives ArrayBuffer
+                const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+
+                // Assume data is in the first sheet
+                if (!workbook.SheetNames || workbook.SheetNames.length === 0) {
+                    throw new Error("File Excel không có sheet nào.");
+                }
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+
+                if (!worksheet) {
+                     throw new Error(`Không tìm thấy sheet có tên '${firstSheetName}'.`);
+                }
+
+                // Convert sheet to array of arrays
+                // header: 1 -> generates array of arrays
+                // defval: "" -> makes blank cells empty strings
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+
+                // Assume the first row is the header in Excel and skip it
+                const dataRows = jsonData.slice(1);
+
+                populateSheet1(dataRows); // Populate Sheet1 table with processed data
+                updateSheet2();           // Perform initial conversion to Sheet2
+
+            } catch (error) {
+                 console.error("Error processing Excel file:", error);
+                 statusDiv.textContent = `Lỗi xử lý file Excel: ${error.message}`;
+                 sheet1TableBody.innerHTML = ''; // Clear tables on error
+                 sheet2TableBody.innerHTML = '';
+            }
+        };
+
+        reader.onerror = (e) => {
+             console.error("Error reading file:", e);
+             statusDiv.textContent = 'Lỗi khi đọc file.';
+             sheet1TableBody.innerHTML = ''; // Clear tables on error
+             sheet2TableBody.innerHTML = '';
+        };
+
+        // Read the file as ArrayBuffer for SheetJS
+        reader.readAsArrayBuffer(file);
+    });
+
+     // Initial state message update
+     statusDiv.textContent = 'Vui lòng chọn một file Excel để bắt đầu.';
+
+</script>
+
+</body>
+</html>

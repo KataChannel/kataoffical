@@ -490,16 +490,30 @@ export class ListDonhangComponent {
   ListImportExcel: any[] = []
   async ImporExcel(event: any) {
     const files = Array.from(event.target.files) as File[];
+    let data = await readExcelFile(files[0], 'Donhang');
+    data = data.slice(1);
+     // Group data by makh
+     const groupedData: { [makh: string]: any[] } = {};
+     data.forEach((item: any) => {
+       if (!item.makh) return;
+       if (!groupedData[item.makh]) {
+       groupedData[item.makh] = [];
+       }
+       groupedData[item.makh].push(item);
+     });
+     // Convert to array format: [{ makh, children: [...] }]
+     const groupedArray = Object.keys(groupedData).map(makh => ({
+       makh,
+       children: groupedData[makh]
+     }));
+     console.log('Grouped by makh:', groupedArray);
     
-    for (let i = 0; i < files.length; i++) {
-      try {
-      const file = files[i];
-      const data = await readExcelFile(file, 'Donhang');
-      
+    for (let i = 0; i < groupedArray.length; i++) {
+      try {     
       // Import one file at a time and wait for it to complete
-      await this.ImporDonhang(data);
+      await this.ImporDonhang(groupedArray[i]?.children);
       
-      this._snackBar.open(`Đã Tạo Đơn ${i + 1}/${files.length}: ${file.name}`, '', {
+      this._snackBar.open(`Đã Tạo Đơn ${i + 1}/${groupedArray.length}: ${groupedArray[i].makh}`, '', {
         duration: 2000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
@@ -523,9 +537,7 @@ export class ListDonhangComponent {
   }
 
   async ImporDonhang(items: any[]): Promise<void> {
-    items = items.slice(1); // Remove the first row (header)
-    console.log(items);
-    
+    // items = items.slice(1); // Remove the first row (header)
     if (!items || !items.length) {
       this._snackBar.open('Không có dữ liệu để nhập', '', {
         duration: 3000,
@@ -582,7 +594,7 @@ export class ListDonhangComponent {
         createdAt: new Date(),
       };
 
-      // Create order
+      console.log(donhangData);
       await this._DonhangService.CreateDonhang(donhangData);
       
       this._snackBar.open('Nhập đơn hàng thành công', '', {
