@@ -8,17 +8,15 @@
         </div>
 
         <!-- Referral Link Section -->
-        <mat-card class="mb-8">
+        <mat-card class="mb-8 p-4">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-lg font-medium text-gray-900 flex items-center gap-2">
+                    <div class="text-lg font-medium text-gray-900 flex items-center gap-2">
                         <mat-icon color="primary">content_copy</mat-icon>
                         Chia sẻ link này để nhận hoa hồng
-                    </h2>
-                </div>
+                    </div>
                 <mat-form-field appearance="outline" class="lg:w-1/2" subscriptSizing="dynamic">
                     <mat-label>Link giới thiệu</mat-label>
-                    <input matInput [value]="inviteLink" readonly>
+                    <input matInput [value]="inviteLink" [disabled]="true" readonly>
                     <button matSuffix mat-icon-button color="primary" [cdkCopyToClipboard]="inviteLink">
                         <mat-icon>content_copy</mat-icon>
                     </button>
@@ -27,14 +25,14 @@
         </mat-card>
 
         <!-- Performance Stats -->
-        <mat-card class="mb-8">
+        <mat-card class="mb-8 p-4">
             <h2 class="text-lg font-medium text-gray-900 flex items-center gap-2 mb-6">
                 <mat-icon color="primary">bar_chart</mat-icon>
                 Thống kê hiệu suất
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Total Clicks -->
-                <mat-card class="bg-gray-50 p-4 rounded-lg shadow-none">
+                <mat-card class="bg-gray-50 p-4 rounded-lg">
                     <div class="flex items-center gap-3">
                         <div class="p-2 rounded-full bg-blue-100 text-blue-600">
                             <mat-icon>groups</mat-icon>
@@ -46,7 +44,7 @@
                     </div>
                 </mat-card>
                 <!-- Successful Registrations -->
-                <mat-card class="bg-gray-50 p-4 rounded-lg shadow-none">
+                <mat-card class="bg-gray-50 p-4 rounded-lg">
                     <div class="flex items-center gap-3">
                         <div class="p-2 rounded-full bg-green-100 text-green-600">
                             <mat-icon>check_circle</mat-icon>
@@ -58,7 +56,7 @@
                     </div>
                 </mat-card>
                 <!-- Course Purchases -->
-                <mat-card class="bg-gray-50 p-4 rounded-lg shadow-none">
+                <mat-card class="bg-gray-50 p-4 rounded-lg">
                     <div class="flex items-center gap-3">
                         <div class="p-2 rounded-full bg-purple-100 text-purple-600">
                             <mat-icon>menu_book</mat-icon>
@@ -70,7 +68,7 @@
                     </div>
                 </mat-card>
                 <!-- Pending Commission -->
-                <mat-card class="bg-gray-50 p-4 rounded-lg shadow-none">
+                <mat-card class="bg-gray-50 p-4 rounded-lg">
                     <div class="flex items-center gap-3">
                         <div class="p-2 rounded-full bg-yellow-100 text-yellow-600">
                             <mat-icon>hourglass_empty</mat-icon>
@@ -82,7 +80,7 @@
                     </div>
                 </mat-card>
                 <!-- Withdrawn Commission -->
-                <mat-card class="bg-gray-50 p-4 rounded-lg shadow-none">
+                <mat-card class="bg-gray-50 p-4 rounded-lg">
                     <div class="flex items-center gap-3">
                         <div class="p-2 rounded-full bg-green-100 text-green-600">
                             <mat-icon>attach_money</mat-icon>
@@ -94,7 +92,7 @@
                     </div>
                 </mat-card>
                 <!-- Processing Commission -->
-                <mat-card class="bg-gray-50 p-4 rounded-lg shadow-none">
+                <mat-card class="bg-gray-50 p-4 rounded-lg">
                     <div class="flex items-center gap-3">
                         <div class="p-2 rounded-full bg-blue-100 text-blue-600">
                             <mat-icon>hourglass_top</mat-icon>
@@ -107,7 +105,7 @@
                 </mat-card>
             </div>
             <!-- Conversion Rate -->
-            <mat-card class="mt-6 bg-gray-50 p-4 rounded-lg shadow-none">
+            <mat-card class="mt-6 bg-gray-50 p-4 rounded-lg">
                 <div class="flex items-center gap-3">
                     <div class="p-2 rounded-full bg-indigo-100 text-indigo-600">
                         <mat-icon>bar_chart</mat-icon>
@@ -121,7 +119,7 @@
         </mat-card>
 
         <!-- Tabs for additional views -->
-        <mat-card class="mb-8">
+        <mat-card class="mb-8 p-4">
             <mat-tab-group>
                 <mat-tab label="Tổng quan">
                     <p class="text-gray-500">Bảng tổng quan hiệu suất sẽ hiển thị tại đây</p>
