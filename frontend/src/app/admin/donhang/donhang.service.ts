@@ -60,7 +60,8 @@ export class DonhangService {
 
       }
       const data = await response.json();           
-      this.ListDonhang.set(data)
+      this.ListDonhang.set(data.data)
+      return data
     } catch (error) {
       return console.error(error);
     }

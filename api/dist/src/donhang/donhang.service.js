@@ -62,26 +62,32 @@ let DonhangService = class DonhangService {
         }
     }
     async search(params) {
-        const { Batdau, Ketthuc, Type, pageSize, pageNumber } = params;
-        const donhangs = await this.prisma.donhang.findMany({
-            where: {
-                ngaygiao: {
-                    gte: Batdau ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate() : undefined,
-                    lte: Ketthuc ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate() : undefined,
-                },
-                type: Type,
-                status: Array.isArray(params.Status) ? { in: params.Status } : params.Status,
+        const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1 } = params;
+        const where = {
+            ngaygiao: {
+                gte: Batdau ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate() : undefined,
+                lte: Ketthuc ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate() : undefined,
             },
-            include: {
-                sanpham: {
-                    include: {
-                        sanpham: true,
+            type: Type,
+            status: Array.isArray(params.Status) ? { in: params.Status } : params.Status,
+        };
+        const [total, donhangs] = await Promise.all([
+            this.prisma.donhang.count({ where }),
+            this.prisma.donhang.findMany({
+                where,
+                include: {
+                    sanpham: {
+                        include: {
+                            sanpham: true,
+                        },
                     },
+                    khachhang: { include: { banggia: { include: { sanpham: true } } } },
                 },
-                khachhang: { include: { banggia: { include: { sanpham: true } } }, },
-            },
-            orderBy: { createdAt: 'desc' },
-        });
+                orderBy: { createdAt: 'desc' },
+                skip: (pageNumber - 1) * pageSize,
+                take: pageSize,
+            }),
+        ]);
         const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
             ...donhang,
             sanpham: sanpham.map((item) => ({
@@ -100,7 +106,13 @@ let DonhangService = class DonhangService {
             khachhang: (({ banggia, ...rest }) => rest)(khachhang),
             name: khachhang.name
         }));
-        return result;
+        return {
+            data: result,
+            total,
+            pageNumber,
+            pageSize,
+            totalPages: Math.ceil(total / pageSize),
+        };
     }
     async phieuchuyen(params) {
         const { Batdau, Ketthuc, Type } = params;

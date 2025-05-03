@@ -4,6 +4,7 @@ import {
   computed,
   effect,
   inject,
+  signal,
   TemplateRef,
   ViewChild,
   ViewEncapsulation,
@@ -69,7 +70,6 @@ import { SanphamService } from '../../sanpham/sanpham.service';
     MatDialogModule,
     MatTabsModule
   ],
-  // providers: [provideNativeDateAdapter()],
 })
 export class ListDonhangComponent {
   Detail: any = {};
@@ -110,17 +110,19 @@ export class ListDonhangComponent {
   private _BanggiaService: BanggiaService = inject(BanggiaService);
   private _SanphamService: SanphamService = inject(SanphamService);
   private _router: Router = inject(Router);
-  Listdonhang: any = this._DonhangService.ListDonhang;
+  Listdonhang: any = signal<any>({})
   dataSource = new MatTableDataSource([]);
   donhangId: any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
-  CountItem: any = 0;
+  CountItem: any = signal<any>(0)
+  pageSize: any = signal<any>(10)
+  pageIndex: any = signal<any>(1)
   SearchParams: any = {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
     Type: 'donsi',
-    pageSize: 9999,
-    pageNumber: 0,
+    pageSize: 10,
+    pageNumber: 1,
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -133,6 +135,16 @@ export class ListDonhangComponent {
   constructor() {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
+    });
+    effect(async () => {
+      const data = await this._DonhangService.searchDonhang(this.SearchParams);
+      this.Listdonhang.set(data);
+      // this.CountItem.set(data.total)   
+      // this.pageSize.set(data.pageSize)
+      // this.pageIndex.set(data.pageIndex)
+      this.dataSource = new MatTableDataSource(this.Listdonhang().data);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     });
   }
   onSelectionChange(event: MatSelectChange): void {
@@ -194,11 +206,14 @@ export class ListDonhangComponent {
     }
   }
   async ngOnInit(): Promise<void> {
-    await this._DonhangService.searchDonhang(this.SearchParams);
-    this.CountItem = this.Listdonhang().length;    
+    const data = await this._DonhangService.searchDonhang(this.SearchParams);
+    this.Listdonhang.set(data);
+    // this.CountItem.set(data.total)   
+    // this.pageSize.set(data.pageSize)
+    // this.pageIndex.set(data.pageIndex)
     this.initializeColumns();
     this.setupDrawer();
-    this.dataSource = new MatTableDataSource(this.Listdonhang());
+    this.dataSource = new MatTableDataSource(this.Listdonhang().data);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.createFilter();
@@ -208,6 +223,18 @@ export class ListDonhangComponent {
     this.paginator._intl.firstPageLabel = 'Trang Đầu';
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
+
+  async onPageChange(event: any): Promise<void> {
+    console.log(event);
+    this.SearchParams.pageSize = event.pageSize;
+    this.SearchParams.pageNumber = event.pageIndex + 1;
+    const data = await this._DonhangService.searchDonhang(this.SearchParams);
+    this.Listdonhang.set(data);
+    this.dataSource = new MatTableDataSource(this.Listdonhang().data);
+    this.dataSource.sort = this.sort;
+  }
+
+
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
       key,
@@ -283,7 +310,7 @@ export class ListDonhangComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    this.dataSource.filteredData = this.Listdonhang().data.filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]
@@ -314,9 +341,8 @@ export class ListDonhangComponent {
   }
   ResetFilter()
   {
-    this.ListFilter = this.Listdonhang();
-    this.dataSource.data = this.Listdonhang();
-    this.dataSource.paginator = this.paginator;
+    this.ListFilter = this.Listdonhang().data;
+    this.dataSource.data = this.Listdonhang().data;
     this.dataSource.sort = this.sort;
   }
   EmptyFiter()
@@ -329,9 +355,7 @@ export class ListDonhangComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-
-    this.dataSource.data = this.Listdonhang().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
-    this.dataSource.paginator = this.paginator;
+    this.dataSource.data = this.Listdonhang().data.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource.sort = this.sort;
     menu.closeMenu();
   }
