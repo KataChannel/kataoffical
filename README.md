@@ -7,7 +7,7 @@ git push
 ssh root@116.118.49.243 
 git pull
 docker compose -f 'docker-compose.yml' up -d --build 
-docker compose -f 'docker-compose.yml' up -d --build 'shared-core-api'
+docker compose -f 'docker-compose.yml' up -d --build 'shared-api'
 docker compose -f 'docker-compose.yml' up -d --build 'admin-ui'
 docker compose -f 'docker-compose.yml' up -d --build 'affiliate-api'
 docker compose -f 'docker-compose.yml' up -d --build 'academy-api'
