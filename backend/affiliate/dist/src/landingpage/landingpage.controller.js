@@ -19,8 +19,9 @@ let LandingpageController = class LandingpageController {
     constructor(landingpageService) {
         this.landingpageService = landingpageService;
     }
-    create(createLandingpageDto) {
-        return this.landingpageService.create(createLandingpageDto);
+    create(data) {
+        console.log('createLandingpageDto', data);
+        return this.landingpageService.create(data);
     }
     findby(param) {
         return this.landingpageService.findby(param);

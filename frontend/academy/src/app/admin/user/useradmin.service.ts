@@ -39,8 +39,8 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
     private APIURL: string = environment.SHARED_APIURL;
     private BASE_URL = `${environment.SHARED_APIURL}/auth`
     profile = signal<any>({});
-    private permissionsSubject = new BehaviorSubject<string[]>([]);
-    public permissions$ = this.permissionsSubject.asObservable();
+    private permissionsadminSubject = new BehaviorSubject<string[]>([]);
+    public permissionsadmin$ = this.permissionsadminSubject.asObservable();
     async getAdmin() {
       try {
         const options = {
@@ -281,11 +281,11 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
         this.handleError(response.status);
       }
       const data = await response.json();
-      const permissions = data.permissions.map((p: any) => p.name);
-      this.profile.set(data)
-      if(permissions.length>0)
+      const permissionsadmin = data.permissions.map((p: any) => p.name);
+      this.profile.set(data)     
+      if(permissionsadmin.length>0)
       {
-        this._StorageService.setItem('permissions', JSON.stringify(permissions));
+        this._StorageService.setItem('permissionsadmin', JSON.stringify(permissionsadmin));
       }
       return data;
     } catch (error) {
@@ -309,13 +309,13 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
         case 404:
           message = 'Vui lòng đăng nhập lại';
           // this._StorageService.removeItem('tokenadmin');
-          // this._StorageService.removeItem('permissions');
+          // this._StorageService.removeItem('permissionsadmin');
           // this.router.navigate(['/login']);
           break;
         case 401:
           message = 'Vui lòng đăng nhập lại';
           // this._StorageService.removeItem('tokenadmin');
-          // this._StorageService.removeItem('permissions');
+          // this._StorageService.removeItem('permissionsadmin');
           // this.router.navigate(['/login']);
           break;
         case 403:
@@ -382,8 +382,8 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
       {
         this._authenticated = true;
         this.accesstokenadmin = data.access_token;
-        this._StorageService.setItem('permissions', JSON.stringify(data?.user?.permissions||[]));
-        this.permissionsSubject.next(data?.user?.permissions);
+        this._StorageService.setItem('permissionsadmin', JSON.stringify(data?.user?.permissions||[]));
+        this.permissionsadminSubject.next(data?.user?.permissions);
         return [true,data]
       }
       return  [false, 'Đăng Nhập Thất Bại']
@@ -392,16 +392,16 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
     }
   }
   loadPermissions() {
-    const permissions = this._StorageService.getItem('permissions');
-    this.permissionsSubject.next(permissions);
-    return permissions;
+    const permissionsadmin = this._StorageService.getItem('permissionsadmin');
+    this.permissionsadminSubject.next(permissionsadmin);
+    return permissionsadmin;
   }
 
   hasPermission(permission: string): boolean {
-    if (!this.permissionsSubject?.getValue()) {
-     this.logout()
+    if (!this.permissionsadminSubject?.getValue()) {
+      this.logout();
     }
-    return this.permissionsSubject?.getValue()?.includes(permission);
+    return this.permissionsadminSubject?.getValue()?.includes(permission);
   }
   async register(user: any) {
     try {
@@ -489,8 +489,8 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
 
   async logout() {
     this._StorageService.removeItem('tokenadmin');
-    this._StorageService.removeItem('permissions');
-    this.permissionsSubject.next([]);
+    this._StorageService.removeItem('permissionsadmin');
+    this.permissionsadminSubject.next([]);
     this.router.navigate(['/']);
     return true
   }

@@ -108,30 +108,30 @@ export class AppService {
 
   async getLastUpdated(table: string) {
     // Kiểm tra xem bảng có hợp lệ không
-    const validTables = [
-      'menu',
-      'affiliateLink',
-      'trackingEvent',
-      'landingPage',
-      'task',
-      'googlesheet',
-      'driveItem',
-      'lead',
-      'sanpham',
-      'banggia',
-      'donhang',
-      'khachhang',
-      'nhacungcap',
-      'dathang',
-      'kho',
-      'phieukho',
-      'role',
-      'permission',
-      'nhomkhachhang',
-    ];
-    if (!validTables.includes(table)) {
-      throw new BadRequestException(`Invalid table name: ${table}`);
-    }
+    // const validTables = [
+    //   'menu',
+    //   'affiliateLink',
+    //   'trackingEvent',
+    //   'landingPage',
+    //   'task',
+    //   'googlesheet',
+    //   'driveItem',
+    //   'lead',
+    //   'sanpham',
+    //   'banggia',
+    //   'donhang',
+    //   'khachhang',
+    //   'nhacungcap',
+    //   'dathang',
+    //   'kho',
+    //   'phieukho',
+    //   'role',
+    //   'permission',
+    //   'nhomkhachhang',
+    // ];
+    // if (!validTables.includes(table)) {
+    //   throw new BadRequestException(`Invalid table name: ${table}`);
+    // }
 
     // Truy vấn bảng tương ứng
     const lastUpdated = await this.prisma[table].aggregate({

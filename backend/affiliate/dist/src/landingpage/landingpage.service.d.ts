@@ -29,7 +29,7 @@ export declare class landingPageService {
         seoKeywords: string | null;
         ownerId: string | null;
         codeId: string;
-        contentJson: import(".prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     reorderlandingPages(landingPageIds: string[]): Promise<void>;
     findAll(): Promise<{
@@ -51,7 +51,7 @@ export declare class landingPageService {
         seoKeywords: string | null;
         ownerId: string | null;
         codeId: string;
-        contentJson: import(".prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }[]>;
     findby(param: any): Promise<{
         id: string;
@@ -72,7 +72,7 @@ export declare class landingPageService {
         seoKeywords: string | null;
         ownerId: string | null;
         codeId: string;
-        contentJson: import(".prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     findOne(id: string): Promise<{
         id: string;
@@ -93,7 +93,7 @@ export declare class landingPageService {
         seoKeywords: string | null;
         ownerId: string | null;
         codeId: string;
-        contentJson: import(".prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -114,7 +114,7 @@ export declare class landingPageService {
         seoKeywords: string | null;
         ownerId: string | null;
         codeId: string;
-        contentJson: import(".prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -135,6 +135,6 @@ export declare class landingPageService {
         seoKeywords: string | null;
         ownerId: string | null;
         codeId: string;
-        contentJson: import(".prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
 }

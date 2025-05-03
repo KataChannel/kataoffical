@@ -83,13 +83,17 @@ export class LoginComponent implements OnInit {
       this.leftpanel = 'opacity-100';
     }, 200);
   }
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this._UserService.getProfile()
+    if (this.tokenadmin) {
+      this.router.navigate(['/admin/thongkectv']);
+    }
     this.route.queryParams.subscribe((params) => {
       const tokenadmin = params['tokenadmin'];
       if (tokenadmin) {
         this.validatetokenadmin(tokenadmin); // Validate the tokenadmin
       } else {
-        this.router.navigate(['/admin/profile']);
+        this.router.navigate(['/admin/thongkectv']);
       }
     });
   }

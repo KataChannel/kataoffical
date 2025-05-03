@@ -20,30 +20,54 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
     }
     async register(data, affiliateCode) {
-        console.log(data, affiliateCode);
-        const existingUser = await this.prisma.user.findFirst({
-            where: {
-                OR: [
-                    { email: data.email || undefined },
-                    { phone: data.phone || undefined },
-                    { SDT: data.phone || undefined },
-                    { facebookId: data.facebookId || undefined },
-                    { googleId: data.googleId || undefined },
-                ],
-            },
-        });
-        if (existingUser) {
-            throw new common_1.UnauthorizedException('User already exists');
+        try {
+            const { email, phone, password, facebookId, googleId, zaloId } = data;
+            const existingUser = await this.prisma.user.findFirst({
+                where: {
+                    OR: [
+                        { email: email || undefined },
+                        { phone: phone || undefined },
+                        { SDT: phone || undefined },
+                        { zaloId: zaloId || undefined },
+                        { facebookId: facebookId || undefined },
+                        { googleId: googleId || undefined },
+                    ],
+                },
+            });
+            if (existingUser) {
+                throw new common_1.UnauthorizedException('User already exists');
+            }
+            let referrerId;
+            if (affiliateCode) {
+                const referrer = await this.prisma.user.findUnique({
+                    where: { inviteCode: affiliateCode },
+                    select: { id: true },
+                });
+                referrerId = referrer?.id;
+            }
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const inviteCode = phone || Math.random().toString(36).slice(-8);
+            const user = await this.prisma.user.create({
+                data: {
+                    email: email || null,
+                    phone: phone || null,
+                    password: hashedPassword,
+                    inviteCode,
+                    affiliateCode: affiliateCode || null,
+                    referrerId,
+                    facebookId: facebookId || null,
+                    googleId: googleId || null,
+                },
+            });
+            return user;
         }
-        const user = await this.prisma.user.create({
-            data: {
-                email: data.email || null,
-                phone: data.phone || null,
-                password: await bcrypt.hash(data.password, 10),
-                affiliateCode: affiliateCode || null,
-            },
-        });
-        return user;
+        catch (error) {
+            console.error('Register error:', error);
+            if (error instanceof common_1.UnauthorizedException) {
+                throw error;
+            }
+            throw new common_1.UnauthorizedException('Registration failed');
+        }
     }
     async login(phone, email, password) {
         const user = await this.prisma.user.findFirst({

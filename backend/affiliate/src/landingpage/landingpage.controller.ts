@@ -4,8 +4,10 @@ import { landingPageService } from './landingpage.service';
 export class LandingpageController {
   constructor(private readonly landingpageService: landingPageService) {}
   @Post()
-  create(@Body() createLandingpageDto: any) {
-    return this.landingpageService.create(createLandingpageDto);
+  create(@Body() data: any) {
+    console.log('createLandingpageDto', data);
+    
+    return this.landingpageService.create(data);
   }
   @Post('findby')
   findby(@Body() param: any) {

@@ -1,0 +1,1 @@
+import{Wb as o,Xb as c,sc as p,wb as n}from"./chunk-JGZMKMCZ.js";import"./chunk-6DNLS54U.js";var a=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=n({type:t,selectors:[["app-thongkectv"]],decls:2,vars:0,template:function(e,m){e&1&&(o(0,"p"),p(1,"thongkectv works!"),c())},encapsulation:2})};export{a as ThongkectvComponent};

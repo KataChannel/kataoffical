@@ -82,8 +82,10 @@ export class AdminmainComponent {
     await this._UserService.getProfile().then(async (res: any) => {
       if(res){
         this.User = res;  
-        const permissions = this.User?.permissions?.map((v:any)=>v.name);   
-        const params = {permissions:permissions,serviceType:'affiliate'}     
+        const permissionsadmin = this.User?.permissions?.map((v:any)=>v.name);   
+        const params = {permissions:permissionsadmin,serviceType:'affiliate'}    
+        console.log('params',params);
+         
         await this._MenuService.getTreeMenu(params)
         this.ListMenu = this._MenuService.ListMenu()    
         this.dataSource.data = this._MenuService.ListMenu()
@@ -111,14 +113,14 @@ export class AdminmainComponent {
     });
   }
   async ClearCache(){
-    const token = localStorage.getItem('token');
-    const permissions = localStorage.getItem('permissions');
+    const token = localStorage.getItem('tokenadmin');
+    const permissionsadmin = localStorage.getItem('permissionsadmin');
     localStorage.clear();
     if (token) {
-      localStorage.setItem('token', token);
+      localStorage.setItem('tokenadmin', token);
     }
-    if (permissions) {
-      localStorage.setItem('permissions', permissions);
+    if (permissionsadmin) {
+      localStorage.setItem('permissionsadmin', permissionsadmin);
     }
     await this._ErrorLogService.ClearRedisCache()
     this._snackBar.open('Xoá Cache Thành Công', '', {

@@ -54,6 +54,7 @@ let landingPageService = class landingPageService {
         }
     }
     async create(data) {
+        console.log('data', data);
         try {
             let newOrder;
             const maxOrder = await this.prisma.landingPage.aggregate({

@@ -20,11 +20,12 @@ export class LandingpageService {
   setLandingpageId(id: string | null) {
     this.landingpageId.set(id);
   }
-    private socket = io(`${environment.SHARED_APIURL}`,{
+    private socket = io(`${environment.ACADEMY_APIURL}`,{
     transports: ['websocket'],
     reconnectionAttempts: 5,
     timeout: 5000,
   });
+
   async CreateLandingpage(dulieu: any) {
     try {
       const options = {
@@ -34,7 +35,7 @@ export class LandingpageService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/landingpage`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/landingpage`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -68,7 +69,7 @@ export class LandingpageService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-      const lastUpdatedResponse = await fetch(`${environment.SHARED_APIURL}/last-updated?table=landingPage`, options);
+      const lastUpdatedResponse = await fetch(`${environment.ACADEMY_APIURL}/last-updated?table=landingPage`, options);
       if (!lastUpdatedResponse.ok) {
         this.handleError(lastUpdatedResponse.status);
         return cachedData;
@@ -81,7 +82,7 @@ export class LandingpageService {
       }
       console.log(updatedAtServer, updatedAtCache); 
       //Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
-      const response = await fetch(`${environment.SHARED_APIURL}/landingpage`, options);
+      const response = await fetch(`${environment.ACADEMY_APIURL}/landingpage`, options);
       if (!response.ok) {
         this.handleError(response.status);
         return cachedData;
@@ -135,7 +136,7 @@ export class LandingpageService {
         },
         body: JSON.stringify(param),
       };
-      const response = await fetch(`${environment.SHARED_APIURL}/landingpage/findby`, options);      
+      const response = await fetch(`${environment.ACADEMY_APIURL}/landingpage/findby`, options);      
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -155,7 +156,7 @@ export class LandingpageService {
           },
           body: JSON.stringify(dulieu),
         };
-        const response = await fetch(`${environment.SHARED_APIURL}/landingpage/${dulieu.id}`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/landingpage/${dulieu.id}`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -178,7 +179,7 @@ export class LandingpageService {
               'Content-Type': 'application/json',
             },
           };
-          const response = await fetch(`${environment.SHARED_APIURL}/landingpage/${item.id}`, options);
+          const response = await fetch(`${environment.ACADEMY_APIURL}/landingpage/${item.id}`, options);
           if (!response.ok) {
             this.handleError(response.status);
           }
@@ -188,6 +189,7 @@ export class LandingpageService {
           return console.error(error);
       }
   }
+  
   private handleError(status: number) {
     let message = 'Lỗi không xác định';
     switch (status) {

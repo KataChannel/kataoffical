@@ -1,0 +1,36 @@
+<div class="container grid lg:grid-cols-3 gap-4 m-auto lg:p-8 p-2">
+    <div class="lg:col-span-3 flex items-center space-x-2">   
+        <button mat-icon-button color="primary" [routerLink]="['/welcome']"><mat-icon>arrow_back</mat-icon></button>
+        <div class="relative">
+            <div class="absolute text-blue-600 inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                <mat-icon>search</mat-icon>
+            </div>
+            <input type="text" (keyup)="applyFilter($event)" placeholder="Vui lòng Tìm Kiếm" class="w-full max-w-2xl border text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block ps-10 p-2.5"/>
+        </div>
+        <button mat-icon-button color="primary" (click)="ClearCache()"><mat-icon>refresh</mat-icon></button>
+    </div>
+    @defer () {
+        <div class="relative rounded-lg p-3 flex flex-col space-y-2 border" *ngFor="let item of ListLandingpage(); let i=index">
+            <div class="relative font-bold text-center">{{item.title}}</div>
+            <div class="relative h-full flex flex-col space-y-2 overflow-auto">
+                <img [src]="item.thumbnail" alt="Thumbnail" class="w-full h-auto rounded-md"/>
+                <div class="line-clamp-3">{{item.description}}</div>
+            </div>
+            <div class="relative">
+                <button *ngIf="!getAffiliateLink(item)" mat-flat-button color="primary" (click)="CreateAffiliateLink(item)">Tạo Mới</button>
+                <div *ngIf="getAffiliateLink(item)" class="flex flex-row space-x-2 items-center">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                        <mat-label>Liên Kết</mat-label>
+                       <input matInput [disabled]="true" [ngModel]="getAffiliateLink(item)" placeholder="Vui lòng Nhập Liên Kết" />
+                   </mat-form-field> 
+                    <button mat-icon-button color="primary" (click)="CopyLinkAffiliate(item)">
+                        <mat-icon>content_copy</mat-icon>
+                    </button>
+                    <button mat-icon-button color="primary" (click)="SharedAffiliate(item)">
+                        <mat-icon>share</mat-icon>
+                    </button>
+                   </div>
+            </div>
+        </div>
+      } 
+</div>

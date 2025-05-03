@@ -35,10 +35,13 @@ model User {
   audits    AuditLog[]
   Notification Notification[]
   LandingPage LandingPage[]
-  affiliateCode String?   @unique // Mã affiliate riêng của user này
+  registrationSource String?  // Nguồn đăng ký, ví dụ: "website", "mobile_app", "referral"
+  inviteCode String?   @unique // Mã invateCode riêng của user này
+  affiliateCode String? 
   referrerId    String?   // ID của user đã giới thiệu user này
   referrer      User?     @relation("Referrals", fields: [referrerId], references: [id])
   referrals     User[]    @relation("Referrals")
+  TrackingEvent TrackingEvent[]
 }
 
 model Role {
@@ -137,26 +140,40 @@ model Notification {
 }
 
 model LandingPage {
-  id            String    @id @default(uuid())
-  title         String
-  slug          String    @unique // URL thân thiện, ví dụ: "chien-dich-thang-4"
-  description   String?
+  id             String    @id @default(uuid())
+  title          String
+  slug           String    @unique // URL thân thiện, ví dụ: "chien-dich-thang-4"
+  description    String?
   thumbnail      String?   // Hình ảnh thumbnail cho trang
-  status        String    @default("draft") // "draft", "published", "archived"
-  contentJson   Json
-  contentHtml   String?
-  customCss     String?
-  customJs      String?
-  seoTitle      String?
+  status         String    @default("draft") // "draft", "published", "archived"
+  contentJson    Json?
+  contentHtml    String?
+  customCss      String?
+  customJs       String?
+  seoTitle       String?
   seoDescription String?
-  seoKeywords   String?   // Có thể là String[]
-  ownerId       String?   // User quản lý trang này
-  owner         User?     @relation(fields: [ownerId], references: [id])
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  codeId      String @unique // Mã đề xuất duy nhất
-  order      Int? @default(1)
-  isActive  Boolean @default(true)
+  seoKeywords    String?   // Có thể là String[]
+  ownerId        String?   // User quản lý trang này
+  owner          User?     @relation(fields: [ownerId], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  codeId         String    @unique // Mã đề xuất duy nhất
+  order          Int?      @default(1)
+  isActive       Boolean   @default(true)
 }
-
+model TrackingEvent {
+  id        String   @id @default(uuid())
+  eventType String?   // Loại sự kiện, ví dụ: "page_view", "form_interaction", "registration_success"
+  pageUrl   String?  // URL của trang mà sự kiện xảy ra
+  refCode   String?  // Mã giới thiệu (referral code) nếu có
+  referrer  String?  // ID của người giới thiệu (nếu có)
+  pageIdentifier String? // ID hoặc slug của trang (nếu có)
+  pageType  String?  // Loại trang, ví dụ: "LadiCTV", "LandingPage", "Blog", "Product"
+  userId    String?  // Link to the user performing the action, if logged in or just registered
+  user      User?    @relation(fields: [userId], references: [id])
+  ipAddress String?
+  userAgent String? // Browser/device information
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 

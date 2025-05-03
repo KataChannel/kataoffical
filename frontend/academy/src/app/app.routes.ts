@@ -15,8 +15,8 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    redirectTo: 'admin/thongkectv', 
-    pathMatch: 'full'
+    redirectTo: 'admin/thongkectv',
+    pathMatch: 'full',
   },
   {
     path: 'admin',
@@ -69,15 +69,40 @@ export const routes: Routes = [
         path: 'quanlyctv',
         canActivate: [PermissionGuard],
         data: { permission: 'quanlyctv.view' },
-        loadComponent: () => import('./admin/quanlyctv/listquanlyctv/listquanlyctv.component').then((c) => c.ListQuanlyctvComponent),
+        loadComponent: () =>
+          import(
+            './admin/quanlyctv/listquanlyctv/listquanlyctv.component'
+          ).then((c) => c.ListQuanlyctvComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import(
+                './admin/quanlyctv/listquanlyctv/listquanlyctv.component'
+              ).then((c) => c.ListQuanlyctvComponent),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import(
+                './admin/quanlyctv/detailquanlyctv/detailquanlyctv.component'
+              ).then((c) => c.DetailQuanlyctvComponent),
+          },
+        ],
+      },
+      {
+        path: 'tracking',
+        canActivate: [PermissionGuard],
+        data: { permission: 'tracking.view' },
+        loadComponent: () => import('./admin/tracking/listtracking/listtracking.component').then((c) => c.ListTrackingComponent),
         children: [
           {
        path: '',
-       loadComponent: () => import('./admin/quanlyctv/listquanlyctv/listquanlyctv.component').then((c) => c.ListQuanlyctvComponent),
+       loadComponent: () => import('./admin/tracking/listtracking/listtracking.component').then((c) => c.ListTrackingComponent),
           },
           {
        path: ':id',
-       loadComponent: () => import('./admin/quanlyctv/detailquanlyctv/detailquanlyctv.component').then((c) => c.DetailQuanlyctvComponent),
+       loadComponent: () => import('./admin/tracking/detailtracking/detailtracking.component').then((c) => c.DetailTrackingComponent),
           },
         ],
       },
@@ -85,7 +110,10 @@ export const routes: Routes = [
         path: 'thongkectv',
         canActivate: [PermissionGuard],
         data: { permission: 'thongkectv.view' },
-        loadComponent: () => import('./admin/thongkectv/thongkectv.component').then((c) => c.ThongkectvComponent),
+        loadComponent: () =>
+          import('./admin/thongkectv/thongkectv.component').then(
+            (c) => c.ThongkectvComponent
+          ),
       },
       {
         path: 'landingpage',
@@ -264,7 +292,7 @@ export const routes: Routes = [
         (c) => c.LoginctvComponent
       ),
   },
-  
+
   {
     path: 'register',
     canActivate: [GuestGuard],
@@ -275,202 +303,224 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'ladictv/:slug',
+    loadComponent: () =>
+      import(
+        './site/home/ladictv/detailladictv/detailladictv.component'
+      ).then((c) => c.DetailladictvComponent),
+  },
+  {
+    path: '',
+    redirectTo: 'gioithieuctv',
+    pathMatch: 'full',
+  },
+  {
     path: '',
     loadComponent: () =>
-      import('./site/sitemain/sitemain.component').then(
-        (c) => c.SitemainComponent
-      ),
-    // loadComponent: () =>import('./admin/hotro/listhotro/listhotro.component').then((c) => c.ListHotroComponent),
-    // loadComponent: () =>import('./admin/vantay/vantay.component').then((c) => c.VantayComponent),
-    //loadComponent: () =>import('./admin/facecomparison/facecomparison.component').then((c) => c.FacecomparisonComponent),
+      import('./site/home/home.component').then((c) => c.HomeComponent),
     children: [
-      { path: '', redirectTo: 'gioithieuctv', pathMatch: 'full' },
       {
-        path: '',
+        path: 'gioithieuctv',
         loadComponent: () =>
-          import('./site/home/home.component').then((c) => c.HomeComponent),
+          import('./site/home/gioithieuctv/gioithieuctv.component').then(
+            (c) => c.GioithieuctvComponent
+          ),
+      },
+      {
+        path: 'dangkyctv',
+        canActivate: [GuestGuard],
+        loadComponent: () =>
+          import('./site/home/dangkyctv/dangkyctv.component').then(
+            (c) => c.DangkyctvComponent
+          ),
+      },
+      {
+        path: 'hotroctv',
+        loadComponent: () =>
+          import('./site/home/hotroctv/hotroctv.component').then(
+            (c) => c.HotroctvComponent
+          ),
+      },
+      {
+        path: 'ladictv',
+        loadComponent: () =>
+          import('./site/home/ladictv/ladictv.component').then(
+            (c) => c.LadictvComponent
+          ),
+      },
+      {
+        path: 'leaderboard',
+        loadComponent: () =>
+          import('./site/home/leaderboard/leaderboard.component').then(
+            (c) => c.LeaderboardComponent
+          ),
+      },
+      {
+        path: 'taikhoanctv',
+        loadComponent: () =>
+          import('./site/home/taikhoanctv/taikhoanctv.component').then(
+            (c) => c.TaikhoanctvComponent
+          ),
+      },
+      {
+        path: 'faqctv',
+        loadComponent: () =>
+          import('./site/home/faqctv/faqctv.component').then(
+            (c) => c.FaqctvComponent
+          ),
+      },
+      {
+        path: 'profile',
+        redirectTo: 'profile/newsfeed',
+        pathMatch: 'full',
+      },
+      {
+        path: 'profile',
+        canActivate: [PermissionGuard],
+        data: { permission: 'profile.view' },
+        loadComponent: () =>
+          import('./admin/user/common/profile/profile.component').then(
+            (c) => c.ProfileComponent
+          ),
         children: [
           {
-            path:'gioithieuctv',
+            path: 'newsfeed',
             loadComponent: () =>
-              import('./site/home/gioithieuctv/gioithieuctv.component').then(
-                (c) => c.GioithieuctvComponent
-              ),
+              import(
+                './admin/user/common/profile/newsfeed/newsfeed.component'
+              ).then((c) => c.NewsfeedComponent),
           },
           {
-            path: 'dangkyctv',
-            canActivate: [GuestGuard],
+            path: 'socialpage',
             loadComponent: () =>
-              import('./site/home/dangkyctv/dangkyctv.component').then((c) => c.DangkyctvComponent),
+              import(
+                './admin/user/common/profile/social/social.component'
+              ).then((c) => c.SocialComponent),
           },
           {
-            path :'hotroctv',
+            path: 'activity',
             loadComponent: () =>
-              import('./site/home/hotroctv/hotroctv.component').then((c) => c.HotroctvComponent),
-         },
-          {
-            path :'ladictv',
-            loadComponent: () =>
-              import('./site/home/ladictv/ladictv.component').then((c) => c.LadictvComponent),
-         },
-          {
-            path :'leaderboard',
-            loadComponent: () =>
-              import('./site/home/leaderboard/leaderboard.component').then((c) => c.LeaderboardComponent),
-         },
-          {
-            path :'taikhoanctv',
-            loadComponent: () =>
-              import('./site/home/taikhoanctv/taikhoanctv.component').then((c) => c.TaikhoanctvComponent),
-         },
-          {path:'faqctv',
-            loadComponent: () =>
-              import('./site/home/faqctv/faqctv.component').then((c) => c.FaqctvComponent),
+              import(
+                './admin/user/common/profile/activity/activity.component'
+              ).then((c) => c.ActivityComponent),
           },
           {
-            path: 'profile',
-            redirectTo: 'profile/newsfeed',
-            pathMatch: 'full',
-          },
-          {
-            path: 'profile',
-            canActivate: [PermissionGuard],
-            data: { permission: 'profile.view' },
+            path: 'gallery',
             loadComponent: () =>
-              import('./admin/user/common/profile/profile.component').then(
-                (c) => c.ProfileComponent
-              ),
-            children: [
-              {
-                path: 'newsfeed',
-                loadComponent: () =>
-                  import(
-                    './admin/user/common/profile/newsfeed/newsfeed.component'
-                  ).then((c) => c.NewsfeedComponent),
-              },
-              {
-                path: 'socialpage',
-                loadComponent: () =>
-                  import(
-                    './admin/user/common/profile/social/social.component'
-                  ).then((c) => c.SocialComponent),
-              },
-              {
-                path: 'activity',
-                loadComponent: () =>
-                  import(
-                    './admin/user/common/profile/activity/activity.component'
-                  ).then((c) => c.ActivityComponent),
-              },
-              {
-                path: 'gallery',
-                loadComponent: () =>
-                  import(
-                    './admin/user/common/profile/gallery/gallery.component'
-                  ).then((c) => c.GalleryComponent),
-              },
-            ],
-          },
-          {
-            path: 'account',
-            redirectTo: 'account/general',
-            pathMatch: 'full',
-          },
-          {
-            path: 'account',
-            loadComponent: () =>
-              import('./admin/user/common/account/account.component').then(
-                (c) => c.AccountComponent
-              ),
-            children: [
-              {
-                path: 'password',
-                loadComponent: () =>
-                  import(
-                    './admin/user/common/account/password/password.component'
-                  ).then((c) => c.PasswordComponent),
-              },
-              {
-                path: 'general',
-                loadComponent: () =>
-                  import(
-                    './admin/user/common/account/general/general.component'
-                  ).then((c) => c.GeneralComponent),
-              },
-              {
-                path: 'notifications',
-                loadComponent: () =>
-                  import(
-                    './admin/user/common/account/notifications/notifications.component'
-                  ).then((c) => c.NotificationsComponent),
-              },
-              {
-                path: 'billing',
-                loadComponent: () =>
-                  import(
-                    './admin/user/common/account/billing/billing.component'
-                  ).then((c) => c.BillingComponent),
-              },
-              {
-                path: 'security',
-                loadComponent: () =>
-                  import(
-                    './admin/user/common/account/security/security.component'
-                  ).then((c) => c.SecurityComponent),
-              },
-            ],
+              import(
+                './admin/user/common/profile/gallery/gallery.component'
+              ).then((c) => c.GalleryComponent),
           },
         ],
       },
       {
-        path: 'lien-he',
-        loadComponent: () =>
-          import('./site/lienhe/lienhe.component').then(
-            (c) => c.LienheComponent
-          ),
+        path: 'account',
+        redirectTo: 'account/general',
+        pathMatch: 'full',
       },
       {
-        path: ':slug',
-        resolve: { componentType: DynamicComponentResolver },
-        loadComponent: async () => {
-          const componentType = history?.state?.componentType;
-          if (componentType) {
-            switch (componentType) {
-              case 'danhmucbaiviet':
-                const c = await import(
-                  './site/danhmucbaiviet/danhmucbaiviet.component'
-                );
-                return c.DanhmucbaivietComponent;
-              case 'baiviet':
-                const c_1 = await import('./site/baiviet/baiviet.component');
-                return c_1.BaivietComponent;
-              case 'danhmuc':
-                const c_2 = await import('./site/danhmuc/danhmuc.component');
-                return c_2.DanhmucComponent;
-              case 'sanpham':
-                const c_3 = await import('./site/sanpham/sanpham.component');
-                return c_3.SanphamComponent;
-              case 'danhmucgioithieu':
-                const c_5 = await import(
-                  './site/danhmucgioithieu/danhmucgioithieu.component'
-                );
-                return c_5.DanhmucgioithieuComponent;
-              case 'gioithieu':
-                const c_6 = await import(
-                  './site/gioithieu/gioithieu.component'
-                );
-                return c_6.GioithieuComponent;
-              default:
-                const c_4 = await import('./site/notfound/notfound.component');
-                return c_4.NotfoundComponent; // Component mặc định
-            }
-          } else {
-            return import('./site/home/home.component').then(
-              (c) => c.HomeComponent
-            );
-          }
-        },
+        path: 'account',
+        loadComponent: () =>
+          import('./admin/user/common/account/account.component').then(
+            (c) => c.AccountComponent
+          ),
+        children: [
+          {
+            path: 'password',
+            loadComponent: () =>
+              import(
+                './admin/user/common/account/password/password.component'
+              ).then((c) => c.PasswordComponent),
+          },
+          {
+            path: 'general',
+            loadComponent: () =>
+              import(
+                './admin/user/common/account/general/general.component'
+              ).then((c) => c.GeneralComponent),
+          },
+          {
+            path: 'notifications',
+            loadComponent: () =>
+              import(
+                './admin/user/common/account/notifications/notifications.component'
+              ).then((c) => c.NotificationsComponent),
+          },
+          {
+            path: 'billing',
+            loadComponent: () =>
+              import(
+                './admin/user/common/account/billing/billing.component'
+              ).then((c) => c.BillingComponent),
+          },
+          {
+            path: 'security',
+            loadComponent: () =>
+              import(
+                './admin/user/common/account/security/security.component'
+              ).then((c) => c.SecurityComponent),
+          },
+        ],
       },
     ],
   },
+  // {
+  //   path: '',
+  //   loadComponent: () =>
+  //     import('./site/sitemain/sitemain.component').then(
+  //       (c) => c.SitemainComponent
+  //     ),
+  //   children: [
+  //     { path: '', redirectTo: 'gioithieuctv', pathMatch: 'full' },
+  //     {
+  //       path: 'lien-he',
+  //       loadComponent: () =>
+  //         import('./site/lienhe/lienhe.component').then(
+  //           (c) => c.LienheComponent
+  //         ),
+  //     },
+  //     {
+  //       path: ':slug',
+  //       resolve: { componentType: DynamicComponentResolver },
+  //       loadComponent: async () => {
+  //         const componentType = history?.state?.componentType;
+  //         if (componentType) {
+  //           switch (componentType) {
+  //             case 'danhmucbaiviet':
+  //               const c = await import(
+  //                 './site/danhmucbaiviet/danhmucbaiviet.component'
+  //               );
+  //               return c.DanhmucbaivietComponent;
+  //             case 'baiviet':
+  //               const c_1 = await import('./site/baiviet/baiviet.component');
+  //               return c_1.BaivietComponent;
+  //             case 'danhmuc':
+  //               const c_2 = await import('./site/danhmuc/danhmuc.component');
+  //               return c_2.DanhmucComponent;
+  //             case 'sanpham':
+  //               const c_3 = await import('./site/sanpham/sanpham.component');
+  //               return c_3.SanphamComponent;
+  //             case 'danhmucgioithieu':
+  //               const c_5 = await import(
+  //                 './site/danhmucgioithieu/danhmucgioithieu.component'
+  //               );
+  //               return c_5.DanhmucgioithieuComponent;
+  //             case 'gioithieu':
+  //               const c_6 = await import(
+  //                 './site/gioithieu/gioithieu.component'
+  //               );
+  //               return c_6.GioithieuComponent;
+  //             default:
+  //               const c_4 = await import('./site/notfound/notfound.component');
+  //               return c_4.NotfoundComponent; // Component mặc định
+  //           }
+  //         } else {
+  //           return import('./site/home/home.component').then(
+  //             (c) => c.HomeComponent
+  //           );
+  //         }
+  //       },
+  //     },
+  //   ],
+  // },
 ];

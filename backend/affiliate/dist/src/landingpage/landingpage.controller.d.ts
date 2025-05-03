@@ -2,7 +2,7 @@ import { landingPageService } from './landingpage.service';
 export declare class LandingpageController {
     private readonly landingpageService;
     constructor(landingpageService: landingPageService);
-    create(createLandingpageDto: any): Promise<{
+    create(data: any): Promise<{
         id: string;
         isActive: boolean;
         createdAt: Date;
@@ -21,7 +21,7 @@ export declare class LandingpageController {
         seoKeywords: string | null;
         ownerId: string | null;
         codeId: string;
-        contentJson: import(".prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     findby(param: any): Promise<{
         id: string;
@@ -42,7 +42,7 @@ export declare class LandingpageController {
         seoKeywords: string | null;
         ownerId: string | null;
         codeId: string;
-        contentJson: import(".prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     findAll(): Promise<{
         id: string;
@@ -63,7 +63,7 @@ export declare class LandingpageController {
         seoKeywords: string | null;
         ownerId: string | null;
         codeId: string;
-        contentJson: import(".prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
@@ -84,7 +84,7 @@ export declare class LandingpageController {
         seoKeywords: string | null;
         ownerId: string | null;
         codeId: string;
-        contentJson: import(".prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -105,7 +105,7 @@ export declare class LandingpageController {
         seoKeywords: string | null;
         ownerId: string | null;
         codeId: string;
-        contentJson: import(".prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -126,7 +126,7 @@ export declare class LandingpageController {
         seoKeywords: string | null;
         ownerId: string | null;
         codeId: string;
-        contentJson: import(".prisma/client/runtime/library").JsonValue;
+        contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     reorder(body: {
         landingpageIds: string[];

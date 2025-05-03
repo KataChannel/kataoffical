@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, Router } from '@angular/router';
-import { UserService } from '../../../../admin/user/user.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { UserAdminService } from '../../useradmin.service';
 @Injectable({ providedIn: 'root' })
 export class PermissionGuard implements CanActivate {
   constructor(
-     private _UserService: UserService,
+     private _UserService: UserAdminService,
      private router: Router,
      private _snackBar: MatSnackBar
     ) {}
@@ -18,7 +18,7 @@ export class PermissionGuard implements CanActivate {
         verticalPosition: "top",
         panelClass: ['snackbar-warning'],
       }); 
-      this.router.navigate(['/loginctv']);
+      this.router.navigate(['/']);
       return false;
     }else {
       return true;

@@ -9,36 +9,64 @@ export class AuthService {
 
 
 async register(data: any, affiliateCode?: string) {
-  console.log(data, affiliateCode);
-  
-  // Kiểm tra xem người dùng đã tồn tại chưa
-  const existingUser = await this.prisma.user.findFirst({
-    where: {
-      OR: [
-        { email: data.email || undefined },
-        { phone: data.phone || undefined },
-        { SDT: data.phone || undefined },
-        { facebookId: data.facebookId || undefined },
-        { googleId: data.googleId || undefined },
-      ],
-    },
-  }); 
-  if (existingUser) {
-    throw new UnauthorizedException('User already exists');
+  try {
+    // Normalize input
+    const { email, phone, password, facebookId, googleId, zaloId } = data;
+
+    // Check for existing user by unique fields
+    const existingUser = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: email || undefined },
+          { phone: phone || undefined },
+          { SDT: phone || undefined },
+          { zaloId: zaloId || undefined },
+          { facebookId: facebookId || undefined },
+          { googleId: googleId || undefined },
+        ],
+      },
+    });
+    if (existingUser) {
+      throw new UnauthorizedException('User already exists');
+    }
+
+    // Resolve referrer if affiliateCode is provided
+    let referrerId: string | undefined;
+    if (affiliateCode) {
+      const referrer = await this.prisma.user.findUnique({
+        where: { inviteCode: affiliateCode },
+        select: { id: true },
+      });
+      referrerId = referrer?.id;
+    }
+
+    // Create new user
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const inviteCode = phone || Math.random().toString(36).slice(-8);
+
+    const user = await this.prisma.user.create({
+      data: {
+        email: email || null,
+        phone: phone || null,
+        password: hashedPassword,
+        inviteCode,
+        affiliateCode: affiliateCode || null,
+        referrerId,
+        facebookId: facebookId || null,
+        googleId: googleId || null,
+      },
+    });
+
+    return user;
+  } catch (error) {
+    // Log error for debugging
+    console.error('Register error:', error);
+
+    if (error instanceof UnauthorizedException) {
+      throw error;
+    }
+    throw new UnauthorizedException('Registration failed');
   }
-
-  // Tạo người dùng mới
-  const user = await this.prisma.user.create({
-    data: {
-      email: data.email || null,
-      phone: data.phone || null,
-      password: await bcrypt.hash(data.password, 10),
-      affiliateCode: affiliateCode || null,
-    },
-  });
-
-  // Trả về thông tin user
-  return user
 }
 
 

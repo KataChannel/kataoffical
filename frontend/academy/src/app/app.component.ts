@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { RouterOutlet } from '@angular/router';
 import { UserService } from './admin/user/user.service';
+import { UserAdminService } from './admin/user/useradmin.service';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
@@ -13,10 +14,12 @@ export class AppComponent {
     private titleService: Title, 
     private metaService: Meta,
     private _UserService: UserService,
+    private _UserAdminService: UserAdminService,
     
   ) { }
   ngOnInit() {
    this._UserService.loadPermissions();
+   this._UserAdminService.loadPermissions();
   //   this._UserService.getProfile().then((data)=>{
   //     console.log(data);
       

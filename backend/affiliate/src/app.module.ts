@@ -12,6 +12,7 @@ import { PermissionModule } from './permission/permission.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
 import { AuditLogModule } from './auditlog/auditlog.module';
 import { LandingPageModule } from './landingpage/landingpage.module';
+import { TrackingeventModule } from './trackingevent/trackingevent.module';
 @Module({
   imports: [
     AuthModule, 
@@ -23,6 +24,7 @@ import { LandingPageModule } from './landingpage/landingpage.module';
     ChatbotModule,
     AuditLogModule,
     LandingPageModule,
+    TrackingeventModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  
