@@ -45,9 +45,9 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
 export class ListSanphamComponent {
   Detail: any = {};
   displayedColumns: string[] = [
+    'masp',
     'title',
     'title2',
-    'masp',
     'giagoc',
     'dvt',
     'soluong',
@@ -58,9 +58,9 @@ export class ListSanphamComponent {
     'createdAt',
   ];
   ColumnName: any = {
+    masp: 'Mã Sản Phẩm',
     title: 'Tên Sản Phẩm',
     title2: 'Tên Sản Phẩm 2',
-    masp: 'Mã Sản Phẩm',
     giagoc: 'Giá Gốc',
     dvt: 'Đơn Vị Tính',
     soluong: 'SL',

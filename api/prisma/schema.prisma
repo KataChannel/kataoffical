@@ -289,16 +289,18 @@ model PhieuKho {
 }
 
 model PhieuKhoSanpham {
-  id        String @id @default(uuid())
-  phieuKhoId String
-  sanphamId  String
-  sldat     Float @default(0)
-  soluong   Float @default(0)
-  ghichu    String?
-  sanpham    Sanpham @relation(fields: [sanphamId], references: [id])
-  phieuKho   PhieuKho @relation(fields: [phieuKhoId], references: [id])
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id          String @id @default(uuid())
+  phieuKhoId  String
+  sanphamId   String
+  sldat       Float @default(0)
+  sltra       Float @default(0)
+  slhuy       Float @default(0)
+  soluong     Decimal? @postgres.Decimal(20, 2) @default(0)
+  ghichu      String?
+  sanpham     Sanpham @relation(fields: [sanphamId], references: [id])
+  phieuKho    PhieuKho @relation(fields: [phieuKhoId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 model Sanpham {
   id        String   @id @default(uuid())
@@ -311,8 +313,8 @@ model Sanpham {
   dvt       String?
   hinhanh   String?
   loadpoint Float? @default(0)
-  soluong   Float @default(0)
-  soluongkho Float @default(0)
+  soluong   Decimal? @postgres.Decimal(20, 2) @default(0)
+  soluongkho Decimal? @postgres.Decimal(20, 2) @default(0)
   haohut    Float @default(0)
   ghichu    String?
   order     Int? @default(1)

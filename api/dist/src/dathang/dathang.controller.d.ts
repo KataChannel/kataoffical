@@ -6,8 +6,8 @@ export declare class DathangController {
         sanpham: {
             id: string;
             ghichu: string | null;
-            isActive: boolean;
             order: number | null;
+            isActive: boolean;
             idSP: string;
             sldat: number | null;
             slgiao: number | null;
@@ -19,12 +19,12 @@ export declare class DathangController {
         }[];
     } & {
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        title: string | null;
-        order: number | null;
         type: string | null;
         printCount: number | null;
         madncc: string | null;
@@ -35,8 +35,8 @@ export declare class DathangController {
         sanpham: {
             id: string;
             ghichu: string | null;
-            isActive: boolean;
             order: number | null;
+            isActive: boolean;
             idSP: string;
             sldat: number | null;
             slgiao: number | null;
@@ -48,12 +48,12 @@ export declare class DathangController {
         }[];
     } & {
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        title: string | null;
-        order: number | null;
         type: string | null;
         printCount: number | null;
         madncc: string | null;
@@ -64,23 +64,23 @@ export declare class DathangController {
         sanpham: any[];
         nhacungcap: {
             id: string;
-            name: string | null;
-            diachi: string | null;
-            sdt: string | null;
-            email: string | null;
             ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            name: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            email: string | null;
             mancc: string;
         };
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        title: string | null;
-        order: number | null;
         type: string | null;
         printCount: number | null;
         madncc: string | null;
@@ -98,42 +98,42 @@ export declare class DathangController {
             ttnhan: number;
             ghichu: string | null;
             id: string;
-            subtitle: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
             title: string;
             title2: string | null;
             slug: string | null;
             masp: string;
+            subtitle: string | null;
             giagoc: number;
             dvt: string | null;
             hinhanh: string | null;
             loadpoint: number | null;
-            soluong: number;
-            soluongkho: number;
+            soluong: import("@prisma/client/runtime/library").Decimal | null;
+            soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: number;
             order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
         }[];
         nhacungcap: {
             id: string;
-            name: string | null;
-            diachi: string | null;
-            sdt: string | null;
-            email: string | null;
             ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            name: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            email: string | null;
             mancc: string;
         };
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        title: string | null;
-        order: number | null;
         type: string | null;
         printCount: number | null;
         madncc: string | null;
@@ -144,8 +144,8 @@ export declare class DathangController {
         sanpham: {
             id: string;
             ghichu: string | null;
-            isActive: boolean;
             order: number | null;
+            isActive: boolean;
             idSP: string;
             sldat: number | null;
             slgiao: number | null;
@@ -157,12 +157,12 @@ export declare class DathangController {
         }[];
     } & {
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        title: string | null;
-        order: number | null;
         type: string | null;
         printCount: number | null;
         madncc: string | null;
@@ -171,12 +171,12 @@ export declare class DathangController {
     }>;
     remove(id: string): Promise<{
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        title: string | null;
-        order: number | null;
         type: string | null;
         printCount: number | null;
         madncc: string | null;

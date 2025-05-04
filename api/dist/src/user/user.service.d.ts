@@ -6,10 +6,10 @@ export declare class UserService {
     constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
     createUser(dto: any): Promise<{
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
@@ -18,22 +18,22 @@ export declare class UserService {
     getUsers(): Promise<{
         roles: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
         }[];
         permissions: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             description: string | null;
         }[];
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
@@ -41,22 +41,22 @@ export declare class UserService {
     findAll(): Promise<{
         roles: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
         }[];
         permissions: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             description: string | null;
         }[];
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
@@ -64,32 +64,32 @@ export declare class UserService {
     findOne(id: string): Promise<{
         roles: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
         }[];
         permissions: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             description: string | null;
         }[];
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
@@ -97,10 +97,10 @@ export declare class UserService {
     }>;
     remove(id: string): Promise<{
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;

@@ -20,6 +20,7 @@ import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { StorageService } from '../../shared/utils/storage.service';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import {MatStepperModule} from '@angular/material/stepper';
 import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
 @Component({
   selector: 'app-adminmain',
@@ -38,7 +39,8 @@ import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
     // RouterLinkActive,
     TreemenuComponent,
     MatInputModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatStepperModule
   ],
   templateUrl: './adminmain.component.html',
   styleUrls: ['./adminmain.component.scss']
@@ -48,6 +50,7 @@ export class AdminmainComponent {
   showFiller = false;
   Config:any =Config
   User:any ={}
+  isQuytrinh:any=false
   private _transformer = (node: any, level: number) => {
     return {
       expandable: !!node?.children && node?.children.length > 0,
@@ -144,4 +147,9 @@ export class AdminmainComponent {
       panelClass: ['snackbar-success'],
     });
   }
+  events = [
+    { date: '2025-01-01', title: 'Project Start', description: 'Initiated the project with team.', icon: 'fa-circle' },
+    { date: '2025-03-01', title: 'Milestone 1', description: 'Completed first phase.', icon: 'fa-check' },
+    { date: '2025-06-01', title: 'Milestone 2', description: 'Launched beta version.', icon: 'fa-rocket' },
+  ];
 }

@@ -70,7 +70,7 @@
         <button mat-icon-button (click)="ClearCache()">
           <mat-icon>cached</mat-icon>
         </button>
-        <button mat-icon-button (click)="drawer1.toggle()">
+        <button mat-icon-button (click)="drawer1.toggle();isQuytrinh=true">
           <mat-icon>dashboard</mat-icon>
         </button>
         <button mat-icon-button (click)="drawer1.toggle()">
@@ -104,8 +104,39 @@
 
 
   <mat-drawer #drawer1 class="{{isFullscreen?'!w-screen':'!w-1/3'}}" mode="over" position="end">
-    <div class="relative h-full flex flex-col space-y-2">
+    <div class="relative h-full flex flex-col space-y-2 p-2">
       <!-- <app-conversation></app-conversation> -->
+      <ul class="list-decimal rounded-lg p-8 space-y-3 border">
+        <li>
+          <strong>0h: Đặt Hàng Ngày 1</strong>
+          <ul class="list-disc px-4">
+            <li>Bộ Phận Order</li>
+            <li>Giao Hàng</li>
+            <li>Xác Nhận Giao Hàng</li>
+          </ul>
+        </li>
+        <li>
+          <strong>1h: Kiểm Kho</strong>
+          <ul class="list-disc px-4">
+            <li>Bộ Phận Kho</li>
+          </ul>
+        </li>
+        <li>
+          <strong>8H Nhập Kiểm Kho</strong>
+          <ul class="list-disc px-4">
+            <li>1. Nhập Kiểm Kho (Bộ Phận Kho)</li>
+            <li>2. Nhập hàng Hủy (Bộ Phận Kho)</li>
+            <li>3. Nhập Tồn Kho Tổng (Bộ Phận Kế Toán)</li>
+            <li>4. Anh Lãnh Đặt Hàng Trước 21h</li>
+          </ul>
+        </li>
+        <li>
+          <strong>21H Đặt Hàng Ngày 2</strong>
+          <ul class="list-disc px-4">
+            <li>Bộ Phận Order</li>
+          </ul>
+        </li>
+      </ul>
     </div>
   </mat-drawer>
 </mat-drawer-container>

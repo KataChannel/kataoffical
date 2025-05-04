@@ -84,8 +84,6 @@
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
-
-
         </div>
         <div class="w-full flex flex-col space-y-2 items-center">
           @for (item of DetailPhieukho().sanpham; track item.id; let idx = $index) {
@@ -112,15 +110,27 @@
                 </div>
               </mat-select>
             </mat-form-field>
-            <mat-form-field appearance="outline" class="w-60" subscriptSizing="dynamic">
+            <mat-form-field appearance="outline" class="w-80" subscriptSizing="dynamic">
               <mat-label>SL</mat-label>
               <input matInput type="number" [disabled]="true" [(ngModel)]="DetailPhieukho().sanpham[idx].sldat"
                 (change)="onChangeSoluong(item,$event)" [ngModelOptions]="{ standalone: true }"
                 placeholder="Vui lòng Nhập Số Lượng" />
             </mat-form-field>
-            <mat-form-field appearance="outline" class="w-60" subscriptSizing="dynamic">
-              <mat-label>SL Thực tế</mat-label>
+            <mat-form-field appearance="outline" class="w-80" subscriptSizing="dynamic">
+              <mat-label>SL Thực</mat-label>
               <input matInput type="number" [disabled]="!isEdit()" [(ngModel)]="DetailPhieukho().sanpham[idx].soluong"
+                (change)="onChangeSoluong(item,$event)" [ngModelOptions]="{ standalone: true }"
+                placeholder="Vui lòng Nhập Số Lượng Thực Tế" />
+            </mat-form-field>
+            <mat-form-field *ngIf="DetailPhieukho().type=='xuat'" appearance="outline" class="w-80" subscriptSizing="dynamic">
+              <mat-label>SL Hủy</mat-label>
+              <input matInput type="number" [disabled]="!isEdit()" [(ngModel)]="DetailPhieukho().sanpham[idx].slhuy"
+                (change)="onChangeSoluong(item,$event)" [ngModelOptions]="{ standalone: true }"
+                placeholder="Vui lòng Nhập Số Lượng Thực Tế" />
+            </mat-form-field>
+            <mat-form-field *ngIf="DetailPhieukho().type=='nhap'" appearance="outline" class="w-80" subscriptSizing="dynamic">
+              <mat-label>SL Trả</mat-label>
+              <input matInput type="number" [disabled]="!isEdit()" [(ngModel)]="DetailPhieukho().sanpham[idx].sltra"
                 (change)="onChangeSoluong(item,$event)" [ngModelOptions]="{ standalone: true }"
                 placeholder="Vui lòng Nhập Số Lượng Thực Tế" />
             </mat-form-field>

@@ -4,9 +4,9 @@ export declare class RoleController {
     constructor(rolesService: RoleService);
     create(createRoleDto: any): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     }>;
     assignPermissionToRole(data: any): Promise<{
         id: string;
@@ -26,9 +26,9 @@ export declare class RoleController {
         }[];
     } & {
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     })[]>;
     findOne(id: string): Promise<({
         permissions: {
@@ -38,17 +38,17 @@ export declare class RoleController {
         }[];
     } & {
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     }) | null>;
     update(id: string, updateRoleDto: any): Promise<{
         permissions: ({
             permission: {
                 id: string;
-                name: string;
                 createdAt: Date;
                 updatedAt: Date;
+                name: string;
                 description: string | null;
             };
         } & {
@@ -58,14 +58,14 @@ export declare class RoleController {
         })[];
     } & {
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     }>;
     remove(id: string): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
     }>;
 }

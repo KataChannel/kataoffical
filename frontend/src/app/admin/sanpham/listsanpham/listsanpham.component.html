@@ -117,6 +117,11 @@
                             {{ idx + 1 }}
                         </span>
                         }
+                        @case ('masp') {
+                            <span class="max-w-40 line-clamp-4">
+                                {{ row[column]}}
+                            </span>
+                        }
                         @case ('createdAt') {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column]|date:'dd/MM/yyyy'}}

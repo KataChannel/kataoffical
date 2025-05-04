@@ -6,12 +6,12 @@ export declare class BanggiaService {
     constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
     create(data: any): Promise<{
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
@@ -21,20 +21,20 @@ export declare class BanggiaService {
     createBanggia(data: any): Promise<{
         sanpham: {
             id: string;
-            isActive: boolean;
             order: number | null;
+            isActive: boolean;
             giaban: number;
             sanphamId: string;
             banggiaId: string;
         }[];
     } & {
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
@@ -46,12 +46,12 @@ export declare class BanggiaService {
         sanpham: number;
         khachhang: number;
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
@@ -62,29 +62,33 @@ export declare class BanggiaService {
         sanpham: {
             giaban: number;
             id: string;
+            title: string;
+            title2: string | null;
+            slug: string | null;
+            masp: string;
+            subtitle: string | null;
+            giagoc: number;
+            dvt: string | null;
+            hinhanh: string | null;
+            loadpoint: number | null;
+            soluong: import("@prisma/client/runtime/library").Decimal | null;
+            soluongkho: import("@prisma/client/runtime/library").Decimal | null;
+            haohut: number;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
+        khachhang: {
+            id: string;
             subtitle: string | null;
             ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            title: string;
-            title2: string | null;
-            slug: string | null;
-            masp: string;
-            giagoc: number;
-            dvt: string | null;
-            hinhanh: string | null;
-            loadpoint: number | null;
-            soluong: number;
-            soluongkho: number;
-            haohut: number;
-            order: number | null;
-        }[];
-        khachhang: {
-            id: string;
             name: string | null;
             namenn: string | null;
-            subtitle: string | null;
             makh: string;
             makhold: string | null;
             diachi: string | null;
@@ -96,20 +100,16 @@ export declare class BanggiaService {
             phone: string | null;
             address: string | null;
             loaikh: string | null;
-            ghichu: string | null;
             hiengia: boolean;
-            isActive: boolean;
             istitle2: boolean;
-            createdAt: Date;
-            updatedAt: Date;
         }[];
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
@@ -119,20 +119,20 @@ export declare class BanggiaService {
     update(id: string, data: any): Promise<{
         sanpham: {
             id: string;
-            isActive: boolean;
             order: number | null;
+            isActive: boolean;
             giaban: number;
             sanphamId: string;
             banggiaId: string;
         }[];
     } & {
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
@@ -141,12 +141,12 @@ export declare class BanggiaService {
     }>;
     remove(id: string): Promise<{
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
@@ -155,12 +155,12 @@ export declare class BanggiaService {
     }>;
     addKHtoBG(banggiaId: string, khachhangIds: any[]): Promise<{
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
@@ -169,12 +169,12 @@ export declare class BanggiaService {
     }>;
     removeKHfromBG(banggiaId: string, khachhangIds: any[]): Promise<{
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;

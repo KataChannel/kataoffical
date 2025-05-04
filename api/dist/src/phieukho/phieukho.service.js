@@ -98,9 +98,7 @@ let PhieukhoService = class PhieukhoService {
                 await prisma.sanpham.update({
                     where: { id: sp.sanphamId },
                     data: {
-                        soluongkho: data.type === 'nhap'
-                            ? { increment: sp.soluong }
-                            : { decrement: sp.soluong },
+                        soluongkho: data.type === 'nhap' ? { increment: sp.soluong } : { decrement: sp.soluong },
                     },
                 });
             }
@@ -120,8 +118,8 @@ let PhieukhoService = class PhieukhoService {
                     where: { id: oldSP.sanphamId },
                     data: {
                         soluongkho: oldPhieuKho.type === 'nhap'
-                            ? { decrement: oldSP.soluong }
-                            : { increment: oldSP.soluong },
+                            ? { decrement: Number(oldSP.soluong) || 0 }
+                            : { increment: Number(oldSP.soluong) || 0 },
                     },
                 });
             }

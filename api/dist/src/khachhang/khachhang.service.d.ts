@@ -5,9 +5,13 @@ export declare class KhachhangService {
     timkiemkhachhang(query: string): Promise<unknown>;
     create(data: any): Promise<{
         id: string;
+        subtitle: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         name: string | null;
         namenn: string | null;
-        subtitle: string | null;
         makh: string;
         makhold: string | null;
         diachi: string | null;
@@ -19,22 +23,18 @@ export declare class KhachhangService {
         phone: string | null;
         address: string | null;
         loaikh: string | null;
-        ghichu: string | null;
         hiengia: boolean;
-        isActive: boolean;
         istitle2: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     findAll(): Promise<({
         banggia: {
             id: string;
+            title: string | null;
             ghichu: string | null;
+            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            title: string | null;
-            order: number | null;
             mabanggia: string | null;
             type: string | null;
             batdau: Date | null;
@@ -43,9 +43,13 @@ export declare class KhachhangService {
         }[];
     } & {
         id: string;
+        subtitle: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         name: string | null;
         namenn: string | null;
-        subtitle: string | null;
         makh: string;
         makhold: string | null;
         diachi: string | null;
@@ -57,18 +61,18 @@ export declare class KhachhangService {
         phone: string | null;
         address: string | null;
         loaikh: string | null;
-        ghichu: string | null;
         hiengia: boolean;
-        isActive: boolean;
         istitle2: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     findby(param: any): Promise<{
         id: string;
+        subtitle: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         name: string | null;
         namenn: string | null;
-        subtitle: string | null;
         makh: string;
         makhold: string | null;
         diachi: string | null;
@@ -80,22 +84,18 @@ export declare class KhachhangService {
         phone: string | null;
         address: string | null;
         loaikh: string | null;
-        ghichu: string | null;
         hiengia: boolean;
-        isActive: boolean;
         istitle2: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     } | null>;
     findOne(id: string): Promise<{
         banggia: {
             id: string;
+            title: string | null;
             ghichu: string | null;
+            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            title: string | null;
-            order: number | null;
             mabanggia: string | null;
             type: string | null;
             batdau: Date | null;
@@ -104,9 +104,13 @@ export declare class KhachhangService {
         }[];
     } & {
         id: string;
+        subtitle: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         name: string | null;
         namenn: string | null;
-        subtitle: string | null;
         makh: string;
         makhold: string | null;
         diachi: string | null;
@@ -118,22 +122,18 @@ export declare class KhachhangService {
         phone: string | null;
         address: string | null;
         loaikh: string | null;
-        ghichu: string | null;
         hiengia: boolean;
-        isActive: boolean;
         istitle2: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     searchfield(searchParams: Record<string, any>): Promise<{
         banggia: {
             id: string;
+            title: string | null;
             ghichu: string | null;
+            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            title: string | null;
-            order: number | null;
             mabanggia: string | null;
             type: string | null;
             batdau: Date | null;
@@ -142,9 +142,13 @@ export declare class KhachhangService {
         }[];
     } & {
         id: string;
+        subtitle: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         name: string | null;
         namenn: string | null;
-        subtitle: string | null;
         makh: string;
         makhold: string | null;
         diachi: string | null;
@@ -156,22 +160,18 @@ export declare class KhachhangService {
         phone: string | null;
         address: string | null;
         loaikh: string | null;
-        ghichu: string | null;
         hiengia: boolean;
-        isActive: boolean;
         istitle2: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     update(id: string, data: any): Promise<{
         banggia: {
             id: string;
+            title: string | null;
             ghichu: string | null;
+            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            title: string | null;
-            order: number | null;
             mabanggia: string | null;
             type: string | null;
             batdau: Date | null;
@@ -180,9 +180,13 @@ export declare class KhachhangService {
         }[];
     } & {
         id: string;
+        subtitle: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         name: string | null;
         namenn: string | null;
-        subtitle: string | null;
         makh: string;
         makhold: string | null;
         diachi: string | null;
@@ -194,18 +198,18 @@ export declare class KhachhangService {
         phone: string | null;
         address: string | null;
         loaikh: string | null;
-        ghichu: string | null;
         hiengia: boolean;
-        isActive: boolean;
         istitle2: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     remove(id: string): Promise<{
         id: string;
+        subtitle: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
         name: string | null;
         namenn: string | null;
-        subtitle: string | null;
         makh: string;
         makhold: string | null;
         diachi: string | null;
@@ -217,11 +221,7 @@ export declare class KhachhangService {
         phone: string | null;
         address: string | null;
         loaikh: string | null;
-        ghichu: string | null;
         hiengia: boolean;
-        isActive: boolean;
         istitle2: boolean;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
 }

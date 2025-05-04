@@ -6,10 +6,10 @@ export declare class UserController {
     constructor(userService: UserService, authService: AuthService);
     create(dto: any): Promise<{
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
@@ -18,22 +18,22 @@ export declare class UserController {
     findAll(): Promise<{
         roles: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
         }[];
         permissions: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             description: string | null;
         }[];
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
@@ -41,22 +41,22 @@ export declare class UserController {
     getProfile(req: any): Promise<{
         roles: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
         }[];
         permissions: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             description: string | null;
         }[];
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
@@ -74,32 +74,32 @@ export declare class UserController {
     findOne(id: string): Promise<{
         roles: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
         }[];
         permissions: {
             id: string;
-            name: string;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
             description: string | null;
         }[];
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         provider: string | null;
         providerId: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
@@ -107,10 +107,10 @@ export declare class UserController {
     }>;
     remove(id: string): Promise<{
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;

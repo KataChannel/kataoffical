@@ -5,20 +5,20 @@ export declare class BanggiaController {
     create(createBanggiaDto: any): Promise<{
         sanpham: {
             id: string;
-            isActive: boolean;
             order: number | null;
+            isActive: boolean;
             giaban: number;
             sanphamId: string;
             banggiaId: string;
         }[];
     } & {
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
@@ -29,12 +29,12 @@ export declare class BanggiaController {
         sanpham: number;
         khachhang: number;
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
@@ -46,12 +46,12 @@ export declare class BanggiaController {
     }): Promise<void>;
     addMultipleKhachhangToBanggia(data: any): Promise<{
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
@@ -60,12 +60,12 @@ export declare class BanggiaController {
     }>;
     removeKHfromBG(data: any): Promise<{
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
@@ -76,29 +76,33 @@ export declare class BanggiaController {
         sanpham: {
             giaban: number;
             id: string;
+            title: string;
+            title2: string | null;
+            slug: string | null;
+            masp: string;
+            subtitle: string | null;
+            giagoc: number;
+            dvt: string | null;
+            hinhanh: string | null;
+            loadpoint: number | null;
+            soluong: import("@prisma/client/runtime/library").Decimal | null;
+            soluongkho: import("@prisma/client/runtime/library").Decimal | null;
+            haohut: number;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
+        khachhang: {
+            id: string;
             subtitle: string | null;
             ghichu: string | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            title: string;
-            title2: string | null;
-            slug: string | null;
-            masp: string;
-            giagoc: number;
-            dvt: string | null;
-            hinhanh: string | null;
-            loadpoint: number | null;
-            soluong: number;
-            soluongkho: number;
-            haohut: number;
-            order: number | null;
-        }[];
-        khachhang: {
-            id: string;
             name: string | null;
             namenn: string | null;
-            subtitle: string | null;
             makh: string;
             makhold: string | null;
             diachi: string | null;
@@ -110,20 +114,16 @@ export declare class BanggiaController {
             phone: string | null;
             address: string | null;
             loaikh: string | null;
-            ghichu: string | null;
             hiengia: boolean;
-            isActive: boolean;
             istitle2: boolean;
-            createdAt: Date;
-            updatedAt: Date;
         }[];
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
@@ -133,20 +133,20 @@ export declare class BanggiaController {
     update(id: string, updateBanggiaDto: any): Promise<{
         sanpham: {
             id: string;
-            isActive: boolean;
             order: number | null;
+            isActive: boolean;
             giaban: number;
             sanphamId: string;
             banggiaId: string;
         }[];
     } & {
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
@@ -155,12 +155,12 @@ export declare class BanggiaController {
     }>;
     remove(id: string): Promise<{
         id: string;
+        title: string | null;
         ghichu: string | null;
+        order: number | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        title: string | null;
-        order: number | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;

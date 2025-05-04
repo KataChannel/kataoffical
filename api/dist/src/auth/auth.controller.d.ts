@@ -14,10 +14,10 @@ export declare class AuthController {
         name: string;
     }): Promise<{
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;
@@ -36,10 +36,10 @@ export declare class AuthController {
         newPassword: string;
     }): Promise<{
         id: string;
-        email: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        email: string | null;
         SDT: string | null;
         password: string;
         provider: string | null;

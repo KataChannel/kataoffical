@@ -65,11 +65,17 @@ let DonhangService = class DonhangService {
         const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1 } = params;
         const where = {
             ngaygiao: {
-                gte: Batdau ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate() : undefined,
-                lte: Ketthuc ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate() : undefined,
+                gte: Batdau
+                    ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+                    : undefined,
+                lte: Ketthuc
+                    ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
+                    : undefined,
             },
             type: Type,
-            status: Array.isArray(params.Status) ? { in: params.Status } : params.Status,
+            status: Array.isArray(params.Status)
+                ? { in: params.Status }
+                : params.Status,
         };
         const [total, donhangs] = await Promise.all([
             this.prisma.donhang.count({ where }),
@@ -93,18 +99,23 @@ let DonhangService = class DonhangService {
             sanpham: sanpham.map((item) => ({
                 ...item.sanpham,
                 idSP: item.idSP,
-                giaban: khachhang.banggia.find((bg) => donhang.ngaygiao && bg.batdau && bg.ketthuc &&
-                    donhang.ngaygiao >= bg.batdau && donhang.ngaygiao <= bg.ketthuc)?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
-                sldat: item.sldat,
-                slgiao: item.slgiao,
-                slnhan: item.slnhan,
-                ttdat: item.ttdat,
-                ttgiao: item.ttgiao,
-                ttnhan: item.ttnhan,
+                giaban: khachhang.banggia
+                    .find((bg) => donhang.ngaygiao &&
+                    bg.batdau &&
+                    bg.ketthuc &&
+                    donhang.ngaygiao >= bg.batdau &&
+                    donhang.ngaygiao <= bg.ketthuc)
+                    ?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
+                sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
+                slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
+                slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
+                ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
+                ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
+                ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
                 ghichu: item.ghichu,
             })),
             khachhang: (({ banggia, ...rest }) => rest)(khachhang),
-            name: khachhang.name
+            name: khachhang.name,
         }));
         return {
             data: result,
@@ -121,11 +132,17 @@ let DonhangService = class DonhangService {
         const result = await this.prisma.donhang.findMany({
             where: {
                 ngaygiao: {
-                    gte: Batdau ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate() : undefined,
-                    lte: Ketthuc ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate() : undefined,
+                    gte: Batdau
+                        ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+                        : undefined,
+                    lte: Ketthuc
+                        ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
+                        : undefined,
                 },
                 type: Type,
-                status: Array.isArray(params.Status) ? { in: params.Status } : params.Status,
+                status: Array.isArray(params.Status)
+                    ? { in: params.Status }
+                    : params.Status,
             },
             include: {
                 sanpham: {
@@ -133,7 +150,7 @@ let DonhangService = class DonhangService {
                         sanpham: true,
                     },
                 },
-                khachhang: { include: { banggia: { include: { sanpham: true } } }, },
+                khachhang: { include: { banggia: { include: { sanpham: true } } } },
             },
             orderBy: { createdAt: 'desc' },
         });
@@ -157,7 +174,7 @@ let DonhangService = class DonhangService {
                         sanpham: true,
                     },
                 },
-                khachhang: { include: { banggia: { include: { sanpham: true } } }, },
+                khachhang: { include: { banggia: { include: { sanpham: true } } } },
             },
         });
         if (!result) {
@@ -169,14 +186,19 @@ let DonhangService = class DonhangService {
             sanpham: result.sanpham.map((item) => ({
                 ...item.sanpham,
                 idSP: item.idSP,
-                giaban: result.khachhang.banggia.find((bg) => result.ngaygiao && bg.batdau && bg.ketthuc &&
-                    result.ngaygiao >= bg.batdau && result.ngaygiao <= bg.ketthuc)?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
-                sldat: item.sldat,
-                slgiao: item.slgiao,
-                slnhan: item.slnhan,
-                ttdat: item.ttdat,
-                ttgiao: item.ttgiao,
-                ttnhan: item.ttnhan,
+                giaban: result.khachhang.banggia
+                    .find((bg) => result.ngaygiao &&
+                    bg.batdau &&
+                    bg.ketthuc &&
+                    result.ngaygiao >= bg.batdau &&
+                    result.ngaygiao <= bg.ketthuc)
+                    ?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
+                sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
+                slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
+                slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
+                ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
+                ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
+                ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
                 ghichu: item.ghichu,
             })),
             khachhang: (({ banggia, ...rest }) => rest)(result.khachhang),
@@ -190,7 +212,7 @@ let DonhangService = class DonhangService {
                         sanpham: true,
                     },
                 },
-                khachhang: { include: { banggia: { include: { sanpham: true } } }, },
+                khachhang: { include: { banggia: { include: { sanpham: true } } } },
             },
         });
         const result = donhangs.map((donhang) => ({
@@ -198,13 +220,19 @@ let DonhangService = class DonhangService {
             sanpham: donhang.sanpham.map((item) => ({
                 ...item.sanpham,
                 idSP: item.idSP,
-                giaban: donhang.khachhang.banggia.find((bg) => donhang.ngaygiao && bg.batdau && bg.ketthuc && donhang.ngaygiao >= bg.batdau && donhang.ngaygiao <= bg.ketthuc)?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
-                sldat: item.sldat,
-                slgiao: item.slgiao,
-                slnhan: item.slnhan,
-                ttdat: item.ttdat,
-                ttgiao: item.ttgiao,
-                ttnhan: item.ttnhan,
+                giaban: donhang.khachhang.banggia
+                    .find((bg) => donhang.ngaygiao &&
+                    bg.batdau &&
+                    bg.ketthuc &&
+                    donhang.ngaygiao >= bg.batdau &&
+                    donhang.ngaygiao <= bg.ketthuc)
+                    ?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
+                sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
+                slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
+                slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
+                ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
+                ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
+                ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
                 ghichu: item.ghichu,
             })),
             name: donhang.khachhang.name,
@@ -250,20 +278,22 @@ let DonhangService = class DonhangService {
             sanpham: donhang.sanpham.map((item) => ({
                 ...item.sanpham,
                 idSP: item.idSP,
-                giaban: donhang.khachhang.banggia.find((bg) => donhang.ngaygiao &&
+                giaban: donhang.khachhang.banggia
+                    .find((bg) => donhang.ngaygiao &&
                     bg.batdau &&
                     bg.ketthuc &&
                     donhang.ngaygiao >= bg.batdau &&
-                    donhang.ngaygiao <= bg.ketthuc)?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
-                sldat: item.sldat,
-                slgiao: item.slgiao,
-                slnhan: item.slnhan,
-                ttdat: item.ttdat,
-                ttgiao: item.ttgiao,
-                ttnhan: item.ttnhan,
+                    donhang.ngaygiao <= bg.ketthuc)
+                    ?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
+                sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
+                slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
+                slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
+                ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
+                ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
+                ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
                 ghichu: item.ghichu,
             })),
-            khachhang: (({ banggia, ...rest }) => rest)(donhang.khachhang)
+            khachhang: (({ banggia, ...rest }) => rest)(donhang.khachhang),
         };
     }
     async findOne(id) {
@@ -275,7 +305,7 @@ let DonhangService = class DonhangService {
                         sanpham: true,
                     },
                 },
-                khachhang: { include: { banggia: { include: { sanpham: true } } }, },
+                khachhang: { include: { banggia: { include: { sanpham: true } } } },
             },
         });
         if (!donhang)
@@ -285,13 +315,19 @@ let DonhangService = class DonhangService {
             sanpham: donhang.sanpham.map((item) => ({
                 ...item.sanpham,
                 idSP: item.idSP,
-                giaban: donhang.khachhang.banggia.find((bg) => donhang.ngaygiao && bg.batdau && bg.ketthuc && donhang.ngaygiao >= bg.batdau && donhang.ngaygiao <= bg.ketthuc)?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
-                sldat: item.sldat,
-                slgiao: item.slgiao,
-                slnhan: item.slnhan,
-                ttdat: item.ttdat,
-                ttgiao: item.ttgiao,
-                ttnhan: item.ttnhan,
+                giaban: donhang.khachhang.banggia
+                    .find((bg) => donhang.ngaygiao &&
+                    bg.batdau &&
+                    bg.ketthuc &&
+                    donhang.ngaygiao >= bg.batdau &&
+                    donhang.ngaygiao <= bg.ketthuc)
+                    ?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
+                sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
+                slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
+                slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
+                ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
+                ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
+                ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
                 ghichu: item.ghichu,
             })),
         };
@@ -314,13 +350,12 @@ let DonhangService = class DonhangService {
                         create: dto?.sanpham?.map((sp) => ({
                             idSP: sp.id,
                             ghichu: sp.ghichu,
-                            sldat: sp.sldat ?? 0,
-                            slgiao: sp.slgiao ?? 0,
-                            slnhan: sp.slnhan ?? 0,
-                            ttdat: sp.ttdat ?? 0,
-                            ttgiao: sp.ttgiao ?? 0,
-                            ttnhan: sp.ttnhan ?? 0,
-                            order: sp.order ?? 0,
+                            sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
+                            ttdat: parseFloat((sp.ttdat ?? 0).toFixed(2)),
+                            ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
+                            ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
                         })),
                     },
                 },
@@ -333,11 +368,28 @@ let DonhangService = class DonhangService {
                     where: { id: sp.id },
                     data: {
                         soluong: {
-                            decrement: sp.sldat ?? 0,
+                            decrement: parseFloat((sp.sldat ?? 0).toFixed(2))
                         },
                     },
                 });
             }
+            await prisma.phieuKho.create({
+                data: {
+                    maphieu: `PX-${madonhang}`,
+                    khoId: '4cc01811-61f5-4bdc-83de-a493764e9258',
+                    type: 'xuat',
+                    ngay: new Date(dto.ngaygiao),
+                    ghichu: `Phiếu kho cho đơn hàng ${madonhang}`,
+                    sanpham: {
+                        create: dto?.sanpham?.map((sp) => ({
+                            sanphamId: sp.id,
+                            sldat: sp.sldat,
+                            soluong: sp.sldat,
+                            ghichu: sp.ghichu,
+                        })),
+                    },
+                },
+            });
             return newDonhang;
         });
     }
@@ -377,12 +429,12 @@ let DonhangService = class DonhangService {
                         create: data?.sanpham?.map((sp) => ({
                             idSP: sp.id,
                             ghichu: sp.ghichu,
-                            sldat: sp.sldat ?? 0,
-                            slgiao: sp.slgiao ?? 0,
-                            slnhan: sp.slnhan ?? 0,
-                            ttdat: sp.ttdat ?? 0,
-                            ttgiao: sp.ttgiao ?? 0,
-                            ttnhan: sp.ttnhan ?? 0,
+                            sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
+                            ttdat: parseFloat((sp.ttdat ?? 0).toFixed(2)),
+                            ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
+                            ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
                             order: sp.order ?? 0,
                         })),
                     },
@@ -396,7 +448,7 @@ let DonhangService = class DonhangService {
                     where: { id: newSP.id },
                     data: {
                         soluong: {
-                            decrement: newSP.sldat ?? 0,
+                            decrement: parseFloat((newSP.sldat ?? 0).toFixed(2))
                         },
                     },
                 });
@@ -424,9 +476,9 @@ let DonhangService = class DonhangService {
                             where: { idSP: sp.id },
                             data: {
                                 ghichu: sp.ghichu,
-                                slgiao: sp.slgiao ?? 0,
-                                slnhan: sp.slnhan ?? 0,
-                                ttgiao: sp.ttgiao ?? 0,
+                                slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
+                                ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
                             },
                         })),
                     },

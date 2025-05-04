@@ -73,6 +73,10 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
             this._ListsanphamComponent.drawer.open();
             this._router.navigate(['/admin/sanpham', id]);
             this.ChosenListNCC = this.DetailSanpham().Nhacungcap||[];
+            this.DetailSanpham.update((v:any)=>{
+                v.soluong = Number(parseFloat(v.soluong).toFixed(2))
+                return v
+            })
         }
       });
     }

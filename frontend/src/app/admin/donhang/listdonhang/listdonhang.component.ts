@@ -532,17 +532,24 @@ export class ListDonhangComponent {
      }));
      console.log('Grouped by makh:', groupedArray);
     
+    // Thêm thời gian chờ giữa các lần import (ví dụ: 500ms)
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     for (let i = 0; i < groupedArray.length; i++) {
       try {     
-      // Import one file at a time and wait for it to complete
+      // Import một file tại một thời điểm và chờ hoàn thành
       await this.ImporDonhang(groupedArray[i]?.children);
-      
+
       this._snackBar.open(`Đã Tạo Đơn ${i + 1}/${groupedArray.length}: ${groupedArray[i].makh}`, '', {
         duration: 2000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-success'],
       });
+
+      // Chờ 500ms trước khi import đơn tiếp theo
+      if (i < groupedArray.length - 1) {
+        await delay(500);
+      }
       } catch (error) {
       console.error(`Lỗi khi Tạo Đơn ${i + 1}:`, error);
       this._snackBar.open(`Lỗi khi Tạo Đơn ${i + 1}`, '', {
@@ -597,12 +604,12 @@ export class ListDonhangComponent {
             throw new Error(`Không tìm thấy sản phẩm với mã ${item.masp}`);
           }
 
-          return {
+            return {
             ...sp,
-            sldat: Number(item.sldat) || 0,
-            slgiao: Number(item.slgiao) || 0,
-            slnhan: Number(item.slnhan) || 0,
-          };
+            sldat: parseFloat(Number(item.sldat).toFixed(2)) || 0,
+            slgiao: parseFloat(Number(item.slgiao).toFixed(2)) || 0,
+            slnhan: parseFloat(Number(item.slnhan).toFixed(2)) || 0,
+            };
         })
       );
 

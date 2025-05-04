@@ -4,17 +4,21 @@ export declare class NhomkhachhangController {
     constructor(nhomkhachhangService: NhomkhachhangService);
     create(createNhomkhachhangDto: any): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         description: string | null;
     }>;
     findAll(): Promise<({
         khachhang: {
             id: string;
+            subtitle: string | null;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
             name: string | null;
             namenn: string | null;
-            subtitle: string | null;
             makh: string;
             makhold: string | null;
             diachi: string | null;
@@ -26,40 +30,40 @@ export declare class NhomkhachhangController {
             phone: string | null;
             address: string | null;
             loaikh: string | null;
-            ghichu: string | null;
             hiengia: boolean;
-            isActive: boolean;
             istitle2: boolean;
-            createdAt: Date;
-            updatedAt: Date;
         }[];
     } & {
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         description: string | null;
     })[]>;
     addMultipleKhachhangToBanggia(data: any): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         description: string | null;
     }>;
     removeKHfromBG(data: any): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         description: string | null;
     }>;
     findOne(id: string): Promise<{
         khachhang: {
             id: string;
+            subtitle: string | null;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
             name: string | null;
             namenn: string | null;
-            subtitle: string | null;
             makh: string;
             makhold: string | null;
             diachi: string | null;
@@ -71,32 +75,28 @@ export declare class NhomkhachhangController {
             phone: string | null;
             address: string | null;
             loaikh: string | null;
-            ghichu: string | null;
             hiengia: boolean;
-            isActive: boolean;
             istitle2: boolean;
-            createdAt: Date;
-            updatedAt: Date;
         }[];
     } & {
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         description: string | null;
     }>;
     update(id: string, updateNhomkhachhangDto: any): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         description: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
-        name: string;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
         description: string | null;
     }>;
 }

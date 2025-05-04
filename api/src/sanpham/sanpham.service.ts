@@ -93,7 +93,7 @@ export class SanphamService {
   async nhucaudathang() {
     try {
       const sanphams = await this.prisma.sanpham.findMany();
-      return sanphams.filter((item) => {
+      return sanphams.filter((item:any) => {
         const check = parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
         return parseFloat(check) > 0;
       });

@@ -5,9 +5,6 @@ import { convertXuatnhapton } from 'src/shared/utils/xuatnhapton.utils';
 @Injectable()
 export class PhieukhoService {
   constructor(private readonly prisma: PrismaService) {}
-
-
-
   async xuatnhapton(query: any) {
     const { khoId, Batdau,Ketthuc } = query;
     const phieuKhos = await this.prisma.phieuKho.findMany({
@@ -94,9 +91,7 @@ export class PhieukhoService {
         await prisma.sanpham.update({
           where: { id: sp.sanphamId },
           data: {
-            soluongkho: data.type === 'nhap' 
-              ? { increment: sp.soluong }  // Tăng kho nếu là phiếu nhập
-              : { decrement: sp.soluong }, // Giảm kho nếu là phiếu xuất
+            soluongkho: data.type === 'nhap' ? { increment: sp.soluong } : { decrement: sp.soluong },
           },
         });
       }
@@ -107,27 +102,22 @@ export class PhieukhoService {
   
   async update(id: string, data: any) {
     return this.prisma.$transaction(async (prisma) => {
-      // Lấy phiếu kho cũ
       const oldPhieuKho = await prisma.phieuKho.findUnique({
         where: { id },
         include: { sanpham: true },
       });
   
       if (!oldPhieuKho) throw new NotFoundException('Phiếu kho không tồn tại');
-  
-      // Hoàn lại số lượng cũ trước khi cập nhật
       for (const oldSP of oldPhieuKho.sanpham) {
         await prisma.sanpham.update({
           where: { id: oldSP.sanphamId },
           data: {
-            soluongkho: oldPhieuKho.type === 'nhap' 
-              ? { decrement: oldSP.soluong } // Trừ đi số lượng cũ nếu là phiếu nhập
-              : { increment: oldSP.soluong }, // Cộng lại số lượng cũ nếu là phiếu xuất
+            soluongkho: oldPhieuKho.type === 'nhap'
+              ? { decrement: Number(oldSP.soluong) || 0 }
+              : { increment: Number(oldSP.soluong) || 0 },
           },
         });
       }
-  
-      // Cập nhật phiếu kho mới
       const updatedPhieuKho = await prisma.phieuKho.update({
         where: { id },
         data: {
@@ -161,7 +151,6 @@ export class PhieukhoService {
           },
         });
       }
-  
       return updatedPhieuKho;
     });
   }
