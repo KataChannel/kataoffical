@@ -1,9 +1,9 @@
 server {
     listen 80;
-    server_name hethong.timona.edu.vn;
+    server_name kataoffical.online;
 
     location / {
-        proxy_pass http://116.118.49.243:4401;
+        proxy_pass http://116.118.85.23:4200;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -13,10 +13,10 @@ server {
 
 server {
     listen 80;
-    server_name apihethong.timona.edu.vn;
+    server_name api.kataoffical.online;
 
     location / {
-        proxy_pass http://116.118.49.243:3101;
+        proxy_pass http://116.118.85.23:3200;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
