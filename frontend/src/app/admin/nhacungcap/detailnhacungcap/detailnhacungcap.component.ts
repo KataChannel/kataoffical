@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal, ViewEncapsulation } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,7 +31,8 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
       MatMenuModule
     ],
     templateUrl: './detailnhacungcap.component.html',
-    styleUrl: './detailnhacungcap.component.scss'
+    styleUrl: './detailnhacungcap.component.scss',
+    changeDetection:ChangeDetectionStrategy.OnPush,
   })
   export class DetailNhacungcapComponent {
     _ListnhacungcapComponent:ListNhacungcapComponent = inject(ListNhacungcapComponent)
