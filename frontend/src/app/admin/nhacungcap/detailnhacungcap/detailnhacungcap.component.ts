@@ -62,6 +62,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
         }
         else{
             await this._NhacungcapService.getNhacungcapByid(id);
+            this.ChosenListSanpham = this.DetailNhacungcap().Sanpham||[];
             this._ListnhacungcapComponent.drawer.open();
             this._router.navigate(['/admin/nhacungcap', id]);
         }
