@@ -16,9 +16,12 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DathangService } from '../dathang.service';
 import { MatMenuModule } from '@angular/material/menu';
-import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
+import { readExcelFile, UploadDathang, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
+import { SanphamService } from '../../sanpham/sanpham.service';
+import { BanggiaService } from '../../banggia/banggia.service';
 @Component({
   selector: 'app-listdathang',
   templateUrl: './listdathang.component.html',
@@ -81,6 +84,9 @@ export class ListDathangComponent {
   private _DathangService: DathangService = inject(DathangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
+  private _NhacungcapService: NhacungcapService = inject(NhacungcapService);
+  private _SanphamService: SanphamService = inject(SanphamService);
+  private _BanggiaService: BanggiaService = inject(BanggiaService);
   private _router: Router = inject(Router);
   Listdathang:any = this._DathangService.ListDathang;
   dataSource = computed(() => {
@@ -278,7 +284,29 @@ export class ListDathangComponent {
   const data = await readExcelFile(event)
   this.DoImportData(data);
   }   
-  ExportExcel(data:any,title:any) {
-    writeExcelFile(data,title);
-  }
+
+ async ExportExcel(data: any, title: any) {
+     await this._NhacungcapService.getAllNhacungcap()
+     await this._SanphamService.getAllSanpham()
+     await this._BanggiaService.getAllBanggia() 
+    const ListNhucau = await this._SanphamService.getNhucau();
+     console.log(ListNhucau);
+      const NCC = this._NhacungcapService.ListNhacungcap().map((v: any) => ({
+        manccold: v.manccold,
+        name: v.name,
+        mancc: v.mancc,
+        // banggia: v.banggia[0]?.mabanggia,
+      }));
+      const SP = this._SanphamService.ListSanpham().map((v: any) => ({
+        subtitle: v.subtitle,
+        masp: v.masp,
+        title: v.title,
+        dvt: v.dvt,
+      }));
+      const BG = this._BanggiaService.ListBanggia().map((v: any) => ({
+        mabanggia: v.mabanggia,
+        title: v.title,
+      }));
+      UploadDathang({SP, NCC, BG}, title);
+    }
 }

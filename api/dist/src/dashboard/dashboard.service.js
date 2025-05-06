@@ -35,6 +35,9 @@ let DashboardService = class DashboardService {
     getSalesTrend(query) {
         throw new Error('Method not implemented.');
     }
+    getDoanhthu(data) {
+        throw new Error('Method not implemented.');
+    }
 };
 exports.DashboardService = DashboardService;
 exports.DashboardService = DashboardService = __decorate([

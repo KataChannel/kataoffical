@@ -276,6 +276,9 @@ export class NhucaudathangComponent {
   async OpenTaodonDialog(teamplate: TemplateRef<any>) {    
     this.ListFindNCC =  await this._NhacungcapService.Findbyids(this.EditList.map((v:any)=>v.id));    
     this.EditList = this.EditList.filter((v:any)=> this.ListFindNCC.some((v1:any)=>v1.Sanpham.some((v3:any)=>v3.id===v.id)));
+    console.log(this.ListFindNCC);
+    console.log(this.EditList);
+    
     const dialogDeleteRef = this._dialog.open(teamplate, {
       hasBackdrop: true,
       disableClose: true,

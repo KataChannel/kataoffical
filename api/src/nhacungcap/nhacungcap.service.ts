@@ -37,14 +37,30 @@ export class NhacungcapService {
   }
 
   async findOne(id: string) {
-    const nhacungcap = await this.prisma.nhacungcap.findUnique({ where: { id } });
+    const nhacungcap = await this.prisma.nhacungcap.findUnique({ 
+      where: { id },
+      include: {
+        Sanpham: true,
+      },
+    });
     if (!nhacungcap) throw new NotFoundException('Nhacungcap not found');
     return nhacungcap;
   }
 
   async update(id: string, data: any) {
-    return this.prisma.nhacungcap.update({ where: { id }, data });
+    const { Sanpham, ...rest } = data;
+    const updatedNhacc = await this.prisma.nhacungcap.update({
+      where: { id },
+      data: {
+        ...rest,
+        Sanpham: {
+          set: Sanpham.map((sp: any) => ({ id: sp.id })), // Gán lại danh sách sản phẩm
+        },
+      },
+    });
+    return updatedNhacc;
   }
+
 
   async remove(id: string) {
     return this.prisma.nhacungcap.delete({ where: { id } });
@@ -67,6 +83,8 @@ export class NhacungcapService {
         Sanpham: true,
       },
     });
+    console.log(suppliers);
+    
     return suppliers;
   }
 

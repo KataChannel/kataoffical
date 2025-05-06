@@ -12,4 +12,5 @@ export declare class DashboardService {
     getLowStockProducts(): void;
     getRecentOrders(limit: number): void;
     getSalesTrend(query: SummaryQueryDto): void;
+    getDoanhthu(data: any): void;
 }

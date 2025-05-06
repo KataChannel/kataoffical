@@ -35,6 +35,9 @@ let DashboardController = class DashboardController {
     getSalesTrend(query) {
         return this.dashboardService.getSalesTrend(query);
     }
+    getDoanhthu(query) {
+        return this.dashboardService.getDoanhthu(query);
+    }
 };
 exports.DashboardController = DashboardController;
 __decorate([
@@ -72,6 +75,13 @@ __decorate([
     __metadata("design:paramtypes", [summary_query_dto_1.SummaryQueryDto]),
     __metadata("design:returntype", void 0)
 ], DashboardController.prototype, "getSalesTrend", null);
+__decorate([
+    (0, common_1.Get)('doanhthu'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [summary_query_dto_1.SummaryQueryDto]),
+    __metadata("design:returntype", void 0)
+], DashboardController.prototype, "getDoanhthu", null);
 exports.DashboardController = DashboardController = __decorate([
     (0, common_1.Controller)('dashboard'),
     __metadata("design:paramtypes", [dashboard_service_1.DashboardService])

@@ -16,6 +16,7 @@ export declare class DathangService {
             sdt: string | null;
             email: string | null;
             mancc: string;
+            manccold: string | null;
         };
         id: string;
         title: string | null;
@@ -69,6 +70,7 @@ export declare class DathangService {
             sdt: string | null;
             email: string | null;
             mancc: string;
+            manccold: string | null;
         };
         id: string;
         title: string | null;

@@ -189,6 +189,7 @@ model Nhacungcap {
   id       String     @id @default(uuid())
   name     String?
   mancc    String     @unique
+  manccold    String?    
   diachi   String?
   email    String?  
   sdt      String?
@@ -199,7 +200,32 @@ model Nhacungcap {
   dathang  Dathang[]  // 1 nhà cung cấp có nhiều đơn đặt hàng
   Sanpham Sanpham[]
 }
-
+model Sanpham {
+  id        String   @id @default(uuid())
+  title     String
+  title2     String?
+  slug      String?   @unique
+  masp      String   @unique
+  subtitle  String? 
+  giagoc    Float @default(0)
+  dvt       String?
+  hinhanh   String?
+  loadpoint Float? @default(0)
+  soluong   Decimal? @postgres.Decimal(20, 2) @default(0)
+  soluongkho Decimal? @postgres.Decimal(20, 2) @default(0)
+  haohut    Float @default(0)
+  ghichu    String?
+  order     Int? @default(1)
+  isActive  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  banggia   Banggiasanpham[]
+  Donhangsanpham Donhangsanpham[]
+  Dathangsanpham Dathangsanpham[]
+  SanphamKho SanphamKho[]
+  PhieuKhoSanpham PhieuKhoSanpham[]
+  Nhacungcap Nhacungcap[]
+}
 model Dathang {
   id          String  @id @default(uuid())
   title       String?
@@ -302,32 +328,7 @@ model PhieuKhoSanpham {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
-model Sanpham {
-  id        String   @id @default(uuid())
-  title     String
-  title2     String?
-  slug      String?   @unique
-  masp      String   @unique
-  subtitle  String? 
-  giagoc    Float @default(0)
-  dvt       String?
-  hinhanh   String?
-  loadpoint Float? @default(0)
-  soluong   Decimal? @postgres.Decimal(20, 2) @default(0)
-  soluongkho Decimal? @postgres.Decimal(20, 2) @default(0)
-  haohut    Float @default(0)
-  ghichu    String?
-  order     Int? @default(1)
-  isActive  Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  banggia   Banggiasanpham[]
-  Donhangsanpham Donhangsanpham[]
-  Dathangsanpham Dathangsanpham[]
-  SanphamKho SanphamKho[]
-  PhieuKhoSanpham PhieuKhoSanpham[]
-  Nhacungcap Nhacungcap[]
-}
+
 model ChatAIMessage {
   id        String  @id @default(uuid())
   userId    String

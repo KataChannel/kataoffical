@@ -42,13 +42,28 @@ let NhacungcapService = class NhacungcapService {
         return this.prisma.nhacungcap.findMany();
     }
     async findOne(id) {
-        const nhacungcap = await this.prisma.nhacungcap.findUnique({ where: { id } });
+        const nhacungcap = await this.prisma.nhacungcap.findUnique({
+            where: { id },
+            include: {
+                Sanpham: true,
+            },
+        });
         if (!nhacungcap)
             throw new common_1.NotFoundException('Nhacungcap not found');
         return nhacungcap;
     }
     async update(id, data) {
-        return this.prisma.nhacungcap.update({ where: { id }, data });
+        const { Sanpham, ...rest } = data;
+        const updatedNhacc = await this.prisma.nhacungcap.update({
+            where: { id },
+            data: {
+                ...rest,
+                Sanpham: {
+                    set: Sanpham.map((sp) => ({ id: sp.id })),
+                },
+            },
+        });
+        return updatedNhacc;
     }
     async remove(id) {
         return this.prisma.nhacungcap.delete({ where: { id } });
@@ -69,6 +84,7 @@ let NhacungcapService = class NhacungcapService {
                 Sanpham: true,
             },
         });
+        console.log(suppliers);
         return suppliers;
     }
 };

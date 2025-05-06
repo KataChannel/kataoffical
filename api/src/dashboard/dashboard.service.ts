@@ -28,4 +28,7 @@ export class DashboardService {
   getSalesTrend(query: SummaryQueryDto) {
     throw new Error('Method not implemented.');
   }
+  getDoanhthu(data: any) {
+    throw new Error('Method not implemented.');
+  }
 }

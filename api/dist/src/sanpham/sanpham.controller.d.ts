@@ -111,6 +111,7 @@ export declare class SanphamController {
             sdt: string | null;
             email: string | null;
             mancc: string;
+            manccold: string | null;
         }[];
         id: string;
         title: string;

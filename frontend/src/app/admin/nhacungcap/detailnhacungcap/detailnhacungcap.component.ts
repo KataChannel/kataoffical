@@ -13,6 +13,9 @@ import { ListNhacungcapComponent } from '../listnhacungcap/listnhacungcap.compon
 import { NhacungcapService } from '../nhacungcap.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
+import { MatMenuModule } from '@angular/material/menu';
+import { SanphamService } from '../../sanpham/sanpham.service';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
   @Component({
     selector: 'app-detailnhacungcap',
     imports: [
@@ -24,7 +27,8 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       MatSelectModule,
       MatDialogModule,
       CommonModule,
-      MatSlideToggleModule
+      MatSlideToggleModule,
+      MatMenuModule
     ],
     templateUrl: './detailnhacungcap.component.html',
     styleUrl: './detailnhacungcap.component.scss'
@@ -32,6 +36,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   export class DetailNhacungcapComponent {
     _ListnhacungcapComponent:ListNhacungcapComponent = inject(ListNhacungcapComponent)
     _NhacungcapService:NhacungcapService = inject(NhacungcapService)
+    _SanphamService:SanphamService = inject(SanphamService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
@@ -43,7 +48,8 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   
       effect(async () => {
         const id = this._NhacungcapService.nhacungcapId();
-      
+        await this._SanphamService.getAllSanpham();
+        this.ListSanpham = this.FilterSanpham = this._SanphamService.ListSanpham();
         if (!id){
           this._router.navigate(['/admin/nhacungcap']);
           this._ListnhacungcapComponent.drawer.close();
@@ -65,7 +71,10 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     isEdit = signal(false);
     isDelete = signal(false);  
     nhacungcapId:any = this._NhacungcapService.nhacungcapId
-    async ngOnInit() {       
+    async ngOnInit() {     
+      const id = this.nhacungcapId();
+      await this._NhacungcapService.getNhacungcapByid(id);
+      this.ChosenListSanpham = this.DetailNhacungcap().Sanpham||[];
     }
     async handleNhacungcapAction() {
       if (this.nhacungcapId() === '0') {
@@ -141,4 +150,48 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
         return v;
       })
     }
+
+    ListSanpham:any=[]
+    FilterSanpham:any =[]
+    ChosenListSanpham:any =[]
+        doSearch(event: any) {
+          this.FilterSanpham = this.ListSanpham.filter((v: any) => removeVietnameseAccents(v.title).includes(event.target.value.toLowerCase())||v.title.toLowerCase().includes(event.target.value.toLowerCase())); 
+        }
+        ChosenAll() {
+          this.FilterSanpham.forEach((item: any) => {
+          const isItemChosen = this.ChosenListSanpham.some((chosenItem:any) => chosenItem.id === item.id);
+          if (isItemChosen) {
+            this.ChosenListSanpham = this.ChosenListSanpham.filter((chosenItem:any) => chosenItem.id !== item.id);
+          } else {
+            this.ChosenListSanpham = [...this.ChosenListSanpham, item];
+          }
+          });
+        }
+        EmptyFiter() {
+         this.ChosenListSanpham = [];
+        }
+        ResetFilter(){
+         this.ChosenListSanpham = this.ListSanpham;
+        }
+        ChosenItem(item: any) {
+          const isItemInFilterList = this.ChosenListSanpham.some((v: any) => v.id === item.id);
+          if (isItemInFilterList) {
+          this.ChosenListSanpham = this.ChosenListSanpham.filter((v: any) => v.id !== item.id);
+          } else {
+          const itemToAdd = this.ListSanpham.find((v: any) => v.id === item.id);
+          if (itemToAdd) {
+            this.ChosenListSanpham = [...this.ChosenListSanpham, itemToAdd];
+          }
+          }
+        }
+        CheckItem(item: any) {
+         return this.ChosenListSanpham.some((v: any) => v.id === item.id);
+        }
+        ApplyFilterColum(menu:any){
+            this.DetailNhacungcap.update((v:any)=>{
+              v.Sanpham = this.ChosenListSanpham
+              return v;
+            })
+            menu.closeMenu();
+        }
   }

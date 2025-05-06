@@ -73,6 +73,7 @@ export declare class DathangController {
             sdt: string | null;
             email: string | null;
             mancc: string;
+            manccold: string | null;
         };
         id: string;
         title: string | null;
@@ -126,6 +127,7 @@ export declare class DathangController {
             sdt: string | null;
             email: string | null;
             mancc: string;
+            manccold: string | null;
         };
         id: string;
         title: string | null;

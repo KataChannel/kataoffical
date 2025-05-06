@@ -654,8 +654,9 @@ export class ListDonhangComponent {
    await this._SanphamService.getAllSanpham()
    await this._BanggiaService.getAllBanggia()  
     const KH = this._KhachhangService.ListKhachhang().map((v: any) => ({
-      makh: v.makh,
+      makhold: v.makhold,
       name: v.name,
+      makh: v.makh,
       banggia: v.banggia[0]?.mabanggia,
     }));
     const SP = this._SanphamService.ListSanpham().map((v: any) => ({

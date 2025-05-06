@@ -8,4 +8,5 @@ export declare class DashboardController {
     getLowStockProducts(): void;
     getRecentOrders(limit: number): void;
     getSalesTrend(query: SummaryQueryDto): void;
+    getDoanhthu(query: SummaryQueryDto): void;
 }
