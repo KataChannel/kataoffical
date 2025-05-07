@@ -4,10 +4,37 @@ export declare class QuanlydriveController {
     constructor(quanlydriveService: QuanlydriveService);
     uploadFile(file: Express.Multer.File): Promise<void>;
     count(): Promise<{
-        count: any;
+        count: number;
     }>;
     queryFolders(query: any): Promise<any[]>;
-    listUsersFolder(query: any): Promise<any>;
+    listUsersFolder(query: any): Promise<({
+        driveItem: {
+            type: import(".prisma/client").$Enums.DriveItemType;
+            id: string;
+            name: string;
+            googleId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            parentId: string | null;
+            mimeType: string | null;
+            path: string | null;
+            size: bigint | null;
+            isDelete: boolean | null;
+            createdTime: Date | null;
+            modifiedTime: Date | null;
+        };
+    } & {
+        role: string;
+        type: string;
+        id: string;
+        googleId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userIdDrive: string;
+        kind: string;
+        emailAddress: string | null;
+        driveId: string;
+    })[]>;
     addUser(body: {
         email: string;
         driveId: any;
@@ -18,18 +45,111 @@ export declare class QuanlydriveController {
         message: any;
     }>;
     search(searchParams: any): Promise<{
-        data: any;
+        data: {
+            size: number;
+            permissions: {
+                role: string;
+                type: string;
+                id: string;
+                googleId: string;
+                createdAt: Date;
+                updatedAt: Date;
+                userIdDrive: string;
+                kind: string;
+                emailAddress: string | null;
+                driveId: string;
+            }[];
+            type: import(".prisma/client").$Enums.DriveItemType;
+            id: string;
+            name: string;
+            googleId: string;
+            createdAt: Date;
+            updatedAt: Date;
+            parentId: string | null;
+            mimeType: string | null;
+            path: string | null;
+            isDelete: boolean | null;
+            createdTime: Date | null;
+            modifiedTime: Date | null;
+        }[];
         pagination: {
-            total: any;
+            total: number;
             page: number;
             pageSize: number;
             totalPages: number;
         };
     }>;
-    create(createquanlyqrcodeDto: any): Promise<any>;
-    findby(param: any): Promise<any>;
+    create(createquanlyqrcodeDto: any): Promise<{
+        type: import(".prisma/client").$Enums.DriveItemType;
+        id: string;
+        name: string;
+        googleId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        parentId: string | null;
+        mimeType: string | null;
+        path: string | null;
+        size: bigint | null;
+        isDelete: boolean | null;
+        createdTime: Date | null;
+        modifiedTime: Date | null;
+    }>;
+    findby(param: any): Promise<{
+        type: import(".prisma/client").$Enums.DriveItemType;
+        id: string;
+        name: string;
+        googleId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        parentId: string | null;
+        mimeType: string | null;
+        path: string | null;
+        size: bigint | null;
+        isDelete: boolean | null;
+        createdTime: Date | null;
+        modifiedTime: Date | null;
+    } | null>;
     findAll(driveId: string): Promise<any>;
-    findOne(id: string): Promise<any>;
-    update(id: string, data: any): Promise<any>;
-    remove(id: string): Promise<any>;
+    findOne(id: string): Promise<{
+        type: import(".prisma/client").$Enums.DriveItemType;
+        id: string;
+        name: string;
+        googleId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        parentId: string | null;
+        mimeType: string | null;
+        path: string | null;
+        size: bigint | null;
+        isDelete: boolean | null;
+        createdTime: Date | null;
+        modifiedTime: Date | null;
+    }>;
+    update(id: string, data: any): Promise<{
+        type: import(".prisma/client").$Enums.DriveItemType;
+        id: string;
+        name: string;
+        googleId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        parentId: string | null;
+        mimeType: string | null;
+        path: string | null;
+        size: bigint | null;
+        isDelete: boolean | null;
+        createdTime: Date | null;
+        modifiedTime: Date | null;
+    }>;
+    remove(id: string): Promise<{
+        role: string;
+        type: string;
+        id: string;
+        googleId: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userIdDrive: string;
+        kind: string;
+        emailAddress: string | null;
+        driveId: string;
+    }>;
 }

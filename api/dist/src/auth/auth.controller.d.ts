@@ -12,7 +12,27 @@ export declare class AuthController {
     register(data: any): Promise<{
         statusCode: HttpStatus;
         message: string;
-        user: any;
+        user: {
+            id: string;
+            name: string | null;
+            avatar: string | null;
+            gender: import(".prisma/client").$Enums.Gender | null;
+            email: string | null;
+            SDT: string | null;
+            phone: string | null;
+            zaloId: string | null;
+            facebookId: string | null;
+            googleId: string | null;
+            password: string | null;
+            provider: string | null;
+            providerId: string | null;
+            isSuperAdmin: boolean;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            affiliateCode: string | null;
+            referrerId: string | null;
+        };
     }>;
     login(body: {
         SDT: string;
@@ -28,7 +48,27 @@ export declare class AuthController {
     }): Promise<{
         statusCode: HttpStatus;
         message: string;
-        result: any;
+        result: {
+            id: string;
+            name: string | null;
+            avatar: string | null;
+            gender: import(".prisma/client").$Enums.Gender | null;
+            email: string | null;
+            SDT: string | null;
+            phone: string | null;
+            zaloId: string | null;
+            facebookId: string | null;
+            googleId: string | null;
+            password: string | null;
+            provider: string | null;
+            providerId: string | null;
+            isSuperAdmin: boolean;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            affiliateCode: string | null;
+            referrerId: string | null;
+        };
     }>;
     randomPassword(req: any): Promise<{
         newPassword: string;

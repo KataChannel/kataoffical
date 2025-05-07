@@ -9,8 +9,36 @@ export declare class ErrorlogController {
     }): Promise<{
         status: string;
     }>;
-    findAll(): Promise<any>;
-    findOne(id: string): Promise<any>;
-    update(id: string, updateErrorlogDto: any): Promise<any>;
-    remove(id: string): Promise<any>;
+    findAll(): Promise<{
+        id: string;
+        createdAt: Date;
+        timestamp: Date;
+        message: string;
+        details: import(".prisma/client/runtime/library").JsonValue | null;
+        source: string;
+    }[]>;
+    findOne(id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        timestamp: Date;
+        message: string;
+        details: import(".prisma/client/runtime/library").JsonValue | null;
+        source: string;
+    }>;
+    update(id: string, updateErrorlogDto: any): Promise<{
+        id: string;
+        createdAt: Date;
+        timestamp: Date;
+        message: string;
+        details: import(".prisma/client/runtime/library").JsonValue | null;
+        source: string;
+    }>;
+    remove(id: string): Promise<{
+        id: string;
+        createdAt: Date;
+        timestamp: Date;
+        message: string;
+        details: import(".prisma/client/runtime/library").JsonValue | null;
+        source: string;
+    }>;
 }

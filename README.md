@@ -7,23 +7,25 @@ git push
 ssh root@116.118.85.23
 git pull
 docker compose -f 'docker-compose.yml' up -d --build 
-docker compose -f 'docker-compose.yml' up -d --build 'shared-api'
-docker compose -f 'docker-compose.yml' up -d --build 'admin-ui'
-docker compose -f 'docker-compose.yml' up -d --build 'affiliate-api'
-docker compose -f 'docker-compose.yml' up -d --build 'academy-api'
-docker compose -f 'docker-compose.yml' up -d --build 'academy-affiliate'
-docker compose -f 'docker-compose.yml' up -d --build 'postgres_taza'
-docker compose -f 'docker-compose.yml' up -d --build 'pgadmin_taza'
+docker compose -f 'docker-compose.yml' up -d --build 'postgres'
+docker compose -f 'docker-compose.yml' up -d --build 'pgadmin'
 docker compose -f 'docker-compose.yml' up -d --build 'datalake_storage'
 docker compose -f 'docker-compose.yml' up -d --build 'processing_service'
 docker compose down rausachsandbox1-berausachsanbox1
 Xoá Tất Cả
-docker system prune -a --volumes -f
+docker stop $(docker ps -aq) # Stop all containers
+docker rm $(docker ps -aq)  # Remove all containers
+docker rmi -f $(docker images -aq) # Remove all images (forcefully if needed)
+docker volume rm $(docker volume ls -q) # Remove all volumes
+docker network rm $(docker network ls | grep -v "bridge\\|host\\|none" | awk '{print $1}') # Remove non-default networks
+docker system prune -a --volumes # Remove all unused data, including volumes
+sudo systemctl restart docker
+sudo service docker restart
 
-reset
 systemctl restart docker
 
 xóa cache và thử lại:
+docker stop prune -af
 docker builder prune -af
 docker image prune -a -f
 docker volume prune -a -f
