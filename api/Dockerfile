@@ -5,9 +5,9 @@ WORKDIR /app
 COPY package.json bun.lock ./
 RUN bun install --no-cache
 COPY . .
-# RUN bun install -g prisma
-# RUN bun prisma migrate dev --name hethong1.1
-# RUN bun prisma generate
+RUN bun install -g prisma
+RUN bun prisma migrate dev --name hethong1.1
+RUN bun prisma generate
 FROM oven/bun:latest
 RUN apt-get update -y && apt-get install -y openssl libssl-dev
 WORKDIR /app

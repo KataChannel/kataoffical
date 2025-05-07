@@ -1,98 +1,81 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+git add .
+git commit -m "update"
+git push
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+npx bun add @nestjs/config @nestjs/jwt @nestjs/passport passport passport-jwt bcryptjs
+npx bun add @prisma/client
+npx bun add -d prisma
+npx bun prisma migrate dev --name hethong1.8 --skip-generate
+npx prisma db push
+npx bun prisma generate 
+npx ts-node prisma/scriptdb/exportData.ts
+npx ts-node prisma/scriptdb/seed.ts
+npx ts-node prisma/scriptdb/backup.ts
+npx ts-node prisma/scriptdb/restore.ts
+npx ts-node prisma/scriptdb/user.ts
+npx ts-node prisma/scriptdb/updatephone.ts
+node createmodule.js
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+npx prisma db seed
+npx katacreate --type nestjs --name menu --outputDir menu
+npx katacreate --type nestjs --name sanpham --outputDir sanpham
+npx katacreate --type nestjs --name donhang --outputDir donhang
+npx katacreate --type nestjs --name banggia --outputDir banggia
+npx katacreate --type nestjs --name giohang --outputDir giohang
+npx katacreate --type nestjs --name khachhang --outputDir khachhang
+npx katacreate --type nestjs --name nhacungcap --outputDir nhacungcap
+npx katacreate --type nestjs --name dathang --outputDir dathang
+npx katacreate --type nestjs --name kho --outputDir kho
+npx katacreate --type nestjs --name phieukho --outputDir phieukho
+npx katacreate --type nestjs --name role --outputDir role
+npx katacreate --type nestjs --name permission --outputDir permission
+npx katacreate --type nestjs --name nhomkhachhang --outputDir nhomkhachhang
+npx katacreate --type nestjs --name chatbot --outputDir chatbot
+npx katacreate --type nestjs --name lead --outputDir lead
+npx katacreate --type nestjs --name task --outputDir task
+npx katacreate --type nestjs --name quanlyqrcode --outputDir quanlyqrcode
+npx katacreate --type nestjs --name quanlydrive --outputDir quanlydrive
+npx katacreate --type nestjs --name googlesheet --outputDir googlesheet
+npx katacreate --type nestjs --name dexuat --outputDir dexuat
+npx katacreate --type nestjs --name landingpage --outputDir landingpage
+npx katacreate --type nestjs --name kataapp --outputDir kataapp
 
-## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Tình huống	Lệnh cần chạy
+Thay đổi nhỏ (thêm/bớt cột)	npx bun prisma migrate dev --name update_schema
+Thay đổi lớn (reset toàn bộ DB)	npx bun prisma migrate reset
+Chỉ cần sync DB mà không tạo migration	npx prisma db push
+Cập nhật Prisma Client	npx bun prisma generate
 
-## Project setup
 
-```bash
-$ npm install
-```
+sanpham : id,title,slug,masp,giagoc,dvt,hinhanh,soluong,soluongkho,ghichu
 
-## Compile and run the project
+donhhang:id,title,type,giohang,khachhang,madonhang,ngaygiao,ghichu,
 
-```bash
-# development
-$ npm run start
+giohang:id,title,donhang,sanpham:[{idSP,title,sldat,slgiao,slnhan,ttdat,ttgiao,ttnhan}]
+(sldat:Số Lượng đặt,slgiao:số lượng giao,slnhan:số lượng nhận,ttdat:tổng tiền đặt,ttgiao:tổng tiền giao,ttnhan:tổng tiền nhận)
 
-# watch mode
-$ npm run start:dev
+banggia:id,title,type,batdau,ketthuc,sanpham
 
-# production mode
-$ npm run start:prod
-```
+sanpham-giohang:n-n
 
-## Run tests
+giohang-donhang:1-1
 
-```bash
-# unit tests
-$ npm run test
+banggia-sanpham:n-n
 
-# e2e tests
-$ npm run test:e2e
 
-# test coverage
-$ npm run test:cov
-```
+nhacungcap: id,name,mancc,diachi,email,sdt,ghichu,isActive
+dathang:id,madncc,title,status,isActive,nhacungcap,sanpham
+1 nhacungcap - nhiều dathang
+1 dathang - 1 nhacungcap
+1 giohang - 1 dathang
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+model Giohang {
+  id        String   @id @default(uuid())
+  title     String
+  donhang   Donhang  @relation(fields: [donhangId], references: [id])
+  donhangId String   @unique
+  order     Int
+  isActive  Boolean  @default(false)
+  sanpham   Giohangsanpham[]
+}

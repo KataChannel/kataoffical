@@ -47,8 +47,8 @@ npx create-nx-workspace@latest kataoffical --preset=angular-nest
 
 npx bun add @prisma/client
 npx bun add -d prisma
-npx bun prisma migrate dev --name process1.6 --skip-generate
-npx prisma migrate dev --name process1.6
+npx bun prisma migrate dev --name kata1.1
+npx prisma migrate dev --name kata1.6
 npx prisma db push
 npx prisma generate 
 npx ts-node prisma/scriptdb/exportData.ts
@@ -92,7 +92,7 @@ tạo mindmap admin,spa,academy,cosmetics
 
 Kích hoạt và reload
 cd /etc/nginx/sites-available
-sudo ln -s /etc/nginx/sites-available/hethong.tazagroup.vn /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/kataoffical /etc/nginx/sites-enabled/
 sudo ln -s /etc/nginx/sites-available/hethong.timona.edu.vn /etc/nginx/sites-enabled/
 sudo ln -s /etc/nginx/sites-available/affiliate /etc/nginx/sites-enabled/
 sudo ln -s /etc/nginx/sites-available/shoprausach /etc/nginx/sites-enabled/
@@ -100,6 +100,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 
 (Tuỳ chọn) Thêm HTTPS với Certbot
+sudo certbot --nginx -d kataoffical.online -d api.kataoffical.online
 sudo certbot --nginx -d hethong.tazagroup.vn -d apihethong.tazagroup.vn
 sudo certbot --nginx -d affiliate.timona.edu.vn -d apiaffiliate.tazagroup.vn
 sudo certbot --nginx -d hethong.timona.edu.vn -d apihethong.timona.edu.vn
@@ -116,6 +117,7 @@ sudo ufw allow 443/tcp
 sudo ufw allow 22/tcp  # 
 
 sudo ufw allow 4200/tcp
+sudo ufw allow 3200/tcp
 sudo ufw allow 5050/tcp
 sudo ufw allow 3000/tcp
 sudo ufw allow 5555/tcp
@@ -125,6 +127,5 @@ sudo ufw allow 4400/tcp
 sudo ufw allow 3100/tcp
 sudo ufw allow 5052/tcp
 sudo ufw reload
-
 sudo crontab -e
 sudo crontab -l

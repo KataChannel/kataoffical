@@ -3,9 +3,9 @@ services:
     image: postgres:15
     restart: always
     environment:
-      POSTGRES_USER: AWois79wFA1bxMK
-      POSTGRES_PASSWORD: 7bhNHJcSEbWln9v
-      POSTGRES_DB: rausachv2
+      POSTGRES_USER: 0GWGwCMtouJ8G6v
+      POSTGRES_PASSWORD: rRxYyjxDv30H84F
+      POSTGRES_DB: kataoffical
     volumes:
         - postgres:/data   
     ports:
@@ -15,8 +15,8 @@ services:
     container_name: pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@rausachtrangia.com
-      PGADMIN_DEFAULT_PASSWORD: 7bhNHJcSEbWln9v
+      PGADMIN_DEFAULT_EMAIL: katachanneloffical@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: rRxYyjxDv30H84F
     ports:
       - "5050:80"
     depends_on:
@@ -29,8 +29,8 @@ services:
         - "9000:9000"
         - "9090:9090"
       environment:
-        MINIO_ROOT_USER: admin
-        MINIO_ROOT_PASSWORD: password
+        MINIO_ROOT_USER: 0GWGwCMtouJ8G6v
+        MINIO_ROOT_PASSWORD: rRxYyjxDv30H84F
       volumes:
         - minio_data:/data
       healthcheck:
