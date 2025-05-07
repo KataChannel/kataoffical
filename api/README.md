@@ -39,6 +39,7 @@ npx katacreate --type nestjs --name googlesheet --outputDir googlesheet
 npx katacreate --type nestjs --name dexuat --outputDir dexuat
 npx katacreate --type nestjs --name landingpage --outputDir landingpage
 npx katacreate --type nestjs --name kataapp --outputDir kataapp
+npx katacreate --type nestjs --name config --outputDir config
 
 
 Tình huống	Lệnh cần chạy

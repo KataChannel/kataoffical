@@ -19,6 +19,7 @@ import { QuanlydriveModule } from './quanlydrive/quanlydrive.module';
 import { GooglesheetModule } from './googlesheet/googlesheet.module';
 import { DexuatModule } from './dexuat/dexuat.module';
 import { LandingPageModule } from './landingpage/landingpage.module';
+import { SettingModule } from './setting/setting.module';
 @Module({
   imports: [
     AuthModule, 
@@ -37,6 +38,7 @@ import { LandingPageModule } from './landingpage/landingpage.module';
     GooglesheetModule,
     DexuatModule,
     LandingPageModule,
+    SettingModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

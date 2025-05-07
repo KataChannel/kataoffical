@@ -22,6 +22,23 @@ enum serviceType {
   cosmetics
   ecommerce
 }
+model Setting {
+  id        String   @id @default(uuid())
+  codeId      String @unique // Mã đề xuất duy nhất
+  key       String   @unique // Key: Tên của cấu hình (ví dụ: 'maintenanceMode', 'welcomeMessage', 'maxUploadSize')
+  value     String // Value: Giá trị của cấu hình. Nên lưu dưới dạng String và parse sang kiểu phù hợp khi đọc.
+  type      String   @default("string") // Type (Optional): Giúp ứng dụng biết cách parse giá trị (ví dụ: 'string', 'boolean', 'number', 'json')
+  description String?   // Description (Optional): Mô tả cấu hình là gì, dùng để làm tài liệu hoặc hiển thị trong Admin UI
+  order     Int? @default(1) // Thứ tự hiển thị trong Admin UI
+  isActive  Boolean  @default(true) // Trạng thái kích hoạt của cấu hình
+  createdById String? // ID của người tạo cấu hình này (nếu cần)
+  createdBy  User?   @relation(fields: [createdById], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([isActive])
+  @@index([order])
+  @@index([createdById])
+}
 model User {
   id        String   @id @default(uuid())
   name        String?
@@ -49,6 +66,8 @@ model User {
   referrerId    String?   // ID của user đã giới thiệu user này
   referrer      User?     @relation("Referrals", fields: [referrerId], references: [id])
   referrals     User[]    @relation("Referrals")
+
+  Setting Setting[]
 }
 
 model Role {
