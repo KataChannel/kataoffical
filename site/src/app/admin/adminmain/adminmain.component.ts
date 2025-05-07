@@ -19,6 +19,7 @@ import { UserService } from '../user/user.service';
 import moment from 'moment';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { StorageService } from '../../shared/utils/storage.service';
+import { SettingService } from '../setting/setting.service';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -33,7 +34,6 @@ import { StorageService } from '../../shared/utils/storage.service';
     MatListModule,
     CommonModule,
     RouterLink,
-    // RouterLinkActive,
     TreemenuComponent,
   ],
   templateUrl: './adminmain.component.html',
@@ -46,6 +46,7 @@ export class AdminmainComponent {
   Config:any =Config
   User:any ={}
   version:any= 'v1.0.0'
+  logoImage:string = ''
   private _transformer = (node: any, level: number) => {
     return {
       expandable: !!node?.children && node?.children.length > 0,
@@ -73,13 +74,18 @@ export class AdminmainComponent {
     private _breakpointObserver:BreakpointObserver,
     private _UserService:UserService,
     private _ErrorLogService:ErrorLogService,
-  ) {}
+  ) {
+    this._SettingService.getSettingBy({ key: 'logoImage' }).then((res: any) => {
+      this.logoImage = res.data[0].value;
+    })
+  }
 
   hasChild = (_: number, node: any) => node.expandable;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   @ViewChild('drawer1', { static: true }) drawer1!: MatDrawer;
   _snackBar:MatSnackBar = inject(MatSnackBar)
   _StorageService:StorageService = inject(StorageService)
+  _SettingService:SettingService = inject(SettingService)
   ListMenu:any[] = []
   async ngOnInit() {
     await this._UserService.getProfile().then(async (res: any) => {

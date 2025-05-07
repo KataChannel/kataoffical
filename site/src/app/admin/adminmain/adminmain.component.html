@@ -2,14 +2,14 @@
   <mat-drawer #drawer mode="side" position="start">
     <div class="relative h-full flex flex-col space-y-2">
       <a [href]="'admin/profile'" class="relative flex flex-col space-y-2 p-2">
-        <img [src]="Config.Logoimage" class="h-10 object-fill" alt="Logo">
+        <img [src]="logoImage" class="m-auto max-h-20 max-w-20 object-fill" alt="Logo">
       </a>
       <div class="relative h-full overflow-auto p-2">
         <app-treemenu [ListMenu]="ListMenu"></app-treemenu>
       </div>
       <div class="relative w-full justify-between flex flex-row space-x-2 items-center p-2">
         <div class="flex flex-row space-x-2">
-          <img [src]="User?.avatar||'images/logo-full-vuong.svg'" alt="Avatar" class="max-w-14 max-h-14 object-cover rounded-full">
+          <img [src]="User?.avatar||logoImage" alt="Avatar" class="max-w-14 max-h-14 object-cover rounded-full">
           <div class="flex flex-col truncate">
             <div class="font-bold">{{User?.Hoten}}</div>
             <div class="italic text-xs truncate">{{User?.Vitri}}</div>
@@ -85,7 +85,7 @@
         <mat-icon>menu</mat-icon>
       </button>
       <a [href]="'admin/profile'" class="relative flex flex-col space-y-2 p-2 text-white">
-        <img [src]="Config.Logowhiteimage" class="h-10 object-fill" alt="Logo">
+        <img [src]="logoImage" class="h-10 object-fill" alt="Logo">
       </a>
       <button mat-icon-button (click)="isShowBottomBar = !isShowBottomBar">
         <mat-icon>more_vert</mat-icon>

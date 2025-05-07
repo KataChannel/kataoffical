@@ -1,0 +1,43 @@
+<div class="flex flex-row justify-between items-center space-x-2 p-2">
+  <button mat-icon-button color="primary" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <div class="font-bold">{{ DetailSetting()?.title || 'Không có dữ liệu' }}</div>
+  <div class="flex flex-row space-x-2 items-center">
+    <mat-slide-toggle [(ngModel)]="DetailSetting().isActive" [disabled]="!isEdit()">{{DetailSetting().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleSettingAction()">
+      <mat-icon>save</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <!-- <button mat-icon-button color="warn" (click)="toggleDelete()">
+      <mat-icon>delete</mat-icon>
+    </button> -->
+  </div>
+</div>
+
+<div class="relative flex flex-col w-full p-4 overflow-auto">
+    <div class="w-full grid lg:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline">
+        <mat-label>Tiêu Đề</mat-label>
+        <input matInput [(ngModel)]="DetailSetting().title" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Key</mat-label>
+        <input matInput [(ngModel)]="DetailSetting().key" [disabled]="!isEdit()" placeholder="Vui lòng nhập Key (ví dụ: 'maintenanceMode', 'welcomeMessage', 'maxUploadSize')"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Value</mat-label>
+        <input matInput [(ngModel)]="DetailSetting().value" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giá trị"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Loại</mat-label>
+        <input matInput [(ngModel)]="DetailSetting().type" [disabled]="!isEdit()" placeholder="Vui lòng nhập Loại (ví dụ: 'string', 'boolean', 'number', 'json')"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Mô tả</mat-label>
+        <input matInput [(ngModel)]="DetailSetting().description" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mô tả"/>
+      </mat-form-field>
+     </div>  
+</div>

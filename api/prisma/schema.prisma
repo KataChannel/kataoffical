@@ -24,10 +24,11 @@ enum serviceType {
 }
 model Setting {
   id        String   @id @default(uuid())
-  codeId      String @unique // Mã đề xuất duy nhất
-  key       String   @unique // Key: Tên của cấu hình (ví dụ: 'maintenanceMode', 'welcomeMessage', 'maxUploadSize')
-  value     String // Value: Giá trị của cấu hình. Nên lưu dưới dạng String và parse sang kiểu phù hợp khi đọc.
-  type      String   @default("string") // Type (Optional): Giúp ứng dụng biết cách parse giá trị (ví dụ: 'string', 'boolean', 'number', 'json')
+  title     String? 
+  codeId    String? @unique // Mã đề xuất duy nhất
+  key       String?   @unique // Key: Tên của cấu hình (ví dụ: 'maintenanceMode', 'welcomeMessage', 'maxUploadSize')
+  value     String? // Value: Giá trị của cấu hình. Nên lưu dưới dạng String và parse sang kiểu phù hợp khi đọc.
+  type      String?   @default("string") // Type (Optional): Giúp ứng dụng biết cách parse giá trị (ví dụ: 'string', 'boolean', 'number', 'json')
   description String?   // Description (Optional): Mô tả cấu hình là gì, dùng để làm tài liệu hoặc hiển thị trong Admin UI
   order     Int? @default(1) // Thứ tự hiển thị trong Admin UI
   isActive  Boolean  @default(true) // Trạng thái kích hoạt của cấu hình

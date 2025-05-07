@@ -11,16 +11,17 @@ const common_1 = require("@nestjs/common");
 const setting_service_1 = require("./setting.service");
 const setting_controller_1 = require("./setting.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
+const errorlog_module_1 = require("../errorlog/errorlog.module");
 const socket_gateway_1 = require("./socket.gateway");
 let SettingModule = class SettingModule {
 };
 exports.SettingModule = SettingModule;
 exports.SettingModule = SettingModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule],
         controllers: [setting_controller_1.SettingController],
-        providers: [setting_service_1.SettingService],
-        exports: [setting_service_1.SettingService, socket_gateway_1.SocketGateway]
+        providers: [setting_service_1.SettingService, socket_gateway_1.SocketGateway],
+        exports: [setting_service_1.SettingService]
     })
 ], SettingModule);
 //# sourceMappingURL=setting.module.js.map

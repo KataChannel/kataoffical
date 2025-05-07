@@ -48,10 +48,8 @@ let SettingController = class SettingController {
 };
 exports.SettingController = SettingController;
 __decorate([
-    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new setting' }),
     (0, swagger_1.ApiBody)({ type: Object }),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -95,7 +93,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Update a setting' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: String }),
     (0, swagger_1.ApiBody)({ type: Object }),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),

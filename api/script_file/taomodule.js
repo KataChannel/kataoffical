@@ -98,9 +98,9 @@ import { ${capitalizedModuleName}Service } from './${lowerCaseModuleName}.servic
 import { ${capitalizedModuleName}Controller } from './${lowerCaseModuleName}.controller';
 import { PrismaModule } from 'prisma/prisma.module';
 import { SocketGateway } from '../socket.gateway'; // Giả định SocketGateway ở ngoài thư mục module specific
-
+import { ErrorlogModule } from 'src/errorlog/errorlog.module';
   @Module({
-    imports: [PrismaModule],
+    imports: [PrismaModule,ErrorlogModule],
     controllers: [${capitalizedModuleName}Controller],
     providers: [${capitalizedModuleName}Service],
     exports: [${capitalizedModuleName}Service, SocketGateway] // Có thể cần điều chỉnh exports

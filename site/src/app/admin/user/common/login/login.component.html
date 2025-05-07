@@ -1,13 +1,13 @@
 
 @defer {
   <div class="relative w-screen h-screen overflow-hidden flex flex-col">
-    <img [src]="Config.Backgroup.url" [alt]="Config.Backgroup.alt" class="object-cover absolute top-0 right-0 w-full h-full">
+    <img [src]="bgLoginImage" [alt]="'Backgroup'" class="object-cover absolute top-0 right-0 w-full h-full">
     <div class="flex flex-row items-center justify-center">
       <div class="flex items-center justify-center lg:max-w-lg w-full h-full absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 p-4">
         <div class="relative w-full grid lg:grid-cols-1 gap-16 lg:p-16 p-8">
             <div class="absolute top-0 right-0 w-full h-full bg-white opacity-80 rounded-lg shadow-lg "></div>
             <div class="transition duration-100 relative flex flex-col space-y-6 items-center mx-auto lg:max-w-lg w-full">
-              <img [src]="Config.Logo.url" [alt]="Config.Logo.alt" class="max-h-28 w-auto rounded-lg">
+              <img [src]="logoImage" [alt]="'Logo'" class="max-h-28 w-auto rounded-lg">
               <mat-form-field subscriptSizing="dynamic" appearance="outline" class="w-full">
                 <mat-label>Số điện thoại</mat-label>
                 <input type="text" matInput class="w-ful" [(ngModel)]="User.SDT" [ngModelOptions]="{standalone: true}" [placeholder]="'Số điện thoại'"/>

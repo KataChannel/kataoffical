@@ -1,8 +1,8 @@
 {
-  "name": "Taza Group",
-  "short_name": "Taza Group",
-  "theme_color": "#1976d2",
-  "background_color": "#fafafa",
+  "name": "Kata Offical Online",
+  "short_name": "Kata Offical",
+  "theme_color": "#3154A1",
+  "background_color": "#ffffff",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",

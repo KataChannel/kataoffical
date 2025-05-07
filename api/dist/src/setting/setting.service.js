@@ -39,12 +39,12 @@ let SettingService = class SettingService {
             });
             let nextNumber = 1;
             if (latest) {
-                const match = latest.codeId.match(/I1(\d+)/);
+                const match = latest.codeId?.match(/I1(\d+)/);
                 if (match) {
                     nextNumber = parseInt(match[1]) + 1;
                 }
             }
-            return `I1${nextNumber.toString().padStart(5, '0')}`;
+            return `ST${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
             this._ErrorlogService.logError('generate codeId', error);
@@ -57,12 +57,12 @@ let SettingService = class SettingService {
                 _max: { order: true },
             });
             const newOrder = (maxOrder._max?.order || 0) + 1;
-            const masp = await this.generateCodeId();
+            const codeId = await this.generateCodeId();
             const created = await this.prisma.setting.create({
                 data: {
                     ...data,
                     order: newOrder,
-                    masp: masp,
+                    codeId: codeId,
                 },
             });
             this._SocketGateway.sendSettingUpdate();

@@ -993,7 +993,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
             'Authorization': \`Bearer \${this._StorageService.getItem('token')}\`
           },
         };
-        const lastUpdatedResponse = await fetch(\`\${environment.APIURL}/last-updated?table=${entityNameLower}\`, options);
+        const lastUpdatedResponse = await fetch(\`\${environment.APIURL}/${entityNameLower}/lastupdated\`, options);
         if (!lastUpdatedResponse.ok) {
           this.handleError(lastUpdatedResponse.status);
           return cachedData;

@@ -8,10 +8,8 @@ import { AuthGuard } from '@nestjs/passport';
 export class SettingController {
   constructor(private readonly settingService: SettingService) {}
 
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new setting' })
   @ApiBody({ type: Object })
-  @UseGuards(AuthGuard('jwt'))
   @Post()
   create(@Body() data: any) {
     return this.settingService.create(data);
@@ -47,7 +45,7 @@ export class SettingController {
   @ApiOperation({ summary: 'Update a setting' })
   @ApiParam({ name: 'id', type: String })
   @ApiBody({ type: Object })
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard())
   @Patch(':id')
   update(@Param('id') id: string, @Body() data: any) {
     return this.settingService.update(id, data);

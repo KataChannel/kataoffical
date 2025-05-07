@@ -15,10 +15,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Config } from './login';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from '../../../../admin/user/user.service';
 import { StorageService } from '../../../../shared/utils/storage.service';
+import { SettingService } from '../../../setting/setting.service';
 
 @Component({
   selector: 'app-login',
@@ -38,14 +39,14 @@ export class LoginComponent implements OnInit {
   gotonew: any = 'translate-x-0';
   _UserService: UserService = inject(UserService);
   _StorageService: StorageService = inject(StorageService);
-  Config: any = Config;
-  order1: any = 'order-1';
-  order2: any = 'order-2';
+  _SettingService: SettingService = inject(SettingService);
   rightpanel: any = 'transform-x-0';
   leftpanel: any = 'transform-x-0';
   // _spinner: NgxSpinnerService = inject(NgxSpinnerService);
   // _NotifierService: NotifierService = inject(NotifierService);
   User: any = {};
+  logoImage: string='';
+  bgLoginImage: string='';
   constructor(
     private auth: AngularFireAuth,
     private route: ActivatedRoute,
@@ -55,6 +56,12 @@ export class LoginComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.token = localStorage.getItem('token') || null;
     }
+    this._SettingService.getSettingBy({ key: 'logoImage' }).then((res: any) => {
+      this.logoImage = res.data[0].value;
+    })
+    this._SettingService.getSettingBy({ key: 'bgloginImage' }).then((res: any) => {
+      this.bgLoginImage = res.data[0].value;
+    });
   }
   private _snackBar: MatSnackBar = inject(MatSnackBar);
   @HostListener('window:message', ['$event'])
@@ -63,23 +70,7 @@ export class LoginComponent implements OnInit {
     // console.log('Got this message from parent: ' + JSON.stringify(event.data));
   }
   SlidingForm() {
-    if (this.order1 == 'order-1') {
-      this.rightpanel = 'opacity-0';
-      this.leftpanel = 'opacity-0';
-    } else {
-      this.rightpanel = 'opacity-100';
-      this.leftpanel = 'opacity-100';
-    }
-    setTimeout(() => {
-      this.order1 == 'order-1'
-        ? (this.order1 = 'order-2')
-        : (this.order1 = 'order-1'),
-        this.order2 == 'order-1'
-          ? (this.order2 = 'order-2')
-          : (this.order2 = 'order-1');
-      this.rightpanel = 'opacity-100';
-      this.leftpanel = 'opacity-100';
-    }, 200);
+
   }
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {

@@ -21,6 +21,22 @@ export const routes: Routes = [
       ),
     children: [
       {
+        path: 'setting',
+        canActivate: [PermissionGuard],
+        data: { permission: 'setting.view' },
+        loadComponent: () => import('./admin/setting/listsetting/listsetting.component').then((c) => c.ListSettingComponent),
+        children: [
+          {
+       path: '',
+       loadComponent: () => import('./admin/setting/listsetting/listsetting.component').then((c) => c.ListSettingComponent),
+          },
+          {
+       path: ':id',
+       loadComponent: () => import('./admin/setting/detailsetting/detailsetting.component').then((c) => c.DetailSettingComponent),
+          },
+        ],
+      },
+      {
         path: 'welcome',
         loadComponent: () =>
           import('./admin/welcome/welcome.component').then(

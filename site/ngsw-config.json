@@ -26,5 +26,19 @@
         ]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-data",
+      "urls": [
+        "https://api.kataoffical.online/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 200,
+        "maxAge": "2d",
+        "timeout": "15s",
+        "strategy": "freshness"
+      }
+    }
   ]
 }
