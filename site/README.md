@@ -1,59 +1,35 @@
-# Site
+git add .
+git commit -m "update"
+git push
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.10.
+npx katacreate --type angular --name menu --outputDir menu
+npx katacreate --type angular --name sanpham --outputDir .
+npx katacreate --type angular --name banggia --outputDir .
+npx katacreate --type angular --name nhacungcap --outputDir .
+npx katacreate --type angular --name donhang --outputDir .
+npx katacreate --type angular --name dathang --outputDir .
+npx katacreate --type angular --name kho --outputDir .
+npx katacreate --type angular --name xuatnhapkho --outputDir .
+npx katacreate --type angular --name user --outputDir .
+npx katacreate --type angular --name role --outputDir .
+npx katacreate --type angular --name permission --outputDir .
+npx katacreate --type angular --name nhomkhachhang --outputDir .
+npx katacreate --type angular --name phieugiaohang --outputDir .
+npx katacreate --type angular --name congnokhachhang --outputDir .
+npx katacreate --type angular --name lead --outputDir .
+npx katacreate --type angular --name task --outputDir .
+npx katacreate --type angular --name quanlyqrcode --outputDir .
+npx katacreate --type angular --name quanlydrive --outputDir .
+npx katacreate --type angular --name quanlygooglesheet --outputDir .
+npx katacreate --type angular --name dexuat --outputDir .
+npx katacreate --type angular --name affiliate --outputDir .
 
-## Development server
-
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+npx ng g c congnokhachhang --skip-tests --standalone
+npx ng g c congnoncc --skip-tests --standalone
+npx ng g c keditor --skip-tests --standalone
+npx ng g c ktable --skip-tests --standalone
+npx ng g c welcome --skip-tests --standalone
+npx ng g c landingpage --skip-tests --standalone
+npx ng g c affiliate --skip-tests --standalone
+npx ng g c newsfeed --skip-tests --standalone
+npx ng g c notifications --skip-tests --standalone

@@ -1,0 +1,5 @@
+<div class="block button-block" [ngStyle]="block?.styles">
+  <a [href]="data?.link || '#'" [ngClass]="['btn', 'btn-' + (data?.variant || 'primary')]">
+    {{ data?.text || 'Button Text' }}
+  </a>
+</div>
