@@ -21,29 +21,80 @@ let SettingController = class SettingController {
     constructor(settingService) {
         this.settingService = settingService;
     }
-    create(data) {
-        return this.settingService.create(data);
+    async create(data) {
+        try {
+            const result = await this.settingService.create(data);
+            return { statusCode: common_1.HttpStatus.CREATED, data: result };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Create setting failed', common_1.HttpStatus.BAD_REQUEST);
+        }
     }
-    findby(param) {
-        return this.settingService.findBy(param);
+    async findby(param) {
+        try {
+            const result = await this.settingService.findBy(param);
+            return { statusCode: common_1.HttpStatus.OK, data: result };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Find settings failed', common_1.HttpStatus.BAD_REQUEST);
+        }
     }
-    findAll() {
-        return this.settingService.findAll();
+    async findAll() {
+        try {
+            const result = await this.settingService.findAll();
+            return { statusCode: common_1.HttpStatus.OK, data: result };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Get all settings failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     async getLastUpdatedSetting() {
-        return this.settingService.getLastUpdatedSetting();
+        try {
+            const result = await this.settingService.getLastUpdatedSetting();
+            return { statusCode: common_1.HttpStatus.OK, data: result };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Get last updated setting failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-    findOne(id) {
-        return this.settingService.findOne(id);
+    async findOne(id) {
+        try {
+            const result = await this.settingService.findOne(id);
+            if (!result) {
+                throw new common_1.HttpException('Setting not found', common_1.HttpStatus.NOT_FOUND);
+            }
+            return { statusCode: common_1.HttpStatus.OK, data: result };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Find setting by ID failed', error.status || common_1.HttpStatus.BAD_REQUEST);
+        }
     }
-    update(id, data) {
-        return this.settingService.update(id, data);
+    async update(id, data) {
+        try {
+            const result = await this.settingService.update(id, data);
+            return { statusCode: common_1.HttpStatus.OK, data: result };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Update setting failed', common_1.HttpStatus.BAD_REQUEST);
+        }
     }
-    remove(id) {
-        return this.settingService.remove(id);
+    async remove(id) {
+        try {
+            const result = await this.settingService.remove(id);
+            return { statusCode: common_1.HttpStatus.OK, data: result };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Delete setting failed', common_1.HttpStatus.BAD_REQUEST);
+        }
     }
-    reorder(body) {
-        return this.settingService.reorderSettings(body.settingIds);
+    async reorder(body) {
+        try {
+            const result = await this.settingService.reorderSettings(body.settingIds);
+            return { statusCode: common_1.HttpStatus.OK, data: result };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Reorder settings failed', common_1.HttpStatus.BAD_REQUEST);
+        }
     }
 };
 exports.SettingController = SettingController;
@@ -54,7 +105,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], SettingController.prototype, "create", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Find settings by parameters' }),
@@ -63,14 +114,14 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], SettingController.prototype, "findby", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get all settings' }),
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], SettingController.prototype, "findAll", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get last updated setting' }),
@@ -86,20 +137,18 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], SettingController.prototype, "findOne", null);
 __decorate([
-    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Update a setting' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: String }),
     (0, swagger_1.ApiBody)({ type: Object }),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)()),
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], SettingController.prototype, "update", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
@@ -110,7 +159,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], SettingController.prototype, "remove", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Reorder settings' }),
@@ -119,7 +168,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], SettingController.prototype, "reorder", null);
 exports.SettingController = SettingController = __decorate([
     (0, swagger_1.ApiTags)('setting'),

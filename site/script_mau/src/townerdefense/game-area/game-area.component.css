@@ -1,0 +1,64 @@
+/* src/townerdefense/game-area/game-area.component.css */
+
+.game-area {
+  position: relative; /* Quan trọng: Để các phần tử con dùng position: absolute */
+  width: 600px; /* Kích thước bản đồ */
+  height: 400px;
+  border: 2px solid #333;
+  margin: 20px auto; /* Căn giữa */
+  background-color: #c8e6c9; /* Nền bản đồ */
+  overflow: hidden; /* Đảm bảo địch không ra khỏi bản đồ */
+}
+
+.path {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* Background hoặc vẽ path ở đây */
+}
+
+.path-point {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: rgba(139, 69, 19, 0.5); /* Màu nâu mờ */
+    border-radius: 50%;
+    transform: translate(-50%, -50%); /* Dịch để tâm nằm ở tọa độ chính xác */
+    z-index: 5; /* Nằm dưới địch */
+    /* Để debug vị trí điểm */
+    /* font-size: 0.7em; color: white; text-align: center; line-height: 10px; */
+}
+
+
+.build-spot {
+    position: absolute;
+    width: 50px; /* Kích thước điểm xây */
+    height: 50px;
+    background-color: rgba(128, 128, 128, 0.5); /* Màu xám mờ */
+    border: 1px dashed #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 15; /* Nằm trên đường đi, dưới tháp */
+    font-size: 2em;
+    color: white;
+    font-weight: bold;
+    /* Để debug vị trí điểm xây */
+    /* transform: translate(-50%, -50%); /* Dịch để tâm nằm ở tọa độ chính xác */
+}
+
+.build-spot:hover {
+    background-color: rgba(128, 128, 128, 0.8);
+}
+
+/* Chỉ báo tầm bắn (nếu dùng) */
+.range-indicator {
+    position: absolute;
+    border: 1px dashed blue;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 255, 0.1);
+    pointer-events: none; /* Không chặn click vào điểm xây */
+    transform: translate(-50%, -50%); /* Căn giữa */
+    z-index: 18;
+}

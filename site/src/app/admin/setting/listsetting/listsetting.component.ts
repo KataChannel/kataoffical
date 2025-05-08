@@ -93,8 +93,6 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, TemplateR
     constructor() {
       effect(() => {
         this.dataSource.data = this.Listsetting();
-        console.log(this.Listsetting());
-        
         this.totalItems = this.Listsetting().length;
         this.calculateTotalPages();
       });
@@ -110,7 +108,6 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, TemplateR
       this._SettingService.listenSettingUpdates();
       await this._SettingService.getAllSetting();
       this.displayedColumns = Object.keys(this.ColumnName)
-      console.log(this.displayedColumns);
       this.updateDisplayData();
       this.dataSource = new MatTableDataSource(this.Listsetting());
       this.dataSource.paginator = this.paginator;

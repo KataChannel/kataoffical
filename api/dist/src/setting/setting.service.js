@@ -29,7 +29,10 @@ let SettingService = class SettingService {
         }
         catch (error) {
             this._ErrorlogService.logError('getLastUpdatedSetting', error);
-            throw error;
+            throw new common_1.InternalServerErrorException({
+                message: 'Không thể lấy thông tin cập nhật cuối cùng',
+                error: error?.message || error,
+            });
         }
     }
     async generateCodeId() {
@@ -48,7 +51,10 @@ let SettingService = class SettingService {
         }
         catch (error) {
             this._ErrorlogService.logError('generate codeId', error);
-            throw error;
+            throw new common_1.InternalServerErrorException({
+                message: 'Không thể sinh mã codeId',
+                error: error?.message || error,
+            });
         }
     }
     async create(data) {
@@ -70,7 +76,10 @@ let SettingService = class SettingService {
         }
         catch (error) {
             this._ErrorlogService.logError('createSetting', error);
-            throw error;
+            throw new common_1.BadRequestException({
+                message: 'Tạo mới setting thất bại',
+                error: error?.message || error,
+            });
         }
     }
     async findBy(param) {
@@ -95,7 +104,10 @@ let SettingService = class SettingService {
         }
         catch (error) {
             this._ErrorlogService.logError('findBy', error);
-            throw error;
+            throw new common_1.InternalServerErrorException({
+                message: 'Không thể lấy danh sách setting',
+                error: error?.message || error,
+            });
         }
     }
     async findAll(page = 1, limit = 20) {
@@ -118,7 +130,10 @@ let SettingService = class SettingService {
         }
         catch (error) {
             this._ErrorlogService.logError('findAll', error);
-            throw error;
+            throw new common_1.InternalServerErrorException({
+                message: 'Không thể lấy tất cả setting',
+                error: error?.message || error,
+            });
         }
     }
     async findOne(id) {
@@ -130,7 +145,12 @@ let SettingService = class SettingService {
         }
         catch (error) {
             this._ErrorlogService.logError('findOne', error);
-            throw error;
+            if (error instanceof common_1.NotFoundException)
+                throw error;
+            throw new common_1.InternalServerErrorException({
+                message: 'Không thể lấy setting',
+                error: error?.message || error,
+            });
         }
     }
     async update(id, data) {
@@ -149,7 +169,10 @@ let SettingService = class SettingService {
         }
         catch (error) {
             this._ErrorlogService.logError('updateSetting', error);
-            throw error;
+            throw new common_1.BadRequestException({
+                message: 'Cập nhật setting thất bại',
+                error: error?.message || error,
+            });
         }
     }
     async remove(id) {
@@ -160,7 +183,10 @@ let SettingService = class SettingService {
         }
         catch (error) {
             this._ErrorlogService.logError('removeSetting', error);
-            throw error;
+            throw new common_1.BadRequestException({
+                message: 'Xóa setting thất bại',
+                error: error?.message || error,
+            });
         }
     }
     async reorderSettings(settingIds) {
@@ -176,7 +202,10 @@ let SettingService = class SettingService {
         }
         catch (error) {
             this._ErrorlogService.logError('reorderSettings', error);
-            throw error;
+            throw new common_1.BadRequestException({
+                message: 'Sắp xếp lại setting thất bại',
+                error: error?.message || error,
+            });
         }
     }
 };

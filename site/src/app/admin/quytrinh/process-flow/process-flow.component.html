@@ -1,0 +1,47 @@
+<div class="process-flow-container">
+  <ng-container *ngIf="processData && processData.length > 0">
+    <div *ngFor="let step of processData; let i = index" class="process-step">
+      <div class="step-header">
+         <span class="step-number">{{ i + 1 }}.</span>
+         <span class="step-time">{{ step.time }}:</span>
+         <span class="step-title">{{ step.title }}</span>
+      </div>
+
+      <p *ngIf="step.description" class="step-description">{{ step.description }}</p>
+
+      <div *ngFor="let block of step.contentBlocks" class="content-block">
+        <ng-container [ngSwitch]="block.type">
+          <p *ngSwitchCase="'text'" class="content-text">
+            {{ block.text }}
+          </p>
+
+          <ul *ngSwitchCase="'list'" class="content-list">
+            <li *ngFor="let item of block.listItems">
+              {{ item }}
+            </li>
+          </ul>
+
+          <figure *ngSwitchCase="'image'" class="content-image">
+            <img [src]="block.imageUrl" [alt]="block.imageAlt || 'Hướng dẫn quy trình'" class="responsive-image">
+            <figcaption *ngIf="block.caption">{{ block.caption }}</figcaption>
+          </figure>
+
+          <figure *ngSwitchCase="'video'" class="content-video">
+             <video controls [src]="block.videoUrl" [type]="block.videoType" class="responsive-video">
+               Your browser does not support the video tag.
+            </video>
+            <figcaption *ngIf="block.caption">{{ block.caption }}</figcaption>
+          </figure>
+
+          <div *ngSwitchDefault>
+            <p class="error-message">Loại nội dung không hỗ trợ: {{ block.type }}</p>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!processData || processData.length === 0">
+    <p>Không có dữ liệu quy trình để hiển thị.</p>
+  </ng-container>
+</div>

@@ -1,7 +1,7 @@
 export const environment = {
   production: true,
   APIURL: 'https://api.kataoffical.online',
-  ImageURL: 'http://localhost:4303',
+  ImageURL: 'https://storage.kataoffical.online',
   app_id: '1416835846626859002',
   secret_key: 'HLBWj23hToA9fuiQvQY4',
   zalo_redirect_uri: 'https://zalo.tazaskinclinic.com/admin/zalotoken',

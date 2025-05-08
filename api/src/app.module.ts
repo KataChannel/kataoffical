@@ -20,6 +20,8 @@ import { GooglesheetModule } from './googlesheet/googlesheet.module';
 import { DexuatModule } from './dexuat/dexuat.module';
 import { LandingPageModule } from './landingpage/landingpage.module';
 import { SettingModule } from './setting/setting.module';
+import { HoadonchitietModule } from './hoadonchitiet/hoadonchitiet.module';
+import { HoadonModule } from './hoadon/hoadon.module';
 @Module({
   imports: [
     AuthModule, 
@@ -38,7 +40,9 @@ import { SettingModule } from './setting/setting.module';
     GooglesheetModule,
     DexuatModule,
     LandingPageModule,
-    SettingModule
+    SettingModule,
+    HoadonchitietModule,
+    HoadonModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

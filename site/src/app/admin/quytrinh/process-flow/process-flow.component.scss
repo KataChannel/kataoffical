@@ -1,0 +1,132 @@
+/* src/app/process-flow/process-flow.component.scss */
+
+.process-flow-container {
+  margin: 20px;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  font-family: sans-serif; // Hoặc font chữ dự án của bạn
+  max-width: 800px; /* Giới hạn chiều rộng container */
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #f9f9f9; /* Màu nền nhẹ */
+}
+
+.process-step {
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed #ccc; // Phân cách các bước
+
+  &:last-child {
+    border-bottom: none; // Bỏ border cho bước cuối
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+}
+
+.step-header {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #0056b3; // Màu sắc tiêu đề
+  display: flex; /* Dùng flexbox để căn chỉnh số thứ tự, thời gian, tiêu đề */
+  align-items: baseline;
+}
+
+.step-number {
+  flex-shrink: 0; /* Không co lại */
+  margin-right: 8px;
+  font-size: 1.1em; /* Kích thước lớn hơn 1 chút */
+  color: #007bff;
+}
+
+.step-time {
+  flex-shrink: 0; /* Không co lại */
+  margin-right: 8px;
+  color: #555; // Màu sắc thời gian
+  font-weight: normal; /* Thời gian không in đậm bằng tiêu đề */
+}
+
+.step-title {
+  flex-grow: 1; /* Cho phép tiêu đề chiếm hết không gian còn lại */
+}
+
+
+.step-description {
+  margin-top: 5px;
+  margin-bottom: 15px;
+  color: #333;
+  line-height: 1.5;
+  padding-left: 20px; /* Thụt vào 1 chút */
+  font-style: italic;
+  border-left: 3px solid #ced4da; /* Đường kẻ nhẹ */
+  padding-left: 17px; /* Điều chỉnh padding-left để tạo khoảng cách sau border */
+}
+
+.content-block {
+  margin-top: 15px; /* Khoảng cách trên */
+  margin-bottom: 15px; /* Khoảng cách dưới */
+  padding-left: 20px; /* Thụt vào một chút so với tiêu đề bước */
+  border-left: 3px solid #28a745; /* Đường kẻ bên trái màu xanh lá */
+  padding-left: 17px; /* Điều chỉnh padding-left để tạo khoảng cách sau border */
+
+
+  &:first-child {
+      margin-top: 0; /* Bỏ margin-top cho khối đầu tiên trong bước */
+  }
+   &:last-child {
+      margin-bottom: 0; /* Bỏ margin-bottom cho khối cuối cùng trong bước */
+  }
+}
+
+
+.content-text {
+  margin: 0; // Reset default margin
+  line-height: 1.6;
+  color: #555;
+}
+
+.content-list {
+  margin: 0;
+  padding-left: 20px; // Thụt đầu dòng cho list
+  color: #555;
+
+  li {
+    margin-bottom: 5px;
+    line-height: 1.5;
+  }
+}
+
+.content-image,
+.content-video {
+    margin: 15px 0; // Khoảng cách trên dưới cho media
+    text-align: center; // Căn giữa hình ảnh/video
+    background-color: #e9ecef; /* Nền nhẹ cho khối media */
+    padding: 10px;
+    border-radius: 5px;
+}
+
+
+.responsive-image,
+.responsive-video {
+  max-width: 100%; // Đảm bảo không tràn ra ngoài container
+  height: auto;    // Giữ tỷ lệ khung hình
+  display: block;  // Loại bỏ khoảng trống dưới thẻ img/video
+  margin: 0 auto;  // Căn giữa block element
+  border-radius: 5px; // Bo góc nhẹ cho media
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2); // Thêm bóng nhẹ
+}
+
+figcaption {
+  margin-top: 8px;
+  font-size: 0.9em;
+  color: #666;
+  font-style: italic;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  border: 1px dashed red;
+  padding: 10px;
+}

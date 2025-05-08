@@ -312,13 +312,9 @@ export class SocketGateway {
 
   // Bạn có thể thêm các hàm gửi event dynamic tại đây, hoặc giữ chung chung
   // Ví dụ:
-  // sendSettingUpdate() { this.server.emit('settingupdated'); }
+  send${capitalizedModuleName}Update() { this.server.emit('settingupdated'); }
   // sendUserUpdate() { this.server.emit('userupdated'); }
 
-  // Để hỗ trợ dynamic module, có thể tạo một hàm chung nhận tên event
-  sendUpdateEvent(eventName: string, data?: any) {
-    this.server.emit(eventName, data);
-  }
 }
 `;
 

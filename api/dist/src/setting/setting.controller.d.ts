@@ -1,94 +1,119 @@
+import { HttpStatus } from '@nestjs/common';
 import { SettingService } from './setting.service';
 export declare class SettingController {
     private readonly settingService;
     constructor(settingService: SettingService);
     create(data: any): Promise<{
-        updatedAt: Date;
-        id: string;
-        title: string | null;
-        codeId: string | null;
-        key: string | null;
-        value: string | null;
-        type: string | null;
-        description: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdById: string | null;
-        createdAt: Date;
+        statusCode: HttpStatus;
+        data: {
+            type: string | null;
+            value: string | null;
+            id: string;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            title: string | null;
+            order: number | null;
+            codeId: string | null;
+            createdById: string | null;
+            key: string | null;
+        };
     }>;
     findby(param: any): Promise<{
+        statusCode: HttpStatus;
         data: {
-            updatedAt: Date;
-            id: string;
-            title: string | null;
-            codeId: string | null;
-            key: string | null;
-            value: string | null;
-            type: string | null;
-            description: string | null;
-            order: number | null;
-            isActive: boolean;
-            createdById: string | null;
-            createdAt: Date;
-        }[];
-        total: number;
-        page: any;
-        pageCount: number;
+            data: {
+                type: string | null;
+                value: string | null;
+                id: string;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                description: string | null;
+                title: string | null;
+                order: number | null;
+                codeId: string | null;
+                createdById: string | null;
+                key: string | null;
+            }[];
+            total: number;
+            page: any;
+            pageCount: number;
+        };
     }>;
     findAll(): Promise<{
+        statusCode: HttpStatus;
         data: {
-            updatedAt: Date;
-            id: string;
-            title: string | null;
-            codeId: string | null;
-            key: string | null;
-            value: string | null;
-            type: string | null;
-            description: string | null;
-            order: number | null;
-            isActive: boolean;
-            createdById: string | null;
-            createdAt: Date;
-        }[];
-        total: number;
-        page: number;
-        pageCount: number;
+            data: {
+                type: string | null;
+                value: string | null;
+                id: string;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                description: string | null;
+                title: string | null;
+                order: number | null;
+                codeId: string | null;
+                createdById: string | null;
+                key: string | null;
+            }[];
+            total: number;
+            page: number;
+            pageCount: number;
+        };
     }>;
     getLastUpdatedSetting(): Promise<{
-        updatedAt: number | Date;
+        statusCode: HttpStatus;
+        data: {
+            updatedAt: number | Date;
+        };
     }>;
     findOne(id: string): Promise<{
-        updatedAt: Date;
-        id: string;
-        title: string | null;
-        codeId: string | null;
-        key: string | null;
-        value: string | null;
-        type: string | null;
-        description: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdById: string | null;
-        createdAt: Date;
+        statusCode: HttpStatus;
+        data: {
+            type: string | null;
+            value: string | null;
+            id: string;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            title: string | null;
+            order: number | null;
+            codeId: string | null;
+            createdById: string | null;
+            key: string | null;
+        };
     }>;
-    update(id: string, data: any): Promise<any>;
+    update(id: string, data: any): Promise<{
+        statusCode: HttpStatus;
+        data: any;
+    }>;
     remove(id: string): Promise<{
-        updatedAt: Date;
-        id: string;
-        title: string | null;
-        codeId: string | null;
-        key: string | null;
-        value: string | null;
-        type: string | null;
-        description: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdById: string | null;
-        createdAt: Date;
+        statusCode: HttpStatus;
+        data: {
+            type: string | null;
+            value: string | null;
+            id: string;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            title: string | null;
+            order: number | null;
+            codeId: string | null;
+            createdById: string | null;
+            key: string | null;
+        };
     }>;
     reorder(body: {
         settingIds: string[];
     }): Promise<{
-        status: string;
+        statusCode: HttpStatus;
+        data: {
+            status: string;
+        };
     }>;
 }

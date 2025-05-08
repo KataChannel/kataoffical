@@ -1,0 +1,21 @@
+/* src/townerdefense/tower/tower.component.css */
+
+.tower {
+  position: absolute;
+  width: 40px; /* Kích thước tháp */
+  height: 40px;
+  background-color: steelblue; /* Màu mặc định */
+  border: 2px solid royalblue;
+  border-radius: 5px;
+  z-index: 20; /* Đảm bảo nằm trên địch và đường đi */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2em;
+}
+
+/* Các loại tháp cụ thể */
+.tower.basic {
+    background-color: #66cdaa;
+    border-color: #008080;
+}

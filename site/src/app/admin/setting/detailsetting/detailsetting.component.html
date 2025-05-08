@@ -20,7 +20,9 @@
 <div class="relative flex flex-col w-full p-4 overflow-auto">
     <div class="w-full grid lg:grid-cols-2 gap-4">
       <mat-form-field appearance="outline">
-        <mat-label>Tiêu Đề</mat-label>
+        <mat-label>Tiêu Đề
+          {{DetailSetting().title}}
+        </mat-label>
         <input matInput [(ngModel)]="DetailSetting().title" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
       </mat-form-field>
       <mat-form-field appearance="outline">

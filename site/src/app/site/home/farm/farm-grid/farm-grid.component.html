@@ -1,0 +1,10 @@
+<div class="farm-grid" [ngStyle]="gridStyles">
+    <div *ngFor="let row of plots; let rowIndex = index">
+      <app-farm-plot
+        *ngFor="let plot of row; let colIndex = index"
+        [plot]="plot"
+        [selectedAction]="selectedAction"
+        (plotAction)="handlePlotAction($event)"> 
+    </app-farm-plot>
+    </div>
+  </div>

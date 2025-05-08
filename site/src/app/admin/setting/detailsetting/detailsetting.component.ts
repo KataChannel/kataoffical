@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -27,7 +27,8 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       MatSlideToggleModule
     ],
     templateUrl: './detailsetting.component.html',
-    styleUrl: './detailsetting.component.scss'
+    styleUrls: ['./detailsetting.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
   })
   export class DetailSettingComponent {
     _ListSettingComponent:ListSettingComponent = inject(ListSettingComponent)
@@ -36,9 +37,10 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
     constructor(){
-      this._route.paramMap.subscribe((params) => {
+      this._route.paramMap.subscribe(async (params) => {
         const id = params.get('id');
-        this._SettingService.setSettingId(id);
+        const Detail = await this._SettingService.getSettingBy({id:id});
+        this.DetailSetting.set(Detail[0]);  
       });
   
       effect(async () => {
@@ -54,18 +56,17 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           this._router.navigate(['/admin/setting', "new"]);
         }
         else{
-            await this._SettingService.getSettingBy({id:id});
+           const Detail = await this._SettingService.getSettingBy({id:id});
+           this.DetailSetting.set(Detail[0]); 
             this._ListSettingComponent.drawer.open();
             this._router.navigate(['/admin/setting', id]);
         }
       });
     }
-    DetailSetting: any = this._SettingService.DetailSetting;
+    DetailSetting: any =  signal<any>({});
     isEdit = signal(false);
     isDelete = signal(false);  
     settingId:any = this._SettingService.settingId
-    async ngOnInit() {       
-    }
     async handleSettingAction() {
       if (this.settingId() === 'new') {
         await this.createSetting();

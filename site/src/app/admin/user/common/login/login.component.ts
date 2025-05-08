@@ -57,10 +57,10 @@ export class LoginComponent implements OnInit {
       this.token = localStorage.getItem('token') || null;
     }
     this._SettingService.getSettingBy({ key: 'logoImage' }).then((res: any) => {
-      this.logoImage = res.data[0].value;
+      this.logoImage = res[0].value;
     })
     this._SettingService.getSettingBy({ key: 'bgloginImage' }).then((res: any) => {
-      this.bgLoginImage = res.data[0].value;
+      this.bgLoginImage = res[0].value;
     });
   }
   private _snackBar: MatSnackBar = inject(MatSnackBar);

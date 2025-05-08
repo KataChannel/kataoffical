@@ -1,0 +1,45 @@
+/* src/townerdefense/enemy/enemy.component.css */
+
+.enemy {
+  position: absolute; /* Vị trí tuyệt đối trong game-area */
+  width: 30px; /* Kích thước địch */
+  height: 30px;
+  background-color: red; /* Màu mặc định */
+  border-radius: 50%; /* Hình tròn */
+  border: 1px solid black;
+  z-index: 10; /* Đảm bảo nằm trên đường đi */
+  box-sizing: border-box; /* Kích thước bao gồm border */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8em; /* Kích thước chữ máu */
+  color: white;
+  font-weight: bold;
+}
+
+/* Các loại địch cụ thể */
+.enemy.basic {
+    background-color: crimson;
+}
+
+.enemy.fast {
+    background-color: orange;
+}
+
+
+.hp-bar-container {
+    position: absolute;
+    top: -8px; /* Đặt thanh máu phía trên địch */
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: grey;
+    border-radius: 2px;
+    overflow: hidden; /* Che phần thanh máu tràn ra */
+}
+
+.hp-bar {
+    height: 100%;
+    background-color: limegreen;
+    transition: width 0.1s linear; /* Hiệu ứng khi máu giảm */
+}

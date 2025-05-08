@@ -74,7 +74,7 @@ import { inject, Inject, Injectable, signal, Signal } from '@angular/core';
           this.handleError(lastUpdatedResponse.status);
           return cachedData;
         }    
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
+        const { updatedAt: updatedAtServer } = (await lastUpdatedResponse.json()).data;
         //Nếu cache vẫn mới, không cần tải lại dữ liệu
         if (updatedAtServer <= updatedAtCache) {
           this.ListSetting.set(cachedData);
@@ -88,10 +88,10 @@ import { inject, Inject, Injectable, signal, Signal } from '@angular/core';
           return cachedData;
         }
         const data = await response.json();        
-        await this.saveSettings(data.data);
+        await this.saveSettings(data.data.data);
         this._StorageService.setItem('settings_updatedAt', updatedAtServer);
         this.ListSetting.set(data);
-        return data;
+        return data.data.data
       } catch (error) {
         this._ErrorLogService.logError('Failed to create getAllSetting', error);
         console.error(error);
@@ -140,8 +140,8 @@ import { inject, Inject, Injectable, signal, Signal } from '@angular/core';
         if (!response.ok) {
           this.handleError(response.status);
         }
-        const data = await response.json();
-        return data;      
+        const data = await response.json();        
+        return data.data.data      
       } catch (error) {
         this._ErrorLogService.logError('Failed to getSettingBy', error);
         return console.error(error);
@@ -166,7 +166,7 @@ import { inject, Inject, Injectable, signal, Signal } from '@angular/core';
           }
           //this.getAllSetting()
         //  this.getSettingBy({id:data.id})
-          return data;
+          return data.data.data
       } catch (error) {
         this._ErrorLogService.logError('Failed to updateSetting', error);
           return console.error(error);

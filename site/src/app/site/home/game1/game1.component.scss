@@ -1,0 +1,32 @@
+// /* planting-game.component.scss */
+// .game-container {
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     font-family: sans-serif;
+//     margin-top: 20px;
+//     background-color: #f0f0f0;
+//     padding: 20px;
+//     border-radius: 8px;
+//     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+//   }
+  
+//   canvas {
+//     border: 1px solid #000;
+//     background-color: #a0d0a0; /* Màu nền xanh nhạt cho đất */
+//     display: block;
+//     margin-bottom: 10px;
+//     width: 100%; /* Canvas sẽ co giãn theo container */
+//     max-width: 600px; /* Giới hạn chiều rộng tối đa */
+//     height: auto; /* Chiều cao tự động theo tỷ lệ */
+//   }
+  
+//   #info {
+//     font-size: 18px;
+//     margin-bottom: 10px;
+//   }
+  
+//   p {
+//       text-align: center;
+//   }
+  

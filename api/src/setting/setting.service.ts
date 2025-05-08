@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from './socket.gateway';
@@ -19,7 +19,10 @@ export class SettingService {
       return { updatedAt: lastUpdated._max.updatedAt || 0 };
     } catch (error) {
       this._ErrorlogService.logError('getLastUpdatedSetting', error);
-      throw error;
+      throw new InternalServerErrorException({
+        message: 'Không thể lấy thông tin cập nhật cuối cùng',
+        error: error?.message || error,
+      });
     }
   }
 
@@ -38,7 +41,10 @@ export class SettingService {
       return `ST${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
       this._ErrorlogService.logError('generate codeId', error);
-      throw error;
+      throw new InternalServerErrorException({
+        message: 'Không thể sinh mã codeId',
+        error: error?.message || error,
+      });
     }
   }
 
@@ -60,7 +66,10 @@ export class SettingService {
       return created;
     } catch (error) {
       this._ErrorlogService.logError('createSetting', error);
-      throw error;
+      throw new BadRequestException({
+        message: 'Tạo mới setting thất bại',
+        error: error?.message || error,
+      });
     }
   }
 
@@ -85,7 +94,10 @@ export class SettingService {
       };
     } catch (error) {
       this._ErrorlogService.logError('findBy', error);
-      throw error;
+      throw new InternalServerErrorException({
+        message: 'Không thể lấy danh sách setting',
+        error: error?.message || error,
+      });
     }
   }
 
@@ -108,7 +120,10 @@ export class SettingService {
       };
     } catch (error) {
       this._ErrorlogService.logError('findAll', error);
-      throw error;
+      throw new InternalServerErrorException({
+        message: 'Không thể lấy tất cả setting',
+        error: error?.message || error,
+      });
     }
   }
 
@@ -119,7 +134,11 @@ export class SettingService {
       return setting;
     } catch (error) {
       this._ErrorlogService.logError('findOne', error);
-      throw error;
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException({
+        message: 'Không thể lấy setting',
+        error: error?.message || error,
+      });
     }
   }
 
@@ -137,7 +156,10 @@ export class SettingService {
       return updated;
     } catch (error) {
       this._ErrorlogService.logError('updateSetting', error);
-      throw error;
+      throw new BadRequestException({
+        message: 'Cập nhật setting thất bại',
+        error: error?.message || error,
+      });
     }
   }
 
@@ -148,7 +170,10 @@ export class SettingService {
       return deleted;
     } catch (error) {
       this._ErrorlogService.logError('removeSetting', error);
-      throw error;
+      throw new BadRequestException({
+        message: 'Xóa setting thất bại',
+        error: error?.message || error,
+      });
     }
   }
 
@@ -164,7 +189,10 @@ export class SettingService {
       return { status: 'success' };
     } catch (error) {
       this._ErrorlogService.logError('reorderSettings', error);
-      throw error;
+      throw new BadRequestException({
+        message: 'Sắp xếp lại setting thất bại',
+        error: error?.message || error,
+      });
     }
   }
 }

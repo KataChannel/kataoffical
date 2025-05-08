@@ -102,7 +102,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 
 (Tuỳ chọn) Thêm HTTPS với Certbot
-sudo certbot --nginx -d kataoffical.online -d api.kataoffical.online
+sudo certbot --nginx -d kataoffical.online -d api.kataoffical.online -d storage.kataoffical.online
 sudo certbot --nginx -d hethong.tazagroup.vn -d apihethong.tazagroup.vn
 sudo certbot --nginx -d affiliate.timona.edu.vn -d apiaffiliate.tazagroup.vn
 sudo certbot --nginx -d hethong.timona.edu.vn -d apihethong.timona.edu.vn
@@ -131,3 +131,8 @@ sudo ufw allow 5052/tcp
 sudo ufw reload
 sudo crontab -e
 sudo crontab -l
+
+
+#Promt
+cập nhật code like senior có trycatch và HttpStatus 
+cập nhật code like senior có trycatch và trả về lỗi

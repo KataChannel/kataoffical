@@ -1,0 +1,24 @@
+<div class="container">
+    <h1>{{ title }}</h1>
+  
+    <div class="toolbar">
+      <h3>Chọn hành động:</h3>
+      <button [ngClass]="{'selected': selectedAction() === 'plant'}" (click)="selectAction('plant')">🌱 Gieo Hạt</button>
+      <button [ngClass]="{'selected': selectedAction() === 'water'}" (click)="selectAction('water')">💧 Tưới Nước</button>
+      <button [ngClass]="{'selected': selectedAction() === 'harvest'}" (click)="selectAction('harvest')">🥕 Thu Hoạch</button>
+      <button [ngClass]="{'selected': selectedAction() === null}" (click)="selectAction(null)">🚶‍♂️ Chọn (Không hành động)</button>
+  
+      <div *ngIf="isPlanting()" class="crop-selector"> Chọn cây để gieo:
+           <select [ngModel]="selectedCropName()" (change)="selectCrop($event)">
+               <option *ngFor="let crop of availableCrops" [value]="crop.name">{{ crop.name | uppercase }}</option>
+           </select>
+       </div>
+    </div>
+  
+    <app-farm-grid
+      [plots]="plots()"
+      [selectedAction]="selectedAction()"
+      (plotAction)="handlePlotAction($event)">
+    </app-farm-grid>
+
+  </div>

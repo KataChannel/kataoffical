@@ -1,0 +1,6 @@
+<div [ngClass]="plotClass" (click)="onClick()">
+    <span *ngIf="plot.state === 'planted'">🌱</span>
+    <span *ngIf="plot.state === 'growing'">🌿</span>
+    <span *ngIf="plot.state === 'ready'">🥕</span> <span *ngIf="plot.state === 'empty'"></span> <div *ngIf="plot.state === 'growing' || plot.state === 'ready'" class="progress">{{ growthProgressDisplay }}</div>
+     <div *ngIf="plot.watered" class="watered-indicator">💧</div>
+  </div> 

@@ -29,6 +29,8 @@ const googlesheet_module_1 = require("./googlesheet/googlesheet.module");
 const dexuat_module_1 = require("./dexuat/dexuat.module");
 const landingpage_module_1 = require("./landingpage/landingpage.module");
 const setting_module_1 = require("./setting/setting.module");
+const hoadonchitiet_module_1 = require("./hoadonchitiet/hoadonchitiet.module");
+const hoadon_module_1 = require("./hoadon/hoadon.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -54,7 +56,9 @@ exports.AppModule = AppModule = __decorate([
             googlesheet_module_1.GooglesheetModule,
             dexuat_module_1.DexuatModule,
             landingpage_module_1.LandingPageModule,
-            setting_module_1.SettingModule
+            setting_module_1.SettingModule,
+            hoadonchitiet_module_1.HoadonchitietModule,
+            hoadon_module_1.HoadonModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

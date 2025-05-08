@@ -1,6 +1,5 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -8,7 +7,14 @@ import { Server } from 'socket.io';
 })
 export class SocketGateway {
   @WebSocketServer() server: Server;
-  sendSettingUpdate() {
-    this.server.emit('settingupdated');
+
+  sendSettingUpdate(): { success: boolean; error?: string } {
+    try {
+      this.server.emit('settingupdated');
+      return { success: true };
+    } catch (error) {
+      // Log error if needed
+      return { success: false, error: (error as Error).message };
+    }
   }
 }

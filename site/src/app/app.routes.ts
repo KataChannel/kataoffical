@@ -4,7 +4,7 @@ import { AuthGuard } from './admin/user/common/guards/auth.guard';
 import { GuestGuard } from './admin/user/common/guards/guest.guard';
 import { PermissionGuard } from './admin/user/common/guards/permission.guard';
 export const routes: Routes = [
-  { path: '', redirectTo: 'admin/profile', pathMatch: 'full' },
+  // { path: '', redirectTo: '', pathMatch: 'full' },
   {
     path: '404',
     loadComponent: () =>
@@ -49,6 +49,22 @@ export const routes: Routes = [
           import('./admin/dashboard/dashboard.component').then(
             (c) => c.DashboardComponent
           ),
+      },
+      {
+        path: 'hoadon',
+        canActivate: [PermissionGuard],
+        data: { permission: 'hoadon.view' },
+        loadComponent: () => import('./admin/hoadon/listhoadon/listhoadon.component').then((c) => c.ListHoadonComponent),
+        children: [
+          {
+       path: '',
+       loadComponent: () => import('./admin/hoadon/listhoadon/listhoadon.component').then((c) => c.ListHoadonComponent),
+          },
+          {
+       path: ':id',
+       loadComponent: () => import('./admin/hoadon/detailhoadon/detailhoadon.component').then((c) => c.DetailHoadonComponent),
+          },
+        ],
       },
       {
         path: 'menu',
@@ -518,6 +534,21 @@ export const routes: Routes = [
         path: '',
         loadComponent: () =>
           import('./site/home/home.component').then((c) => c.HomeComponent),
+      },
+      {
+        path: 'game1',
+        loadComponent: () =>
+          import('./site/home/game1/game1.component').then((c) => c.Game1Component),
+      },
+      {
+        path: 'game2',
+        loadComponent: () =>
+          import('./site/home/farm/farm.component').then((c) => c.FarmComponent),
+      },
+      {
+        path: 'game3',
+        loadComponent: () =>
+          import('./site/home/townerdefense/townerdefense.component').then((c) => c.TownerdefenseComponent),
       },
       {
         path: 'lien-he',

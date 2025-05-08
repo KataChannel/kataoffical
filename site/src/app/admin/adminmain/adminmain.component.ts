@@ -75,8 +75,9 @@ export class AdminmainComponent {
     private _UserService:UserService,
     private _ErrorLogService:ErrorLogService,
   ) {
-    this._SettingService.getSettingBy({ key: 'logoImage' }).then((res: any) => {
-      this.logoImage = res.data[0].value;
+    this._SettingService.getSettingBy({ key: 'logoImage' }).then((res: any) => { 
+      this.logoImage = res[0].value;
+      console.log('Logo image set to:', this.logoImage);
     })
   }
 
