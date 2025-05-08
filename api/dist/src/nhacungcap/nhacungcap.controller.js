@@ -19,23 +19,113 @@ let NhacungcapController = class NhacungcapController {
     constructor(nhacungcapService) {
         this.nhacungcapService = nhacungcapService;
     }
-    create(createNhacungcapDto) {
-        return this.nhacungcapService.create(createNhacungcapDto);
+    async create(createNhacungcapDto) {
+        try {
+            const result = await this.nhacungcapService.create(createNhacungcapDto);
+            return {
+                statusCode: common_1.HttpStatus.CREATED,
+                message: 'Nhà cung cấp created successfully',
+                data: result,
+            };
+        }
+        catch (error) {
+            return {
+                statusCode: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: 'Failed to create nhà cung cấp',
+                error: error.message || error,
+            };
+        }
     }
-    findByProductIds(productIds) {
-        return this.nhacungcapService.findByProductIds(productIds);
+    async findByProductIds(productIds) {
+        try {
+            const result = await this.nhacungcapService.findByProductIds(productIds);
+            return {
+                statusCode: common_1.HttpStatus.OK,
+                message: 'Nhà cung cấp(s) fetched successfully',
+                data: result,
+            };
+        }
+        catch (error) {
+            return {
+                statusCode: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: 'Failed to fetch nhà cung cấp(s)',
+                error: error.message || error,
+            };
+        }
     }
-    findAll() {
-        return this.nhacungcapService.findAll();
+    async findAll() {
+        try {
+            const result = await this.nhacungcapService.findAll();
+            return {
+                statusCode: common_1.HttpStatus.OK,
+                message: 'Nhà cung cấp(s) fetched successfully',
+                data: result,
+            };
+        }
+        catch (error) {
+            return {
+                statusCode: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: 'Failed to fetch nhà cung cấp(s)',
+                error: error.message || error,
+            };
+        }
     }
-    findOne(id) {
-        return this.nhacungcapService.findOne(id);
+    async findOne(id) {
+        try {
+            const result = await this.nhacungcapService.findOne(id);
+            if (!result) {
+                return {
+                    statusCode: common_1.HttpStatus.NOT_FOUND,
+                    message: 'Nhà cung cấp not found',
+                };
+            }
+            return {
+                statusCode: common_1.HttpStatus.OK,
+                message: 'Nhà cung cấp fetched successfully',
+                data: result,
+            };
+        }
+        catch (error) {
+            return {
+                statusCode: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: 'Failed to fetch nhà cung cấp',
+                error: error.message || error,
+            };
+        }
     }
-    update(id, updateNhacungcapDto) {
-        return this.nhacungcapService.update(id, updateNhacungcapDto);
+    async update(id, updateNhacungcapDto) {
+        try {
+            const result = await this.nhacungcapService.update(id, updateNhacungcapDto);
+            return {
+                statusCode: common_1.HttpStatus.OK,
+                message: 'Nhà cung cấp updated successfully',
+                data: result,
+            };
+        }
+        catch (error) {
+            return {
+                statusCode: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: 'Failed to update nhà cung cấp',
+                error: error.message || error,
+            };
+        }
     }
-    remove(id) {
-        return this.nhacungcapService.remove(id);
+    async remove(id) {
+        try {
+            const result = await this.nhacungcapService.remove(id);
+            return {
+                statusCode: common_1.HttpStatus.OK,
+                message: 'Nhà cung cấp deleted successfully',
+                data: result,
+            };
+        }
+        catch (error) {
+            return {
+                statusCode: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: 'Failed to delete nhà cung cấp',
+                error: error.message || error,
+            };
+        }
     }
 };
 exports.NhacungcapController = NhacungcapController;
@@ -44,27 +134,27 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], NhacungcapController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)('finbyids'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], NhacungcapController.prototype, "findByProductIds", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], NhacungcapController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)('findid/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], NhacungcapController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
@@ -72,14 +162,14 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], NhacungcapController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], NhacungcapController.prototype, "remove", null);
 exports.NhacungcapController = NhacungcapController = __decorate([
     (0, common_1.Controller)('nhacungcap'),

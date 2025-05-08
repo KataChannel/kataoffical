@@ -1,0 +1,49 @@
+<table class="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg shadow-md">
+    <thead class="bg-gray-50 rounded-t-lg cursor-pointer">
+        <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider first:rounded-tl-lg last:rounded-tr-lg">
+               Tên Sản Phẩm
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Mã Sản Phẩm
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Gợi Ý
+            </th>
+            <th (click)="FilterTable('',item)" *ngFor="let item of filterListNCC; let i=index" scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-slate-50">
+                {{item.name}}
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider last:rounded-tr-lg">
+            </th>
+        </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200 rounded-b-lg">
+        <tr *ngFor="let item of filterListSP; trackBy:trackByFn; let j=index" class="last:rounded-b-lg cursor-pointer hover:bg-slate-50">
+            <td class="whitespace-nowrap first:rounded-bl-lg" (click)="FilterTable(item,'')">
+                <span class="max-w-40 line-clamp-4 p-2">
+                    {{ item.title }}
+                </span>
+            </td>
+            <td class="whitespace-nowrap">
+                <span class="max-w-40 line-clamp-4">
+                    {{ item.masp }}
+                </span>
+            </td>
+            <td class="whitespace-nowrap">
+                <span class="max-w-40 line-clamp-4">
+                    {{GetGoiy(item)}} ({{DadatGoiy(item)||0}})
+                </span>
+            </td>
+            <td *ngFor="let item of filterListNCC; let i=index" class="whitespace-nowrap">
+                <div *ngIf="CheckSanphaminNCC(item,filterListSP[j])"
+                [contentEditable]="true"
+                class="sldat-input p-2 min-w-28 text-end bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                (blur)="updateBlur($event,filterListSP[j],item)"
+                (keyup.enter)="updateEnter($event,filterListSP[j],item)"
+                >
+               {{ item.soluong || 0 | number:'1.0-2' }}
+               </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

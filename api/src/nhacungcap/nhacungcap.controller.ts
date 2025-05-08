@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, HttpStatus } from '@nestjs/common';
 import { NhacungcapService } from './nhacungcap.service';
 
 @Controller('nhacungcap')
@@ -6,30 +6,116 @@ export class NhacungcapController {
   constructor(private readonly nhacungcapService: NhacungcapService) {}
 
   @Post()
-  create(@Body() createNhacungcapDto: any) {
-    return this.nhacungcapService.create(createNhacungcapDto);
+  async create(@Body() createNhacungcapDto: any) {
+    try {
+      const result = await this.nhacungcapService.create(createNhacungcapDto);
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'Nhà cung cấp created successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Failed to create nhà cung cấp',
+        error: error.message || error,
+      };
+    }
   }
+
   @Post('finbyids')
-  findByProductIds(@Body() productIds: any) {
-    return this.nhacungcapService.findByProductIds(productIds);
+  async findByProductIds(@Body() productIds: any) {
+    try {
+      const result = await this.nhacungcapService.findByProductIds(productIds);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Nhà cung cấp(s) fetched successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Failed to fetch nhà cung cấp(s)',
+        error: error.message || error,
+      };
+    }
   }
 
   @Get()
-  findAll() {
-    return this.nhacungcapService.findAll();
+  async findAll() {
+    try {
+      const result = await this.nhacungcapService.findAll();
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Nhà cung cấp(s) fetched successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Failed to fetch nhà cung cấp(s)',
+        error: error.message || error,
+      };
+    }
   }
 
   @Get('findid/:id')
-  findOne(@Param('id') id: string) {
-    return this.nhacungcapService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    try {
+      const result = await this.nhacungcapService.findOne(id);
+      if (!result) {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Nhà cung cấp not found',
+        };
+      }
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Nhà cung cấp fetched successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Failed to fetch nhà cung cấp',
+        error: error.message || error,
+      };
+    }
   }
+
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNhacungcapDto: any) {
-    return this.nhacungcapService.update(id, updateNhacungcapDto);
+  async update(@Param('id') id: string, @Body() updateNhacungcapDto: any) {
+    try {
+      const result = await this.nhacungcapService.update(id, updateNhacungcapDto);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Nhà cung cấp updated successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Failed to update nhà cung cấp',
+        error: error.message || error,
+      };
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.nhacungcapService.remove(id);
+  async remove(@Param('id') id: string) {
+    try {
+      const result = await this.nhacungcapService.remove(id);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Nhà cung cấp deleted successfully',
+        data: result,
+      };
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Failed to delete nhà cung cấp',
+        error: error.message || error,
+      };
+    }
   }
 }

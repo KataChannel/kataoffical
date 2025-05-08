@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NhacungcapService } from '../nhacungcap.service';
 import { MatMenuModule } from '@angular/material/menu';
-import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
+import { readExcelFile, readExcelFileNoWorker, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
@@ -89,19 +89,6 @@ export class ListNhacungcapComponent {
       this.filterValues[column] = '';
     });
   }
-  createFilter(): (data: any, filter: string) => boolean {
-    return (data, filter) => {
-      const filterObject = JSON.parse(filter);
-      let isMatch = true;
-      this.displayedColumns.forEach(column => {
-        if (filterObject[column]) {
-          const value = data[column] ? data[column].toString().toLowerCase() : '';
-          isMatch = isMatch && value.includes(filterObject[column].toLowerCase());
-        }
-      });
-      return isMatch;
-    };
-  }
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -115,7 +102,6 @@ export class ListNhacungcapComponent {
     this.dataSource = new MatTableDataSource(this.Listnhacungcap());
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    this.dataSource.filterPredicate = this.createFilter();
     this.initializeColumns();
     this.setupDrawer();
     this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
@@ -285,56 +271,47 @@ export class ListNhacungcapComponent {
     //   //  window.location.reload();
     // });
   }
-  DoImportData(data:any)
+  async DoImportData(data:any)
   {
     console.log(data);
     
-    const transformedData = data.map((v: any) => ({
+  const isUpdate = false
+   const transformedData = data.map((v: any) => ({
       name: v.name?.trim()||'',
       mancc: v.mancc?.trim()||'',
-      sdt: v.sdt?.trim()||'',
+      manccold: v.manccold?.trim()||'',
       diachi: v.diachi?.trim()||'',
-      ghichu: v.ghichu?.trim()||'',
+      email: v.email?.trim()||'',
+      sdt: v.sdt?.toString().trim()||'',
+      ghichu: v.ghichu?.toString().trim()||'',       
    }));
-   // Filter out duplicate mancc values
-   const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
-      index === self.findIndex((t:any) => (
-        t.mancc === value.mancc
-      ))
-   )
-    const listId2 = uniqueData.map((v: any) => v.mancc);
-    const listId1 = this._NhacungcapService.ListNhacungcap().map((v: any) => v.mancc);
-    const listId3 = listId2.filter((item:any) => !listId1.includes(item));
-    const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._NhacungcapService.ListNhacungcap().find((v1) => v1.mancc === v.mancc);
-        if (item) {
-          const item1 = { ...item, ...v };
-          await this._NhacungcapService.updateNhacungcap(item1);
-        }
-        else{
-          await this._NhacungcapService.CreateNhacungcap(v);
-        }
-      });
-     const disableItem = listId3.map(async (v: any) => {
-        const item = this._NhacungcapService.ListNhacungcap().find((v1) => v1.mancc === v);
-        item.isActive = false;
-        await this._NhacungcapService.updateNhacungcap(item);
-      });
-      Promise.all([...createuppdateitem, ...disableItem]).then(() => {
-        this._snackBar.open('Cập Nhật Thành Công', '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-       // window.location.reload();
-      });
+  for (const v of transformedData) {
+    await new Promise(resolve => setTimeout(resolve, 100)); // 100ms delay
+    await this._NhacungcapService.CreateNhacungcap(v);
+  }
+   
+  //  if (isUpdate) {
+  //         await this._NhacungcapService.updateNhacungcap(item1);
+  //  }
+  //       else{
+  //       }
   }
   async ImporExcel(event: any) {
-  const data = await readExcelFile(event)
+    const file = event.target.files[0];
+    if (!file) return;
+    const data = await readExcelFileNoWorker(file, 'Sheet1');
   this.DoImportData(data);
   }   
-  ExportExcel(data:any,title:any) {
+  ExportExcel(dulieu:any,title:any) {
+    const data = dulieu.map((v: any) => ({
+      name: v.name?.trim()||'',
+      mancc: v.mancc?.trim()||'',
+      manccold: v.manccold?.trim()||'',
+      diachi: v.diachi?.trim()||'',
+      email: v.email?.trim()||'',
+      sdt: v.sdt?.trim()||'',
+      ghichu: v.ghichu?.trim()||'',
+    }));
     writeExcelFile(data,title);
   }
   trackByFn(index: number, item: any): any {

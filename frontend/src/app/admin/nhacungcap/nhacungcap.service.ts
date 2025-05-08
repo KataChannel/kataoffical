@@ -55,7 +55,7 @@ export class NhacungcapService {
           }
         }
         this.getAllNhacungcap()
-        this.nhacungcapId.set(data.id)
+        this.nhacungcapId.set(data.data.id)
     } catch (error) {
         return console.error(error);
     }
@@ -92,7 +92,7 @@ export class NhacungcapService {
             this.router.navigate(['/errorserver'], { queryParams: {data:result}});
           }
         }
-       return data
+       return data.data
     } catch (error) {
         return console.error(error);
     }
@@ -126,7 +126,8 @@ export class NhacungcapService {
         }
       }
       const data = await response.json();           
-      this.ListNhacungcap.set(data)
+      this.ListNhacungcap.set(data.data)
+      return data.data
     } catch (error) {
       return console.error(error);
     }
@@ -159,7 +160,7 @@ export class NhacungcapService {
         }
       }
       const data = await response.json();      
-      this.DetailNhacungcap.set(data)
+      this.DetailNhacungcap.set(data.data)
     } catch (error) {
       return console.error(error);
     }
@@ -178,6 +179,8 @@ export class NhacungcapService {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+        console.log(data);
+        
         if (!response.ok) {
           if (response.status === 401) {
             const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })

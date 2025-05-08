@@ -22,6 +22,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
 import { DathangService } from '../dathang.service';
+import { TablenhucaudathanhComponent } from './tablenhucaudathanh/tablenhucaudathanh.component';
 @Component({
   selector: 'app-nhucaudathang',
   templateUrl: './nhucaudathang.component.html',
@@ -41,7 +42,8 @@ import { DathangService } from '../dathang.service';
     CommonModule,
     FormsModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    TablenhucaudathanhComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -273,37 +275,65 @@ export class NhucaudathangComponent {
   }
   ListFindNCC:any[] = [];
   ListDathang:any[] = [];
-  async OpenTaodonDialog(teamplate: TemplateRef<any>) {    
-    this.ListFindNCC =  await this._NhacungcapService.Findbyids(this.EditList.map((v:any)=>v.id));    
-    this.EditList = this.EditList.filter((v:any)=> this.ListFindNCC.some((v1:any)=>v1.Sanpham.some((v3:any)=>v3.id===v.id)));
-    console.log(this.ListFindNCC);
-    console.log(this.EditList);
+  isSubmit: boolean = false;
+  onListDathangChange(event:any) {
+    console.log(event);
+    this.ListDathang = event;
+    console.log(this.ListDathang);  
+  }
+  CheckSubmit(){
+    // Kiểm tra nếu có sản phẩm nào có số lượng đặt âm thì báo lỗi, ngược lại isSubmit = true
+    const hasNegative = this.ListDathang.some((ncc: any) =>
+      (ncc.sanpham || []).some((sp: any) => Number(sp.sldat) < 0)
+    );
+    console.log(hasNegative);
     
+    console.log(this.ListDathang);
+    
+    if (hasNegative) {
+      this._snackBar.open('Có sản phẩm có số lượng đặt âm!', '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-error'],
+      });
+      this.isSubmit = false;
+      return false;
+    } else {
+      this.isSubmit = true;
+      return true;
+    }
+  }
+  async OpenTaodonDialog(teamplate: TemplateRef<any>) {    
+
+    this.ListFindNCC =  await this._NhacungcapService.Findbyids(this.EditList.map((v:any)=>v.id));    
+    this.EditList = this.EditList.filter((v:any)=> this.ListFindNCC.some((v1:any)=>v1.Sanpham.some((v3:any)=>v3.id===v.id)));    
     const dialogDeleteRef = this._dialog.open(teamplate, {
       hasBackdrop: true,
       disableClose: true,
     });
     dialogDeleteRef.afterClosed().subscribe((result) => {
       if (result=="true") {
-        Promise.all(this.ListDathang.map(item => this._DathangService.CreateByNhucau(item)))
-          .then(() => {
-            this._snackBar.open('Tạo Mới đặt hàng thành công', '', {
-              duration: 2000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['snackbar-success'],
-            });
-            this._router.navigate(['/admin/dathang']);
-          })
-          .catch(error => {
-            this._snackBar.open('Có lỗi xảy ra khi Tạo Mới đặt hàng', '', {
-              duration: 2000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['snackbar-error'],
-            });
-            console.error('Error creating orders:', error);
-          });
+        console.log(this.ListDathang);
+        // Promise.all(this.ListDathang.map(item => this._DathangService.CreateByNhucau(item)))
+        //   .then(() => {
+        //     this._snackBar.open('Tạo Mới đặt hàng thành công', '', {
+        //       duration: 2000,
+        //       horizontalPosition: 'end',
+        //       verticalPosition: 'top',
+        //       panelClass: ['snackbar-success'],
+        //     });
+        //     this._router.navigate(['/admin/dathang']);
+        //   })
+        //   .catch(error => {
+        //     this._snackBar.open('Có lỗi xảy ra khi Tạo Mới đặt hàng', '', {
+        //       duration: 2000,
+        //       horizontalPosition: 'end',
+        //       verticalPosition: 'top',
+        //       panelClass: ['snackbar-error'],
+        //     });
+        //     console.error('Error creating orders:', error);
+        //   });
       }
     });
   }
