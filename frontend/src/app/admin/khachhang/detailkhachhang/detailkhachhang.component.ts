@@ -14,7 +14,7 @@ import { KhachhangService } from '../khachhang.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { BanggiaService } from '../../banggia/banggia.service';
-import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
+import { SearchfilterComponent } from '../../../shared/common/searchfilter123/searchfilter.component';
   @Component({
     selector: 'app-detailkhachhang',
     imports: [

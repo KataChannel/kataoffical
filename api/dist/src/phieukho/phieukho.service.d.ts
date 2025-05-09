@@ -67,18 +67,6 @@ export declare class PhieukhoService {
         khoId: string;
     }[]>;
     findOne(id: string): Promise<{
-        kho: {
-            id: string;
-            ghichu: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            diachi: string | null;
-            sdt: string | null;
-            makho: string | null;
-            congtyId: string | null;
-        };
         sanpham: {
             id: string;
             soluong: import("@prisma/client/runtime/library").Decimal | null;
@@ -91,6 +79,18 @@ export declare class PhieukhoService {
             slhuy: number;
             phieuKhoId: string;
         }[];
+        kho: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            diachi: string | null;
+            sdt: string | null;
+            makho: string | null;
+            congtyId: string | null;
+        };
     } & {
         id: string;
         ghichu: string | null;

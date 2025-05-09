@@ -60,7 +60,6 @@ export class RevenuechartComponent {
   public finalChartOptions: ChartOptions;
   constructor() {
     this.finalChartOptions = this.getDefaultOptions();
-    console.log("Lão già AreaChartComponent đã được khởi tạo!");
   }
   startDate: string = new Date().toISOString().split('T')[0]; // Ngày bắt đầu
   endDate: string = new Date().toISOString().split('T')[0]; // Ngày kết thúc
@@ -71,13 +70,11 @@ export class RevenuechartComponent {
   }
   ngOnInit(): void {
     // ngOnInit chạy một lần sau khi các @Input được gán lần đầu
-    console.log("ngOnInit: Chuẩn bị hiển thị biểu đồ...");
     this.prepareChartOptions();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
 
-    console.log("ngOnChanges: Có sự thay đổi đầu vào!");
     // Kiểm tra xem các Input liên quan có thay đổi không
     if (changes['chartOptions'] || changes['seriesData'] || changes['categories'] || changes['chartHeight'] || changes['chartTitle']) {
        this.prepareChartOptions();
@@ -179,11 +176,7 @@ export class RevenuechartComponent {
 
     // Kiểm tra lại lần cuối, ví dụ nếu không có series thì phải gán cái gì đó để không lỗi
     if (!this.finalChartOptions.series || this.finalChartOptions.series.length === 0) {
-        console.warn("Lão thấy không có dữ liệu series nào được cung cấp, hiển thị dữ liệu rỗng.");
         this.finalChartOptions.series = [{ name: 'Không có dữ liệu', data: [] }];
     }
-
-    console.log("Cấu hình cuối cùng đã được thiết lập thành công.");
-    console.log("Cấu hình cuối cùng:", this.finalChartOptions);
   }
 }

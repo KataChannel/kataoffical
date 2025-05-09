@@ -12,9 +12,46 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DathangService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 let DathangService = class DathangService {
     constructor(prisma) {
         this.prisma = prisma;
+    }
+    async generateNextOrderCode() {
+        const lastOrder = await this.prisma.dathang.findFirst({
+            orderBy: { createdAt: 'desc' },
+        });
+        let nextCode = 'TGNCC-AA00001';
+        if (lastOrder && lastOrder.madncc) {
+            nextCode = this.incrementOrderCode(lastOrder.madncc);
+        }
+        return nextCode;
+    }
+    incrementOrderCode(orderCode) {
+        const prefix = 'TGNCC-';
+        const letters = orderCode.slice(6, 8);
+        const numbers = parseInt(orderCode.slice(8), 13);
+        let newLetters = letters;
+        let newNumbers = numbers + 1;
+        if (newNumbers > 99999) {
+            newNumbers = 1;
+            newLetters = this.incrementLetters(letters);
+        }
+        return `${prefix}${newLetters}${newNumbers.toString().padStart(5, '0')}`;
+    }
+    incrementLetters(letters) {
+        let firstChar = letters.charCodeAt(0);
+        let secondChar = letters.charCodeAt(1);
+        if (secondChar === 90) {
+            if (firstChar === 90)
+                return 'ZZ';
+            firstChar++;
+            secondChar = 65;
+        }
+        else {
+            secondChar++;
+        }
+        return String.fromCharCode(firstChar) + String.fromCharCode(secondChar);
     }
     async reorderDathangs(dathangIds) {
         for (let i = 0; i < dathangIds.length; i++) {
@@ -80,13 +117,14 @@ let DathangService = class DathangService {
         };
     }
     async create(data) {
-        console.error(data);
         return this.prisma.$transaction(async (prisma) => {
+            const madathang = await this.generateNextOrderCode();
+            console.log(madathang);
             const newDathang = await prisma.dathang.create({
                 data: {
                     title: data.title,
                     type: data.type,
-                    madncc: data.madncc,
+                    madncc: madathang,
                     ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
                     ghichu: data.ghichu,
                     nhacungcapId: data.nhacungcapId,
@@ -114,28 +152,45 @@ let DathangService = class DathangService {
                     where: { id: sp.id },
                     data: {
                         soluong: {
-                            increment: sp.sldat || 0,
+                            decrement: parseFloat((sp.sldat ?? 0).toFixed(2))
                         },
                     },
                 });
             }
+            await prisma.phieuKho.create({
+                data: {
+                    maphieu: `PN-${newDathang.id}`,
+                    khoId: DEFAUL_KHO_ID,
+                    type: 'nhap',
+                    ngay: newDathang.ngaynhan || new Date(),
+                    ghichu: `Phiếu nhập kho cho đơn hàng ${newDathang.title}`,
+                    sanpham: {
+                        create: data?.sanpham?.map((sp) => ({
+                            sanphamId: sp.id,
+                            sldat: sp.sldat,
+                            soluong: sp.sldat,
+                            ghichu: sp.ghichu,
+                        })),
+                    },
+                },
+            });
             return newDathang;
         });
     }
     async createbynhucau(data) {
-        console.error(data);
         return this.prisma.$transaction(async (prisma) => {
             const nhacungcap = await prisma.nhacungcap.findUnique({
                 where: { id: data.id },
             });
             if (!nhacungcap)
                 throw new common_1.NotFoundException('Nhà cung cấp không tồn tại');
+            const madathang = await this.generateNextOrderCode();
             const newDathang = await prisma.dathang.create({
                 data: {
-                    title: nhacungcap?.title,
-                    type: nhacungcap?.type,
-                    madncc: nhacungcap?.madncc,
-                    ngaynhan: new Date(),
+                    title: data.title,
+                    type: data.type,
+                    madncc: madathang,
+                    ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
                     ghichu: data.ghichu,
                     nhacungcapId: nhacungcap.id,
                     order: data.order || 0,
@@ -162,11 +217,28 @@ let DathangService = class DathangService {
                     where: { id: sp.id },
                     data: {
                         soluong: {
-                            increment: sp.sldat || 0,
+                            decrement: parseFloat((sp.sldat ?? 0).toFixed(2)),
                         },
                     },
                 });
             }
+            await prisma.phieuKho.create({
+                data: {
+                    maphieu: `PN-${newDathang.id}`,
+                    khoId: DEFAUL_KHO_ID,
+                    type: 'nhap',
+                    ngay: newDathang.ngaynhan || new Date(),
+                    ghichu: `Phiếu nhập kho cho đơn hàng ${newDathang.title}`,
+                    sanpham: {
+                        create: data?.sanpham?.map((sp) => ({
+                            sanphamId: sp.id,
+                            sldat: sp.sldat,
+                            soluong: sp.sldat,
+                            ghichu: sp.ghichu,
+                        })),
+                    },
+                },
+            });
             return newDathang;
         });
     }

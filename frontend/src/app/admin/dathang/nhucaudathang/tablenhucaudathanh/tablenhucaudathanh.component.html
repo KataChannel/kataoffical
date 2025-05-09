@@ -41,7 +41,7 @@
                 (blur)="updateBlur($event,filterListSP[j],item)"
                 (keyup.enter)="updateEnter($event,filterListSP[j],item)"
                 >
-               {{ item.soluong || 0 | number:'1.0-2' }}
+               {{ getSLDat(item,filterListSP[j]) | number:'1.0-2' }}
                </div>
             </td>
         </tr>

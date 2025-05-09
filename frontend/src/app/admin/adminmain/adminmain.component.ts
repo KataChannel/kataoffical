@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
@@ -22,6 +22,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {MatStepperModule} from '@angular/material/stepper';
 import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
+import { CommonuserguideComponent } from '../userguide/commonuserguide/commonuserguide.component';
+import { UserguideService } from '../userguide/userguide.service';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -40,7 +42,8 @@ import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
     TreemenuComponent,
     MatInputModule,
     MatFormFieldModule,
-    MatStepperModule
+    MatStepperModule,
+    CommonuserguideComponent,
   ],
   templateUrl: './adminmain.component.html',
   styleUrls: ['./adminmain.component.scss']
@@ -85,8 +88,10 @@ export class AdminmainComponent {
   @ViewChild('drawer1', { static: true }) drawer1!: MatDrawer;
   _snackBar:MatSnackBar = inject(MatSnackBar)
   _StorageService:StorageService = inject(StorageService)
+  _UserguideService:UserguideService = inject(UserguideService)
   ListMenu:any[] = []
   FilterListMenu:any[] = []
+  DetailUserguide:any = signal<any>({});
   async ngOnInit() {
     await this._UserService.getProfile().then(async (res: any) => {
       if(res){
@@ -97,8 +102,8 @@ export class AdminmainComponent {
         this.dataSource.data = this._MenuService.ListMenu()
       } 
     });
-   
- 
+    await this._UserguideService.getUserguideBy({codeId:'I100001'})
+    this.DetailUserguide = this._UserguideService.DetailUserguide
     this._breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       if (result.matches) {
         this.drawer.mode = 'over';

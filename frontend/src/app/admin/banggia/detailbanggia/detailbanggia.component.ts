@@ -25,7 +25,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 import html2canvas from 'html2canvas';
 import { MatMenuModule } from '@angular/material/menu';
 import { KhachhangService } from '../../khachhang/khachhang.service';
-import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
+import { SearchfilterComponent } from '../../../shared/common/searchfilter123/searchfilter.component';
   @Component({
     selector: 'app-detailbanggia',
     imports: [

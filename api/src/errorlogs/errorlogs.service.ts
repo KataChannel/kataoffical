@@ -17,7 +17,6 @@ export class ErrorlogsService {
       await this.prisma.errorLog.create({
         data: logEntry,
       });
-      console.error(logEntry); // Log tạm vào console
     } catch (error) {
       console.error('Failed to save log to database:', error);
     }

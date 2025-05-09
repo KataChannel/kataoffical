@@ -27,7 +27,6 @@ let ErrorlogsService = class ErrorlogsService {
             await this.prisma.errorLog.create({
                 data: logEntry,
             });
-            console.error(logEntry);
         }
         catch (error) {
             console.error('Failed to save log to database:', error);

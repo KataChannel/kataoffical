@@ -22,6 +22,7 @@ import { GoogledriveModule } from './shared/googledrive/googledrive.module';
 import { ErrorlogsModule } from './errorlogs/errorlogs.module';
 import { CallbackModule } from './callback/callback.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { UserguideModule } from './userguide/userguide.module';
 
 @Module({
   imports: [
@@ -43,7 +44,8 @@ import { DashboardModule } from './dashboard/dashboard.module';
     GoogledriveModule,
     ErrorlogsModule,
     CallbackModule,
-    DashboardModule
+    DashboardModule,
+    UserguideModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

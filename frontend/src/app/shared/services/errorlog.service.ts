@@ -15,10 +15,8 @@ export class ErrorLogService {
         url: window.location.href,
       },
     };
-
-    console.error(logEntry); // Log tạm vào console
     try {
-      await fetch(`${environment.APIURL}/logs`, {
+      await fetch(`${environment.APIURL}/errorlogs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(logEntry),

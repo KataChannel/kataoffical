@@ -2,6 +2,9 @@ import { PrismaService } from 'prisma/prisma.service';
 export declare class DathangService {
     private readonly prisma;
     constructor(prisma: PrismaService);
+    generateNextOrderCode(): Promise<string>;
+    private incrementOrderCode;
+    private incrementLetters;
     reorderDathangs(dathangIds: string[]): Promise<void>;
     findAll(): Promise<{
         sanpham: any[];

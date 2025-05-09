@@ -315,25 +315,31 @@ export class NhucaudathangComponent {
     dialogDeleteRef.afterClosed().subscribe((result) => {
       if (result=="true") {
         console.log(this.ListDathang);
-        // Promise.all(this.ListDathang.map(item => this._DathangService.CreateByNhucau(item)))
-        //   .then(() => {
-        //     this._snackBar.open('Tạo Mới đặt hàng thành công', '', {
-        //       duration: 2000,
-        //       horizontalPosition: 'end',
-        //       verticalPosition: 'top',
-        //       panelClass: ['snackbar-success'],
-        //     });
-        //     this._router.navigate(['/admin/dathang']);
-        //   })
-        //   .catch(error => {
-        //     this._snackBar.open('Có lỗi xảy ra khi Tạo Mới đặt hàng', '', {
-        //       duration: 2000,
-        //       horizontalPosition: 'end',
-        //       verticalPosition: 'top',
-        //       panelClass: ['snackbar-error'],
-        //     });
-        //     console.error('Error creating orders:', error);
-        //   });
+        (async () => {
+          for (const item of this.ListDathang) {
+            await this._DathangService.CreateByNhucau(item);
+            // Optional delay to allow data updates - adjust delay as needed
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+        })()
+          .then(() => {
+            this._snackBar.open('Tạo Mới đặt hàng thành công', '', {
+              duration: 2000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-success'],
+            });
+           this._router.navigate(['/admin/dathang']);
+          })
+          .catch(error => {
+            this._snackBar.open('Có lỗi xảy ra khi Tạo Mới đặt hàng', '', {
+              duration: 2000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-error'],
+            });
+            console.error('Error creating orders:', error);
+          });
       }
     });
   }

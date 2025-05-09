@@ -103,44 +103,74 @@ export function UploadDathang(
     workbook.Sheets[sheetName] = worksheet;
   });
 
-  // ✅ Tạo dữ liệu cho sheet summary đúng như ảnh
-  const summaryData: any[][] = [
-    ['ngay', 'mancc', 'name', 'mabangia', 'masp','tensp' ,'sldat', 'slgiao', 'slnhan'],
-    ['Ngày', 'Mã NCC', 'Nhà Cung Cấp', 'Bảng Giá', 'Mã Sản Phẩm','Tên Sản Phẩm', 'SL Đặt', 'SL Giao', 'SL Nhận'],
-    [moment().format('DD/MM/YYYY'), 'TG-NCC0001', '', '', 'I100001', '', '1', '', ''],
-    ['', '', '', '', '', '', '', '', ''],
-  ];
-
-  const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-
-
-  // Define cell styling constants for reuse
-  const redFontStyle = { font: { color: { rgb: 'FF0000' } } };
-
-  // Define formula cell configurations for clarity
-  const formulaCells = [
-    { cell: 'C3', formula: 'VLOOKUP(B3,NCC!A:D,2,0)', type: 's' },
-    { cell: 'D3', formula: 'VLOOKUP(B3,NCC!A:D,3,0)', type: 's' },
-    { cell: 'F3', formula: 'VLOOKUP(E3,SP!B:D,2,0)', type: 's' },
-    { cell: 'H3', formula: 'G3', type: 'n' },
-    { cell: 'I3', formula: 'G3', type: 'n' },
-
-    { cell: 'A4', formula: 'A3', type: 's' },
-    { cell: 'B4', formula: 'B3', type: 's' },
-    { cell: 'C4', formula: 'VLOOKUP(B4,NCC!A:C,2,0)', type: 's' },
-    { cell: 'D4', formula: 'VLOOKUP(B4,NCC!A:C,3,0)', type: 's' },
-    { cell: 'F4', formula: 'VLOOKUP(E4,SP!B:D,2,0)', type: 's' },
-    { cell: 'H4', formula: 'G4', type: 'n' },
-    { cell: 'I4', formula: 'G4', type: 'n' }
-  ];
+    // ✅ Tạo dữ liệu cho sheet summary đúng như ảnh
+    const summaryData: any[][] = [
+      ['ngay','manccold', 'mancc', 'name', 'mabangia', 'masp','tensp' ,'sldat', 'slgiao', 'slnhan'],
+      ['Ngày', 'Mã Cũ','Mã Mới', 'Tên Nhà Cung Cấp', 'Bảng Giá', 'Mã Sản Phẩm','Tên Sản Phẩm', 'SL Đặt', 'SL Giao', 'SL Nhận'],
+      [moment().format('DD/MM/YYYY'), 'V100049', '', '', '', 'I100001', '', '1', '', ''],
+      ['', '', '', '', '', '', '', '', ''],
+    ];
   
-  formulaCells.forEach(({ cell, formula, type }) => {
-    summarySheet[cell] = {
-      f: formula,
-      t: type,
-      s: redFontStyle
-    };
-  });
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+  
+  
+    // Define cell styling constants for reuse
+    const redFontStyle = { font: { color: { rgb: 'FF0000' } } };
+  
+    // Define formula cell configurations for clarity
+    const formulaCells = [
+      { cell: 'C3', formula: 'VLOOKUP(B3,NCC!A:D,3,0)', type: 's' },
+      { cell: 'D3', formula: 'VLOOKUP(B3,NCC!A:D,2,0)', type: 's' },
+      { cell: 'G3', formula: 'VLOOKUP(F3,SP!B:D,2,0)', type: 's' },
+      { cell: 'I3', formula: 'H3', type: 'n' },
+      { cell: 'J3', formula: 'H3', type: 'n' },
+    ];
+    
+    formulaCells.forEach(({ cell, formula, type }) => {
+      summarySheet[cell] = {
+        f: formula,
+        t: type,
+        s: redFontStyle
+      };
+    });
+  // // ✅ Tạo dữ liệu cho sheet summary đúng như ảnh
+  // const summaryData: any[][] = [
+  //   ['ngay', 'mancc', 'name', 'mabangia', 'masp','tensp' ,'sldat', 'slgiao', 'slnhan'],
+  //   ['Ngày', 'Mã NCC', 'Nhà Cung Cấp', 'Bảng Giá', 'Mã Sản Phẩm','Tên Sản Phẩm', 'SL Đặt', 'SL Giao', 'SL Nhận'],
+  //   [moment().format('DD/MM/YYYY'), 'TG-NCC0001', '', '', 'I100001', '', '1', '', ''],
+  //   ['', '', '', '', '', '', '', '', ''],
+  // ];
+
+  // const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+
+
+  // // Define cell styling constants for reuse
+  // const redFontStyle = { font: { color: { rgb: 'FF0000' } } };
+
+  // // Define formula cell configurations for clarity
+  // const formulaCells = [
+  //   { cell: 'C3', formula: 'VLOOKUP(B3,NCC!A:D,2,0)', type: 's' },
+  //   { cell: 'D3', formula: 'VLOOKUP(B3,NCC!A:D,3,0)', type: 's' },
+  //   { cell: 'F3', formula: 'VLOOKUP(E3,SP!B:D,2,0)', type: 's' },
+  //   { cell: 'H3', formula: 'G3', type: 'n' },
+  //   { cell: 'I3', formula: 'G3', type: 'n' },
+
+  //   { cell: 'A4', formula: 'A3', type: 's' },
+  //   { cell: 'B4', formula: 'B3', type: 's' },
+  //   { cell: 'C4', formula: 'VLOOKUP(B4,NCC!A:C,2,0)', type: 's' },
+  //   { cell: 'D4', formula: 'VLOOKUP(B4,NCC!A:C,3,0)', type: 's' },
+  //   { cell: 'F4', formula: 'VLOOKUP(E4,SP!B:D,2,0)', type: 's' },
+  //   { cell: 'H4', formula: 'G4', type: 'n' },
+  //   { cell: 'I4', formula: 'G4', type: 'n' }
+  // ];
+  
+  // formulaCells.forEach(({ cell, formula, type }) => {
+  //   summarySheet[cell] = {
+  //     f: formula,
+  //     t: type,
+  //     s: redFontStyle
+  //   };
+  // });
 
   const summarySheetName = 'Dathang';
   workbook.SheetNames.push(summarySheetName);
@@ -186,6 +216,8 @@ export function readExcelFile(event: any, sheetName?: any): Promise<any> {
     };
   });
 }
+
+
 export function readExcelFileNoWorker(event: any, sheetName?: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const file = event.target?.files?.[0] || event;

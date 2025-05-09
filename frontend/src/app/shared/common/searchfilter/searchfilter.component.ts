@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, signal } from "@angular/core";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, signal, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDatepickerModule } from "@angular/material/datepicker";
@@ -7,13 +7,14 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
-import { MatMenuModule } from "@angular/material/menu";
+import { MatMenuModule, MatMenuTrigger } from "@angular/material/menu";
 import { MatPaginatorModule } from "@angular/material/paginator";
 import { MatSelectModule } from "@angular/material/select";
 import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatSortModule } from "@angular/material/sort";
 import { MatTableModule } from "@angular/material/table";
 import { removeVietnameseAccents } from "../../utils/texttransfer.utils";
+
 @Component({
   selector: 'app-searchfilter',
   templateUrl: './searchfilter.component.html',
@@ -41,11 +42,13 @@ export class SearchfilterComponent {
   @Input() filterItem: any[] = [];
   @Input() ListFilter: any[] = [];
   @Input() CountItems: any = 0;
+  @Input() icon: any = '';
   @Input() title: any = 'Items';
   @Input() fieldsearch: any = 'title';
   @Input() isEdit = signal(false);
   @Input() isDelete = signal(false);
   @Output() OutFilter = new EventEmitter<any>();
+  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
   trackByFn(index: number, item: any): any {
     return item.id;
   }
@@ -62,8 +65,7 @@ export class SearchfilterComponent {
       const value = event.target.value;
       this.filterItem = this.ListItem.filter((v) => 
       removeVietnameseAccents(v[field]).includes(value.toLowerCase())
-      ||v[field].toLowerCase().includes(value.toLowerCase())
-    );
+      ||v[field].toLowerCase().includes(value.toLowerCase()));
   }
   DoListFilter()
   {

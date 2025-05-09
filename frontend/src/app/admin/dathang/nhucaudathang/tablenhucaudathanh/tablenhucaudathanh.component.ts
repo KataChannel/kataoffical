@@ -1,11 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, ChangeDetectionStrategy, Component, EventEmitter, inject, Input, Output, SimpleChanges } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import e from 'express';
 @Component({
   selector: 'app-tablenhucaudathanh',
   imports: [
-    CommonModule
+    CommonModule,
+    MatIconModule,
+    MatButtonModule
   ],
   templateUrl: './tablenhucaudathanh.component.html',
   styleUrls: ['./tablenhucaudathanh.component.scss'],
@@ -44,7 +48,6 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
   FilterTable(sanpham:any,nhacungcap:any){
     this.isFilter = !this.isFilter;
     if(this.isFilter){
-    console.log(sanpham,nhacungcap);
     if(sanpham!==''){
       const EditList = this.EditList.filter((item:any) => item.id=== sanpham.id);
       const ListFindNCC = this.ListFindNCC.filter((item:any) => item.Sanpham.some((x:any) => x.id === sanpham.id));
@@ -53,6 +56,22 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
     else{
       const ListFindNCC = this.ListFindNCC.filter((item:any) => item.id=== nhacungcap.id);
       const EditList = ListFindNCC[0]?.Sanpham
+      ListFindNCC.forEach(item => {
+        item.sanpham = item.Sanpham.map((sp: any) => ({
+          ...sp,
+          sldat: Number(this.GetGoiy(sp))
+        }));
+      });
+      const existingIndex = this.ListDathang.findIndex((item: any) => item.id === nhacungcap.id);
+      if(existingIndex !== -1){
+      // Update the existing entry
+      this.ListDathang[existingIndex] = { ...this.ListDathang[existingIndex], ...ListFindNCC[0] };
+      } else {
+      // Add new entry
+      this.ListDathang.push(ListFindNCC[0]);
+      }   
+    
+      this.ListDathangChange.emit(this.ListDathang);
       this.LoadTable(ListFindNCC,EditList);
     }
   }
@@ -64,6 +83,14 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['ListFindNCC'] || changes['EditList']) {
       this.LoadTable(this.ListFindNCC, this.EditList);
+    }
+  }
+  getSLDat(ncc:any,sanpham:any){
+    const existingItem = ncc.sanpham?.find((v:any) => v.id === sanpham.id);
+    if (existingItem) {
+      return existingItem.sldat || 0;
+    } else {
+      return 0;
     }
   }
   GetGoiy(item:any){
@@ -181,8 +208,8 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
 
 
   updateBlur(event: FocusEvent, Sanpham: any, Nhacungcap: any) {
-    console.log('sanpham', Sanpham);
-    console.log('nhacungcap', Nhacungcap);
+    // console.log('sanpham', Sanpham);
+    // console.log('nhacungcap', Nhacungcap);
     
     // Lấy giá trị mới từ input hiện tại (class 'sldat-input')
     const inputElem = (event.target as HTMLElement).closest('.sldat-input') as HTMLElement;
@@ -191,7 +218,8 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
       const value = (inputElem as HTMLInputElement).value || (inputElem as HTMLElement).innerText;
       newValue = Number(value.trim()) || 0;
     }
-
+    console.log('newValue', newValue);
+    
     // Kiểm tra trước khi cập nhật
     // Tạm thời gán thử giá trị mới để kiểm tra âm
     let tempListDathang = JSON.parse(JSON.stringify(this.ListDathang));
