@@ -66,7 +66,6 @@ import { ChangeDetectionStrategy, Component, computed, effect, inject, TemplateR
       createdAt: 'Ngày tạo',
       updatedAt: 'Ngày cập nhật',
     };
-
     FilterColumns: any[] = JSON.parse(
       localStorage.getItem('SettingColFilter') || '[]'
     );

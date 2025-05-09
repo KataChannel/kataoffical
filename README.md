@@ -136,3 +136,5 @@ sudo crontab -l
 #Promt
 cập nhật code like senior có trycatch và HttpStatus 
 cập nhật code like senior có trycatch và trả về lỗi
+
+Đóng vai là lập trình viên chuyên nghiệp 60 năm kinh nghiệm : dự án của tôi sử dụng angular, nestjs, postgres, docker, prisma, socket io, redis

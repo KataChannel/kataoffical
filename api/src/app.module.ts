@@ -22,6 +22,8 @@ import { LandingPageModule } from './landingpage/landingpage.module';
 import { SettingModule } from './setting/setting.module';
 import { HoadonchitietModule } from './hoadonchitiet/hoadonchitiet.module';
 import { HoadonModule } from './hoadon/hoadon.module';
+import { MinioModule } from './minio/minio.module';
+
 @Module({
   imports: [
     AuthModule, 
@@ -42,7 +44,8 @@ import { HoadonModule } from './hoadon/hoadon.module';
     LandingPageModule,
     SettingModule,
     HoadonchitietModule,
-    HoadonModule
+    HoadonModule,
+    MinioModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  
