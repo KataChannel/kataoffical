@@ -53,8 +53,9 @@ export class NhucaudathangComponent {
     'masp',
     'giagoc',
     'dvt',
-    'soluong',
-    'soluongkho',
+    'slton',
+    'slchogiao',
+    'slchonhap',
     'haohut',
     'goiy'
   ];
@@ -63,8 +64,9 @@ export class NhucaudathangComponent {
     masp: 'Mã Sản Phẩm',
     giagoc: 'Giá Gốc',
     dvt: 'Đơn Vị Tính',
-    soluong: 'SL',
-    soluongkho: 'SL Kho',
+    slton: 'Tồn',
+    slchogiao: 'Chờ Giao',
+    slchonhap: 'Chờ Nhập',
     haohut: 'Hao Hụt',
     goiy: 'Gợi Ý',
   };

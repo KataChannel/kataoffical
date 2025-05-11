@@ -603,5 +603,41 @@ export class DetailDathangComponent {
     this.dataSource.data.sort((a, b) => a.order - b.order);
     menu.closeMenu();
   }
+
+  GiaoDonhang()
+  {
+    this.DetailDathang.update((v:any)=>{
+      v.sanpham.forEach((v1:any)=>{
+        v1.slgiao = v1.sldat;
+      })
+      v.status = 'dagiao';
+      return v;
+    })
+    this._DathangService.updateDathang(this.DetailDathang()).then((res:any)=>{
+      this._snackBar.open('Giao Đơn Hàng Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    })
+  }
+  Danhanhang(){
+    this.DetailDathang.update((v:any)=>{
+      v.sanpham.forEach((v1:any)=>{
+        v1.slnhan = v1.slgiao;
+      })
+      v.status = 'danhan';
+      return v;
+    })
+    this._DathangService.updateDathang(this.DetailDathang()).then((res:any)=>{
+      this._snackBar.open('Giao Đơn Hàng Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    })
+  }
 }
 

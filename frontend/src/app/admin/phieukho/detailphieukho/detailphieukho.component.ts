@@ -75,7 +75,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
           this._ListphieukhoComponent.drawer.close();
         }
         if(id === '0'){
-          this.DetailPhieukho.set({ maphieu: GenId(8, false),sanpham:[],ngay: new Date() });
+          this.DetailPhieukho.set({ sanpham:[],ngay: new Date() });
           this._ListphieukhoComponent.drawer.open();
           this.isEdit.update(value => !value);
           this._router.navigate(['/admin/phieukho', "0"]);
@@ -88,10 +88,10 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
       });
     }
     ChangeType(event:any){
-      this.DetailPhieukho.update((v:any)=>{
-        v.sanpham = [];
-        return v;
-      })
+      // this.DetailPhieukho.update((v:any)=>{
+      //   v.sanpham = [];
+      //   return v;
+      // })
     }
     ChosenDonhang(event:any,type:any){
       console.log(event.value);

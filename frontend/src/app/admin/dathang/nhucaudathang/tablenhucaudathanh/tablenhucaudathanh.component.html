@@ -31,7 +31,7 @@
             </td>
             <td class="whitespace-nowrap">
                 <span class="max-w-40 line-clamp-4">
-                    {{GetGoiy(item)}} ({{DadatGoiy(item)||0}})
+                    {{item.goiy}} ({{DadatGoiy(item)||0}})
                 </span>
             </td>
             <td *ngFor="let item of filterListNCC; let i=index" class="whitespace-nowrap">

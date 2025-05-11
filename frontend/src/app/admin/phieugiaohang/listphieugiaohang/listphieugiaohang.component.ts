@@ -92,7 +92,7 @@ export class ListPhieugiaohangComponent {
       Batdau: moment().toDate(),
       Ketthuc: moment().toDate(),
       Type: 'donsi',
-      Status:'dadat'
+      Status:['dadat','dagiao','danhan'],
     };
     ListDate: any[] = [
       { id: 1, Title: '1 Ngày', value: 'day' },

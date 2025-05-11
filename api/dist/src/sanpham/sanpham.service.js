@@ -84,10 +84,29 @@ let SanphamService = class SanphamService {
     async nhucaudathang() {
         try {
             const sanphams = await this.prisma.sanpham.findMany();
-            return sanphams.filter((item) => {
-                const check = parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
-                return parseFloat(check) > 0;
+            const tonkhos = await this.prisma.tonKho.findMany();
+            const result = tonkhos.filter((tonkho) => {
+                const sanpham = sanphams.find((sp) => sp.id === tonkho.sanphamId);
+                if (sanpham) {
+                    const goiy = (Number(tonkho.slton) - Number(tonkho.slchogiao) + Number(tonkho.slchonhap))
+                        * (1 + Number(sanpham.haohut) / 100);
+                    goiy < 0;
+                    tonkho.goiy = goiy;
+                    return goiy < 0;
+                }
+                return false;
             });
+            const combined = result.map((tonkho) => {
+                const product = sanphams.find((sp) => sp.id === tonkho.sanphamId);
+                return {
+                    ...product,
+                    slton: Number(tonkho.slton),
+                    slchogiao: Number(tonkho.slchogiao),
+                    slchonhap: Number(tonkho.slchonhap),
+                    goiy: Math.abs(Number(tonkho.goiy)),
+                };
+            });
+            return combined;
         }
         catch (error) {
             this._ErrorlogsService.logError('Lỗi lấy tất cả sản phẩm', {

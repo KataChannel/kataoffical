@@ -9,12 +9,13 @@ export declare class DathangController {
             order: number | null;
             isActive: boolean;
             idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
+            sldat: import("@prisma/client/runtime/library").Decimal;
+            slgiao: import("@prisma/client/runtime/library").Decimal;
+            slnhan: import("@prisma/client/runtime/library").Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
+            ttdat: import("@prisma/client/runtime/library").Decimal;
+            ttgiao: import("@prisma/client/runtime/library").Decimal;
+            ttnhan: import("@prisma/client/runtime/library").Decimal;
             dathangId: string;
         }[];
     } & {
@@ -26,6 +27,7 @@ export declare class DathangController {
         createdAt: Date;
         updatedAt: Date | null;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -38,12 +40,13 @@ export declare class DathangController {
             order: number | null;
             isActive: boolean;
             idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
+            sldat: import("@prisma/client/runtime/library").Decimal;
+            slgiao: import("@prisma/client/runtime/library").Decimal;
+            slnhan: import("@prisma/client/runtime/library").Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
+            ttdat: import("@prisma/client/runtime/library").Decimal;
+            ttgiao: import("@prisma/client/runtime/library").Decimal;
+            ttnhan: import("@prisma/client/runtime/library").Decimal;
             dathangId: string;
         }[];
     } & {
@@ -55,6 +58,7 @@ export declare class DathangController {
         createdAt: Date;
         updatedAt: Date | null;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -83,6 +87,7 @@ export declare class DathangController {
         createdAt: Date;
         updatedAt: Date | null;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -94,6 +99,7 @@ export declare class DathangController {
             sldat: number;
             slgiao: number;
             slnhan: number;
+            slhuy: number;
             ttdat: number;
             ttgiao: number;
             ttnhan: number;
@@ -137,27 +143,13 @@ export declare class DathangController {
         createdAt: Date;
         updatedAt: Date | null;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
         nhacungcapId: string;
     }>;
     update(id: string, updateDathangDto: any): Promise<{
-        sanpham: {
-            id: string;
-            ghichu: string | null;
-            order: number | null;
-            isActive: boolean;
-            idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
-            dathangId: string;
-        }[];
-    } & {
         id: string;
         title: string | null;
         ghichu: string | null;
@@ -166,6 +158,7 @@ export declare class DathangController {
         createdAt: Date;
         updatedAt: Date | null;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -180,6 +173,7 @@ export declare class DathangController {
         createdAt: Date;
         updatedAt: Date | null;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;

@@ -30,6 +30,15 @@
   width: 5px !important;
 }
 
+.mdc-data-table__cell {
+  border:1px solid #e0e0e0 !important;
+}
+.mdc-data-table__header-cell {
+  border: 1px solid #e0e0e0 !important;
+}
+
+
+
 .primary {
   @include mat.icon-button-overrides((
     icon-color: white,   // Background color of the button

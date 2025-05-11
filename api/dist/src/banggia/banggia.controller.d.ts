@@ -7,8 +7,8 @@ export declare class BanggiaController {
             id: string;
             order: number | null;
             isActive: boolean;
-            giaban: number;
             sanphamId: string;
+            giaban: number;
             banggiaId: string;
         }[];
     } & {
@@ -135,8 +135,8 @@ export declare class BanggiaController {
             id: string;
             order: number | null;
             isActive: boolean;
-            giaban: number;
             sanphamId: string;
+            giaban: number;
             banggiaId: string;
         }[];
     } & {

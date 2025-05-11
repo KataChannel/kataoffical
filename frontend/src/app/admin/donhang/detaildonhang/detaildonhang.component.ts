@@ -167,12 +167,12 @@ export class DetailDonhangComponent {
     }
   }
 
-  private async updateDonhang() {
+  private async updateDonhang(status?: any) {
     try {
       this.DetailDonhang.update((v: any) => ({
         ...v,
         type: 'donsi',
-        status: 'dadat',
+        status: status ?? 'dadat',
       }));
       
       this.DetailDonhang.update((v: any) => ({
@@ -195,6 +195,9 @@ export class DetailDonhangComponent {
     } catch (error) {
       console.error('Lỗi khi cập nhật donhang:', error);
     }
+  }
+  UpdateStatus(status: any) {
+    this.updateDonhang(status);
   }
   async DeleteData() {
     try {
@@ -298,7 +301,7 @@ export class DetailDonhangComponent {
     this.DetailDonhang.update((v: any) => {
       if (index !== null) {
         if (field === 'sldat') {
-          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
+          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = newValue;
           // Find the next input to focus on
           const inputs = document.querySelectorAll('.sldat-input')as NodeListOf<HTMLInputElement>;
               if (index < this.dataSource().filteredData.length - 1) {
@@ -359,7 +362,7 @@ export class DetailDonhangComponent {
               panelClass: ['snackbar-error'],
             });
           } else {
-            v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newGiao;
+            v.sanpham[index]['slgiao'] =  newGiao;
           }
         } else {
           v.sanpham[index][field] = newValue;
@@ -369,15 +372,49 @@ export class DetailDonhangComponent {
       }
       return v;
     });
-  
-    // CẬP NHẬT LẠI UI BẰNG CÁCH SET NỘI DUNG CHO `contentEditable`
-    // setTimeout(() => {
-    //   if(index !== null){
-    //   (event.target as HTMLElement).innerText = this.DetailDonhang()?.sanpham[index]?.slgiao || '0';
-    //   }
-    // }, 0);
-
   }
+
+
+  updateBlurValue(
+    event: Event,
+    index: number | null,
+    element: any,
+    field: keyof any,
+    type: 'number' | 'string'
+  ) {
+    const target = event.target as HTMLElement;
+    const newValue =
+      type === 'number' ? Number(target.innerText.trim()) || 0 : target.innerText.trim();
+
+    this.DetailDonhang.update((v: any) => {
+      if (index !== null) {
+        if (field === 'sldat') {
+          v.sanpham[index]['sldat'] = newValue;
+          v.sanpham[index]['slgiao'] = newValue;
+          // v.sanpham[index]['slnhan'] = newValue;
+        } else if (field === 'slgiao') {
+          if (newValue < v.sanpham[index]['sldat']) {
+            v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
+            this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
+              duration: 1000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-error'],
+            });
+          } else {
+            v.sanpham[index]['slgiao'] = newValue;
+            // v.sanpham[index]['slnhan'] = newValue;
+          }
+        } else {
+          v.sanpham[index][field] = newValue;
+        }
+      } else {
+        v[field] = newValue;
+      }
+      return v;
+    });
+  }
+
 
   
 

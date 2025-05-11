@@ -17,30 +17,52 @@ async function restoreTableFromJson(table) {
             return;
         }
         const filePath = path.join(BACKUP_ROOT_DIR, latestBackupDir, `${table}.json`);
-        console.log(filePath);
         if (!fs.existsSync(filePath)) {
-            console.error(`❌ Không tìm thấy file backup cho bảng ${table}`);
             return;
         }
         const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         if (Array.isArray(data) && data.length > 0) {
-            try {
-                const processedData = data.map(item => {
-                    const newItem = { ...item };
-                    if (newItem.size && typeof newItem.size === 'string') {
-                        newItem.size = newItem.size.trim() === '' ? null : parseInt(newItem.size, 10);
-                    }
-                    return newItem;
-                });
-                await prisma[table].createMany({
+            const processedData = data.map((item) => {
+                const newItem = { ...item };
+                if (newItem.size && typeof newItem.size === 'string') {
+                    newItem.size =
+                        newItem.size.trim() === '' ? null : parseInt(newItem.size, 10);
+                }
+                return newItem;
+            });
+            const model = prisma[table];
+            if (!model || typeof model.createMany !== 'function') {
+                console.log(`Bảng join ${table} không có model. Sử dụng raw SQL để restore dữ liệu.`);
+                const columns = Object.keys(processedData[0])
+                    .map((col) => `"${col}"`)
+                    .join(', ');
+                const values = processedData
+                    .map((item) => {
+                    return ('(' +
+                        Object.values(item)
+                            .map((val) => {
+                            if (typeof val === 'string') {
+                                return `'${val.replace(/'/g, "''")}'`;
+                            }
+                            else if (val === null || val === undefined) {
+                                return 'NULL';
+                            }
+                            return val;
+                        })
+                            .join(', ') +
+                        ')');
+                })
+                    .join(', ');
+                await prisma.$executeRawUnsafe(`INSERT INTO "${table}" (${columns}) VALUES ${values}`);
+                return;
+            }
+            else {
+                await model.createMany({
                     data: processedData,
                     skipDuplicates: true,
                 });
-                console.log(`✅ Đã nhập dữ liệu vào bảng ${table}`);
             }
-            catch (error) {
-                console.error(`⚠️ Lỗi khi nhập dữ liệu vào bảng ${table}:`, error.message);
-            }
+            console.log(`✅ Đã nhập dữ liệu vào bảng ${table}`);
         }
     }
     catch (error) {

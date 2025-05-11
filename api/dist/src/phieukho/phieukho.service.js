@@ -33,13 +33,12 @@ let PhieukhoService = class PhieukhoService {
             },
         });
         const tranData = phieuKhos.map((phieuKho) => ({
-            khoname: phieuKho.kho.name,
+            khoname: phieuKho.kho?.name ?? '',
             maphieu: phieuKho.maphieu,
             ngay: phieuKho.ngay,
             type: phieuKho.type,
             sanpham: phieuKho.sanpham.map((item) => ({
                 id: item.id,
-                sldat: item.sldat,
                 soluong: item.soluong,
                 title: item.sanpham.title,
             })),
@@ -158,7 +157,27 @@ let PhieukhoService = class PhieukhoService {
         });
     }
     async remove(id) {
-        return this.prisma.phieuKho.delete({ where: { id } });
+        return this.prisma.$transaction(async (prisma) => {
+            const phieuKho = await prisma.phieuKho.findUnique({
+                where: { id },
+                include: { sanpham: true },
+            });
+            if (!phieuKho) {
+                throw new common_1.NotFoundException('Phiếu kho không tồn tại');
+            }
+            for (const item of phieuKho.sanpham) {
+                await prisma.sanpham.update({
+                    where: { id: item.sanphamId },
+                    data: {
+                        soluongkho: phieuKho.type === 'xuat'
+                            ? { increment: item.soluong ?? 0 }
+                            : { decrement: item.soluong ?? 0 },
+                    },
+                });
+            }
+            await prisma.phieuKhoSanpham.deleteMany({ where: { phieuKhoId: id } });
+            return prisma.phieuKho.delete({ where: { id } });
+        });
     }
 };
 exports.PhieukhoService = PhieukhoService;

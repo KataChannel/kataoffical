@@ -34,14 +34,11 @@ export declare class PhieukhoService {
                 updatedAt: Date;
             };
             id: string;
-            soluong: import("@prisma/client/runtime/library").Decimal | null;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            sldat: number;
             sanphamId: string;
-            sltra: number;
-            slhuy: number;
             phieuKhoId: string;
         }[];
         kho: {
@@ -55,28 +52,29 @@ export declare class PhieukhoService {
             sdt: string | null;
             makho: string | null;
             congtyId: string | null;
-        };
+        } | null;
         id: string;
+        title: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
-        maphieu: string;
-        ngay: Date;
-        khoId: string;
+        type: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        maphieu: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        khoId: string | null;
     }[]>;
     findOne(id: string): Promise<{
         sanpham: {
             id: string;
-            soluong: import("@prisma/client/runtime/library").Decimal | null;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            sldat: number;
             sanphamId: string;
-            sltra: number;
-            slhuy: number;
             phieuKhoId: string;
         }[];
         kho: {
@@ -90,75 +88,85 @@ export declare class PhieukhoService {
             sdt: string | null;
             makho: string | null;
             congtyId: string | null;
-        };
+        } | null;
     } & {
         id: string;
+        title: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
-        maphieu: string;
-        ngay: Date;
-        khoId: string;
+        type: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        maphieu: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        khoId: string | null;
     }>;
     create(data: any): Promise<{
         sanpham: {
             id: string;
-            soluong: import("@prisma/client/runtime/library").Decimal | null;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            sldat: number;
             sanphamId: string;
-            sltra: number;
-            slhuy: number;
             phieuKhoId: string;
         }[];
     } & {
         id: string;
+        title: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
-        maphieu: string;
-        ngay: Date;
-        khoId: string;
+        type: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        maphieu: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        khoId: string | null;
     }>;
     update(id: string, data: any): Promise<{
         sanpham: {
             id: string;
-            soluong: import("@prisma/client/runtime/library").Decimal | null;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
-            sldat: number;
             sanphamId: string;
-            sltra: number;
-            slhuy: number;
             phieuKhoId: string;
         }[];
     } & {
         id: string;
+        title: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
-        maphieu: string;
-        ngay: Date;
-        khoId: string;
+        type: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        maphieu: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        khoId: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
+        title: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
-        maphieu: string;
-        ngay: Date;
-        khoId: string;
+        type: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        maphieu: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        khoId: string | null;
     }>;
 }

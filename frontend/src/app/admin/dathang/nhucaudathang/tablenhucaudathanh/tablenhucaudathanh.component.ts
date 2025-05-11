@@ -24,7 +24,10 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
   filterListNCC: any[] = [];
   filterListSP: any[] = [];
   ngAfterViewInit(): void {
-    this.LoadTable(this.ListFindNCC,this.EditList);
+    this.LoadTable(this.ListFindNCC,this.EditList); 
+    console.log('ListFindNCC',this.ListFindNCC);
+    console.log('EditList',this.EditList);
+    
   }
   LoadTable(ListFindNCC: any[], EditList: any[]){
     let vitri = 1;
@@ -48,31 +51,37 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
   FilterTable(sanpham:any,nhacungcap:any){
     this.isFilter = !this.isFilter;
     if(this.isFilter){
-    if(sanpham!==''){
-      const EditList = this.EditList.filter((item:any) => item.id=== sanpham.id);
-      const ListFindNCC = this.ListFindNCC.filter((item:any) => item.Sanpham.some((x:any) => x.id === sanpham.id));
-      this.LoadTable(ListFindNCC,EditList);
-    }
-    else{
-      const ListFindNCC = this.ListFindNCC.filter((item:any) => item.id=== nhacungcap.id);
-      const EditList = ListFindNCC[0]?.Sanpham
-      ListFindNCC.forEach(item => {
-        item.sanpham = item.Sanpham.map((sp: any) => ({
-          ...sp,
-          sldat: Number(this.GetGoiy(sp))
+    if (sanpham && Object.keys(sanpham).length > 0) {
+      // When a specific product is selected, filter by product id
+      const filteredEditList = this.EditList.filter((item: any) => item.id === sanpham.id);
+      const filteredListNCC = this.ListFindNCC.filter((item: any) =>
+      item.Sanpham.some((sp: any) => sp.id === sanpham.id)
+      );
+      this.LoadTable(filteredListNCC, filteredEditList);
+    } else if (nhacungcap && Object.keys(nhacungcap).length > 0) {
+      // When filtering by supplier only
+      const filteredListNCC = this.ListFindNCC.filter((item: any) => item.id === nhacungcap.id);
+      // For each matched supplier, update its product list with default sldat values
+      filteredListNCC.forEach(item => {
+      const matchedProducts = this.filterListSP
+        .filter((sp: any) => item.Sanpham.some((p: any) => p.id === sp.id))
+        .map(sp => ({
+        ...sp,
+        sldat: Number(sp.goiy)
         }));
+      if (matchedProducts.length > 0) {
+        item.sanpham = matchedProducts;
+      }
       });
-      const existingIndex = this.ListDathang.findIndex((item: any) => item.id === nhacungcap.id);
-      if(existingIndex !== -1){
-      // Update the existing entry
-      this.ListDathang[existingIndex] = { ...this.ListDathang[existingIndex], ...ListFindNCC[0] };
+      // Update or add the filtered supplier into ListDathang accordingly
+      const existingIndex = this.ListDathang.findIndex((entry: any) => entry.id === nhacungcap.id);
+      if (existingIndex !== -1) {
+      this.ListDathang[existingIndex] = { ...this.ListDathang[existingIndex], ...filteredListNCC[0] };
       } else {
-      // Add new entry
-      this.ListDathang.push(ListFindNCC[0]);
-      }   
-    
+      this.ListDathang.push(filteredListNCC[0]);
+      }
       this.ListDathangChange.emit(this.ListDathang);
-      this.LoadTable(ListFindNCC,EditList);
+      this.LoadTable(filteredListNCC, this.filterListSP);
     }
   }
   else{
@@ -93,15 +102,12 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
       return 0;
     }
   }
-  GetGoiy(item:any){
-    return parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
-  }
   DadatGoiy(item:any){
       const SLDat = this.ListDathang.reduce((acc: number, ncc: any) => {
         const sp = ncc.sanpham?.find((v: any) => v.id === item.id);
         return acc + (sp?.sldat ? Number(sp.sldat) : 0);
       }, 0);
-    return (Number(this.GetGoiy(item)) - SLDat).toFixed(2);
+    return (Number(item.goiy) - SLDat).toFixed(2);
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
@@ -163,7 +169,7 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
           const sp = ncc.sanpham?.find((v: any) => v.id === Sanpham.id);
           return acc + (sp?.sldat ? Number(sp.sldat) : 0);
         }, 0);
-        return (Number(this.GetGoiy(Sanpham)) - SLDat).toFixed(2);
+        return (Number(Sanpham.goiy) - SLDat).toFixed(2);
       })();
 
       if (Number(checkValue) < 0) {
@@ -245,7 +251,7 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
         const sp = ncc.sanpham?.find((v: any) => v.id === Sanpham.id);
         return acc + (sp?.sldat ? Number(sp.sldat) : 0);
       }, 0);
-      return (Number(this.GetGoiy(Sanpham)) - SLDat).toFixed(2);
+      return (Number(Sanpham.goiy) - SLDat).toFixed(2);
     })();
 
     if (Number(checkValue) < 0) {

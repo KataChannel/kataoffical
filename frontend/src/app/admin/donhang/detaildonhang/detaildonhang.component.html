@@ -11,9 +11,11 @@
   </div>
   <div class="flex flex-row space-x-2 items-center">
     <mat-slide-toggle [(ngModel)]="DetailDonhang().isActive" [disabled]="!isEdit()">{{DetailDonhang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+    <button *ngIf="DetailDonhang().status === 'dagiao'" mat-flat-button color="primary" (click)="UpdateStatus('dadat')">Đã Đặt</button>
     <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>
     </button>
+
     <button mat-icon-button color="primary" (click)="printContent()">
       <mat-icon>print</mat-icon>
     </button>
@@ -209,6 +211,7 @@
                         @case ('sldat') {
                         <div
                           [contentEditable]="true"
+                          (blur)="updateBlurValue($event,idx, row, 'sldat','number')"
                           (keydown.enter)="updateValue($event,idx, row, 'sldat','number')"
                           class="sldat-input p-2 min-w-28 text-end bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                           >
@@ -225,6 +228,7 @@
                         @case ('ghichu') {
                       <div
                           [contentEditable]="true"
+                          (blur)="updateBlurValue($event,idx, row, 'ghichu','string')"
                           (keydown.enter)="updateValue($event,idx, row, 'ghichu','string')"
                           class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                         >

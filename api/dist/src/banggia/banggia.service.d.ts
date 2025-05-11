@@ -23,8 +23,8 @@ export declare class BanggiaService {
             id: string;
             order: number | null;
             isActive: boolean;
-            giaban: number;
             sanphamId: string;
+            giaban: number;
             banggiaId: string;
         }[];
     } & {
@@ -121,8 +121,8 @@ export declare class BanggiaService {
             id: string;
             order: number | null;
             isActive: boolean;
-            giaban: number;
             sanphamId: string;
+            giaban: number;
             banggiaId: string;
         }[];
     } & {

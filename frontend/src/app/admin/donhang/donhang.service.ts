@@ -194,6 +194,7 @@ export class DonhangService {
         }
         this.getAllDonhang()
         this.getDonhangByid(dulieu.id)
+        return data
     } catch (error) {
         return console.error(error);
     }

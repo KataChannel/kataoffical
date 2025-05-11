@@ -117,6 +117,12 @@ export class ListDonhangComponent {
   CountItem: any = signal<any>(0)
   pageSize: any = signal<any>(10)
   pageIndex: any = signal<any>(1)
+  Trangthaidon:any ={
+    dadat:'Đơn mới',
+    dagiao:'Đã giao',
+    danhan:'Đã nhận',
+    huy:'Đã hủy',
+  }
   SearchParams: any = {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
@@ -208,9 +214,6 @@ export class ListDonhangComponent {
   async ngOnInit(): Promise<void> {
     const data = await this._DonhangService.searchDonhang(this.SearchParams);
     this.Listdonhang.set(data);
-    // this.CountItem.set(data.total)   
-    // this.pageSize.set(data.pageSize)
-    // this.pageIndex.set(data.pageIndex)
     this.initializeColumns();
     this.setupDrawer();
     this.dataSource = new MatTableDataSource(this.Listdonhang().data);

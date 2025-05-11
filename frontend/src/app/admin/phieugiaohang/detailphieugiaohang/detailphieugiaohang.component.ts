@@ -68,12 +68,6 @@ export class DetailPhieugiaohangComponent {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
       this._PhieugiaohangService.setDonhangId(id);
-      // await this._KhachhangService.getAllKhachhang();
-      // this.filterKhachhang = this.ListKhachhang();
-      // await this._BanggiaService.getAllBanggia();
-      // this.filterBanggia = this._BanggiaService.ListBanggia();
-            // await this._SanphamService.getAllSanpham();
-      // this.filterSanpham = this._SanphamService.ListSanpham();
     });
 
     effect(async () => {
@@ -84,6 +78,7 @@ export class DetailPhieugiaohangComponent {
       }
       else {
         await this._PhieugiaohangService.Phieugiaohang({id:id});
+        this.DetailPhieugiaohang().status ==="danhan"? this.isEdit.set(false):this.isEdit.set(true);
         this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang()?.sanpham.map((v:any)=>{
           v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
           return v;
@@ -305,13 +300,88 @@ export class DetailPhieugiaohangComponent {
       return v;
     });    
   }
-  GiaoDonhang()
-  {
-    this.DetailPhieugiaohang.update((v:any)=>{
-      v.status='dagiao'
-      return v
-    })
-    this._PhieugiaohangService.updateDonhang(this.DetailPhieugiaohang())
+
+  updateBlurValue(
+    event: FocusEvent,
+    index: number | null,
+    element: any,
+    field: keyof any,
+    type: 'number' | 'string'
+  ) {
+    const target = event.target as HTMLElement;
+    const newValue =
+      type === 'number'
+        ? Number(target.innerText.trim()) || 0
+        : target.innerText.trim();
+
+    // Cập nhật giá trị sau khi input mất focus (blur)
+    this.DetailPhieugiaohang.update((v: any) => {
+      if (index !== null) {
+        if (field === 'sldat') {
+          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
+        } else if (field === 'ghichu') {
+          v.sanpham[index]['ghichu'] = newValue;
+        } else if (field === 'slgiao') {
+          v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
+          v.sanpham[index]['ttgiao'] = v.sanpham[index]['slgiao'] * v.sanpham[index]['giaban'];
+        } else {
+          v.sanpham[index][field] = newValue;
+        }
+      } else {
+        v[field] = newValue;
+      }
+      return v;
+    });
+  }
+
+
+  async GiaoDonhang() {
+    try {
+      this.DetailPhieugiaohang.update((v: any) => {
+        v.status = 'dagiao';
+        return v;
+      });
+      await this._PhieugiaohangService.updateDonhang(this.DetailPhieugiaohang());
+      this._snackBar.open('Giao đơn hàng thành công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+    } catch (error) {
+      console.error('Lỗi khi giao đơn hàng:', error);
+      this._snackBar.open('Giao đơn hàng thất bại', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+    }
+  }
+  async Danhanhang() {
+    try {
+      this.DetailPhieugiaohang.update((v: any) => {
+        v.status = 'danhan';
+        return v;
+      });
+      console.log(this.DetailPhieugiaohang());
+      
+      await this._PhieugiaohangService.updateDonhang(this.DetailPhieugiaohang());
+      this._snackBar.open('Đã Nhận đơn hàng thành công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+    } catch (error) {
+      console.error('Lỗi khi nhận đơn hàng:', error);
+      this._snackBar.open('Nhận đơn hàng thất bại', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+    }
   }
 
   Tongcong: any = 0;

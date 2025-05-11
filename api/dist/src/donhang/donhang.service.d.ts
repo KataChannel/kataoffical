@@ -121,8 +121,8 @@ export declare class DonhangService {
                     id: string;
                     order: number | null;
                     isActive: boolean;
-                    giaban: number;
                     sanphamId: string;
+                    giaban: number;
                     banggiaId: string;
                 }[];
             } & {
@@ -249,6 +249,7 @@ export declare class DonhangService {
             sldat: number;
             slgiao: number;
             slnhan: number;
+            slhuy: number;
             ttdat: number;
             ttgiao: number;
             ttnhan: number;
@@ -277,8 +278,8 @@ export declare class DonhangService {
                     id: string;
                     order: number | null;
                     isActive: boolean;
-                    giaban: number;
                     sanphamId: string;
+                    giaban: number;
                     banggiaId: string;
                 }[];
             } & {
@@ -339,12 +340,13 @@ export declare class DonhangService {
             order: number | null;
             isActive: boolean | null;
             idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
+            sldat: import("@prisma/client/runtime/library").Decimal;
+            slgiao: import("@prisma/client/runtime/library").Decimal;
+            slnhan: import("@prisma/client/runtime/library").Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
+            ttdat: import("@prisma/client/runtime/library").Decimal;
+            ttgiao: import("@prisma/client/runtime/library").Decimal;
+            ttnhan: import("@prisma/client/runtime/library").Decimal;
             donhangId: string;
         }[];
     } & {
@@ -363,21 +365,6 @@ export declare class DonhangService {
         printCount: number | null;
     }>;
     update(id: string, data: any): Promise<{
-        sanpham: {
-            id: string;
-            ghichu: string | null;
-            order: number | null;
-            isActive: boolean | null;
-            idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
-            donhangId: string;
-        }[];
-    } & {
         id: string;
         title: string | null;
         ghichu: string | null;
@@ -391,7 +378,7 @@ export declare class DonhangService {
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
-    }>;
+    } | undefined>;
     updatePhieugiao(id: string, data: any): Promise<{
         sanpham: {
             id: string;
@@ -399,12 +386,13 @@ export declare class DonhangService {
             order: number | null;
             isActive: boolean | null;
             idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
+            sldat: import("@prisma/client/runtime/library").Decimal;
+            slgiao: import("@prisma/client/runtime/library").Decimal;
+            slnhan: import("@prisma/client/runtime/library").Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
+            ttdat: import("@prisma/client/runtime/library").Decimal;
+            ttgiao: import("@prisma/client/runtime/library").Decimal;
+            ttnhan: import("@prisma/client/runtime/library").Decimal;
             donhangId: string;
         }[];
     } & {

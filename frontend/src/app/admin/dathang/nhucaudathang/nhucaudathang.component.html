@@ -7,7 +7,7 @@
             <div class="w-full flex flex-row space-x-2 items-center">
                 <!-- <button class="flex flex-row items-center btn-primary" matTooltip="Thêm mới" (click)="create()" mat-flat-button>
                     <mat-icon>add_circle</mat-icon>
-                    <span class="whitespace-nowrap">Tạo Mới</span>
+                    <span class="whitespace- ">Tạo Mới</span>
                 </button> -->
                 <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
                     <mat-icon>tune</mat-icon>
@@ -41,7 +41,7 @@
                 <!-- <button matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
                     <mat-icon>cloud_download</mat-icon>
                 </button> -->
-                <span (click)="ChoseAllEdit()" class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
+                <span (click)="ChoseAllEdit()" class="lg:flex hidden whitespace-  p-2 rounded-lg bg-slate-200">
                     {{this.Listsanpham().length}} Sản Phẩm
                 </span>
                 <button (click)="OpenTaodonDialog(TaodonDialog)" *ngIf="EditList.length>0" color="primary" mat-flat-button>
@@ -61,7 +61,7 @@
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
                     <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
-                        <span class="max-w-40 line-clamp-4 me-4">
+                        <span class="max-w- line-clamp-4 me-4">
                             {{ ColumnName[column] }}
                         </span>
                              <span class="z-10 material-symbols-outlined text-gray-500" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
@@ -114,37 +114,32 @@
                     <td mat-cell *matCellDef="let row; let idx = index">
                         @switch (column) {
                         @case ('STT') {
-                        <span class="max-w-40 line-clamp-4">
+                        <span class="max-w- line-clamp-4">
                             {{ idx + 1 }}
                         </span>
                         }
                         @case ('createdAt') {
-                        <span class="max-w-40 line-clamp-4">
+                        <span class="max-w- line-clamp-4">
                             {{ row[column]|date:'dd/MM/yyyy'}}
                         </span>
                         }
                         @case ('haohut') {
-                        <span class="max-w-40 line-clamp-4 text-end">
+                        <span class="max-w- line-clamp-4 text-end">
                             {{ row[column]}}%
                         </span>
                         }
                         @case ('soluong') {
-                        <span class="max-w-40 line-clamp-4 text-end">
+                        <span class="max-w- line-clamp-4 text-end">
                             {{ row[column]}}
                         </span>
                         }
                         @case ('soluongkho') {
-                        <span class="max-w-40 line-clamp-4 text-end">
+                        <span class="max-w- line-clamp-4 text-end">
                             {{ row[column]}}
                         </span>
                         }
-                        @case ('goiy') {
-                        <span class="max-w-40 line-clamp-4 text-end">
-                           {{GetGoiy(row)}}
-                        </span>
-                        }
                         @case ('isActive') {
-                        <span class="max-w-40 line-clamp-4">
+                        <span class="max-w- line-clamp-4">
                             @if (row[column]) {
                             <mat-icon class="text-green-500">check_circle</mat-icon>
                             }
@@ -154,12 +149,12 @@
                         </span>
                         }
                         @case ('updatedAt') {
-                        <span class="max-w-40 line-clamp-4">
+                        <span class="max-w- line-clamp-4">
                             {{ row[column]|date:'dd/MM/yyyy'}}
                         </span>
                         }
                         @default {
-                        <span class="max-w-40 line-clamp-4">
+                        <span class="max-w- line-clamp-4">
                             {{ row[column] }}
                         </span>
                         }
@@ -243,22 +238,22 @@
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <tr *ngFor="let item of EditList; trackBy:trackByFn; let j=index">
-                            <td class="whitespace-nowrap">
-                                <span class="max-w-40 line-clamp-4">
+                            <td class="whitespace- ">
+                                <span class="max-w- line-clamp-4">
                                     {{ item.title }}
                                 </span>
                             </td>
-                            <td class="whitespace-nowrap">
-                                <span class="max-w-40 line-clamp-4">
+                            <td class="whitespace- ">
+                                <span class="max-w- line-clamp-4">
                                     {{ item.masp }}
                                 </span>
                             </td>
-                            <td class="whitespace-nowrap">
-                                <span class="max-w-40 line-clamp-4">
+                            <td class="whitespace- ">
+                                <span class="max-w- line-clamp-4">
                                     {{GetGoiy(item)}}
                                 </span>
                             </td>
-                            <td *ngFor="let item of ListFindNCC; let i=index" class="whitespace-nowrap">
+                            <td *ngFor="let item of ListFindNCC; let i=index" class="whitespace- ">
   
                                 <div *ngIf="CheckSanphaminNCC(item,EditList[j])"
                                 [contentEditable]="true"

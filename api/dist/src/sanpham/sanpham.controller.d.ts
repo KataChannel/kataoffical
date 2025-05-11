@@ -63,24 +63,28 @@ export declare class SanphamController {
         updatedAt: Date;
     }[]>;
     nhucaudathang(): Promise<{
-        id: string;
-        title: string;
-        title2: string | null;
-        slug: string | null;
-        masp: string;
-        subtitle: string | null;
-        giagoc: number;
-        dvt: string | null;
-        hinhanh: string | null;
-        loadpoint: number | null;
-        soluong: import("@prisma/client/runtime/library").Decimal | null;
-        soluongkho: import("@prisma/client/runtime/library").Decimal | null;
-        haohut: number;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
+        slton: number;
+        slchogiao: number;
+        slchonhap: number;
+        goiy: number;
+        id?: string | undefined;
+        title?: string | undefined;
+        title2?: string | null | undefined;
+        slug?: string | null | undefined;
+        masp?: string | undefined;
+        subtitle?: string | null | undefined;
+        giagoc?: number | undefined;
+        dvt?: string | null | undefined;
+        hinhanh?: string | null | undefined;
+        loadpoint?: number | null | undefined;
+        soluong?: import("@prisma/client/runtime/library").Decimal | null | undefined;
+        soluongkho?: import("@prisma/client/runtime/library").Decimal | null | undefined;
+        haohut?: number | undefined;
+        ghichu?: string | null | undefined;
+        order?: number | null | undefined;
+        isActive?: boolean | undefined;
+        createdAt?: Date | undefined;
+        updatedAt?: Date | undefined;
     }[]>;
     getLastUpdatedSanpham(): Promise<{
         updatedAt: number | Date;
@@ -89,16 +93,16 @@ export declare class SanphamController {
         Donhangsanpham: {
             createdAt: Date;
             madonhang: string;
-            sldat: number;
-            slgiao: number;
-            slnhan: number;
+            sldat: import("@prisma/client/runtime/library").Decimal;
+            slgiao: import("@prisma/client/runtime/library").Decimal;
+            slnhan: import("@prisma/client/runtime/library").Decimal;
         }[];
         Dathangsanpham: {
             createdAt: Date;
             madncc: string | null;
-            sldat: number;
-            slgiao: number;
-            slnhan: number;
+            sldat: import("@prisma/client/runtime/library").Decimal;
+            slgiao: import("@prisma/client/runtime/library").Decimal;
+            slnhan: import("@prisma/client/runtime/library").Decimal;
         }[];
         Nhacungcap: {
             id: string;

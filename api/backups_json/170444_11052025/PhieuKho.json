@@ -1,0 +1,17 @@
+[
+  {
+    "id": "c4b8ed6b-d082-42fa-bc96-f82cbd06002b",
+    "maphieu": "PX-TG-AA00001",
+    "ngay": "2025-05-11T00:00:00.000Z",
+    "type": "xuat",
+    "khoId": "4cc01811-61f5-4bdc-83de-a493764e9258",
+    "ghichu": null,
+    "isActive": false,
+    "createdAt": "2025-05-11T09:21:32.415Z",
+    "updatedAt": "2025-05-11T09:47:44.843Z",
+    "title": null,
+    "madathang": null,
+    "madncc": null,
+    "madonhang": null
+  }
+]

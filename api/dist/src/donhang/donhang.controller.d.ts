@@ -9,12 +9,13 @@ export declare class DonhangController {
             order: number | null;
             isActive: boolean | null;
             idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
+            sldat: import("@prisma/client/runtime/library").Decimal;
+            slgiao: import("@prisma/client/runtime/library").Decimal;
+            slnhan: import("@prisma/client/runtime/library").Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
+            ttdat: import("@prisma/client/runtime/library").Decimal;
+            ttgiao: import("@prisma/client/runtime/library").Decimal;
+            ttnhan: import("@prisma/client/runtime/library").Decimal;
             donhangId: string;
         }[];
     } & {
@@ -213,8 +214,8 @@ export declare class DonhangController {
                     id: string;
                     order: number | null;
                     isActive: boolean;
-                    giaban: number;
                     sanphamId: string;
+                    giaban: number;
                     banggiaId: string;
                 }[];
             } & {
@@ -275,6 +276,7 @@ export declare class DonhangController {
             sldat: number;
             slgiao: number;
             slnhan: number;
+            slhuy: number;
             ttdat: number;
             ttgiao: number;
             ttnhan: number;
@@ -303,8 +305,8 @@ export declare class DonhangController {
                     id: string;
                     order: number | null;
                     isActive: boolean;
-                    giaban: number;
                     sanphamId: string;
+                    giaban: number;
                     banggiaId: string;
                 }[];
             } & {
@@ -365,12 +367,13 @@ export declare class DonhangController {
             order: number | null;
             isActive: boolean | null;
             idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
+            sldat: import("@prisma/client/runtime/library").Decimal;
+            slgiao: import("@prisma/client/runtime/library").Decimal;
+            slnhan: import("@prisma/client/runtime/library").Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
+            ttdat: import("@prisma/client/runtime/library").Decimal;
+            ttgiao: import("@prisma/client/runtime/library").Decimal;
+            ttnhan: import("@prisma/client/runtime/library").Decimal;
             donhangId: string;
         }[];
     } & {
@@ -389,21 +392,6 @@ export declare class DonhangController {
         printCount: number | null;
     }>;
     update(id: string, updateDonhangDto: any): Promise<{
-        sanpham: {
-            id: string;
-            ghichu: string | null;
-            order: number | null;
-            isActive: boolean | null;
-            idSP: string;
-            sldat: number | null;
-            slgiao: number | null;
-            slnhan: number | null;
-            ttdat: number | null;
-            ttgiao: number | null;
-            ttnhan: number | null;
-            donhangId: string;
-        }[];
-    } & {
         id: string;
         title: string | null;
         ghichu: string | null;
@@ -417,7 +405,7 @@ export declare class DonhangController {
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
-    }>;
+    } | undefined>;
     remove(id: string): Promise<{
         id: string;
         title: string | null;

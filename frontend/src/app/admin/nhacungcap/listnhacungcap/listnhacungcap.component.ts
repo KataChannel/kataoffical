@@ -46,6 +46,7 @@ export class ListNhacungcapComponent {
   displayedColumns: string[] = [
     'name',
     'mancc',
+    'Sanpham',
     'diachi',
     'email',
     'sdt',
@@ -57,6 +58,7 @@ export class ListNhacungcapComponent {
   ColumnName: any = {
     name: 'Tên Nhà Cung Cấp',
     mancc: 'Mã Nhà Cung Cấp',
+    Sanpham:'Sản Phẩm',
     diachi: 'Địa Chỉ',
     email: 'Email',
     sdt: 'Số Điện Thoại',
@@ -109,6 +111,12 @@ export class ListNhacungcapComponent {
     this.paginator._intl.previousPageLabel = 'Về Trước';
     this.paginator._intl.firstPageLabel = 'Trang Đầu';
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    this.dataSource.sortingDataAccessor = (item: any, property: string) => {
+        if (property === 'Sanpham') {
+          return item[property] ? item[property].length : 0;
+        }
+        return item[property];
+    };
   }
   async refresh() {
    await this._NhacungcapService.getAllNhacungcap();
@@ -208,7 +216,6 @@ export class ListNhacungcapComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-
     this.dataSource.data = this.Listnhacungcap().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;

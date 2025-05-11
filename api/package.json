@@ -21,7 +21,7 @@
     "seed": "npx prisma db seed"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node prisma/restore.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
