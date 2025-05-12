@@ -169,7 +169,7 @@ export class DathangService {
           khoId: DEFAUL_KHO_ID,        // Cập nhật khoId phù hợp
           type: 'nhap',                   // Loại phiếu nhập (nhập kho)
           ngay: newDathang.ngaynhan || new Date(),        // Sử dụng ngày nhận từ đơn hàng
-          ghichu: `Phiếu nhập kho cho đơn hàng ${newDathang.title}`,
+          ghichu: `Phiếu nhập kho cho đơn hàng ${newDathang.madncc}`,
           sanpham: {
             create: data?.sanpham?.map((sp: any) => ({
               sanphamId: sp.id,
@@ -242,7 +242,7 @@ export class DathangService {
           khoId: DEFAUL_KHO_ID,        // Cập nhật khoId phù hợp
           type: 'nhap',                   // Loại phiếu nhập (nhập kho)
           ngay: newDathang.ngaynhan || new Date(),
-          ghichu: `Phiếu nhập kho cho đơn hàng ${newDathang.title}`,
+          ghichu: `Phiếu nhập kho cho đơn hàng ${newDathang.madncc}`,
           sanpham: {
             create: data?.sanpham?.map((sp: any) => ({
               sanphamId: sp.id,

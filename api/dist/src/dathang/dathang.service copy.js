@@ -163,7 +163,7 @@ let DathangService = class DathangService {
                     khoId: DEFAUL_KHO_ID,
                     type: 'nhap',
                     ngay: newDathang.ngaynhan || new Date(),
-                    ghichu: `Phiếu nhập kho cho đơn hàng ${newDathang.title}`,
+                    ghichu: `Phiếu nhập kho cho đơn hàng ${newDathang.madncc}`,
                     sanpham: {
                         create: data?.sanpham?.map((sp) => ({
                             sanphamId: sp.id,
@@ -228,7 +228,7 @@ let DathangService = class DathangService {
                     khoId: DEFAUL_KHO_ID,
                     type: 'nhap',
                     ngay: newDathang.ngaynhan || new Date(),
-                    ghichu: `Phiếu nhập kho cho đơn hàng ${newDathang.title}`,
+                    ghichu: `Phiếu nhập kho cho đơn hàng ${newDathang.madncc}`,
                     sanpham: {
                         create: data?.sanpham?.map((sp) => ({
                             sanphamId: sp.id,

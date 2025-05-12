@@ -93,7 +93,11 @@ export class DathangService {
       include: {
         sanpham: {
           include: {
-            sanpham: true,
+            sanpham: {
+              include: {
+                TonKho: true,
+              },
+            },
           },
         },
         nhacungcap: true,
@@ -102,18 +106,27 @@ export class DathangService {
     if (!dathang) throw new NotFoundException('Dathang not found');
     return {
       ...dathang,
-      sanpham: dathang.sanpham.map((item) => ({
-      ...item.sanpham,
-      idSP: item.idSP,
-      sldat: Number(item.sldat),
-      slgiao: Number(item.slgiao),
-      slnhan: Number(item.slnhan),
-      slhuy: Number(item.slhuy),
-      ttdat: Number(item.ttdat),
-      ttgiao: Number(item.ttgiao),
-      ttnhan: Number(item.ttnhan),
-      ghichu: item.ghichu,
-      })),
+      sanpham: dathang.sanpham.map((item) => {
+        let computedGoiy = 0;
+        if (item.sanpham.TonKho && item.sanpham.TonKho[0]) {
+          const tonkho = item.sanpham.TonKho[0];
+          computedGoiy = (Number(tonkho.slton) - Number(tonkho.slchogiao) + Number(tonkho.slchonhap))
+            * (1 + Number(item.sanpham.haohut) / 100);
+        }
+        return {
+          ...item.sanpham,
+          idSP: item.idSP,
+          goiy: Math.abs(computedGoiy),
+          sldat: Number(item.sldat),
+          slgiao: Number(item.slgiao),
+          slnhan: Number(item.slnhan),
+          slhuy: Number(item.slhuy),
+          ttdat: Number(item.ttdat),
+          ttgiao: Number(item.ttgiao),
+          ttnhan: Number(item.ttnhan),
+          ghichu: item.ghichu,
+        };
+      }),
     };
   }
 

@@ -47,22 +47,28 @@ import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
 export class XuatnhaptonComponent {
   Detail: any = {};
   displayedColumns: string[] = [
-    'khoname',
     'title',
-    'slnhap',
-    'slxuat',
-    'soluong',
+    'masp',
+    'dvt',
+    'slton',
+    'slchogiao',
+    'slchonhap',
+    'haohut',
+    'goiy'
   ];
 
   ColumnName: any = {
-    khoname: 'Kho',
-    title: 'Sản Phẩm',
-    slnhap: 'Nhập',
-    slxuat: 'Xuất',
-    soluong: 'Tồn',
+    title: 'Tên sản phẩm',
+    masp: 'Mã sản phẩm',
+    dvt: 'Đơn vị tính',
+    slton: 'SL tồn',
+    slchogiao: 'SL chờ giao',
+    slchonhap: 'SL chờ nhập',
+    haohut: 'Hao hụt',
+    goiy: 'Gợi ý'
   };
   FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('DonhangColFilter') || '[]'
+    localStorage.getItem('TonkhoColFilter') || '[]'
   );
   Columns: any[] = [];
   isFilter: boolean = false;
@@ -124,13 +130,6 @@ export class XuatnhaptonComponent {
   onDateChange(event: any): void {
     this.ngOnInit()
   }
-  async LoadXNT(): Promise<void> {
-    await this._PhieukhoService.getxuatnhapton(this.SearchParams);
-    this.dataSource.data = this.Xuatnhapton();
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    console.log(this.dataSource.data);
-  }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
       const filterObject = JSON.parse(filter);
@@ -152,10 +151,8 @@ export class XuatnhaptonComponent {
     }
   }
   async ngOnInit(): Promise<void> {    
-    await this._KhoService.getAllKho();
-    this.ListKho = this._KhoService.ListKho();
-    await this._PhieukhoService.getxuatnhapton(this.SearchParams);
-    this.CountItem = this.Xuatnhapton().length;
+    this._KhoService.getTonKho('1', '1000').then((res) => {
+    this.Xuatnhapton.set(res.data);
     this.dataSource.data = this.Xuatnhapton();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -166,9 +163,8 @@ export class XuatnhaptonComponent {
     this.paginator._intl.previousPageLabel = 'Về Trước';
     this.paginator._intl.firstPageLabel = 'Trang Đầu';
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
-  }
-  async refresh() {
-   await this._PhieukhoService.getAllPhieukho();
+    });
+    this.CountItem = this.Xuatnhapton().length;
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -179,7 +175,7 @@ export class XuatnhaptonComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('DonhangColFilter',JSON.stringify(this.FilterColumns)
+      localStorage.setItem('TonkhoColFilter',JSON.stringify(this.FilterColumns)
       );
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -218,7 +214,7 @@ export class XuatnhaptonComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('DonhangColFilter',JSON.stringify(this.FilterColumns)
+    localStorage.setItem('TonkhoColFilter',JSON.stringify(this.FilterColumns)
     );
   }
   doFilterColumns(event: any): void {

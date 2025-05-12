@@ -96,6 +96,7 @@ export declare class DathangController {
     findOne(id: string): Promise<{
         sanpham: {
             idSP: string;
+            goiy: number;
             sldat: number;
             slgiao: number;
             slnhan: number;
@@ -104,6 +105,13 @@ export declare class DathangController {
             ttgiao: number;
             ttnhan: number;
             ghichu: string | null;
+            TonKho: {
+                id: string;
+                sanphamId: string;
+                slton: import("@prisma/client/runtime/library").Decimal;
+                slchogiao: import("@prisma/client/runtime/library").Decimal;
+                slchonhap: import("@prisma/client/runtime/library").Decimal;
+            }[];
             id: string;
             title: string;
             title2: string | null;

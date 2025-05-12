@@ -17,6 +17,42 @@ let PhieukhoService = class PhieukhoService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    async generateNextOrderCode() {
+        const lastOrder = await this.prisma.dathang.findFirst({
+            orderBy: { createdAt: 'desc' },
+        });
+        let nextCode = 'TGNCC-AA00001';
+        if (lastOrder && lastOrder.madncc) {
+            nextCode = this.incrementOrderCode(lastOrder.madncc);
+        }
+        return nextCode;
+    }
+    incrementOrderCode(orderCode) {
+        const prefix = 'PK-';
+        const letters = orderCode.slice(6, 8);
+        const numbers = parseInt(orderCode.slice(8), 13);
+        let newLetters = letters;
+        let newNumbers = numbers + 1;
+        if (newNumbers > 99999) {
+            newNumbers = 1;
+            newLetters = this.incrementLetters(letters);
+        }
+        return `${prefix}${newLetters}${newNumbers.toString().padStart(5, '0')}`;
+    }
+    incrementLetters(letters) {
+        let firstChar = letters.charCodeAt(0);
+        let secondChar = letters.charCodeAt(1);
+        if (secondChar === 90) {
+            if (firstChar === 90)
+                return 'ZZ';
+            firstChar++;
+            secondChar = 65;
+        }
+        else {
+            secondChar++;
+        }
+        return String.fromCharCode(firstChar) + String.fromCharCode(secondChar);
+    }
     async xuatnhapton(query) {
         const { khoId, Batdau, Ketthuc } = query;
         const phieuKhos = await this.prisma.phieuKho.findMany({
@@ -73,10 +109,11 @@ let PhieukhoService = class PhieukhoService {
         return phieuKho;
     }
     async create(data) {
+        const maphieukho = await this.generateNextOrderCode();
         return this.prisma.$transaction(async (prisma) => {
             const newPhieuKho = await prisma.phieuKho.create({
                 data: {
-                    maphieu: data.maphieu,
+                    maphieu: maphieukho,
                     ngay: new Date(data.ngay),
                     type: data.type,
                     khoId: data.khoId,
@@ -85,7 +122,6 @@ let PhieukhoService = class PhieukhoService {
                     sanpham: {
                         create: data.sanpham.map((sp) => ({
                             sanphamId: sp.sanphamId,
-                            sldat: sp.sldat,
                             soluong: sp.soluong,
                             ghichu: sp.ghichu,
                         })),
@@ -94,11 +130,28 @@ let PhieukhoService = class PhieukhoService {
                 include: { sanpham: true },
             });
             for (const sp of data.sanpham) {
-                await prisma.sanpham.update({
-                    where: { id: sp.sanphamId },
-                    data: {
-                        soluongkho: data.type === 'nhap' ? { increment: sp.soluong } : { decrement: sp.soluong },
-                    },
+                await prisma.tonKho.upsert({
+                    where: { sanphamId: sp.sanphamId },
+                    update: data.type === 'nhap'
+                        ? {
+                            slton: { increment: sp.soluong },
+                        }
+                        : {
+                            slton: { decrement: sp.soluong },
+                        },
+                    create: data.type === 'nhap'
+                        ? {
+                            sanphamId: sp.sanphamId,
+                            slton: sp.soluong,
+                            slchogiao: 0,
+                            slchonhap: 0,
+                        }
+                        : {
+                            sanphamId: sp.sanphamId,
+                            slton: -sp.soluong,
+                            slchogiao: 0,
+                            slchonhap: 0,
+                        },
                 });
             }
             return newPhieuKho;

@@ -47,6 +47,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { KhachhangService } from '../../khachhang/khachhang.service';
 import { BanggiaService } from '../../banggia/banggia.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
+import { TrangThaiDon } from '../../../shared/utils/trangthai';
 @Component({
   selector: 'app-listdonhang',
   templateUrl: './listdonhang.component.html',
@@ -117,12 +118,7 @@ export class ListDonhangComponent {
   CountItem: any = signal<any>(0)
   pageSize: any = signal<any>(10)
   pageIndex: any = signal<any>(1)
-  Trangthaidon:any ={
-    dadat:'Đơn mới',
-    dagiao:'Đã giao',
-    danhan:'Đã nhận',
-    huy:'Đã hủy',
-  }
+  Trangthaidon:any = TrangThaiDon
   SearchParams: any = {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),

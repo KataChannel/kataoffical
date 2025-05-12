@@ -301,7 +301,7 @@ export class DetailDathangComponent {
         console.log(v.sanpham[index]);
         
         if (field === 'sldat') {
-          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
+          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao']  = newValue;
           // Find the next input to focus on
           const inputs = document.querySelectorAll('.sldat-input')as NodeListOf<HTMLInputElement>;
               if (index < this.dataSource.filteredData.length - 1) {
@@ -362,7 +362,7 @@ export class DetailDathangComponent {
               panelClass: ['snackbar-error'],
             });
           } else {
-            v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newGiao;
+            v.sanpham[index]['slgiao'] = newGiao;
           }
         } else {
           v.sanpham[index][field] = newValue;
@@ -374,7 +374,40 @@ export class DetailDathangComponent {
     });
   }
 
+  UpdateBlurValue(event: Event, index: number | null, element: any, field: keyof any, type: 'number' | 'string') {
+    const newValue =
+      type === 'number'
+        ? Number((event.target as HTMLElement).innerText.trim()) || 0
+        : (event.target as HTMLElement).innerText.trim();
 
+    this.DetailDathang.update((v: any) => {
+      if (index !== null) {
+        if (field === 'sldat') {
+          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = newValue;
+        } else if (field === 'ghichu') {
+          v.sanpham[index][field] = newValue;
+        } else if (field === 'slgiao') {
+          const newGiao = newValue;
+          if (newGiao < v.sanpham[index]['sldat']) {
+            v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
+            this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
+              duration: 1000,
+              horizontalPosition: "end",
+              verticalPosition: "top",
+              panelClass: ['snackbar-error'],
+            });
+          } else {
+            v.sanpham[index]['slgiao'] = newGiao;
+          }
+        } else {
+          v.sanpham[index][field] = newValue;
+        }
+      } else {
+        v[field] = newValue;
+      }
+      return v;
+    });
+  }
 
 
 
@@ -420,6 +453,7 @@ export class DetailDathangComponent {
     'masp',
     'dvt',
     'sldat',
+    'slgiao',
     'slnhan',
     'ghichu'
   ];
@@ -429,6 +463,7 @@ export class DetailDathangComponent {
     masp: 'Mã SP',
     dvt: 'Đơn Vị Tính',
     sldat: 'SL Đặt',
+    slgiao: 'SL Giao',
     slnhan: 'SL Nhận',
     ghichu: 'Ghi Chú'
   };
@@ -570,6 +605,9 @@ export class DetailDathangComponent {
     else{
       this.ListFilter = [...this.ListFilter,...CheckItem];
     }
+    this.ListFilter.forEach((v:any)=>{
+      v.idSP = v.id
+    })
   }
   ChosenAll(list:any)
   {
@@ -607,9 +645,6 @@ export class DetailDathangComponent {
   GiaoDonhang()
   {
     this.DetailDathang.update((v:any)=>{
-      v.sanpham.forEach((v1:any)=>{
-        v1.slgiao = v1.sldat;
-      })
       v.status = 'dagiao';
       return v;
     })
@@ -624,14 +659,11 @@ export class DetailDathangComponent {
   }
   Danhanhang(){
     this.DetailDathang.update((v:any)=>{
-      v.sanpham.forEach((v1:any)=>{
-        v1.slnhan = v1.slgiao;
-      })
       v.status = 'danhan';
       return v;
     })
     this._DathangService.updateDathang(this.DetailDathang()).then((res:any)=>{
-      this._snackBar.open('Giao Đơn Hàng Thành Công', '', {
+      this._snackBar.open('Đã Nhận Hàng Thành Công', '', {
         duration: 1000,
         horizontalPosition: 'end',
         verticalPosition: 'top',

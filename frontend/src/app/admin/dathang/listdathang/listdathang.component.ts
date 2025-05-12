@@ -22,6 +22,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { BanggiaService } from '../../banggia/banggia.service';
+import { TrangThaiDon } from '../../../shared/utils/trangthai';
 @Component({
   selector: 'app-listdathang',
   templateUrl: './listdathang.component.html',
@@ -52,9 +53,8 @@ export class ListDathangComponent {
     'nhacungcap',
     'sanpham',
     'ngaynhan',
+    'status', 
     'ghichu',
-   // 'order',
-    'isActive',
     'createdAt',
     'updatedAt',
   ];
@@ -66,9 +66,8 @@ export class ListDathangComponent {
     nhacungcap: 'Nhà Cung Cấp',
     sanpham: 'Sản Phẩm',
     ngaynhan: 'Ngày Nhận',
+    status: 'Trạng Thái',
     ghichu: 'Ghi Chú',
-  //  order: 'Thứ Tự',
-    isActive: 'Trạng Thái',
     createdAt:'Ngày Tạo',
     updatedAt:'Ngày Cập Nhật'
   };
@@ -77,6 +76,7 @@ export class ListDathangComponent {
   );
   Columns: any[] = [];
   isFilter: boolean = false;
+  Trangthaidon:any = TrangThaiDon
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;

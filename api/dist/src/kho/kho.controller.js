@@ -22,6 +22,11 @@ let khoController = class khoController {
     create(createkhoDto) {
         return this.khoService.create(createkhoDto);
     }
+    getPaginated(page, limit) {
+        const pageNumber = parseInt(page, 10) || 1;
+        const limitNumber = parseInt(limit, 10) || 10;
+        return this.khoService.gettonkho(pageNumber, limitNumber);
+    }
     findAll() {
         return this.khoService.findAll();
     }
@@ -43,6 +48,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], khoController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)('tonkho'),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], khoController.prototype, "getPaginated", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

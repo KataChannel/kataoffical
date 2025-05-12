@@ -148,6 +148,18 @@
                             {{ row[column].name}}
                         </span>
                         }
+                                          @case ('status') {
+                        <span class="max-w-40 line-clamp-4 font-bold"
+                        [ngClass]="{
+                            'text-blue-500':   row[column] === 'dadat',
+                            'text-yellow-500': row[column] === 'dagiao',
+                            'text-green-500':  row[column] === 'danhan',
+                            'text-red-500':    row[column] === 'huy'
+                        }
+                        ">
+                            {{Trangthaidon[row[column]]}}
+                        </span>
+                        }
                         @case ('sanpham') {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column].length }}

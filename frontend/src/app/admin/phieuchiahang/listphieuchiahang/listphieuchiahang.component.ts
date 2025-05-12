@@ -43,6 +43,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
 import { environment } from '../../../../environments/environment.development';
 import { SearchService } from '../../../shared/services/search.service';
 import { StorageService } from '../../../shared/utils/storage.service';
+import { TrangThaiDon } from '../../../shared/utils/trangthai';
 @Component({
   selector: 'app-listphieuchiahang',
   templateUrl: './listphieuchiahang.component.html',
@@ -92,8 +93,9 @@ export class ListPhieuchiahangComponent {
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('DonhangColFilter') || '[]'
   );
-  Columns: any[] = [];
+  Columns: any[] = [];  
   isFilter: boolean = false;
+  Trangthaidon:any = TrangThaiDon
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;

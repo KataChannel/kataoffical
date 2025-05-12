@@ -40,6 +40,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import html2canvas from 'html2canvas';
 import { DonhangService } from '../../donhang/donhang.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { TrangThaiDon } from '../../../shared/utils/trangthai';
 @Component({
   selector: 'app-listcongnokhachhang',
   templateUrl: './listcongnokhachhang.component.html',
@@ -91,6 +92,7 @@ export class ListcongnokhachhangComponent {
   );
   Columns: any[] = [];
   isFilter: boolean = false;
+  Trangthaidon:any = TrangThaiDon;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
@@ -108,7 +110,7 @@ export class ListcongnokhachhangComponent {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
     Type: 'donsi',
-    Status:'dagiao'
+    Status:'danhan'
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -377,7 +379,7 @@ export class ListcongnokhachhangComponent {
   BackStatus()
   {
     this.editDonhang.forEach((v:any) => {
-        v.status = 'dadat';
+        v.status = 'dagiao';
         this._DonhangService.updateDonhang(v);
     });
   }

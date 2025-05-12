@@ -23,6 +23,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import moment from 'moment';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { TrangThaiDon } from '../../../shared/utils/trangthai';
 @Component({
   selector: 'app-listphieugiaohang',
   templateUrl: './listphieugiaohang.component.html',
@@ -88,11 +89,12 @@ export class ListPhieugiaohangComponent {
   _snackBar: MatSnackBar = inject(MatSnackBar);
   isSearch: boolean = false;
   CountItem: any = 0;
+  Trangthaidon:any = TrangThaiDon 
   SearchParams: any = {
       Batdau: moment().toDate(),
       Ketthuc: moment().toDate(),
       Type: 'donsi',
-      Status:['dadat','dagiao','danhan'],
+      Status:['dadat','dagiao'],
     };
     ListDate: any[] = [
       { id: 1, Title: '1 Ngày', value: 'day' },

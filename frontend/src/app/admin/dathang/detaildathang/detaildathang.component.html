@@ -187,18 +187,23 @@
                             </span>
                             }
                         @case ('sldat') {
+                        <div class="flex flex-row space-x-1 items-center">
                       <div
                           [contentEditable]="true"
+                          (blur)="UpdateBlurValue($event,idx, row, 'sldat','number')"
                           (keydown.enter)="EnterUpdateValue($event,idx, row, 'sldat','number')"
                           class="sldat-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                         >
                         {{ row[column]||0|number:'1.0-2' }}
                          </div>
-                         <div>(SL:{{row.soluong}})-(SLkho:{{row.soluongkho}})-(Hao hụt:{{row.haohut}}%)(Gợi ý: {{GetGoiy(row)}})</div>
+
+                         <div class="text-xs text-red-600 font-bold">Gợi ý ({{row.goiy}})</div>
+                         </div>
                         }
                         @case ('slgiao') {
                       <div
                           [contentEditable]="true"
+                          (blur)="UpdateBlurValue($event,idx, row, 'slgiao','number')"
                           (keydown.enter)="EnterUpdateValue($event,idx, row, 'slgiao','number')"
                           class="slgiao-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                         >
@@ -208,6 +213,7 @@
                         @case ('slnhan') {
                       <div
                           [contentEditable]="true"
+                          (blur)="UpdateBlurValue($event,idx, row, 'slnhan','number')"
                           (keydown.enter)="EnterUpdateValue($event,idx, row, 'slnhan','number')"
                           class="slnhan-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                         >
@@ -217,6 +223,7 @@
                         @case ('ghichu') {
                       <div
                           [contentEditable]="true"
+                          (blur)="UpdateBlurValue($event,idx, row, 'ghichu','string')"
                           (keydown.enter)="EnterUpdateValue($event,idx, row, 'ghichu','string')"
                           class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                         >
@@ -250,6 +257,7 @@
             <th class="border p-2">Tên sản phẩm</th>
             <th class="border p-2">ĐVT</th>
             <th class="border p-2 max-w-10">SL Đặt</th>
+            <th class="border p-2 max-w-10">SL Giao</th>
             <th class="border p-2 max-w-10">SL Nhận</th>
             <th class="border p-2">Ghi chú</th>
           </tr>
@@ -261,6 +269,7 @@
               <td class="border p-2">{{item.title}}</td>
               <td class="border p-2 text-center">{{item.dvt}}</td>
               <td class="border p-2 text-end max-w-10">{{item.sldat|number:'1.0-2'}}</td>
+              <td class="border p-2 text-end max-w-10">{{item.slgiao|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-10">{{item.slnhan||0|number:'1.0-2'}}</td>
               <td class="border p-2">{{item.ghichu}}</td>
             </tr>
@@ -268,6 +277,7 @@
           <tr class="border">
             <td colspan="3" class="border p-2 text-start">Tổng:</td>
             <td class="border p-2 text-end font-bold">{{TinhTong(DetailDathang().sanpham,'sldat')|number:'1.0-2'}}</td>
+            <td class="border p-2 text-end font-bold">{{TinhTong(DetailDathang().sanpham,'slgiao')|number:'1.0-2'}}</td>
             <td class="border p-2 text-end font-bold">{{TinhTong(DetailDathang().sanpham,'slnhan')|number:'1.0-2'}}</td>
             <td class="border p-2 text-end"></td>
           </tr>

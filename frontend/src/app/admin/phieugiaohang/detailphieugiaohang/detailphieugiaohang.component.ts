@@ -33,8 +33,6 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
-import { SanphamService } from '../../sanpham/sanpham.service';
-import html2canvas from 'html2canvas';
 import { DonhangService } from '../../donhang/donhang.service';
 @Component({
   selector: 'app-detailphieugiaohang',

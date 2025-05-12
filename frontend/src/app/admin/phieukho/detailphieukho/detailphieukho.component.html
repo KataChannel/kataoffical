@@ -2,7 +2,7 @@
   <button mat-icon-button color="primary" (click)="goBack()">
     <mat-icon>arrow_back</mat-icon>
   </button>
-  <div class="font-bold">{{ DetailPhieukho()?.title || 'Không có dữ liệu' }}</div>
+  <div class="font-bold">{{ DetailPhieukho()?.maphieu || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
     <mat-slide-toggle [(ngModel)]="DetailPhieukho().isActive" [disabled]="!isEdit()">{{DetailPhieukho().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handlePhieukhoAction()">
@@ -32,7 +32,7 @@
   <!-- Chi tiết Phieukho -->
   <ng-container *ngIf="!isDelete()">
     <ng-container>
-      <div class="w-full flex flex-col space-y-2">
+      <div class="w-full flex flex-col space-y-4">
         <div class="w-full flex flex-row space-x-2">
           <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
             <mat-label>Tiêu Đề</mat-label>
@@ -103,36 +103,17 @@
                   </div>
                   <div class="overflow-y-auto max-h-44">
                     @for (item of filterSP; track item.id) {
-                    <mat-option [value]="item.id">{{item.title}} [SL : {{item.soluong}}{{item.dvt}}][SL Tồn :
-                      {{item.soluongkho}}{{item.dvt}}]</mat-option>
+                    <mat-option [value]="item.id">{{item.title}} ({{item.dvt}})</mat-option>
                     }
                   </div>
                 </div>
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="outline" class="w-80" subscriptSizing="dynamic">
-              <mat-label>SL</mat-label>
-              <input matInput type="number" [disabled]="true" [(ngModel)]="DetailPhieukho().sanpham[idx].sldat"
-                (change)="onChangeSoluong(item,$event)" [ngModelOptions]="{ standalone: true }"
-                placeholder="Vui lòng Nhập Số Lượng" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="w-80" subscriptSizing="dynamic">
-              <mat-label>SL Thực</mat-label>
+              <mat-label>Số Lượng</mat-label>
               <input matInput type="number" [disabled]="!isEdit()" [(ngModel)]="DetailPhieukho().sanpham[idx].soluong"
                 (change)="onChangeSoluong(item,$event)" [ngModelOptions]="{ standalone: true }"
-                placeholder="Vui lòng Nhập Số Lượng Thực Tế" />
-            </mat-form-field>
-            <mat-form-field *ngIf="DetailPhieukho().type=='xuat'" appearance="outline" class="w-80" subscriptSizing="dynamic">
-              <mat-label>SL Hủy</mat-label>
-              <input matInput type="number" [disabled]="!isEdit()" [(ngModel)]="DetailPhieukho().sanpham[idx].slhuy"
-                (change)="onChangeSoluong(item,$event)" [ngModelOptions]="{ standalone: true }"
-                placeholder="Vui lòng Nhập Số Lượng Thực Tế" />
-            </mat-form-field>
-            <mat-form-field *ngIf="DetailPhieukho().type=='nhap'" appearance="outline" class="w-80" subscriptSizing="dynamic">
-              <mat-label>SL Trả</mat-label>
-              <input matInput type="number" [disabled]="!isEdit()" [(ngModel)]="DetailPhieukho().sanpham[idx].sltra"
-                (change)="onChangeSoluong(item,$event)" [ngModelOptions]="{ standalone: true }"
-                placeholder="Vui lòng Nhập Số Lượng Thực Tế" />
+                placeholder="Vui lòng Nhập Số Lượng" />
             </mat-form-field>
             <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
               <mat-label>Ghi Chú</mat-label>

@@ -2,6 +2,9 @@ import { PrismaService } from 'prisma/prisma.service';
 export declare class PhieukhoService {
     private readonly prisma;
     constructor(prisma: PrismaService);
+    generateNextOrderCode(): Promise<string>;
+    private incrementOrderCode;
+    private incrementLetters;
     xuatnhapton(query: any): Promise<{
         id: string;
         khoname: string;

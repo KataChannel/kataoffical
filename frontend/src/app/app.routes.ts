@@ -473,6 +473,7 @@ export const routes: Routes = [
             (c) => c.XuatnhaptonComponent
           ),
       },
+      
       {
         path: 'congnokhachhang',
         canActivate: [PermissionGuard],

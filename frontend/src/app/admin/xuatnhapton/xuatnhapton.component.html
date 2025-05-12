@@ -27,9 +27,6 @@
               <button matTooltip="Tìm Kiếm" color="primary" (click)="isSearch = !isSearch" mat-icon-button>
                   <mat-icon>search</mat-icon>
               </button>
-              <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
-                  {{CountItem}} Phiếu Kho
-              </span>
           </div>
       </div>
       <div *ngIf="isSearch" class="py-2 w-full flex flex-row space-x-2 items-center">
@@ -39,42 +36,6 @@
           </mat-form-field>
           <button mat-icon-button color="warn" (click)="isSearch=!isSearch"><mat-icon>cancel</mat-icon></button>
       </div>
-        <div class="w-full flex flex-row space-x-2 items-center">
-            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-                <mat-label>Kho</mat-label>
-                <mat-select [(ngModel)]="SearchParams.khoId" [ngModelOptions]="{standalone: true}"
-                  (selectionChange)="onSelectionChange($event)">
-                  @for (item of ListKho; track item.id) {
-                  <mat-option [value]="item.id">{{item.name}}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-
-            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Chọn Thời Gian</mat-label>
-              <mat-select [(ngModel)]="Chonthoigian" [ngModelOptions]="{standalone: true}"
-                (selectionChange)="onSelectionChange($event)">
-                @for (item of ListDate; track item) {
-                <mat-option [value]="item.value">{{item.Title}}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-
-            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Bắt Đầu</mat-label>
-              <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau" [(ngModel)]="SearchParams.Batdau" [ngModelOptions]="{standalone: true}">
-              <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau"></mat-datepicker-toggle>
-              <mat-datepicker #pickerBatdau></mat-datepicker>
-            </mat-form-field>
-  
-            <mat-form-field  [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Kết Thúc</mat-label>
-              <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerKetthuc" [(ngModel)]="SearchParams.Ketthuc" [ngModelOptions]="{standalone: true}">
-              <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
-              <mat-datepicker #pickerKetthuc></mat-datepicker>
-            </mat-form-field>
-            <button mat-icon-button color="primary" (click)="LoadXNT()"><mat-icon>refresh</mat-icon></button>
-          </div>
         <div class="w-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {

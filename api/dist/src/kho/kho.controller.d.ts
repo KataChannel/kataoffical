@@ -14,6 +14,27 @@ export declare class khoController {
         makho: string | null;
         congtyId: string | null;
     }>;
+    getPaginated(page: string, limit: string): Promise<{
+        data: {
+            slchogiao: number;
+            slchonhap: number;
+            slton: number;
+            masp: string;
+            dvt: string | null;
+            title: string;
+            subtitle: string;
+            haohut: number;
+            goiy: number;
+            id: string;
+            sanphamId: string;
+        }[];
+        meta: {
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    }>;
     findAll(): Promise<{
         id: string;
         ghichu: string | null;
