@@ -339,7 +339,7 @@ model Hoadon {
   khdon         String?
   khhdgoc       String?
   khmshdgoc     String?
-  lhdgoc        String?
+  lhdgoc        Int?
   mhdon         String?
   mtdiep        String?
   mtdtchieu     String?
@@ -367,7 +367,7 @@ model Hoadon {
   ntnhan        DateTime?
   pban          String?
   ptgui         Int?
-  shdgoc        String?
+  shdgoc        Int?
   tchat         Int?
   tdlap         DateTime?
   tgia          Int?
@@ -510,7 +510,7 @@ model UserguidStep {
   @@index([id])
 }
 
-model Image {
+model Resource {
   id        String   @id @default(uuid())
   url       String
   fileType  String?

@@ -27,7 +27,7 @@ import { inject, Inject, Injectable, signal, Signal } from '@angular/core';
       reconnectionAttempts: 5,
       timeout: 5000,
     });
-    async fetchData(dulieu: any) {
+    async fetchData(dulieu: any) {      
       const API_URL = `https://hoadondientu.gdt.gov.vn:30000/query/invoices/${dulieu.type=='banra'?'sold':'purchase'}?sort=tdlap:desc,khmshdon:asc,shdon:desc&size=50${dulieu.state ? `&state=${dulieu.state}` : ''}&search=tdlap=ge=${dulieu.batdau};tdlap=le=${dulieu.ketthuc}`;
       try {
         const options = {
@@ -48,7 +48,8 @@ import { inject, Inject, Injectable, signal, Signal } from '@angular/core';
 
 
                 // Chuyển đổi item sang đúng kiểu dữ liệu và chỉ lấy các trường cần thiết
-                const rest = {
+                const rest = {  
+                id: item.id,
                 nbmst: String(item.nbmst),
                 khmshdon: item.khmshdon != null ? Number(item.khmshdon) : undefined,
                 khhdon: item.khhdon ?? undefined,

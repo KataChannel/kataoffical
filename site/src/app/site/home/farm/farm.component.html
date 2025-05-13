@@ -1,24 +1,38 @@
-<div class="container">
-    <h1>{{ title }}</h1>
-  
-    <div class="toolbar">
-      <h3>Chọn hành động:</h3>
-      <button [ngClass]="{'selected': selectedAction() === 'plant'}" (click)="selectAction('plant')">🌱 Gieo Hạt</button>
-      <button [ngClass]="{'selected': selectedAction() === 'water'}" (click)="selectAction('water')">💧 Tưới Nước</button>
-      <button [ngClass]="{'selected': selectedAction() === 'harvest'}" (click)="selectAction('harvest')">🥕 Thu Hoạch</button>
-      <button [ngClass]="{'selected': selectedAction() === null}" (click)="selectAction(null)">🚶‍♂️ Chọn (Không hành động)</button>
-  
-      <div *ngIf="isPlanting()" class="crop-selector"> Chọn cây để gieo:
-           <select [ngModel]="selectedCropName()" (change)="selectCrop($event)">
-               <option *ngFor="let crop of availableCrops" [value]="crop.name">{{ crop.name | uppercase }}</option>
-           </select>
-       </div>
-    </div>
-  
-    <app-farm-grid
-      [plots]="plots()"
-      [selectedAction]="selectedAction()"
-      (plotAction)="handlePlotAction($event)">
-    </app-farm-grid>
-
+<div class="farm-container">
+  <h1 class="mb-4">Nông Trại</h1>
+  <div class="toolbar mb-4">
+    <ng-container *ngFor="let c of crops; let i = index">
+      <div class="seed-item"
+           [class.selected]="selectedCrop()===c.name"
+           [style.background]="c.color"
+           (click)="selectSeed(c.name)">
+        {{i+1}}. {{c.name}} ({{inventory()[c.name]}})
+      </div>
+    </ng-container>
+    <div class="money">Tiền: {{money()}}</div>
   </div>
+
+  <div class="farm-grid" [ngStyle]="{'cursor': cursorStyle}">
+    <div *ngFor="let row of plots()" class="row">
+      <div *ngFor="let plot of row"
+           class="plot"
+           [style.borderColor]="plot.cropType ? getCropColor(plot.cropType) : '#ccc'"
+           [ngStyle]="plot.state==='empty'?{'background-color': getSoilColor(plot)}:{}"
+           (click)="onPlotClick(plot)">
+        <ng-container [ngSwitch]="plot.state">
+          <span *ngSwitchCase="'empty'"   class="empty">Empty</span>
+          <ng-container *ngSwitchCase="'seed'">
+            <span class="seed">{{plot.cropType}}</span>
+            <span class="countdown">{{getRemainingTime(plot)}}s</span>
+          </ng-container>
+          <ng-container *ngSwitchCase="'growing'">
+            <span class="growing">{{plot.growthProgress}}%</span>
+            <span class="countdown">{{getRemainingTime(plot)}}s</span>
+          </ng-container>
+          <span *ngSwitchCase="'ready'" class="ready">Ready</span>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  <p>{{ lastHarvestInfo }}</p>
+</div>

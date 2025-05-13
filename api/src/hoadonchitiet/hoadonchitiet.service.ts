@@ -30,8 +30,18 @@ export class hoadonChitietService {
 
   async create(data: any) {
     try {
-
-      const created = await this.prisma.hoadonChitiet.create({data});
+      // nếu có idhdon thì tìm Hóa đơn và nối qua quan hệ hoadon
+      const { idhdon, ...payload } = data;
+      if (idhdon) {
+        const hoadon = await this.prisma.hoadon.findUnique({
+          where: { id: idhdon },
+        });
+        if (!hoadon) {
+          throw new NotFoundException('Hóa đơn không tồn tại');
+        }
+        payload.hoadon = { connect: { id: hoadon.id } };
+      }
+      const created = await this.prisma.hoadonChitiet.create({ data: payload });
       this._SocketGateway.sendHoadonchitietUpdate(); // Event socket có thể cần tên khác
       return created;
     } catch (error) {

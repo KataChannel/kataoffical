@@ -51,7 +51,7 @@ let MinioService = class MinioService {
             await this.client.putObject(this.bucketName, fileName, file.buffer, file.size, metaData);
             const publicUrl = process.env.MINIO_PUBLIC_URL?.trim() || 'http://localhost:9000';
             const url = `${this.bucketName}/${fileName}`;
-            await this.prisma.image.create({
+            await this.prisma.resource.create({
                 data: {
                     url,
                     fileType: file.mimetype,
@@ -64,17 +64,17 @@ let MinioService = class MinioService {
         }
         catch (error) {
             console.error('Error uploading file to Minio or saving to DB:', error);
-            throw new common_1.InternalServerErrorException('Unable to upload image or save to the database');
+            throw new common_1.InternalServerErrorException('Unable to upload resource or save to the database');
         }
     }
     async deleteFile(id) {
-        const image = await this.prisma.image.findUnique({ where: { id: id } });
-        if (!image) {
-            throw new common_2.NotFoundException('Image not found');
+        const resource = await this.prisma.resource.findUnique({ where: { id: id } });
+        if (!resource) {
+            throw new common_2.NotFoundException('resource not found');
         }
-        const fileName = image.url.split('/').pop();
+        const fileName = resource.url.split('/').pop();
         if (!fileName) {
-            throw new common_1.InternalServerErrorException('Invalid image URL: file name not found');
+            throw new common_1.InternalServerErrorException('Invalid resource URL: file name not found');
         }
         try {
             await this.client.removeObject(this.bucketName, fileName);
@@ -83,7 +83,7 @@ let MinioService = class MinioService {
             console.error('Error deleting file from Minio:', error);
             throw new common_1.InternalServerErrorException('Error deleting file from Minio');
         }
-        await this.prisma.image.delete({ where: { id: id } });
+        await this.prisma.resource.delete({ where: { id: id } });
     }
 };
 exports.MinioService = MinioService;

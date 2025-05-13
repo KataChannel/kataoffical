@@ -34,7 +34,17 @@ let hoadonChitietService = class hoadonChitietService {
     }
     async create(data) {
         try {
-            const created = await this.prisma.hoadonChitiet.create({ data });
+            const { idhdon, ...payload } = data;
+            if (idhdon) {
+                const hoadon = await this.prisma.hoadon.findUnique({
+                    where: { id: idhdon },
+                });
+                if (!hoadon) {
+                    throw new common_1.NotFoundException('Hóa đơn không tồn tại');
+                }
+                payload.hoadon = { connect: { id: hoadon.id } };
+            }
+            const created = await this.prisma.hoadonChitiet.create({ data: payload });
             this._SocketGateway.sendHoadonchitietUpdate();
             return created;
         }

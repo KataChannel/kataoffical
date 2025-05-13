@@ -23,6 +23,7 @@ export declare class HoadonService {
         khhdon: string | null;
         shdon: number | null;
         cqt: string | null;
+        cttkhac: import(".prisma/client/runtime/library").JsonValue | null;
         hdon: string | null;
         hsgcma: string | null;
         hsgoc: string | null;
@@ -32,7 +33,7 @@ export declare class HoadonService {
         khdon: string | null;
         khhdgoc: string | null;
         khmshdgoc: string | null;
-        lhdgoc: string | null;
+        lhdgoc: number | null;
         mhdon: string | null;
         mtdiep: string | null;
         mtdtchieu: string | null;
@@ -68,6 +69,7 @@ export declare class HoadonService {
         tgtttbso: number | null;
         thdon: string | null;
         thlap: number | null;
+        thttlphi: import(".prisma/client/runtime/library").JsonValue | null;
         tlhdon: string | null;
         ttcktmai: number | null;
         tthai: number | null;
@@ -129,14 +131,12 @@ export declare class HoadonService {
         hdxkhau: string | null;
         hdxkptquan: string | null;
         hdgktkhthue: string | null;
-        tthdclquan: boolean | null;
-        hdTrung: string | null;
-        isHDTrung: boolean | null;
-        cttkhac: import(".prisma/client/runtime/library").JsonValue | null;
-        thttlphi: import(".prisma/client/runtime/library").JsonValue | null;
         hdonLquans: import(".prisma/client/runtime/library").JsonValue | null;
+        tthdclquan: boolean | null;
         pdndungs: import(".prisma/client/runtime/library").JsonValue | null;
         hdtbssrses: import(".prisma/client/runtime/library").JsonValue | null;
+        hdTrung: string | null;
+        isHDTrung: boolean | null;
     }>;
     findBy(param: any): Promise<{
         data: {
@@ -152,6 +152,7 @@ export declare class HoadonService {
             khhdon: string | null;
             shdon: number | null;
             cqt: string | null;
+            cttkhac: import(".prisma/client/runtime/library").JsonValue | null;
             hdon: string | null;
             hsgcma: string | null;
             hsgoc: string | null;
@@ -161,7 +162,7 @@ export declare class HoadonService {
             khdon: string | null;
             khhdgoc: string | null;
             khmshdgoc: string | null;
-            lhdgoc: string | null;
+            lhdgoc: number | null;
             mhdon: string | null;
             mtdiep: string | null;
             mtdtchieu: string | null;
@@ -197,6 +198,7 @@ export declare class HoadonService {
             tgtttbso: number | null;
             thdon: string | null;
             thlap: number | null;
+            thttlphi: import(".prisma/client/runtime/library").JsonValue | null;
             tlhdon: string | null;
             ttcktmai: number | null;
             tthai: number | null;
@@ -258,14 +260,12 @@ export declare class HoadonService {
             hdxkhau: string | null;
             hdxkptquan: string | null;
             hdgktkhthue: string | null;
-            tthdclquan: boolean | null;
-            hdTrung: string | null;
-            isHDTrung: boolean | null;
-            cttkhac: import(".prisma/client/runtime/library").JsonValue | null;
-            thttlphi: import(".prisma/client/runtime/library").JsonValue | null;
             hdonLquans: import(".prisma/client/runtime/library").JsonValue | null;
+            tthdclquan: boolean | null;
             pdndungs: import(".prisma/client/runtime/library").JsonValue | null;
             hdtbssrses: import(".prisma/client/runtime/library").JsonValue | null;
+            hdTrung: string | null;
+            isHDTrung: boolean | null;
         }[];
         total: number;
         page: any;
@@ -285,6 +285,7 @@ export declare class HoadonService {
             khhdon: string | null;
             shdon: number | null;
             cqt: string | null;
+            cttkhac: import(".prisma/client/runtime/library").JsonValue | null;
             hdon: string | null;
             hsgcma: string | null;
             hsgoc: string | null;
@@ -294,7 +295,7 @@ export declare class HoadonService {
             khdon: string | null;
             khhdgoc: string | null;
             khmshdgoc: string | null;
-            lhdgoc: string | null;
+            lhdgoc: number | null;
             mhdon: string | null;
             mtdiep: string | null;
             mtdtchieu: string | null;
@@ -330,6 +331,7 @@ export declare class HoadonService {
             tgtttbso: number | null;
             thdon: string | null;
             thlap: number | null;
+            thttlphi: import(".prisma/client/runtime/library").JsonValue | null;
             tlhdon: string | null;
             ttcktmai: number | null;
             tthai: number | null;
@@ -391,14 +393,12 @@ export declare class HoadonService {
             hdxkhau: string | null;
             hdxkptquan: string | null;
             hdgktkhthue: string | null;
-            tthdclquan: boolean | null;
-            hdTrung: string | null;
-            isHDTrung: boolean | null;
-            cttkhac: import(".prisma/client/runtime/library").JsonValue | null;
-            thttlphi: import(".prisma/client/runtime/library").JsonValue | null;
             hdonLquans: import(".prisma/client/runtime/library").JsonValue | null;
+            tthdclquan: boolean | null;
             pdndungs: import(".prisma/client/runtime/library").JsonValue | null;
             hdtbssrses: import(".prisma/client/runtime/library").JsonValue | null;
+            hdTrung: string | null;
+            isHDTrung: boolean | null;
         }[];
         total: number;
         page: number;
@@ -417,6 +417,7 @@ export declare class HoadonService {
         khhdon: string | null;
         shdon: number | null;
         cqt: string | null;
+        cttkhac: import(".prisma/client/runtime/library").JsonValue | null;
         hdon: string | null;
         hsgcma: string | null;
         hsgoc: string | null;
@@ -426,7 +427,7 @@ export declare class HoadonService {
         khdon: string | null;
         khhdgoc: string | null;
         khmshdgoc: string | null;
-        lhdgoc: string | null;
+        lhdgoc: number | null;
         mhdon: string | null;
         mtdiep: string | null;
         mtdtchieu: string | null;
@@ -462,6 +463,7 @@ export declare class HoadonService {
         tgtttbso: number | null;
         thdon: string | null;
         thlap: number | null;
+        thttlphi: import(".prisma/client/runtime/library").JsonValue | null;
         tlhdon: string | null;
         ttcktmai: number | null;
         tthai: number | null;
@@ -523,14 +525,12 @@ export declare class HoadonService {
         hdxkhau: string | null;
         hdxkptquan: string | null;
         hdgktkhthue: string | null;
-        tthdclquan: boolean | null;
-        hdTrung: string | null;
-        isHDTrung: boolean | null;
-        cttkhac: import(".prisma/client/runtime/library").JsonValue | null;
-        thttlphi: import(".prisma/client/runtime/library").JsonValue | null;
         hdonLquans: import(".prisma/client/runtime/library").JsonValue | null;
+        tthdclquan: boolean | null;
         pdndungs: import(".prisma/client/runtime/library").JsonValue | null;
         hdtbssrses: import(".prisma/client/runtime/library").JsonValue | null;
+        hdTrung: string | null;
+        isHDTrung: boolean | null;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
@@ -546,6 +546,7 @@ export declare class HoadonService {
         khhdon: string | null;
         shdon: number | null;
         cqt: string | null;
+        cttkhac: import(".prisma/client/runtime/library").JsonValue | null;
         hdon: string | null;
         hsgcma: string | null;
         hsgoc: string | null;
@@ -555,7 +556,7 @@ export declare class HoadonService {
         khdon: string | null;
         khhdgoc: string | null;
         khmshdgoc: string | null;
-        lhdgoc: string | null;
+        lhdgoc: number | null;
         mhdon: string | null;
         mtdiep: string | null;
         mtdtchieu: string | null;
@@ -591,6 +592,7 @@ export declare class HoadonService {
         tgtttbso: number | null;
         thdon: string | null;
         thlap: number | null;
+        thttlphi: import(".prisma/client/runtime/library").JsonValue | null;
         tlhdon: string | null;
         ttcktmai: number | null;
         tthai: number | null;
@@ -652,14 +654,12 @@ export declare class HoadonService {
         hdxkhau: string | null;
         hdxkptquan: string | null;
         hdgktkhthue: string | null;
-        tthdclquan: boolean | null;
-        hdTrung: string | null;
-        isHDTrung: boolean | null;
-        cttkhac: import(".prisma/client/runtime/library").JsonValue | null;
-        thttlphi: import(".prisma/client/runtime/library").JsonValue | null;
         hdonLquans: import(".prisma/client/runtime/library").JsonValue | null;
+        tthdclquan: boolean | null;
         pdndungs: import(".prisma/client/runtime/library").JsonValue | null;
         hdtbssrses: import(".prisma/client/runtime/library").JsonValue | null;
+        hdTrung: string | null;
+        isHDTrung: boolean | null;
     }>;
     reorderHoadons(hoadonIds: string[]): Promise<void>;
 }

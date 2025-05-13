@@ -48,10 +48,8 @@ let HoadonchitietController = class HoadonchitietController {
 };
 exports.HoadonchitietController = HoadonchitietController;
 __decorate([
-    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new hoadonchitiet' }),
     (0, swagger_1.ApiBody)({ type: Object }),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),

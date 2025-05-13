@@ -58,7 +58,7 @@ export class MinioService {
             const url = `${this.bucketName}/${fileName}`;
             // const url = `${publicUrl}/${this.bucketName}/${fileName}`;
 
-            await this.prisma.image.create({
+            await this.prisma.resource.create({
                 data: {
                     url,
                     fileType: file.mimetype,
@@ -72,20 +72,20 @@ export class MinioService {
         } catch (error) {
             console.error('Error uploading file to Minio or saving to DB:', error);
             throw new InternalServerErrorException(
-                'Unable to upload image or save to the database'
+                'Unable to upload resource or save to the database'
             );
         }
     }
 
     async deleteFile(id: any): Promise<void> {
-        const image = await this.prisma.image.findUnique({ where: { id: id } });
-        if (!image) {
-            throw new NotFoundException('Image not found');
+        const resource = await this.prisma.resource.findUnique({ where: { id: id } });
+        if (!resource) {
+            throw new NotFoundException('resource not found');
         }
 
-        const fileName = image.url.split('/').pop();
+        const fileName = resource.url.split('/').pop();
         if (!fileName) {
-            throw new InternalServerErrorException('Invalid image URL: file name not found');
+            throw new InternalServerErrorException('Invalid resource URL: file name not found');
         }
 
         try {
@@ -95,6 +95,6 @@ export class MinioService {
             throw new InternalServerErrorException('Error deleting file from Minio');
         }
 
-        await this.prisma.image.delete({ where: { id: id } });
+        await this.prisma.resource.delete({ where: { id: id } });
     }
 }

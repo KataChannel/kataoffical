@@ -8,10 +8,8 @@ import { AuthGuard } from '@nestjs/passport';
 export class HoadonchitietController {
   constructor(private readonly hoadonchitietService: hoadonChitietService) {}
 
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new hoadonchitiet' })
   @ApiBody({ type: Object })
-  @UseGuards(AuthGuard('jwt'))
   @Post()
   create(@Body() data: any) {
     return this.hoadonchitietService.create(data);

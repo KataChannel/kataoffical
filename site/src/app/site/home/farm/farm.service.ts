@@ -22,6 +22,7 @@ export interface Crop {
   name: string;
   growthTime: number; // Thời gian để lớn (ví dụ: số tick game)
   harvestValue: number; // Giá trị khi thu hoạch (nếu có kinh tế)
+  color: string; // Màu sắc của cây trồng
 }
 
 @Injectable({
@@ -37,10 +38,13 @@ export class FarmService {
   private gameTickInterval = 1000; // 1 giây mỗi tick game
   private gameSubscription: Subscription | null = null;
 
-  // Dữ liệu mẫu về cây trồng
+  // Định nghĩa 5 loại cây với màu sắc tương ứng:
   private crops: Crop[] = [
-    { name: 'carrot', growthTime: 10, harvestValue: 5 },
-    // Có thể thêm nhiều loại cây khác
+    { name: 'carrot', growthTime: 10, harvestValue: 5, color: 'yellow' }, // vàng
+    { name: 'lettuce', growthTime: 8, harvestValue: 4, color: 'green' }, // xanh lá cây
+    { name: 'blueberry', growthTime: 12, harvestValue: 6, color: 'blue' }, // xanh nước biển
+    { name: 'tomato', growthTime: 9, harvestValue: 5, color: 'red' }, // đỏ
+    { name: 'potato', growthTime: 11, harvestValue: 7, color: 'brown' }, // nâu
   ];
 
   constructor() {
@@ -90,12 +94,14 @@ export class FarmService {
       const newPlots = this.farmPlots().map(rowArr => rowArr.map(plot => ({ ...plot })));
       const p = newPlots[row][col];
       p.state = 'planted';
-      p.cropType = cropName;
+      p.cropType = crop.name;
       p.growthProgress = 0;
       p.watered = false;
+
+      // Log thêm thông tin về màu của cây được gieo
+      console.log(`Planted ${crop.name} (${crop.color}) at (${row}, ${col})`);
+
       this.farmPlots.set(newPlots);
-      console.log(`Crop ${cropName} planted at (${row}, ${col})`);
-      console.log(`Planted ${cropName} at (${row}, ${col})`);
       return true;
     }
     return false;
@@ -103,8 +109,8 @@ export class FarmService {
 
   // Tưới nước
   waterPlot(row: number, col: number): boolean {
-     const currentPlots = this.farmPlots();
-     const plot = currentPlots?.[row]?.[col];
+    const currentPlots = this.farmPlots();
+    const plot = currentPlots?.[row]?.[col];
 
     if (plot && (plot.state === 'planted' || plot.state === 'growing') && !plot.watered) {
       const newPlots = this.farmPlots().map(rowArr => rowArr.map(plot => ({ ...plot })));
@@ -145,7 +151,7 @@ export class FarmService {
     this.gameSubscription = interval(this.gameTickInterval).subscribe(() => {
       this.updateGrowth();
     });
-     console.log('Game tick started');
+    console.log('Game tick started');
   }
 
   // Cập nhật sự phát triển của cây sau mỗi tick
@@ -154,25 +160,25 @@ export class FarmService {
     // Sử dụng mutate để thay đổi trực tiếp mảng, Angular sẽ phát hiện sự thay đổi trong signal
     const newPlots = this.farmPlots().map(rowArr => rowArr.map(plot => ({ ...plot })));
     for (let i = 0; i < this.rows; i++) {
-        for (let j = 0; j < this.cols; j++) {
-            const plot = newPlots[i][j];
-            const crop = this.crops.find(c => c.name === plot.cropType);
+      for (let j = 0; j < this.cols; j++) {
+        const plot = newPlots[i][j];
+        const crop = this.crops.find(c => c.name === plot.cropType);
 
-            if (plot.cropType && (plot.state === 'planted' || plot.state === 'growing') && crop) {
-                if (plot.state === 'planted' && plot.growthProgress > 0) {
-                    plot.state = 'growing';
-                    changed = true;
-                }
+        if (plot.cropType && (plot.state === 'planted' || plot.state === 'growing') && crop) {
+          if (plot.state === 'planted' && plot.growthProgress > 0) {
+            plot.state = 'growing';
+            changed = true;
+          }
 
-                // Reset trạng thái tưới sau khi cây lớn 1 bước
-                plot.watered = false; // Uncomment dòng này nếu muốn tưới mỗi tick
+          // Reset trạng thái tưới sau khi cây lớn 1 bước
+          plot.watered = false; // Uncomment dòng này nếu muốn tưới mỗi tick
 
-                if (plot.growthProgress < 100) { // Đánh dấu thay đổi nếu cây vẫn đang lớn
-                    changed = true;
-                }
-            }
-            // Logic cây không lớn nếu không tưới có thể thêm ở đây
+          if (plot.growthProgress < 100) { // Đánh dấu thay đổi nếu cây vẫn đang lớn
+            changed = true;
+          }
         }
+        // Logic cây không lớn nếu không tưới có thể thêm ở đây
+      }
     }
     this.farmPlots.set(newPlots);
 
@@ -181,7 +187,6 @@ export class FarmService {
 
     // Không cần emitPlots() nữa, Signal tự động thông báo khi mutate/set
   }
-
 
   // Dừng vòng lặp game tick
   stopGameTick(): void {
