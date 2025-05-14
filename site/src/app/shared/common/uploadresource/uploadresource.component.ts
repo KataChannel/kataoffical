@@ -183,17 +183,23 @@ export class UploadresourceComponent implements OnInit, OnChanges {
   validFilesCount(): number {
     return this.selectedFiles.filter(file => !this.fileErrors[file.name] && file.size > 0).length;
   }
-  onUpload(event?: MouseEvent): void {
+  async onUpload(event?: MouseEvent): Promise<void> {
     if (event) {
-        event.stopPropagation();
+      event.stopPropagation();
     }
 
-    const filesToUpload = this.selectedFiles.filter(file => !this.fileErrors[file.name] && file.size > 0); // Chỉ upload file có size > 0 và không lỗi
+    const filesToUpload = this.selectedFiles.filter(
+      file => !this.fileErrors[file.name] && file.size > 0
+    );
 
     if (filesToUpload.length === 0) {
-      if (!this.uploadUrl) this.uploadMessage = 'Chưa cấu hình URL để upload.';
-      else if (this.selectedFiles.length > 0) this.uploadMessage = 'Không có file hợp lệ để upload.';
-      else this.uploadMessage = 'Chưa chọn file nào.';
+      if (!this.uploadUrl) {
+        this.uploadMessage = 'Chưa cấu hình URL để upload.';
+      } else if (this.selectedFiles.length > 0) {
+        this.uploadMessage = 'Không có file hợp lệ để upload.';
+      } else {
+        this.uploadMessage = 'Chưa chọn file nào.';
+      }
       this.isUploadSuccess = false;
       this.isUploading = false;
       return;
@@ -205,75 +211,67 @@ export class UploadresourceComponent implements OnInit, OnChanges {
       console.error('Upload URL is not configured.');
       return;
     }
-     if (this.isUploading) return;
-
+    if (this.isUploading) return;
 
     this.isUploading = true;
     this.uploadProgress = 0;
     this.uploadMessage = `Đang chuẩn bị upload ${filesToUpload.length} file...`;
     this.isUploadSuccess = false;
 
-    const formData = new FormData();
+    let uploadedCount = 0;
+    const totalCount = filesToUpload.length;
 
-    if (this.category) {
-        formData.append('category', this.category);
-    }
-    if (this.group) {
-        formData.append('group', this.group);
-    }
+    // Helper function to upload a single file and return a promise that resolves on completion.
+    const uploadFile = (file: File): Promise<void> => {
+      return new Promise<void>(resolve => {
+        const fileFormData = new FormData();
+        fileFormData.append('file', file, file.name);
+        if (this.category) {
+          fileFormData.append('category', this.category);
+        }
+        if (this.group) {
+          fileFormData.append('group', this.group);
+        }
 
-    filesToUpload.forEach(file => {
-      formData.append('file', file, file.name); // Key là 'file', server có thể cần xử lý nhiều file với cùng key này
-    });
-
-
-    this.http.post(this.uploadUrl, formData, {
-      reportProgress: true,
-      observe: 'events'
-    }).subscribe({
-      next: (httpEvent: any) => {
-        if (httpEvent.type === HttpEventType.UploadProgress) {
-          if (httpEvent.total) {
-            this.uploadProgress = Math.round(100 * httpEvent.loaded / httpEvent.total);
-            this.uploadMessage = `Đang upload... ${this.uploadProgress}%`;
+        this.http.post(this.uploadUrl, fileFormData, {
+          reportProgress: true,
+          observe: 'events'
+        }).subscribe({
+          next: (httpEvent: any) => {
+            if (httpEvent.type === HttpEventType.UploadProgress && httpEvent.total) {
+              const progress = Math.round(100 * httpEvent.loaded / httpEvent.total);
+              this.uploadProgress = progress;
+              this.uploadMessage = `Đang upload ${file.name}... ${progress}%`;
+            } else if (httpEvent instanceof HttpResponse) {
+              uploadedCount++;
+              this.uploadSuccessEvent.emit(httpEvent.body);
+              // Loại bỏ file đã upload khỏi danh sách selectedFiles và cập nhật lỗi liên quan
+              this.selectedFiles = this.selectedFiles.filter(existingFile => existingFile !== file);
+              delete this.fileErrors[file.name];
+              resolve();
+            }
+          },
+          error: (err: any) => {
+            this.uploadMessage = `Upload ${file.name} thất bại.`;
+            this.uploadErrorEvent.emit(err);
+            console.error('Upload error:', err);
+            // Tiếp tục với file tiếp theo ngay cả khi gặp lỗi.
+            resolve();
           }
-        } else if (httpEvent instanceof HttpResponse) {
-          this.uploadMessage = `Upload thành công ${filesToUpload.length} file!`;
-          this.isUploadSuccess = true;
-          this.uploadSuccessEvent.emit(httpEvent.body);
+        });
+      });
+    };
 
-          this.selectedFiles = this.selectedFiles.filter(file => !filesToUpload.includes(file));
-          filesToUpload.forEach(file => delete this.fileErrors[file.name]);
+    // Upload các file một cách tuần tự bằng async/await
+    for (let i = 0; i < totalCount; i++) {
+      await uploadFile(filesToUpload[i]);
+    }
 
-          this.uploadProgress = 0;
-          if (this.selectedFiles.length === 0) {
-            this.filesSelectedEvent.emit([]);
-          } else {
-            this.filesSelectedEvent.emit(this.selectedFiles);
-          }
-        }
-      },
-      error: (err: any) => {
-        this.uploadMessage = 'Upload thất bại. Vui lòng thử lại.';
-        if (err.error && typeof err.error.message === 'string') {
-            this.uploadMessage = `Upload thất bại: ${err.error.message}`;
-        } else if (typeof err.message === 'string') {
-            this.uploadMessage = `Upload thất bại: ${err.message}`;
-        }
-        this.isUploadSuccess = false;
-        this.uploadErrorEvent.emit(err);
-        console.error('Upload error:', err);
-        this.uploadProgress = 0;
-      },
-      complete: () => {
-        this.isUploading = false;
-        if (this.isUploadSuccess) {
-             // Giữ lại message thành công một chút hoặc xóa đi nếu muốn
-        } else if (this.uploadProgress === 100 && !this.isUploadSuccess) {
-            // Trường hợp progress 100% nhưng server trả lỗi sau đó
-            this.uploadMessage = this.uploadMessage || 'Có lỗi xảy ra sau khi tải lên hoàn tất.';
-        }
-      }
-    });
+    this.isUploading = false;
+    this.uploadMessage = `Upload thành công ${uploadedCount} file!`;
+    this.isUploadSuccess = uploadedCount === totalCount;
+
+    // Cập nhật lại selectedFiles cho component
+    this.filesSelectedEvent.emit(this.selectedFiles.length === 0 ? [] : this.selectedFiles);
   }
 }

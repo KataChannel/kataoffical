@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
 import { ResourceService } from './resource.service';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('resource')
 @Controller('resource')
@@ -11,7 +11,7 @@ export class ResourceController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new resource' })
   @ApiBody({ type: Object })
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() data: any) {
     try {
@@ -67,7 +67,7 @@ export class ResourceController {
   @ApiOperation({ summary: 'Update a resource' })
   @ApiParam({ name: 'id', type: String })
   @ApiBody({ type: Object })
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(@Param('id') id: string, @Body() data: any) {
     try {
@@ -80,7 +80,7 @@ export class ResourceController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete a resource' })
   @ApiParam({ name: 'id', type: String })
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: string) {
     try {

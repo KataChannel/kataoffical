@@ -15,7 +15,7 @@ const socket_io_1 = require("socket.io");
 let SocketGateway = class SocketGateway {
     sendResourceUpdate() {
         try {
-            this.server.emit('resourceupdated');
+            this.server.emit('resource-updated');
             return { success: true };
         }
         catch (error) {

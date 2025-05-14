@@ -32,21 +32,6 @@ export class MinioService {
       throw new InternalServerErrorException('Minio bucket error');
     }
   }
-  async getLastUpdatedResource(): Promise<{ updatedAt: number }> {
-    try {
-      const lastUpdated = await this.prisma.resource.aggregate({
-        _max: { updatedAt: true },
-      });
-      return {
-        updatedAt: lastUpdated._max.updatedAt
-          ? new Date(lastUpdated._max.updatedAt).getTime()
-          : 0,
-      };
-    } catch (error) {
-      throw error;
-    }
-  }
-
   async generateCodeId(): Promise<string> {
     try {
       const latest = await this.prisma.resource.findFirst({
@@ -54,7 +39,7 @@ export class MinioService {
       });
       let nextNumber = 1;
       if (latest && latest.codeId) {
-        const match = latest.codeId.match(/I1(\d+)/);
+        const match = latest.codeId.match(/IMG(\d+)/);
         if (match) {
           nextNumber = parseInt(match[1]) + 1;
         }
@@ -119,7 +104,7 @@ export class MinioService {
     }
   }
 
-  async deleteFile(id: any): Promise<void> {
+  async deleteFile(id: any): Promise<boolean> {
     const resource = await this.prisma.resource.findUnique({
       where: { id: id },
     });
@@ -140,7 +125,7 @@ export class MinioService {
       console.error('Error deleting file from Minio:', error);
       throw new InternalServerErrorException('Error deleting file from Minio');
     }
-
     await this.prisma.resource.delete({ where: { id: id } });
+    return true;
   }
 }

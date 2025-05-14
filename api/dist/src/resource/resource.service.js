@@ -14,11 +14,13 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("./socket.gateway");
+const minio_service_1 = require("../minio/minio.service");
 let ResourceService = class ResourceService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway, _ErrorlogService, _MinioService) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
         this._ErrorlogService = _ErrorlogService;
+        this._MinioService = _MinioService;
     }
     async getLastUpdatedResource() {
         try {
@@ -65,6 +67,7 @@ let ResourceService = class ResourceService {
                     codeId: codeId
                 },
             });
+            this._SocketGateway.sendResourceUpdate();
             return created;
         }
         catch (error) {
@@ -143,6 +146,7 @@ let ResourceService = class ResourceService {
             else {
                 updated = await this.prisma.resource.update({ where: { id }, data });
             }
+            this._SocketGateway.sendResourceUpdate();
             return updated;
         }
         catch (error) {
@@ -152,8 +156,15 @@ let ResourceService = class ResourceService {
     }
     async remove(id) {
         try {
-            const deleted = await this.prisma.resource.delete({ where: { id } });
-            return deleted;
+            const resource = await this.prisma.resource.findUnique({ where: { id } });
+            if (!resource)
+                throw new common_1.NotFoundException('Resource not found');
+            const fileDeleted = await this._MinioService.deleteFile(resource.id);
+            if (!fileDeleted) {
+                throw new Error('File deletion from Minio failed');
+            }
+            this._SocketGateway.sendResourceUpdate();
+            return fileDeleted;
         }
         catch (error) {
             this._ErrorlogService.logError('removeResource', error);
@@ -181,6 +192,7 @@ exports.ResourceService = ResourceService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        errorlog_service_1.ErrorlogService,
+        minio_service_1.MinioService])
 ], ResourceService);
 //# sourceMappingURL=resource.service.js.map

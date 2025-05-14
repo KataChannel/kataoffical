@@ -21,9 +21,10 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
   import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
   import { MatDialog, MatDialogModule } from '@angular/material/dialog';
   import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
-  import { environment } from '../../../../environments/environment.development';
   import { KtableComponent } from '../../../shared/common/ktable/ktable.component';
 import { Debounce, memoize } from '../../../shared/utils/decorators';
+import { UploadresourceComponent } from '../../../shared/common/uploadresource/uploadresource.component';
+import { environment } from '../../../../environments/environment';
   @Component({
     selector: 'app-listresource',
     templateUrl: './listresource.component.html',
@@ -45,7 +46,8 @@ import { Debounce, memoize } from '../../../shared/utils/decorators';
       MatTooltipModule,
       MatDialogModule,
       SearchfilterComponent,
-      KtableComponent
+      KtableComponent,
+      UploadresourceComponent
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
   })
@@ -55,6 +57,7 @@ import { Debounce, memoize } from '../../../shared/utils/decorators';
       stt:'#',
       url: 'Hình Ảnh',
       title: 'Tiêu Đề',
+      codeId:'Code',
       description: 'Mô Tả',
       fileType: 'Loại Tập Tin',
       category: 'Danh Mục',
@@ -84,6 +87,9 @@ import { Debounce, memoize } from '../../../shared/utils/decorators';
     _snackBar: MatSnackBar = inject(MatSnackBar);
     CountItem: any = 0;
     isSearch: boolean = false;
+    uploadUrl: string = `${environment.APIURL}/minio/upload`;
+    category: string = 'default';
+    group: string = 'default';
     constructor() {
       effect(() => {
         this.dataSource.data = this.Listresource();
@@ -242,6 +248,17 @@ import { Debounce, memoize } from '../../../shared/utils/decorators';
       this.drawer.open();
       this._router.navigate(['admin/resource', 'new']);
     }
+    openUploadDialog(teamplate: TemplateRef<any>) {
+        const dialogDeleteRef = this._dialog.open(teamplate, {
+          hasBackdrop: true,
+          disableClose: true,
+        });
+        dialogDeleteRef.afterClosed().subscribe((result) => {
+          if (result=="true") {
+            
+          }
+        });
+    }
     openDeleteDialog(teamplate: TemplateRef<any>) {
         const dialogDeleteRef = this._dialog.open(teamplate, {
           hasBackdrop: true,
@@ -253,6 +270,10 @@ import { Debounce, memoize } from '../../../shared/utils/decorators';
           }
         });
     }
+
+
+
+
     DeleteListItem(): void {
       this.EditList.forEach((item: any) => {
         this._ResourceService.DeleteResource(item);

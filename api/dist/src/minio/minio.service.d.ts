@@ -6,9 +6,6 @@ export declare class MinioService {
     private options;
     constructor(prisma: PrismaService);
     private ensureBucketExists;
-    getLastUpdatedResource(): Promise<{
-        updatedAt: number;
-    }>;
     generateCodeId(): Promise<string>;
     uploadFile(file: Express.Multer.File, extra: {
         title?: string;
@@ -16,5 +13,5 @@ export declare class MinioService {
         group?: string;
         description?: string;
     }): Promise<string>;
-    deleteFile(id: any): Promise<void>;
+    deleteFile(id: any): Promise<boolean>;
 }

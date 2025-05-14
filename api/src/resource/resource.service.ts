@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from './socket.gateway';
+import { MinioService } from 'src/minio/minio.service';
 
 @Injectable()
 export class ResourceService {
@@ -9,6 +10,7 @@ export class ResourceService {
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
     private _ErrorlogService: ErrorlogService,
+    private _MinioService: MinioService,
   ) {}
 
   async getLastUpdatedResource(): Promise<{ updatedAt: number }> {
@@ -56,7 +58,7 @@ export class ResourceService {
           codeId: codeId
         },
       });
-      //this._SocketGateway.sendResourceUpdate();
+      this._SocketGateway.sendResourceUpdate();
       return created;
     } catch (error) {
       this._ErrorlogService.logError('createResource', error);
@@ -133,7 +135,7 @@ export class ResourceService {
       } else {
         updated = await this.prisma.resource.update({ where: { id }, data });
       }
-      //this._SocketGateway.sendResourceUpdate();
+      this._SocketGateway.sendResourceUpdate();
       return updated;
     } catch (error) {
       this._ErrorlogService.logError('updateResource', error);
@@ -143,9 +145,16 @@ export class ResourceService {
 
   async remove(id: string) {
     try {
-      const deleted = await this.prisma.resource.delete({ where: { id } });
-      //this._SocketGateway.sendResourceUpdate();
-      return deleted;
+      const resource = await this.prisma.resource.findUnique({ where: { id } });
+      if (!resource) throw new NotFoundException('Resource not found');
+
+      // Delete file from Minio and check if deletion was successful
+      const fileDeleted = await this._MinioService.deleteFile(resource.id);
+      if (!fileDeleted) {
+        throw new Error('File deletion from Minio failed');
+      }
+      this._SocketGateway.sendResourceUpdate();
+      return fileDeleted;
     } catch (error) {
       this._ErrorlogService.logError('removeResource', error);
       throw error;

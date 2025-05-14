@@ -16,7 +16,7 @@ exports.ResourceController = void 0;
 const common_1 = require("@nestjs/common");
 const resource_service_1 = require("./resource.service");
 const swagger_1 = require("@nestjs/swagger");
-const passport_1 = require("@nestjs/passport");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let ResourceController = class ResourceController {
     constructor(resourceService) {
         this.resourceService = resourceService;
@@ -91,7 +91,7 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new resource' }),
     (0, swagger_1.ApiBody)({ type: Object }),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -135,7 +135,7 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Update a resource' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: String }),
     (0, swagger_1.ApiBody)({ type: Object }),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -147,7 +147,7 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Delete a resource' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: String }),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

@@ -12,9 +12,9 @@ export declare class ResourceController {
         codeId: string | null;
         url: string | null;
         fileType: string | null;
+        metaData: import(".prisma/client/runtime/library").JsonValue | null;
         category: string | null;
         group: string | null;
-        metaData: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     findby(param: any): Promise<{
         data: {
@@ -27,9 +27,9 @@ export declare class ResourceController {
             codeId: string | null;
             url: string | null;
             fileType: string | null;
+            metaData: import(".prisma/client/runtime/library").JsonValue | null;
             category: string | null;
             group: string | null;
-            metaData: import(".prisma/client/runtime/library").JsonValue | null;
         }[];
         total: number;
         page: any;
@@ -46,9 +46,9 @@ export declare class ResourceController {
             codeId: string | null;
             url: string | null;
             fileType: string | null;
+            metaData: import(".prisma/client/runtime/library").JsonValue | null;
             category: string | null;
             group: string | null;
-            metaData: import(".prisma/client/runtime/library").JsonValue | null;
         }[];
         total: number;
         page: number;
@@ -67,25 +67,12 @@ export declare class ResourceController {
         codeId: string | null;
         url: string | null;
         fileType: string | null;
+        metaData: import(".prisma/client/runtime/library").JsonValue | null;
         category: string | null;
         group: string | null;
-        metaData: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     update(id: string, data: any): Promise<any>;
-    remove(id: string): Promise<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        description: string | null;
-        title: string | null;
-        order: number | null;
-        codeId: string | null;
-        url: string | null;
-        fileType: string | null;
-        category: string | null;
-        group: string | null;
-        metaData: import(".prisma/client/runtime/library").JsonValue | null;
-    }>;
+    remove(id: string): Promise<true>;
     reorder(body: {
         resourceIds: string[];
     }): Promise<{

@@ -40,21 +40,6 @@ let MinioService = class MinioService {
             throw new common_1.InternalServerErrorException('Minio bucket error');
         }
     }
-    async getLastUpdatedResource() {
-        try {
-            const lastUpdated = await this.prisma.resource.aggregate({
-                _max: { updatedAt: true },
-            });
-            return {
-                updatedAt: lastUpdated._max.updatedAt
-                    ? new Date(lastUpdated._max.updatedAt).getTime()
-                    : 0,
-            };
-        }
-        catch (error) {
-            throw error;
-        }
-    }
     async generateCodeId() {
         try {
             const latest = await this.prisma.resource.findFirst({
@@ -62,7 +47,7 @@ let MinioService = class MinioService {
             });
             let nextNumber = 1;
             if (latest && latest.codeId) {
-                const match = latest.codeId.match(/I1(\d+)/);
+                const match = latest.codeId.match(/IMG(\d+)/);
                 if (match) {
                     nextNumber = parseInt(match[1]) + 1;
                 }
@@ -124,6 +109,7 @@ let MinioService = class MinioService {
             throw new common_1.InternalServerErrorException('Error deleting file from Minio');
         }
         await this.prisma.resource.delete({ where: { id: id } });
+        return true;
     }
 };
 exports.MinioService = MinioService;

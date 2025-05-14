@@ -11,8 +11,7 @@ export class SocketGateway {
 
   sendResourceUpdate(): { success: boolean; error?: string } { 
     try {
-      // Phát sự kiện dynamic với tên: resourceupdated
-      this.server.emit('resourceupdated');
+      this.server.emit('resource-updated');
       return { success: true };
     } catch (error) {
       return { success: false, error: (error as Error).message };
