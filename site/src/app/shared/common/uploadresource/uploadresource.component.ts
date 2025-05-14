@@ -15,8 +15,8 @@ export class UploadresourceComponent implements OnInit, OnChanges {
   @Input() allowedFileTypes: string[] = [];
   @Input() maxFileSizeMB: number = 5;
   @Input() uploadUrl: string = '';
-  @Input() category: string = '';
-  @Input() group: string = '';
+  @Input() category: string = 'default';
+  @Input() group: string = 'default';
 
   @Output() filesSelectedEvent = new EventEmitter<File[]>();
   @Output() uploadSuccessEvent = new EventEmitter<any>();

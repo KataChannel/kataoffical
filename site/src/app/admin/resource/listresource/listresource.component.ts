@@ -53,13 +53,13 @@ import { Debounce, memoize } from '../../../shared/utils/decorators';
     displayedColumns: string[] = [];
     ColumnName: any = {
       stt:'#',
-      title: 'Tên Sản Phẩm',
-      codeId: 'Code',
+      url: 'Hình Ảnh',
+      title: 'Tiêu Đề',
       description: 'Mô Tả',
-      status: 'Trạng Thái',
-      order: 'Thứ Tự',
+      fileType: 'Loại Tập Tin',
+      category: 'Danh Mục',
+      group: 'Nhóm',
       createdAt: 'Ngày Tạo',
-      updatedAt: 'Ngày Cập Nhật'
     };
     FilterColumns: any[] = JSON.parse(
       localStorage.getItem('ResourceColFilter') || '[]'
@@ -111,6 +111,9 @@ import { Debounce, memoize } from '../../../shared/utils/decorators';
     }
     async refresh() {
      await this._ResourceService.getAllResource();
+    }
+    getImage(url: string): string {
+      return url ? `${environment.ImageURL}/${url}` : 'assets/images/no-image.png';
     }
     private initializeColumns(): void {
       this.Columns = Object.keys(this.ColumnName).map((key) => ({

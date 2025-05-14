@@ -520,6 +520,7 @@ model Resource {
   metaData  Json?
   category  String?
   group     String?
+  order       Int?     @default(1)
   createdAt     DateTime @default(now())
   updatedAt     DateTime       @updatedAt
 }

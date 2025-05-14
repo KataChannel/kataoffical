@@ -76,7 +76,7 @@
           }
           @else {
           <th class="!border whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
-            <span class="max-w-40 line-clamp-4 me-4">
+            <span class="max-w-40 line-clamp- TRUNCATE me-4">
               {{ ColumnName[column] }}
             </span>
             <app-searchfilter [icon]="'filter_alt'" [ListItem]="this.Listresource()" [fieldsearch]="column"
@@ -86,28 +86,33 @@
           }
           <td class="border" mat-cell *matCellDef="let row; let idx = index">
             @switch (column) {
-            @case ('codeId') {
-            <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
-              {{ row[column] }}
-            </span>
-            }
             @case ('stt') {
             <span class="">
               {{ idx + 1 }}
             </span>
+            }    
+            @case ('codeId') {
+            <span (click)="goToDetail(row);" class="max-w-40 line-clamp- TRUNCATE font-bold text-blue-600">
+              {{ row[column] }}
+            </span>
+            }
+            @case ('url') {
+              <a [href]="getImage(row[column])" target="_blank" rel="noopener noreferrer">
+              <img [src]="getImage(row[column])" lazyload="true" class="m-auto w-10 h-10 object-cover rounded-lg">
+              </a>
             }
             @case ('createdAt') {
-            <span class="max-w-40 line-clamp-4">
+            <span class="max-w-40 line-clamp- TRUNCATE">
               {{ row[column]|date:'dd/MM/yyyy'}}
             </span>
             }
             @case ('haohut') {
-            <span class="max-w-40 line-clamp-4">
+            <span class="max-w-40 line-clamp- TRUNCATE">
               {{ row[column]}}%
             </span>
             }
             @case ('isActive') {
-            <span class="max-w-40 line-clamp-4">
+            <span class="max-w-40 line-clamp- TRUNCATE">
               @if (row[column]) {
               <mat-icon class="text-green-500">check_circle</mat-icon>
               }
@@ -117,12 +122,12 @@
             </span>
             }
             @case ('updatedAt') {
-            <span class="max-w-40 line-clamp-4">
+            <span class="max-w-40 line-clamp- TRUNCATE">
               {{ row[column]|date:'dd/MM/yyyy'}}
             </span>
             }
             @default {
-            <span class="max-w-40 line-clamp-4">
+            <span class="max-w-40 line-clamp- TRUNCATE">
               {{ row[column] }}
             </span>
             }

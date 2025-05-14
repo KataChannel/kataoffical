@@ -6,6 +6,9 @@ git push
 # server
 ssh root@116.118.85.23
 git pull
+
+cp /root/secret/.env /root/kataoffical/api/
+
 docker compose -f 'docker-compose.yml' up -d --build 
 docker compose -f 'docker-compose.yml' up -d --build 'postgres'
 docker compose -f 'docker-compose.yml' up -d --build 'pgadmin'
