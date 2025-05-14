@@ -52,9 +52,12 @@ export declare class AuthService {
             permissions: ({
                 permission: {
                     id: string;
+                    order: number | null;
                     createdAt: Date;
                     updatedAt: Date;
                     name: string;
+                    codeId: string | null;
+                    group: string | null;
                     description: string | null;
                 };
             } & {

@@ -16,8 +16,8 @@ export declare class UserguideService {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
         codeId: string | null;
+        description: string | null;
         time: string | null;
     }>;
     findBy(param: any): Promise<{
@@ -30,8 +30,8 @@ export declare class UserguideService {
                 createdAt: Date;
                 updatedAt: Date;
                 type: string;
-                description: string | null;
                 codeId: string | null;
+                description: string | null;
                 listItems: string | null;
                 imageUrl: string | null;
                 imageAlt: string | null;
@@ -45,8 +45,8 @@ export declare class UserguideService {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            description: string | null;
             codeId: string | null;
+            description: string | null;
             time: string | null;
         })[];
         total: number;
@@ -60,8 +60,8 @@ export declare class UserguideService {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            description: string | null;
             codeId: string | null;
+            description: string | null;
             time: string | null;
         }[];
         total: number;
@@ -74,8 +74,8 @@ export declare class UserguideService {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
         codeId: string | null;
+        description: string | null;
         time: string | null;
     }>;
     update(id: string, data: any): Promise<{
@@ -84,8 +84,8 @@ export declare class UserguideService {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
         codeId: string | null;
+        description: string | null;
         time: string | null;
     }>;
     remove(id: string): Promise<{
@@ -94,8 +94,8 @@ export declare class UserguideService {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        description: string | null;
         codeId: string | null;
+        description: string | null;
         time: string | null;
     }>;
     reorderUserguides(userguideIds: string[]): Promise<{

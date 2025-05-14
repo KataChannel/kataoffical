@@ -42,9 +42,12 @@ model UserRole {
 
 model Permission {
   id          String         @id @default(uuid())
+  codeId      String?         
   name        String         @unique
+  group       String?       // Nhóm quyền
   description String?
   roles       RolePermission[]
+  order       Int?          @default(1)
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 }

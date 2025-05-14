@@ -97,6 +97,10 @@ export class ListDonhangComponent {
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('DonhangColFilter') || '[]'
   );
+  totalItems = 0;
+  pageSize = 10;
+  currentPage = 1;
+  totalPages = 1;
   Columns: any[] = [];
   isFilter: boolean = false;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -115,9 +119,8 @@ export class ListDonhangComponent {
   dataSource = new MatTableDataSource([]);
   donhangId: any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
-  CountItem: any = signal<any>(0)
-  pageSize: any = signal<any>(10)
-  pageIndex: any = signal<any>(1)
+  CountItem: any = 0
+  pageIndex: any = 1
   Trangthaidon:any = TrangThaiDon
   SearchParams: any = {
     Batdau: moment().toDate(),
@@ -141,14 +144,61 @@ export class ListDonhangComponent {
     effect(async () => {
       const data = await this._DonhangService.searchDonhang(this.SearchParams);
       this.Listdonhang.set(data);
-      // this.CountItem.set(data.total)   
-      // this.pageSize.set(data.pageSize)
-      // this.pageIndex.set(data.pageIndex)
+      if(data.data)
+      {
+      this.totalItems = Number(data.total);
+      this.pageSize = Number(data.pageSize);
+      this.pageIndex = Number(data.pageIndex);
+      this.currentPage = Number(data.pageIndex);
       this.dataSource = new MatTableDataSource(this.Listdonhang().data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      }
+
     });
   }
+
+  onPageSizeChange(size: number,menuHienthi:any) {
+    if(size>this.totalItems){
+      this.pageSize = this.totalItems;
+      this._snackBar.open(`Số lượng tối đa ${this.totalItems}`, '', {
+        duration: 1000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-success'],
+      });
+    }
+    else {
+      this.pageSize = size;
+    }
+    this.currentPage = 1; // Reset to first page when changing page size
+    this.calculateTotalPages();
+    this.updateDisplayData();
+    menuHienthi.closeMenu();
+  }
+  calculateTotalPages() {
+    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+  }
+  onPreviousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updateDisplayData();
+    }
+  }
+  
+  onNextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updateDisplayData();
+    }
+  }
+  updateDisplayData() {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    const pageData = this.Listdonhang().slice(startIndex, endIndex);
+    this.dataSource.data = pageData;
+    }
+
   onSelectionChange(event: MatSelectChange): void {
     const timeFrames: { [key: string]: () => void } = {
       day: () => {
@@ -209,18 +259,27 @@ export class ListDonhangComponent {
   }
   async ngOnInit(): Promise<void> {
     const data = await this._DonhangService.searchDonhang(this.SearchParams);
-    this.Listdonhang.set(data);
+    console.log(data);
+    this.Listdonhang.set(data.data);
     this.initializeColumns();
     this.setupDrawer();
+    if(data.data){
+    this.totalItems = Number(data.total);
+    this.pageSize = Number(data.pageSize);
+    this.currentPage = Number(data.pageNumber);
+    this.totalPages = Number(data.totalPages);
+    this.pageIndex = Number(data.pageIndex);
     this.dataSource = new MatTableDataSource(this.Listdonhang().data);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.createFilter();
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    }
+
+    // this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+    // this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+    // this.paginator._intl.previousPageLabel = 'Về Trước';
+    // this.paginator._intl.firstPageLabel = 'Trang Đầu';
+    // this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
 
   async onPageChange(event: any): Promise<void> {

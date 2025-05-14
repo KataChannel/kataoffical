@@ -3,6 +3,7 @@
         <router-outlet></router-outlet>
     </mat-drawer>
     <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
+
         <div *ngIf="!isSearch" class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
             <div class="flex flex-row space-x-2 items-center">
                 <button class="flex flex-row items-center btn-primary" matTooltip="Thêm mới" (click)="create()" mat-flat-button>
@@ -46,6 +47,7 @@
                 </span>
             </div>
         </div>
+        
         <div *ngIf="isSearch" class="py-2 w-full flex flex-row space-x-2 items-center">
             <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
                 <mat-label>Tìm Kiếm</mat-label>
@@ -53,6 +55,7 @@
             </mat-form-field>
             <button mat-icon-button color="warn" (click)="isSearch=!isSearch"><mat-icon>cancel</mat-icon></button>
         </div>
+
         <div class="w-full grid lg:grid-cols-4 grid-cols-2 gap-2 items-center">
             <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
               <mat-label>Loại Đơn</mat-label>
@@ -227,7 +230,42 @@
                 </tr>
             </table>
         </div>
-        <mat-paginator [length]="Listdonhang().total" [pageSize]="Listdonhang().pageSize" [pageIndex]="Listdonhang().pageIndex" [pageSizeOptions]="[10]" (page)="onPageChange($event)"></mat-paginator>
+        
+           <div class="cursor-pointer border rounded-lg px-3 p-1 flex flex-row space-x-2 items-center justify-between">
+      <div
+        class="w-full flex lg:p-0 p-2 lg:flex-row lg:space-x-2 lg:items-center lg:justify-between flex-col justify-center">
+        <span class="w-full text-center">Đang Xem <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> -
+          <strong>{{ currentPage * pageSize > totalItems ? totalItems : currentPage * pageSize }}</strong>
+          trong số {{ totalItems }} mục, {{ currentPage }}/{{totalPages}} Trang</span>
+        <div class="w-full flex flex-row space-x-2 items-center lg:justify-end justify-center">
+          <span class="font-bold text-blue-600" [matMenuTriggerFor]="menu" #menuHienthi="matMenuTrigger">Hiện
+            Thị : {{pageSize}} mục</span>
+          <mat-menu #menu="matMenu">
+            <div class="w-full flex flex-col space-y-2 p-4" (click)="$event.stopPropagation()">
+              <span>Số Lượng</span>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <input matInput [(ngModel)]="pageSize" [ngModelOptions]="{ standalone: true }"
+                  placeholder="Vui lòng Nhập Số Lượng" />
+              </mat-form-field>
+              <button mat-flat-button color="primary" (click)="onPageSizeChange(pageSize,menuHienthi)">Áp
+                Dụng</button>
+            </div>
+          </mat-menu>
+          <div class="pagination-controls">
+            <button mat-icon-button color="primary" [disabled]="currentPage === 1"
+              (click)="onPreviousPage()">
+              <mat-icon>keyboard_arrow_left</mat-icon>
+            </button>
+            <button mat-icon-button color="primary" [disabled]="currentPage === totalPages"
+              (click)="onNextPage()">
+              <mat-icon>keyboard_arrow_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div> 
+        
+        <!-- <mat-paginator [length]="Listdonhang().total" [pageSize]="Listdonhang().pageSize" [pageIndex]="Listdonhang().pageIndex" [pageSizeOptions]="[10]" (page)="onPageChange($event)"></mat-paginator> -->
     </div>
 </mat-drawer-container>
 

@@ -136,7 +136,7 @@ export class AdminmainComponent {
   async ClearCache(): Promise<void> {
     const token = this._StorageService.getItem('token');
     const permissions = this._StorageService.getItem('permissions');
-    this._StorageService.clearAllIndexedDB()
+    this._StorageService.deleteDB()
     this._StorageService.clear()
     if (token) {
       this._StorageService.setItem('token', token);

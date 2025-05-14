@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal, TemplateRef, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -19,7 +19,11 @@ import { MatMenuModule } from '@angular/material/menu';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
+import { environment } from '../../../../environments/environment.development';
+import { memoize, Debounce } from '../../../shared/utils/decorators';
+
 @Component({
   selector: 'app-listpermission',
   templateUrl: './listpermission.component.html',
@@ -38,99 +42,90 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     MatSelectModule,
     CommonModule,
     FormsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule,
+    SearchfilterComponent
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ListPermissionComponent {
-  Detail: any = {};
-  displayedColumns: string[] = [
-    'name',
-    'description',
-    'createdAt',
-    'updatedAt',
-  ];
+export class ListPermissionComponent implements OnInit {
+  displayedColumns: string[] = [];
   ColumnName: any = {
-    name: 'Quyền',
+    stt: '#',
+    codeId: 'Code',
+    name: 'Tiêu Đề',
+    group: 'Nhóm',
     description: 'Mô Tả',
-    createdAt:'Ngày Tạo',
-    updatedAt:'Ngày Cập Nhật'
+    status: 'Trạng Thái',
+    order: 'Thứ Tự',
+    createdAt: 'Ngày Tạo',
+    updatedAt: 'Ngày Cập Nhật'
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('PermissionColFilter') || '[]'
-  );
+  FilterColumns: any[] = JSON.parse(localStorage.getItem('PermissionColFilter') || '[]');
   Columns: any[] = [];
-  isFilter: boolean = false;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
-  filterValues: { [key: string]: string } = {};
+
   private _PermissionService: PermissionService = inject(PermissionService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
-  Listpermission:any = this._PermissionService.ListPermission;
-  dataSource = new MatTableDataSource([]);
-  permissionId:any = this._PermissionService.permissionId;
-  _snackBar: MatSnackBar = inject(MatSnackBar);
-  CountItem: any = 0;
+  private _dialog: MatDialog = inject(MatDialog);
+  private _snackBar: MatSnackBar = inject(MatSnackBar);
+
+  Listpermission = this._PermissionService.ListPermission;
+  page = this._PermissionService.page;
+  pageCount = this._PermissionService.pageCount;
+  total = this._PermissionService.total;
+  pageSize = this._PermissionService.pageSize;
+  permissionId = this._PermissionService.permissionId;
+  dataSource:any = new MatTableDataSource([]);
+  EditList: any[] = [];
+  isSearch = signal<boolean>(false);
+
   constructor() {
-    this.displayedColumns.forEach(column => {
-      this.filterValues[column] = '';
+    effect(() => {
+      this.dataSource.data = this.Listpermission();
+      this.dataSource.sort = this.sort;
+      if (this.paginator) {
+        this.paginator.pageIndex = this.page() - 1;
+        this.paginator.pageSize = this.pageSize();
+        this.paginator.length = this.total();
+      }
     });
   }
-  createFilter(): (data: any, filter: string) => boolean {
-    return (data, filter) => {
-      const filterObject = JSON.parse(filter);
-      let isMatch = true;
-      this.displayedColumns.forEach(column => {
-        if (filterObject[column]) {
-          const value = data[column] ? data[column].toString().toLowerCase() : '';
-          isMatch = isMatch && value.includes(filterObject[column].toLowerCase());
-        }
-      });
-      return isMatch;
-    };
-  }
-  applyFilter() {
-    this.dataSource.filter = JSON.stringify(this.filterValues);
-  }
-  async ngOnInit(): Promise<void> {    
-    await this._PermissionService.getAllPermission();
-    this.CountItem = this.Listpermission().length;
+
+  async ngOnInit(): Promise<void> {
+    this._PermissionService.listenPermissionUpdates();
+    await this._PermissionService.getAllPermission(this.pageSize(),true);
+    this.displayedColumns = Object.keys(this.ColumnName);
     this.dataSource = new MatTableDataSource(this.Listpermission());
-    this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    this.dataSource.filterPredicate = this.createFilter();
     this.initializeColumns();
     this.setupDrawer();
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
-  async refresh() {
-   await this._PermissionService.getAllPermission();
-  }
+
   private initializeColumns(): void {
-    this.Columns = Object.keys(this.ColumnName).map((key) => ({
-      key,
-      value: this.ColumnName[key],
-      isShow: true,
-    }));
-    if (this.FilterColumns.length === 0) {
-      this.FilterColumns = this.Columns;
-    } else {
-      localStorage.setItem('PermissionColFilter',JSON.stringify(this.FilterColumns)
-      );
+    this.Columns = Object.entries(this.ColumnName).map(([key, value]) => ({ key, value, isShow: true }));
+    this.FilterColumns = this.FilterColumns.length ? this.FilterColumns : this.Columns;
+    localStorage.setItem('PermissionColFilter', JSON.stringify(this.FilterColumns));
+    this.displayedColumns = this.FilterColumns.filter(col => col.isShow).map(col => col.key);
+    this.ColumnName = this.FilterColumns.reduce((acc, { key, value, isShow }) => 
+      isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
-    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
-      (item) => item.key
-    );
-    this.ColumnName = this.FilterColumns.reduce((obj, item) => {
-      if (item.isShow) obj[item.key] = item.value;
-      return obj;
-    }, {} as Record<string, string>);
+  }
+
+  async getUpdatedCodeIds() {
+    await this._PermissionService.getUpdatedCodeIds();
   }
 
   private setupDrawer(): void {
@@ -139,12 +134,12 @@ export class ListPermissionComponent {
       .subscribe((result) => {
         if (result.matches) {
           this.drawer.mode = 'over';
-          this.paginator.hidePageSize = true;
         } else {
           this.drawer.mode = 'side';
         }
       });
   }
+
   toggleColumn(item: any): void {
     const column = this.FilterColumns.find((v) => v.key === item.key);
     if (column) {
@@ -152,175 +147,251 @@ export class ListPermissionComponent {
       this.updateDisplayedColumns();
     }
   }
-  FilterHederColumn(list:any,column:any)
-  {
+
+  @memoize()
+  FilterHederColumn(list: any, column: any) {
     const uniqueList = list.filter((obj: any, index: number, self: any) => 
       index === self.findIndex((t: any) => t[column] === obj[column])
     );
-    return uniqueList
+    return uniqueList;
   }
+
+  @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listpermission().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();
-    console.log(query,column);
-    console.log(this.dataSource.filteredData);   
+    this.dataSource.filteredData = this.Listpermission().filter((v: any) => 
+      v[column].toLowerCase().includes(event.target.value.toLowerCase())
+    );
   }
-  ListFilter:any[] =[]
-  ChosenItem(item:any)
-  {
-    if(this.ListFilter.includes(item.id))
-    {
-      this.ListFilter = this.ListFilter.filter((v) => v !== item.id);
+
+  ListFilter: any[] = [];
+  ChosenItem(item: any, column: any) {
+    const CheckItem = this.dataSource.filteredData.filter((v: any) => v[column] === item[column]);
+    const CheckItem1 = this.ListFilter.filter((v: any) => v[column] === item[column]);
+    if (CheckItem1.length > 0) {
+      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
+    } else {
+      this.ListFilter = [...this.ListFilter, ...CheckItem];
     }
-    else{
-      this.ListFilter.push(item.id);
-    }
-    console.log(this.ListFilter);
-    
   }
-  ChosenAll(list:any)
-  {
-    list.forEach((v:any) => {
-      if(this.ListFilter.includes(v.id))
-        {
-          this.ListFilter = this.ListFilter.filter((v) => v !== v.id);
-        }
-        else{
-          this.ListFilter.push(v.id);
-        }
+
+  ChosenAll(list: any) {
+    list.forEach((v: any) => {
+      const CheckItem = this.ListFilter.find((v1) => v1.id === v.id) ? true : false;
+      if (CheckItem) {
+        this.ListFilter = this.ListFilter.filter((v1) => v1.id !== v.id);
+      } else {
+        this.ListFilter.push(v);
+      }
     });
   }
-  ResetFilter()
-  {
-    this.ListFilter = this.Listpermission().map((v:any) => v.id);
-    this.dataSource.data = this.Listpermission();
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+
+  ResetFilter() {
+    this.ListFilter = this.Listpermission();
   }
-  EmptyFiter()
-  {
+
+  EmptyFiter() {
     this.ListFilter = [];
   }
-  CheckItem(item:any)
-  {
-    return this.ListFilter.includes(item.id);
+
+  CheckItem(item: any) {
+    return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
-  ApplyFilterColum(menu:any)
-  {    
-    this.dataSource.data = this.Listpermission().filter((v: any) => this.ListFilter.includes(v.id));
+
+  ApplyFilterColum(menu: any) {
+    this.dataSource.data = this.Listpermission().filter((v: any) => 
+      this.ListFilter.some((v1) => v1.id === v.id)
+    );
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    console.log(this.dataSource.data);
     menu.closeMenu();
-    
   }
+
+  onOutFilter(event: any) {
+    this.dataSource.data = event;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
   private updateDisplayedColumns(): void {
-    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
-      (item) => item.key
-    );
+    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map((item) => item.key);
     this.ColumnName = this.FilterColumns.reduce((obj, item) => {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('PermissionColFilter',JSON.stringify(this.FilterColumns)
-    );
+    localStorage.setItem('PermissionColFilter', JSON.stringify(this.FilterColumns));
   }
+
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();
-    this.FilterColumns = this.Columns.filter((v) =>
-      v.value.toLowerCase().includes(query)
-    );
+    this.FilterColumns = this.Columns.filter((v) => v.value.toLowerCase().includes(query));
   }
+
   create(): void {
     this.drawer.open();
-    this._router.navigate(['admin/permission', 0]);
+    this._router.navigate(['admin/permission', 'new']);
   }
+
+  openDeleteDialog(template: TemplateRef<any>) {
+    const dialogDeleteRef = this._dialog.open(template, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+    dialogDeleteRef.afterClosed().subscribe((result) => {
+      if (result === "true") {
+        this.DeleteListItem();
+      }
+    });
+  }
+
+  DeleteListItem(): void {
+    this.EditList.forEach((item: any) => {
+      this._PermissionService.DeletePermission(item);
+    });
+    this.EditList = [];
+    this._snackBar.open('Xóa Thành Công', '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+  }
+
+  AddToEdit(item: any): void {
+    const existingItem = this.EditList.find((v: any) => v.id === item.id);
+    if (existingItem) {
+      this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
+    } else {
+      this.EditList.push(item);
+    }
+  }
+
+  CheckItemInEdit(item: any): boolean {
+    return this.EditList.some((v: any) => v.id === item.id);
+  }
+
   goToDetail(item: any): void {
-     this._PermissionService.setPermissionId(item.id);
     this.drawer.open();
+    this._PermissionService.setPermissionId(item.id);
     this._router.navigate(['admin/permission', item.id]);
   }
+
+  OpenLoadDrive(template: TemplateRef<any>) {
+    const dialogDeleteRef = this._dialog.open(template, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+    dialogDeleteRef.afterClosed().subscribe((result) => {
+      if (result === "true") {
+        // Handle action if needed
+      }
+    });
+  }
+
+  IdSheet: any = '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk';
+  SheetName: any = 'SPImport';
+  ImportIteam: any[] = [];
+  ImportColumnName: any = {};
+  ImportdisplayedColumns: any[] = [];
+
   async LoadDrive() {
     const DriveInfo = {
-      IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'NCCImport',
-      ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
+      IdSheet: this.IdSheet,
+      SheetName: this.SheetName,
+      ApiKey: environment.GSApiKey,
     };
-   const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
-   const data = ConvertDriveData(result.values);
-   console.log(data);
-   this.DoImportData(data);
-    // const updatePromises = data.map(async (v: any) => {
-    //   const item = this._KhachhangsService
-    //     .ListKhachhang()
-    //     .find((v1) => v1.MaKH === v.MaKH);
-    //   if (item) {
-    //     const item1 = { ...item, ...v };
-    //     console.log(item1);
+    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
+    this.ImportIteam = ConvertDriveData(result.values);
+    this.ImportColumnName = Object.fromEntries(result.values[0].map((key: any, i: any) => [key, result.values[1][i]]));
+    this.ImportdisplayedColumns = result.values[0];
+  }
 
-    //     await this._KhachhangsService.updateOneKhachhang(item1);
-    //   }
-    // });
-    // Promise.all(updatePromises).then(() => {
-    //   this._snackBar.open('Cập Nhật Thành Công', '', {
-    //     duration: 1000,
-    //     horizontalPosition: 'end',
-    //     verticalPosition: 'top',
-    //     panelClass: ['snackbar-success'],
-    //   });
-    //   //  window.location.reload();
-    // });
-  }
-  DoImportData(data:any)
-  {
-    console.log(data);
-    
+  async DoImportData(data: any) {
     const transformedData = data.map((v: any) => ({
-      name: v.name?.trim()||'',
-      mancc: v.mancc?.trim()||'',
-      sdt: v.sdt?.trim()||'',
-      diachi: v.diachi?.trim()||'',
-      ghichu: v.ghichu?.trim()||'',
-   }));
-   // Filter out duplicate mancc values
-   const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
-      index === self.findIndex((t:any) => (
-        t.mancc === value.mancc
-      ))
-   )
-    const listId2 = uniqueData.map((v: any) => v.mancc);
-    const listId1 = this._PermissionService.ListPermission().map((v: any) => v.mancc);
-    const listId3 = listId2.filter((item:any) => !listId1.includes(item));
-    const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._PermissionService.ListPermission().find((v1) => v1.mancc === v.mancc);
-        if (item) {
-          const item1 = { ...item, ...v };
-          await this._PermissionService.updatePermission(item1);
-        }
-        else{
-          await this._PermissionService.CreatePermission(v);
-        }
-      });
-     const disableItem = listId3.map(async (v: any) => {
-        const item = this._PermissionService.ListPermission().find((v1) => v1.mancc === v);
-        item.isActive = false;
-        await this._PermissionService.updatePermission(item);
-      });
-      Promise.all([...createuppdateitem, ...disableItem]).then(() => {
-        this._snackBar.open('Cập Nhật Thành Công', '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-       // window.location.reload();
-      });
+      title: v.title?.trim() || '',
+      masp: v.masp?.trim() || '',
+      giagoc: Number(v.giagoc) || 0,
+      dvt: v.dvt?.trim() || '',
+      soluong: Number(v.soluong) || 0,
+      soluongkho: Number(v.soluongkho) || 0,
+      haohut: Number(v.haohut) || 0,
+      ghichu: v.ghichu?.trim() || '',
+    }));
+
+    const uniqueData = Array.from(new Map(transformedData.map((item: any) => [item.masp, item])).values());
+    const existingPermission = this._PermissionService.ListPermission();
+    const existingMasp = existingPermission.map((v: any) => v.masp);
+    const newMasp = uniqueData.map((v: any) => v.masp).filter((item: any) => !existingMasp.includes(item));
+
+    await Promise.all(uniqueData.map(async (v: any) => {
+      const existingItem = existingPermission.find((v1: any) => v1.masp === v.masp);
+      if (existingItem) {
+        const updatedItem = { ...existingItem, ...v };
+        await this._PermissionService.updatePermission(updatedItem);
+      } else {
+        await this._PermissionService.CreatePermission(v);
+      }
+    }));
+    await Promise.all(existingPermission
+      .filter(sp => !uniqueData.some((item: any) => item.masp === sp.masp))
+      .map(sp => this._PermissionService.updatePermission({ ...sp, isActive: false }))
+    );
+
+    this._snackBar.open('Cập Nhật Thành Công', '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
   }
+
   async ImporExcel(event: any) {
-  const data = await readExcelFile(event)
-  this.DoImportData(data);
-  }   
-  ExportExcel(data:any,title:any) {
-    writeExcelFile(data,title);
+    const data = await readExcelFile(event);
+    this.DoImportData(data);
+  }
+
+  ExportExcel(data: any, title: any) {
+    const dulieu = data.map((v: any) => ({
+      title: v.title,
+      masp: v.masp,
+      giagoc: v.giagoc,
+      dvt: v.dvt,
+      soluong: v.soluong,
+      soluongkho: v.soluongkho,
+      haohut: v.haohut,
+      ghichu: v.ghichu,
+    }));
+    writeExcelFile(dulieu, title);
+  }
+
+  trackByFn(index: number, item: any): any {
+    return item.id;
+  }
+
+  onPageSizeChange(size: number, menuHienthi: any) {
+    if (size > this.total()) {
+      this._snackBar.open(`Số lượng tối đa ${this.total()}`, '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      size = this.total();
+    }
+    this._PermissionService.page.set(1);
+    this._PermissionService.getAllPermission(size, true);
+    menuHienthi.closeMenu();
+  }
+  onPreviousPage(){
+    if (this.page() > 1) {
+      this._PermissionService.page.set(this.page() - 1);
+      this._PermissionService.getAllPermission(this.pageSize(), true);
+    }
+  }
+
+  onNextPage(){
+    if (this.page() < this.pageCount()) {
+      this._PermissionService.page.set(this.page() + 1);
+      this._PermissionService.getAllPermission(this.pageSize(), true);
+    }
   }
 }

@@ -30,7 +30,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     styleUrl: './detailpermission.component.scss'
   })
   export class DetailPermissionComponent {
-    _ListpermissionComponent:ListPermissionComponent = inject(ListPermissionComponent)
+    _ListPermissionComponent:ListPermissionComponent = inject(ListPermissionComponent)
     _PermissionService:PermissionService = inject(PermissionService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
@@ -43,19 +43,19 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   
       effect(async () => {
         const id = this._PermissionService.permissionId();
-      
         if (!id){
           this._router.navigate(['/admin/permission']);
-          this._ListpermissionComponent.drawer.close();
+          this._ListPermissionComponent.drawer.close();
         }
-        if(id === '0'){
-          this._ListpermissionComponent.drawer.open();
+        if(id === 'new'){
+          this.DetailPermission.set({});
+          this._ListPermissionComponent.drawer.open();
           this.isEdit.update(value => !value);
-          this._router.navigate(['/admin/permission', "0"]);
+          this._router.navigate(['/admin/permission', "new"]);
         }
         else{
-            await this._PermissionService.getPermissionByid(id);
-            this._ListpermissionComponent.drawer.open();
+            await this._PermissionService.getPermissionBy({id:id,isOne:true});
+            this._ListPermissionComponent.drawer.open();
             this._router.navigate(['/admin/permission', id]);
         }
       });
@@ -67,7 +67,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     async ngOnInit() {       
     }
     async handlePermissionAction() {
-      if (this.permissionId() === '0') {
+      if (this.permissionId() === 'new') {
         await this.createPermission();
       }
       else {
@@ -122,7 +122,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     }
     goBack(){
       this._router.navigate(['/admin/permission'])
-      this._ListpermissionComponent.drawer.close();
+      this._ListPermissionComponent.drawer.close();
     }
     trackByFn(index: number, item: any): any {
       return item.id;
@@ -135,6 +135,9 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       this.isDelete.update(value => !value);
     }
     FillSlug(){
-
+      this.DetailPermission.update((v:any)=>{
+        v.slug = convertToSlug(v.title);
+        return v;
+      })
     }
   }
