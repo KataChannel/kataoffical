@@ -1,0 +1,45 @@
+<div class="flex flex-row justify-between items-center space-x-2 p-2">
+  <button mat-icon-button color="primary" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <div class="font-bold">{{ DetailResource()?.title || 'Không có dữ liệu' }}</div>
+  <div class="flex flex-row space-x-2 items-center">
+    <mat-slide-toggle [(ngModel)]="DetailResource().isActive" [disabled]="!isEdit()">{{DetailResource().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleResourceAction()">
+      <mat-icon>save</mat-icon>
+    </button>
+    <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
+      <mat-icon>edit</mat-icon>
+    </button>
+  </div>
+</div>
+
+<div class="relative flex flex-col w-full p-4 overflow-auto">
+  <ng-container *ngIf="isDelete()">
+    <div class="flex flex-col space-y-4 items-center justify-center">
+      <div class="font-bold text-2xl">Bạn chắc chắn muốn xoá không?</div>
+      <div class="flex flex-row space-x-2 items-center justify-center">
+        <button mat-flat-button color="primary" (click)="DeleteData()">Đồng Ý</button>
+        <button mat-flat-button color="warn" (click)="toggleDelete()">Huỷ Bỏ</button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!isDelete()">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <mat-form-field appearance="outline">
+        <mat-label>Tiêu Đề</mat-label>
+        <input matInput [(ngModel)]="DetailResource().title" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Danh Mục</mat-label>
+        <input matInput [(ngModel)]="DetailResource().category" [disabled]="!isEdit()" placeholder="Vui lòng nhập Danh Mục"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Nhóm</mat-label>
+        <input matInput [(ngModel)]="DetailResource().group" [disabled]="!isEdit()" placeholder="Vui lòng nhập Nhóm"/>
+      </mat-form-field>
+      <app-uploadresource [uploadUrl]="uploadUrl" [category]="DetailResource().category" [group]="DetailResource().group" class="col-span-2"></app-uploadresource>  
+    </div>
+  </ng-container>
+</div>

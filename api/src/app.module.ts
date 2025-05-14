@@ -23,6 +23,7 @@ import { SettingModule } from './setting/setting.module';
 import { HoadonchitietModule } from './hoadonchitiet/hoadonchitiet.module';
 import { HoadonModule } from './hoadon/hoadon.module';
 import { MinioModule } from './minio/minio.module';
+import { SanphamModule } from './sanpham/sanpham.module';
 
 @Module({
   imports: [
@@ -45,7 +46,8 @@ import { MinioModule } from './minio/minio.module';
     SettingModule,
     HoadonchitietModule,
     HoadonModule,
-    MinioModule
+    MinioModule,
+    SanphamModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

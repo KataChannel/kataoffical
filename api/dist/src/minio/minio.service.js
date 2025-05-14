@@ -18,14 +18,15 @@ let MinioService = class MinioService {
     constructor(prisma) {
         this.prisma = prisma;
         this.bucketName = process.env.MINIO_BUCKET?.trim() || 'images';
-        const options = {
+        this.options = {
             endPoint: process.env.MINIO_ENDPOINT?.trim() || 'localhost',
             port: parseInt(process.env.MINIO_PORT?.trim() || '9000', 10),
             useSSL: process.env.MINIO_USE_SSL?.trim() === 'true',
             accessKey: process.env.MINIO_ROOT_USER?.trim() || '0GWGwCMtouJ8G6v',
             secretKey: process.env.MINIO_ROOT_PASSWORD?.trim() || 'rRxYyjxDv30H84F',
         };
-        this.client = new minio_1.Client(options);
+        console.log(this.options);
+        this.client = new minio_1.Client(this.options);
         this.ensureBucketExists();
     }
     async ensureBucketExists() {
@@ -41,6 +42,7 @@ let MinioService = class MinioService {
         }
     }
     async uploadFile(file, extra) {
+        console.log(this.options);
         const fileName = `${Date.now()}-${file.originalname}`;
         const metaData = {
             'Content-Type': file.mimetype,
@@ -55,6 +57,8 @@ let MinioService = class MinioService {
                 data: {
                     url,
                     fileType: file.mimetype,
+                    title: extra.title || file.originalname,
+                    description: extra.description || null,
                     metaData,
                     category: extra.category || null,
                     group: extra.group || null,
@@ -72,7 +76,7 @@ let MinioService = class MinioService {
         if (!resource) {
             throw new common_2.NotFoundException('resource not found');
         }
-        const fileName = resource.url.split('/').pop();
+        const fileName = resource?.url?.split('/').pop();
         if (!fileName) {
             throw new common_1.InternalServerErrorException('Invalid resource URL: file name not found');
         }

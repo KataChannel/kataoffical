@@ -61,7 +61,7 @@ export declare class HoadonService {
         ntnhan: Date | null;
         pban: string | null;
         ptgui: number | null;
-        shdgoc: string | null;
+        shdgoc: number | null;
         tdlap: Date | null;
         tgtcthue: number | null;
         tgtthue: number | null;
@@ -190,7 +190,7 @@ export declare class HoadonService {
             ntnhan: Date | null;
             pban: string | null;
             ptgui: number | null;
-            shdgoc: string | null;
+            shdgoc: number | null;
             tdlap: Date | null;
             tgtcthue: number | null;
             tgtthue: number | null;
@@ -323,7 +323,7 @@ export declare class HoadonService {
             ntnhan: Date | null;
             pban: string | null;
             ptgui: number | null;
-            shdgoc: string | null;
+            shdgoc: number | null;
             tdlap: Date | null;
             tgtcthue: number | null;
             tgtthue: number | null;
@@ -455,7 +455,7 @@ export declare class HoadonService {
         ntnhan: Date | null;
         pban: string | null;
         ptgui: number | null;
-        shdgoc: string | null;
+        shdgoc: number | null;
         tdlap: Date | null;
         tgtcthue: number | null;
         tgtthue: number | null;
@@ -584,7 +584,7 @@ export declare class HoadonService {
         ntnhan: Date | null;
         pban: string | null;
         ptgui: number | null;
-        shdgoc: string | null;
+        shdgoc: number | null;
         tdlap: Date | null;
         tgtcthue: number | null;
         tgtthue: number | null;

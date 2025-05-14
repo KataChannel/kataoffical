@@ -24,18 +24,37 @@ export const routes: Routes = [
         path: 'setting',
         canActivate: [PermissionGuard],
         data: { permission: 'setting.view' },
-        loadComponent: () => import('./admin/setting/listsetting/listsetting.component').then((c) => c.ListSettingComponent),
-        children: [
-          {
-       path: '',
-       loadComponent: () => import('./admin/setting/listsetting/listsetting.component').then((c) => c.ListSettingComponent),
-          },
-          {
-       path: ':id',
-       loadComponent: () => import('./admin/setting/detailsetting/detailsetting.component').then((c) => c.DetailSettingComponent),
-          },
-        ],
+        loadChildren: () =>
+          import('./admin/setting/setting.route').then(
+            (m) => m.SettingRoutingModule
+          ),
       },
+        {
+        path: 'resource',
+        canActivate: [PermissionGuard],
+        data: { permission: 'resource.view' },
+        loadChildren: () =>
+           import('./admin/resource/resource.route').then(m => m.ResourceRoutingModule),
+  },
+      {
+        path: 'baiviet',
+        canActivate: [PermissionGuard],
+        data: { permission: 'baiviet.view' },
+        loadChildren: () =>
+          import('./admin/baiviet/baiviet.route').then(
+            (m) => m.BaivietRoutingModule
+          ),
+      },
+      {
+        path: 'sanpham',
+        canActivate: [PermissionGuard],
+        data: { permission: 'sanpham.view' },
+        loadChildren: () =>
+          import('./admin/sanpham/sanpham.route').then(
+            (m) => m.SanphamRoutingModule
+          ),
+      },
+
       {
         path: 'welcome',
         loadComponent: () =>
@@ -54,34 +73,52 @@ export const routes: Routes = [
         path: 'hoadon',
         canActivate: [PermissionGuard],
         data: { permission: 'hoadon.view' },
-        loadComponent: () => import('./admin/hoadon/listhoadon/listhoadon.component').then((c) => c.ListHoadonComponent),
+        loadComponent: () =>
+          import('./admin/hoadon/listhoadon/listhoadon.component').then(
+            (c) => c.ListHoadonComponent
+          ),
         children: [
           {
-       path: '',
-       loadComponent: () => import('./admin/hoadon/listhoadon/listhoadon.component').then((c) => c.ListHoadonComponent),
+            path: '',
+            loadComponent: () =>
+              import('./admin/hoadon/listhoadon/listhoadon.component').then(
+                (c) => c.ListHoadonComponent
+              ),
           },
           {
-       path: ':id',
-       loadComponent: () => import('./admin/hoadon/detailhoadon/detailhoadon.component').then((c) => c.DetailHoadonComponent),
+            path: ':id',
+            loadComponent: () =>
+              import('./admin/hoadon/detailhoadon/detailhoadon.component').then(
+                (c) => c.DetailHoadonComponent
+              ),
           },
         ],
       },
       {
-         path: 'hoadonchitiet',
-         canActivate: [PermissionGuard],
-         data: { permission: 'hoadonchitiet.view' },
-         loadComponent: () => import('./admin/hoadonchitiet/listhoadonchitiet/listhoadonchitiet.component').then((c) => c.ListHoadonchitietComponent),
-         children: [
-           {
-        path: '',
-        loadComponent: () => import('./admin/hoadonchitiet/listhoadonchitiet/listhoadonchitiet.component').then((c) => c.ListHoadonchitietComponent),
-           },
-           {
-        path: ':id',
-        loadComponent: () => import('./admin/hoadonchitiet/detailhoadonchitiet/detailhoadonchitiet.component').then((c) => c.DetailHoadonchitietComponent),
-           },
-         ],
-       },
+        path: 'hoadonchitiet',
+        canActivate: [PermissionGuard],
+        data: { permission: 'hoadonchitiet.view' },
+        loadComponent: () =>
+          import(
+            './admin/hoadonchitiet/listhoadonchitiet/listhoadonchitiet.component'
+          ).then((c) => c.ListHoadonchitietComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import(
+                './admin/hoadonchitiet/listhoadonchitiet/listhoadonchitiet.component'
+              ).then((c) => c.ListHoadonchitietComponent),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import(
+                './admin/hoadonchitiet/detailhoadonchitiet/detailhoadonchitiet.component'
+              ).then((c) => c.DetailHoadonchitietComponent),
+          },
+        ],
+      },
       {
         path: 'menu',
         canActivate: [PermissionGuard],
@@ -111,15 +148,24 @@ export const routes: Routes = [
         path: 'userguide',
         canActivate: [PermissionGuard],
         data: { permission: 'userguide.view' },
-        loadComponent: () => import('./admin/userguide/listuserguide/listuserguide.component').then((c) => c.ListUserguideComponent),
+        loadComponent: () =>
+          import(
+            './admin/userguide/listuserguide/listuserguide.component'
+          ).then((c) => c.ListUserguideComponent),
         children: [
           {
-       path: '',
-       loadComponent: () => import('./admin/userguide/listuserguide/listuserguide.component').then((c) => c.ListUserguideComponent),
+            path: '',
+            loadComponent: () =>
+              import(
+                './admin/userguide/listuserguide/listuserguide.component'
+              ).then((c) => c.ListUserguideComponent),
           },
           {
-       path: ':id',
-       loadComponent: () => import('./admin/userguide/detailuserguide/detailuserguide.component').then((c) => c.DetailUserguideComponent),
+            path: ':id',
+            loadComponent: () =>
+              import(
+                './admin/userguide/detailuserguide/detailuserguide.component'
+              ).then((c) => c.DetailUserguideComponent),
           },
         ],
       },
@@ -570,17 +616,23 @@ export const routes: Routes = [
       {
         path: 'game1',
         loadComponent: () =>
-          import('./site/home/game1/game1.component').then((c) => c.Game1Component),
+          import('./site/home/game1/game1.component').then(
+            (c) => c.Game1Component
+          ),
       },
       {
         path: 'game2',
         loadComponent: () =>
-          import('./site/home/farm/farm.component').then((c) => c.FarmComponent),
+          import('./site/home/farm/farm.component').then(
+            (c) => c.FarmComponent
+          ),
       },
       {
         path: 'game3',
         loadComponent: () =>
-          import('./site/home/townerdefense/townerdefense.component').then((c) => c.TownerdefenseComponent),
+          import('./site/home/townerdefense/townerdefense.component').then(
+            (c) => c.TownerdefenseComponent
+          ),
       },
       {
         path: 'lien-he',

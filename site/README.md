@@ -33,3 +33,6 @@ npx ng g c landingpage --skip-tests --standalone
 npx ng g c affiliate --skip-tests --standalone
 npx ng g c newsfeed --skip-tests --standalone
 npx ng g c game1 --skip-tests --standalone
+npx ng g c sharedsanpham --skip-tests --standalone
+npx ng g c dashboarsanpham --skip-tests --standalone
+npx ng g c uploadresource --skip-tests --standalone

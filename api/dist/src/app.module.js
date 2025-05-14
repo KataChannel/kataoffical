@@ -32,6 +32,7 @@ const setting_module_1 = require("./setting/setting.module");
 const hoadonchitiet_module_1 = require("./hoadonchitiet/hoadonchitiet.module");
 const hoadon_module_1 = require("./hoadon/hoadon.module");
 const minio_module_1 = require("./minio/minio.module");
+const sanpham_module_1 = require("./sanpham/sanpham.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -60,7 +61,8 @@ exports.AppModule = AppModule = __decorate([
             setting_module_1.SettingModule,
             hoadonchitiet_module_1.HoadonchitietModule,
             hoadon_module_1.HoadonModule,
-            minio_module_1.MinioModule
+            minio_module_1.MinioModule,
+            sanpham_module_1.SanphamModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

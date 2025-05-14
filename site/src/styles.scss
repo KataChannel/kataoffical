@@ -30,6 +30,7 @@
   width: 5px !important;
 }
 
+
 .primary {
   @include mat.icon-button-overrides((
     icon-color: white,   // Background color of the button

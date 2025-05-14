@@ -160,8 +160,8 @@ import { ErrorlogModule } from 'src/errorlog/errorlog.module';
 @Module({
   imports: [PrismaModule, ErrorlogModule],
   controllers: [${capitalizedModuleName}Controller],
-  providers: [${capitalizedModuleName}Service],
-  exports: [${capitalizedModuleName}Service, SocketGateway]
+  providers: [${capitalizedModuleName}Service, SocketGateway],
+  exports: [${capitalizedModuleName}Service]
 })
 export class ${capitalizedModuleName}Module {}
 `;
@@ -184,7 +184,7 @@ export class ${capitalizedModuleName}Service {
       const lastUpdated = await this.prisma.${lowerCaseModuleName}.aggregate({
         _max: { updatedAt: true },
       });
-      return { updatedAt: lastUpdated._max.updatedAt || 0 };
+      return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
     } catch (error) {
       this._ErrorlogService.logError('getLastUpdated${capitalizedModuleName}', error);
       throw error;

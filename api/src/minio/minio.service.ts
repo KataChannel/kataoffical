@@ -7,18 +7,18 @@ import { NotFoundException } from '@nestjs/common';
 export class MinioService {
     private client: Client;
     private bucketName: string;
-
+    private options: ClientOptions;
     constructor(private prisma: PrismaService) {
         this.bucketName = process.env.MINIO_BUCKET?.trim() || 'images';
-        const options: ClientOptions = {
+        this.options = {
             endPoint: process.env.MINIO_ENDPOINT?.trim() || 'localhost',
             port: parseInt(process.env.MINIO_PORT?.trim() || '9000', 10),
             useSSL: process.env.MINIO_USE_SSL?.trim() === 'true',
             accessKey: process.env.MINIO_ROOT_USER?.trim() || '0GWGwCMtouJ8G6v',
             secretKey: process.env.MINIO_ROOT_PASSWORD?.trim() || 'rRxYyjxDv30H84F',
         };
-
-        this.client = new Client(options);
+        console.log(this.options);
+        this.client = new Client(this.options);
         this.ensureBucketExists();
     }
 
@@ -36,8 +36,10 @@ export class MinioService {
 
     async uploadFile(
         file: Express.Multer.File,
-        extra: { category?: string; group?: string },
+        extra: { title?: string; category?: string; group?: string; description?: string }
     ): Promise<string> {
+       console.log(this.options);
+        
         const fileName = `${Date.now()}-${file.originalname}`;
         const metaData = {
             'Content-Type': file.mimetype,
@@ -62,6 +64,8 @@ export class MinioService {
                 data: {
                     url,
                     fileType: file.mimetype,
+                    title: extra.title || file.originalname,
+                    description: extra.description || null,
                     metaData,
                     category: extra.category || null,
                     group: extra.group || null,
@@ -83,7 +87,7 @@ export class MinioService {
             throw new NotFoundException('resource not found');
         }
 
-        const fileName = resource.url.split('/').pop();
+        const fileName = resource?.url?.split('/').pop();
         if (!fileName) {
             throw new InternalServerErrorException('Invalid resource URL: file name not found');
         }

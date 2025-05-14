@@ -512,10 +512,28 @@ model UserguidStep {
 
 model Resource {
   id        String   @id @default(uuid())
-  url       String
+  codeId    String?   @unique // Mã đề xuất duy nhất
+  title     String?
+  url       String?
+  description String?
   fileType  String?
   metaData  Json?
   category  String?
   group     String?
-  createdAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+
+model sanpham {
+  id          String   @id @default(uuid())
+  codeId      String   @unique
+  title       String
+  description String?
+  price       Float    @default(0)
+  inStock     Boolean  @default(true)
+  status      String   @default("draft") // "draft", "published", "archived"
+  order       Int?     @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

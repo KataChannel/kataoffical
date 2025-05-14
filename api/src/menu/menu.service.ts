@@ -34,13 +34,9 @@ export class MenuService {
       orderBy: { order: 'asc' },
     });
   }
-  async findby(param: any) {
-    console.log('param', param);
-    
+  async findby(param: any) {    
     try {
-      const menu = await this.prisma.menu.findUnique({ where: param });
-      console.log('menu', menu);
-      
+      const menu = await this.prisma.menu.findUnique({ where: param });      
       if (!menu) throw new NotFoundException('menu not found');
       return menu;
     } catch (error) {

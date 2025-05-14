@@ -33,7 +33,7 @@ export class UserController {
   @Get('profile')
   @UseGuards(JwtAuthGuard)
   // @Permissions('view_profile')
-  async getProfile(@Req() req) {
+  async getProfile(@Req() req: any) {    
     return this.userService.findOne(req.user.id);
   }
   @Post('assign')

@@ -44,10 +44,8 @@ let MenuService = class MenuService {
         });
     }
     async findby(param) {
-        console.log('param', param);
         try {
             const menu = await this.prisma.menu.findUnique({ where: param });
-            console.log('menu', menu);
             if (!menu)
                 throw new common_1.NotFoundException('menu not found');
             return menu;

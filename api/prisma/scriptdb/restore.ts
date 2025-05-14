@@ -45,10 +45,20 @@ async function restoreTableFromJson(table: string): Promise<void> {
             return newItem;
           });
           
-          await prisma[table].createMany({
-            data: processedData,
-            skipDuplicates: true, // Bỏ qua nếu trùng
-          });
+          if (prisma[table] && typeof prisma[table].createMany === 'function') {
+            await prisma[table].createMany({
+              data: processedData,
+              skipDuplicates: true, // Bỏ qua nếu trùng
+            });
+          } else {
+            // Fallback query in case prisma[table].createMany is not available
+            for (const item of processedData) {
+              const keys = Object.keys(item);
+              const values = Object.values(item);
+              const query = `INSERT INTO "${table}" (${keys.map(key => '"' + key + '"').join(', ')}) VALUES (${keys.map((_, i) => '$' + (i + 1)).join(', ')}) ON CONFLICT DO NOTHING`;
+              await prisma.$executeRawUnsafe(query, ...values);
+            }
+          }
           console.log(`✅ Đã nhập dữ liệu vào bảng ${table}`);
         } catch (error) {
           console.error(`⚠️ Lỗi khi nhập dữ liệu vào bảng ${table}:`, error.message);
