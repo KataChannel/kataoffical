@@ -13,8 +13,8 @@ exports.ResourceService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const errorlog_service_1 = require("../errorlog/errorlog.service");
-const socket_gateway_1 = require("./socket.gateway");
 const minio_service_1 = require("../minio/minio.service");
+const socket_gateway_1 = require("../socket.gateway");
 let ResourceService = class ResourceService {
     constructor(prisma, _SocketGateway, _ErrorlogService, _MinioService) {
         this.prisma = prisma;
@@ -67,7 +67,7 @@ let ResourceService = class ResourceService {
                     codeId: codeId
                 },
             });
-            this._SocketGateway.sendResourceUpdate();
+            this._SocketGateway.sendUpdate('resource');
             return created;
         }
         catch (error) {
@@ -77,7 +77,15 @@ let ResourceService = class ResourceService {
     }
     async findBy(param) {
         try {
-            const { page = 1, limit = 20, ...where } = param;
+            const { isOne, ...rest } = param;
+            if (isOne) {
+                const result = await this.prisma.resource.findFirst({
+                    where: rest,
+                    orderBy: { order: 'asc' },
+                });
+                return result;
+            }
+            const { page = 1, limit = 20, ...where } = rest;
             const skip = (page - 1) * limit;
             const [data, total] = await Promise.all([
                 this.prisma.resource.findMany({
@@ -146,7 +154,7 @@ let ResourceService = class ResourceService {
             else {
                 updated = await this.prisma.resource.update({ where: { id }, data });
             }
-            this._SocketGateway.sendResourceUpdate();
+            this._SocketGateway.sendUpdate('resource');
             return updated;
         }
         catch (error) {
@@ -163,7 +171,7 @@ let ResourceService = class ResourceService {
             if (!fileDeleted) {
                 throw new Error('File deletion from Minio failed');
             }
-            this._SocketGateway.sendResourceUpdate();
+            this._SocketGateway.sendUpdate('resource');
             return fileDeleted;
         }
         catch (error) {

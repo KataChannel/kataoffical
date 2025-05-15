@@ -67,7 +67,7 @@ let UserguideService = class UserguideService {
                     masp: masp,
                 },
             });
-            this._SocketGateway.senduserUpdate();
+            this._SocketGateway.sendUpdate('userguides');
             return created;
         }
         catch (error) {
@@ -142,7 +142,7 @@ let UserguideService = class UserguideService {
             else {
                 updated = await this.prisma.userguidStep.update({ where: { id }, data });
             }
-            this._SocketGateway.senduserUpdate();
+            this._SocketGateway.sendUpdate('userguides');
             return updated;
         }
         catch (error) {
@@ -152,7 +152,7 @@ let UserguideService = class UserguideService {
     async remove(id) {
         try {
             const deleted = await this.prisma.userguidStep.delete({ where: { id } });
-            this._SocketGateway.senduserUpdate();
+            this._SocketGateway.sendUpdate('userguides');
             return deleted;
         }
         catch (error) {
@@ -167,7 +167,7 @@ let UserguideService = class UserguideService {
                     data: { order: i + 1 },
                 });
             }
-            this._SocketGateway.senduserUpdate();
+            this._SocketGateway.sendUpdate('userguides');
             return { status: 'success' };
         }
         catch (error) {

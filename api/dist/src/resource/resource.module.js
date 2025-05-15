@@ -11,10 +11,10 @@ const common_1 = require("@nestjs/common");
 const resource_service_1 = require("./resource.service");
 const resource_controller_1 = require("./resource.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
-const socket_gateway_1 = require("./socket.gateway");
 const errorlog_module_1 = require("../errorlog/errorlog.module");
 const minio_module_1 = require("../minio/minio.module");
 const auth_module_1 = require("../auth/auth.module");
+const socket_gateway_1 = require("../socket.gateway");
 let ResourceModule = class ResourceModule {
 };
 exports.ResourceModule = ResourceModule;

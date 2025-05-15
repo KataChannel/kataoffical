@@ -259,6 +259,17 @@ import { environment } from '../../../../environments/environment';
           }
         });
     }
+    openImageViewDialog(teamplate: TemplateRef<any>) {
+        const dialogDeleteRef = this._dialog.open(teamplate, {
+          hasBackdrop: true,
+          disableClose: true,
+        });
+        dialogDeleteRef.afterClosed().subscribe((result) => {
+          if (result=="true") {
+            
+          }
+        });
+    }
     openDeleteDialog(teamplate: TemplateRef<any>) {
         const dialogDeleteRef = this._dialog.open(teamplate, {
           hasBackdrop: true,

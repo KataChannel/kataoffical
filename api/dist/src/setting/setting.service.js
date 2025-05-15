@@ -13,7 +13,7 @@ exports.SettingService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const errorlog_service_1 = require("../errorlog/errorlog.service");
-const socket_gateway_1 = require("./socket.gateway");
+const socket_gateway_1 = require("../socket.gateway");
 let SettingService = class SettingService {
     constructor(prisma, _SocketGateway, _ErrorlogService) {
         this.prisma = prisma;
@@ -71,7 +71,7 @@ let SettingService = class SettingService {
                     codeId: codeId,
                 },
             });
-            this._SocketGateway.sendSettingUpdate();
+            this._SocketGateway.sendUpdate('setting');
             return created;
         }
         catch (error) {
@@ -164,7 +164,7 @@ let SettingService = class SettingService {
             else {
                 updated = await this.prisma.setting.update({ where: { id }, data });
             }
-            this._SocketGateway.sendSettingUpdate();
+            this._SocketGateway.sendUpdate('setting');
             return updated;
         }
         catch (error) {
@@ -178,7 +178,7 @@ let SettingService = class SettingService {
     async remove(id) {
         try {
             const deleted = await this.prisma.setting.delete({ where: { id } });
-            this._SocketGateway.sendSettingUpdate();
+            this._SocketGateway.sendUpdate('setting');
             return deleted;
         }
         catch (error) {
@@ -197,7 +197,7 @@ let SettingService = class SettingService {
                     data: { order: i + 1 },
                 });
             }
-            this._SocketGateway.sendSettingUpdate();
+            this._SocketGateway.sendUpdate('setting');
             return { status: 'success' };
         }
         catch (error) {

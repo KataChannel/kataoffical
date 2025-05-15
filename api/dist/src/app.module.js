@@ -30,10 +30,10 @@ const dexuat_module_1 = require("./dexuat/dexuat.module");
 const landingpage_module_1 = require("./landingpage/landingpage.module");
 const setting_module_1 = require("./setting/setting.module");
 const hoadonchitiet_module_1 = require("./hoadonchitiet/hoadonchitiet.module");
-const hoadon_module_1 = require("./hoadon/hoadon.module");
 const minio_module_1 = require("./minio/minio.module");
 const sanpham_module_1 = require("./sanpham/sanpham.module");
 const resource_module_1 = require("./resource/resource.module");
+const donhang_module_1 = require("./hoadon/donhang.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -61,7 +61,7 @@ exports.AppModule = AppModule = __decorate([
             landingpage_module_1.LandingPageModule,
             setting_module_1.SettingModule,
             hoadonchitiet_module_1.HoadonchitietModule,
-            hoadon_module_1.HoadonModule,
+            donhang_module_1.HoadonModule,
             minio_module_1.MinioModule,
             sanpham_module_1.SanphamModule,
             resource_module_1.ResourceModule

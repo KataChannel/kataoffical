@@ -54,7 +54,7 @@ export class landingPageService {
         _max: { order: true },
       });
       newOrder = (maxOrder._max?.order || 0) + 1;
-      this._SocketGateway.sendlandingPageUpdate();
+     this._SocketGateway.sendUpdate('landingPage');
       const codeId = await this.generatecodeId();
       return this.prisma.landingPage.create({
         data: {
@@ -121,7 +121,7 @@ export class landingPageService {
         await this.prisma.landingPage.update({ where: { id }, data: rest });
         await this.prisma.landingPage.update({ where: { id }, data: { order } });
       }
-      this._SocketGateway.sendlandingPageUpdate();
+      this._SocketGateway.sendUpdate('landingPage');
       return this.prisma.landingPage.update({ where: { id }, data });
     } catch (error) {
       this._ErrorlogService.logError('updatelandingPage',error);
@@ -131,7 +131,7 @@ export class landingPageService {
 
   async remove(id: string) {
     try {
-      this._SocketGateway.sendlandingPageUpdate();
+      this._SocketGateway.sendUpdate('landingPage');
       return this.prisma.landingPage.delete({ where: { id } });
     } catch (error) {
       this._ErrorlogService.logError('removelandingPage',error);

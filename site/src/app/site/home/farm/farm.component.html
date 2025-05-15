@@ -1,21 +1,27 @@
-<div class="farm-container">
+<div class="w-full h-full flex flex-col space-y-2 justify-center items-center p-4">
+<div class="max-w-lg flex flex-col space-y-2">
   <h1 class="mb-4">Nông Trại</h1>
-  <div class="toolbar mb-4">
-    <ng-container *ngFor="let c of crops; let i = index">
-      <div class="seed-item"
-           [class.selected]="selectedCrop()===c.name"
-           [style.background]="c.color"
-           (click)="selectSeed(c.name)">
-        {{i+1}}. {{c.name}} ({{inventory()[c.name]}})
+  <div class="flex flex-row space-x-2">
+      <div *ngFor="let c of crops; let i = index"
+        (click)="selectSeed(c.name)"
+        [ngClass]="{
+          'rounded-lg p-2 flex items-center justify-between cursor-pointer bg-slate-100': true,
+          'border border-blue-600 shadow-lg': selectedCrop() === c.name,
+          'selected': selectedCrop() === c.name,
+          'hover:bg-blue-100': selectedCrop() !== c.name,
+        }"
+        [ngStyle]="{'color': c.color}">
+        {{ i + 1 }}. {{ c.name }} ({{ inventory()[c.name] }})
       </div>
-    </ng-container>
-    <div class="money">Tiền: {{money()}}</div>
   </div>
+  <div class="money">Tiền: {{money()}} - Vật Phẩm : </div>
+  
+  <div class="money">{{lastHarvestInfo }}</div>
 
-  <div class="farm-grid" [ngStyle]="{'cursor': cursorStyle}">
-    <div *ngFor="let row of plots()" class="row">
+  <div class="mx-auto flex flex-row gap-2 p-2 rounded-lg" [ngStyle]="{'cursor': cursorStyle}">
+    <div *ngFor="let row of plots()" class="flex flex-col gap-2">
       <div *ngFor="let plot of row"
-           class="plot"
+           class="w-16 h-16 border-2 rounded-lg flex flex-col items-center justify-center"
            [style.borderColor]="plot.cropType ? getCropColor(plot.cropType) : '#ccc'"
            [ngStyle]="plot.state==='empty'?{'background-color': getSoilColor(plot)}:{}"
            (click)="onPlotClick(plot)">
@@ -34,5 +40,5 @@
       </div>
     </div>
   </div>
-  <p>{{ lastHarvestInfo }}</p>
+</div>
 </div>

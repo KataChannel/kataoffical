@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { ErrorlogService } from 'src/errorlog/errorlog.service';
-import { SocketGateway } from './socket.gateway';
+import { SocketGateway } from 'src/socket.gateway';
+
 
 @Injectable()
 export class SettingService {
@@ -62,7 +63,7 @@ export class SettingService {
           codeId: codeId,
         },
       });
-      this._SocketGateway.sendSettingUpdate();
+      this._SocketGateway.sendUpdate('setting');
       return created;
     } catch (error) {
       this._ErrorlogService.logError('createSetting', error);
@@ -152,7 +153,7 @@ export class SettingService {
       } else {
         updated = await this.prisma.setting.update({ where: { id }, data });
       }
-      this._SocketGateway.sendSettingUpdate();
+      this._SocketGateway.sendUpdate('setting');
       return updated;
     } catch (error) {
       this._ErrorlogService.logError('updateSetting', error);
@@ -166,7 +167,7 @@ export class SettingService {
   async remove(id: string) {
     try {
       const deleted = await this.prisma.setting.delete({ where: { id } });
-      this._SocketGateway.sendSettingUpdate();
+       this._SocketGateway.sendUpdate('setting');
       return deleted;
     } catch (error) {
       this._ErrorlogService.logError('removeSetting', error);
@@ -185,7 +186,7 @@ export class SettingService {
           data: { order: i + 1 },
         });
       }
-      this._SocketGateway.sendSettingUpdate();
+      this._SocketGateway.sendUpdate('setting');
       return { status: 'success' };
     } catch (error) {
       this._ErrorlogService.logError('reorderSettings', error);

@@ -3,9 +3,8 @@ export declare class HoadonchitietController {
     private readonly hoadonchitietService;
     constructor(hoadonchitietService: hoadonChitietService);
     create(data: any): Promise<{
-        id: string;
-        createdAt: Date;
         updatedAt: Date;
+        id: string;
         idhdon: string;
         dgia: number | null;
         dvtinh: string | null;
@@ -24,12 +23,12 @@ export declare class HoadonchitietController {
         sxep: number | null;
         dvtte: string | null;
         tgia: number | null;
+        createdAt: Date;
     }>;
     findby(param: any): Promise<{
         data: {
-            id: string;
-            createdAt: Date;
             updatedAt: Date;
+            id: string;
             idhdon: string;
             dgia: number | null;
             dvtinh: string | null;
@@ -48,6 +47,7 @@ export declare class HoadonchitietController {
             sxep: number | null;
             dvtte: string | null;
             tgia: number | null;
+            createdAt: Date;
         }[];
         total: number;
         page: any;
@@ -55,9 +55,8 @@ export declare class HoadonchitietController {
     }>;
     findAll(): Promise<{
         data: {
-            id: string;
-            createdAt: Date;
             updatedAt: Date;
+            id: string;
             idhdon: string;
             dgia: number | null;
             dvtinh: string | null;
@@ -76,6 +75,7 @@ export declare class HoadonchitietController {
             sxep: number | null;
             dvtte: string | null;
             tgia: number | null;
+            createdAt: Date;
         }[];
         total: number;
         page: number;
@@ -85,9 +85,8 @@ export declare class HoadonchitietController {
         updatedAt: number | Date;
     }>;
     findOne(id: string): Promise<{
-        id: string;
-        createdAt: Date;
         updatedAt: Date;
+        id: string;
         idhdon: string;
         dgia: number | null;
         dvtinh: string | null;
@@ -106,12 +105,12 @@ export declare class HoadonchitietController {
         sxep: number | null;
         dvtte: string | null;
         tgia: number | null;
+        createdAt: Date;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
-        id: string;
-        createdAt: Date;
         updatedAt: Date;
+        id: string;
         idhdon: string;
         dgia: number | null;
         dvtinh: string | null;
@@ -130,6 +129,7 @@ export declare class HoadonchitietController {
         sxep: number | null;
         dvtte: string | null;
         tgia: number | null;
+        createdAt: Date;
     }>;
     reorder(body: {
         hoadonchitietIds: string[];

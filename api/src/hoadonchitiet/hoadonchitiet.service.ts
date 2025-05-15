@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { ErrorlogService } from 'src/errorlog/errorlog.service';
-import { SocketGateway } from './socket.gateway'; // Giả định SocketGateway ở ngoài thư mục module specific
+import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
 export class hoadonChitietService {
@@ -42,7 +42,7 @@ export class hoadonChitietService {
         payload.hoadon = { connect: { id: hoadon.id } };
       }
       const created = await this.prisma.hoadonChitiet.create({ data: payload });
-      this._SocketGateway.sendHoadonchitietUpdate(); // Event socket có thể cần tên khác
+      this._SocketGateway.sendUpdate('hoadonChitiet'); 
       return created;
     } catch (error) {
       this._ErrorlogService.logError('createhoadonChitiet', error);
@@ -116,7 +116,7 @@ export class hoadonChitietService {
     try {
       let updated;
       updated = await this.prisma.hoadonChitiet.update({ where: { id }, data });
-      this._SocketGateway.sendHoadonchitietUpdate(); // Event socket có thể cần tên khác
+      this._SocketGateway.sendUpdate('hoadonChitiet'); 
       return updated;
     } catch (error) {
       this._ErrorlogService.logError('updatehoadonChitiet', error);
@@ -128,7 +128,7 @@ export class hoadonChitietService {
     try {
       // Giả định có model Prisma cho module này
       const deleted = await this.prisma.hoadonChitiet.delete({ where: { id } });
-      this._SocketGateway.sendHoadonchitietUpdate(); // Event socket có thể cần tên khác
+      this._SocketGateway.sendUpdate('hoadonChitiet'); 
       return deleted;
     } catch (error) {
       this._ErrorlogService.logError('removehoadonChitiet', error);

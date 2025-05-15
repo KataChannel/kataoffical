@@ -54,7 +54,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           this._router.navigate(['/admin/hoadon', "new"]);
         }
         else{
-            await this._HoadonService.getHoadonBy({id:id});
+            await this._HoadonService.getHoadonBy({id:id,isOne:true});
             this._ListHoadonComponent.drawer.open();
             this._router.navigate(['/admin/hoadon', id]);
         }

@@ -9,39 +9,29 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SocketGateway = void 0;
+exports.SocketGateway = exports.SocketEvents = void 0;
 const websockets_1 = require("@nestjs/websockets");
 const socket_io_1 = require("socket.io");
+var SocketEvents;
+(function (SocketEvents) {
+    SocketEvents["SANPHAM"] = "sanpham";
+    SocketEvents["KHACHHANG"] = "khachhang";
+    SocketEvents["USER"] = "user";
+    SocketEvents["LEAD"] = "lead";
+    SocketEvents["TASK"] = "task";
+    SocketEvents["DEXUAT"] = "dexuat";
+    SocketEvents["LANDING_PAGE"] = "landingPage";
+    SocketEvents["TRACKING_EVENT"] = "trackingevent";
+    SocketEvents["AFFILIATE_LINK"] = "affiliatelink";
+    SocketEvents["MENU"] = "menu";
+})(SocketEvents || (exports.SocketEvents = SocketEvents = {}));
 let SocketGateway = class SocketGateway {
-    sendSanphamUpdate() {
-        this.server.emit('sanpham-updated');
-    }
-    sendKhachangUpdate() {
-        this.server.emit('khachhang-updated');
-    }
-    senduserUpdate() {
-        this.server.emit('user-updated');
-    }
-    sendleadUpdate() {
-        this.server.emit('lead-updated');
-    }
-    sendtaskUpdate() {
-        this.server.emit('task-updated');
-    }
-    sendDexuatUpdate() {
-        this.server.emit('dexuat-updated');
-    }
-    sendlandingPageUpdate() {
-        this.server.emit('landingPage-updated');
-    }
-    sendTrackingEventUpdate() {
-        this.server.emit('trackingevent-updated');
-    }
-    sendAffiliatelinkUpdate() {
-        this.server.emit('affiliatelink-updated');
-    }
-    sendMenuUpdate() {
-        this.server.emit('menu-updated');
+    sendUpdate(event, data) {
+        if (!this.server) {
+            console.error('WebSocket server not initialized');
+            return;
+        }
+        this.server.emit(`${event}-updated`, data);
     }
 };
 exports.SocketGateway = SocketGateway;

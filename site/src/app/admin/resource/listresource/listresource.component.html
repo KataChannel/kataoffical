@@ -25,10 +25,7 @@
             <mat-icon>delete</mat-icon>
             <span class="whitespace-nowrap">Xoá</span>
           </button>
-          </div>
-
-        <div class="flex flex-row space-x-2 items-center">
-          <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
+                    <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
             <mat-icon>tune</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
@@ -48,12 +45,7 @@
               }
             </div>
           </mat-menu>
-          <!-- <button matTooltip="Tải lên file excel" (click)="openUploadDialog(UploadDialog)" color="primary" mat-icon-button>
-            <mat-icon>file_upload</mat-icon>
-          </button> -->
-        </div>
-
-
+          </div>
       </div>
     </div>
     <div class="w-full h-full overflow-auto">
@@ -83,7 +75,7 @@
             </span>
             }    
             @case ('codeId') {
-            <span (click)="goToDetail(row);" class="max-w-40 line-clamp- TRUNCATE font-bold text-blue-600">
+            <span (click)="openImageViewDialog(ImageViewDialog);" class="max-w-40 line-clamp- TRUNCATE font-bold text-blue-600">
               {{ row[column] }}
             </span>
             }
@@ -184,6 +176,51 @@
 
 
 <ng-template #LoadDriveDialog>
+  <mat-dialog-content
+    class="!w-screen !h-screen !max-h-screen !relative !flex flex-col space-y-8 items-center justify-center">
+    <div class="relative flex flex-row space-x-2 items-center">
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>IdSheet</mat-label>
+        <input matInput [(ngModel)]="IdSheet" [ngModelOptions]="{ standalone: true }"
+          placeholder="Vui lòng Nhập IdSheet" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+        <mat-label>SheetName</mat-label>
+        <input matInput [(ngModel)]="SheetName" [ngModelOptions]="{ standalone: true }"
+          placeholder="Vui lòng Nhập SheetName" />
+      </mat-form-field>
+      <button (click)="LoadDrive()" matTooltip="Load Dữ Liệu" color="primary" mat-icon-button>
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+    <div class="relative h-full w-full overflow-auto">
+      <app-ktable [ListItem]="ImportIteam" [ColumnName]="ImportColumnName"
+        [displayedColumns]="ImportdisplayedColumns"></app-ktable>
+    </div>
+
+    <div class="relative flex flex-row space-x-2 items-center justify-center">
+      <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
+      <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
+    </div>
+  </mat-dialog-content>
+</ng-template>
+<ng-template #UploadDialog>
+  <mat-dialog-content
+    class="!relative !flex flex-col space-y-8 items-center justify-center">
+    <div class="relative flex flex-row space-x-2 items-center">
+      <div class="font-bold text-lg">Upload Tài Nguyên</div>
+    </div>
+    <div class="relative h-full w-full overflow-auto">
+      <app-uploadresource [uploadUrl]="uploadUrl" [category]="category" [group]="group" class="col-span-2"></app-uploadresource>  
+    </div>
+
+    <div class="relative flex flex-row space-x-2 items-center justify-center">
+      <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
+    </div>
+  </mat-dialog-content>
+</ng-template>
+
+<ng-template #ImageViewDialog>
   <mat-dialog-content
     class="!w-screen !h-screen !max-h-screen !relative !flex flex-col space-y-8 items-center justify-center">
     <div class="relative flex flex-row space-x-2 items-center">

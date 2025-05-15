@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { ErrorlogService } from 'src/errorlog/errorlog.service';
-import { SocketGateway } from './socket.gateway';
 import { MinioService } from 'src/minio/minio.service';
+import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
 export class ResourceService {
@@ -58,7 +58,7 @@ export class ResourceService {
           codeId: codeId
         },
       });
-      this._SocketGateway.sendResourceUpdate();
+      this._SocketGateway.sendUpdate('resource');
       return created;
     } catch (error) {
       this._ErrorlogService.logError('createResource', error);
@@ -68,7 +68,15 @@ export class ResourceService {
 
   async findBy(param: any) {
     try {
-      const { page = 1, limit = 20, ...where } = param;
+      const { isOne, ...rest } = param;
+      if (isOne) {
+        const result = await this.prisma.resource.findFirst({
+          where: rest,
+          orderBy: { order: 'asc' },
+        });
+        return result;
+      }
+      const { page = 1, limit = 20, ...where } = rest;
       const skip = (page - 1) * limit;
       const [data, total] = await Promise.all([
         this.prisma.resource.findMany({
@@ -135,7 +143,7 @@ export class ResourceService {
       } else {
         updated = await this.prisma.resource.update({ where: { id }, data });
       }
-      this._SocketGateway.sendResourceUpdate();
+      this._SocketGateway.sendUpdate('resource');
       return updated;
     } catch (error) {
       this._ErrorlogService.logError('updateResource', error);
@@ -153,7 +161,7 @@ export class ResourceService {
       if (!fileDeleted) {
         throw new Error('File deletion from Minio failed');
       }
-      this._SocketGateway.sendResourceUpdate();
+      this._SocketGateway.sendUpdate('resource');
       return fileDeleted;
     } catch (error) {
       this._ErrorlogService.logError('removeResource', error);

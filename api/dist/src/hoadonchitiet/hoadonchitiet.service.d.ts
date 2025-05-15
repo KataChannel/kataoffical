@@ -1,6 +1,6 @@
 import { PrismaService } from 'prisma/prisma.service';
 import { ErrorlogService } from 'src/errorlog/errorlog.service';
-import { SocketGateway } from './socket.gateway';
+import { SocketGateway } from 'src/socket.gateway';
 export declare class hoadonChitietService {
     private readonly prisma;
     private _SocketGateway;
@@ -10,9 +10,8 @@ export declare class hoadonChitietService {
         updatedAt: number | Date;
     }>;
     create(data: any): Promise<{
-        id: string;
-        createdAt: Date;
         updatedAt: Date;
+        id: string;
         idhdon: string;
         dgia: number | null;
         dvtinh: string | null;
@@ -31,12 +30,12 @@ export declare class hoadonChitietService {
         sxep: number | null;
         dvtte: string | null;
         tgia: number | null;
+        createdAt: Date;
     }>;
     findBy(param: any): Promise<{
         data: {
-            id: string;
-            createdAt: Date;
             updatedAt: Date;
+            id: string;
             idhdon: string;
             dgia: number | null;
             dvtinh: string | null;
@@ -55,6 +54,7 @@ export declare class hoadonChitietService {
             sxep: number | null;
             dvtte: string | null;
             tgia: number | null;
+            createdAt: Date;
         }[];
         total: number;
         page: any;
@@ -62,9 +62,8 @@ export declare class hoadonChitietService {
     }>;
     findAll(page?: number, limit?: number): Promise<{
         data: {
-            id: string;
-            createdAt: Date;
             updatedAt: Date;
+            id: string;
             idhdon: string;
             dgia: number | null;
             dvtinh: string | null;
@@ -83,15 +82,15 @@ export declare class hoadonChitietService {
             sxep: number | null;
             dvtte: string | null;
             tgia: number | null;
+            createdAt: Date;
         }[];
         total: number;
         page: number;
         pageCount: number;
     }>;
     findOne(id: string): Promise<{
-        id: string;
-        createdAt: Date;
         updatedAt: Date;
+        id: string;
         idhdon: string;
         dgia: number | null;
         dvtinh: string | null;
@@ -110,12 +109,12 @@ export declare class hoadonChitietService {
         sxep: number | null;
         dvtte: string | null;
         tgia: number | null;
+        createdAt: Date;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
-        id: string;
-        createdAt: Date;
         updatedAt: Date;
+        id: string;
         idhdon: string;
         dgia: number | null;
         dvtinh: string | null;
@@ -134,6 +133,7 @@ export declare class hoadonChitietService {
         sxep: number | null;
         dvtte: string | null;
         tgia: number | null;
+        createdAt: Date;
     }>;
     reorderhoadonChitiets(hoadonChitietIds: string[]): Promise<void>;
 }

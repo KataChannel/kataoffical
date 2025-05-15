@@ -51,7 +51,7 @@ export class MenuService {
   async update(id: string, data: any) {
     try {
       await this.prisma.menu.update({ where: { id }, data });
-      this._SocketGateway.sendMenuUpdate();
+          this._SocketGateway.sendUpdate('menu');
       return this.prisma.menu.update({ where: { id }, data });
     } catch (error) {
       this._ErrorlogService.logError('updateMenu', error);
@@ -61,7 +61,7 @@ export class MenuService {
 
   async remove(id: string) {
     try {
-      this._SocketGateway.sendMenuUpdate();
+      this._SocketGateway.sendUpdate('menu');
       return this.prisma.menu.delete({ where: { id } });
     } catch (error) {
       this._ErrorlogService.logError('removeMenu', error);

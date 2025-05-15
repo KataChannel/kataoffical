@@ -201,7 +201,7 @@ let UserService = class UserService {
                 where: { id },
                 data: updateData
             });
-            this._SocketGateway.senduserUpdate();
+            this._SocketGateway.sendUpdate('user');
             const { password, ...userWithoutPassword } = updatedUser;
             return userWithoutPassword;
         }

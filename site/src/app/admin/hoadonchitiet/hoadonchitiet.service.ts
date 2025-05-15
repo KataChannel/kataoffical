@@ -28,7 +28,8 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
       timeout: 5000,
     });
      async fetchData(dulieu: any) {
-      console.log(dulieu);
+      console.log('dulieu', dulieu);
+      
       const API_URL = `https://hoadondientu.gdt.gov.vn:30000/query/invoices/detail?nbmst=${dulieu.nbmst}&khhdon=${dulieu.khhdon}&shdon=${dulieu.shdon}&khmshdon=${dulieu.khmshdon}`;
       try {
         const options = {
@@ -40,15 +41,13 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
-            const data = await response.json();
+          const data = await response.json();
             console.log(data);
             // if (data.datas.length > 0) {
             // for (const item of data.datas) {
             //     const rest = {
 
             //     }
-
-
             //     await this.CreateHoadon(rest);
             //     await new Promise(resolve => setTimeout(resolve, 300)); // delay 300ms giữa các lần gọi
             //    }
@@ -125,10 +124,10 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
           return cachedData;
         }
         const data = await response.json();
-        await this.saveHoadonchitiets(data);
+        await this.saveHoadonchitiets(data.data);
         this._StorageService.setItem('hoadonchitiets_updatedAt', updatedAtServer);
-        this.ListHoadonchitiet.set(data);
-        return data;
+        this.ListHoadonchitiet.set(data.data);
+        return data.data;
       } catch (error) {
         this._ErrorLogService.logError('Failed to create getAllHoadonchitiet', error);
         console.error(error);

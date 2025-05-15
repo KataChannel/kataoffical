@@ -11,9 +11,6 @@
     <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
-    <!-- <button mat-icon-button color="warn" (click)="toggleDelete()">
-      <mat-icon>delete</mat-icon>
-    </button> -->
   </div>
 </div>
 
@@ -29,37 +26,23 @@
   </ng-container>
 
   <ng-container *ngIf="!isDelete()">
-    <div class="w-full flex flex-col space-y-2">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <mat-form-field appearance="outline">
         <mat-label>Tiêu Đề</mat-label>
-        <input matInput [(ngModel)]="DetailHoadon().title" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
+        <input matInput [(ngModel)]="DetailHoadon().name" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Nhóm</mat-label>
+        <input matInput [(ngModel)]="DetailHoadon().group" [disabled]="!isEdit()" placeholder="Vui lòng nhập Nhóm"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Mã Sản Phẩm</mat-label>
-        <input matInput [(ngModel)]="DetailHoadon().masp" [disabled]="true" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+        <input matInput [(ngModel)]="DetailHoadon().codeId" [disabled]="true" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Giá Gốc</mat-label>
-        <input matInput type="number" [(ngModel)]="DetailHoadon().giagoc" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giá Gốc"/>
+      <mat-form-field class="lg:col-span-2" appearance="outline">
+        <mat-label>Mô Tả</mat-label>
+        <textarea matInput [(ngModel)]="DetailHoadon().description" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mô Tả"></textarea>
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Đơn Vị Tính</mat-label>
-        <input matInput [(ngModel)]="DetailHoadon().dvt" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
-      </mat-form-field>
-      <div class="flex flex-row space-x-2">
-        <mat-form-field appearance="outline">
-          <mat-label>Số Lượng</mat-label>
-          <input matInput type="number" [(ngModel)]="DetailHoadon().soluong" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Số Lượng Kho</mat-label>
-          <input matInput type="number" [(ngModel)]="DetailHoadon().soluongkho" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Hao Hụt %</mat-label>
-          <input matInput type="number" [(ngModel)]="DetailHoadon().haohut" [disabled]="!isEdit()" placeholder="Vui lòng nhập haohut"/>
-        </mat-form-field>
-      </div>
     </div>
   </ng-container>
 </div>

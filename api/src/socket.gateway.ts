@@ -1,6 +1,17 @@
 import { WebSocketGateway, WebSocketServer, SubscribeMessage } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-
+export enum SocketEvents {
+  SANPHAM = 'sanpham',
+  KHACHHANG = 'khachhang',
+  USER = 'user',
+  LEAD = 'lead',
+  TASK = 'task',
+  DEXUAT = 'dexuat',
+  LANDING_PAGE = 'landingPage',
+  TRACKING_EVENT = 'trackingevent',
+  AFFILIATE_LINK = 'affiliatelink',
+  MENU = 'menu',
+}
 @WebSocketGateway({
   cors: {
     origin: '*',
@@ -8,36 +19,12 @@ import { Server } from 'socket.io';
 })
 export class SocketGateway {
   @WebSocketServer() server: Server;
-
   // Gửi sự kiện cập nhật sản phẩm đến tất cả client
-  sendSanphamUpdate() {
-    this.server.emit('sanpham-updated'); // FE sẽ nhận sự kiện này
-  }
-  sendKhachangUpdate() {
-    this.server.emit('khachhang-updated'); // FE sẽ nhận sự kiện này
-  }
-  senduserUpdate() {
-    this.server.emit('user-updated'); // FE sẽ nhận sự kiện này
-  }
-  sendleadUpdate() {
-    this.server.emit('lead-updated'); // FE sẽ nhận sự kiện này
-  }
-  sendtaskUpdate() {
-    this.server.emit('task-updated'); // FE sẽ nhận sự kiện này
-  }
-  sendDexuatUpdate() {
-    this.server.emit('dexuat-updated'); // FE sẽ nhận sự kiện này
-  }
-  sendlandingPageUpdate() {
-    this.server.emit('landingPage-updated'); // FE sẽ nhận sự kiện này
-  }
-  sendTrackingEventUpdate() {
-    this.server.emit('trackingevent-updated'); // FE sẽ nhận sự kiện này
-  }
-  sendAffiliatelinkUpdate() {
-    this.server.emit('affiliatelink-updated'); // FE sẽ nhận sự kiện này
-  }
-  sendMenuUpdate() {
-    this.server.emit('menu-updated'); // FE sẽ nhận sự kiện này
-  }
+    sendUpdate(event: any, data?: any) {
+        if (!this.server) {
+          console.error('WebSocket server not initialized');
+          return;
+        }
+        this.server.emit(`${event}-updated`, data);
+    }
 }

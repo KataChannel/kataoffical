@@ -13,7 +13,7 @@ exports.hoadonChitietService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const errorlog_service_1 = require("../errorlog/errorlog.service");
-const socket_gateway_1 = require("./socket.gateway");
+const socket_gateway_1 = require("../socket.gateway");
 let hoadonChitietService = class hoadonChitietService {
     constructor(prisma, _SocketGateway, _ErrorlogService) {
         this.prisma = prisma;
@@ -45,7 +45,7 @@ let hoadonChitietService = class hoadonChitietService {
                 payload.hoadon = { connect: { id: hoadon.id } };
             }
             const created = await this.prisma.hoadonChitiet.create({ data: payload });
-            this._SocketGateway.sendHoadonchitietUpdate();
+            this._SocketGateway.sendUpdate('hoadonChitiet');
             return created;
         }
         catch (error) {
@@ -117,7 +117,7 @@ let hoadonChitietService = class hoadonChitietService {
         try {
             let updated;
             updated = await this.prisma.hoadonChitiet.update({ where: { id }, data });
-            this._SocketGateway.sendHoadonchitietUpdate();
+            this._SocketGateway.sendUpdate('hoadonChitiet');
             return updated;
         }
         catch (error) {
@@ -128,7 +128,7 @@ let hoadonChitietService = class hoadonChitietService {
     async remove(id) {
         try {
             const deleted = await this.prisma.hoadonChitiet.delete({ where: { id } });
-            this._SocketGateway.sendHoadonchitietUpdate();
+            this._SocketGateway.sendUpdate('hoadonChitiet');
             return deleted;
         }
         catch (error) {

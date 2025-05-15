@@ -3,7 +3,7 @@ import { hoadonChitietService } from './hoadonchitiet.service';
 import { HoadonchitietController } from './hoadonchitiet.controller';
 import { PrismaModule } from 'prisma/prisma.module';
 import { ErrorlogModule } from 'src/errorlog/errorlog.module';
-import { SocketGateway } from './socket.gateway';
+import { SocketGateway } from 'src/socket.gateway';
   @Module({
     imports: [PrismaModule,ErrorlogModule],
     controllers: [HoadonchitietController],

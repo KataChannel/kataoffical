@@ -52,7 +52,7 @@ export class DexuatService {
         _max: { order: true },
       });
       newOrder = (maxOrder._max?.order || 0) + 1;
-      this._SocketGateway.sendDexuatUpdate();
+      this._SocketGateway.sendUpdate('dexuat');
       const codeId = await this.generatecodeId();      
       const { chitiet, ...dexuatData } = data;
       return this.prisma.dexuat.create({
@@ -182,8 +182,7 @@ export class DexuatService {
         );
       }
 
-      this._SocketGateway.sendDexuatUpdate();
-      
+      this._SocketGateway.sendUpdate('dexuat');
       return this.prisma.dexuat.findUnique({
         where: { id },
         include: { chitiet: true }
@@ -196,7 +195,7 @@ export class DexuatService {
 
   async remove(id: string) {
     try {
-      this._SocketGateway.sendDexuatUpdate();
+      this._SocketGateway.sendUpdate('dexuat');
       return this.prisma.dexuat.delete({ where: { id } });
     } catch (error) {
       this._ErrorlogService.logError('removeDexuat',error);

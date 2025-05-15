@@ -6,36 +6,36 @@ export declare class SettingController {
     create(data: any): Promise<{
         statusCode: HttpStatus;
         data: {
-            type: string | null;
-            value: string | null;
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
             updatedAt: Date;
-            description: string | null;
+            id: string;
             title: string | null;
-            order: number | null;
             codeId: string | null;
-            createdById: string | null;
             key: string | null;
+            value: string | null;
+            type: string | null;
+            description: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdById: string | null;
+            createdAt: Date;
         };
     }>;
     findby(param: any): Promise<{
         statusCode: HttpStatus;
         data: {
             data: {
-                type: string | null;
-                value: string | null;
-                id: string;
-                isActive: boolean;
-                createdAt: Date;
                 updatedAt: Date;
-                description: string | null;
+                id: string;
                 title: string | null;
-                order: number | null;
                 codeId: string | null;
-                createdById: string | null;
                 key: string | null;
+                value: string | null;
+                type: string | null;
+                description: string | null;
+                order: number | null;
+                isActive: boolean;
+                createdById: string | null;
+                createdAt: Date;
             }[];
             total: number;
             page: any;
@@ -46,18 +46,18 @@ export declare class SettingController {
         statusCode: HttpStatus;
         data: {
             data: {
-                type: string | null;
-                value: string | null;
-                id: string;
-                isActive: boolean;
-                createdAt: Date;
                 updatedAt: Date;
-                description: string | null;
+                id: string;
                 title: string | null;
-                order: number | null;
                 codeId: string | null;
-                createdById: string | null;
                 key: string | null;
+                value: string | null;
+                type: string | null;
+                description: string | null;
+                order: number | null;
+                isActive: boolean;
+                createdById: string | null;
+                createdAt: Date;
             }[];
             total: number;
             page: number;
@@ -73,18 +73,18 @@ export declare class SettingController {
     findOne(id: string): Promise<{
         statusCode: HttpStatus;
         data: {
-            type: string | null;
-            value: string | null;
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
             updatedAt: Date;
-            description: string | null;
+            id: string;
             title: string | null;
-            order: number | null;
             codeId: string | null;
-            createdById: string | null;
             key: string | null;
+            value: string | null;
+            type: string | null;
+            description: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdById: string | null;
+            createdAt: Date;
         };
     }>;
     update(id: string, data: any): Promise<{
@@ -94,18 +94,18 @@ export declare class SettingController {
     remove(id: string): Promise<{
         statusCode: HttpStatus;
         data: {
-            type: string | null;
-            value: string | null;
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
             updatedAt: Date;
-            description: string | null;
+            id: string;
             title: string | null;
-            order: number | null;
             codeId: string | null;
-            createdById: string | null;
             key: string | null;
+            value: string | null;
+            type: string | null;
+            description: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdById: string | null;
+            createdAt: Date;
         };
     }>;
     reorder(body: {

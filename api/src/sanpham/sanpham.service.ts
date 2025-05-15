@@ -56,7 +56,7 @@ export class SanphamService {
           codeId: codeId
         },
       });
-      this._SocketGateway.sendSanphamUpdate();
+      this._SocketGateway.sendUpdate('sanpham');
       return created;
     } catch (error) {
       this._ErrorlogService.logError('createSanpham', error);
@@ -140,7 +140,7 @@ export class SanphamService {
       } else {
         updated = await this.prisma.sanpham.update({ where: { id }, data });
       }
-      this._SocketGateway.sendSanphamUpdate();
+      this._SocketGateway.sendUpdate('sanpham');
       return updated;
     } catch (error) {
       this._ErrorlogService.logError('updateSanpham', error);
@@ -151,7 +151,7 @@ export class SanphamService {
   async remove(id: string) {
     try {
       const deleted = await this.prisma.sanpham.delete({ where: { id } });
-      this._SocketGateway.sendSanphamUpdate();
+       this._SocketGateway.sendUpdate('sanpham');
       return deleted;
     } catch (error) {
       this._ErrorlogService.logError('removeSanpham', error);
@@ -167,7 +167,7 @@ export class SanphamService {
           data: { order: i + 1 }
         });
       }
-      this._SocketGateway.sendSanphamUpdate();
+      this._SocketGateway.sendUpdate('sanpham');
       return { status: 'success' };
     } catch (error) {
       this._ErrorlogService.logError('reorderSanphams', error);

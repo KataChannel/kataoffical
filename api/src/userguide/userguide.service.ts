@@ -57,7 +57,7 @@ export class UserguideService {
           masp: masp,
         },
       });
-      this._SocketGateway.senduserUpdate();
+       this._SocketGateway.sendUpdate('userguides');
       return created;
     } catch (error) {
       this.handleError('createUserguide', error);
@@ -129,7 +129,7 @@ export class UserguideService {
       } else {
         updated = await this.prisma.userguidStep.update({ where: { id }, data });
       }
-      this._SocketGateway.senduserUpdate();
+      this._SocketGateway.sendUpdate('userguides');
       return updated;
     } catch (error) {
       this.handleError('updateUserguide', error);
@@ -139,7 +139,7 @@ export class UserguideService {
   async remove(id: string) {
     try {
       const deleted = await this.prisma.userguidStep.delete({ where: { id } });
-      this._SocketGateway.senduserUpdate();
+      this._SocketGateway.sendUpdate('userguides');
       return deleted;
     } catch (error) {
       this.handleError('removeUserguide', error);
@@ -154,7 +154,7 @@ export class UserguideService {
           data: { order: i + 1 },
         });
       }
-      this._SocketGateway.senduserUpdate();
+      this._SocketGateway.sendUpdate('userguides');
       return { status: 'success' };
     } catch (error) {
       this.handleError('reorderUserguides', error);

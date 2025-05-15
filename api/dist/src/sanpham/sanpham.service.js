@@ -65,7 +65,7 @@ let SanphamService = class SanphamService {
                     codeId: codeId
                 },
             });
-            this._SocketGateway.sendSanphamUpdate();
+            this._SocketGateway.sendUpdate('sanpham');
             return created;
         }
         catch (error) {
@@ -151,7 +151,7 @@ let SanphamService = class SanphamService {
             else {
                 updated = await this.prisma.sanpham.update({ where: { id }, data });
             }
-            this._SocketGateway.sendSanphamUpdate();
+            this._SocketGateway.sendUpdate('sanpham');
             return updated;
         }
         catch (error) {
@@ -162,7 +162,7 @@ let SanphamService = class SanphamService {
     async remove(id) {
         try {
             const deleted = await this.prisma.sanpham.delete({ where: { id } });
-            this._SocketGateway.sendSanphamUpdate();
+            this._SocketGateway.sendUpdate('sanpham');
             return deleted;
         }
         catch (error) {
@@ -178,7 +178,7 @@ let SanphamService = class SanphamService {
                     data: { order: i + 1 }
                 });
             }
-            this._SocketGateway.sendSanphamUpdate();
+            this._SocketGateway.sendUpdate('sanpham');
             return { status: 'success' };
         }
         catch (error) {

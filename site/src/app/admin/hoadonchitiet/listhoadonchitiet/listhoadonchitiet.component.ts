@@ -118,53 +118,62 @@ import { HoadonService } from '../../hoadon/hoadon.service';
 
     async fetchData() {
       this._StorageService.setItem('hoadon_token', this.token);
-      const listHoadon = await this._HoadonService.getAllHoadon();
+      const listHoadon = await this._HoadonService.getAllHoadon(1000);
       console.log(listHoadon);
 
       // Process each hoadon sequentially to avoid overloading the server.
       for (const item of listHoadon) {
-        const result = await this._HoadonchitietService.fetchData({
-          token: this.token,
-          ...item,
+      const result = await this._HoadonchitietService.fetchData({
+        token: this.token,
+        ...item,
+      });
+      console.log(result);
+      // Delay between each hoadon call
+      await this.delay(200);
+
+      if (result.message) {
+        this._snackBar.open(result.message, '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
         });
-        console.log(result);
-        if (result.message) {
-          this._snackBar.open(result.message, '', {
-            duration: 1000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['snackbar-success'],
-          });
-        } else {
-          if (result.hdhhdvu && Array.isArray(result.hdhhdvu)) {
-            // Process each item sequentially to avoid server lag.
-            for (const item1 of result.hdhhdvu.slice(0, 2)) {
-              const data = {
-                id: item1.id,
-                idhdon: item1.idhdon,
-                dvtinh: item1.dvtinh,
-                ltsuat: item1.ltsuat,
-                sluong: item1.sluong,
-                dgia: item1.dgia,
-                stbchu: item1.stbchu,
-                stckhau: item1.stckhau,
-                stt: item1.stt,
-                tchat: item1.tchat,
-                ten: item1.ten,
-                thtcthue: item1.thtcthue,
-                thtien: item1.thtien,
-                tlckhau: item1.tlckhau,
-                tsuat: item1.tsuat,
-                tthue: item1.tthue,
-                sxep: item1.sxep,
-                dvtte: item1.dvtte,
-                tgia: item1.tgia,
-              };
-              await this._HoadonchitietService.CreateHoadonchitiet(data);
-            }
-          }
+      } else {
+        if (result.hdhhdvu && Array.isArray(result.hdhhdvu)) {
+        // Process each item sequentially to avoid server lag.
+        for (const item1 of result.hdhhdvu.slice(0, 2)) {
+          const data = {
+          id: item1.id,
+          idhdon: item1.idhdon,
+          dvtinh: item1.dvtinh,
+          ltsuat: item1.ltsuat,
+          sluong: item1.sluong,
+          dgia: item1.dgia,
+          stbchu: item1.stbchu,
+          stckhau: item1.stckhau,
+          stt: item1.stt,
+          tchat: item1.tchat,
+          ten: item1.ten,
+          thtcthue: item1.thtcthue,
+          thtien: item1.thtien,
+          tlckhau: item1.tlckhau,
+          tsuat: item1.tsuat,
+          tthue: item1.tthue,
+          sxep: item1.sxep,
+          dvtte: item1.dvtte,
+          tgia: item1.tgia,
+          };
+          await this._HoadonchitietService.CreateHoadonchitiet(data);
+          // Delay between each CreateHoadonchitiet call
+          await this.delay(200);
+        }
         }
       }
+      }
+    }
+
+    private delay(ms: number) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     async refresh() {

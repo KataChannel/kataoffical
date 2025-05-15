@@ -224,7 +224,7 @@ export class UserService {
       });
 
       // Notify clients about the update
-      this._SocketGateway.senduserUpdate();
+      this._SocketGateway.sendUpdate('user');
 
       // Return user without password
       const { password, ...userWithoutPassword } = updatedUser;

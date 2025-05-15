@@ -27,7 +27,6 @@ import { environment } from '../../../../environments/environment.development';
       MatDialogModule,
       CommonModule,
       MatSlideToggleModule,
-      UploadresourceComponent
     ],
     templateUrl: './detailresource.component.html',
     styleUrls: ['./detailresource.component.scss']
