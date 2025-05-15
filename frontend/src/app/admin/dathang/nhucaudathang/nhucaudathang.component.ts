@@ -280,7 +280,8 @@ export class NhucaudathangComponent {
   isSubmit: boolean = false;
   onListDathangChange(event:any) {
     console.log(event);
-    this.ListDathang = event;
+    this.isSubmit = event.isSubmit;
+    this.ListDathang = event.ListDathang;
     console.log(this.ListDathang);  
   }
   CheckSubmit(){
@@ -307,7 +308,6 @@ export class NhucaudathangComponent {
     }
   }
   async OpenTaodonDialog(teamplate: TemplateRef<any>) {    
-
     this.ListFindNCC =  await this._NhacungcapService.Findbyids(this.EditList.map((v:any)=>v.id));    
     this.EditList = this.EditList.filter((v:any)=> this.ListFindNCC.some((v1:any)=>v1.Sanpham.some((v3:any)=>v3.id===v.id)));    
     const dialogDeleteRef = this._dialog.open(teamplate, {

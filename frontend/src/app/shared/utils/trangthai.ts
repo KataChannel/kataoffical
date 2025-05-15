@@ -3,4 +3,5 @@ export const TrangThaiDon = {
     dagiao: 'Đã giao',
     danhan: 'Đã nhận',
     huy: 'Đã hủy',
+    hoanthanh: 'Hoàn thành',
 };

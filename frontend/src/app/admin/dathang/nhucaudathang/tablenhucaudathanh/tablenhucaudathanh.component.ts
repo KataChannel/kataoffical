@@ -19,7 +19,7 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
   @Input() ListFindNCC: any[] = [];
   @Input() EditList: any[] = [];
   @Input() ListDathang: any[] = [];
-  @Output() ListDathangChange = new EventEmitter<any[]>();
+  @Output() ListDathangChange = new EventEmitter<any>();
   _snackBar:MatSnackBar = inject(MatSnackBar);
   filterListNCC: any[] = [];
   filterListSP: any[] = [];
@@ -80,8 +80,11 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
       } else {
       this.ListDathang.push(filteredListNCC[0]);
       }
-      this.ListDathangChange.emit(this.ListDathang);
-      this.LoadTable(filteredListNCC, this.filterListSP);
+      console.log('sanpham', sanpham);
+      console.log('nhacungcap', nhacungcap);
+      console.log('ListDathang', this.ListDathang);
+      this.ListDathangChange.emit({isSubmit: false, ListDathang: this.ListDathang});
+      this.LoadTable(filteredListNCC, filteredListNCC[0].sanpham);
     }
   }
   else{
@@ -208,7 +211,7 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
           (allInputs[currentIndex + 1] as HTMLElement).focus();
         }
       });
-      this.ListDathangChange.emit(this.ListDathang);
+      this.ListDathangChange.emit({isSubmit: false, ListDathang: this.ListDathang});
     }
   }
 
@@ -291,7 +294,7 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
         Nhacungcap.ngaynhan = new Date();
         this.ListDathang.push(Nhacungcap);
       }
-      this.ListDathangChange.emit(this.ListDathang);
+      this.ListDathangChange.emit({isSubmit: false, ListDathang: this.ListDathang});
       console.log(this.ListDathang);
     }
   }

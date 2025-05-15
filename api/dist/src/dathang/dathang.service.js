@@ -434,7 +434,7 @@ let DathangService = class DathangService {
                     const maphieuNhap = `PX-${oldDathang.madncc}-RET`;
                     const phieuKhoData = {
                         maphieu: maphieuNhap,
-                        ngay: new Date(data.ngaygiao),
+                        ngay: new Date(data.ngaynhan),
                         type: 'xuat',
                         khoId: DEFAUL_KHO_ID,
                         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',

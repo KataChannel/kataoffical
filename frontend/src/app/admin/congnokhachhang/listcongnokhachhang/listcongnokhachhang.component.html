@@ -80,7 +80,8 @@
           <div class="flex flex-row space-x-2">
             <!-- <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button> -->
             <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Công Nợ</button>
-            <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="BackStatus()">Quay Lại Đã Giao</button>
+            <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="BackStatus()">Quay Lại Đã Giao</button>
+            <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="Hoanthanh()">Hoàn Thành</button>
           </div>
         <div class="w-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
@@ -185,10 +186,11 @@
                                           @case ('status') {
                         <span class="max-w-40 line-clamp-4 font-bold"
                         [ngClass]="{
-                            'text-blue-500':   row[column] === 'dadat',
-                            'text-yellow-500': row[column] === 'dagiao',
-                            'text-green-500':  row[column] === 'danhan',
-                            'text-red-500':    row[column] === 'huy'
+                          'text-blue-500': row[column] === 'dadat',
+                          'text-yellow-500': row[column] === 'dagiao',
+                          'text-green-500': row[column] === 'danhan',
+                          'text-purple-500': row[column] === 'hoanthanh',
+                          'text-red-500': row[column] === 'huy'
                         }
                         ">
                             {{Trangthaidon[row[column]]}}

@@ -8,7 +8,7 @@ ssh root@116.118.49.243
 git pull
 docker compose -f 'docker-compose.yml' up -d --build 'ferausach'
 docker compose -f 'docker-compose.yml' up -d --build 'berausach'
-docker compose -f 'docker-compose.yml' up -d --build 'datalake_storage'
+docker compose -f 'docker-compose.yml' up -d --build 'minio_rausach'
 docker compose -f 'docker-compose.yml' up -d --build 'redis'
 docker compose -f 'docker-compose.yml' up -d --build 'backend-shop'
 docker compose -f 'docker-compose.yml' up -d --build 'frontend-shop'

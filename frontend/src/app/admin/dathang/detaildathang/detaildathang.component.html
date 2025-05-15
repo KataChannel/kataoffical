@@ -9,8 +9,9 @@
      >{{DetailDathang().madncc||''}}
   </div>
   <div class="flex flex-row space-x-2 items-center">
-      <button *ngIf="DetailDathang().status!=='danhan'" mat-flat-button color="primary" [disabled]="DetailDathang().status=='dagiao'" (click)="GiaoDonhang()"> Đã Giao</button>
-    <button mat-flat-button color="primary" [disabled]="DetailDathang().status=='danhan'" (click)="Danhanhang()"> Đã Nhận</button>
+    <button *ngIf="DetailDathang().status=='dadat'" mat-flat-button color="primary" [disabled]="DetailDathang().status=='dagiao'" (click)="GiaoDonhang()"> Đã Giao</button>
+    <button *ngIf="DetailDathang().status=='dagiao'" mat-flat-button color="primary" [disabled]="DetailDathang().status=='danhan'" (click)="Danhanhang()"> Đã Nhận</button>
+    @if(DetailDathang().status!=='danhan') {
     <mat-slide-toggle [(ngModel)]="DetailDathang().isActive" [disabled]="!isEdit()">{{DetailDathang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleDathangAction()">
       <mat-icon>save</mat-icon>
@@ -21,6 +22,10 @@
     <button mat-icon-button color="warn" (click)="toggleDelete()">
       <mat-icon>delete</mat-icon>
     </button>
+    }
+    @else {
+     <button mat-flat-button color="primary" [disabled]="DetailDathang().status=='danhan'"> Đã Nhận</button>
+    }
   </div>
 </div>
 
@@ -103,7 +108,6 @@
                   </div>
                 </mat-select>
               </mat-form-field>
-
                 <!-- <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
                   <mat-label>Sản Phẩm</mat-label>
                   <mat-select (selectionChange)="SelectSanpham($event)">
@@ -187,7 +191,7 @@
                             </span>
                             }
                         @case ('sldat') {
-                        <div class="flex flex-row space-x-1 items-center">
+                     <div *ngIf="DetailDathang().status==='dadat'" class="flex flex-row space-x-1 items-center">
                       <div
                           [contentEditable]="true"
                           (blur)="UpdateBlurValue($event,idx, row, 'sldat','number')"
@@ -199,9 +203,12 @@
 
                          <div class="text-xs text-red-600 font-bold">Gợi ý ({{row.goiy}})</div>
                          </div>
+                         <div *ngIf="DetailDathang().status !== 'dadat'">
+                             {{ row[column]||0|number:'1.0-2' }}
+                         </div>
                         }
                         @case ('slgiao') {
-                      <div
+                      <div *ngIf="DetailDathang().status === 'dagiao'"
                           [contentEditable]="true"
                           (blur)="UpdateBlurValue($event,idx, row, 'slgiao','number')"
                           (keydown.enter)="EnterUpdateValue($event,idx, row, 'slgiao','number')"
@@ -209,15 +216,21 @@
                         >
                         {{ row[column]||0|number:'1.0-2' }}
                          </div>
+                         <div *ngIf="DetailDathang().status !== 'dagiao'">
+                             {{ row[column]||0|number:'1.0-2' }}
+                         </div>
                         }
                         @case ('slnhan') {
-                      <div
+                      <div *ngIf="DetailDathang().status === 'danhan'"
                           [contentEditable]="true"
                           (blur)="UpdateBlurValue($event,idx, row, 'slnhan','number')"
                           (keydown.enter)="EnterUpdateValue($event,idx, row, 'slnhan','number')"
                           class="slnhan-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                         >
                         {{ row[column]||0|number:'1.0-2' }}
+                         </div>
+                        <div *ngIf="DetailDathang().status !== 'danhan'">
+                             {{ row[column]||0|number:'1.0-2' }}
                          </div>
                         }
                         @case ('ghichu') {

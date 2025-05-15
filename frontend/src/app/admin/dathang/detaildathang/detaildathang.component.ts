@@ -669,6 +669,7 @@ export class DetailDathangComponent {
         verticalPosition: 'top',
         panelClass: ['snackbar-success'],
       });
+      this.isEdit.update((value) => !value);
     })
   }
 }

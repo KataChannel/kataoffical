@@ -110,7 +110,7 @@ export class ListcongnokhachhangComponent {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
     Type: 'donsi',
-    Status:'danhan'
+    Status:['danhan','hoanthanh']
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -380,6 +380,13 @@ export class ListcongnokhachhangComponent {
   {
     this.editDonhang.forEach((v:any) => {
         v.status = 'dagiao';
+        this._DonhangService.updateDonhang(v);
+    });
+  }
+  Hoanthanh()
+  {
+    this.editDonhang.forEach((v:any) => {
+        v.status = 'hoanthanh';
         this._DonhangService.updateDonhang(v);
     });
   }

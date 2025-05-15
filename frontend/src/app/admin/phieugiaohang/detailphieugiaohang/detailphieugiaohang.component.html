@@ -27,9 +27,6 @@
       <mat-icon>edit</mat-icon>
     </button>
     }
-    <button mat-icon-button color="warn" (click)="toggleDelete()">
-      <mat-icon>delete</mat-icon>
-    </button>
   </div>
 </div>
 
@@ -196,7 +193,7 @@
                         }
                         @case ('slgiao') {
                         @if(DetailPhieugiaohang().status!='dagiao') {
-                      <div
+                         <div
                           [contentEditable]="true"
                           (blur)="updateBlurValue($event,idx, row, 'slgiao','number')"
                           (keydown.enter)="updateValue($event,idx, row, 'slgiao','number')"

@@ -134,14 +134,12 @@ model Nhomkhachhang {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
-
-
-
 enum StatusDonhang {
   dadat     // Đã xác nhận
   dagiao       // Đã giao hàng
   danhan     // Đã nhận hàng
   huy     // Đã hủy
+  hoanthanh   // Đã hoàn thành
 }
 model Sanpham {
   id        String   @id @default(uuid())

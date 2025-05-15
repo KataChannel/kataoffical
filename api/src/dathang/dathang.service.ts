@@ -546,12 +546,12 @@ export class DathangService {
         }
 
         // Nếu có sản phẩm thiếu, phát sinh phiếu kho nhập hàng trả về
-        if (shortageItems.length > 0) {
+      if (shortageItems.length > 0) {
           // Sử dụng mã đơn hàng hiện có (madncc) để tạo mã phiếu kho nhập
-          const maphieuNhap = `PX-${oldDathang.madncc}-RET`;
-          const phieuKhoData = {
+        const maphieuNhap = `PX-${oldDathang.madncc}-RET`;
+        const phieuKhoData = {
         maphieu: maphieuNhap,
-        ngay: new Date(data.ngaygiao), // Ngày nhập có thể sử dụng ngày giao hoặc hiện tại
+        ngay: new Date(data.ngaynhan), // Ngày nhập có thể sử dụng ngày giao hoặc hiện tại
         type: 'xuat', // Loại phiếu xuất
         khoId: DEFAUL_KHO_ID,
         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
@@ -566,7 +566,7 @@ export class DathangService {
           };
 
           await prisma.phieuKho.create({
-        data: phieuKhoData,
+             data: phieuKhoData,
           });
         }
 

@@ -95,8 +95,8 @@ export class DonhangService {
           khachhang: { include: { banggia: { include: { sanpham: true } } } },
         },
         orderBy: { createdAt: 'desc' },
-        skip: (pageNumber - 1) * pageSize,
-        take: pageSize,
+        skip: (Number(pageNumber) - 1) * Number(pageSize),
+        take: Number(pageSize),
       }),
     ]);
 
@@ -703,7 +703,14 @@ async update(id: string, data: any) {
       },
       });
     }
-
+    if (data.status === 'hoanthanh') {
+      return prisma.donhang.update({
+        where: { id },
+        data: {
+          status: 'hoanthanh',
+        },
+      });
+    }
     // Nếu không rơi vào các trường hợp trên, sử dụng logic cập nhật phiếu giao (updatePhieugiao)
     // return this.updatePhieugiao(id, data);
   });

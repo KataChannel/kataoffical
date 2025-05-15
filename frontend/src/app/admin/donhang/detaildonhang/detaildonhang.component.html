@@ -11,7 +11,6 @@
   </div>
   <div class="flex flex-row space-x-2 items-center">
     <mat-slide-toggle [(ngModel)]="DetailDonhang().isActive" [disabled]="!isEdit()">{{DetailDonhang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
-    <button *ngIf="DetailDonhang().status === 'dagiao'" mat-flat-button color="primary" (click)="UpdateStatus('dadat')">Đã Đặt</button>
     <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>
     </button>
@@ -19,15 +18,17 @@
     <button mat-icon-button color="primary" (click)="printContent()">
       <mat-icon>print</mat-icon>
     </button>
+    @if(DetailDonhang().status === 'dadat') {
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleDonhangAction()">
       <mat-icon>save</mat-icon>
     </button>
     <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
-    <button mat-icon-button color="warn" (click)="toggleDelete()">
+    <button mat-icon-button color="warn" *ngIf="!isEdit()" (click)="toggleDelete()">
       <mat-icon>delete</mat-icon>
     </button>
+  }
   </div>
 </div>
 
@@ -54,6 +55,7 @@
             <div>Website: http://rausachtrangia.com - Hotline: 090.245.8081</div>
           </div>
         </div>
+
         <div class="font-bold text-[18px] uppercase">Bảng Sao Kê Hàng Ngày</div>
       <div class="font-bold text-[18px] uppercase {{DetailDonhang()?.khachhangId?'':'text-red-700 italic'}}">{{DetailDonhang()?.khachhang?.name||"Chưa Chọn Khách Hàng"}}</div>
       <div *ngIf="isEdit() && DetailDonhang()?.khachhang?.ghichu" class="p-2 rounded-lg border text-red-600" [innerHTML]="DetailDonhang().khachhang.ghichu"></div>
@@ -175,7 +177,7 @@
                     <mat-label>Tìm Kiếm</mat-label>
                     <input matInput (keyup)="applyFilter($event)" placeholder="Tìm Kiếm" />
                 </mat-form-field>
-                <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(dataSource().data,'Sanpham_donhang')" color="primary" mat-icon-button>
+                <!-- <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(dataSource().data,'Sanpham_donhang')" color="primary" mat-icon-button>
                   <mat-icon>file_download</mat-icon>
               </button>
               <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
@@ -184,7 +186,7 @@
               <input class="hidden" (change)="ImporExcel($event)" type="file" #uploadfile>
                 <button [disabled]="!isEdit()" matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
                   <mat-icon>cloud_download</mat-icon>
-              </button>
+              </button> -->
                    <button [disabled]="!isEdit()" matTooltip="Làm Trống Giỏ Hàng" (click)="EmptyCart()" color="warn" mat-icon-button>
                      <mat-icon>delete</mat-icon>
                  </button>
@@ -291,8 +293,8 @@
           </tr>
         </tbody>
       </table>
-      <div class="w-full text-end font-bold p-2">Ngày In:</div>
-      <div class="w-full flex justify-between items-center text-center mt-6 p-2">
+      <div *ngIf="!isEdit()" class="w-full text-end font-bold p-2">Ngày In:</div>
+      <div *ngIf="!isEdit()" class="w-full flex justify-between items-center text-center mt-6 p-2">
         <p><strong>Người vận chuyển</strong></p>
         <p><strong>Người nhận hàng</strong></p>
         <p><strong>Thủ kho</strong></p>

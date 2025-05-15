@@ -92,8 +92,8 @@ let DonhangService = class DonhangService {
                     khachhang: { include: { banggia: { include: { sanpham: true } } } },
                 },
                 orderBy: { createdAt: 'desc' },
-                skip: (pageNumber - 1) * pageSize,
-                take: pageSize,
+                skip: (Number(pageNumber) - 1) * Number(pageSize),
+                take: Number(pageSize),
             }),
         ]);
         const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
@@ -635,6 +635,14 @@ let DonhangService = class DonhangService {
                                 };
                             }),
                         },
+                    },
+                });
+            }
+            if (data.status === 'hoanthanh') {
+                return prisma.donhang.update({
+                    where: { id },
+                    data: {
+                        status: 'hoanthanh',
                     },
                 });
             }

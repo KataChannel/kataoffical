@@ -362,8 +362,6 @@ export class DetailPhieugiaohangComponent {
         v.status = 'danhan';
         return v;
       });
-      console.log(this.DetailPhieugiaohang());
-      
       await this._PhieugiaohangService.updateDonhang(this.DetailPhieugiaohang());
       this._snackBar.open('Đã Nhận đơn hàng thành công', '', {
         duration: 1000,
@@ -371,6 +369,7 @@ export class DetailPhieugiaohangComponent {
         verticalPosition: 'top',
         panelClass: ['snackbar-success']
       });
+      this.isEdit.update((value) => !value);
     } catch (error) {
       console.error('Lỗi khi nhận đơn hàng:', error);
       this._snackBar.open('Nhận đơn hàng thất bại', '', {
