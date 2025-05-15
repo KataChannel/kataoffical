@@ -176,4 +176,18 @@ model TrackingEvent {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+model Resource {
+  id        String   @id @default(uuid())
+  codeId    String?   @unique // Mã đề xuất duy nhất
+  title     String?
+  url       String?
+  description String?
+  fileType  String?
+  metaData  Json?
+  category  String?
+  group     String?
+  order       Int?     @default(1)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime       @updatedAt
+}
 

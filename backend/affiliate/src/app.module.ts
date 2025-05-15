@@ -13,6 +13,7 @@ import { ChatbotModule } from './chatbot/chatbot.module';
 import { AuditLogModule } from './auditlog/auditlog.module';
 import { LandingPageModule } from './landingpage/landingpage.module';
 import { TrackingeventModule } from './trackingevent/trackingevent.module';
+import { ResourceModule } from './resource/resource.module';
 @Module({
   imports: [
     AuthModule, 
@@ -24,7 +25,8 @@ import { TrackingeventModule } from './trackingevent/trackingevent.module';
     ChatbotModule,
     AuditLogModule,
     LandingPageModule,
-    TrackingeventModule
+    TrackingeventModule,
+    ResourceModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

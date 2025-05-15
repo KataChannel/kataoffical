@@ -16,6 +16,7 @@ docker compose -f 'docker-compose.yml' up -d --build 'postgres_taza'
 docker compose -f 'docker-compose.yml' up -d --build 'pgadmin_taza'
 docker compose -f 'docker-compose.yml' up -d --build 'datalake_storage'
 docker compose -f 'docker-compose.yml' up -d --build 'processing_service'
+docker compose -f 'docker-compose.yml' up -d --build 'minio_taza'
 docker compose down rausachsandbox1-berausachsanbox1
 Xoá Tất Cả
 docker system prune -a --volumes -f

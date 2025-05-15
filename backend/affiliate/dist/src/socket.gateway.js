@@ -12,7 +12,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketGateway = void 0;
 const websockets_1 = require("@nestjs/websockets");
 const socket_io_1 = require("socket.io");
+const events_1 = require("events");
+events_1.EventEmitter.defaultMaxListeners = 50;
 let SocketGateway = class SocketGateway {
+    constructor() {
+        this.emitCount = 0;
+    }
+    onModuleInit() {
+        if (this.server) {
+            this.server.setMaxListeners(50);
+        }
+    }
+    sendUpdate(event, data) {
+        if (!this.server) {
+            console.error('WebSocket server not initialized');
+            return;
+        }
+        this.emitCount++;
+        console.log(`Emit count: ${this.emitCount}`);
+        this.server.emit(`${event}-updated`, data);
+    }
     sendSanphamUpdate() {
         this.server.emit('sanpham-updated');
     }

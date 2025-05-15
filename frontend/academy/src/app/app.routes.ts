@@ -66,21 +66,39 @@ export const routes: Routes = [
         ],
       },
       {
-               path: 'tainguyen',
-               canActivate: [PermissionGuard],
-               data: { permission: 'tainguyen.view' },
-               loadComponent: () => import('./admin/tainguyen/listtainguyen/listtainguyen.component').then((c) => c.ListTainguyenComponent),
-               children: [
-                 {
-              path: '',
-              loadComponent: () => import('./admin/tainguyen/listtainguyen/listtainguyen.component').then((c) => c.ListTainguyenComponent),
-                 },
-                 {
-              path: ':id',
-              loadComponent: () => import('./admin/tainguyen/detailtainguyen/detailtainguyen.component').then((c) => c.DetailTainguyenComponent),
-                 },
-               ],
-             },
+        path: 'tainguyen',
+        canActivate: [PermissionGuard],
+        data: { permission: 'tainguyen.view' },
+        loadComponent: () =>
+          import(
+            './admin/tainguyen/listtainguyen/listtainguyen.component'
+          ).then((c) => c.ListTainguyenComponent),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import(
+                './admin/tainguyen/listtainguyen/listtainguyen.component'
+              ).then((c) => c.ListTainguyenComponent),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import(
+                './admin/tainguyen/detailtainguyen/detailtainguyen.component'
+              ).then((c) => c.DetailTainguyenComponent),
+          },
+        ],
+      },
+      {
+        path: 'resource',
+        canActivate: [PermissionGuard],
+        data: { permission: 'resource.view' },
+        loadChildren: () =>
+          import('./admin/resource/resource.route').then(
+            (m) => m.ResourceRoutingModule
+          ),
+      },
       {
         path: 'quanlyctv',
         canActivate: [PermissionGuard],
@@ -110,15 +128,24 @@ export const routes: Routes = [
         path: 'tracking',
         canActivate: [PermissionGuard],
         data: { permission: 'tracking.view' },
-        loadComponent: () => import('./admin/tracking/listtracking/listtracking.component').then((c) => c.ListTrackingComponent),
+        loadComponent: () =>
+          import('./admin/tracking/listtracking/listtracking.component').then(
+            (c) => c.ListTrackingComponent
+          ),
         children: [
           {
-       path: '',
-       loadComponent: () => import('./admin/tracking/listtracking/listtracking.component').then((c) => c.ListTrackingComponent),
+            path: '',
+            loadComponent: () =>
+              import(
+                './admin/tracking/listtracking/listtracking.component'
+              ).then((c) => c.ListTrackingComponent),
           },
           {
-       path: ':id',
-       loadComponent: () => import('./admin/tracking/detailtracking/detailtracking.component').then((c) => c.DetailTrackingComponent),
+            path: ':id',
+            loadComponent: () =>
+              import(
+                './admin/tracking/detailtracking/detailtracking.component'
+              ).then((c) => c.DetailTrackingComponent),
           },
         ],
       },
@@ -321,9 +348,9 @@ export const routes: Routes = [
   {
     path: 'ladictv/:slug',
     loadComponent: () =>
-      import(
-        './site/home/ladictv/detailladictv/detailladictv.component'
-      ).then((c) => c.DetailladictvComponent),
+      import('./site/home/ladictv/detailladictv/detailladictv.component').then(
+        (c) => c.DetailladictvComponent
+      ),
   },
   {
     path: '',
