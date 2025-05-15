@@ -153,6 +153,7 @@ services:
       PORT: 3100
     ports:
       - "3100:3100"
+    restart: unless-stopped  
   affiliate-api:
     build:
       context: ./backend/affiliate
@@ -160,9 +161,10 @@ services:
     container_name: affiliate_api
     environment:
       NODE_ENV: development
-      PORT: "3105"
+      PORT: 3105
     ports:
       - "3105:3105"
+    restart: unless-stopped  
 
   academy-api:
     build:
