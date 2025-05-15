@@ -80,18 +80,18 @@ services:
     ports:
       - "4500:4000"
     restart: unless-stopped
-  datalake_storage:
+  minio_rausach:
     image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
-    container_name: datalake_minio
-    command: server /data --console-address ":9090"
+    container_name: minio_rausach
+    command: server /data --console-address ":9091"
     ports:
-      - "9000:9000"
-      - "9090:9090"
+      - "9001:9001"
+      - "9091:9091"
     environment:
       MINIO_ROOT_USER: RC4hWSS4V6QIcfl
       MINIO_ROOT_PASSWORD: LEOZHZwjaasTTKk
     volumes:
-      - minio_data:/data
+      - minio_data1:/data1
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 5s
@@ -105,4 +105,4 @@ volumes:
   redis_data:
   uploads_data:
     driver: local
-  minio_data:
+  minio_data1:
