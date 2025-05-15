@@ -44,6 +44,7 @@ import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.
 import { SearchService } from '../../../shared/services/search.service';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { UserService } from '../../user/user.service';
 @Component({
   selector: 'app-detaildonhang',
   imports: [
@@ -73,6 +74,7 @@ export class DetailDonhangComponent {
   _BanggiaService: BanggiaService = inject(BanggiaService);
   _SanphamService: SanphamService = inject(SanphamService);
   _SearchService: SearchService = inject(SearchService);
+  _UserService: UserService = inject(UserService);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -127,8 +129,11 @@ export class DetailDonhangComponent {
   filterBanggia: any[] = [];
   filterSanpham: any[] = [];
   donhangId: any = this._DonhangService.donhangId;
+  permissions: any = []
   async ngOnInit() {
-
+     await this._UserService.getProfile();
+     this.permissions = this._UserService.profile().permissions.map((v:any)=>v.name);
+     console.log(this.permissions);  
   }
   async handleDonhangAction() {
     if (this.donhangId() === '0') {

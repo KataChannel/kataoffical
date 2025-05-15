@@ -17,19 +17,21 @@ import { SanphamService } from '../sanpham/sanpham.service';
         const result =  await this.PhieukhoRepository.save(data);
         result?.Sanpham?.forEach(async (v: any) => {
           const SP = await this._SanphamService.findid(v.id);
-          if(SP){
-            if(result.Type == "NHAP") {
-              SP.SoluongTT =  SP.SoluongTT + v.Soluong;
-              await this._SanphamService.update(v.id,SP);
+            if (SP) {
+            const currentQuantity = Number(SP.SoluongTT);
+            const changeQuantity = Number(v.Soluong);
+            if (result.Type === "NHAP") {
+              SP.SoluongTT = currentQuantity + changeQuantity;
+              await this._SanphamService.update(v.id, SP);
             }
-            else if(result.Type == "XUAT" && SP.SoluongTT < v.Soluong) {
-              return { error: 1001, data: "Số lượng tồn kho không đủ" }
+            else if (result.Type === "XUAT" && currentQuantity < changeQuantity) {
+              return { error: 1001, data: "Số lượng tồn kho không đủ" };
             }
-            else if(result.Type == "XUAT") {
-              SP.SoluongTT =  SP.SoluongTT - v.Soluong;
-              await this._SanphamService.update(v.id,SP);
+            else if (result.Type === "XUAT") {
+              SP.SoluongTT = currentQuantity - changeQuantity;
+              await this._SanphamService.update(v.id, SP);
             }
-          }
+            }
         });
       }
       else {

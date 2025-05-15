@@ -1,0 +1,31 @@
+    <div class="cursor-pointer border rounded-lg px-3 p-1 flex flex-row space-x-2 items-center justify-between">
+       <div
+        class="w-full flex lg:p-0 p-2 lg:flex-row lg:space-x-2 lg:items-center lg:justify-between flex-col justify-center">
+        <span class="w-full text-center">Đang Xem <strong>{{ (page - 1) * pageSize + 1 }}</strong> -
+          <strong>{{ page * pageSize > total ? total : page * pageSize }}</strong>
+          trong số {{ total }} mục, {{ page }}/{{pageCount}} Trang</span>
+        <div class="w-full flex flex-row space-x-2 items-center lg:justify-end justify-center">
+          <span class="font-bold text-blue-600" [matMenuTriggerFor]="menu1" #menuHienthi="matMenuTrigger">Hiện
+            Thị : {{pageSize}} mục</span>
+          <mat-menu #menu1="matMenu">
+            <div class="w-full flex flex-col space-y-2 p-4" (click)="$event.stopPropagation()">
+              <span>Số Lượng</span>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <input matInput [(ngModel)]="pageSize" [ngModelOptions]="{ standalone: true }"
+                  placeholder="Vui lòng Nhập Số Lượng" />
+              </mat-form-field>
+              <button mat-flat-button color="primary" (click)="onPageSizeChange(pageSize,menuHienthi)">Áp
+                Dụng</button>
+            </div>
+          </mat-menu>
+          <div class="pagination-controls">
+            <button mat-icon-button color="primary" [disabled]="page === 1" (click)="onPreviousPage()">
+              <mat-icon>keyboard_arrow_left</mat-icon>
+            </button>
+            <button mat-icon-button color="primary" [disabled]="page === pageCount" (click)="onNextPage()">
+              <mat-icon>keyboard_arrow_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>

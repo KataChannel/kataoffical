@@ -230,8 +230,19 @@
                 </tr>
             </table>
         </div>
-        
-           <div class="cursor-pointer border rounded-lg px-3 p-1 flex flex-row space-x-2 items-center justify-between">
+       
+        <app-sharepagination
+            [pageSize]="pageSize()"
+            [page]="page()"
+            [total]="total()"
+            [pageCount]="pageCount()"
+            (emitChange)="onPageChange($event)"
+            >
+        </app-sharepagination>
+
+
+
+ <!-- <div class="cursor-pointer border rounded-lg px-3 p-1 flex flex-row space-x-2 items-center justify-between">
       <div
         class="w-full flex lg:p-0 p-2 lg:flex-row lg:space-x-2 lg:items-center lg:justify-between flex-col justify-center">
         <span class="w-full text-center">Đang Xem <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> -
@@ -263,7 +274,7 @@
           </div>
         </div>
       </div>
-    </div> 
+    </div>  -->
         
         <!-- <mat-paginator [length]="Listdonhang().total" [pageSize]="Listdonhang().pageSize" [pageIndex]="Listdonhang().pageIndex" [pageSizeOptions]="[10]" (page)="onPageChange($event)"></mat-paginator> -->
     </div>

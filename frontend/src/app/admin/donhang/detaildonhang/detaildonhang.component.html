@@ -209,6 +209,7 @@
                             </span>
                             }
                         @case ('sldat') {
+                        @if(permissions?.includes('donhang.sldat')) {
                         <div
                           [contentEditable]="true"
                           (blur)="updateBlurValue($event,idx, row, 'sldat','number')"
@@ -217,7 +218,9 @@
                           >
                         {{ row[column]||0|number:'1.0-2' }}
                          </div>
-                         <!-- <div>(SL:{{row.soluong}})-(SLkho:{{row.soluongkho}})-(Hao hụt:{{row.haohut}}%)(Gợi ý: {{GetGoiy(row)}})</div> -->
+                          } @else {
+                          <div class="text-end">{{ row[column]||0|number:'1.0-2' }}</div>
+                          }
                         }
                         @case ('slgiao') {
                       <div class="text-end">{{ row[column]||0|number:'1.0-2' }}</div>

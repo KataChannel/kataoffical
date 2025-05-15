@@ -174,7 +174,9 @@ export class DonhangService {
       sdt: khachhang.sdt,
       gionhanhang: khachhang.gionhanhang,
       tongsomon: sanpham.length,
-      soluongtt: sanpham.reduce((total, item: any) => total + item.slgiao, 0),
+      soluongtt: parseFloat(
+        sanpham.reduce((total, item: any) => total + Number(item.slgiao || 0), 0).toFixed(2)
+      ),
     }));
   }
   async phieugiao(params: any) {

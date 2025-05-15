@@ -58,7 +58,7 @@ export declare class DonhangService {
         sdt: string | null;
         gionhanhang: string | null;
         tongsomon: number;
-        soluongtt: any;
+        soluongtt: number;
         id: string;
         title: string | null;
         ghichu: string | null;

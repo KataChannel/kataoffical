@@ -22,3 +22,5 @@ npx ng g c dashboardblock --skip-tests --standalone
 npx ng g c lienheadmin --skip-tests --standalone
 npx ng g c tablenhucaudathanh --skip-tests --standalone
 npx ng g c commonuserguide --skip-tests --standalone
+npx ng g c sharepagination --skip-tests --standalone
+

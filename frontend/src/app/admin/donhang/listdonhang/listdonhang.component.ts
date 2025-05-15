@@ -48,6 +48,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
 import { BanggiaService } from '../../banggia/banggia.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
+import { SharepaginationComponent } from '../../../shared/common/sharepagination/sharepagination.component';
 @Component({
   selector: 'app-listdonhang',
   templateUrl: './listdonhang.component.html',
@@ -69,7 +70,8 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
     MatTooltipModule,
     MatDatepickerModule,
     MatDialogModule,
-    MatTabsModule
+    MatTabsModule,
+    SharepaginationComponent
   ],
 })
 export class ListDonhangComponent {
@@ -98,7 +100,6 @@ export class ListDonhangComponent {
     localStorage.getItem('DonhangColFilter') || '[]'
   );
   totalItems = 0;
-  pageSize = 10;
   currentPage = 1;
   totalPages = 1;
   Columns: any[] = [];
@@ -137,69 +138,85 @@ export class ListDonhangComponent {
   ];
   Chonthoigian: any = 'day';
   isSearch: boolean = false;
+  pageSize = signal<number>(10);
+  page = signal<number>(1);
+  total = signal<number>(0);
+  pageCount = signal<number>(0);
   constructor() {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
     effect(async () => {
+       await this.LoadData();
+    });
+  }
+  async onPageChange(event: any): Promise<void> {
+    console.log(event);
+    this.SearchParams.pageSize = event.pageSize;
+    this.SearchParams.pageNumber = event.page;
+    await this.LoadData();
+  }
+  async LoadData() {
       const data = await this._DonhangService.searchDonhang(this.SearchParams);
       this.Listdonhang.set(data);
       if(data.data)
       {
-      this.totalItems = Number(data.total);
-      this.pageSize = Number(data.pageSize);
-      this.pageIndex = Number(data.pageIndex);
-      this.currentPage = Number(data.pageIndex);
+      this.total.set(Number(data.total));
+      this.pageSize.set(Number(data.pageSize));
+      this.page.set(Number(data.pageNumber));
+      this.pageCount.set(data.totalPages);
       this.dataSource = new MatTableDataSource(this.Listdonhang().data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       }
-
-    });
   }
 
-  onPageSizeChange(size: number,menuHienthi:any) {
-    if(size>this.totalItems){
-      this.pageSize = this.totalItems;
-      this._snackBar.open(`Số lượng tối đa ${this.totalItems}`, '', {
-        duration: 1000,
-        horizontalPosition: "end",
-        verticalPosition: "top",
-        panelClass: ['snackbar-success'],
-      });
-    }
-    else {
-      this.pageSize = size;
-    }
-    this.currentPage = 1; // Reset to first page when changing page size
-    this.calculateTotalPages();
-    this.updateDisplayData();
-    menuHienthi.closeMenu();
-  }
-  calculateTotalPages() {
-    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-  }
-  onPreviousPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.updateDisplayData();
-    }
-  }
+  // onPageSizeChange(size: number,menuHienthi:any) {
+  //   if(size>this.totalItems){
+  //     this.pageSize = this.totalItems;
+  //     this._snackBar.open(`Số lượng tối đa ${this.totalItems}`, '', {
+  //       duration: 1000,
+  //       horizontalPosition: "end",
+  //       verticalPosition: "top",
+  //       panelClass: ['snackbar-success'],
+  //     });
+  //   }
+  //   else {
+  //     this.pageSize = size;
+  //   }
+  //   this.currentPage = 1; // Reset to first page when changing page size
+  //   this.calculateTotalPages();
+  //   this.updateDisplayData();
+  //   menuHienthi.closeMenu();
+  // }
+
+
+  // calculateTotalPages() {
+  //   this.totalPages = Math.ceil(this.totalItems / this.pageSize);
+  // }
+  // onPreviousPage() {
+  //   if (this.currentPage > 1) {
+  //     this.currentPage--;
+  //     this.updateDisplayData();
+  //   }
+  // }
   
-  onNextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.updateDisplayData();
-    }
-  }
-  updateDisplayData() {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    const pageData = this.Listdonhang().slice(startIndex, endIndex);
-    this.dataSource.data = pageData;
-    }
+  // onNextPage() {
+  //   if (this.currentPage < this.totalPages) {
+  //     this.currentPage++;
+  //     this.updateDisplayData();
+  //   }
+  // }
 
-  onSelectionChange(event: MatSelectChange): void {
+
+  // updateDisplayData() {
+  //   const startIndex = (this.currentPage - 1) * this.pageSize;
+  //   const endIndex = startIndex + this.pageSize;
+  //   const pageData = this.Listdonhang().slice(startIndex, endIndex);
+  //   this.dataSource.data = pageData;
+  // }
+
+  async onSelectionChange(event: MatSelectChange): Promise<void> {
     const timeFrames: { [key: string]: () => void } = {
       day: () => {
         this.SearchParams.Batdau = moment()
@@ -229,7 +246,8 @@ export class ListDonhangComponent {
         this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
       },
     };
-     this.ngOnInit();
+     await this.LoadData();
+    //  this.ngOnInit();
   }
   onDateChange(event: any): void {
     this.ngOnInit();
@@ -258,22 +276,9 @@ export class ListDonhangComponent {
     }
   }
   async ngOnInit(): Promise<void> {
-    const data = await this._DonhangService.searchDonhang(this.SearchParams);
-    console.log(data);
-    this.Listdonhang.set(data.data);
+     await this.LoadData();
     this.initializeColumns();
     this.setupDrawer();
-    if(data.data){
-    this.totalItems = Number(data.total);
-    this.pageSize = Number(data.pageSize);
-    this.currentPage = Number(data.pageNumber);
-    this.totalPages = Number(data.totalPages);
-    this.pageIndex = Number(data.pageIndex);
-    this.dataSource = new MatTableDataSource(this.Listdonhang().data);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.dataSource.filterPredicate = this.createFilter();
-    }
 
     // this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
     // this.paginator._intl.nextPageLabel = 'Tiếp Theo';
@@ -282,15 +287,15 @@ export class ListDonhangComponent {
     // this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
 
-  async onPageChange(event: any): Promise<void> {
-    console.log(event);
-    this.SearchParams.pageSize = event.pageSize;
-    this.SearchParams.pageNumber = event.pageIndex + 1;
-    const data = await this._DonhangService.searchDonhang(this.SearchParams);
-    this.Listdonhang.set(data);
-    this.dataSource = new MatTableDataSource(this.Listdonhang().data);
-    this.dataSource.sort = this.sort;
-  }
+  // async onPageChange(event: any): Promise<void> {
+  //   console.log(event);
+  //   this.SearchParams.pageSize = event.pageSize;
+  //   this.SearchParams.pageNumber = event.pageIndex + 1;
+  //   const data = await this._DonhangService.searchDonhang(this.SearchParams);
+  //   this.Listdonhang.set(data);
+  //   this.dataSource = new MatTableDataSource(this.Listdonhang().data);
+  //   this.dataSource.sort = this.sort;
+  // }
 
 
   private initializeColumns(): void {

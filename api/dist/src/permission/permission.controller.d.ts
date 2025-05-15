@@ -4,33 +4,33 @@ export declare class PermissionController {
     constructor(permissionService: PermissionService);
     create(data: any): Promise<{
         id: string;
-        codeId: string | null;
-        name: string;
-        group: string | null;
-        description: string | null;
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        codeId: string | null;
+        group: string | null;
+        description: string | null;
     }>;
     findby(param: any): Promise<{
         id: string;
-        codeId: string | null;
-        name: string;
-        group: string | null;
-        description: string | null;
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        codeId: string | null;
+        group: string | null;
+        description: string | null;
     } | {
         data: {
             id: string;
-            codeId: string | null;
-            name: string;
-            group: string | null;
-            description: string | null;
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
+            codeId: string | null;
+            group: string | null;
+            description: string | null;
         }[];
         total: number;
         page: any;
@@ -39,13 +39,13 @@ export declare class PermissionController {
     findAll(page?: string, limit?: string): Promise<{
         data: {
             id: string;
-            codeId: string | null;
-            name: string;
-            group: string | null;
-            description: string | null;
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
+            name: string;
+            codeId: string | null;
+            group: string | null;
+            description: string | null;
         }[];
         total: number;
         page: number;
@@ -56,24 +56,24 @@ export declare class PermissionController {
     }>;
     findOne(id: string): Promise<{
         id: string;
-        codeId: string | null;
-        name: string;
-        group: string | null;
-        description: string | null;
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        codeId: string | null;
+        group: string | null;
+        description: string | null;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
         id: string;
-        codeId: string | null;
-        name: string;
-        group: string | null;
-        description: string | null;
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
+        name: string;
+        codeId: string | null;
+        group: string | null;
+        description: string | null;
     }>;
     reorder(body: {
         permissionIds: string[];
