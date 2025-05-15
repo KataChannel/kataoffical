@@ -26,7 +26,6 @@ import { ResourceModule } from './resource/resource.module';
     AuditLogModule,
     LandingPageModule,
     TrackingeventModule,
-    ResourceModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  
