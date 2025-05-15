@@ -249,7 +249,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       </div>
     </div>
     <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
-      {{this.Listmenu().length}} Items
+      {{this.${entityNameUpper}().length}} Items
     </span>
     <button class="flex flex-row items-center" color="primary" matTooltip="Thêm mới" (click)="create()" mat-flat-button>
       <mat-icon>add_circle</mat-icon>
@@ -286,7 +286,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       }
     </div>
   </mat-menu>
-    <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(Listmenu(),'Menu')" color="primary"
+    <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(${entityNameUpper}(),'Menu')" color="primary"
       mat-icon-button>
       <mat-icon>file_download</mat-icon>
     </button>
@@ -922,7 +922,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     };
   }`,
   [`${entityNameLower}/${entityNameLower}.service.ts`]: 
-  `import { Inject, Injectable, signal, Signal } from '@angular/core';
+  `import { inject, Injectable, signal, Signal } from '@angular/core';
   import { Router } from '@angular/router';
   import { environment } from '../../../environments/environment.development';
   import { StorageService } from '../../shared/utils/storage.service';
@@ -993,7 +993,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
             'Authorization': \`Bearer \${this._StorageService.getItem('token')}\`
           },
         };
-        const lastUpdatedResponse = await fetch(\`\${environment.APIURL}/last-updated?table=${entityNameLower}\`, options);
+        const lastUpdatedResponse = await fetch(\`\${environment.APIURL}/${entityNameLower}/lastupdated\`, options);
         if (!lastUpdatedResponse.ok) {
           this.handleError(lastUpdatedResponse.status);
           return cachedData;

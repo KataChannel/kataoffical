@@ -11,6 +11,13 @@ import { NavigatorPanelComponent } from '../navigator-panel/navigator-panel.comp
 import { SectionBlockComponent } from '../blocks/section-block/section-block.component';
 import { ContainerBlockComponent } from '../blocks/container-block/container-block.component';
 import { v4 as uuidv4 } from 'uuid'; // npm install uuid @types/uuid
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatOptionModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-editor',
@@ -19,7 +26,14 @@ import { v4 as uuidv4 } from 'uuid'; // npm install uuid @types/uuid
     CommonModule, JsonPipe, FormsModule, DragDropModule,
     TextBlockComponent, ImageBlockComponent, ButtonBlockComponent,
     ColumnsBlockComponent, NavigatorPanelComponent,
-    SectionBlockComponent, ContainerBlockComponent
+    SectionBlockComponent, ContainerBlockComponent,
+    MatSidenavModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatCardModule,
+    MatExpansionModule,
+    MatOptionModule
   ],
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.scss']
@@ -68,7 +82,7 @@ export class EditorComponent implements OnInit {
      ];
      this.pageBlocks.sort((a, b) => (a.parentId === null && b.parentId === null) ? a.order - b.order : 0);
      this.updateAllParentIdsAndOrders();
-     console.log("Loaded pageBlocks:", JSON.stringify(this.pageBlocks));
+     console.log("Loaded pageBlocks:", this.pageBlocks);
   }
 
   addBlock(type: BlockType) {

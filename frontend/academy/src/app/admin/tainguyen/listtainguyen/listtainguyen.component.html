@@ -17,7 +17,7 @@
       </div>
     </div>
     <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
-        {{this.Listquanlyctv().length}} Items
+      {{this.Listtainguyen().length}} Items
     </span>
     <button class="flex flex-row items-center" color="primary" matTooltip="Thêm mới" (click)="create()" mat-flat-button>
       <mat-icon>add_circle</mat-icon>
@@ -54,7 +54,7 @@
       }
     </div>
   </mat-menu>
-    <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(Listquanlyctv(),'Menu')" color="primary"
+    <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(Listtainguyen(),'Menu')" color="primary"
       mat-icon-button>
       <mat-icon>file_download</mat-icon>
     </button>
@@ -75,10 +75,10 @@
         @for (column of displayedColumns; track column) {
         <ng-container [matColumnDef]="column">
           <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
-            <span class="max-w-40 line-clamp- me-4">
+            <span class="max-w-40 line-clamp-4 me-4">
               {{ ColumnName[column] }}
             </span>
-            <app-searchfilter [icon]="'filter_alt'" [ListItem]="this.Listquanlyctv()" [fieldsearch]="column"
+            <app-searchfilter [icon]="'filter_alt'" [ListItem]="this.Listtainguyen()" [fieldsearch]="column"
               [ListFilter]="ListFilter" [filterItem]="FilterHederColumn(dataSource.filteredData,column)"
               (OutFilter)="onOutFilter($event)"></app-searchfilter>
 
@@ -86,27 +86,27 @@
           <td mat-cell *matCellDef="let row; let idx = index">
             @switch (column) {
             @case ('masp') {
-            <span (click)="goToDetail(row);" class="max-w-40 line-clamp- font-bold text-blue-600">
+            <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
               {{ row[column] }}
             </span>
             }
             @case ('STT') {
-            <span class="max-w-40 line-clamp-">
+            <span class="max-w-40 line-clamp-4">
               {{ idx + 1 }}
             </span>
             }
             @case ('createdAt') {
-            <span class="max-w-40 line-clamp-">
+            <span class="max-w-40 line-clamp-4">
               {{ row[column]|date:'dd/MM/yyyy'}}
             </span>
             }
             @case ('haohut') {
-            <span class="max-w-40 line-clamp-">
+            <span class="max-w-40 line-clamp-4">
               {{ row[column]}}%
             </span>
             }
             @case ('isActive') {
-            <span class="max-w-40 line-clamp-">
+            <span class="max-w-40 line-clamp-4">
               @if (row[column]) {
               <mat-icon class="text-green-500">check_circle</mat-icon>
               }
@@ -116,12 +116,12 @@
             </span>
             }
             @case ('updatedAt') {
-            <span class="max-w-40 line-clamp-">
+            <span class="max-w-40 line-clamp-4">
               {{ row[column]|date:'dd/MM/yyyy'}}
             </span>
             }
             @default {
-            <span class="max-w-40 line-clamp-">
+            <span class="max-w-40 line-clamp-4">
               {{ row[column] }}
             </span>
             }

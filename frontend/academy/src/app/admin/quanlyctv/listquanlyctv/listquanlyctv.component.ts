@@ -52,16 +52,17 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
   export class ListQuanlyctvComponent {
     displayedColumns: string[] = [];
     ColumnName: any = {
-      title: 'Tên Sản Phẩm',
-      masp: 'Mã Sản Phẩm',
-      giagoc: 'Giá Gốc',
-      dvt: 'Đơn Vị Tính',
-      soluong: 'SL',
-      soluongkho: 'SL Kho',
-      haohut: 'Hao Hụt',
-      ghichu: 'Ghi Chú',
-      createdAt: 'Ngày Tạo'
+      name: 'Họ Tên',
+      avatar: 'Avatar',
+      gender: 'Giới Tính',
+      email: 'Email',
+      phone: 'Số Điện Thoại',
+      createdAt: 'Ngày Tạo',
+      inviteCode: 'Mã Giới Thiệu',
+      affiliateCode: 'Giới Thiệu Bởi',
+      isActive: 'Kích Hoạt',
     };
+
     FilterColumns: any[] = JSON.parse(
       localStorage.getItem('QuanlyctvColFilter') || '[]'
     );

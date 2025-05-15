@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { TrackingService } from '../../../admin/tracking/tracking.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-taikhoanctv',
   imports: [
@@ -29,6 +30,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 export class TaikhoanctvComponent {
   _UserService:UserService = inject(UserService);
   _TrackingService:TrackingService = inject(TrackingService);
+  _snackbar:MatSnackBar = inject(MatSnackBar);
   profile:any = signal<any>({});
   inviteLink:any = '';
   Views:any = signal<any>(0);
@@ -42,6 +44,19 @@ export class TaikhoanctvComponent {
     });
     await this._TrackingService.getTrackingBy({ eventType: 'page_view', refCode: this.profile().inviteCode, isCount: true }).then((res: any) => {
       this.Views.set(res.count);
+    });
+  }
+  getCoppyLink(url: string) {
+    navigator.clipboard.writeText(url).then(() => {
+      this._snackbar.open('Đã Coppy', 'Close', {
+        duration: 2000,
+        panelClass: ['snackbar-success'],
+      });
+    }).catch(err => {
+      this._snackbar.open('Coppy Lỗi', 'Close', {
+        duration: 2000,
+        panelClass: ['snackbar-error'],
+      });
     });
   }
   logout() {    

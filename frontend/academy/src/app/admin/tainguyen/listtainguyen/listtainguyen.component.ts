@@ -14,7 +14,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
   import { MatSnackBar } from '@angular/material/snack-bar';
   import { FormsModule } from '@angular/forms';
   import { MatTooltipModule } from '@angular/material/tooltip';
-  import { TrackingService } from '../tracking.service';
+  import { TainguyenService } from '../tainguyen.service';
   import { MatMenuModule } from '@angular/material/menu';
   import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
   import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
@@ -25,9 +25,9 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
   import { environment } from '../../../../environments/environment.development';
   import { KtableComponent } from '../../../shared/common/ktable/ktable.component';
   @Component({
-    selector: 'app-listtracking',
-    templateUrl: './listtracking.component.html',
-    styleUrls: ['./listtracking.component.scss'],
+    selector: 'app-listtainguyen',
+    templateUrl: './listtainguyen.component.html',
+    styleUrls: ['./listtainguyen.component.scss'],
     imports: [
       MatFormFieldModule,
       MatInputModule,
@@ -49,19 +49,21 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
   })
-  export class ListTrackingComponent {
+  export class ListTainguyenComponent {
     displayedColumns: string[] = [];
     ColumnName: any = {
-      eventType: 'Loại Sự Kiện',
-      refCode: 'Ref Code',
-      pageUrl: 'URL Trang',
-      pageIdentifier: 'Trang',
-      pageType: 'Loại Trang',
-      ipAddress: 'Địa Chỉ IP',
-      createdAt: 'Ngày Tạo',
+      title: 'Tên Sản Phẩm',
+      masp: 'Mã Sản Phẩm',
+      giagoc: 'Giá Gốc',
+      dvt: 'Đơn Vị Tính',
+      soluong: 'SL',
+      soluongkho: 'SL Kho',
+      haohut: 'Hao Hụt',
+      ghichu: 'Ghi Chú',
+      createdAt: 'Ngày Tạo'
     };
     FilterColumns: any[] = JSON.parse(
-      localStorage.getItem('TrackingColFilter') || '[]'
+      localStorage.getItem('TainguyenColFilter') || '[]'
     );
     Columns: any[] = [];
     totalItems = 0;
@@ -71,24 +73,24 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
     @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
-    private _TrackingService: TrackingService = inject(TrackingService);
+    private _TainguyenService: TainguyenService = inject(TainguyenService);
     private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
     private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
     private _router: Router = inject(Router);
     private _dialog: MatDialog = inject(MatDialog);
-    Listtracking:any = this._TrackingService.ListTracking;
+    Listtainguyen:any = this._TainguyenService.ListTainguyen;
     EditList:any=[];
     dataSource = new MatTableDataSource([]);
-    trackingId:any = this._TrackingService.trackingId;
+    tainguyenId:any = this._TainguyenService.tainguyenId;
     _snackBar: MatSnackBar = inject(MatSnackBar);
     CountItem: any = 0;
     isSearch: boolean = false;
     constructor() {
       effect(() => {
-        this.dataSource.data = this.Listtracking();
-        console.log(this.Listtracking());
+        this.dataSource.data = this.Listtainguyen();
+        console.log(this.Listtainguyen());
         
-        this.totalItems = this.Listtracking().length;
+        this.totalItems = this.Listtainguyen().length;
         this.calculateTotalPages();
       });
     }
@@ -100,19 +102,19 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
       }
     }
     async ngOnInit(): Promise<void> {    
-      this._TrackingService.listenTrackingUpdates();
-      await this._TrackingService.getAllTracking();
+      this._TainguyenService.listenTainguyenUpdates();
+      await this._TainguyenService.getAllTainguyen();
       this.displayedColumns = Object.keys(this.ColumnName)
       console.log(this.displayedColumns);
       this.updateDisplayData();
-      this.dataSource = new MatTableDataSource(this.Listtracking());
+      this.dataSource = new MatTableDataSource(this.Listtainguyen());
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.initializeColumns();
       this.setupDrawer();
     }
     async refresh() {
-     await this._TrackingService.getAllTracking();
+     await this._TainguyenService.getAllTainguyen();
     }
     private initializeColumns(): void {
       this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -123,7 +125,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
       if (this.FilterColumns.length === 0) {
         this.FilterColumns = this.Columns;
       } else {
-        localStorage.setItem('TrackingColFilter',JSON.stringify(this.FilterColumns)
+        localStorage.setItem('TainguyenColFilter',JSON.stringify(this.FilterColumns)
         );
       }
       this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -163,7 +165,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
     }
     @Debounce(300)
     doFilterHederColumn(event: any, column: any): void {
-      this.dataSource.filteredData = this.Listtracking().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+      this.dataSource.filteredData = this.Listtainguyen().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
       const query = event.target.value.toLowerCase();  
     }
     ListFilter:any[] =[]
@@ -194,8 +196,8 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
     }
     ResetFilter()
     {
-      this.ListFilter = this.Listtracking();
-      // this.dataSource.data = this.Listtracking();
+      this.ListFilter = this.Listtainguyen();
+      // this.dataSource.data = this.Listtainguyen();
       // this.dataSource.paginator = this.paginator;
       // this.dataSource.sort = this.sort;
     }
@@ -209,7 +211,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
     }
     ApplyFilterColum(menu:any)
     {    
-      this.dataSource.data = this.Listtracking().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+      this.dataSource.data = this.Listtainguyen().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       menu.closeMenu();
@@ -228,7 +230,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
         if (item.isShow) obj[item.key] = item.value;
         return obj;
       }, {} as Record<string, string>);
-      localStorage.setItem('TrackingColFilter',JSON.stringify(this.FilterColumns)
+      localStorage.setItem('TainguyenColFilter',JSON.stringify(this.FilterColumns)
       );
     }
     doFilterColumns(event: any): void {
@@ -239,7 +241,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
     }
     create(): void {
       this.drawer.open();
-      this._router.navigate(['admin/tracking', 'new']);
+      this._router.navigate(['admin/tainguyen', 'new']);
     }
     openDeleteDialog(teamplate: TemplateRef<any>) {
         const dialogDeleteRef = this._dialog.open(teamplate, {
@@ -254,7 +256,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
     }
     DeleteListItem(): void {
       this.EditList.forEach((item: any) => {
-        this._TrackingService.DeleteTracking(item);
+        this._TainguyenService.DeleteTainguyen(item);
       });
       this.EditList = [];
       this._snackBar.open('Xóa Thành Công', '', {
@@ -279,8 +281,8 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
     }
     goToDetail(item: any): void {
       this.drawer.open();
-      this._TrackingService.setTrackingId(item.id);
-      this._router.navigate(['admin/tracking', item.id]);
+      this._TainguyenService.setTainguyenId(item.id);
+      this._router.navigate(['admin/tainguyen', item.id]);
     }
     OpenLoadDrive(teamplate: TemplateRef<any>)
     {
@@ -331,22 +333,22 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
   
       // Filter out duplicate masp values
       const uniqueData = Array.from(new Map(transformedData.map((item:any) => [item.masp, item])).values());
-      const existingTracking = this._TrackingService.ListTracking();
-      const existingMasp  = existingTracking.map((v: any) => v.masp);
+      const existingTainguyen = this._TainguyenService.ListTainguyen();
+      const existingMasp  = existingTainguyen.map((v: any) => v.masp);
       const newMasp = uniqueData.map((v: any) => v.masp).filter((item: any) => !existingMasp.includes(item));
   
       await Promise.all(uniqueData.map(async (v: any) => {
-        const existingItem = existingTracking.find((v1: any) => v1.masp === v.masp);
+        const existingItem = existingTainguyen.find((v1: any) => v1.masp === v.masp);
         if (existingItem) {
           const updatedItem = { ...existingItem, ...v };
-          await this._TrackingService.updateTracking(updatedItem);
+          await this._TainguyenService.updateTainguyen(updatedItem);
         } else {
-          await this._TrackingService.CreateTracking(v);
+          await this._TainguyenService.CreateTainguyen(v);
         }
       }));
-      await Promise.all(existingTracking
+      await Promise.all(existingTainguyen
         .filter(sp => !uniqueData.some((item:any) => item.masp === sp.masp))
-        .map(sp => this._TrackingService.updateTracking({ ...sp, isActive: false }))
+        .map(sp => this._TainguyenService.updateTainguyen({ ...sp, isActive: false }))
       );
   
       this._snackBar.open('Cập Nhật Thành Công', '', {
@@ -388,9 +390,9 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
   }
   
   onPageSizeChange(size: number,menuHienthi:any) {
-    if(size>this.Listtracking().length){
-      this.pageSize = this.Listtracking().length;
-      this._snackBar.open(`Số lượng tối đa ${this.Listtracking().length}`, '', {
+    if(size>this.Listtainguyen().length){
+      this.pageSize = this.Listtainguyen().length;
+      this._snackBar.open(`Số lượng tối đa ${this.Listtainguyen().length}`, '', {
         duration: 1000,
         horizontalPosition: "end",
         verticalPosition: "top",
@@ -423,7 +425,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
   updateDisplayData() {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
-    const pageData = this.Listtracking().slice(startIndex, endIndex);
+    const pageData = this.Listtainguyen().slice(startIndex, endIndex);
     this.dataSource.data = pageData;
     }
   }

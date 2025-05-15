@@ -1,33 +1,33 @@
-import { inject, Inject, Injectable, signal, Signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment.development';
-import { StorageService } from '../../shared/utils/storage.service';
-import { io } from 'socket.io-client';
-import { openDB } from 'idb';
-import { ErrorLogService } from '../../shared/services/errorlog.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { inject, Injectable, signal, Signal } from '@angular/core';
+  import { Router } from '@angular/router';
+  import { environment } from '../../../environments/environment.development';
+  import { StorageService } from '../../shared/utils/storage.service';
+  import { io } from 'socket.io-client';
+  import { openDB } from 'idb';
+  import { ErrorLogService } from '../../shared/services/errorlog.service';
+  import { MatSnackBar } from '@angular/material/snack-bar';
   @Injectable({
     providedIn: 'root'
   })
-  export class QuanlyctvService {
+  export class TainguyenService {
     constructor(
       private _StorageService: StorageService,
       private router: Router,
       private _ErrorLogService: ErrorLogService,
     ) { }
     private _snackBar:MatSnackBar = inject(MatSnackBar);
-    ListQuanlyctv = signal<any[]>([]);
-    DetailQuanlyctv = signal<any>({});
-    quanlyctvId = signal<string | null>(null);
-    setQuanlyctvId(id: string | null) {
-      this.quanlyctvId.set(id);
+    ListTainguyen = signal<any[]>([]);
+    DetailTainguyen = signal<any>({});
+    tainguyenId = signal<string | null>(null);
+    setTainguyenId(id: string | null) {
+      this.tainguyenId.set(id);
     }
       private socket = io(`${environment.ACADEMY_APIURL}`,{
       transports: ['websocket'],
       reconnectionAttempts: 5,
       timeout: 5000,
     });
-    async CreateQuanlyctv(dulieu: any) {
+    async CreateTainguyen(dulieu: any) {
       try {
         const options = {
             method:'POST',
@@ -36,7 +36,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
             },
             body: JSON.stringify(dulieu),
           };
-          const response = await fetch(`${environment.ACADEMY_APIURL}/users`, options);
+          const response = await fetch(`${environment.ACADEMY_APIURL}/tainguyen`, options);
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
@@ -44,21 +44,21 @@ import { MatSnackBar } from '@angular/material/snack-bar';
           if (!response.ok) {
             this.handleError(response.status);
           }
-          this.getAllQuanlyctv()
-          this.quanlyctvId.set(data.id)
+          this.getAllTainguyen()
+          this.tainguyenId.set(data.id)
       } catch (error) {
-          this._ErrorLogService.logError('Failed to CreateQuanlyctv', error);
+          this._ErrorLogService.logError('Failed to CreateTainguyen', error);
           return console.error(error);
       }
     }
   
-    async getAllQuanlyctv() {
+    async getAllTainguyen() {
       const db = await this.initDB();
-      const cachedData = await db.getAll('quanlyctvs');
-      const updatedAtCache = this._StorageService.getItem('quanlyctvs_updatedAt') || '0';
+      const cachedData = await db.getAll('tainguyens');
+      const updatedAtCache = this._StorageService.getItem('tainguyens_updatedAt') || '0';
       // Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
       if (cachedData.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) { // 5 phút cache TTL
-        this.ListQuanlyctv.set(cachedData);
+        this.ListTainguyen.set(cachedData);
         return cachedData;
       }
       try {
@@ -69,7 +69,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
             'Authorization': `Bearer ${this._StorageService.getItem('token')}`
           },
         };
-        const lastUpdatedResponse = await fetch(`${environment.ACADEMY_APIURL}/users/last-updated`, options);
+        const lastUpdatedResponse = await fetch(`${environment.ACADEMY_APIURL}/tainguyen/lastupdated`, options);
         if (!lastUpdatedResponse.ok) {
           this.handleError(lastUpdatedResponse.status);
           return cachedData;
@@ -77,23 +77,23 @@ import { MatSnackBar } from '@angular/material/snack-bar';
         const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
         //Nếu cache vẫn mới, không cần tải lại dữ liệu
         if (updatedAtServer <= updatedAtCache) {
-          this.ListQuanlyctv.set(cachedData);
+          this.ListTainguyen.set(cachedData);
           return cachedData;
         }
         console.log(updatedAtServer, updatedAtCache); 
         //Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
-        const response = await fetch(`${environment.ACADEMY_APIURL}/users`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/tainguyen`, options);
         if (!response.ok) {
           this.handleError(response.status);
           return cachedData;
         }
         const data = await response.json();
-        await this.saveQuanlyctvs(data);
-        this._StorageService.setItem('quanlyctvs_updatedAt', updatedAtServer);
-        this.ListQuanlyctv.set(data);
+        await this.saveTainguyens(data);
+        this._StorageService.setItem('tainguyens_updatedAt', updatedAtServer);
+        this.ListTainguyen.set(data);
         return data;
       } catch (error) {
-        this._ErrorLogService.logError('Failed to create getAllQuanlyctv', error);
+        this._ErrorLogService.logError('Failed to create getAllTainguyen', error);
         console.error(error);
         return cachedData;
       }
@@ -101,32 +101,32 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   
   
     //Lắng nghe cập nhật từ WebSocket
-    listenQuanlyctvUpdates() {
-      this.socket.on('quanlyctv-updated', async () => {
+    listenTainguyenUpdates() {
+      this.socket.on('tainguyen-updated', async () => {
         console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-        this._StorageService.removeItem('quanlyctvs_updatedAt');
-        await this.getAllQuanlyctv();
+        this._StorageService.removeItem('tainguyens_updatedAt');
+        await this.getAllTainguyen();
       });
     }
     //Khởi tạo IndexedDB
     private async initDB() {
-      return await openDB('QuanlyctvDB', 1, {
+      return await openDB('TainguyenDB', 1, {
         upgrade(db) {
-          db.createObjectStore('quanlyctvs', { keyPath: 'id' });
+          db.createObjectStore('tainguyens', { keyPath: 'id' });
         },
       });
     }
     // Lưu vào IndexedDB
-    private async saveQuanlyctvs(data: any[]) {
+    private async saveTainguyens(data: any[]) {
       const db = await this.initDB();
-      const tx = db.transaction('quanlyctvs', 'readwrite');
-      const store = tx.objectStore('quanlyctvs');
+      const tx = db.transaction('tainguyens', 'readwrite');
+      const store = tx.objectStore('tainguyens');
       await store.clear(); // Xóa dữ liệu cũ
       data.forEach(item => store.put(item));
       await tx.done;
     }
   
-    async getQuanlyctvBy(param: any) {
+    async getTainguyenBy(param: any) {
       try {
         const options = {
           method: 'POST',
@@ -136,18 +136,18 @@ import { MatSnackBar } from '@angular/material/snack-bar';
           },
           body: JSON.stringify(param),
         };
-        const response = await fetch(`${environment.ACADEMY_APIURL}/users/findby`, options);      
+        const response = await fetch(`${environment.ACADEMY_APIURL}/tainguyen/findby`, options);      
         if (!response.ok) {
           this.handleError(response.status);
         }
         const data = await response.json();      
-        this.DetailQuanlyctv.set(data)
+        this.DetailTainguyen.set(data)
       } catch (error) {
-        this._ErrorLogService.logError('Failed to getQuanlyctvBy', error);
+        this._ErrorLogService.logError('Failed to getTainguyenBy', error);
         return console.error(error);
       }
     }
-    async updateQuanlyctv(dulieu: any) {
+    async updateTainguyen(dulieu: any) {
       try {
         const options = {
             method:'PATCH',
@@ -156,7 +156,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
             },
             body: JSON.stringify(dulieu),
           };
-          const response = await fetch(`${environment.ACADEMY_APIURL}/users/${dulieu.id}`, options);
+          const response = await fetch(`${environment.ACADEMY_APIURL}/tainguyen/${dulieu.id}`, options);
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
@@ -164,14 +164,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
           if (!response.ok) {
             this.handleError(response.status);
           }
-          this.getAllQuanlyctv()
-          this.getQuanlyctvBy({id:data.id})
+          this.getAllTainguyen()
+          this.getTainguyenBy({id:data.id})
       } catch (error) {
-        this._ErrorLogService.logError('Failed to updateQuanlyctv', error);
+        this._ErrorLogService.logError('Failed to updateTainguyen', error);
           return console.error(error);
       }
     }
-    async DeleteQuanlyctv(item:any) {    
+    async DeleteTainguyen(item:any) {    
       try {
           const options = {
               method:'DELETE',
@@ -179,13 +179,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
                 'Content-Type': 'application/json',
               },
             };
-            const response = await fetch(`${environment.ACADEMY_APIURL}/users/${item.id}`, options);
+            const response = await fetch(`${environment.ACADEMY_APIURL}/tainguyen/${item.id}`, options);
             if (!response.ok) {
               this.handleError(response.status);
             }
-            this.getAllQuanlyctv()
+            this.getAllTainguyen()
         } catch (error) {
-          this._ErrorLogService.logError('Failed to DeleteQuanlyctv', error);
+          this._ErrorLogService.logError('Failed to DeleteTainguyen', error);
             return console.error(error);
         }
     }

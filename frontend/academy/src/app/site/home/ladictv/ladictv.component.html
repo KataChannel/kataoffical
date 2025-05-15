@@ -1,26 +1,61 @@
 <div class="flex flex-col space-y-4 container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-8">Landing Pages</h1>
-
-  <div>
-    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Tìm Kiếm</mat-label>
-      <input matInput type="text" (input)="applyFilters($event)" placeholder="Tìm Kiếm">
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
+  <h1 class="text-3xl font-bold mb-8">Landing Pages</h1>  
+  <div class="relative w-full">
+      <input type="text"
+          placeholder="Tìm Kiếm..."
+          (input)="applyFilters($event)"
+          class="block lg:w-auto w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <span class="material-symbols-outlined text-gray-500">search</span>
+      </div>
   </div>
-
   <!-- Item List -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div *ngFor="let item of Filerladi"
-      class="bg-white flex flex-col space-y-2 rounded-lg border">
+    <div *ngFor="let item of Filerladi" class="bg-white flex flex-col space-y-2 rounded-lg border">
       <img [src]="item.thumbnail" [alt]="item.title" class="w-full h-48 object-cover" loading="lazy">
       <div class="p-4">
         <h2 class="text-xl font-semibold text-gray-800 mb-2 line-clamp-1">{{item.title}}</h2>
         <p class="line-clamp-3" [innerHTML]="item.description"></p>
-        <a href="ladictv/{{item?.slug}}?ref={{profile()?.inviteCode}}" target="_blank"
+        <!-- <a href="ladictv/{{item?.slug}}?ref={{profile()?.inviteCode}}" target="_blank"
         class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors duration-300">
         Chia Sẻ
-      </a>
+         </a> -->
+        <div class="flex flex-row space-x-2 justify-between">
+          <button (click)="getCoppyLink('/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode)" mat-flat-button color="primary">
+            <mat-icon>content_copy</mat-icon>
+            <span>Copy</span>
+          </button>
+          <button mat-flat-button color="primary" [matMenuTriggerFor]="menu">
+            <mat-icon>share</mat-icon>
+            <span>Share</span>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="share('facebook', '/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode, item?.title, item?.description, item?.thumbnail)">
+              <mat-icon class="!text-blue-500">facebook</mat-icon>
+              <span>Facebook</span>
+            </button>
+            <button mat-menu-item (click)="share('twitter', '/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode, item?.title, item?.description, item?.thumbnail)">
+              <mat-icon class="!text-blue-500">linkedin</mat-icon>
+              <span>Twitter</span>
+            </button>
+            <button mat-menu-item color="primary" (click)="share('linkedin', '/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode, item?.title, item?.description, item?.thumbnail)">
+              <mat-icon class="!text-blue-500">linkedin</mat-icon>
+              <span>LinkedIn</span>
+            </button>
+            <button mat-menu-item color="primary" (click)="share('pinterest', '/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode, item?.title, item?.description, item?.thumbnail)">
+              <mat-icon class="!text-blue-500">pinterest</mat-icon>
+              <span>Pinterest</span>
+            </button>
+            <button mat-menu-item color="primary" (click)="share('whatsapp', '/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode, item?.title, item?.description, item?.thumbnail)">
+              <mat-icon class="!text-blue-500">link</mat-icon>
+              <span>WhatsApp</span>
+            </button>
+            <button mat-menu-item color="primary" (click)="share('email', '/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode, item?.title, item?.description, item?.thumbnail)">
+              <mat-icon class="!text-blue-500">email</mat-icon>
+              <span>Email</span>
+            </button>
+          </mat-menu>
+        </div>
       </div>
     </div>
   </div>

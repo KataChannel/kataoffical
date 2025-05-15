@@ -66,6 +66,22 @@ export const routes: Routes = [
         ],
       },
       {
+               path: 'tainguyen',
+               canActivate: [PermissionGuard],
+               data: { permission: 'tainguyen.view' },
+               loadComponent: () => import('./admin/tainguyen/listtainguyen/listtainguyen.component').then((c) => c.ListTainguyenComponent),
+               children: [
+                 {
+              path: '',
+              loadComponent: () => import('./admin/tainguyen/listtainguyen/listtainguyen.component').then((c) => c.ListTainguyenComponent),
+                 },
+                 {
+              path: ':id',
+              loadComponent: () => import('./admin/tainguyen/detailtainguyen/detailtainguyen.component').then((c) => c.DetailTainguyenComponent),
+                 },
+               ],
+             },
+      {
         path: 'quanlyctv',
         canActivate: [PermissionGuard],
         data: { permission: 'quanlyctv.view' },
