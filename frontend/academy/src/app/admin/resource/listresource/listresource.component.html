@@ -75,7 +75,7 @@
             </span>
             }    
             @case ('codeId') {
-            <span (click)="openImageViewDialog(ImageViewDialog);" class="max-w-40 line-clamp- TRUNCATE font-bold text-blue-600">
+            <span [routerLink]="[row.id]" class="max-w-40 line-clamp- TRUNCATE font-bold text-blue-600">
               {{ row[column] }}
             </span>
             }

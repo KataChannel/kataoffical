@@ -47,7 +47,8 @@ import { environment } from '../../../../environments/environment';
       MatDialogModule,
       SearchfilterComponent,
       KtableComponent,
-      UploadresourceComponent
+      UploadresourceComponent,
+      RouterLink
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
   })
@@ -55,9 +56,9 @@ import { environment } from '../../../../environments/environment';
     displayedColumns: string[] = [];
     ColumnName: any = {
       stt:'#',
+      codeId:'Code',
       url: 'Hình Ảnh',
       title: 'Tiêu Đề',
-      codeId:'Code',
       description: 'Mô Tả',
       fileType: 'Loại Tập Tin',
       category: 'Danh Mục',

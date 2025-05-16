@@ -3,7 +3,7 @@ export const environment = {
   //APIURL: 'http://localhost:3100',
   SHARED_APIURL: 'https://apihethong.tazagroup.vn',
   ACADEMY_APIURL: 'https://apiaffiliate.tazagroup.vn',
-  ImageURL: 'http://localhost:4303',
+  ImageURL: 'https://storage.timona.edu.vn',
   app_id: '1416835846626859002',
   secret_key: 'HLBWj23hToA9fuiQvQY4',
   zalo_redirect_uri: 'https://zalo.tazaskinclinic.com/admin/zalotoken',

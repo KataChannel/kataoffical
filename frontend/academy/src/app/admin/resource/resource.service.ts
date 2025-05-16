@@ -182,7 +182,7 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
               method:'DELETE',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+                'Authorization': `Bearer ${this._StorageService.getItem('tokenadmin')}`
               },
             };
             const response = await fetch(`${environment.ACADEMY_APIURL}/resource/${item.id}`, options);
