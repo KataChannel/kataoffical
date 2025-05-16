@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 const prisma = new PrismaClient();
-const BACKUP_ROOT_DIR = './backups_json';
+const BACKUP_ROOT_DIR = './rausach_json';
 
 function getFormattedDate(): string {
   const now = new Date();

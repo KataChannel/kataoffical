@@ -23,6 +23,78 @@ export class BanggiaService {
     reconnectionAttempts: 5, // Giới hạn reconnect nếu fail
     timeout: 5000, // Timeout 5s
   });
+
+  async importBGKH(dulieu: any) {
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/banggia/importbgkh`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+          this.handleError(response.status);
+        }
+        this.getAllBanggia()
+    } catch (error) {
+        return console.error(error);
+    }
+  }
+  async importSPBG(dulieu: any) {
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/banggia/importspbg`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+          this.handleError(response.status);
+        }
+        this.getAllBanggia()
+    } catch (error) {
+        return console.error(error);
+    }
+  }
+
+  async importBanggia(dulieu: any) {
+    console.log('bg', dulieu);
+    
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/banggia/import`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+          this.handleError(response.status);
+        }
+        this.getAllBanggia()
+    } catch (error) {
+        return console.error(error);
+    }
+  }
+
+
   async CreateBanggia(dulieu: any) {
     try {
       const options = {
@@ -46,6 +118,7 @@ export class BanggiaService {
         return console.error(error);
     }
   }
+
 
   async getAllBanggia() {
     const db = await this.initDB();

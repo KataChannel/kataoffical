@@ -4,6 +4,31 @@ export declare class BanggiaService {
     private readonly prisma;
     private readonly _SocketGateway;
     constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
+    importSPBG(listBanggia: any[]): Promise<{}>;
+    importBanggia(data: any): Promise<{
+        sanpham: {
+            id: string;
+            order: number | null;
+            isActive: boolean;
+            sanphamId: string;
+            giaban: number;
+            banggiaId: string;
+        }[];
+    } & {
+        id: string;
+        title: string | null;
+        ghichu: string | null;
+        order: number | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        mabanggia: string | null;
+        type: string | null;
+        batdau: Date | null;
+        ketthuc: Date | null;
+        status: string | null;
+    }>;
+    importBGKH(data: any[]): Promise<any[]>;
     create(data: any): Promise<{
         id: string;
         title: string | null;
@@ -41,10 +66,14 @@ export declare class BanggiaService {
         ketthuc: Date | null;
         status: string | null;
     }>;
-    reorderBanggias(banggiaIds: string[]): Promise<void>;
+    reorderBanggias(banggiaIds: string[]): Promise<null>;
     findAll(): Promise<{
         sanpham: number;
         khachhang: number;
+        ListKH: {
+            makh: string;
+            name: string | null;
+        }[];
         id: string;
         title: string | null;
         ghichu: string | null;

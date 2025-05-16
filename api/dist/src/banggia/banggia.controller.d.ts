@@ -2,6 +2,31 @@ import { BanggiaService } from './banggia.service';
 export declare class BanggiaController {
     private readonly banggiaService;
     constructor(banggiaService: BanggiaService);
+    import(data: any): Promise<{
+        sanpham: {
+            id: string;
+            order: number | null;
+            isActive: boolean;
+            sanphamId: string;
+            giaban: number;
+            banggiaId: string;
+        }[];
+    } & {
+        id: string;
+        title: string | null;
+        ghichu: string | null;
+        order: number | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        mabanggia: string | null;
+        type: string | null;
+        batdau: Date | null;
+        ketthuc: Date | null;
+        status: string | null;
+    }>;
+    importspbg(data: any): Promise<{}>;
+    importbgkh(data: any): Promise<any[]>;
     create(createBanggiaDto: any): Promise<{
         sanpham: {
             id: string;
@@ -28,6 +53,10 @@ export declare class BanggiaController {
     findAll(): Promise<{
         sanpham: number;
         khachhang: number;
+        ListKH: {
+            makh: string;
+            name: string | null;
+        }[];
         id: string;
         title: string | null;
         ghichu: string | null;
@@ -43,7 +72,7 @@ export declare class BanggiaController {
     }[]>;
     reorder(body: {
         banggiaIds: string[];
-    }): Promise<void>;
+    }): Promise<null>;
     addMultipleKhachhangToBanggia(data: any): Promise<{
         id: string;
         title: string | null;
@@ -153,18 +182,5 @@ export declare class BanggiaController {
         ketthuc: Date | null;
         status: string | null;
     }>;
-    remove(id: string): Promise<{
-        id: string;
-        title: string | null;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        mabanggia: string | null;
-        type: string | null;
-        batdau: Date | null;
-        ketthuc: Date | null;
-        status: string | null;
-    }>;
+    remove(id: string): void;
 }

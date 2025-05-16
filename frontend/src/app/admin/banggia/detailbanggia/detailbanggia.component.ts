@@ -13,7 +13,6 @@ import { ListBanggiaComponent } from '../listbanggia/listbanggia.component';
 import { BanggiaService } from '../banggia.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { ConvertDriveData, GenId, convertToSlug } from '../../../shared/utils/shared.utils';
-import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import moment from 'moment';
 import { SanphamService } from '../../sanpham/sanpham.service';

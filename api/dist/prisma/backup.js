@@ -4,7 +4,7 @@ const client_1 = require("@prisma/client");
 const fs = require("fs");
 const path = require("path");
 const prisma = new client_1.PrismaClient();
-const BACKUP_ROOT_DIR = './backups_json';
+const BACKUP_ROOT_DIR = './rausach_json';
 function getFormattedDate() {
     const now = new Date();
     const pad = (num) => num.toString().padStart(2, '0');

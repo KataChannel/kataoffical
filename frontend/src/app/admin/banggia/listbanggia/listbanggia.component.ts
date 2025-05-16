@@ -16,8 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BanggiaService } from '../banggia.service';
 import { MatMenuModule } from '@angular/material/menu';
-import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
-import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
+import { excelSerialDateToJSDate, readExcelFile, readExcelFileNoWorker, writeExcelFile, writeExcelFileSheets } from '../../../shared/utils/exceldrive.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import moment from 'moment';
@@ -212,7 +211,6 @@ export class ListBanggiaComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-
     this.dataSource.data = this.Listbanggia().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -244,75 +242,109 @@ export class ListBanggiaComponent {
     this.drawer.open();
     this._router.navigate(['admin/banggia', item.id]);
   }
-  async LoadDrive() {
-    const DriveInfo = {
-      IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'DSBanggiaImport',
-      ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
-    };
-   const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
-   const data = ConvertDriveData(result.values);
-  this.DoImportData(data);
+convertDataToData1(
+  data: Array<{ masp: string; title: string; giagoc: any; [key: string]: any }>
+): Array<{
+  mabanggia: string;
+  title: string;
+  sanpham: Array<{ masp: string; title: string; giagoc: any }>;
+}> {
+  if (!data || data.length === 0) {
+    return [];
   }
+
+  // Extract keys representing price boards (excluding masp, title, giagoc)
+  const boardKeys = Object.keys(data[0]).filter(
+    (key) => !['masp', 'title', 'giagoc'].includes(key)
+  );
+
+  // For each board key, create an object with a list of products
+  const data1 = boardKeys.map((boardKey) => ({
+    mabanggia: boardKey,
+    title: `Bảng giá ${boardKey.replace('BG', '')}`,
+    sanpham: data.map((sp) => ({
+      masp: sp.masp,
+      title: sp.title,
+      giagoc: sp.giagoc,
+      giaban: sp[boardKey] || 0,
+    })),
+  }));
+
+  return data1;
+}
+
+
   DoImportData(data:any)
   {
-    console.log(data);
-    
-    const transformedData = data.map((v: any) => ({
-      mabanggia: v.mabanggia?.trim()||'',
-      title: v.title?.trim()||'',
-      batdau: moment(v.batdau,"DD/MM/YYYY").toDate()||moment().toDate(),
-      ketthuc: moment(v.ketthuc,"DD/MM/YYYY").toDate()||moment().toDate(),
-      ghichu: v.ghichu?.trim()||'',
-      status: v.status?.trim()||'',
-   }));
-   console.log(transformedData);
-   
-   // Filter out duplicate mabanggia values
-   const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
-      index === self.findIndex((t:any) => (
-        t.mabanggia === value.mabanggia
-      ))
-   )
-    const listId2 = uniqueData.map((v: any) => v.mabanggia);
-    const listId1 = this._BanggiaService.ListBanggia().map((v: any) => v.mabanggia);
-    const listId3 = listId2.filter((item:any) => !listId1.includes(item));
-    const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._BanggiaService.ListBanggia().find((v1) => v1.mabanggia === v.mabanggia);
-        if (item) {
-          const item1 = { ...item, ...v };
-          // await this._BanggiaService.updateBanggia(item1);
-        }
-        else{
-          await this._BanggiaService.CreateBanggia(v);
-        }
+    if (!data.SPBG || !data.BG || !data.BGKH) {
+      this._snackBar.open('SPBG hoặc BG hoặc BGKH không tồn tại', '', {
+        duration: 3000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-error'],
       });
-     const disableItem = listId3.map(async (v: any) => {
-        const item = this._BanggiaService.ListBanggia().find((v1) => v1.mabanggia === v);
-        // item.isActive = false;
-        await this._BanggiaService.updateBanggia(item);
-      });
-      Promise.all([...createuppdateitem, ...disableItem]).then(() => {
-        this._snackBar.open('Cập Nhật Thành Công', '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-       // window.location.reload();
-      });
+      return;
+    }
+    const ListBG = (data.BG || []).map((v: any) => ({
+      id: v.mabanggia,
+      mabanggia: v.mabanggia,
+      type: v.type,
+      batdau: moment(excelSerialDateToJSDate(v.batdau)).toDate(),
+      ketthuc: moment(excelSerialDateToJSDate(v.ketthuc)).toDate(),
+      ghichu: v.ghichu,
+      status: v.status,
+    })).filter((v: any) => v.mabanggia !== undefined && v.mabanggia !== null && v.mabanggia !== '');
+    this._BanggiaService.importBanggia(ListBG);
+    const ListData = this.convertDataToData1(data.SPBG);
+    this._BanggiaService.importSPBG(ListData);
+      const BGKH = (data.BGKH || []).map((v: any) => ({
+        mabanggia: v.mabanggia,
+        name: v.name,
+        makh: v.makh,
+      }));
+    this._BanggiaService.importBGKH(BGKH);
+    this._snackBar.open('Import Thành Công', '', {
+      duration: 1000,
+      horizontalPosition: "end",
+      verticalPosition: "top",
+      panelClass: ['snackbar-success'],
+    });
   }
-  async ImporExcel(event: any) {
-  const data = await readExcelFile(event)
-  this.DoImportData(data);
-  }   
+
+  async ImportExcel(event: any) {
+    const data = await readExcelFileNoWorker(event);
+    this.DoImportData(data);
+  }
   async ExportExcel(data:any,title:any) {
     await this._SanphamService.getAllSanpham()
     const ListSP = this._SanphamService.ListSanpham()
-    const result = this.convertToData3(data,ListSP)
-    writeExcelFile(result,title);
+    const result = this.convertToData3(data, ListSP)
+    await this._BanggiaService.getAllBanggia();
+    let Banggia = this._BanggiaService.ListBanggia();
+    const ListKH = Banggia.reduce((acc: any[], v: any) => {
+      if (Array.isArray(v.ListKH)) {
+        v.ListKH.forEach((kh: any) => {
+          acc.push({
+            mabanggia: v.mabanggia,
+            makh: kh.makh,
+            name: kh.name,
+          });
+        });
+      }
+      return acc;
+    }, []);
+    Banggia = Banggia.map((v:any) => {
+      return {
+        mabanggia: v.mabanggia,
+        type: v.type,
+        batdau: moment(v.batdau).format('DD/MM/YYYY'),
+        ketthuc: moment(v.ketthuc).format('DD/MM/YYYY'),
+        ghichu: v.ghichu,
+        status: v.status,
+      };
+    });
+    writeExcelFileSheets({ 'SPBG': { data: result }, 'BG': { data: Banggia }, 'BGKH': { data: ListKH } }, title);
   }
-
   convertToData3(data: any, data2: any) {
     const pricingTables = new Set(data.map((item: any) => item.mabanggia));
     return data2.map((product: any) => ({
@@ -325,18 +357,10 @@ export class ListBanggiaComponent {
       }, {} as Record<string, string>)
     }));
   }
-
-// // Execute conversion
-// const data3 = convertToData3(data, data2);
-
-// // Output result (for demonstration)
-// console.log(JSON.stringify(data3, null, 2));
-
-
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
-    ListStatus: any[] = [
+ListStatus: any[] = [
     { value: 'baogia', title: 'Báo Giá' },
     { value: 'dangban', title: 'Đang Bán' },
     { value: 'ngungban', title: 'Ngừng Bán' },

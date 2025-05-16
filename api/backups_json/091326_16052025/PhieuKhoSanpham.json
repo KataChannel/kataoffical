@@ -1,0 +1,1595 @@
+[
+  {
+    "id": "fa5e9082-fdf4-43c7-878c-3aafc45a7d2d",
+    "phieuKhoId": "e5fc95dd-313f-494b-b5e8-a1edcda01c84",
+    "sanphamId": "004685b6-2de0-48a0-b3e7-8d8f348ae215",
+    "soluong": "5",
+    "ghichu": "",
+    "createdAt": "2025-05-11T17:22:42.479Z",
+    "updatedAt": "2025-05-11T17:22:42.479Z"
+  },
+  {
+    "id": "e4eb549f-d8e5-4cf1-bb34-931f15ad6ca0",
+    "phieuKhoId": "e5fc95dd-313f-494b-b5e8-a1edcda01c84",
+    "sanphamId": "0037ecad-c0ef-4aff-b210-619abe6484cc",
+    "soluong": "6",
+    "ghichu": "",
+    "createdAt": "2025-05-11T17:22:42.479Z",
+    "updatedAt": "2025-05-11T17:22:42.479Z"
+  },
+  {
+    "id": "36b0a2e8-fe21-4b82-b475-22926d7b9471",
+    "phieuKhoId": "e5fc95dd-313f-494b-b5e8-a1edcda01c84",
+    "sanphamId": "00f26cb6-bdc7-403a-add1-e7b32008146a",
+    "soluong": "7",
+    "ghichu": "",
+    "createdAt": "2025-05-11T17:22:42.479Z",
+    "updatedAt": "2025-05-11T17:22:42.479Z"
+  },
+  {
+    "id": "34cc8102-601c-486e-985a-95ab1e1b0c9b",
+    "phieuKhoId": "e5fc95dd-313f-494b-b5e8-a1edcda01c84",
+    "sanphamId": "001bea64-6b9f-492e-9602-40a58f124843",
+    "soluong": "8",
+    "ghichu": "",
+    "createdAt": "2025-05-11T17:22:42.479Z",
+    "updatedAt": "2025-05-11T17:22:42.479Z"
+  },
+  {
+    "id": "5debdc62-5d4b-466f-b420-b9f8dd326fac",
+    "phieuKhoId": "a952d65c-ccd3-404d-a2c1-83ca72e4a2f4",
+    "sanphamId": "004685b6-2de0-48a0-b3e7-8d8f348ae215",
+    "soluong": "4",
+    "ghichu": "",
+    "createdAt": "2025-05-11T18:51:32.971Z",
+    "updatedAt": "2025-05-11T18:51:32.971Z"
+  },
+  {
+    "id": "31b2f8fe-d401-467a-b417-526366afd874",
+    "phieuKhoId": "08701c6f-1f49-4693-a9f3-e93420dc6934",
+    "sanphamId": "001bea64-6b9f-492e-9602-40a58f124843",
+    "soluong": "5",
+    "ghichu": "",
+    "createdAt": "2025-05-11T18:51:33.166Z",
+    "updatedAt": "2025-05-11T18:51:33.166Z"
+  },
+  {
+    "id": "6669383f-a454-40c6-a7e7-3bb27236ba4a",
+    "phieuKhoId": "65f1d7e6-1690-4526-800d-51a9188b443c",
+    "sanphamId": "004685b6-2de0-48a0-b3e7-8d8f348ae215",
+    "soluong": "0",
+    "ghichu": "",
+    "createdAt": "2025-05-11T19:34:27.720Z",
+    "updatedAt": "2025-05-11T19:34:27.720Z"
+  },
+  {
+    "id": "4c9b77c6-5a1b-453b-aebd-124bc49b9d4e",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "8579e05d-4010-4158-9284-e8c2eb72a184",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "080e6ce3-7729-4190-a826-2b7afc799478",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "34ec62d4-7285-4fac-99cb-ae5e6085f2dd",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "e9b4195d-37f6-4475-9b66-1558f2ae15c6",
+    "phieuKhoId": "6cbf6cc9-b6d1-4b22-bb18-a5a78c6397b8",
+    "sanphamId": "001bea64-6b9f-492e-9602-40a58f124843",
+    "soluong": "5",
+    "ghichu": "",
+    "createdAt": "2025-05-11T19:43:35.875Z",
+    "updatedAt": "2025-05-11T19:43:35.875Z"
+  },
+  {
+    "id": "9be3a0f8-9570-4961-a9f4-5eeee2f797cf",
+    "phieuKhoId": "24bf6176-4f1f-4885-8888-a12238a69f73",
+    "sanphamId": "001bea64-6b9f-492e-9602-40a58f124843",
+    "soluong": "10",
+    "ghichu": "",
+    "createdAt": "2025-05-11T19:59:00.253Z",
+    "updatedAt": "2025-05-11T19:59:00.253Z"
+  },
+  {
+    "id": "64fc94d7-296a-443a-9b9e-7f5ab0b800bf",
+    "phieuKhoId": "db19c9a1-5d1b-48a7-ba7a-b23c4f48a954",
+    "sanphamId": "004685b6-2de0-48a0-b3e7-8d8f348ae215",
+    "soluong": "8",
+    "ghichu": "",
+    "createdAt": "2025-05-11T19:59:17.072Z",
+    "updatedAt": "2025-05-11T19:59:17.072Z"
+  },
+  {
+    "id": "39ac7ef1-e446-4060-a34e-191ade7e1d2e",
+    "phieuKhoId": "4bf2bc88-7a96-447f-8b76-d084dd244276",
+    "sanphamId": "004685b6-2de0-48a0-b3e7-8d8f348ae215",
+    "soluong": "1",
+    "ghichu": "abc",
+    "createdAt": "2025-05-12T04:09:04.126Z",
+    "updatedAt": "2025-05-12T04:09:04.126Z"
+  },
+  {
+    "id": "6f26ebec-b7c2-410a-99a3-e8f629f3e41e",
+    "phieuKhoId": "21aaf888-d99e-4f2e-806d-eff4df08c036",
+    "sanphamId": "001bea64-6b9f-492e-9602-40a58f124843",
+    "soluong": "10",
+    "ghichu": "",
+    "createdAt": "2025-05-12T04:32:09.981Z",
+    "updatedAt": "2025-05-12T04:32:09.981Z"
+  },
+  {
+    "id": "4b10d412-e3ed-44fb-9a45-b1b610be8a6b",
+    "phieuKhoId": "21aaf888-d99e-4f2e-806d-eff4df08c036",
+    "sanphamId": "0037ecad-c0ef-4aff-b210-619abe6484cc",
+    "soluong": "11",
+    "ghichu": "",
+    "createdAt": "2025-05-12T04:32:09.981Z",
+    "updatedAt": "2025-05-12T04:32:09.981Z"
+  },
+  {
+    "id": "9ffdafb1-bc34-49f7-a8c3-4d3f72807989",
+    "phieuKhoId": "21aaf888-d99e-4f2e-806d-eff4df08c036",
+    "sanphamId": "004685b6-2de0-48a0-b3e7-8d8f348ae215",
+    "soluong": "12",
+    "ghichu": "",
+    "createdAt": "2025-05-12T04:32:09.981Z",
+    "updatedAt": "2025-05-12T04:32:09.981Z"
+  },
+  {
+    "id": "032734d6-3568-43c4-849b-d41da7977e50",
+    "phieuKhoId": "fab998e5-c784-4d2f-a7e5-257bbc46dace",
+    "sanphamId": "032b0eb9-d453-4059-b1b4-10a4b87d9f7a",
+    "soluong": "20",
+    "ghichu": "",
+    "createdAt": "2025-05-12T04:34:16.267Z",
+    "updatedAt": "2025-05-12T04:34:16.267Z"
+  },
+  {
+    "id": "88036bec-4532-4f22-a14b-dcb85263c9be",
+    "phieuKhoId": "fab998e5-c784-4d2f-a7e5-257bbc46dace",
+    "sanphamId": "073fd63a-5dc5-4dce-a99b-0767bd0bcd54",
+    "soluong": "21",
+    "ghichu": "",
+    "createdAt": "2025-05-12T04:34:16.267Z",
+    "updatedAt": "2025-05-12T04:34:16.267Z"
+  },
+  {
+    "id": "a1dd35af-2771-4b58-a24d-824229e1153f",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "cc51d302-7170-4b9c-85c2-5ec747fa9d9b",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "786155d4-b88b-4b70-bc21-97e4c76cf493",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "b4157d65-54ca-4483-8d16-8f97627a18f3",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "10a8f37b-1660-49e2-9013-c216b08aaf47",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "459a317b-96ed-4f57-8c24-6d8437d11932",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "5d258a76-3481-4c53-bfdd-c27e1a36213f",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "85cae42f-c0de-4b43-9b85-b08920955b91",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "0842f445-dd98-4400-a6af-6ea4cbde4438",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "8537fc52-f95c-4dd1-be0e-2c3192b54f7c",
+    "soluong": "0.6",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "83f8fd38-2a32-4fb0-9c5d-04493200ec0a",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "883ae580-bfd7-418d-ae99-c0d31289dce3",
+    "soluong": "1.2",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "0633be22-9ee9-4248-9e77-1fdb902cd28b",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "c8615421-496d-42a7-8a94-2fce57c41307",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "c3b692ac-a0d5-4f3b-869a-fe6ecb0a1123",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "7ea5992e-7eec-4502-9e3f-41e3e9fa5424",
+    "soluong": "1.3",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "ef6a55c3-2fab-4e26-954f-0d04d1b83eb8",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "333bc748-179f-47a1-b8e9-0b655b6ef306",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "9a45824b-d035-4c7f-9359-74bd432bd4f3",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "e06209af-257a-4434-b274-f25efb1b0be9",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "7e949833-a808-4520-833a-3dca11408be7",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "2c7e6f3f-e9bf-486f-8025-3cc2bcf351dd",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "4560f83e-3c17-4a39-9004-b68e7c87e341",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "4cba84ba-ee09-4c47-86b4-78d4e24332a6",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "29378598-af94-4e7a-a109-bbd406463314",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "5bb75718-dd27-4d13-8ada-d6f090232b80",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "830fb887-5965-4f61-98e9-6c07f291af19",
+    "phieuKhoId": "9a786cd6-96ca-466e-8cf4-1be70460e75b",
+    "sanphamId": "8537fc52-f95c-4dd1-be0e-2c3192b54f7c",
+    "soluong": "2.2",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:40:53.258Z",
+    "updatedAt": "2025-05-12T07:40:53.258Z"
+  },
+  {
+    "id": "ce4b5078-3206-4992-90dd-afead4cc9f9c",
+    "phieuKhoId": "9a786cd6-96ca-466e-8cf4-1be70460e75b",
+    "sanphamId": "71f9cc29-88ec-4fb6-b505-052e56a98c34",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:40:53.258Z",
+    "updatedAt": "2025-05-12T07:40:53.258Z"
+  },
+  {
+    "id": "d719351a-5739-4084-a39b-b8e06be13154",
+    "phieuKhoId": "9a786cd6-96ca-466e-8cf4-1be70460e75b",
+    "sanphamId": "9b8d20fa-a932-47d4-92ce-68e726c1a43e",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:40:53.258Z",
+    "updatedAt": "2025-05-12T07:40:53.258Z"
+  },
+  {
+    "id": "3eb0440b-f264-433d-8fa4-c8f7f1151ebb",
+    "phieuKhoId": "9a786cd6-96ca-466e-8cf4-1be70460e75b",
+    "sanphamId": "18b1aa4b-f182-4bde-83f9-1f44ebafc725",
+    "soluong": "3.5",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:40:53.258Z",
+    "updatedAt": "2025-05-12T07:40:53.258Z"
+  },
+  {
+    "id": "f1eaeea0-0667-4cc6-9565-6cc06e677bec",
+    "phieuKhoId": "9a786cd6-96ca-466e-8cf4-1be70460e75b",
+    "sanphamId": "e6df7a2b-8aee-41ef-a1f4-a1a9aa7f7766",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:40:53.258Z",
+    "updatedAt": "2025-05-12T07:40:53.258Z"
+  },
+  {
+    "id": "fa9c1233-c6a1-4960-9fc2-00d4366cb452",
+    "phieuKhoId": "9a786cd6-96ca-466e-8cf4-1be70460e75b",
+    "sanphamId": "0f6bf142-9e29-4ab2-baa4-a48f43c97653",
+    "soluong": "0.6",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:40:53.258Z",
+    "updatedAt": "2025-05-12T07:40:53.258Z"
+  },
+  {
+    "id": "2daa5d6b-fd22-4ab9-bb69-550e4874c412",
+    "phieuKhoId": "9a786cd6-96ca-466e-8cf4-1be70460e75b",
+    "sanphamId": "2063576a-c6c1-4912-8b72-524478d4fa43",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:40:53.258Z",
+    "updatedAt": "2025-05-12T07:40:53.258Z"
+  },
+  {
+    "id": "3ff5bedd-4f5f-4815-97e7-048d09c540ff",
+    "phieuKhoId": "9a786cd6-96ca-466e-8cf4-1be70460e75b",
+    "sanphamId": "66d49d1b-e628-42e2-af56-5e9fcc40c775",
+    "soluong": "3",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:40:53.258Z",
+    "updatedAt": "2025-05-12T07:40:53.258Z"
+  },
+  {
+    "id": "b4be3710-2c54-45d3-b34c-68dfbfd11dbc",
+    "phieuKhoId": "9a786cd6-96ca-466e-8cf4-1be70460e75b",
+    "sanphamId": "4239188a-c89f-4a89-875b-309601979f38",
+    "soluong": "0.4",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:40:53.258Z",
+    "updatedAt": "2025-05-12T07:40:53.258Z"
+  },
+  {
+    "id": "8db0d995-3199-4f8c-8af6-85178e1b068b",
+    "phieuKhoId": "9a786cd6-96ca-466e-8cf4-1be70460e75b",
+    "sanphamId": "0278d7f6-cd13-49b9-97c7-7c2137963aa6",
+    "soluong": "0.4",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:40:53.258Z",
+    "updatedAt": "2025-05-12T07:40:53.258Z"
+  },
+  {
+    "id": "115b8b5c-f60a-482e-bcf2-d5039840c67b",
+    "phieuKhoId": "9a786cd6-96ca-466e-8cf4-1be70460e75b",
+    "sanphamId": "21c77dda-d916-45d6-8f3a-f95580788c9d",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:40:53.258Z",
+    "updatedAt": "2025-05-12T07:40:53.258Z"
+  },
+  {
+    "id": "9293fdf8-c9e8-4255-ab36-8e09ed4e1b77",
+    "phieuKhoId": "9a786cd6-96ca-466e-8cf4-1be70460e75b",
+    "sanphamId": "426a1474-3869-4a89-98bd-38c5e4ede09a",
+    "soluong": "3",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:40:53.258Z",
+    "updatedAt": "2025-05-12T07:40:53.258Z"
+  },
+  {
+    "id": "ea897033-7399-4269-8c4e-0da5b446e4ca",
+    "phieuKhoId": "9a786cd6-96ca-466e-8cf4-1be70460e75b",
+    "sanphamId": "4b869cbc-e148-4b62-b89d-8ff1d0c6f613",
+    "soluong": "0.4",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:40:53.258Z",
+    "updatedAt": "2025-05-12T07:40:53.258Z"
+  },
+  {
+    "id": "6231b495-cb40-427b-a8a9-01539886811a",
+    "phieuKhoId": "884b6536-c875-4293-9d06-70fe44fd8f74",
+    "sanphamId": "073fd63a-5dc5-4dce-a99b-0767bd0bcd54",
+    "soluong": "117",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:45:16.865Z",
+    "updatedAt": "2025-05-12T07:45:16.865Z"
+  },
+  {
+    "id": "460e7b64-3e24-4ca3-b2a6-5d6dff5c25c4",
+    "phieuKhoId": "884b6536-c875-4293-9d06-70fe44fd8f74",
+    "sanphamId": "2a1e3054-0d48-4c10-b9d4-77e595674395",
+    "soluong": "25",
+    "ghichu": "",
+    "createdAt": "2025-05-12T07:45:16.865Z",
+    "updatedAt": "2025-05-12T07:45:16.865Z"
+  },
+  {
+    "id": "a69c3d0d-308c-48ad-832e-91923901c3eb",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "18b1aa4b-f182-4bde-83f9-1f44ebafc725",
+    "soluong": "4.1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "50e26ba5-f796-4b9b-ad49-d20da32737ce",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "5047bd5c-121a-4d8a-b56d-b1876c5b48e6",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "5c79f34a-a532-4fe5-b323-dcf97a8a9ad0",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "15cdf5c0-c249-4fa2-b425-9d50934c52b9",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "9a0c5664-2739-4194-83a8-e75a5bcb3348",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "5aa7f1d1-5709-4c51-bd38-4b77b55cec76",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "02443c76-1ba1-4e77-9e6e-72745b9949b2",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "0f6bf142-9e29-4ab2-baa4-a48f43c97653",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "967104e5-aa8d-4fcf-abd0-b22e8a6aa6a5",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "4a4439a9-1492-4f98-a3a0-9e414921f242",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "af79f742-92a4-48de-932a-1e69d2c448a6",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "9dc13fce-1d56-40b0-89f8-b6ce2bb2f8e6",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "b5d2144b-b386-4dc7-bd76-533a59fb5203",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "0b1403a5-5d0f-41c8-99f5-d3b6757cd5b6",
+    "soluong": "7",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "78776a50-7c88-48e6-bd7c-8373b49dc694",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "5413aa83-b95f-4b71-97c8-7fb42843c5df",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "981f8f51-4c2e-441c-b9ac-ce7e2085209e",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "80061ed9-8152-44ec-95f0-978accb974b0",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "48921568-e55f-4827-a8c1-f96df69b65d4",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "2063576a-c6c1-4912-8b72-524478d4fa43",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "edb45aab-0b1a-40fb-977d-88d823ba6bd6",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "15de146c-f971-4b9e-93a7-f8b04977ce6c",
+    "soluong": "3",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "57f2540a-c635-4eb8-b1fa-506d9a376ccc",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "32b553bd-348b-4e9b-b541-a5918891fec4",
+    "soluong": "0.3",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "eab379b8-a564-4a6d-bcc1-427159284c7e",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "66d49d1b-e628-42e2-af56-5e9fcc40c775",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "1efe1bbe-97b3-4f98-b983-62fa3bb678c1",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "388a1c07-4bc9-433b-bca8-9d129e77f35e",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "1ed1392e-b4fc-4379-b2fc-56c25e4f077b",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "4239188a-c89f-4a89-875b-309601979f38",
+    "soluong": "0.3",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "eb279789-6f91-4d09-b076-16c2c4598e25",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "0278d7f6-cd13-49b9-97c7-7c2137963aa6",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "dc5aefba-2a11-440e-9316-7ec6308183bc",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "cf824997-42ea-44eb-baf8-4ba74fd772cf",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "277117f5-baee-4715-b837-81e0a2201bc5",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "739d44c2-f77c-4f38-861e-7cc2003b5165",
+    "soluong": "0.2",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "86714981-961f-4f0f-9336-8cb3ef1936a4",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "b53bf201-1562-46f6-b8ac-b667590abca8",
+    "soluong": "0.1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "f6891f63-652c-4528-b788-427085a86164",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "bd4b25e5-a1bf-40d0-9af6-50d397bbe20f",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "87fa1238-ca5f-4f03-a8a5-a4c8cb81ff06",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "cd75e449-ee4e-44dc-b7a7-d2594270a786",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "9833fac2-83d3-48ad-8422-0775367c38db",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "7f7a3a99-bb05-484b-ba3c-84a41f228cde",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "f2a0c462-d723-48f3-978d-7a6effc22832",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "426a1474-3869-4a89-98bd-38c5e4ede09a",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "d24e442c-ac90-4b16-a314-2923d4372e67",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "f9a8f041-53b7-4c9f-a1b2-956ab3a39f23",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "ee65f234-4100-4695-a2b0-f12e8b559e98",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "95a4eb3a-24b9-4dbd-a1ac-6738e4fbc275",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "966fcda0-6d6b-4b49-b05a-ce1af06ab3cd",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "4b7bf998-30e8-4fbd-8d88-b11f99c416f4",
+    "soluong": "3",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "a60641fc-94ed-4743-98dc-d9d149751331",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "de0f2739-4c4a-4f7d-b0eb-16f500b02169",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "98c8c9e7-61c2-45e4-92a4-3992094f74bb",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "0d6f1151-caa1-4b04-82d1-efa4dc276501",
+    "soluong": "3",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "8053b0a9-5e9d-4093-a6eb-c4bb8de35ae1",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "4afc75cd-6ee1-4dea-ab80-1ec5d264b310",
+    "soluong": "5",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "1140ad91-1a7e-4a03-8690-855d44044344",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "a3991692-2ac2-49a4-b696-5541c987e88d",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "cc191903-8742-4798-991b-0c28bf5c4c30",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "94706a77-876d-4501-be1e-e4d15ff5f50b",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "1b43a948-0de9-4918-ade3-95cd6600f1d0",
+    "phieuKhoId": "e31e0252-1375-49a0-ac05-72b484f89597",
+    "sanphamId": "15e06cb8-92ff-4ce9-949f-192452430fba",
+    "soluong": "3.3",
+    "ghichu": "",
+    "createdAt": "2025-05-14T18:40:36.679Z",
+    "updatedAt": "2025-05-14T18:40:36.679Z"
+  },
+  {
+    "id": "d9039042-99cd-4c01-be11-13805fc641ed",
+    "phieuKhoId": "e1da0349-e03b-4836-b496-711bf5c65245",
+    "sanphamId": "18b1aa4b-f182-4bde-83f9-1f44ebafc725",
+    "soluong": "2.6",
+    "ghichu": "",
+    "createdAt": "2025-05-15T02:49:34.864Z",
+    "updatedAt": "2025-05-15T02:49:34.864Z"
+  },
+  {
+    "id": "e8114291-35fe-484b-81d8-32b51334a9cb",
+    "phieuKhoId": "e1da0349-e03b-4836-b496-711bf5c65245",
+    "sanphamId": "15de146c-f971-4b9e-93a7-f8b04977ce6c",
+    "soluong": "0.2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T02:49:34.864Z",
+    "updatedAt": "2025-05-15T02:49:34.864Z"
+  },
+  {
+    "id": "e49d41ff-0cdf-42f7-ac8c-3d808c534e63",
+    "phieuKhoId": "e1da0349-e03b-4836-b496-711bf5c65245",
+    "sanphamId": "ace68a44-1695-4c34-ac49-81f35eea4ff0",
+    "soluong": "3.1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T02:49:34.864Z",
+    "updatedAt": "2025-05-15T02:49:34.864Z"
+  },
+  {
+    "id": "d8206e0a-f9e3-4811-b966-5fc9c626d581",
+    "phieuKhoId": "e1da0349-e03b-4836-b496-711bf5c65245",
+    "sanphamId": "32b553bd-348b-4e9b-b541-a5918891fec4",
+    "soluong": "0.2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T02:49:34.864Z",
+    "updatedAt": "2025-05-15T02:49:34.864Z"
+  },
+  {
+    "id": "1fd72c7a-894c-44f8-8ac2-b1c00c964247",
+    "phieuKhoId": "e1da0349-e03b-4836-b496-711bf5c65245",
+    "sanphamId": "77147b1d-afd7-4ca1-b539-ec8b07d4bdf3",
+    "soluong": "3.3",
+    "ghichu": "",
+    "createdAt": "2025-05-15T02:49:34.864Z",
+    "updatedAt": "2025-05-15T02:49:34.864Z"
+  },
+  {
+    "id": "29e256fc-9cb2-47df-aaad-a642f6b47032",
+    "phieuKhoId": "e1da0349-e03b-4836-b496-711bf5c65245",
+    "sanphamId": "53c78d06-944c-4f80-afb0-3965c6db3e7d",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T02:49:34.864Z",
+    "updatedAt": "2025-05-15T02:49:34.864Z"
+  },
+  {
+    "id": "ce60f28d-0f84-4677-b69e-300df464bbcb",
+    "phieuKhoId": "e1da0349-e03b-4836-b496-711bf5c65245",
+    "sanphamId": "088fa873-e190-4f70-8f88-6b118285b2ca",
+    "soluong": "0.2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T02:49:34.864Z",
+    "updatedAt": "2025-05-15T02:49:34.864Z"
+  },
+  {
+    "id": "9ef3057f-b4c4-4301-9ea5-b0db80f33149",
+    "phieuKhoId": "e1da0349-e03b-4836-b496-711bf5c65245",
+    "sanphamId": "9f41c662-881e-4a32-94b9-a29673c94f22",
+    "soluong": "3",
+    "ghichu": "",
+    "createdAt": "2025-05-15T02:49:34.864Z",
+    "updatedAt": "2025-05-15T02:49:34.864Z"
+  },
+  {
+    "id": "359469e0-d88d-4d2e-9bc7-4cd7b97c1924",
+    "phieuKhoId": "e1da0349-e03b-4836-b496-711bf5c65245",
+    "sanphamId": "ffacaf5c-51fb-45eb-945d-f1c0ae2a6fc7",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T02:49:34.864Z",
+    "updatedAt": "2025-05-15T02:49:34.864Z"
+  },
+  {
+    "id": "4208d442-7ea0-49df-905a-9aea94bdc2b8",
+    "phieuKhoId": "4e68444a-bf88-448e-a6d0-1c80f781091c",
+    "sanphamId": "133b8806-6548-4924-816a-f2e748df78d9",
+    "soluong": "1.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T02:59:46.317Z",
+    "updatedAt": "2025-05-15T02:59:46.317Z"
+  },
+  {
+    "id": "291695f6-223c-4c50-942a-f90881b1cdd3",
+    "phieuKhoId": "4e68444a-bf88-448e-a6d0-1c80f781091c",
+    "sanphamId": "3b57d36a-b6a6-4608-86fd-08cfc123f424",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T02:59:46.317Z",
+    "updatedAt": "2025-05-15T02:59:46.317Z"
+  },
+  {
+    "id": "471136b7-6173-44de-ace8-18cf44a2ae6a",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "69760f32-32e6-4feb-b3d6-4f1d9635f6e5",
+    "soluong": "1.4",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "5c300b7b-016a-49dc-bb7e-5115c5b88b0e",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "883ae580-bfd7-418d-ae99-c0d31289dce3",
+    "soluong": "3.4",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "c0c13eee-4207-4d1e-8ac2-cc9992a989a0",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "38976d10-f00c-48d3-b723-86f4df11bc71",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "da8ea95e-372d-4a07-98b5-bfd59f9f903b",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "4cba84ba-ee09-4c47-86b4-78d4e24332a6",
+    "soluong": "3.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "b753ba1d-97cd-4993-84bb-1f558e48cc53",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "5bb75718-dd27-4d13-8ada-d6f090232b80",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "0ae7cf67-d3b4-45af-a847-b8f4d1f64d51",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "18b1aa4b-f182-4bde-83f9-1f44ebafc725",
+    "soluong": "5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "e4d5edab-f246-4aae-afe6-0d3d3895a6ff",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "5413aa83-b95f-4b71-97c8-7fb42843c5df",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "dfac9f28-7a98-4120-9ccb-5c3f92c4bd1f",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "0aeb6731-fd8d-4188-b83b-4b11c5a1f1e6",
+    "soluong": "40",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "27ae3eba-b836-4716-a70f-06b58fd76e55",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "37a4f151-7022-49d1-bf8f-c5e3417d1845",
+    "soluong": "6",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "81a8bc50-1f95-4b2a-bb69-d7eac25543dc",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "2063576a-c6c1-4912-8b72-524478d4fa43",
+    "soluong": "2.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "1848e8c9-4aaf-4d3d-94d1-cafaf2a9d913",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "71179229-e9f2-4659-afdf-8502d18fe0a4",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "39079bbc-a8b0-4c34-bc5a-33715f5d83e8",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "388a1c07-4bc9-433b-bca8-9d129e77f35e",
+    "soluong": "1.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "387572d5-6bed-4ab9-b469-32bac7b34972",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "8baa40a0-0ac4-40ff-9b28-870f474be3d5",
+    "soluong": "1.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "65bcdc93-71ce-4353-86f2-872c0d9dd712",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "4239188a-c89f-4a89-875b-309601979f38",
+    "soluong": "0.7",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "b398948d-09a1-4405-8543-6d4b3cff65fa",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "25ff5d60-1bb0-488e-a1aa-7900c1ac61a6",
+    "soluong": "0.1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "947af067-774e-43c7-b843-ba974d289af4",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "84a459a1-6dfc-405f-b8d9-bc79e1eabece",
+    "soluong": "11.7",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "76263efd-e338-4b1b-800e-e00b013355de",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "5d5001ea-7458-4eed-bc7b-e8637595fd83",
+    "soluong": "1.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "dfd739b2-a238-400e-b9c4-41dd19fdf616",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "e652c8da-2b6e-48de-a8a4-2cf36d5c262b",
+    "soluong": "0.6",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "ac5cf636-0df1-4c43-8d0d-09c61c150f7c",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "3b2cc282-6f8b-4395-bf72-52390786eac9",
+    "soluong": "1.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "91de6c25-14d0-4c34-a3eb-bf463ad0e15c",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "2ba4b3da-3d88-4bfe-91a4-52cade0bcb42",
+    "soluong": "6.2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "a4c2bd39-d275-4f03-8baa-ec70c7502221",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "004685b6-2de0-48a0-b3e7-8d8f348ae215",
+    "soluong": "5.2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "103cc151-f260-4676-9b09-5eed7a29ff26",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "d47ae15e-e403-4a12-87ca-8a9bf526568e",
+    "soluong": "2.1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "5c9490cc-5443-4d19-a014-904f76894cf5",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "78434add-7e9a-4143-bb90-dbd2e366dbd4",
+    "soluong": "0.3",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "97313045-7a82-49f0-9b9d-93b48af9f20a",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "f6ea0f46-c69e-45f9-a601-48a0060916cf",
+    "soluong": "3",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "1979183f-8eb4-4b9e-9d19-8d8b90fa911b",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "5dbe981c-88f4-4198-bfaf-d3ce81fb1668",
+    "soluong": "0.7",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "1826ca65-eee2-4135-9d5b-2591a4900b27",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "cd75e449-ee4e-44dc-b7a7-d2594270a786",
+    "soluong": "3.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "a4f183b4-219a-4cfa-9f6b-e1f80af500f7",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "8579e05d-4010-4158-9284-e8c2eb72a184",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "99118a72-9fea-4c9c-832c-679c9ad05e7a",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "34ec62d4-7285-4fac-99cb-ae5e6085f2dd",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "260fd964-3d3e-4ff5-8a27-85c3b5e655e1",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "e69ba918-1fac-4338-905d-780aa263d4ce",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "084dc65e-5271-4c55-9b55-6feafb52bff1",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "0c8d5e6b-57ff-411f-b0af-dc719db6127c",
+    "soluong": "3",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "874b8bee-cc68-42fa-a90f-6d8d533eb5f0",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "459a317b-96ed-4f57-8c24-6d8437d11932",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "c0b19a2a-537f-43c7-8249-2f37fb411e0d",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "ad782a31-09bb-4a5e-a6e3-b1a435eed4fb",
+    "soluong": "0.3",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "1113eec8-b97f-4031-a1dd-96f1d803986b",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "454485cf-8215-4111-b079-180c4b1e907e",
+    "soluong": "0.3",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "d67773a9-996a-4ca3-89d5-3aef00df7b67",
+    "phieuKhoId": "61def377-d3aa-49fc-927b-83098ee4a637",
+    "sanphamId": "b4157d65-54ca-4483-8d16-8f97627a18f3",
+    "soluong": "20",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:02:22.860Z",
+    "updatedAt": "2025-05-15T03:02:22.860Z"
+  },
+  {
+    "id": "51e5d760-7cf9-4b1b-9b25-13915a9e548c",
+    "phieuKhoId": "c8341e65-b4ff-42b8-98d8-9c9f0de64007",
+    "sanphamId": "25dc3475-2da1-4815-9f50-da084fdb2fdc",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:10:12.418Z",
+    "updatedAt": "2025-05-15T03:10:12.418Z"
+  },
+  {
+    "id": "cea6ec4d-0c4e-4031-a7ff-209f1e842396",
+    "phieuKhoId": "c8341e65-b4ff-42b8-98d8-9c9f0de64007",
+    "sanphamId": "584b2851-da8b-4e2b-b185-53e4f6a8711e",
+    "soluong": "0.6",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:10:12.418Z",
+    "updatedAt": "2025-05-15T03:10:12.418Z"
+  },
+  {
+    "id": "22d4ff71-344b-4635-a68c-9ce1a9c73ebf",
+    "phieuKhoId": "c8341e65-b4ff-42b8-98d8-9c9f0de64007",
+    "sanphamId": "3ff182fc-9685-4223-83aa-43849a0f7daa",
+    "soluong": "0.65",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:10:12.418Z",
+    "updatedAt": "2025-05-15T03:10:12.418Z"
+  },
+  {
+    "id": "9d0d6625-5647-461f-8bc8-da680610fcd0",
+    "phieuKhoId": "c8341e65-b4ff-42b8-98d8-9c9f0de64007",
+    "sanphamId": "575c739e-20e9-4483-8cfd-b1b402ef1499",
+    "soluong": "15.3",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:10:12.418Z",
+    "updatedAt": "2025-05-15T03:10:12.418Z"
+  },
+  {
+    "id": "8e366f95-75dd-4a51-b3cb-082e7862852d",
+    "phieuKhoId": "c8341e65-b4ff-42b8-98d8-9c9f0de64007",
+    "sanphamId": "b7a3bdca-f1d7-4396-a390-86e88d037c4d",
+    "soluong": "0.2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:10:12.418Z",
+    "updatedAt": "2025-05-15T03:10:12.418Z"
+  },
+  {
+    "id": "00db05fa-1305-4e29-98cf-a6990796d45b",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "d9c859d2-f8a1-4785-97e7-fd1d2d0e706a",
+    "soluong": "2.8",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "d59c57e6-ac07-4ebe-a94d-912153c5f13a",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "9a518f10-6cfb-4b70-8f4f-5f0613df35ca",
+    "soluong": "2.2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "4e4f144b-882b-4cf3-8829-ee3d6b4f4e02",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "9dab77e0-b8d6-4886-b941-7f3b01083854",
+    "soluong": "1.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "d9cba075-132c-40ab-9d16-8b426494a8df",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "4cba84ba-ee09-4c47-86b4-78d4e24332a6",
+    "soluong": "1.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "e656e86b-bdbf-43d1-bd7b-b723e2576982",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "15cdf5c0-c249-4fa2-b425-9d50934c52b9",
+    "soluong": "6.4",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "b8546a8b-8853-4137-8679-8b876ed6ad21",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "9dc13fce-1d56-40b0-89f8-b6ce2bb2f8e6",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "f58848ee-1f09-425a-9cc2-53443649c0fd",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "8d831210-bf5b-4e1c-920f-d7f27c850472",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "b65252e2-677e-4814-851d-e36f7f8b5185",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "0aeb6731-fd8d-4188-b83b-4b11c5a1f1e6",
+    "soluong": "20",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "3dd69471-ef12-4293-8b75-901bc8711395",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "575c739e-20e9-4483-8cfd-b1b402ef1499",
+    "soluong": "6.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "c178fabf-1e25-46cb-998f-ea826f9bb2ab",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "32b553bd-348b-4e9b-b541-a5918891fec4",
+    "soluong": "0.8",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "1a8cd63c-9732-4a46-b026-d0dd66657839",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "b9321f99-6975-4892-9ab7-84d3eaf97551",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "00320804-7252-4d4b-a8bb-4e14938efecd",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "21c77dda-d916-45d6-8f3a-f95580788c9d",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "daa5a5dc-5fbb-4467-b74a-cc8534aacf01",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "2ba4b3da-3d88-4bfe-91a4-52cade0bcb42",
+    "soluong": "0.8",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "427f55d5-4f79-439e-994b-730df0336b44",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "088fa873-e190-4f70-8f88-6b118285b2ca",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "c2ca0d08-3e9d-4913-81b6-48efe995fb3d",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "61c0bdbb-f652-4fcf-853c-476e1e1849d5",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "21107663-4cca-41b2-bfac-77655f48335f",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "739d44c2-f77c-4f38-861e-7cc2003b5165",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "a9e8c996-f058-480e-ad3a-3b96a196a99e",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "731340c7-1b31-4ace-a815-ebfcef43401e",
+    "soluong": "1.7",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "e484091c-af42-4082-bdfd-054b883c6741",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "0c8d5e6b-57ff-411f-b0af-dc719db6127c",
+    "soluong": "4",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "30b7b4fd-85a3-48e0-b940-6fb5669e0e19",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "83b533df-062b-4f8b-ae91-e2388c538fea",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "d6f7e36c-8787-4034-8e08-6d644d4cd50e",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "b4157d65-54ca-4483-8d16-8f97627a18f3",
+    "soluong": "2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "f886bf28-5f3c-4ebc-95d7-6e288d6afb45",
+    "phieuKhoId": "b33ef0c3-e1d1-496a-a94c-e7b210eee345",
+    "sanphamId": "82a25445-7e9e-4ba3-8c47-c2f81a4ba7e9",
+    "soluong": "1.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:13:50.891Z",
+    "updatedAt": "2025-05-15T03:13:50.891Z"
+  },
+  {
+    "id": "f0134542-c295-41df-a0ee-26db254cf1cb",
+    "phieuKhoId": "fe570925-8377-41de-acde-8b5bbce92563",
+    "sanphamId": "19ce292a-f97a-4fc9-8bba-5ff92d570ff6",
+    "soluong": "12.2",
+    "ghichu": "Thiếu 12.20",
+    "createdAt": "2025-05-15T06:42:09.273Z",
+    "updatedAt": "2025-05-15T06:42:09.273Z"
+  },
+  {
+    "id": "35b9ca0c-bf2b-480f-83dd-4bd9038622ba",
+    "phieuKhoId": "f427d603-e2e1-4985-a97d-9eac93618536",
+    "sanphamId": "19ce292a-f97a-4fc9-8bba-5ff92d570ff6",
+    "soluong": "12.2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T06:31:46.072Z",
+    "updatedAt": "2025-05-15T06:31:46.072Z"
+  },
+  {
+    "id": "fa65ef07-4451-45fc-a797-fcf160f37d78",
+    "phieuKhoId": "f427d603-e2e1-4985-a97d-9eac93618536",
+    "sanphamId": "372f0bb0-0a8d-4154-92f6-d9745a36676c",
+    "soluong": "0",
+    "ghichu": "",
+    "createdAt": "2025-05-15T06:31:46.072Z",
+    "updatedAt": "2025-05-15T06:31:46.072Z"
+  },
+  {
+    "id": "9b030f0a-0861-4b10-9fab-4c8849948610",
+    "phieuKhoId": "f427d603-e2e1-4985-a97d-9eac93618536",
+    "sanphamId": "a844c32b-b38e-4377-b7ac-bb8748fbd17b",
+    "soluong": "0",
+    "ghichu": "",
+    "createdAt": "2025-05-15T06:31:46.072Z",
+    "updatedAt": "2025-05-15T06:31:46.072Z"
+  },
+  {
+    "id": "4b0ac2b8-9c16-46f7-8be6-b239385909e4",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "fff4e192-4fad-49e4-8c7d-d58f56487c56",
+    "soluong": "1.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "3158abf7-6859-4247-bcb3-cffa8300e27f",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "29d5bb44-1d7e-41af-9264-13c0fdf5047b",
+    "soluong": "7",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "0d10ea3a-6b63-4ea1-b18e-902f49686017",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "c8615421-496d-42a7-8a94-2fce57c41307",
+    "soluong": "3.1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "a6f5e341-c89b-4c1c-a518-c54d72b6162b",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "9aa86d5d-e51f-4d7c-a6b9-26c218e7f92e",
+    "soluong": "2.8",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "fe06e29c-2f49-4b50-a3e4-83e2b9de6499",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "5413aa83-b95f-4b71-97c8-7fb42843c5df",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "c53e86da-fc4e-4a9f-b1c7-1eb0002cfd51",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "32b553bd-348b-4e9b-b541-a5918891fec4",
+    "soluong": "1.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "f0fb0e79-a5c9-4894-9308-6d98caae2f97",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "71179229-e9f2-4659-afdf-8502d18fe0a4",
+    "soluong": "0.2",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "9865e26b-0d43-4ae7-99de-f2649a7f81dd",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "004685b6-2de0-48a0-b3e7-8d8f348ae215",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "82787645-80ab-4e88-951d-bad4916f4b75",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "701992f7-bcae-498e-8ef7-2f3d6cb67019",
+    "soluong": "0.4",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "41d629f8-9b79-4c61-9c7d-b253fead063c",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "d47ae15e-e403-4a12-87ca-8a9bf526568e",
+    "soluong": "1",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "9037b177-0d49-464f-bbb2-8a47e63f9b40",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "739d44c2-f77c-4f38-861e-7cc2003b5165",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "f06f5fa8-5511-4a8e-b3ae-434c203dc69b",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "01189c93-a579-48b5-8a7a-208fb7225a58",
+    "soluong": "0.3",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "40e4d317-d24f-41f0-9435-6b47e162e8f4",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "9f41c662-881e-4a32-94b9-a29673c94f22",
+    "soluong": "0.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "a8f1deea-a2c5-40aa-8d12-d4fa9acdec62",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "459a317b-96ed-4f57-8c24-6d8437d11932",
+    "soluong": "1.5",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "914170ac-cb7b-4dad-8703-f27b1c6500f6",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "073fd63a-5dc5-4dce-a99b-0767bd0bcd54",
+    "soluong": "20",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "eb94f805-3536-4fe1-b70a-10472f127548",
+    "phieuKhoId": "94cbc6c4-e3dd-40f9-8042-28a8e8af07b3",
+    "sanphamId": "696ea338-af55-494b-a0ff-baa7746e4def",
+    "soluong": "3.7",
+    "ghichu": "",
+    "createdAt": "2025-05-15T03:12:43.389Z",
+    "updatedAt": "2025-05-15T03:12:43.389Z"
+  },
+  {
+    "id": "85ff1737-9b7c-42d1-9e90-3bc76d8d2a59",
+    "phieuKhoId": "f427d603-e2e1-4985-a97d-9eac93618536",
+    "sanphamId": "e6df7a2b-8aee-41ef-a1f4-a1a9aa7f7766",
+    "soluong": "0",
+    "ghichu": "",
+    "createdAt": "2025-05-15T06:31:46.072Z",
+    "updatedAt": "2025-05-15T06:31:46.072Z"
+  },
+  {
+    "id": "6952d9b4-da40-4a79-8092-24472f36e53e",
+    "phieuKhoId": "f427d603-e2e1-4985-a97d-9eac93618536",
+    "sanphamId": "5ee406cb-300c-4367-ad47-a2e20abd6d06",
+    "soluong": "0",
+    "ghichu": "",
+    "createdAt": "2025-05-15T06:31:46.072Z",
+    "updatedAt": "2025-05-15T06:31:46.072Z"
+  },
+  {
+    "id": "cbe2432e-4960-4772-abf9-4ad6df65d736",
+    "phieuKhoId": "f427d603-e2e1-4985-a97d-9eac93618536",
+    "sanphamId": "4afc75cd-6ee1-4dea-ab80-1ec5d264b310",
+    "soluong": "0",
+    "ghichu": "",
+    "createdAt": "2025-05-15T06:31:46.072Z",
+    "updatedAt": "2025-05-15T06:31:46.072Z"
+  },
+  {
+    "id": "34d1e7df-f8c0-42b4-b845-db7d458bfc73",
+    "phieuKhoId": "f427d603-e2e1-4985-a97d-9eac93618536",
+    "sanphamId": "9b8d20fa-a932-47d4-92ce-68e726c1a43e",
+    "soluong": "0",
+    "ghichu": "",
+    "createdAt": "2025-05-15T06:31:46.072Z",
+    "updatedAt": "2025-05-15T06:31:46.072Z"
+  },
+  {
+    "id": "64b71660-0c68-4de1-b3e6-a0fc7e406408",
+    "phieuKhoId": "f427d603-e2e1-4985-a97d-9eac93618536",
+    "sanphamId": "3f7a3f5b-8926-417d-bffa-5150b8bdf922",
+    "soluong": "0",
+    "ghichu": "",
+    "createdAt": "2025-05-15T06:31:46.072Z",
+    "updatedAt": "2025-05-15T06:31:46.072Z"
+  },
+  {
+    "id": "52f7de54-afd8-4122-b6d1-a198bede8dab",
+    "phieuKhoId": "f427d603-e2e1-4985-a97d-9eac93618536",
+    "sanphamId": "61af2974-cc38-4c5b-a372-cecf80de5024",
+    "soluong": "0",
+    "ghichu": "",
+    "createdAt": "2025-05-15T06:31:46.072Z",
+    "updatedAt": "2025-05-15T06:31:46.072Z"
+  },
+  {
+    "id": "4e562116-62bd-4584-99ab-938ac86f908f",
+    "phieuKhoId": "f427d603-e2e1-4985-a97d-9eac93618536",
+    "sanphamId": "8e17dfe3-9664-4bbc-bf02-722406d457f2",
+    "soluong": "0",
+    "ghichu": "",
+    "createdAt": "2025-05-15T06:31:46.072Z",
+    "updatedAt": "2025-05-15T06:31:46.072Z"
+  }
+]

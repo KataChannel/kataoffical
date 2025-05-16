@@ -1,6 +1,53 @@
 import moment from 'moment';
 // import * as XLSX from 'xlsx';
-import * as XLSX from 'xlsx-js-style';   
+import * as XLSX from 'xlsx-js-style'; 
+
+
+export function writeExcelFileSheets(
+  sheetsData: {
+    [sheetName: string]: {
+      data: any[];
+      headers?: string[];
+      mapping?: { [key: string]: string };
+    };
+  },
+  title: string
+): void {
+  // Tạo workbook mới
+  const workbook: XLSX.WorkBook = { Sheets: {}, SheetNames: [] };
+
+  // Duyệt qua mỗi sheet được định nghĩa trong sheetsData
+  Object.keys(sheetsData).forEach(sheetName => {
+    let { data, headers = [], mapping = {} } = sheetsData[sheetName];
+    // Nếu có headers và mapping thì thực hiện chuyển đổi dữ liệu
+    const finalData = headers.length > 0 && Object.keys(mapping).length > 0
+      ? data.map((item: any) => {
+          let newItem: { [key: string]: any } = {};
+          headers.forEach((headerKey: string) => {
+            // Tìm key tương ứng trong mapping
+            const dataKey = Object.keys(mapping).find(key => mapping[key] === headerKey);
+            newItem[headerKey] = dataKey ? item[dataKey] || null : null;
+          });
+          return newItem;
+        })
+      : data;
+    // Tạo worksheet từ finalData
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(finalData);
+    workbook.SheetNames.push(sheetName);
+    workbook.Sheets[sheetName] = worksheet;
+  });
+
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array',
+  });
+  saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
+}
+
+
+
+
+
 export function writeExcelFile(
   data: any,
   title: string,
@@ -27,7 +74,6 @@ export function writeExcelFile(
     bookType: 'xlsx',
     type: 'array',
   });
-
   saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
 }
 
@@ -247,4 +293,13 @@ export function readExcelFileNoWorker(event: any, sheetName?: string): Promise<a
     reader.onerror = (err) => reject(err);
     reader.readAsArrayBuffer(file);
   });
+}
+
+
+export function excelSerialDateToJSDate(serial: any) {
+  const excelEpochOffset = 25569;
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+  const daysSinceUnixEpoch = serial - excelEpochOffset;
+  const utcMilliseconds = daysSinceUnixEpoch * millisecondsPerDay;
+  return new Date(utcMilliseconds);
 }
