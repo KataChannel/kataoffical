@@ -92,7 +92,6 @@ let MenuService = class MenuService {
             include: { children: true },
             orderBy: { order: 'asc' },
         });
-        console.log('menu', menus);
         const filteredMenus = menus.filter(menu => {
             const slug = menu.slug;
             const permission = `${slug?.split('/').pop()}.view`;

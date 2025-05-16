@@ -38,12 +38,18 @@ let HoadonService = class HoadonService {
     }
     async create(data) {
         try {
+            const { id, ...newData } = data;
+            if (newData.khdon !== undefined && newData.khdon !== null && typeof newData.khdon !== 'string') {
+                newData.khdon = newData.khdon.toString();
+            }
+            if (newData.tgtkcthue !== undefined && newData.tgtkcthue !== null && typeof newData.tgtkcthue !== 'string') {
+                newData.tgtkcthue = newData.tgtkcthue.toString();
+            }
             const created = await this.prisma.hoadon.create({
                 data: {
-                    ...data,
+                    ...newData,
                 },
             });
-            this._SocketGateway.sendUpdate('donhang');
             return created;
         }
         catch (error) {

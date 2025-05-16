@@ -79,8 +79,15 @@
   
   <mat-form-field appearance="outline" subscriptSizing="dynamic">
     <mat-label>Loại Hóa Đơn</mat-label>
-    <input matInput [(ngModel)]="Detail.type"  [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Loại Hóa Đơn" />
-  </mat-form-field> 
+    <mat-select [(ngModel)]="Detail.type" [ngModelOptions]="{ standalone: true }">
+      <mat-option value="banra">Ban ra</mat-option>
+      <mat-option value="muavao">Mua vào</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+
+
+
   <mat-form-field appearance="outline" subscriptSizing="dynamic">
     <mat-label>Tháng</mat-label>
    <input type="number" matInput [(ngModel)]="Detail.thang"  [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Tháng" />

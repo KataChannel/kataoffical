@@ -2,19 +2,24 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
   import { Router } from '@angular/router';
   import { environment } from '../../../environments/environment.development';
   import { StorageService } from '../../shared/utils/storage.service';
-  import { io } from 'socket.io-client';
   import { openDB } from 'idb';
   import { ErrorLogService } from '../../shared/services/errorlog.service';
   import { MatSnackBar } from '@angular/material/snack-bar';
+import { SharedSocketService } from '../../shared/services/sharedsocket.service';
   @Injectable({
     providedIn: 'root'
   })
   export class BaivietService {
+    private socket: any;
     constructor(
       private _StorageService: StorageService,
       private router: Router,
       private _ErrorLogService: ErrorLogService,
-    ) { }
+      private _sharedSocketService:SharedSocketService,
+    ) { 
+      this.socket = this._sharedSocketService.getSocket();
+      this.listenBaivietUpdates();
+}
     private _snackBar:MatSnackBar = inject(MatSnackBar);
     ListBaiviet = signal<any[]>([]);
     DetailBaiviet = signal<any>({});
@@ -22,11 +27,6 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
     setBaivietId(id: string | null) {
       this.baivietId.set(id);
     }
-      private socket = io(`${environment.APIURL}`,{
-      transports: ['websocket'],
-      reconnectionAttempts: 5,
-      timeout: 5000,
-    });
     async CreateBaiviet(dulieu: any) {
       try {
         const options = {
@@ -103,13 +103,14 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
   
   
     //Lắng nghe cập nhật từ WebSocket
-    listenBaivietUpdates() {
-      this.socket.on('baiviet-updated', async () => {
-        console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-        this._StorageService.removeItem('baiviets_updatedAt');
-        await this.getAllBaiviet();
-      });
-    }
+     listenBaivietUpdates() {
+          this.socket.off('baiviet-updated'); // đảm bảo không đăng ký nhiều lần
+          this.socket.on('baivet-updated', async () => {
+            console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
+            this._StorageService.removeItem('baiviets_updatedAt');
+            await this.getAllBaiviet();
+          });
+     }
     //Khởi tạo IndexedDB
     private async initDB() {
       return await openDB('BaivietDB', 1, {

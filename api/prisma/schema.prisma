@@ -453,6 +453,7 @@ model Hoadon {
 
 model HoadonChitiet {
   id        String   @id @default(uuid())
+  codeId    String? 
   idhdon    String
   hoadon    Hoadon   @relation(fields: [idhdon], references: [id], onDelete: Cascade)
   dgia      Int?
@@ -472,6 +473,7 @@ model HoadonChitiet {
   sxep      Int?
   dvtte     String?
   tgia      Int?
+  order     Int? @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 

@@ -5,26 +5,27 @@ import { StorageService } from '../../shared/utils/storage.service';
 import { io } from 'socket.io-client';
 import { openDB } from 'idb';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
+import { SharedSocketService } from '../../shared/services/sharedsocket.service';
 @Injectable({
   providedIn: 'root'
 })
 export class DexuatService {
+    private socket;
   constructor(
     private _StorageService: StorageService,
     private router: Router,
     private _ErrorLogService: ErrorLogService,
-  ) { }
+    private _sharedSocketService: SharedSocketService,
+  ) { 
+    this.socket = this._sharedSocketService.getSocket();
+    this.listenDexuatUpdates();
+  }
   ListDexuat = signal<any[]>([]);
   DetailDexuat = signal<any>({});
   dexuatId = signal<string | null>(null);
   setDexuatId(id: string | null) {
     this.dexuatId.set(id);
   }
-    private socket = io(`${environment.APIURL}`,{
-    transports: ['websocket'],
-    reconnectionAttempts: 5,
-    timeout: 5000,
-  });
   async CreateDexuat(dulieu: any) {
     try {
       const options = {
@@ -101,6 +102,7 @@ export class DexuatService {
 
   //Lắng nghe cập nhật từ WebSocket
   listenDexuatUpdates() {
+    this.socket.off('dexuat-updated'); // đảm bảo không đăng ký nhiều lần
     this.socket.on('dexuat-updated', async () => {
       console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
       this._StorageService.removeItem('dexuats_updatedAt');

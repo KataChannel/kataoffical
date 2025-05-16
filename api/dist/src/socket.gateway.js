@@ -9,28 +9,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SocketGateway = exports.SocketEvents = void 0;
+exports.SocketGateway = void 0;
 const websockets_1 = require("@nestjs/websockets");
 const socket_io_1 = require("socket.io");
-var SocketEvents;
-(function (SocketEvents) {
-    SocketEvents["SANPHAM"] = "sanpham";
-    SocketEvents["KHACHHANG"] = "khachhang";
-    SocketEvents["USER"] = "user";
-    SocketEvents["LEAD"] = "lead";
-    SocketEvents["TASK"] = "task";
-    SocketEvents["DEXUAT"] = "dexuat";
-    SocketEvents["LANDING_PAGE"] = "landingPage";
-    SocketEvents["TRACKING_EVENT"] = "trackingevent";
-    SocketEvents["AFFILIATE_LINK"] = "affiliatelink";
-    SocketEvents["MENU"] = "menu";
-})(SocketEvents || (exports.SocketEvents = SocketEvents = {}));
+const events_1 = require("events");
+events_1.EventEmitter.defaultMaxListeners = 50;
 let SocketGateway = class SocketGateway {
+    constructor() {
+        this.emitCount = 0;
+    }
+    onModuleInit() {
+        if (this.server) {
+            this.server.setMaxListeners(50);
+        }
+    }
     sendUpdate(event, data) {
         if (!this.server) {
             console.error('WebSocket server not initialized');
             return;
         }
+        this.emitCount++;
+        console.log(`Emit count: ${this.emitCount}`);
         this.server.emit(`${event}-updated`, data);
     }
 };

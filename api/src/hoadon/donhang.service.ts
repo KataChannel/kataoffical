@@ -27,20 +27,30 @@ export class HoadonService {
     }
   }
 
-  async create(data: any) {
-    try {
-      const created = await this.prisma.hoadon.create({
-        data: {
-          ...data,
-        },
-      });
-      this._SocketGateway.sendUpdate('donhang');
-      return created;
-    } catch (error) {
-      this._ErrorlogService.logError('createHoadon', error);
-      throw error;
+async create(data: any) {
+  try {
+    const { id, ...newData } = data;
+
+    // Ép kiểu trường "khdon": nếu có giá trị và không phải string thì chuyển sang string.
+    if (newData.khdon !== undefined && newData.khdon !== null && typeof newData.khdon !== 'string') {
+      newData.khdon = newData.khdon.toString();
     }
+    if (newData.tgtkcthue !== undefined && newData.tgtkcthue !== null && typeof newData.tgtkcthue !== 'string') {
+      newData.tgtkcthue = newData.tgtkcthue.toString();
+    }
+
+    const created = await this.prisma.hoadon.create({
+      data: {
+        ...newData,
+      },
+    });
+    // this._SocketGateway.sendUpdate('donhang');
+    return created;
+  } catch (error) {
+    this._ErrorlogService.logError('createHoadon', error);
+    throw error;
   }
+}
 
   async findBy(param: any) {
     try {

@@ -87,8 +87,6 @@ export class MenuService {
       include: { children: true },
       orderBy: { order: 'asc' },
     });
-
-    console.log('menu', menus);
     
     // Filter menus by permissions
     const filteredMenus = menus.filter(menu => {
