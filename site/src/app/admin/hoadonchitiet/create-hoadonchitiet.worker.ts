@@ -1,9 +1,10 @@
 /// <reference lib="webworker" />
-import { environment } from "../../../environments/environment.development";
+
+import { environment } from "../../../environments/environment";
+
 addEventListener('message', async ({ data }) => {
     const items: any[] = data.items;
     console.log("data", data.items);
-    
     for (const item of items) {
         try {
             const response = await fetch(`${environment.APIURL}/hoadonchitiet`, {
