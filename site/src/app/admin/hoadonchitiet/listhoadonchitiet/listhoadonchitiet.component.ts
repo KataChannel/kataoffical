@@ -134,6 +134,7 @@ async fetchData() {
           // Create an array of items to send through the worker
           const itemsToCreate = result.hdhhdvu.map((item1: any) => ({
             id: item1.id,
+            idhoadon:item.id,
             idhdon: item1.idhdon,
             dvtinh: item1.dvtinh,
             ltsuat: item1.ltsuat,
@@ -157,7 +158,7 @@ async fetchData() {
           // Initialize Worker (ensure the worker file exists at the corresponding path)
           const worker = new Worker(new URL('../create-hoadonchitiet.worker', import.meta.url));
           
-          // Send data to worker
+          // Send data to worker          
           worker.postMessage({ items: itemsToCreate, token: this.token });
 
           worker.onmessage = (event: MessageEvent<any>) => {

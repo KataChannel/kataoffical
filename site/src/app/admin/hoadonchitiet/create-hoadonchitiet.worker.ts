@@ -2,7 +2,7 @@
 import { environment } from "../../../environments/environment.development";
 addEventListener('message', async ({ data }) => {
     const items: any[] = data.items;
-    console.log("data", data);
+    console.log("data", data.items);
     
     for (const item of items) {
         try {

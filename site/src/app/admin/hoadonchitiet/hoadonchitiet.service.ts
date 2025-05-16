@@ -45,7 +45,6 @@ export class HoadonchitietService {
           }
           const data = await response.json();
             return data;
-
       } catch (error) {
           this._ErrorLogService.logError('Failed to CreateHoadon', error);
           return console.error(error);

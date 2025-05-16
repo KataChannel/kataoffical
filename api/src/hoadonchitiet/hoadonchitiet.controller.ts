@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
-import { HoadonchitietService } from './donhang.service';
+import { HoadonchitietService } from './hoadonchitiet.service';
 @Controller('hoadonchitiet') 
 export class HoadonchitietController { 
   constructor(private readonly hoadonchitietService: HoadonchitietService) {} 

@@ -50,19 +50,28 @@ export class HoadonchitietService {
     }
   }
 
-  async create(data: any) { 
+  async create(data: any) {     
     try {
       const maxOrder = await this.prisma.hoadonChitiet.aggregate({
         _max: { order: true },
       });
       const newOrder = (maxOrder._max?.order || 0) + 1;
       const codeId = await this.generateCodeId();
-      const { id, ...rest } = data;
+      // Ensure data includes a valid idhoadon
+      const { id, idhoadon, ...rest } = data;
+      console.log('Creating hoadonChitiet with idhoadon:', idhoadon);
+      const hoadonExists = await this.prisma.hoadon.findFirst({ where: { id: idhoadon } });
+
+      if (!hoadonExists) {
+        throw new HttpException('Referenced Hoadon not found', HttpStatus.BAD_REQUEST);
+      }
+
       const created = await this.prisma.hoadonChitiet.create({
         data: {
           ...rest,
           order: newOrder,
-          codeId: codeId
+          codeId: codeId,
+          idhoadon: idhoadon,
         },
       });
       this._SocketGateway.sendUpdate('hoadonchitiet');

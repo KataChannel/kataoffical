@@ -33,7 +33,7 @@ const minio_module_1 = require("./minio/minio.module");
 const sanpham_module_1 = require("./sanpham/sanpham.module");
 const resource_module_1 = require("./resource/resource.module");
 const donhang_module_1 = require("./hoadon/donhang.module");
-const donhang_module_2 = require("./hoadonchitiet/donhang.module");
+const hoadonchitiet_module_1 = require("./hoadonchitiet/hoadonchitiet.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -60,7 +60,7 @@ exports.AppModule = AppModule = __decorate([
             dexuat_module_1.DexuatModule,
             landingpage_module_1.LandingPageModule,
             setting_module_1.SettingModule,
-            donhang_module_2.HoadonchitietModule,
+            hoadonchitiet_module_1.HoadonchitietModule,
             donhang_module_1.HoadonModule,
             minio_module_1.MinioModule,
             sanpham_module_1.SanphamModule,

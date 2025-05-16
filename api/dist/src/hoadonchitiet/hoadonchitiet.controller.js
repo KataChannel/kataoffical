@@ -16,7 +16,7 @@ exports.HoadonchitietController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const donhang_service_1 = require("./donhang.service");
+const hoadonchitiet_service_1 = require("./hoadonchitiet.service");
 let HoadonchitietController = class HoadonchitietController {
     constructor(hoadonchitietService) {
         this.hoadonchitietService = hoadonchitietService;
@@ -185,6 +185,6 @@ __decorate([
 ], HoadonchitietController.prototype, "reorder", null);
 exports.HoadonchitietController = HoadonchitietController = __decorate([
     (0, common_1.Controller)('hoadonchitiet'),
-    __metadata("design:paramtypes", [donhang_service_1.HoadonchitietService])
+    __metadata("design:paramtypes", [hoadonchitiet_service_1.HoadonchitietService])
 ], HoadonchitietController);
-//# sourceMappingURL=donhang.controller.js.map
+//# sourceMappingURL=hoadonchitiet.controller.js.map

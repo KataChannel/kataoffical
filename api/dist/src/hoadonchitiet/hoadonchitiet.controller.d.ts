@@ -1,15 +1,7 @@
-import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
-import { SocketGateway } from 'src/socket.gateway';
-export declare class HoadonchitietService {
-    private readonly prisma;
-    private _SocketGateway;
-    private _ErrorlogService;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogService: ErrorlogService);
-    getLastUpdatedhoadonChitiet(): Promise<{
-        updatedAt: number;
-    }>;
-    generateCodeId(): Promise<string>;
+import { HoadonchitietService } from './hoadonchitiet.service';
+export declare class HoadonchitietController {
+    private readonly hoadonchitietService;
+    constructor(hoadonchitietService: HoadonchitietService);
     create(data: any): Promise<{
         id: string;
         createdAt: Date;
@@ -20,6 +12,7 @@ export declare class HoadonchitietService {
         tchat: number | null;
         tgia: number | null;
         idhdon: string;
+        idhoadon: string | null;
         dgia: number | null;
         dvtinh: string | null;
         ltsuat: string | null;
@@ -35,7 +28,7 @@ export declare class HoadonchitietService {
         tthue: number | null;
         sxep: number | null;
     }>;
-    findBy(param: any): Promise<{
+    findby(param: any): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -45,6 +38,7 @@ export declare class HoadonchitietService {
         tchat: number | null;
         tgia: number | null;
         idhdon: string;
+        idhoadon: string | null;
         dgia: number | null;
         dvtinh: string | null;
         ltsuat: string | null;
@@ -70,6 +64,7 @@ export declare class HoadonchitietService {
             tchat: number | null;
             tgia: number | null;
             idhdon: string;
+            idhoadon: string | null;
             dgia: number | null;
             dvtinh: string | null;
             ltsuat: string | null;
@@ -89,7 +84,7 @@ export declare class HoadonchitietService {
         page: any;
         pageCount: number;
     } | null>;
-    findAll(page?: number, limit?: number): Promise<{
+    findAll(page?: string, limit?: string): Promise<{
         data: {
             id: string;
             createdAt: Date;
@@ -100,6 +95,7 @@ export declare class HoadonchitietService {
             tchat: number | null;
             tgia: number | null;
             idhdon: string;
+            idhoadon: string | null;
             dgia: number | null;
             dvtinh: string | null;
             ltsuat: string | null;
@@ -119,6 +115,9 @@ export declare class HoadonchitietService {
         page: number;
         pageCount: number;
     }>;
+    getLastUpdatedHoadonchitiet(): Promise<{
+        updatedAt: number;
+    }>;
     findOne(id: string): Promise<{
         id: string;
         createdAt: Date;
@@ -129,6 +128,7 @@ export declare class HoadonchitietService {
         tchat: number | null;
         tgia: number | null;
         idhdon: string;
+        idhoadon: string | null;
         dgia: number | null;
         dvtinh: string | null;
         ltsuat: string | null;
@@ -155,6 +155,7 @@ export declare class HoadonchitietService {
         tchat: number | null;
         tgia: number | null;
         idhdon: string;
+        idhoadon: string | null;
         dgia: number | null;
         dvtinh: string | null;
         ltsuat: string | null;
@@ -170,7 +171,9 @@ export declare class HoadonchitietService {
         tthue: number | null;
         sxep: number | null;
     }>;
-    reorderhoadonChitiets(hoadonChitietIds: string[]): Promise<{
+    reorder(body: {
+        hoadonchitietIds: string[];
+    }): Promise<{
         status: string;
     }>;
 }

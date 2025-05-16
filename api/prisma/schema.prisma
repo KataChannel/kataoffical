@@ -455,7 +455,8 @@ model HoadonChitiet {
   id        String   @id @default(uuid())
   codeId    String? 
   idhdon    String
-  hoadon    Hoadon   @relation(fields: [idhdon], references: [id], onDelete: Cascade)
+  idhoadon  String?
+  hoadon    Hoadon?   @relation(fields: [idhoadon], references: [id], onDelete: Cascade)
   dgia      Int?
   dvtinh    String?
   ltsuat    String?
@@ -476,7 +477,6 @@ model HoadonChitiet {
   order     Int? @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-
   @@index([idhdon])
 }
 

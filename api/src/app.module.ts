@@ -24,7 +24,7 @@ import { MinioModule } from './minio/minio.module';
 import { SanphamModule } from './sanpham/sanpham.module';
 import { ResourceModule } from './resource/resource.module';
 import { HoadonModule } from './hoadon/donhang.module';
-import { HoadonchitietModule } from './hoadonchitiet/donhang.module';
+import { HoadonchitietModule } from './hoadonchitiet/hoadonchitiet.module';
 
 @Module({
   imports: [
