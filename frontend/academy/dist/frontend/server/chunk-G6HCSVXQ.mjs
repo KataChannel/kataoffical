@@ -1,2 +1,0 @@
-import './polyfills.server.mjs';
-import{$b as o,_b as i,wc as l,yb as t}from"./chunk-CQBZTN5W.mjs";import"./chunk-KB5IWD3E.mjs";import"./chunk-RIAI3ORJ.mjs";var a=class n{static \u0275fac=function(e){return new(e||n)};static \u0275cmp=t({type:n,selectors:[["app-billing"]],decls:2,vars:0,template:function(e,p){e&1&&(i(0,"p"),l(1,"billing works!"),o())},encapsulation:2})};export{a as BillingComponent};

@@ -87,7 +87,7 @@ import { environment } from '../../../../environments/environment';
     _snackBar: MatSnackBar = inject(MatSnackBar);
     CountItem: any = 0;
     isSearch: boolean = false;
-    uploadUrl: string = `${environment.APIURL}/minio/upload`;
+    uploadUrl: string = `${environment.ACADEMY_APIURL}/minio/upload`;
     category: string = 'default';
     group: string = 'default';
     constructor() {

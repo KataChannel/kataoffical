@@ -1,0 +1,59 @@
+<div class="w-full flex flex-col space-y-2 bg-white shadow rounded-md p-4">
+    <div class="cursor-pointer flex flex-row space-x-2 justify-between items-center">
+        <div class="text-lg font-bold">{{title}}</div>
+        <div class="flex flex-row space-x-2 items-center">
+           <div>Hôm Nay</div>
+            <button mat-icon-button color="primary" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" >
+                <button mat-menu-item>
+                    <mat-icon>download</mat-icon>
+                    <span>Tải Xuống</span>
+                </button>
+                <button mat-menu-item>
+                    <mat-icon>share</mat-icon>
+                    <span>Chia Sẽ</span>
+                </button>
+                <button mat-menu-item>
+                    <mat-icon>today</mat-icon>
+                    <span>Hôm Nay</span>
+                </button>
+                <button mat-menu-item>
+                    <mat-icon>calendar_month</mat-icon>
+                    <span>Tháng Này</span>
+                </button>
+                <button mat-menu-item [matMenuTriggerFor]="dataRangeMenu">
+                    <mat-icon>date_range</mat-icon>
+                    <span>Tuỳ Chọn</span>
+                </button>
+                <mat-menu #dataRangeMenu="matMenu">
+                    <div class="w-full flex flex-col gap-3 p-4" (click)="$event.stopPropagation()">
+                        <mat-form-field appearance="fill" class="w-full">
+                            <mat-label>Ngày Bắt Đầu</mat-label>
+                            <input matInput [(ngModel)]="startDate" [ngModelOptions]="{ standalone: true }" [matDatepicker]="startPicker" placeholder="Ngày Bắt Đầu">
+                            <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+                            <mat-datepicker #startPicker></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill" class="w-full">
+                            <mat-label>Ngày Kết Thúc</mat-label>
+                            <input matInput [(ngModel)]="endDate" [ngModelOptions]="{ standalone: true }" [matDatepicker]="endPicker" placeholder="Ngày Kết Thúc">
+                            <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+                            <mat-datepicker #endPicker></mat-datepicker>
+                        </mat-form-field>
+                        <button (click)="applyDateRange(menuTrigger)" mat-raised-button color="primary" class="w-full">Áp Dụng</button>
+                    </div>
+                  </mat-menu>
+            </mat-menu> 
+        </div>    
+    </div>
+    <div class="flex flex-row space-x-4 items-center">
+         <span class="material-symbols-outlined !text-2xl !text-white p-4 !bg-blue-300 rounded-lg">paid</span>
+        <div class="flex flex-col space-y-2">
+            <div class="text-start text-xl font-bold">{{value | number:'1.0-2'}} {{type=='percent'?'%':'đ'}}</div>
+            <div *ngIf="value>0" class="text-green-600">Tăng: {{value}}{{type=='percent'?'%':'đ'}}</div>
+            <div *ngIf="value==0" class="text-gray-600">Không tăng/giảm: {{value}}{{type=='percent'?'%':'đ'}}</div>
+            <div *ngIf="value<0" class="text-red-600">Giảm: {{value}}{{type=='percent'?'%':'đ'}}</div>
+        </div>
+    </div>
+</div>

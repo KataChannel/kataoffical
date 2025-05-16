@@ -22,7 +22,7 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
     setResourceId(id: string | null) {
       this.resourceId.set(id);
     }
-      private socket = io(`${environment.APIURL}`,{
+      private socket = io(`${environment.ACADEMY_APIURL}`,{
       transports: ['websocket'],
       reconnectionAttempts: 5,
       timeout: 5000,
@@ -37,7 +37,7 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
             },
             body: JSON.stringify(dulieu),
           };
-          const response = await fetch(`${environment.APIURL}/resource`, options);
+          const response = await fetch(`${environment.ACADEMY_APIURL}/resource`, options);
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
@@ -72,7 +72,7 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
             'Authorization': `Bearer ${this._StorageService.getItem('token')}`
           },
         };
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/resource/lastupdated`, options);
+        const lastUpdatedResponse = await fetch(`${environment.ACADEMY_APIURL}/resource/lastupdated`, options);
         if (!lastUpdatedResponse.ok) {
           this.handleError(lastUpdatedResponse.status);
           return cachedData;
@@ -84,7 +84,7 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
           return cachedData;
         }
         //Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
-        const response = await fetch(`${environment.APIURL}/resource`, options);
+        const response = await fetch(`${environment.ACADEMY_APIURL}/resource`, options);
         if (!response.ok) {
           this.handleError(response.status);
           return cachedData;
@@ -138,7 +138,7 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
           },
           body: JSON.stringify(param),
         };
-        const response = await fetch(`${environment.APIURL}/resource/findby`, options);      
+        const response = await fetch(`${environment.ACADEMY_APIURL}/resource/findby`, options);      
         if (!response.ok) {
           this.handleError(response.status);
         }
@@ -159,7 +159,7 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
             },
             body: JSON.stringify(dulieu),
           };
-          const response = await fetch(`${environment.APIURL}/resource/${dulieu.id}`, options);
+          const response = await fetch(`${environment.ACADEMY_APIURL}/resource/${dulieu.id}`, options);
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
@@ -185,7 +185,7 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
                 'Authorization': `Bearer ${this._StorageService.getItem('token')}`
               },
             };
-            const response = await fetch(`${environment.APIURL}/resource/${item.id}`, options);
+            const response = await fetch(`${environment.ACADEMY_APIURL}/resource/${item.id}`, options);
             if (!response.ok) {
               this.handleError(response.status);
             }

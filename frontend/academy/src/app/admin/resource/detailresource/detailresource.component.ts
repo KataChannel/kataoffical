@@ -67,7 +67,7 @@ import { environment } from '../../../../environments/environment.development';
     isDelete = signal(false);  
     resourceId:any = this._ResourceService.resourceId
     // uploadUrl: string = `https://api.kataoffical.online/minio/upload`;
-    uploadUrl: string = `${environment.APIURL}/minio/upload`;
+    uploadUrl: string = `${environment.ACADEMY_APIURL}/minio/upload`;
     category: string = 'default';
     group: string = 'default';
     async ngOnInit() {

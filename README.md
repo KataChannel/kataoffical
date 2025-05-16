@@ -102,7 +102,7 @@ sudo systemctl reload nginx
 
 (Tuỳ chọn) Thêm HTTPS với Certbot
 sudo certbot --nginx -d hethong.tazagroup.vn -d apihethong.tazagroup.vn
-sudo certbot --nginx -d affiliate.timona.edu.vn -d apiaffiliate.tazagroup.vn
+sudo certbot --nginx -d affiliate.timona.edu.vn -d apiaffiliate.tazagroup.vn -d storage.timona.edu.vn
 sudo certbot --nginx -d hethong.timona.edu.vn -d apihethong.timona.edu.vn
 sudo certbot --nginx -d shop.rausachtrangia.com -d api.rausachtrangia.com
 sudo certbot renew --dry-run
@@ -125,6 +125,7 @@ sudo ufw allow 3331/tcp
 sudo ufw allow 4400/tcp
 sudo ufw allow 3100/tcp
 sudo ufw allow 5052/tcp
+sudo ufw allow 9002/tcp
 sudo ufw reload
 
 sudo crontab -e
