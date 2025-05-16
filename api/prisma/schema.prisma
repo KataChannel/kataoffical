@@ -455,8 +455,8 @@ model HoadonChitiet {
   id        String   @id @default(uuid())
   codeId    String? 
   idhdon    String
-  idhoadon  String?
-  hoadon    Hoadon?   @relation(fields: [idhoadon], references: [id], onDelete: Cascade)
+  idhoadon  String
+  hoadon    Hoadon   @relation(fields: [idhoadon], references: [id], onDelete: Cascade)
   dgia      Int?
   dvtinh    String?
   ltsuat    String?

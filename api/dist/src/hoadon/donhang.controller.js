@@ -37,7 +37,7 @@ let HoadonController = class HoadonController {
             throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async findAll(page = '1', limit = '10') {
+    async findAll(page = '1', limit = '10', isChitiet = 'false') {
         try {
             const pageNum = parseInt(page, 10);
             const limitNum = parseInt(limit, 10);
@@ -116,8 +116,9 @@ __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)('page')),
     __param(1, (0, common_1.Query)('limit')),
+    __param(2, (0, common_1.Query)('isChitiet')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], HoadonController.prototype, "findAll", null);
 __decorate([

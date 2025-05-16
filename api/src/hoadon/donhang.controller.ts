@@ -35,8 +35,9 @@ export class HoadonController {
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get()
   async findAll(
-    @Query('page') page: string = '1', 
-    @Query('limit') limit: string = '10', 
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+    @Query('isChitiet') isChitiet: string = 'false',
   ) {
     try {
       const pageNum = parseInt(page, 10);
@@ -47,7 +48,7 @@ export class HoadonController {
       if (isNaN(limitNum) || limitNum < 1) {
         throw new HttpException('Limit must be a positive integer', HttpStatus.BAD_REQUEST);
       }
-      return await this.hoadonService.findAll(pageNum, limitNum);
+      return await this.hoadonService.findAll(pageNum, limitNum,isChitiet);
     } catch (error) {
       throw new HttpException(
         error.message || 'Failed to fetch hoadons',

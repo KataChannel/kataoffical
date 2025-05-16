@@ -16,6 +16,6 @@ export default `<!doctype html>
 <body class="mat-typography" ngcm="">
   <app-root></app-root>
   <noscript>Please enable JavaScript to continue using this application.</noscript>
-<link rel="modulepreload" href="chunk-PLT2CCUH.js"><link rel="modulepreload" href="chunk-H4Q3EX52.js"><link rel="modulepreload" href="chunk-E5N3S7FG.js"><link rel="modulepreload" href="chunk-BH53CEYB.js"><link rel="modulepreload" href="chunk-5DPPF2ZZ.js"><link rel="modulepreload" href="chunk-UWG4GFF3.js"><link rel="modulepreload" href="chunk-KDLSUHPH.js"><link rel="modulepreload" href="chunk-DXWKSC2F.js"><link rel="modulepreload" href="chunk-GG5PNR75.js"><link rel="modulepreload" href="chunk-7RWCIHFI.js"><script src="polyfills-FFHMD2TL.js" type="module"></script><script src="main-XMTR45YH.js" type="module"></script></body>
+<link rel="modulepreload" href="chunk-PLT2CCUH.js"><link rel="modulepreload" href="chunk-H4Q3EX52.js"><link rel="modulepreload" href="chunk-E5N3S7FG.js"><link rel="modulepreload" href="chunk-BH53CEYB.js"><link rel="modulepreload" href="chunk-5DPPF2ZZ.js"><link rel="modulepreload" href="chunk-UWG4GFF3.js"><link rel="modulepreload" href="chunk-KDLSUHPH.js"><link rel="modulepreload" href="chunk-DXWKSC2F.js"><link rel="modulepreload" href="chunk-GG5PNR75.js"><link rel="modulepreload" href="chunk-7RWCIHFI.js"><script src="polyfills-FFHMD2TL.js" type="module"></script><script src="main-7HGZIV6T.js" type="module"></script></body>
 </html>
 `;

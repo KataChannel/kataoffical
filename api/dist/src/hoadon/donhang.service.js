@@ -87,16 +87,37 @@ let HoadonService = class HoadonService {
             throw error;
         }
     }
-    async findAll(page = 1, limit = 20) {
+    async findAll(page = 1, limit = 20, isChitiet = 'false') {
         try {
             const skip = (page - 1) * limit;
-            const [data, total] = await Promise.all([
-                this.prisma.hoadon.findMany({
-                    skip,
-                    take: limit,
-                }),
-                this.prisma.hoadon.count(),
-            ]);
+            let data, total;
+            const includeChitiet = isChitiet.toLowerCase() === 'true';
+            if (includeChitiet) {
+                const listIdsResult = await this.prisma.hoadonChitiet.findMany({
+                    distinct: ['idhoadon'],
+                    select: { idhoadon: true },
+                });
+                const listIds = listIdsResult.map(item => item.idhoadon);
+                [data, total] = await Promise.all([
+                    this.prisma.hoadon.findMany({
+                        where: { id: { notIn: listIds } },
+                        skip,
+                        take: limit,
+                    }),
+                    this.prisma.hoadon.count({
+                        where: { id: { notIn: listIds } },
+                    }),
+                ]);
+            }
+            else {
+                [data, total] = await Promise.all([
+                    this.prisma.hoadon.findMany({
+                        skip,
+                        take: limit,
+                    }),
+                    this.prisma.hoadon.count(),
+                ]);
+            }
             return {
                 data,
                 total,

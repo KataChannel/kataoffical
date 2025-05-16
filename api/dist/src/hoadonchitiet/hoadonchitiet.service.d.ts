@@ -20,7 +20,7 @@ export declare class HoadonchitietService {
         tchat: number | null;
         tgia: number | null;
         idhdon: string;
-        idhoadon: string | null;
+        idhoadon: string;
         dgia: number | null;
         dvtinh: string | null;
         ltsuat: string | null;
@@ -46,7 +46,7 @@ export declare class HoadonchitietService {
         tchat: number | null;
         tgia: number | null;
         idhdon: string;
-        idhoadon: string | null;
+        idhoadon: string;
         dgia: number | null;
         dvtinh: string | null;
         ltsuat: string | null;
@@ -72,7 +72,7 @@ export declare class HoadonchitietService {
             tchat: number | null;
             tgia: number | null;
             idhdon: string;
-            idhoadon: string | null;
+            idhoadon: string;
             dgia: number | null;
             dvtinh: string | null;
             ltsuat: string | null;
@@ -103,7 +103,7 @@ export declare class HoadonchitietService {
             tchat: number | null;
             tgia: number | null;
             idhdon: string;
-            idhoadon: string | null;
+            idhoadon: string;
             dgia: number | null;
             dvtinh: string | null;
             ltsuat: string | null;
@@ -133,7 +133,7 @@ export declare class HoadonchitietService {
         tchat: number | null;
         tgia: number | null;
         idhdon: string;
-        idhoadon: string | null;
+        idhoadon: string;
         dgia: number | null;
         dvtinh: string | null;
         ltsuat: string | null;
@@ -160,7 +160,7 @@ export declare class HoadonchitietService {
         tchat: number | null;
         tgia: number | null;
         idhdon: string;
-        idhoadon: string | null;
+        idhoadon: string;
         dgia: number | null;
         dvtinh: string | null;
         ltsuat: string | null;

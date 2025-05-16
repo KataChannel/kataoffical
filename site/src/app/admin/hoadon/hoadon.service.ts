@@ -269,7 +269,7 @@ export class HoadonService {
     }
   }
 
-  async getAllHoadon(pageSize: number = this.pageSize(), forceRefresh: boolean = false) {
+  async getAllHoadon(pageSize: number = this.pageSize(), forceRefresh: boolean = false, isChitiet: boolean = false) {
     this.pageSize.set(pageSize);
     const cached = await this.getCachedData();   
     const updatedAtCache = this._StorageService.getItem('hoadons_updatedAt') || '0';    
@@ -322,7 +322,8 @@ export class HoadonService {
       // Tải dữ liệu mới từ server
       const query = new URLSearchParams({
         page: this.page().toString(),
-        limit: pageSize.toString()
+        limit: pageSize.toString(),
+        isChitiet: isChitiet ? 'true' : 'false',
       });
       const response = await fetch(`${environment.APIURL}/hoadon?${query}`, options);
       if (!response.ok) {

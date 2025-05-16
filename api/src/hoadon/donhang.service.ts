@@ -82,16 +82,36 @@ async create(data: any) {
     }
   }
 
-  async findAll(page: number = 1, limit: number = 20) {
+  async findAll(page: number = 1, limit: number = 20, isChitiet: string = 'false') {
     try {
       const skip = (page - 1) * limit;
-      const [data, total] = await Promise.all([
-        this.prisma.hoadon.findMany({
-          skip,
-          take: limit,
-        }),
-        this.prisma.hoadon.count(),
-      ]);
+      let data:any, total:any;
+      const includeChitiet = isChitiet.toLowerCase() === 'true';
+      if (includeChitiet) {
+        const listIdsResult = await this.prisma.hoadonChitiet.findMany({
+          distinct: ['idhoadon'],
+          select: { idhoadon: true },
+        });
+        const listIds = listIdsResult.map(item => item.idhoadon);
+        [data, total] = await Promise.all([
+          this.prisma.hoadon.findMany({
+            where: { id: { notIn: listIds } },
+            skip,
+            take: limit,
+          }),
+          this.prisma.hoadon.count({
+            where: { id: { notIn: listIds } },
+          }),
+        ]);
+      } else {
+        [data, total] = await Promise.all([
+          this.prisma.hoadon.findMany({
+            skip,
+            take: limit,
+          }),
+          this.prisma.hoadon.count(),
+        ]);
+      }
       return {
         data,
         total,

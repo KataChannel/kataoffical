@@ -89,6 +89,7 @@ export class ListHoadonchitietComponent implements OnInit {
   isSearch = signal<boolean>(false);
   token: any= this._StorageService.getItem('token') || '';
   hoadon_token: any= this._StorageService.getItem('hoadon_token') || '';
+  Detail:any={thang:'01', nam:'2025'};
   constructor() {
     effect(() => {
       this.dataSource.data = this.Listhoadonchitiet();
@@ -113,7 +114,7 @@ export class ListHoadonchitietComponent implements OnInit {
   soluong: any = 0;
 async fetchData() {
     this._StorageService.setItem('hoadon_token', this.hoadon_token);
-    const listHoadon = await this._HoadonService.getAllHoadon(this.soluong);
+    const listHoadon = await this._HoadonService.getAllHoadon(this.soluong, false,true);
     // Process each hoadon sequentially to avoid overloading the server.
     for (const item of listHoadon) {
       const result = await this._HoadonchitietService.fetchData({
