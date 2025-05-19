@@ -297,7 +297,7 @@ convertDataToData1(
     this._BanggiaService.importBanggia(ListBG);
     const ListData = this.convertDataToData1(data.SPBG);
     this._BanggiaService.importSPBG(ListData);
-      const BGKH = (data.BGKH || []).map((v: any) => ({
+    const BGKH = (data.BGKH || []).map((v: any) => ({
         mabanggia: v.mabanggia,
         name: v.name,
         makh: v.makh,
@@ -350,9 +350,9 @@ convertDataToData1(
     return data2.map((product: any) => ({
       masp: product.masp,
       title: product.title,
-      giagoc: product.giagoc.toString(),
+      giaban: product.giaban.toString(),
       ...Array.from(pricingTables).reduce((acc: Record<string, string>, table:any) => {
-        acc[table] = product.giagoc.toString();
+        acc[table] = product.giaban.toString();
         return acc;
       }, {} as Record<string, string>)
     }));

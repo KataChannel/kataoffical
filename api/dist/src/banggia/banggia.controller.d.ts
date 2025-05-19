@@ -5,10 +5,10 @@ export declare class BanggiaController {
     import(data: any): Promise<{
         sanpham: {
             id: string;
+            giaban: number;
             order: number | null;
             isActive: boolean;
             sanphamId: string;
-            giaban: number;
             banggiaId: string;
         }[];
     } & {
@@ -30,10 +30,10 @@ export declare class BanggiaController {
     create(createBanggiaDto: any): Promise<{
         sanpham: {
             id: string;
+            giaban: number;
             order: number | null;
             isActive: boolean;
             sanphamId: string;
-            giaban: number;
             banggiaId: string;
         }[];
     } & {
@@ -162,10 +162,10 @@ export declare class BanggiaController {
     update(id: string, updateBanggiaDto: any): Promise<{
         sanpham: {
             id: string;
+            giaban: number;
             order: number | null;
             isActive: boolean;
             sanphamId: string;
-            giaban: number;
             banggiaId: string;
         }[];
     } & {

@@ -8,10 +8,10 @@ export declare class BanggiaService {
     importBanggia(data: any): Promise<{
         sanpham: {
             id: string;
+            giaban: number;
             order: number | null;
             isActive: boolean;
             sanphamId: string;
-            giaban: number;
             banggiaId: string;
         }[];
     } & {
@@ -46,10 +46,10 @@ export declare class BanggiaService {
     createBanggia(data: any): Promise<{
         sanpham: {
             id: string;
+            giaban: number;
             order: number | null;
             isActive: boolean;
             sanphamId: string;
-            giaban: number;
             banggiaId: string;
         }[];
     } & {
@@ -148,10 +148,10 @@ export declare class BanggiaService {
     update(id: string, data: any): Promise<{
         sanpham: {
             id: string;
+            giaban: number;
             order: number | null;
             isActive: boolean;
             sanphamId: string;
-            giaban: number;
             banggiaId: string;
         }[];
     } & {

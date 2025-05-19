@@ -119,10 +119,10 @@ export declare class DonhangService {
             banggia: ({
                 sanpham: {
                     id: string;
+                    giaban: number;
                     order: number | null;
                     isActive: boolean;
                     sanphamId: string;
-                    giaban: number;
                     banggiaId: string;
                 }[];
             } & {
@@ -179,7 +179,7 @@ export declare class DonhangService {
     searchfield(searchParams: Record<string, any>): Promise<{
         sanpham: {
             idSP: string;
-            giaban: number | undefined;
+            giaban: number;
             sldat: number;
             slgiao: number;
             slnhan: number;
@@ -245,7 +245,7 @@ export declare class DonhangService {
     findOne(id: string): Promise<{
         sanpham: {
             idSP: string;
-            giaban: number | undefined;
+            giaban: number;
             sldat: number;
             slgiao: number;
             slnhan: number;
@@ -276,10 +276,10 @@ export declare class DonhangService {
             banggia: ({
                 sanpham: {
                     id: string;
+                    giaban: number;
                     order: number | null;
                     isActive: boolean;
                     sanphamId: string;
-                    giaban: number;
                     banggiaId: string;
                 }[];
             } & {

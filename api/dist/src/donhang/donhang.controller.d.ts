@@ -142,7 +142,7 @@ export declare class DonhangController {
     searchfield(searchParams: Record<string, any>): Promise<{
         sanpham: {
             idSP: string;
-            giaban: number | undefined;
+            giaban: number;
             sldat: number;
             slgiao: number;
             slnhan: number;
@@ -212,10 +212,10 @@ export declare class DonhangController {
             banggia: ({
                 sanpham: {
                     id: string;
+                    giaban: number;
                     order: number | null;
                     isActive: boolean;
                     sanphamId: string;
-                    giaban: number;
                     banggiaId: string;
                 }[];
             } & {
@@ -272,7 +272,7 @@ export declare class DonhangController {
     findOne(id: string): Promise<{
         sanpham: {
             idSP: string;
-            giaban: number | undefined;
+            giaban: number;
             sldat: number;
             slgiao: number;
             slnhan: number;
@@ -303,10 +303,10 @@ export declare class DonhangController {
             banggia: ({
                 sanpham: {
                     id: string;
+                    giaban: number;
                     order: number | null;
                     isActive: boolean;
                     sanphamId: string;
-                    giaban: number;
                     banggiaId: string;
                 }[];
             } & {

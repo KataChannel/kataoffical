@@ -102,29 +102,34 @@ export class DonhangService {
 
     const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
       ...donhang,
-      sanpham: sanpham.map((item: any) => ({
+      sanpham: sanpham.map((item: any) => {
+      const matchingBanggia = khachhang.banggia.find(
+        (bg) =>
+        donhang.ngaygiao &&
+        bg.batdau &&
+        bg.ketthuc &&
+        donhang.ngaygiao >= bg.batdau &&
+        donhang.ngaygiao <= bg.ketthuc,
+      );
+      const priceFromBanggia = matchingBanggia
+        ? matchingBanggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
+        : undefined;
+      return {
         ...item.sanpham,
         idSP: item.idSP,
-        giaban: khachhang.banggia
-          .find(
-            (bg) =>
-              donhang.ngaygiao &&
-              bg.batdau &&
-              bg.ketthuc &&
-              donhang.ngaygiao >= bg.batdau &&
-              donhang.ngaygiao <= bg.ketthuc,
-          )
-          ?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
-
+        giaban:
+        priceFromBanggia !== undefined
+          ? priceFromBanggia
+          : item.sanpham.giaban,
         sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
         slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
         slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
         ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
         ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
         ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
-
         ghichu: item.ghichu,
-      })),
+      };
+      }),
       khachhang: (({ banggia, ...rest }) => rest)(khachhang), // Xóa banggia
       name: khachhang.name,
     }));
@@ -196,19 +201,25 @@ export class DonhangService {
     }
     return {
       ...result,
-      sanpham: result.sanpham.map((item: any) => ({
+      sanpham: result.sanpham.map((item: any) => {
+      const matchingBanggia = result.khachhang.banggia.find(
+        (bg) =>
+        result.ngaygiao &&
+        bg.batdau &&
+        bg.ketthuc &&
+        result.ngaygiao >= bg.batdau &&
+        result.ngaygiao <= bg.ketthuc,
+      );
+      const priceFromBanggia = matchingBanggia
+        ? matchingBanggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
+        : undefined;
+      return {
         ...item.sanpham,
         idSP: item.idSP,
-        giaban: result.khachhang.banggia
-          .find(
-            (bg) =>
-              result.ngaygiao &&
-              bg.batdau &&
-              bg.ketthuc &&
-              result.ngaygiao >= bg.batdau &&
-              result.ngaygiao <= bg.ketthuc,
-          )
-          ?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
+        giaban:
+        priceFromBanggia !== undefined
+          ? priceFromBanggia
+          : item.sanpham.giaban,
         sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
         slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
         slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
@@ -216,7 +227,8 @@ export class DonhangService {
         ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
         ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
         ghichu: item.ghichu,
-      })),
+      };
+      }),
       khachhang: (({ banggia, ...rest }) => rest)(result.khachhang), // Xóa banggia
     };
   }
@@ -234,19 +246,22 @@ export class DonhangService {
     });
     const result = donhangs.map((donhang) => ({
       ...donhang,
-      sanpham: donhang.sanpham.map((item: any) => ({
+      sanpham: donhang.sanpham.map((item: any) => {
+      const matchingBanggia = donhang.khachhang.banggia.find(
+        (bg) =>
+        donhang.ngaygiao &&
+        bg.batdau &&
+        bg.ketthuc &&
+        donhang.ngaygiao >= bg.batdau &&
+        donhang.ngaygiao <= bg.ketthuc,
+      );
+      const priceFromBanggia = matchingBanggia
+        ? matchingBanggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
+        : undefined;
+      return {
         ...item.sanpham,
         idSP: item.idSP,
-        giaban: donhang.khachhang.banggia
-          .find(
-            (bg) =>
-              donhang.ngaygiao &&
-              bg.batdau &&
-              bg.ketthuc &&
-              donhang.ngaygiao >= bg.batdau &&
-              donhang.ngaygiao <= bg.ketthuc,
-          )
-          ?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
+        giaban: priceFromBanggia !== undefined ? priceFromBanggia : item.sanpham.giaban,
         sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
         slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
         slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
@@ -254,7 +269,8 @@ export class DonhangService {
         ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
         ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
         ghichu: item.ghichu,
-      })),
+      };
+      }),
       name: donhang.khachhang.name,
     }));
     return result;
@@ -298,19 +314,25 @@ export class DonhangService {
 
     return {
       ...donhang,
-      sanpham: donhang.sanpham.map((item) => ({
+      sanpham: donhang.sanpham.map((item) => {
+      const matchingBanggia = donhang.khachhang.banggia.find(
+        (bg) =>
+        donhang.ngaygiao &&
+        bg.batdau &&
+        bg.ketthuc &&
+        donhang.ngaygiao >= bg.batdau &&
+        donhang.ngaygiao <= bg.ketthuc,
+      );
+      const priceFromBanggia = matchingBanggia
+        ? matchingBanggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
+        : undefined;
+      return {
         ...item.sanpham,
         idSP: item.idSP,
-        giaban: donhang.khachhang.banggia
-          .find(
-            (bg) =>
-              donhang.ngaygiao &&
-              bg.batdau &&
-              bg.ketthuc &&
-              donhang.ngaygiao >= bg.batdau &&
-              donhang.ngaygiao <= bg.ketthuc,
-          )
-          ?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
+        giaban:
+        priceFromBanggia !== undefined
+          ? priceFromBanggia
+          : item.sanpham.giaban,
         sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
         slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
         slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
@@ -318,7 +340,8 @@ export class DonhangService {
         ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
         ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
         ghichu: item.ghichu,
-      })),
+      };
+      }),
       khachhang: (({ banggia, ...rest }) => rest)(donhang.khachhang), // Xóa banggia
     };
   }
@@ -337,28 +360,35 @@ export class DonhangService {
     if (!donhang) throw new NotFoundException('DonHang not found');
     const result = {
       ...donhang,
-      sanpham: donhang.sanpham.map((item) => ({
-        ...item.sanpham,
-        idSP: item.idSP,
-        giaban: donhang.khachhang.banggia
-          .find(
-            (bg) =>
-              donhang.ngaygiao &&
-              bg.batdau &&
-              bg.ketthuc &&
-              donhang.ngaygiao >= bg.batdau &&
-              donhang.ngaygiao <= bg.ketthuc,
-          )
-          ?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban,
-        sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
-        slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
-        slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
-        slhuy: parseFloat((item.slhuy ?? 0).toFixed(2)),
-        ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
-        ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
-        ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
-        ghichu: item.ghichu,
-      })),
+      sanpham: donhang.sanpham.map((item) => {
+        const matchingBanggia = donhang.khachhang.banggia.find(
+          (bg) =>
+            donhang.ngaygiao &&
+            bg.batdau &&
+            bg.ketthuc &&
+            donhang.ngaygiao >= bg.batdau &&
+            donhang.ngaygiao <= bg.ketthuc,
+        );
+        const productGiabanFromBanggia = matchingBanggia?.sanpham.find(
+          (sp) => sp.sanphamId === item.idSP,
+        )?.giaban;
+        return {
+          ...item.sanpham,
+          idSP: item.idSP,
+          giaban:
+            productGiabanFromBanggia !== undefined
+              ? productGiabanFromBanggia
+              : item.sanpham.giaban,
+          sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
+          slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
+          slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
+          slhuy: parseFloat((item.slhuy ?? 0).toFixed(2)),
+          ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
+          ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
+          ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
+          ghichu: item.ghichu,
+        };
+      }),
     };
     return result;
   }
@@ -750,6 +780,10 @@ async updatePhieugiao(id: string, data: any) {
       return updatedDonhang;
     });
   }
+
+
+
+
   async remove(id: string) {
     return this.prisma.donhang.delete({ where: { id } });
   }

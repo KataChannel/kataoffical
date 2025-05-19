@@ -149,6 +149,7 @@ model Sanpham {
   masp      String   @unique
   subtitle  String? 
   giagoc    Float @default(0)
+  giaban    Float @default(0)
   dvt       String?
   hinhanh   String?
   loadpoint Float? @default(0)

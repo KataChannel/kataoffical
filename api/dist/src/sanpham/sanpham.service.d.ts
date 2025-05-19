@@ -18,6 +18,7 @@ export declare class SanphamService {
         masp: string;
         subtitle: string | null;
         giagoc: number;
+        giaban: number;
         dvt: string | null;
         hinhanh: string | null;
         loadpoint: number | null;
@@ -39,6 +40,7 @@ export declare class SanphamService {
         masp: string;
         subtitle: string | null;
         giagoc: number;
+        giaban: number;
         dvt: string | null;
         hinhanh: string | null;
         loadpoint: number | null;
@@ -63,6 +65,7 @@ export declare class SanphamService {
         masp?: string | undefined;
         subtitle?: string | null | undefined;
         giagoc?: number | undefined;
+        giaban?: number | undefined;
         dvt?: string | null | undefined;
         hinhanh?: string | null | undefined;
         loadpoint?: number | null | undefined;
@@ -83,6 +86,7 @@ export declare class SanphamService {
         masp: string;
         subtitle: string | null;
         giagoc: number;
+        giaban: number;
         dvt: string | null;
         hinhanh: string | null;
         loadpoint: number | null;
@@ -130,6 +134,7 @@ export declare class SanphamService {
         masp: string;
         subtitle: string | null;
         giagoc: number;
+        giaban: number;
         dvt: string | null;
         hinhanh: string | null;
         loadpoint: number | null;
@@ -164,6 +169,7 @@ export declare class SanphamService {
         masp: string;
         subtitle: string | null;
         giagoc: number;
+        giaban: number;
         dvt: string | null;
         hinhanh: string | null;
         loadpoint: number | null;
@@ -184,6 +190,7 @@ export declare class SanphamService {
         masp: string;
         subtitle: string | null;
         giagoc: number;
+        giaban: number;
         dvt: string | null;
         hinhanh: string | null;
         loadpoint: number | null;
@@ -204,6 +211,7 @@ export declare class SanphamService {
         masp: string;
         subtitle: string | null;
         giagoc: number;
+        giaban: number;
         dvt: string | null;
         hinhanh: string | null;
         loadpoint: number | null;

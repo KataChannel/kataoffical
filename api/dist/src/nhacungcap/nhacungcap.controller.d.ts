@@ -38,6 +38,7 @@ export declare class NhacungcapController {
                 masp: string;
                 subtitle: string | null;
                 giagoc: number;
+                giaban: number;
                 dvt: string | null;
                 hinhanh: string | null;
                 loadpoint: number | null;
@@ -82,6 +83,7 @@ export declare class NhacungcapController {
                 masp: string;
                 subtitle: string | null;
                 giagoc: number;
+                giaban: number;
                 dvt: string | null;
                 hinhanh: string | null;
                 loadpoint: number | null;
@@ -131,6 +133,7 @@ export declare class NhacungcapController {
                 masp: string;
                 subtitle: string | null;
                 giagoc: number;
+                giaban: number;
                 dvt: string | null;
                 hinhanh: string | null;
                 loadpoint: number | null;

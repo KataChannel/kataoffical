@@ -51,8 +51,12 @@
         <input matInput type="number" [(ngModel)]="DetailSanpham().giagoc" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giá Gốc"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
+        <mat-label>Giá Bán</mat-label>
+        <input matInput type="number" [(ngModel)]="DetailSanpham().giaban" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giá Bán"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
         <mat-label>Đơn Vị Tính</mat-label>
-        <input matInput [(ngModel)]="DetailSanpham().dvt" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+        <input matInput [(ngModel)]="DetailSanpham().dvt" [disabled]="!isEdit()" placeholder="Vui lòng nhập Đơn Vị Tính"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Điểm Trọng Tải</mat-label>
@@ -109,7 +113,7 @@
             {{item.name}}
           </button>   
         </div>
-       <div class="col-span-2 flex flex-col space-y-2 p-4">
+       <!-- <div class="col-span-2 flex flex-col space-y-2 p-4">
           <div class="grid grid-cols-3 gap-2 font-bold">
             <span>Mã Đơn</span>
             <span>Số Lượng</span>
@@ -125,7 +129,7 @@
             <span>+ {{item.sldat}}</span>
             <span>{{item.createdAt|date:'dd/MM/yyyy'}}</span>
           </div>
-        </div>
+        </div> -->
     </div>
   </ng-container>
 </div>

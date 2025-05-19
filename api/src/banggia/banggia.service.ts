@@ -11,6 +11,20 @@ export class BanggiaService {
 
   async importSPBG(listBanggia: any[]) {
     try {
+     const banggiagoc = listBanggia.find(bg => bg.mabanggia === 'giaban');  
+        // Update giaban for each sanpham in banggiagoc   
+     if(banggiagoc){
+       await Promise.all(banggiagoc.sanpham.map(async (sp: any) => {
+         const result = await this.prisma.sanpham.update({
+           where: { masp: sp.masp },
+           data: { giaban: sp.giaban }
+         });
+         console.log(`Updated sanpham ${sp.masp} giaban successfully`, result);
+       }));
+      }
+
+
+
       const productIds = Array.from(
         listBanggia.flatMap(bg => bg?.sanpham?.map((sp: any) => sp.masp) || [])
       );
