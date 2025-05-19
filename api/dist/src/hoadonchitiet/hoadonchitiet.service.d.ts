@@ -138,7 +138,6 @@ export declare class HoadonchitietService {
         page: number;
         pageCount: number;
     }>;
-    parseDate(dateStr: any): Date;
     formatDate(date: any): string;
     formatMonth(date: any): string;
     xuatnhapton(param: any): Promise<{

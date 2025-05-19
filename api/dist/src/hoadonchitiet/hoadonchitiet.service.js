@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
+const moment = require("moment");
 let HoadonchitietService = class HoadonchitietService {
     constructor(prisma, _SocketGateway, _ErrorlogService) {
         this.prisma = prisma;
@@ -174,14 +175,23 @@ let HoadonchitietService = class HoadonchitietService {
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    parseDate(dateStr) {
-        const [month, day, year] = dateStr.split('/');
-        return new Date(year, month - 1, day);
-    }
     formatDate(date) {
+        if (typeof date === 'string') {
+            date = new Date(date);
+        }
+        if (!(date instanceof Date) || isNaN(date.getTime())) {
+            throw new Error('Invalid date');
+        }
         return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
     }
     formatMonth(date) {
+        if (typeof date === 'string') {
+            date = new Date(date);
+        }
+        if (!(date instanceof Date) || isNaN(date.getTime())) {
+            throw new Error('Invalid date');
+        }
+        console.log('date', date);
         return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
     }
     async xuatnhapton(param) {
@@ -205,7 +215,11 @@ let HoadonchitietService = class HoadonchitietService {
                     take: limit,
                     orderBy: { order: 'asc' },
                     where: { ...where, ...dateFilter },
-                    include: { hoadon: { select: { ntao: true, tdlap: true, thlap: true, nbmst: true } } },
+                    include: {
+                        hoadon: {
+                            select: { ntao: true, tdlap: true, thlap: true, nbmst: true },
+                        },
+                    },
                 }),
                 this.prisma.hoadonChitiet.count({
                     where: { ...where, ...dateFilter },
@@ -221,14 +235,12 @@ let HoadonchitietService = class HoadonchitietService {
                     };
                 }
             });
-            const currentDate = new Date();
             const dailyMap = {};
-            console.log('hoadonchitiets', hoadonchitiets);
             hoadonchitiets.forEach((item) => {
                 if (item.title && item.sluong && item.hoadon && item.hoadon.ntao) {
-                    const date = new Date(item.hoadon.ntao);
-                    console.log('date', date);
-                    const dateStr = this.formatDate(date);
+                    const date = new Date(item?.hoadon?.ntao);
+                    console.log('item', item);
+                    const dateStr = moment(date).format('DD/MM/YYYY');
                     const key = `${item.title}_${dateStr}`;
                     if (!dailyMap[key]) {
                         dailyMap[key] = {
@@ -251,7 +263,7 @@ let HoadonchitietService = class HoadonchitietService {
                             tongXuatNam: 0,
                         };
                     }
-                    if (item.hoadon.nbmst === "5900363291") {
+                    if (item.hoadon.nbmst === '5900363291') {
                         dailyMap[key].nhapNgay += item.sluong || 0;
                         dailyMap[key].ttnhap += item.thtien || 0;
                     }
@@ -262,14 +274,13 @@ let HoadonchitietService = class HoadonchitietService {
                 }
             });
             const baoCaoHangNgay = Object.values(dailyMap);
-            console.log('baoCaoHangNgay', baoCaoHangNgay);
             const monthlyMap = {};
             const yearlyMap = {};
             baoCaoHangNgay.forEach((record) => {
-                const monthKey = `${record.ma}_${this.formatMonth(record.date)}`;
+                const monthKey = `${record.ma}_${moment(record.date).format('MM/YYYY')}`;
                 if (!monthlyMap[monthKey]) {
                     monthlyMap[monthKey] = {
-                        thang: this.formatMonth(record.date),
+                        thang: moment(record.date).format('MM/YYYY'),
                         sanpham: record.sanpham,
                         ma: record.ma,
                         donvi: record.donvi,
@@ -281,10 +292,10 @@ let HoadonchitietService = class HoadonchitietService {
                 }
                 monthlyMap[monthKey].tongNhapThang += record.nhapNgay;
                 monthlyMap[monthKey].tongXuatThang += record.xuatNgay;
-                const yearKey = `${record.ma}_${record.date.getFullYear()}`;
+                const yearKey = `${record.ma}_${moment(record.date).format('YYYY')}`;
                 if (!yearlyMap[yearKey]) {
                     yearlyMap[yearKey] = {
-                        nam: record.date.getFullYear(),
+                        nam: moment(record.date).format('YYYY'),
                         sanpham: record.sanpham,
                         ma: record.ma,
                         donvi: record.donvi,
@@ -306,8 +317,12 @@ let HoadonchitietService = class HoadonchitietService {
                 entry.closing = entry.tongNhapNam - entry.tongXuatNam;
             });
             const products = new Set([
-                ...hoadonchitiets.map((item) => item.title).filter((t) => t != null),
-                ...mathangs.map((item) => item.title).filter((t) => t != null),
+                ...hoadonchitiets
+                    .map((item) => item.title)
+                    .filter((t) => t != null),
+                ...mathangs
+                    .map((item) => item.title)
+                    .filter((t) => t != null),
             ]);
             const baoCaoTongHop = [...baoCaoHangNgay];
             console.log('baoCaoTongHop', baoCaoTongHop);
@@ -315,7 +330,10 @@ let HoadonchitietService = class HoadonchitietService {
                 if (!baoCaoTongHop.some((row) => row.ma === product)) {
                     const mathangItem = mathangs.find((item) => item.title === product);
                     const productName = mathangItem && mathangItem.ten ? mathangItem.ten : product;
-                    const details = productDetails[product] || { code: product, unit: 'N/A' };
+                    const details = productDetails[product] || {
+                        code: product,
+                        unit: 'N/A',
+                    };
                     baoCaoTongHop.push({
                         ngay: 'N/A',
                         ma: details.code,

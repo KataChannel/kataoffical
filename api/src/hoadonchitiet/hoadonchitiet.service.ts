@@ -1,8 +1,8 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { title } from 'process';
 import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
+import * as moment from 'moment';
 
 @Injectable()
 export class HoadonchitietService {
@@ -166,24 +166,42 @@ export class HoadonchitietService {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-  
-  parseDate(dateStr) {
-      const [month, day, year] = dateStr.split('/');
-      return new Date(year, month - 1, day);
-  }
 
-  // Function to format date to DD/MM/YYYY
+
   formatDate(date) {
-      return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+    if (typeof date === 'string') {
+      date = new Date(date);
+    }
+
+    if (!(date instanceof Date) || isNaN(date.getTime())) {
+      throw new Error('Invalid date');
+    }
+
+    return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
   }
 
-  // Function to format month to MM/YYYY
   formatMonth(date) {
-      return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+    if (typeof date === 'string') {
+      date = new Date(date);
+    }
+
+    if (!(date instanceof Date) || isNaN(date.getTime())) {
+      throw new Error('Invalid date');
+    }
+
+    console.log('date', date);
+    return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
   }
 
   async xuatnhapton(param: any) {
-    const { page = 1, limit = 20,sizesp=10, batdau, ketthuc, ...where } = param;
+    const {
+      page = 1,
+      limit = 20,
+      sizesp = 10,
+      batdau,
+      ketthuc,
+      ...where
+    } = param;
     console.log('param', param);
     try {
       const skip = (page - 1) * limit;
@@ -204,14 +222,20 @@ export class HoadonchitietService {
           take: limit,
           orderBy: { order: 'asc' },
           where: { ...where, ...dateFilter },
-          include: { hoadon: { select: { ntao: true, tdlap: true, thlap: true, nbmst: true } } },
+          include: {
+            hoadon: {
+              select: { ntao: true, tdlap: true, thlap: true, nbmst: true },
+            },
+          },
         }),
         this.prisma.hoadonChitiet.count({
           where: { ...where, ...dateFilter },
         }),
         this.prisma.mathang.findMany(),
       ]);
-      const productDetails: { [title2: string]: { code: string; unit: string } } = {};
+      const productDetails: {
+        [title2: string]: { code: string; unit: string };
+      } = {};
       mathangs.forEach((item: any) => {
         if (item.title) {
           productDetails[item.title2] = {
@@ -220,16 +244,13 @@ export class HoadonchitietService {
           };
         }
       });
-      const currentDate = new Date();
       const dailyMap: { [key: string]: any } = {};
-      console.log('hoadonchitiets', hoadonchitiets);
-
+      // console.log('hoadonchitiets', hoadonchitiets);
       hoadonchitiets.forEach((item: any) => {
         if (item.title && item.sluong && item.hoadon && item.hoadon.ntao) {
-          const date = new Date(item.hoadon.ntao);
-          console.log('date', date);
-          
-          const dateStr = this.formatDate(date);
+          const date = new Date(item?.hoadon?.ntao);
+          console.log('item', item);
+          const dateStr = moment(date).format('DD/MM/YYYY');
           const key = `${item.title}_${dateStr}`;
           if (!dailyMap[key]) {
             dailyMap[key] = {
@@ -253,7 +274,7 @@ export class HoadonchitietService {
             };
           }
 
-          if (item.hoadon.nbmst === "5900363291") {
+          if (item.hoadon.nbmst === '5900363291') {
             dailyMap[key].nhapNgay += item.sluong || 0;
             dailyMap[key].ttnhap += item.thtien || 0;
           } else {
@@ -262,17 +283,15 @@ export class HoadonchitietService {
           }
         }
       });
-  
+
       const baoCaoHangNgay = Object.values(dailyMap);
-      console.log('baoCaoHangNgay', baoCaoHangNgay);
-      
       const monthlyMap: { [key: string]: any } = {};
       const yearlyMap: { [key: string]: any } = {};
       baoCaoHangNgay.forEach((record: any) => {
-        const monthKey = `${record.ma}_${this.formatMonth(record.date)}`;
+        const monthKey = `${record.ma}_${moment(record.date).format('MM/YYYY')}`;
         if (!monthlyMap[monthKey]) {
           monthlyMap[monthKey] = {
-            thang: this.formatMonth(record.date),
+            thang: moment(record.date).format('MM/YYYY'),
             sanpham: record.sanpham,
             ma: record.ma,
             donvi: record.donvi,
@@ -284,11 +303,10 @@ export class HoadonchitietService {
         }
         monthlyMap[monthKey].tongNhapThang += record.nhapNgay;
         monthlyMap[monthKey].tongXuatThang += record.xuatNgay;
-  
-        const yearKey = `${record.ma}_${record.date.getFullYear()}`;
+        const yearKey = `${record.ma}_${moment(record.date).format('YYYY')}`;
         if (!yearlyMap[yearKey]) {
           yearlyMap[yearKey] = {
-            nam: record.date.getFullYear(),
+            nam: moment(record.date).format('YYYY'),
             sanpham: record.sanpham,
             ma: record.ma,
             donvi: record.donvi,
@@ -301,7 +319,7 @@ export class HoadonchitietService {
         yearlyMap[yearKey].tongNhapNam += record.nhapNgay;
         yearlyMap[yearKey].tongXuatNam += record.xuatNgay;
       });
-  
+
       Object.values(monthlyMap).forEach((entry: any) => {
         entry.opening = 0;
         entry.closing = entry.tongNhapThang - entry.tongXuatThang;
@@ -310,22 +328,32 @@ export class HoadonchitietService {
         entry.opening = 0;
         entry.closing = entry.tongNhapNam - entry.tongXuatNam;
       });
-  
+
       const products = new Set<string>([
-        ...hoadonchitiets.map((item: any) => item.title).filter((t: any) => t != null),
-        ...mathangs.map((item: any) => item.title).filter((t: any) => t != null),
+        ...hoadonchitiets
+          .map((item: any) => item.title)
+          .filter((t: any) => t != null),
+        ...mathangs
+          .map((item: any) => item.title)
+          .filter((t: any) => t != null),
       ]);
-  
+
       // Use current date as fallback for products with no transactions.
-  
-      const baoCaoTongHop = [...baoCaoHangNgay];   
+
+      const baoCaoTongHop = [...baoCaoHangNgay];
       console.log('baoCaoTongHop', baoCaoTongHop);
-      
+
       products.forEach((product) => {
         if (!baoCaoTongHop.some((row: any) => row.ma === product)) {
-          const mathangItem = mathangs.find((item: any) => item.title === product);
-          const productName = mathangItem && mathangItem.ten ? mathangItem.ten : product;
-          const details = productDetails[product] || { code: product, unit: 'N/A' };
+          const mathangItem = mathangs.find(
+            (item: any) => item.title === product,
+          );
+          const productName =
+            mathangItem && mathangItem.ten ? mathangItem.ten : product;
+          const details = productDetails[product] || {
+            code: product,
+            unit: 'N/A',
+          };
           baoCaoTongHop.push({
             ngay: 'N/A',
             ma: details.code,
@@ -346,9 +374,8 @@ export class HoadonchitietService {
             tongXuatNam: 0,
           });
         }
-      });      
+      });
 
-  
       return {
         data: baoCaoTongHop.slice(0, sizesp),
         total,
@@ -365,9 +392,9 @@ export class HoadonchitietService {
     }
   }
   async mathang(param: any) {
-    const { page = 1, pageSize = 20, ...where } = param;    
+    const { page = 1, pageSize = 20, ...where } = param;
     try {
-      const skip = (page - 1) * pageSize;  
+      const skip = (page - 1) * pageSize;
       const filter = { ...where };
       const [mathangs, total] = await Promise.all([
         this.prisma.mathang.findMany({
@@ -380,11 +407,11 @@ export class HoadonchitietService {
           where: filter,
         }),
       ]);
-  
+
       return {
         data: mathangs.map((item: any) => {
           item.giavon = Number(item.giavon).toFixed(0);
-          return item; 
+          return item;
         }),
         total,
         page,
@@ -417,14 +444,14 @@ export class HoadonchitietService {
 
   async updateMathang(id: string, data: any) {
     console.log('data', data);
-    
+
     try {
-        const updated = await this.prisma.mathang.update({
-          where: { id },
-          data:{isproduct: data.isproduct},
-        });
-        console.log('updated', updated);
-        
+      const updated = await this.prisma.mathang.update({
+        where: { id },
+        data: { isproduct: data.isproduct },
+      });
+      console.log('updated', updated);
+
       return updated;
     } catch (error) {
       this._ErrorlogService.logError('updateMathang', error);
