@@ -192,6 +192,8 @@ export class HoadonchitietService {
       }
 
       const data = await response.json();
+      console.log('🔄 Dữ liệu sản phẩm mới từ server:', data);
+      
       await this.saveHoadonchitiets(data.data, {
         page: data.page || 1,
         pageCount: data.pageCount || 1,
@@ -221,6 +223,98 @@ export class HoadonchitietService {
       this.total.set(cached.pagination.total);
       this.pageSize.set(cached.pagination.pageSize);
       return cached.hoadonchitiets;
+    }
+  }
+  async getXuatnhapton(param: any, pageSize: number = this.pageSize()) {
+    this.pageSize.set(pageSize); // Cập nhật pageSize
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+        body: JSON.stringify({ ...param, page: this.page(), limit: pageSize }),
+      };
+      const response = await fetch(`${environment.APIURL}/hoadonchitiet/xuatnhapton`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      const data = await response.json();
+      if (param.isOne === true) {
+        this.DetailHoadonchitiet.set(data);
+      } else {
+        await this.saveHoadonchitiets(data.data, {
+          page: data.page || 1,
+          pageCount: data.pageCount || 1,
+          total: data.total || data.data.length,
+          pageSize
+        });
+        this._StorageService.setItem('hoadonchitiets_updatedAt', new Date().toISOString());
+        this.ListHoadonchitiet.set(data.data);
+        this.page.set(data.page || 1);
+        this.pageCount.set(data.pageCount || 1);
+        this.total.set(data.total || data.data.length);
+        this.pageSize.set(pageSize);
+      }
+    } catch (error) {
+      this._ErrorLogService.logError('Failed to getHoadonchitietBy', error);
+      console.error(error);
+      const cached = await this.getCachedData();
+      if (!param.isOne) {
+        this.ListHoadonchitiet.set(cached.hoadonchitiets);
+        this.page.set(cached.pagination.page);
+        this.pageCount.set(cached.pagination.pageCount);
+        this.total.set(cached.pagination.total);
+        this.pageSize.set(cached.pagination.pageSize);
+      }
+    }
+  }
+  async getMathang(param: any, pageSize: number = this.pageSize()) {
+    this.pageSize.set(pageSize); // Cập nhật pageSize
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+        body: JSON.stringify({ ...param }),
+      };
+      const response = await fetch(`${environment.APIURL}/hoadonchitiet/mathang`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      const data = await response.json();
+      console.log('🔄 Dữ liệu sản phẩm mới từ server:', data);
+      this.page.set(data.page || 1);
+      this.pageCount.set(data.pageCount || 1);
+      this.total.set(data.total || data.data.length);
+      this.ListHoadonchitiet.set(data.data);
+    } catch (error) {
+      this._ErrorLogService.logError('Failed to getHoadonchitietBy', error);
+      console.error(error);
+      const cached = await this.getCachedData();
+    }
+  }
+  async updateMathang(dulieu: any) {
+    try {
+      const options = {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+        body: JSON.stringify(dulieu),
+      };
+      const response = await fetch(`${environment.APIURL}/hoadonchitiet/mathang/${dulieu.id}`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      const data = await response.json();
+    } catch (error) {
+      this._ErrorLogService.logError('Failed to getHoadonchitietBy', error);
+      console.error(error);
     }
   }
 

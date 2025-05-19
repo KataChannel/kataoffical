@@ -24,15 +24,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin"
@@ -40,15 +40,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/setting"
@@ -56,15 +56,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/setting/*"
@@ -72,15 +72,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/resource"
@@ -88,15 +88,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/resource/dashboard"
@@ -104,15 +104,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/resource/*"
@@ -120,15 +120,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/baiviet"
@@ -136,15 +136,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/baiviet/dashboard"
@@ -152,15 +152,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/baiviet/*"
@@ -168,15 +168,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/sanpham"
@@ -184,15 +184,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/sanpham/dashboard"
@@ -200,15 +200,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/sanpham/*"
@@ -216,15 +216,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/welcome"
@@ -232,15 +232,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/dashboard"
@@ -248,15 +248,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/hoadon"
@@ -264,15 +264,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/hoadon/*"
@@ -280,15 +280,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/hoadonchitiet"
@@ -296,15 +296,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/hoadonchitiet/*"
@@ -312,15 +312,47 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
+      "chunk-PSZXQIUS.js"
+    ],
+    "route": "/admin/xuatnhapton"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
+      "chunk-NWTUN43M.js",
+      "chunk-FVBTANBM.js",
+      "chunk-FLTDKWCI.js",
+      "chunk-E2JMTFJ4.js",
+      "chunk-DQEOXPOR.js",
+      "chunk-MS4AQ6UA.js",
+      "chunk-W4JVII6R.js",
+      "chunk-PSZXQIUS.js"
+    ],
+    "route": "/admin/mathang"
+  },
+  {
+    "renderMode": 1,
+    "preload": [
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
+      "chunk-NWTUN43M.js",
+      "chunk-FVBTANBM.js",
+      "chunk-FLTDKWCI.js",
+      "chunk-E2JMTFJ4.js",
+      "chunk-DQEOXPOR.js",
+      "chunk-MS4AQ6UA.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/menu"
@@ -328,15 +360,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/menu/*"
@@ -344,15 +376,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/userguide"
@@ -360,15 +392,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/userguide/*"
@@ -376,15 +408,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/quanlyqrcode"
@@ -392,15 +424,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/quanlyqrcode/*"
@@ -408,15 +440,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/quanlydrive"
@@ -424,15 +456,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/quanlydrive/*"
@@ -440,15 +472,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/drivelocal"
@@ -456,15 +488,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/drivelocal/*"
@@ -472,15 +504,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/googlesheet"
@@ -488,15 +520,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/googlesheet/*"
@@ -504,15 +536,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/landingpage"
@@ -520,15 +552,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/landingpage/*"
@@ -536,15 +568,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/hotro"
@@ -552,15 +584,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/hotro/*"
@@ -568,15 +600,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/nhomuser"
@@ -584,15 +616,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/nhomuser/*"
@@ -600,15 +632,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/permission"
@@ -616,15 +648,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/permission/*"
@@ -632,15 +664,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/goooglesheets"
@@ -648,15 +680,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/khachhang"
@@ -664,15 +696,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/khachhang/*"
@@ -680,15 +712,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/nhomkhachhang"
@@ -696,15 +728,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/nhomkhachhang/*"
@@ -712,15 +744,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/user"
@@ -728,15 +760,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/user/*"
@@ -744,15 +776,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/quanlyfile"
@@ -760,15 +792,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/quanlyfile/*"
@@ -776,15 +808,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "redirectTo": "/admin/profile/newsfeed",
@@ -793,15 +825,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/profile/newsfeed"
@@ -809,15 +841,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/profile/socialpage"
@@ -825,15 +857,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/profile/activity"
@@ -841,15 +873,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/profile/gallery"
@@ -857,15 +889,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/dexuat"
@@ -873,15 +905,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/dexuat/*"
@@ -889,15 +921,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "redirectTo": "/admin/account/general",
@@ -906,15 +938,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/account/password"
@@ -922,15 +954,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/account/general"
@@ -938,15 +970,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/account/notifications"
@@ -954,15 +986,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/account/billing"
@@ -970,15 +1002,15 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-C45LDTM6.js",
-      "chunk-IDAQ6BHR.js",
+      "chunk-ZWYGZGTA.js",
+      "chunk-WXWEYMAM.js",
       "chunk-NWTUN43M.js",
       "chunk-FVBTANBM.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-E2JMTFJ4.js",
       "chunk-DQEOXPOR.js",
       "chunk-MS4AQ6UA.js",
-      "chunk-V7LCEQTQ.js",
+      "chunk-W4JVII6R.js",
       "chunk-PSZXQIUS.js"
     ],
     "route": "/admin/account/security"
@@ -986,14 +1018,14 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-Q5FZJJZQ.js",
+      "chunk-BHNC2A3I.js",
       "chunk-KHG2G56T.js",
       "chunk-N325B2HJ.js",
-      "chunk-FY3IAPRD.js",
+      "chunk-FLTDKWCI.js",
       "chunk-PKTJEQ3B.js",
-      "chunk-E327P2PL.js",
-      "chunk-YUFAOVRW.js",
+      "chunk-ATATVIKK.js",
       "chunk-WUATMGZA.js",
+      "chunk-YUFAOVRW.js",
       "chunk-HXG3U3LB.js",
       "chunk-XQAJNNHC.js"
     ],
@@ -1054,8 +1086,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72766, hash: '929c5eacc272a6b0c572b849621f6bf1b68c88d11d1bddb2ab55eb747b1b3ca8', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24057, hash: 'b6763379115f46bf1ded1d7339e3cb0377f5e91904f7a3b5dc1061bf541a50fe', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
-    'styles-AURRFZS6.css': {size: 144903, hash: 'qlHw6XxGqg4', text: () => import('./assets-chunks/styles-AURRFZS6_css.mjs').then(m => m.default)}
+    'index.csr.html': {size: 72766, hash: '5d0d38911e4065926ec913edf3a11ff4ac5709ba721ca67e96c5a2e2ee1abdd9', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24057, hash: 'f4294b81b030d107f099507416dfe3d2e2af8ff3e7b003bb92d444dcdc862b38', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'styles-KJGAWMWP.css': {size: 144912, hash: 'Z1PEI5BHlVs', text: () => import('./assets-chunks/styles-KJGAWMWP_css.mjs').then(m => m.default)}
   },
 };

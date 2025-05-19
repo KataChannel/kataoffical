@@ -21,7 +21,7 @@
   <div class="mx-auto flex flex-row gap-2 p-2 rounded-lg" [ngStyle]="{'cursor': cursorStyle}">
     <div *ngFor="let row of plots()" class="flex flex-col gap-2">
       <div *ngFor="let plot of row"
-           class="w-16 h-16 border-2 rounded-lg flex flex-col items-center justify-center"
+           class="w-12 h-12 border-2 rounded-lg flex flex-col items-center justify-center"
            [style.borderColor]="plot.cropType ? getCropColor(plot.cropType) : '#ccc'"
            [ngStyle]="plot.state==='empty'?{'background-color': getSoilColor(plot)}:{}"
            (click)="onPlotClick(plot)">

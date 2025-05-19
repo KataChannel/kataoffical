@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đồng bộ Title (Optimized 10,000 Rows)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fuzzball@2.2.0/dist/fuzzball.umd.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .truncate {
+      max-width: 300px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .stt-column {
+      width: 60px;
+    }
+    #progressSection {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+  <div class="w-full max-w-6xl bg-white rounded-lg shadow-lg p-6">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Đồng bộ Title Tương tự</h1>
+    
+    <div class="mb-4">
+      <label class="block text-gray-700 font-medium mb-2" for="fileInput">
+        Chọn file dulieucannhomlai.json
+      </label>
+      <input type="file" id="fileInput" accept=".json" 
+             class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md 
+                    file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 
+                    hover:file:bg-blue-100">
+    </div>
+
+    <div id="progressSection" class="mb-4">
+      <p class="text-gray-700">Đang xử lý: <span id="progressText">0%</span></p>
+      <div class="w-full bg-gray-200 rounded-full h-4">
+        <div id="progressBar" class="bg-blue-500 h-4 rounded-full" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <div id="originalTable" class="hidden mb-6">
+      <h2 class="text-lg font-semibold text-gray-700 mb-2">Dữ liệu gốc</h2>
+      <div class="overflow-x-auto">
+        <table id="originalDataTable" class="w-full text-sm text-left text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th class="px-4 py-2 stt-column">STT</th>
+              <th class="px-4 py-2">Title</th>
+              <th class="px-4 py-2">Title2</th>
+              <th class="px-4 py-2">ĐVT</th>
+              <th class="px-4 py-2">Giavon</th>
+            </tr>
+          </thead>
+          <tfoot class="bg-gray-100 font-semibold">
+            <tr>
+              <td class="px-4 py-2" colspan="2">Tổng: <span id="originalTotalRecords">0</span> bản ghi</td>
+              <td class="px-4 py-2"></td>
+              <td class="px-4 py-2"></td>
+              <td class="px-4 py-2">Giavon: <span id="originalTotalGiavon">0</span></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div id="syncedTable" class="hidden mb-6">
+      <h2 class="text-lg font-semibold text-gray-700 mb-2">Dữ liệu đã đồng bộ</h2>
+      <div class="overflow-x-auto">
+        <table id="syncedDataTable" class="w-full text-sm text-left text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <th class="px-4 py-2 stt-column">STT</th>
+              <th class="px-4 py-2">Title</th>
+              <th class="px-4 py-2">Title2</th>
+              <th class="px-4 py-2">ĐVT</th>
+              <th class="px-4 py-2">Giavon</th>
+            </tr>
+          </thead>
+          <tfoot class="bg-gray-100 font-semibold">
+            <tr>
+              <td class="px-4 py-2" colspan="2">Tổng: <span id="syncedTotalRecords">0</span> bản ghi</td>
+              <td class="px-4 py-2"></td>
+              <td class="px-4 py-2"></td>
+              <td class="px-4 py-2">Giavon: <span id="syncedTotalGiavon">0</span></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div id="downloadSection" class="hidden">
+      <button id="downloadButton" 
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Tải file dulieucannhomlai_synced.json
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Lấy các phần tử DOM
+    const fileInput = document.getElementById('fileInput');
+    const progressSection = document.getElementById('progressSection');
+    const progressText = document.getElementById('progressText');
+    const progressBar = document.getElementById('progressBar');
+    const originalTable = document.getElementById('originalTable');
+    const syncedTable = document.getElementById('syncedTable');
+    const originalTotalRecords = document.getElementById('originalTotalRecords');
+    const originalTotalGiavon = document.getElementById('originalTotalGiavon');
+    const syncedTotalRecords = document.getElementById('syncedTotalRecords');
+    const syncedTotalGiavon = document.getElementById('syncedTotalGiavon');
+    const downloadSection = document.getElementById('downloadSection');
+    const downloadButton = document.getElementById('downloadButton');
+
+    // Hàm lấy từ khóa chính từ title
+    function getMainKeyword(title) {
+      // Lấy 50 ký tự đầu hoặc đến một dấu phân cách hợp lý
+      return title
+        .slice(0, 50)
+        .split(/rj45|cat[56]e?|1y|phukien|8p8c|100chop|scanne|scanner|sadadads/)[0]
+        .trim();
+    }
+
+    // Hàm đồng bộ title
+    async function syncTitleBySimilarity(data, similarityThreshold = 85) {
+      // Bước 1: Phân nhóm theo từ khóa chính
+      const clusters = {};
+      data.forEach((item, index) => {
+        const keyword = getMainKeyword(item.title);
+        if (!clusters[keyword]) clusters[keyword] = [];
+        clusters[keyword].push({ ...item, originalIndex: index });
+      });
+
+      const syncedData = new Array(data.length);
+      const usedIndices = new Set();
+      let progress = 0;
+      const totalClusters = Object.keys(clusters).length;
+
+      // Bước 2: Xử lý từng cụm
+      for (const keyword of Object.keys(clusters)) {
+        const cluster = clusters[keyword];
+        const groups = [];
+
+        // Nhóm trong cụm
+        for (let i = 0; i < cluster.length; i++) {
+          if (usedIndices.has(cluster[i].originalIndex)) continue;
+
+          const current = cluster[i];
+          const group = [current];
+          usedIndices.add(current.originalIndex);
+
+          for (let j = i + 1; j < cluster.length; j++) {
+            if (usedIndices.has(cluster[j].originalIndex)) continue;
+
+            const other = cluster[j];
+            // Chỉ so sánh title với title
+            const titleSim = fuzzball.ratio(current.title, other.title);
+
+            const isSimilar = titleSim >= similarityThreshold;
+
+            if (isSimilar) {
+              group.push(other);
+              usedIndices.add(other.originalIndex);
+            }
+          }
+
+          if (group.length > 0) {
+            groups.push(group);
+          }
+        }
+
+        // Đồng bộ title trong cụm
+        for (const group of groups) {
+          const standardTitle = group[0].title;
+          group.forEach(item => {
+            syncedData[item.originalIndex] = {
+              title: standardTitle,
+              title2: item.title2,
+              dvtinh: item.dvtinh,
+              giavon: item.giavon
+            };
+          });
+        }
+
+        // Cập nhật tiến trình
+        progress++;
+        const percentage = Math.round((progress / totalClusters) * 100);
+        progressText.textContent = `${percentage}%`;
+        progressBar.style.width = `${percentage}%`;
+        await new Promise(resolve => setTimeout(resolve, 0)); // Cho phép UI cập nhật
+      }
+
+      // Điền các bản ghi chưa được nhóm
+      data.forEach((item, index) => {
+        if (!syncedData[index]) {
+          syncedData[index] = { ...item };
+        }
+      });
+
+      return syncedData;
+    }
+
+    // Hàm khởi tạo DataTable
+    function initDataTable(tableId, data) {
+      const tableData = data.map((item, index) => ({
+        stt: index + 1,
+        title: `<span title="${item.title}" class="truncate">${item.title}</span>`,
+        title2: `<span title="${item.title2}" class="truncate">${item.title2}</span>`,
+        dvtinh: item.dvtinh,
+        giavon: parseInt(item.giavon).toLocaleString()
+      }));
+
+      $(`#${tableId}`).DataTable({
+        data: tableData,
+        columns: [
+          { data: 'stt', className: 'stt-column' },
+          { data: 'title' },
+          { data: 'title2' },
+          { data: 'dvtinh' },
+          { data: 'giavon' }
+        ],
+        pageLength: 50,
+        lengthMenu: [10, 25, 50, 100],
+        searching: true,
+        ordering: true,
+        language: {
+          search: "Tìm kiếm:",
+          lengthMenu: "Hiển thị _MENU_ bản ghi",
+          info: "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
+          paginate: {
+            first: "Đầu",
+            last: "Cuối",
+            next: "Tiếp",
+            previous: "Trước"
+          }
+        }
+      });
+
+      // Cập nhật tổng
+      const totalRecords = data.length;
+      const totalGiavon = data.reduce((sum, item) => sum + parseInt(item.giavon), 0);
+      document.getElementById(`${tableId === 'originalDataTable' ? 'original' : 'synced'}TotalRecords`).textContent = totalRecords.toLocaleString();
+      document.getElementById(`${tableId === 'originalDataTable' ? 'original' : 'synced'}TotalGiavon`).textContent = totalGiavon.toLocaleString();
+    }
+
+    // Xử lý khi chọn file
+    fileInput.addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      progressSection.style.display = 'block';
+      originalTable.classList.add('hidden');
+      syncedTable.classList.add('hidden');
+      downloadSection.classList.add('hidden');
+
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+
+          // Hiển thị dữ liệu gốc
+          originalTable.classList.remove('hidden');
+          initDataTable('originalDataTable', data);
+
+          // Đồng bộ title
+          const syncedData = await syncTitleBySimilarity(data, 85);
+
+          // Hiển thị dữ liệu đã đồng bộ
+          syncedTable.classList.remove('hidden');
+          initDataTable('syncedDataTable', syncedData);
+
+          // Hiển thị nút tải
+          downloadSection.classList.remove('hidden');
+
+          // Xử lý tải file
+          downloadButton.onclick = () => {
+            const jsonStr = JSON.stringify(syncedData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'dulieucannhomlai_synced.json';
+            a.click();
+            URL.revokeObjectURL(url);
+          };
+
+          progressSection.style.display = 'none';
+        } catch (error) {
+          progressSection.style.display = 'none';
+          alert('Lỗi khi đọc file JSON: ' + error.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>

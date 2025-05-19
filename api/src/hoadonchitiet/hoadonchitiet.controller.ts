@@ -19,6 +19,26 @@ export class HoadonchitietController {
   }
   @ApiOperation({ summary: 'Find hoadonchitiets by parameters' })
   @ApiBody({ type: Object }) 
+  @Post('xuatnhapton')
+  async xuatnhapton(@Body() param: any) {
+    try {
+      return await this.hoadonchitietService.xuatnhapton(param);
+    } catch (error) {
+      throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+  @ApiOperation({ summary: 'Find hoadonchitiets by parameters' })
+  @ApiBody({ type: Object }) 
+  @Post('mathang')
+  async mathang(@Body() param: any) {
+    try {
+      return await this.hoadonchitietService.mathang(param);
+    } catch (error) {
+      throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+  @ApiOperation({ summary: 'Find hoadonchitiets by parameters' })
+  @ApiBody({ type: Object }) 
   @Post('findby')
   async findby(@Body() param: any) {
     try {
@@ -83,6 +103,19 @@ export class HoadonchitietController {
   async update(@Param('id') id: string, @Body() data: any) { 
     try {
       return await this.hoadonchitietService.update(id, data);
+    } catch (error) {
+      throw new HttpException(error.message || 'Update failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update a hoadonchitiet' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiBody({ type: Object }) 
+  @UseGuards(JwtAuthGuard)
+  @Patch('mathang/:id')
+  async updatemathang(@Param('id') id: string, @Body() data: any) { 
+    try {
+      return await this.hoadonchitietService.updateMathang(id, data);
     } catch (error) {
       throw new HttpException(error.message || 'Update failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }

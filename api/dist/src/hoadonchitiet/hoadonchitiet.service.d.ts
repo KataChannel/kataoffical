@@ -14,11 +14,13 @@ export declare class HoadonchitietService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string | null;
         order: number | null;
         codeId: string | null;
         dvtte: string | null;
         tchat: number | null;
         tgia: number | null;
+        title2: string | null;
         idhdon: string;
         idhoadon: string;
         dgia: number | null;
@@ -35,16 +37,19 @@ export declare class HoadonchitietService {
         tsuat: number | null;
         tthue: number | null;
         sxep: number | null;
+        isproduct: boolean | null;
     }>;
     findBy(param: any): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string | null;
         order: number | null;
         codeId: string | null;
         dvtte: string | null;
         tchat: number | null;
         tgia: number | null;
+        title2: string | null;
         idhdon: string;
         idhoadon: string;
         dgia: number | null;
@@ -61,16 +66,19 @@ export declare class HoadonchitietService {
         tsuat: number | null;
         tthue: number | null;
         sxep: number | null;
+        isproduct: boolean | null;
     } | {
         data: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
             order: number | null;
             codeId: string | null;
             dvtte: string | null;
             tchat: number | null;
             tgia: number | null;
+            title2: string | null;
             idhdon: string;
             idhoadon: string;
             dgia: number | null;
@@ -87,6 +95,7 @@ export declare class HoadonchitietService {
             tsuat: number | null;
             tthue: number | null;
             sxep: number | null;
+            isproduct: boolean | null;
         }[];
         total: number;
         page: any;
@@ -94,14 +103,19 @@ export declare class HoadonchitietService {
     } | null>;
     findAll(page?: number, limit?: number): Promise<{
         data: {
+            ntao: string;
+            tdlap: string;
+            thlap: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            title: string | null;
             order: number | null;
             codeId: string | null;
             dvtte: string | null;
             tchat: number | null;
             tgia: number | null;
+            title2: string | null;
             idhdon: string;
             idhoadon: string;
             dgia: number | null;
@@ -118,20 +132,39 @@ export declare class HoadonchitietService {
             tsuat: number | null;
             tthue: number | null;
             sxep: number | null;
+            isproduct: boolean | null;
         }[];
         total: number;
         page: number;
+        pageCount: number;
+    }>;
+    parseDate(dateStr: any): Date;
+    formatDate(date: any): string;
+    formatMonth(date: any): string;
+    xuatnhapton(param: any): Promise<{
+        data: any[];
+        total: number;
+        totalSP: any;
+        page: any;
+        pageCount: number;
+    }>;
+    mathang(param: any): Promise<{
+        data: any[];
+        total: number;
+        page: any;
         pageCount: number;
     }>;
     findOne(id: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string | null;
         order: number | null;
         codeId: string | null;
         dvtte: string | null;
         tchat: number | null;
         tgia: number | null;
+        title2: string | null;
         idhdon: string;
         idhoadon: string;
         dgia: number | null;
@@ -148,17 +181,34 @@ export declare class HoadonchitietService {
         tsuat: number | null;
         tthue: number | null;
         sxep: number | null;
+        isproduct: boolean | null;
+    }>;
+    updateMathang(id: string, data: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        title: string | null;
+        order: number | null;
+        codeId: string | null;
+        status: string;
+        title2: string | null;
+        dvtinh: string | null;
+        ten: string | null;
+        isproduct: boolean | null;
+        giavon: number;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        title: string | null;
         order: number | null;
         codeId: string | null;
         dvtte: string | null;
         tchat: number | null;
         tgia: number | null;
+        title2: string | null;
         idhdon: string;
         idhoadon: string;
         dgia: number | null;
@@ -175,6 +225,7 @@ export declare class HoadonchitietService {
         tsuat: number | null;
         tthue: number | null;
         sxep: number | null;
+        isproduct: boolean | null;
     }>;
     reorderhoadonChitiets(hoadonChitietIds: string[]): Promise<{
         status: string;

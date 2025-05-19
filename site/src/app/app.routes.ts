@@ -29,13 +29,15 @@ export const routes: Routes = [
             (m) => m.SettingRoutingModule
           ),
       },
-        {
+      {
         path: 'resource',
         canActivate: [PermissionGuard],
         data: { permission: 'resource.view' },
         loadChildren: () =>
-           import('./admin/resource/resource.route').then(m => m.ResourceRoutingModule),
-  },
+          import('./admin/resource/resource.route').then(
+            (m) => m.ResourceRoutingModule
+          ),
+      },
       {
         path: 'baiviet',
         canActivate: [PermissionGuard],
@@ -119,6 +121,20 @@ export const routes: Routes = [
           },
         ],
       },
+     {
+            path: 'xuatnhapton',
+            loadComponent: () =>
+              import(
+                './admin/hoadonchitiet/xuatnhapton/xuatnhapton.component'
+              ).then((c) => c.XuatnhaptonComponent),
+        },
+     {
+            path: 'mathang',
+            loadComponent: () =>
+              import(
+                './admin/hoadonchitiet/mathang/mathang.component'
+              ).then((c) => c.MathangComponent),
+        },
       {
         path: 'menu',
         canActivate: [PermissionGuard],

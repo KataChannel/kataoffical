@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "fuzzball": "^2.2.2"
+  }
+}

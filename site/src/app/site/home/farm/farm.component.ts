@@ -42,7 +42,7 @@ export interface Crop {
 })
 export class FarmComponent implements OnInit, OnDestroy {
   rows = 5;
-  cols = 5;
+  cols = 8;
   private farmPlots: WritableSignal<FarmPlot[][]> = signal([]);
   plots: Signal<FarmPlot[][]> = this.farmPlots.asReadonly();
   private tickSub!: Subscription;

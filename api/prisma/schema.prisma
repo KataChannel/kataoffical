@@ -454,6 +454,8 @@ model Hoadon {
 model HoadonChitiet {
   id        String   @id @default(uuid())
   codeId    String? 
+  title     String?
+  title2     String?
   idhdon    String
   idhoadon  String
   hoadon    Hoadon   @relation(fields: [idhoadon], references: [id], onDelete: Cascade)
@@ -475,11 +477,25 @@ model HoadonChitiet {
   dvtte     String?
   tgia      Int?
   order     Int? @default(1)
+  isproduct Boolean? @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   @@index([idhdon])
 }
-
+model Mathang {
+  id        String   @id @default(uuid())
+  codeId    String?  @unique // Mã đề xuất duy nhất
+  ten       String?
+  title     String?
+  title2    String?
+  dvtinh    String?
+  giavon    Float    @default(0)
+  isproduct Boolean? @default(true)
+  status    String   @default("draft") // "draft", "published", "archived"
+  order     Int?     @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 model UserguidBlock {
   id        String        @id @default(uuid())
   codeId    String?       @unique // Mã đề xuất duy nhất

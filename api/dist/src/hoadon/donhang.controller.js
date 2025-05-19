@@ -47,7 +47,7 @@ let HoadonController = class HoadonController {
             if (isNaN(limitNum) || limitNum < 1) {
                 throw new common_1.HttpException('Limit must be a positive integer', common_1.HttpStatus.BAD_REQUEST);
             }
-            return await this.hoadonService.findAll(pageNum, limitNum);
+            return await this.hoadonService.findAll(pageNum, limitNum, isChitiet);
         }
         catch (error) {
             throw new common_1.HttpException(error.message || 'Failed to fetch hoadons', error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);

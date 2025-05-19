@@ -29,6 +29,22 @@ let HoadonchitietController = class HoadonchitietController {
             throw new common_1.HttpException(error.message || 'Create failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async xuatnhapton(param) {
+        try {
+            return await this.hoadonchitietService.xuatnhapton(param);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async mathang(param) {
+        try {
+            return await this.hoadonchitietService.mathang(param);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async findby(param) {
         try {
             return await this.hoadonchitietService.findBy(param);
@@ -77,6 +93,14 @@ let HoadonchitietController = class HoadonchitietController {
             throw new common_1.HttpException(error.message || 'Update failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async updatemathang(id, data) {
+        try {
+            return await this.hoadonchitietService.updateMathang(id, data);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Update failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async remove(id) {
         try {
             return await this.hoadonchitietService.remove(id);
@@ -106,6 +130,24 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], HoadonchitietController.prototype, "create", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Find hoadonchitiets by parameters' }),
+    (0, swagger_1.ApiBody)({ type: Object }),
+    (0, common_1.Post)('xuatnhapton'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HoadonchitietController.prototype, "xuatnhapton", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Find hoadonchitiets by parameters' }),
+    (0, swagger_1.ApiBody)({ type: Object }),
+    (0, common_1.Post)('mathang'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HoadonchitietController.prototype, "mathang", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Find hoadonchitiets by parameters' }),
     (0, swagger_1.ApiBody)({ type: Object }),
@@ -157,6 +199,19 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], HoadonchitietController.prototype, "update", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Update a hoadonchitiet' }),
+    (0, swagger_1.ApiParam)({ name: 'id', type: String }),
+    (0, swagger_1.ApiBody)({ type: Object }),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)('mathang/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], HoadonchitietController.prototype, "updatemathang", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Delete a hoadonchitiet' }),
