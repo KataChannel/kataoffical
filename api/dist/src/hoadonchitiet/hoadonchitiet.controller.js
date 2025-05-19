@@ -29,9 +29,24 @@ let HoadonchitietController = class HoadonchitietController {
             throw new common_1.HttpException(error.message || 'Create failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async xuatnhapton(param) {
+    async xuatnhapton(param, res) {
+        console.log('param', param);
         try {
-            return await this.hoadonchitietService.xuatnhapton(param);
+            if (param.isDownload === true) {
+                const dulieu = await this.hoadonchitietService.xuatnhapton(param);
+                const buffer = await this.hoadonchitietService.generateExcel(dulieu.data);
+                const stream = require('stream');
+                const bufferStream = new stream.PassThrough();
+                bufferStream.end(buffer);
+                return new common_1.StreamableFile(bufferStream, {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    disposition: 'attachment; filename="xuatnhapton.xlsx"',
+                });
+            }
+            else {
+                const result = await this.hoadonchitietService.xuatnhapton(param);
+                return result;
+            }
         }
         catch (error) {
             throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -135,8 +150,9 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: Object }),
     (0, common_1.Post)('xuatnhapton'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)({ passthrough: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], HoadonchitietController.prototype, "xuatnhapton", null);
 __decorate([

@@ -147,6 +147,7 @@ export declare class HoadonchitietService {
         page: any;
         pageCount: number;
     }>;
+    generateExcel(dulieu: any): Promise<Buffer>;
     mathang(param: any): Promise<{
         data: any[];
         total: number;
@@ -195,6 +196,7 @@ export declare class HoadonchitietService {
         ten: string | null;
         isproduct: boolean | null;
         giavon: number;
+        isEdit: boolean | null;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{

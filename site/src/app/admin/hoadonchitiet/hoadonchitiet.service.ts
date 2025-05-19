@@ -6,9 +6,10 @@ import { openDB } from 'idb';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SharedSocketService } from '../../shared/services/sharedsocket.service';
+import { saveAs } from 'file-saver';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HoadonchitietService {
   private socket: any;
@@ -16,7 +17,7 @@ export class HoadonchitietService {
     private _StorageService: StorageService,
     private router: Router,
     private _ErrorLogService: ErrorLogService,
-    private _sharedSocketService: SharedSocketService,
+    private _sharedSocketService: SharedSocketService
   ) {
     this.socket = this._sharedSocketService.getSocket();
     this.listenHoadonchitietUpdates();
@@ -28,28 +29,28 @@ export class HoadonchitietService {
   page = signal<number>(1);
   pageCount = signal<number>(1);
   total = signal<number>(0);
-  pageSize = signal<number>(10); // Mặc định 10 mục mỗi trang
+  pageSize = signal<number>(50); // Mặc định 10 mục mỗi trang
   hoadonchitietId = signal<string | null>(null);
 
-    async fetchData(dulieu: any) {
-      const API_URL = `https://hoadondientu.gdt.gov.vn:30000/query/invoices/detail?nbmst=${dulieu.nbmst}&khhdon=${dulieu.khhdon}&shdon=${dulieu.shdon}&khmshdon=${dulieu.khmshdon}`;
-      try {
-        const options = {
-            headers: {
-              "Authorization": `Bearer ${dulieu.token}`
-            },
-          };
-          const response = await fetch(API_URL, options);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const data = await response.json();
-            return data;
-      } catch (error) {
-          this._ErrorLogService.logError('Failed to CreateHoadon', error);
-          return console.error(error);
+  async fetchData(dulieu: any) {
+    const API_URL = `https://hoadondientu.gdt.gov.vn:30000/query/invoices/detail?nbmst=${dulieu.nbmst}&khhdon=${dulieu.khhdon}&shdon=${dulieu.shdon}&khmshdon=${dulieu.khmshdon}`;
+    try {
+      const options = {
+        headers: {
+          Authorization: `Bearer ${dulieu.token}`,
+        },
+      };
+      const response = await fetch(API_URL, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      this._ErrorLogService.logError('Failed to CreateHoadon', error);
+      return console.error(error);
     }
+  }
 
   // Khởi tạo IndexedDB
   private async initDB() {
@@ -76,7 +77,15 @@ export class HoadonchitietService {
   }
 
   // Lưu dữ liệu và phân trang vào IndexedDB
-  private async saveHoadonchitiets(data: any[], pagination: { page: number, pageCount: number, total: number, pageSize: number }) {
+  private async saveHoadonchitiets(
+    data: any[],
+    pagination: {
+      page: number;
+      pageCount: number;
+      total: number;
+      pageSize: number;
+    }
+  ) {
     const db = await this.initDB();
     const tx = db.transaction('hoadonchitiets', 'readwrite');
     const store = tx.objectStore('hoadonchitiets');
@@ -92,10 +101,18 @@ export class HoadonchitietService {
     if (cached && cached.hoadonchitiets) {
       return {
         hoadonchitiets: cached.hoadonchitiets,
-        pagination: cached.pagination || { page: 1, pageCount: 1, total: cached.hoadonchitiets.length, pageSize: 10 }
+        pagination: cached.pagination || {
+          page: 1,
+          pageCount: 1,
+          total: cached.hoadonchitiets.length,
+          pageSize: 10,
+        },
       };
     }
-    return { hoadonchitiets: [], pagination: { page: 1, pageCount: 1, total: 0, pageSize: 10 } };
+    return {
+      hoadonchitiets: [],
+      pagination: { page: 1, pageCount: 1, total: 0, pageSize: 10 },
+    };
   }
 
   setHoadonchitietId(id: string | null) {
@@ -108,11 +125,14 @@ export class HoadonchitietService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+          Authorization: `Bearer ${this._StorageService.getItem('token')}`,
         },
         body: JSON.stringify(dulieu),
       };
-      const response = await fetch(`${environment.APIURL}/hoadonchitiet`, options);
+      const response = await fetch(
+        `${environment.APIURL}/hoadonchitiet`,
+        options
+      );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -125,13 +145,21 @@ export class HoadonchitietService {
     }
   }
 
-  async getAllHoadonchitiet(pageSize: number = this.pageSize(), forceRefresh: boolean = false) {
+  async getAllHoadonchitiet(
+    pageSize: number = this.pageSize(),
+    forceRefresh: boolean = false
+  ) {
     this.pageSize.set(pageSize);
-    const cached = await this.getCachedData();   
-    const updatedAtCache = this._StorageService.getItem('hoadonchitiets_updatedAt') || '0';    
-    
+    const cached = await this.getCachedData();
+    const updatedAtCache =
+      this._StorageService.getItem('hoadonchitiets_updatedAt') || '0';
+
     // Nếu không yêu cầu tải mới và cache hợp lệ, trả về cache
-    if (!forceRefresh && cached.hoadonchitiets.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) {
+    if (
+      !forceRefresh &&
+      cached.hoadonchitiets.length > 0 &&
+      Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000
+    ) {
       this.ListHoadonchitiet.set(cached.hoadonchitiets);
       this.page.set(cached.pagination.page);
       this.pageCount.set(cached.pagination.pageCount);
@@ -145,13 +173,16 @@ export class HoadonchitietService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+          Authorization: `Bearer ${this._StorageService.getItem('token')}`,
         },
       };
 
       // Kiểm tra thời gian cập nhật từ server, trừ khi được yêu cầu forceRefresh
       if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/hoadonchitiet/lastupdated`, options);
+        const lastUpdatedResponse = await fetch(
+          `${environment.APIURL}/hoadonchitiet/lastupdated`,
+          options
+        );
         if (!lastUpdatedResponse.ok) {
           this.handleError(lastUpdatedResponse.status);
           this.ListHoadonchitiet.set(cached.hoadonchitiets);
@@ -178,9 +209,12 @@ export class HoadonchitietService {
       // Tải dữ liệu mới từ server
       const query = new URLSearchParams({
         page: this.page().toString(),
-        limit: pageSize.toString()
+        limit: pageSize.toString(),
       });
-      const response = await fetch(`${environment.APIURL}/hoadonchitiet?${query}`, options);
+      const response = await fetch(
+        `${environment.APIURL}/hoadonchitiet?${query}`,
+        options
+      );
       if (!response.ok) {
         this.handleError(response.status);
         this.ListHoadonchitiet.set(cached.hoadonchitiets);
@@ -193,20 +227,29 @@ export class HoadonchitietService {
 
       const data = await response.json();
       console.log('🔄 Dữ liệu sản phẩm mới từ server:', data);
-      
+
       await this.saveHoadonchitiets(data.data, {
         page: data.page || 1,
         pageCount: data.pageCount || 1,
         total: data.total || data.data.length,
-        pageSize
+        pageSize,
       });
       // Với forceRefresh, cập nhật luôn với thời gian mới từ server, nếu không thì sử dụng thời gian lấy từ lastUpdatedResponse
       if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/hoadonchitiet/lastupdated`, options);
+        const lastUpdatedResponse = await fetch(
+          `${environment.APIURL}/hoadonchitiet/lastupdated`,
+          options
+        );
         const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-        this._StorageService.setItem('hoadonchitiets_updatedAt', updatedAtServer);
+        this._StorageService.setItem(
+          'hoadonchitiets_updatedAt',
+          updatedAtServer
+        );
       } else {
-        this._StorageService.setItem('hoadonchitiets_updatedAt', new Date().toISOString());
+        this._StorageService.setItem(
+          'hoadonchitiets_updatedAt',
+          new Date().toISOString()
+        );
       }
       this.ListHoadonchitiet.set(data.data);
       this.page.set(data.page || 1);
@@ -228,34 +271,50 @@ export class HoadonchitietService {
   async getXuatnhapton(param: any, pageSize: number = this.pageSize()) {
     this.pageSize.set(pageSize); // Cập nhật pageSize
     try {
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
-        },
-        body: JSON.stringify({ ...param, page: this.page(), limit: pageSize }),
-      };
-      const response = await fetch(`${environment.APIURL}/hoadonchitiet/xuatnhapton`, options);
-      if (!response.ok) {
-        this.handleError(response.status);
-      }
-      const data = await response.json();
-      if (param.isOne === true) {
-        this.DetailHoadonchitiet.set(data);
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${this._StorageService.getItem('token')}`,
+          },
+          body: JSON.stringify({
+            ...param,
+            page: this.page(),
+            limit: pageSize,
+          }),
+        };
+        const response = await fetch(
+          `${environment.APIURL}/hoadonchitiet/xuatnhapton`,
+          options
+        );
+        if (!response.ok) {
+          this.handleError(response.status);
+        }
+
+      if (param.isDownload === true) {
+          const blob = await response.blob();
+          saveAs(blob, 'data.xlsx'); // Tải file về
       } else {
-        await this.saveHoadonchitiets(data.data, {
-          page: data.page || 1,
-          pageCount: data.pageCount || 1,
-          total: data.total || data.data.length,
-          pageSize
-        });
-        this._StorageService.setItem('hoadonchitiets_updatedAt', new Date().toISOString());
-        this.ListHoadonchitiet.set(data.data);
-        this.page.set(data.page || 1);
-        this.pageCount.set(data.pageCount || 1);
-        this.total.set(data.total || data.data.length);
-        this.pageSize.set(pageSize);
+        const data = await response.json();        
+        if (param.isOne === true) {
+          this.DetailHoadonchitiet.set(data);
+        } else {
+          await this.saveHoadonchitiets(data.data, {
+            page: data.page || 1,
+            pageCount: data.pageCount || 1,
+            total: data.total || data.data.length,
+            pageSize,
+          });
+          this._StorageService.setItem(
+            'hoadonchitiets_updatedAt',
+            new Date().toISOString()
+          );
+          this.ListHoadonchitiet.set(data.data);
+          this.page.set(data.page || 1);
+          this.pageCount.set(data.pageCount || 1);
+          this.total.set(data.total || data.data.length);
+          this.pageSize.set(pageSize);
+        }
       }
     } catch (error) {
       this._ErrorLogService.logError('Failed to getHoadonchitietBy', error);
@@ -277,11 +336,14 @@ export class HoadonchitietService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+          Authorization: `Bearer ${this._StorageService.getItem('token')}`,
         },
         body: JSON.stringify({ ...param }),
       };
-      const response = await fetch(`${environment.APIURL}/hoadonchitiet/mathang`, options);
+      const response = await fetch(
+        `${environment.APIURL}/hoadonchitiet/mathang`,
+        options
+      );
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -303,11 +365,14 @@ export class HoadonchitietService {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+          Authorization: `Bearer ${this._StorageService.getItem('token')}`,
         },
         body: JSON.stringify(dulieu),
       };
-      const response = await fetch(`${environment.APIURL}/hoadonchitiet/mathang/${dulieu.id}`, options);
+      const response = await fetch(
+        `${environment.APIURL}/hoadonchitiet/mathang/${dulieu.id}`,
+        options
+      );
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -324,10 +389,13 @@ export class HoadonchitietService {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+          Authorization: `Bearer ${this._StorageService.getItem('token')}`,
         },
       };
-      const response = await fetch(`${environment.APIURL}/hoadonchitiet/updateCodeIds`, options);
+      const response = await fetch(
+        `${environment.APIURL}/hoadonchitiet/updateCodeIds`,
+        options
+      );
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -356,11 +424,14 @@ export class HoadonchitietService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+          Authorization: `Bearer ${this._StorageService.getItem('token')}`,
         },
         body: JSON.stringify({ ...param, page: this.page(), limit: pageSize }),
       };
-      const response = await fetch(`${environment.APIURL}/hoadonchitiet/findby`, options);
+      const response = await fetch(
+        `${environment.APIURL}/hoadonchitiet/findby`,
+        options
+      );
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -372,9 +443,12 @@ export class HoadonchitietService {
           page: data.page || 1,
           pageCount: data.pageCount || 1,
           total: data.total || data.data.length,
-          pageSize
+          pageSize,
         });
-        this._StorageService.setItem('hoadonchitiets_updatedAt', new Date().toISOString());
+        this._StorageService.setItem(
+          'hoadonchitiets_updatedAt',
+          new Date().toISOString()
+        );
         this.ListHoadonchitiet.set(data.data);
         this.page.set(data.page || 1);
         this.pageCount.set(data.pageCount || 1);
@@ -401,11 +475,14 @@ export class HoadonchitietService {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+          Authorization: `Bearer ${this._StorageService.getItem('token')}`,
         },
         body: JSON.stringify(dulieu),
       };
-      const response = await fetch(`${environment.APIURL}/hoadonchitiet/${dulieu.id}`, options);
+      const response = await fetch(
+        `${environment.APIURL}/hoadonchitiet/${dulieu.id}`,
+        options
+      );
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -424,10 +501,13 @@ export class HoadonchitietService {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+          Authorization: `Bearer ${this._StorageService.getItem('token')}`,
         },
       };
-      const response = await fetch(`${environment.APIURL}/hoadonchitiet/${item.id}`, options);
+      const response = await fetch(
+        `${environment.APIURL}/hoadonchitiet/${item.id}`,
+        options
+      );
       if (!response.ok) {
         this.handleError(response.status);
       }

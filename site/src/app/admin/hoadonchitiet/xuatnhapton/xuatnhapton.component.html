@@ -28,35 +28,6 @@
         </div>
 
         <div class="flex flex-row space-x-2 items-center">
-          <div class="flex flex-row space-x-2 items-center">
-            <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-              <mat-label>Bắt Đầu</mat-label>
-              <input matInput [matDatepicker]="picker" [(ngModel)]="SearchParams.batdau"
-                [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Ngày" />
-              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-              <mat-label>Kết Thúc</mat-label>
-              <input matInput [matDatepicker]="picker1" [(ngModel)]="SearchParams.ketthuc"
-                [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Ngày" />
-              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-              <mat-datepicker #picker1></mat-datepicker>
-            </mat-form-field>
-          </div>
-          <mat-form-field appearance="outline" subscriptSizing="dynamic">
-               <mat-label>Số Lượng SP</mat-label>
-              <input type="number" matInput [(ngModel)]="SearchParams.sizesp"  [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Số Lượng SP" />
-          </mat-form-field> 
-          <button (click)="fetchData()" class="flex flex-row items-center whitespace-nowrap" color="primary"
-            matTooltip="Lấy dữ liệu" mat-flat-button>
-            <span class="whitespace-nowrap">Lấy Dữ Liệu</span>
-          </button>
-        </div>
-
-
-
-        <div class="flex flex-row space-x-2 items-center">
           <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
             <mat-icon>tune</mat-icon>
           </button>
@@ -94,9 +65,37 @@
           </button>
         </div>
 
-
       </div>
     </div>
+    
+        <div class="flex flex-row space-x-2 items-center">
+          <div class="flex flex-row space-x-2 items-center">
+            <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+              <mat-label>Bắt Đầu</mat-label>
+              <input matInput [matDatepicker]="picker" [(ngModel)]="SearchParams.batdau"
+                [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Ngày" />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+              <mat-label>Kết Thúc</mat-label>
+              <input matInput [matDatepicker]="picker1" [(ngModel)]="SearchParams.ketthuc"
+                [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Ngày" />
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+               <mat-label>Số Lượng SP</mat-label>
+              <input type="number" matInput [(ngModel)]="SearchParams.sizesp"  [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Số Lượng SP" />
+          </mat-form-field> 
+          <mat-slide-toggle [(ngModel)]="SearchParams.isDownload">Download</mat-slide-toggle>
+          <button (click)="fetchData()" class="flex flex-row items-center whitespace-nowrap" color="primary"
+            matTooltip="Lấy dữ liệu" mat-flat-button>
+            <span class="whitespace-nowrap">Lấy Dữ Liệu</span>
+          </button>
+        </div>
+
     <div class="w-full h-full overflow-auto">
       <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
         @for (column of displayedColumns; track column) {

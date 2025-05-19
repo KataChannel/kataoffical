@@ -25,7 +25,8 @@
               "color-name",
               "debug",
               "xmlhttprequest-ssl",
-              "qrcode"
+              "qrcode",
+              "file-saver"
              ],
             "outputPath": "dist/site",
             "index": "src/index.html",

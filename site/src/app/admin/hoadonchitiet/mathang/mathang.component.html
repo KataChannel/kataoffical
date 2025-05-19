@@ -32,7 +32,8 @@
         </div>
 
         <div class="flex flex-row space-x-2 items-center">
-          <mat-slide-toggle [(ngModel)]="SearchParams.isproduct" (click)="fetchData()"></mat-slide-toggle>
+          <mat-slide-toggle [(ngModel)]="SearchParams.isproduct" (click)="fetchData()">Product</mat-slide-toggle>
+          <mat-slide-toggle [(ngModel)]="SearchParams.isEdit" (click)="fetchData()">Edit</mat-slide-toggle>
 
           <!-- <button (click)="fetchData()" class="flex flex-row items-center whitespace-nowrap" color="primary"
             matTooltip="Lấy dữ liệu" mat-flat-button>
@@ -119,17 +120,16 @@
             }         
             @case ('ten') {
        <div class="flex flex-col space-y-2">
-            <span class="max-w-80 line-clamp-4 text-start">
+            <span class="line-clamp-4 text-start">
               {{ row[column]}}
             </span>
-             <span class="max-w-80 line-clamp-4 text-start text-blue-600">
+             <span class="line-clamp-4 text-start text-blue-600">
               {{ row.title}}
             </span>
-            <span class="max-w-80 line-clamp-4 text-start {{row.title===row.title2 ? 'text-red-600' : 'text-green-600'}}">
+            <span class="line-clamp-4 text-start {{row.title===row.title2 ? 'text-red-600' : 'text-green-600'}}">
               {{ row.title2}}
             </span>
               </div>
-
             }
             @case ('title') {
             <span class="max-w-80 line-clamp-4 text-start">
@@ -140,7 +140,7 @@
             </span>
             }
             @case ('title2') {
-            <span class="max-w-80 line-clamp-4 text-start">
+            <span class="max-w- line-clamp-4 text-start">
               <div class="relative w-full">
                   <input type="text" (keyup.enter)="Capnhattitle2($event,row)"
                       placeholder="Tìm Kiếm..."

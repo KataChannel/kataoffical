@@ -15,6 +15,7 @@ const prisma_service_1 = require("../../prisma/prisma.service");
 const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 const moment = require("moment");
+const ExcelJS = require("exceljs");
 let HoadonchitietService = class HoadonchitietService {
     constructor(prisma, _SocketGateway, _ErrorlogService) {
         this.prisma = prisma;
@@ -191,12 +192,11 @@ let HoadonchitietService = class HoadonchitietService {
         if (!(date instanceof Date) || isNaN(date.getTime())) {
             throw new Error('Invalid date');
         }
-        console.log('date', date);
         return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
     }
     async xuatnhapton(param) {
+        delete param.isDownload;
         const { page = 1, limit = 20, sizesp = 10, batdau, ketthuc, ...where } = param;
-        console.log('param', param);
         try {
             const skip = (page - 1) * limit;
             const dateFilter = batdau && ketthuc
@@ -238,8 +238,7 @@ let HoadonchitietService = class HoadonchitietService {
             const dailyMap = {};
             hoadonchitiets.forEach((item) => {
                 if (item.title && item.sluong && item.hoadon && item.hoadon.ntao) {
-                    const date = new Date(item?.hoadon?.ntao);
-                    console.log('item', item);
+                    const date = new Date(item.hoadon.ntao);
                     const dateStr = moment(date).format('DD/MM/YYYY');
                     const key = `${item.title}_${dateStr}`;
                     if (!dailyMap[key]) {
@@ -252,111 +251,76 @@ let HoadonchitietService = class HoadonchitietService {
                             nhapNgay: 0,
                             xuatNgay: 0,
                             cuoiNgay: 0,
-                            ttnhap: 0,
-                            ttxuat: 0,
+                            ttdauNgay: 0,
+                            ttnhapNgay: 0,
+                            ttxuatNgay: 0,
+                            ttcuoiNgay: 0,
                             thang: this.formatMonth(date),
                             tongNhapThang: 0,
                             tongXuatThang: 0,
-                            closing: 0,
+                            tongCuoiThang: 0,
+                            ttnhapThang: 0,
+                            ttxuatThang: 0,
+                            ttcuoiThang: 0,
                             nam: date.getFullYear(),
                             tongNhapNam: 0,
                             tongXuatNam: 0,
+                            tongCuoiNam: 0,
+                            ttnhapNam: 0,
+                            ttxuatNam: 0,
+                            ttcuoiNam: 0,
                         };
                     }
                     if (item.hoadon.nbmst === '5900363291') {
                         dailyMap[key].nhapNgay += item.sluong || 0;
-                        dailyMap[key].ttnhap += item.thtien || 0;
+                        dailyMap[key].ttnhapNgay += item.thtien || 0;
+                        dailyMap[key].tongNhapThang += item.sluong || 0;
+                        dailyMap[key].ttnhapThang += item.thtien || 0;
+                        dailyMap[key].tongNhapNam += item.sluong || 0;
+                        dailyMap[key].ttnhapNam += item.thtien || 0;
                     }
                     else {
                         dailyMap[key].xuatNgay += item.sluong || 0;
-                        dailyMap[key].ttxuat += item.thtien || 0;
+                        dailyMap[key].ttxuatNgay += item.thtien || 0;
+                        dailyMap[key].tongXuatThang += item.sluong || 0;
+                        dailyMap[key].ttxuatThang += item.thtien || 0;
+                        dailyMap[key].tongXuatNam += item.sluong || 0;
+                        dailyMap[key].ttxuatNam += item.thtien || 0;
                     }
+                    dailyMap[key].cuoiNgay =
+                        dailyMap[key].dauNgay + dailyMap[key].nhapNgay - dailyMap[key].xuatNgay;
+                    dailyMap[key].ttcuoiNgay =
+                        dailyMap[key].ttdauNgay + dailyMap[key].ttnhapNgay - dailyMap[key].ttxuatNgay;
+                }
+            });
+            const groupedByProduct = {};
+            Object.keys(dailyMap).forEach(key => {
+                const record = dailyMap[key];
+                const productKey = record.ma;
+                if (!groupedByProduct[productKey]) {
+                    groupedByProduct[productKey] = [];
+                }
+                groupedByProduct[productKey].push(record);
+            });
+            Object.values(groupedByProduct).forEach(records => {
+                records.sort((a, b) => {
+                    const dateA = moment(a.ngay, 'DD/MM/YYYY').toDate().getTime();
+                    const dateB = moment(b.ngay, 'DD/MM/YYYY').toDate().getTime();
+                    return dateA - dateB;
+                });
+                for (let i = 1; i < records.length; i++) {
+                    records[i].dauNgay = records[i - 1].cuoiNgay;
+                    records[i].ttdauNgay = records[i - 1].ttcuoiNgay;
+                    records[i].cuoiNgay =
+                        records[i].dauNgay + records[i].nhapNgay - records[i].xuatNgay;
+                    records[i].ttcuoiNgay =
+                        records[i].ttdauNgay + records[i].ttnhapNgay - records[i].ttxuatNgay;
                 }
             });
             const baoCaoHangNgay = Object.values(dailyMap);
-            const monthlyMap = {};
-            const yearlyMap = {};
-            baoCaoHangNgay.forEach((record) => {
-                const monthKey = `${record.ma}_${moment(record.date).format('MM/YYYY')}`;
-                if (!monthlyMap[monthKey]) {
-                    monthlyMap[monthKey] = {
-                        thang: moment(record.date).format('MM/YYYY'),
-                        sanpham: record.sanpham,
-                        ma: record.ma,
-                        donvi: record.donvi,
-                        tongNhapThang: 0,
-                        tongXuatThang: 0,
-                        opening: 0,
-                        closing: 0,
-                    };
-                }
-                monthlyMap[monthKey].tongNhapThang += record.nhapNgay;
-                monthlyMap[monthKey].tongXuatThang += record.xuatNgay;
-                const yearKey = `${record.ma}_${moment(record.date).format('YYYY')}`;
-                if (!yearlyMap[yearKey]) {
-                    yearlyMap[yearKey] = {
-                        nam: moment(record.date).format('YYYY'),
-                        sanpham: record.sanpham,
-                        ma: record.ma,
-                        donvi: record.donvi,
-                        tongNhapNam: 0,
-                        tongXuatNam: 0,
-                        opening: 0,
-                        closing: 0,
-                    };
-                }
-                yearlyMap[yearKey].tongNhapNam += record.nhapNgay;
-                yearlyMap[yearKey].tongXuatNam += record.xuatNgay;
-            });
-            Object.values(monthlyMap).forEach((entry) => {
-                entry.opening = 0;
-                entry.closing = entry.tongNhapThang - entry.tongXuatThang;
-            });
-            Object.values(yearlyMap).forEach((entry) => {
-                entry.opening = 0;
-                entry.closing = entry.tongNhapNam - entry.tongXuatNam;
-            });
-            const products = new Set([
-                ...hoadonchitiets
-                    .map((item) => item.title)
-                    .filter((t) => t != null),
-                ...mathangs
-                    .map((item) => item.title)
-                    .filter((t) => t != null),
-            ]);
-            const baoCaoTongHop = [...baoCaoHangNgay];
-            console.log('baoCaoTongHop', baoCaoTongHop);
-            products.forEach((product) => {
-                if (!baoCaoTongHop.some((row) => row.ma === product)) {
-                    const mathangItem = mathangs.find((item) => item.title === product);
-                    const productName = mathangItem && mathangItem.ten ? mathangItem.ten : product;
-                    const details = productDetails[product] || {
-                        code: product,
-                        unit: 'N/A',
-                    };
-                    baoCaoTongHop.push({
-                        ngay: 'N/A',
-                        ma: details.code,
-                        sanpham: productName,
-                        donvi: details.unit,
-                        dauNgay: 0,
-                        nhapNgay: 0,
-                        xuatNgay: 0,
-                        cuoiNgay: 0,
-                        ttnhap: 0,
-                        ttxuat: 0,
-                        thang: 'N/A',
-                        tongNhapThang: 0,
-                        tongXuatThang: 0,
-                        closing: 0,
-                        nam: 'N/A',
-                        tongNhapNam: 0,
-                        tongXuatNam: 0,
-                    });
-                }
-            });
+            const filteredBaoCaoTongHop = baoCaoHangNgay.filter(record => record.ngay !== 'N/A' && record.thang !== 'N/A' && record.nam !== 'N/A');
             return {
-                data: baoCaoTongHop.slice(0, sizesp),
+                data: filteredBaoCaoTongHop.slice(0, sizesp),
                 total,
                 totalSP: sizesp,
                 page,
@@ -370,11 +334,41 @@ let HoadonchitietService = class HoadonchitietService {
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async generateExcel(dulieu) {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Sheet1');
+        console.log('dulieu', dulieu);
+        if (!dulieu || !dulieu.length) {
+            throw new Error('No data provided');
+        }
+        const headers = Object.keys(dulieu[0]);
+        worksheet.columns = headers.map(key => ({
+            header: key.toUpperCase(),
+            key,
+            width: 20,
+        }));
+        const batchSize = 10000;
+        for (let i = 0; i < dulieu.length; i += batchSize) {
+            const batch = dulieu.slice(i, i + batchSize);
+            worksheet.addRows(batch);
+        }
+        const data = await workbook.xlsx.writeBuffer();
+        return Buffer.from(data);
+    }
     async mathang(param) {
-        const { page = 1, pageSize = 20, ...where } = param;
+        const { page = 1, pageSize = 50, ...where } = param;
         try {
             const skip = (page - 1) * pageSize;
             const filter = { ...where };
+            if (filter.title || filter.title2) {
+                const searchTerm = filter.title || filter.title2;
+                filter.OR = [
+                    { title: { contains: searchTerm, mode: 'insensitive' } },
+                    { title2: { contains: searchTerm, mode: 'insensitive' } },
+                ];
+                delete filter.title;
+                delete filter.title2;
+            }
             const [mathangs, total] = await Promise.all([
                 this.prisma.mathang.findMany({
                     skip,
@@ -421,10 +415,13 @@ let HoadonchitietService = class HoadonchitietService {
     }
     async updateMathang(id, data) {
         console.log('data', data);
+        if (data.giavon && typeof data.giavon === 'string') {
+            data.giavon = parseFloat(data.giavon);
+        }
         try {
             const updated = await this.prisma.mathang.update({
                 where: { id },
-                data: { isproduct: data.isproduct },
+                data,
             });
             console.log('updated', updated);
             return updated;

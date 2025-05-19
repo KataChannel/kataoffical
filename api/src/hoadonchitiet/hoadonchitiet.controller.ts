@@ -1,10 +1,25 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query, Res, StreamableFile } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
 import { HoadonchitietService } from './hoadonchitiet.service';
+import { Response } from 'express';
 @Controller('hoadonchitiet') 
 export class HoadonchitietController { 
   constructor(private readonly hoadonchitietService: HoadonchitietService) {} 
+  // @Get('download')
+  // async downloadExcel(@Res() res: Response) {
+  //   const buffer = await this.hoadonchitietService.generateExcel();
+  //   if (!buffer) {
+  //     throw new HttpException('No data to download', HttpStatus.NOT_FOUND);
+  //   }
+  //   res.set({
+  //     'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  //     'Content-Disposition': 'attachment; filename="data.xlsx"',
+  //     'Content-Length': buffer.length,
+  //   });
+  //   res.send(buffer);
+  // }  
+
   @ApiBearerAuth() 
   @ApiOperation({ summary: 'Create a new hoadonchitiet' }) 
   @ApiBody({ type: Object }) 
@@ -17,16 +32,34 @@ export class HoadonchitietController {
       throw new HttpException(error.message || 'Create failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+  
   @ApiOperation({ summary: 'Find hoadonchitiets by parameters' })
-  @ApiBody({ type: Object }) 
+  @ApiBody({ type: Object })
   @Post('xuatnhapton')
-  async xuatnhapton(@Body() param: any) {
+  async xuatnhapton(@Body() param: any, @Res({ passthrough: true }) res: Response) {
+    console.log('param', param);
+    
     try {
-      return await this.hoadonchitietService.xuatnhapton(param);
+      if (param.isDownload === true) {
+        const dulieu = await this.hoadonchitietService.xuatnhapton(param);
+        const buffer = await this.hoadonchitietService.generateExcel(dulieu.data);
+        const stream = require('stream');
+        const bufferStream = new stream.PassThrough();
+        bufferStream.end(buffer);
+        
+        return new StreamableFile(bufferStream, {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          disposition: 'attachment; filename="xuatnhapton.xlsx"',
+        });
+      } else {
+        const result = await this.hoadonchitietService.xuatnhapton(param);
+        return result;
+      }
     } catch (error) {
       throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
   @ApiOperation({ summary: 'Find hoadonchitiets by parameters' })
   @ApiBody({ type: Object }) 
   @Post('mathang')

@@ -1,4 +1,6 @@
+import { StreamableFile } from '@nestjs/common';
 import { HoadonchitietService } from './hoadonchitiet.service';
+import { Response } from 'express';
 export declare class HoadonchitietController {
     private readonly hoadonchitietService;
     constructor(hoadonchitietService: HoadonchitietService);
@@ -31,13 +33,13 @@ export declare class HoadonchitietController {
         sxep: number | null;
         isproduct: boolean | null;
     }>;
-    xuatnhapton(param: any): Promise<{
+    xuatnhapton(param: any, res: Response): Promise<{
         data: any[];
         total: number;
         totalSP: any;
         page: any;
         pageCount: number;
-    }>;
+    } | StreamableFile>;
     mathang(param: any): Promise<{
         data: any[];
         total: number;
@@ -189,6 +191,7 @@ export declare class HoadonchitietController {
         ten: string | null;
         isproduct: boolean | null;
         giavon: number;
+        isEdit: boolean | null;
     }>;
     remove(id: string): Promise<{
         id: string;

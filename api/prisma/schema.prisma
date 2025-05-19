@@ -491,6 +491,7 @@ model Mathang {
   dvtinh    String?
   giavon    Float    @default(0)
   isproduct Boolean? @default(true)
+  isEdit    Boolean? @default(false)
   status    String   @default("draft") // "draft", "published", "archived"
   order     Int?     @default(1)
   createdAt DateTime @default(now())

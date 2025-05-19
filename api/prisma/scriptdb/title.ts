@@ -3,13 +3,16 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function importData() {
-  const hoadonChitiets = await prisma.hoadonChitiet.findMany();
+  const hoadonChitiets = await prisma.hoadonChitiet.findMany({where: { idhdon: 'e0b2c5a7-6260-48c9-b9c8-dd5bd3783cc0' }});
   for (const hoadonChitiet of hoadonChitiets) {
     if (hoadonChitiet.ten) {
       try {
         await prisma.hoadonChitiet.update({
           where: { id: hoadonChitiet.id },
-          data: { title2: hoadonChitiet.title2 },
+          data: { 
+            title: removeVietnameseAccents(hoadonChitiet.ten),
+            title2: removeVietnameseAccents(hoadonChitiet.ten)
+          },
         });
         console.log(`✅ Updated title for hoadonChitiet with ID ${hoadonChitiet.id}`);
       } catch (error) {

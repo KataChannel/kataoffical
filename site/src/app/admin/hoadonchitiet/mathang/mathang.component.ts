@@ -26,9 +26,7 @@ import { memoize, Debounce } from '../../../shared/utils/decorators';
 import { StorageService } from '../../../shared/utils/storage.service';
 import { HoadonService } from '../../hoadon/hoadon.service';
 import { SharepaginationComponent } from '../../../shared/common/sharepagination/sharepagination.component';
-import moment from 'moment';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { title } from 'process';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
@@ -97,7 +95,10 @@ export class MathangComponent implements OnInit {
   token: any= this._StorageService.getItem('token') || '';
   hoadon_token: any= this._StorageService.getItem('hoadon_token') || '';
   Detail:any={thang:'01', nam:'2025'};
-  SearchParams: any = {isproduct:true};
+  SearchParams: any = {
+    isproduct:true,
+    isEdit:false,
+  };
   edittitle2:any
   constructor() {
     effect(() => {
@@ -123,13 +124,14 @@ export class MathangComponent implements OnInit {
   Capnhattitle2(event:any,item:any){
   const value = event.target.value;
   item.title2 = value;
+  item.isEdit = true;
   this._HoadonchitietService.updateMathang(item);
-    this._snackBar.open('Cập Nhật Thành Công', '', {
-    duration: 1000,
-    horizontalPosition: 'end',
-    verticalPosition: 'top',
-    panelClass: ['snackbar-success'],
-  });
+  this._snackBar.open('Cập Nhật Thành Công', '', {
+  duration: 1000,
+  horizontalPosition: 'end',
+  verticalPosition: 'top',
+  panelClass: ['snackbar-success'],
+  }); 
   this.fetchData();
  }
 async setisProduct(): Promise<void> {
@@ -159,6 +161,8 @@ async setisProduct(): Promise<void> {
 
   async fetchData() {
     await this._HoadonchitietService.getMathang(this.SearchParams);
+    this.dataSource = new MatTableDataSource(this.Listhoadonchitiet());
+    this.dataSource.sort = this.sort;
   }
   getTotal(list: any[],field:any): number {
     return list?.reduce((acc: number, item: any) => acc + item[field], 0);
@@ -182,10 +186,13 @@ async setisProduct(): Promise<void> {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+      if(filterValue === '') {
+        delete this.SearchParams.title;
+      }
+      else{
+    this.SearchParams.title = filterValue;
+      }
+    this.fetchData();
   }
 
   async getUpdatedCodeIds() {

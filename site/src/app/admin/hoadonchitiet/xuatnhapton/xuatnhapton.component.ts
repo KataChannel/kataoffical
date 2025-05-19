@@ -28,6 +28,7 @@ import { HoadonService } from '../../hoadon/hoadon.service';
 import { SharepaginationComponent } from '../../../shared/common/sharepagination/sharepagination.component';
 import moment from 'moment';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-xuatnhapton',
@@ -51,7 +52,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     MatDialogModule,
     SearchfilterComponent,
     SharepaginationComponent,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatSlideToggleModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -63,18 +65,22 @@ export class XuatnhaptonComponent implements OnInit {
     ma: 'Mã SP',
     sanpham: 'Tên Sản Phẩm',
     donvi: 'Đơn Vị Tính',
+    ttdauNgay: 'TT Đầu Ngày',
     dauNgay: 'SL Đầu Ngày',
     nhapNgay: 'SL Nhập Ngày',
+    ttnhapNgay: 'TT Nhập Ngày',
     xuatNgay: 'SL Xuất Ngày',
+    ttxuatNgay:'TT Xuất Ngày',
     cuoiNgay: 'SL Cuối Ngày',
+    ttcuoiNgay:'TT Cuối Ngày',
     thang: 'Tháng',
     tongNhapThang: 'Tổng Nhập Tháng',
     tongXuatThang: 'Tổng Xuất Tháng',
     cuoiThang: 'SL Cuối Tháng',
-    nam: 'Năm', 
-    tongNhapNam: 'Tổng Nhập Năm',
-    tongXuatNam: 'Tổng Xuất Năm',
-    cuoiNam: 'SL Cuối Năm',
+    // nam: 'Năm', 
+    // tongNhapNam: 'Tổng Nhập Năm',
+    // tongXuatNam: 'Tổng Xuất Năm',
+    // cuoiNam: 'SL Cuối Năm',
   };
 
   FilterColumns: any[] = JSON.parse(localStorage.getItem('xuatnhaptonColFilter') || '[]');
@@ -388,14 +394,32 @@ export class XuatnhaptonComponent implements OnInit {
 
   ExportExcel(data: any, title: any) {
     const dulieu = data.map((v: any) => ({
-      title: v.title,
+      ngay: v.ngay,
       masp: v.masp,
-      giagoc: v.giagoc,
-      dvt: v.dvt,
-      soluong: v.soluong,
-      soluongkho: v.soluongkho,
-      haohut: v.haohut,
-      ghichu: v.ghichu,
+      sanpham: v.sanpham,
+      donvi: v.donvi,
+      ttdauNgay: v.ttdauNgay,
+      dauNgay: v.dauNgay,
+      nhapNgay: v.nhapNgay,
+      ttnhapNgay: v.ttnhapNgay,
+      xuatNgay: v.xuatNgay,
+      ttxuatNgay: v.ttxuatNgay,
+      cuoiNgay: v.cuoiNgay,
+      ttcuoiNgay: v.ttcuoiNgay,
+      thang: v.thang,
+      tongNhapThang: v.tongNhapThang,
+      tongXuatThang: v.tongXuatThang,
+      tongCuoiThang: v.tongCuoiThang,
+      ttnhapThang: v.ttnhapThang,
+      ttxuatThang: v.ttxuatThang,
+      ttcuoiThang: v.ttcuoiThang,
+      nam: v.nam,
+      tongNhapNam: v.tongNhapNam,
+      tongXuatNam: v.tongXuatNam,
+      tongCuoiNam: v.tongCuoiNam,
+      ttnhapNam: v.ttnhapNam,
+      ttxuatNam: v.ttxuatNam,
+      ttcuoiNam: v.ttcuoiNam,
     }));
     writeExcelFile(dulieu, title);
   }
