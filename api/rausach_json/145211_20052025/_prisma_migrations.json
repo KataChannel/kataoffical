@@ -1,0 +1,22 @@
+[
+  {
+    "id": "2343219c-3795-4e88-b06a-ac94ac037051",
+    "checksum": "393df8799050ecaef6752f1b0b2f7c1582d92eae92cfec9c1b280bb1964bf059",
+    "finished_at": "2025-05-16T04:05:32.915Z",
+    "migration_name": "20250516040532_migration_name",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-16T04:05:32.542Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "e2e589e9-8a18-4808-9c3a-9605d3a893cb",
+    "checksum": "9f25d8544a44f0b80a687a2f0c812baa6db94c606fe111a3d2ee2c3acd0c3cfa",
+    "finished_at": "2025-05-19T03:06:21.370Z",
+    "migration_name": "20250519030621_rausach10061905",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-19T03:06:21.348Z",
+    "applied_steps_count": 1
+  }
+]

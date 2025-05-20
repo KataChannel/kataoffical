@@ -69,6 +69,7 @@ export class DathangService {
         },
         nhacungcap: true,
       },
+      orderBy: { createdAt: 'desc' },
     });
     return dathangs.map((dathang) => ({
       ...dathang,

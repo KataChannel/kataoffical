@@ -243,6 +243,7 @@ export class DonhangService {
         },
         khachhang: { include: { banggia: { include: { sanpham: true } } } },
       },
+      orderBy: { createdAt: 'desc' },
     });
     const result = donhangs.map((donhang) => ({
       ...donhang,
