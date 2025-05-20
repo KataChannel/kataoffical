@@ -45,7 +45,7 @@ let khoService = class khoService {
                 title: sanpham?.title ?? '',
                 subtitle: sanpham?.subtitle ?? '',
                 haohut: sanpham?.haohut ?? false,
-                goiy: valueCalculation < 0 ? Math.abs(valueCalculation) : 0,
+                goiy: valueCalculation < 0 ? parseFloat(Math.abs(valueCalculation).toFixed(2)) : 0,
             };
         });
         return {

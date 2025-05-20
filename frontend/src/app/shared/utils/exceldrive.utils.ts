@@ -77,6 +77,25 @@ export function writeExcelFile(
   saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
 }
 
+export function writeExcelMultiple(
+  sheetsData: { [sheetName: string]: any[] },
+  title: string = 'Excel_Export'
+): void {
+  const workbook: XLSX.WorkBook = { Sheets: {}, SheetNames: [] };
+
+  // Thêm các sheet dữ liệu gốc
+  Object.keys(sheetsData).forEach(sheetName => {
+    const worksheet = XLSX.utils.json_to_sheet(sheetsData[sheetName]);
+    workbook.SheetNames.push(sheetName);
+    workbook.Sheets[sheetName] = worksheet;
+  });
+  // Ghi file excel
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array',
+  });
+  saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
+}
 export function writeExcelFileWithSheets(
   sheetsData: { [sheetName: string]: any[] },
   title: string = 'Excel_Export'

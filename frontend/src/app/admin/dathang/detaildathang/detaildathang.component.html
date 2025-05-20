@@ -11,6 +11,7 @@
   <div class="flex flex-row space-x-2 items-center">
     <button *ngIf="DetailDathang().status=='dadat'" mat-flat-button color="primary" [disabled]="DetailDathang().status=='dagiao'" (click)="GiaoDonhang()"> Đã Giao</button>
     <button *ngIf="DetailDathang().status=='dagiao'" mat-flat-button color="primary" [disabled]="DetailDathang().status=='danhan'" (click)="Danhanhang()"> Đã Nhận</button>
+    <button mat-icon-button color="primary" (click)="PrintDathang()"><mat-icon>image</mat-icon></button>
     @if(DetailDathang().status!=='danhan') {
     <mat-slide-toggle [(ngModel)]="DetailDathang().isActive" [disabled]="!isEdit()">{{DetailDathang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleDathangAction()">
@@ -262,11 +263,13 @@
         </div>
         }
       </div>   
-     
-      <table *ngIf="!isEdit()" class="w-full border-collapse border mt-4">
+      
+      <table id="chuphinh" *ngIf="!isEdit()" class="border-collapse border mt-4">
         <thead>
           <tr class="border">
-            <th class="border p-2">STT</th>
+            <th class="border p-2">
+                <span>STT</span>
+            </th>
             <th class="border p-2">Tên sản phẩm</th>
             <th class="border p-2">ĐVT</th>
             <th class="border p-2 max-w-10">SL Đặt</th>
@@ -295,21 +298,7 @@
             <td class="border p-2 text-end"></td>
           </tr>
         </tbody>
-      </table>
-      <!-- <div class="w-full text-end font-bold p-2">Ngày In:</div>
-      <div class="w-full flex justify-between items-center text-center mt-6 p-2">
-        <p><strong>Người vận chuyển</strong></p>
-        <p><strong>Người nhận hàng</strong></p>
-        <p><strong>Thủ kho</strong></p>
-        <p><strong>Người lập</strong></p>
-      </div>
-      <div class="w-full flex justify-between items-center text-center !mt-20 p-2">
-        <p><strong>Nguyễn Văn A</strong></p>
-        <p><strong>Nguyễn Thị B</strong></p>
-        <p><strong>Lê Văn C</strong></p>
-        <p><strong>Ngô Thị D</strong></p>
-      </div> -->
-  
+      </table>  
     </div>
   </div>
     </ng-container> 

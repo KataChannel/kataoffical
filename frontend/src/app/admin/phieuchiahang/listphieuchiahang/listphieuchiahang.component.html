@@ -44,7 +44,7 @@
                 <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{CountItem}} Đơn Hàng
                 </span>
-                <button mat-flat-button color="primary" (click)="uploadfile.click()" [disabled]="isLoading">Upload</button>
+                <!-- <button mat-flat-button color="primary" (click)="uploadfile.click()" [disabled]="isLoading">Upload</button> -->
                 <button mat-flat-button color="primary" (click)="openXembillDialog(dialogXembill)" [disabled]="ListBill.length===0">Xem Bill</button>
                 <input hidden type="file" (change)="onFileSelected($event)" #uploadfile>
                 <div *ngIf="isLoading" class="flex flex-row items-center space-x-2">
@@ -247,8 +247,8 @@
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
             </table>
-            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" [pageSize]="100"></mat-paginator>
         </div>
+         <mat-paginator [pageSizeOptions]="[10, 25, 100]" [pageSize]="100"></mat-paginator>
     </div>
 </mat-drawer-container>
 

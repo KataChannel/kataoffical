@@ -17,20 +17,22 @@ let PhieukhoService = class PhieukhoService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async generateNextOrderCode() {
-        const lastOrder = await this.prisma.dathang.findFirst({
+    async generateNextOrderCode(type) {
+        const lastOrder = await this.prisma.phieuKho.findFirst({
+            where: { type },
             orderBy: { createdAt: 'desc' },
         });
-        let nextCode = 'TGNCC-AA00001';
-        if (lastOrder && lastOrder.madncc) {
-            nextCode = this.incrementOrderCode(lastOrder.madncc);
+        let nextCode = type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+        if (lastOrder && lastOrder.maphieu) {
+            nextCode = this.incrementOrderCode(lastOrder.maphieu, type);
         }
         return nextCode;
     }
-    incrementOrderCode(orderCode) {
-        const prefix = 'PK-';
-        const letters = orderCode.slice(6, 8);
-        const numbers = parseInt(orderCode.slice(8), 13);
+    incrementOrderCode(orderCode, type) {
+        console.log('Incrementing order code:', orderCode);
+        const prefix = type === 'nhap' ? 'PKN' : 'PKX';
+        const letters = orderCode.slice(3, 5);
+        const numbers = parseInt(orderCode.slice(5), 10);
         let newLetters = letters;
         let newNumbers = numbers + 1;
         if (newNumbers > 99999) {
@@ -83,10 +85,12 @@ let PhieukhoService = class PhieukhoService {
     }
     async findAll() {
         const phieuKhos = await this.prisma.phieuKho.findMany({
+            where: {},
             include: {
                 sanpham: { include: { sanpham: true } },
                 kho: true,
             },
+            orderBy: { createdAt: 'desc' },
         });
         return phieuKhos.map((phieuKho) => ({
             ...phieuKho,
@@ -109,26 +113,50 @@ let PhieukhoService = class PhieukhoService {
         return phieuKho;
     }
     async create(data) {
-        const maphieukho = await this.generateNextOrderCode();
+        console.log('Creating new PhieuKho with data:', data);
         return this.prisma.$transaction(async (prisma) => {
-            const newPhieuKho = await prisma.phieuKho.create({
-                data: {
-                    maphieu: maphieukho,
-                    ngay: new Date(data.ngay),
-                    type: data.type,
-                    khoId: data.khoId,
-                    ghichu: data.ghichu,
-                    isActive: data.isActive ?? true,
-                    sanpham: {
-                        create: data.sanpham.map((sp) => ({
-                            sanphamId: sp.sanphamId,
-                            soluong: sp.soluong,
-                            ghichu: sp.ghichu,
-                        })),
-                    },
-                },
-                include: { sanpham: true },
-            });
+            let attempts = 0;
+            let newPhieuKho;
+            while (attempts < 3) {
+                const maphieukho = await this.generateNextOrderCode(data.type);
+                console.log('Generated maphieukho:', maphieukho);
+                try {
+                    newPhieuKho = await prisma.phieuKho.create({
+                        data: {
+                            maphieu: maphieukho,
+                            ngay: new Date(data.ngay),
+                            type: data.type,
+                            khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+                            ghichu: data.ghichu,
+                            isActive: data.isActive ?? true,
+                            sanpham: {
+                                create: data.sanpham.map((sp) => ({
+                                    sanphamId: sp.sanphamId,
+                                    soluong: sp.soluong,
+                                    ghichu: sp.ghichu,
+                                })),
+                            },
+                        },
+                        include: { sanpham: true },
+                    });
+                    break;
+                }
+                catch (error) {
+                    if (error.code === 'P2002' &&
+                        error.meta &&
+                        error.meta.target &&
+                        error.meta.target.includes('maphieu')) {
+                        attempts++;
+                        console.log(`Duplicate maphieu encountered. Retrying attempt ${attempts}...`);
+                        if (attempts >= 3) {
+                            throw error;
+                        }
+                    }
+                    else {
+                        throw error;
+                    }
+                }
+            }
             for (const sp of data.sanpham) {
                 await prisma.tonKho.upsert({
                     where: { sanphamId: sp.sanphamId },
@@ -219,12 +247,12 @@ let PhieukhoService = class PhieukhoService {
                 throw new common_1.NotFoundException('Phiếu kho không tồn tại');
             }
             for (const item of phieuKho.sanpham) {
-                await prisma.sanpham.update({
-                    where: { id: item.sanphamId },
+                await prisma.tonKho.update({
+                    where: { sanphamId: item.sanphamId },
                     data: {
-                        soluongkho: phieuKho.type === 'xuat'
-                            ? { increment: item.soluong ?? 0 }
-                            : { decrement: item.soluong ?? 0 },
+                        slton: phieuKho.type === 'nhap'
+                            ? { decrement: item.soluong ?? 0 }
+                            : { increment: item.soluong ?? 0 },
                     },
                 });
             }

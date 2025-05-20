@@ -37,7 +37,28 @@
   border: 1px solid #e0e0e0 !important;
 }
 
+.excelstyle {
+  border: 1px solid #e0e0e0 !important;
+  border-collapse: collapse;
+  width: 100%;
+  margin:0 auto;
+  font-size: 14px;
+  text-align: left;
 
+  th, td {
+    padding: 0px;
+    border: 1px solid #e0e0e0;
+  }
+
+  th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+}
 
 .primary {
   @include mat.icon-button-overrides((

@@ -27,6 +27,15 @@
               <button matTooltip="Tìm Kiếm" color="primary" (click)="isSearch = !isSearch" mat-icon-button>
                   <mat-icon>search</mat-icon>
               </button>
+                <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(Xuatnhapton(),'tonkho')" color="primary" mat-icon-button>
+                    <mat-icon>file_download</mat-icon>
+                </button>
+                <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
+                    <mat-icon>file_upload</mat-icon>
+                </button>
+                <input multiple class="hidden" (change)="ImporExcel($event)" type="file" #uploadfile>
+
+
           </div>
       </div>
       <div *ngIf="isSearch" class="py-2 w-full flex flex-row space-x-2 items-center">
@@ -37,7 +46,7 @@
           <button mat-icon-button color="warn" (click)="isSearch=!isSearch"><mat-icon>cancel</mat-icon></button>
       </div>
         <div class="w-full overflow-auto">
-            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
+            <table class="excelstyle !border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
                   <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -145,7 +154,7 @@
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
             </table>
-            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
         </div>
+      <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>    
     </div>
   </mat-drawer-container>

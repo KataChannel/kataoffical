@@ -21,6 +21,8 @@ import moment from 'moment';
 import { PhieukhoService } from '../phieukho/phieukho.service';
 import { KhoService } from '../kho/kho.service';
 import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
+import { SanphamService } from '../sanpham/sanpham.service';
+import { readExcelFile, readExcelFileNoWorker, writeExcelFileWithSheets, writeExcelMultiple } from '../../shared/utils/exceldrive.utils';
 @Component({
   selector: 'app-xuatnhapton',
   templateUrl: './xuatnhapton.component.html',
@@ -77,6 +79,7 @@ export class XuatnhaptonComponent {
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
   private _PhieukhoService: PhieukhoService = inject(PhieukhoService);
+  private _SanphamService: SanphamService = inject(SanphamService);
   private _KhoService: KhoService = inject(KhoService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _router: Router = inject(Router);
@@ -151,6 +154,7 @@ export class XuatnhaptonComponent {
     }
   }
   async ngOnInit(): Promise<void> {    
+    await this._SanphamService.getAllSanpham() 
     this._KhoService.getTonKho('1', '1000').then((res) => {
     this.Xuatnhapton.set(res.data);
     this.dataSource.data = this.Xuatnhapton();
@@ -233,8 +237,15 @@ export class XuatnhaptonComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Xuatnhapton().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
+    console.log(query);
+    console.log(column);
+
+    this.dataSource.filteredData = this.Xuatnhapton().filter((v: any) => 
+      
+      removeVietnameseAccents(v[column]).includes(query) || v[column].toLowerCase().includes(query)
+  );
+
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
@@ -287,6 +298,100 @@ export class XuatnhaptonComponent {
     this.dataSource.sort = this.sort;    
     menu.closeMenu();
   }
+
+  async ExportExcel(data: any, title: any) {
+   await this._SanphamService.getAllSanpham() 
+    const SP = this._SanphamService.ListSanpham().map((v: any) => ({
+      subtitle: v.subtitle,
+      masp: v.masp,
+      title: v.title,
+      dvt: v.dvt,
+    }));
+    const XNT = this.Xuatnhapton().map((v: any) => ({
+      masp: v.masp,
+      title: v.title,
+      dvt: v.dvt,
+      slton: v.slton,
+    }))
+    writeExcelMultiple({SP, XNT}, title);
+  }
+
+  async ImporExcel(event: any) {
+    const files = Array.from(event.target.files) as File[];
+    const data = await readExcelFileNoWorker(files[0], 'XNT');
+
+    const phieuNhapDetails: any[] = [];
+    const phieuXuatDetails: any[] = [];
+
+    data.forEach((v: any) => {
+      const exitItem = this.Xuatnhapton().find((item: any) => item.masp === v.masp);
+      if (exitItem) {
+        if (v.slton > exitItem.slton) {
+          // Tính chênh lệch cho phiếu nhập
+          phieuNhapDetails.push({
+          sanphamId:this._SanphamService.ListSanpham().find((item:any)=>item.masp===v.masp).id, 
+          soluong: v.slton - exitItem.slton,
+          // thêm các trường cần thiết
+          });
+        } else if (v.slton < exitItem.slton) {
+          // Tính chênh lệch cho phiếu xuất
+          phieuXuatDetails.push({
+          sanphamId:this._SanphamService.ListSanpham().find((item:any)=>item.masp===v.masp).id,
+          soluong: exitItem.slton - v.slton,
+          // thêm các trường cần thiết
+          });
+        }
+      }
+    });
+
+    if (phieuNhapDetails.length > 0) {
+      // Tạo phiếu nhập một lần với danh sách chi tiết
+      this._PhieukhoService.CreatePhieukho(
+        {
+        title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
+        type:'nhap',
+        sanpham: phieuNhapDetails, 
+        ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
+        ngay: moment()
+      });
+    }
+    if (phieuXuatDetails.length > 0) {
+      // Tạo phiếu xuất một lần với danh sách chi tiết
+      this._PhieukhoService.CreatePhieukho(
+        {
+        title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
+        type:'xuat',
+        sanpham: phieuXuatDetails, 
+        ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
+        ngay: moment()
+      });
+    }
+    if (phieuNhapDetails.length > 0) {
+      this._snackBar.open(`Điều chỉnh nhập kho với ${phieuNhapDetails.length} sản phẩm`, '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success'],
+          });
+    }
+    if (phieuXuatDetails.length > 0) {
+      this._snackBar.open(`Điều chỉnh xuất kho với ${phieuXuatDetails.length} sản phẩm`, '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success'],
+        });
+    }
+    if (phieuNhapDetails.length === 0 && phieuXuatDetails.length === 0) {
+            this._snackBar.open('Kho không thay đổi', '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success'],
+        });
+    }
+  }
+
 }
 
 

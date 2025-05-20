@@ -36,6 +36,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import html2canvas from 'html2canvas';
 @Component({
   selector: 'app-detaildathang',
   imports: [
@@ -72,7 +73,9 @@ export class DetailDathangComponent {
       const id = params.get('id');
       this._DathangService.setDathangId(id);
       await this._NhacungcapService.getAllNhacungcap();
-      this.filterNhacungcap = this.ListNhacungcap().filter((v: any) => v.isActive);
+      this.filterNhacungcap = this.ListNhacungcap().filter(
+        (v: any) => v.isActive
+      );
       await this._BanggiaService.getAllBanggia();
       this.filterBanggia = this._BanggiaService.ListBanggia();
       await this._SanphamService.getAllSanpham();
@@ -91,7 +94,7 @@ export class DetailDathangComponent {
         this.DetailDathang.set({
           title: GenId(8, false),
           madncc: GenId(8, false),
-          type:'dathang',
+          type: 'dathang',
           ngaynhan: moment().add(1, 'days').format('YYYY-MM-DD'),
         });
         this._ListdathangComponent.drawer.open();
@@ -99,7 +102,7 @@ export class DetailDathangComponent {
         this._router.navigate(['/admin/dathang', '0']);
       } else {
         await this._DathangService.getDathangByid(id);
-        this.ListFilter = this.DetailDathang().sanpham
+        this.ListFilter = this.DetailDathang().sanpham;
         this._ListdathangComponent.drawer.open();
         this._router.navigate(['/admin/dathang', id]);
       }
@@ -124,7 +127,7 @@ export class DetailDathangComponent {
   private async createDathang() {
     try {
       this.DetailDathang.update((v: any) => {
-        v.sanpham = this.dataSource.data
+        v.sanpham = this.dataSource.data;
         v.ngaynhan = moment(v.ngaygiao).format('YYYY-MM-DD');
         return v;
       });
@@ -140,14 +143,51 @@ export class DetailDathangComponent {
       console.error('Lỗi khi tạo dathang:', error);
     }
   }
+  isPrint: any = signal<any>(false);
+  PrintDathang() {
+    const printContent = document.getElementById('chuphinh');
+    if (!printContent) {
+      console.error('Print content element not found');
+      return;
+    }
+    // Ensure the document is focused before copying to clipboard
+    window.focus();
+    html2canvas(printContent as HTMLElement)
+      .then((canvas) => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const item = new ClipboardItem({ "image/png": blob });
+            navigator.clipboard.write([item])
+              .then(() => {
+                console.log('Image copied to clipboard successfully');
+                this._snackBar.open('Đã Chụp Hình Xong', '', {
+                  duration: 1000,
+                  horizontalPosition: "end",
+                  verticalPosition: "top",
+                  panelClass: ['snackbar-success'],
+                });
+              })
+              .catch((error) => {
+                console.error('Error copying image to clipboard:', error);
+              });
+          } else {
+            console.error('Failed to convert canvas to Blob');
+          }
+        }, 'image/png');
+      })
+      .catch((error) => console.error('Error generating image:', error));
+
+  }
+
+  printContent() {}
 
   private async updateDathang() {
     try {
       console.log(this.DetailDathang());
-      this.DetailDathang.update((v:any)=>{
-        v.sanpham = this.dataSource.data
-        return v
-      })
+      this.DetailDathang.update((v: any) => {
+        v.sanpham = this.dataSource.data;
+        return v;
+      });
       await this._DathangService.updateDathang(this.DetailDathang());
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,
@@ -200,8 +240,7 @@ export class DetailDathangComponent {
     const query = event.target.value.toLowerCase();
     this.filterNhacungcap = this.ListNhacungcap().filter(
       (v: any) =>
-        v.isActive &&
-        v.name.toLowerCase().includes(query) ||
+        (v.isActive && v.name.toLowerCase().includes(query)) ||
         v.namenn.toLowerCase().includes(query) ||
         v.sdt.toLowerCase().includes(query)
     );
@@ -268,97 +307,112 @@ export class DetailDathangComponent {
   //       }else{
   //         v.sanpham[index][field] = newValue;
   //       }
-       
+
   //     } else {
   //       v[field] = newValue;
   //     }
   //     return v;
   //   });
   // }
-  EnterUpdateValue(event: Event,index: number | null,element: any,field: keyof any,type: 'number' | 'string') {
+  EnterUpdateValue(
+    event: Event,
+    index: number | null,
+    element: any,
+    field: keyof any,
+    type: 'number' | 'string'
+  ) {
     const newValue =
       type === 'number'
         ? Number((event.target as HTMLElement).innerText.trim()) || 0
         : (event.target as HTMLElement).innerText.trim();
-        const keyboardEvent = event as KeyboardEvent;
-        if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
-          event.preventDefault();
-        }
-        if (type === "number") {
-          const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
-          
-          // Chặn nếu không phải số và không thuộc danh sách phím cho phép
-          if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
-            event.preventDefault();
-          }
-        } 
-        console.log(this.DetailDathang());
-        
+    const keyboardEvent = event as KeyboardEvent;
+    if (keyboardEvent.key === 'Enter' && !keyboardEvent.shiftKey) {
+      event.preventDefault();
+    }
+    if (type === 'number') {
+      const allowedKeys = [
+        'Backspace',
+        'Delete',
+        'ArrowLeft',
+        'ArrowRight',
+        'Tab',
+      ];
+
+      // Chặn nếu không phải số và không thuộc danh sách phím cho phép
+      if (
+        !/^\d$/.test(keyboardEvent.key) &&
+        !allowedKeys.includes(keyboardEvent.key)
+      ) {
+        event.preventDefault();
+      }
+    }
+    console.log(this.DetailDathang());
+
     this.DetailDathang.update((v: any) => {
       if (index !== null) {
         console.log(index);
-        
-        console.log(v.sanpham[index]);
-        
-        if (field === 'sldat') {
-          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao']  = newValue;
-          // Find the next input to focus on
-          const inputs = document.querySelectorAll('.sldat-input')as NodeListOf<HTMLInputElement>;
-              if (index < this.dataSource.filteredData.length - 1) {
-                const nextInput = inputs[index + 1]as HTMLInputElement
-                if (nextInput) {
-                  if (nextInput instanceof HTMLInputElement) {
-                    nextInput.focus();
-                    nextInput.select();
-                  }
-                  // Then select text using a different method that works on more element types
-                  setTimeout(() => {
-                    if (document.createRange && window.getSelection) {
-                      const range = document.createRange();
-                      range.selectNodeContents(nextInput);
-                      const selection = window.getSelection();
-                      selection?.removeAllRanges();
-                      selection?.addRange(range);
-                    }
-                  }, 10);
-                }
-              }
 
-        } 
-        else if (field === 'ghichu') {
+        console.log(v.sanpham[index]);
+
+        if (field === 'sldat') {
+          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = newValue;
+          // Find the next input to focus on
+          const inputs = document.querySelectorAll(
+            '.sldat-input'
+          ) as NodeListOf<HTMLInputElement>;
+          if (index < this.dataSource.filteredData.length - 1) {
+            const nextInput = inputs[index + 1] as HTMLInputElement;
+            if (nextInput) {
+              if (nextInput instanceof HTMLInputElement) {
+                nextInput.focus();
+                nextInput.select();
+              }
+              // Then select text using a different method that works on more element types
+              setTimeout(() => {
+                if (document.createRange && window.getSelection) {
+                  const range = document.createRange();
+                  range.selectNodeContents(nextInput);
+                  const selection = window.getSelection();
+                  selection?.removeAllRanges();
+                  selection?.addRange(range);
+                }
+              }, 10);
+            }
+          }
+        } else if (field === 'ghichu') {
           v.sanpham[index][field] = newValue;
           // Find the next input to focus on
-          const inputs = document.querySelectorAll('.ghichu-input')as NodeListOf<HTMLInputElement>;
-              if (index < this.dataSource.filteredData.length - 1) {
-                const nextInput = inputs[index + 1]as HTMLInputElement
-                if (nextInput) {
-                  if (nextInput instanceof HTMLInputElement) {
-                    nextInput.focus();
-                    nextInput.select();
-                  }
-                  // Then select text using a different method that works on more element types
-                  setTimeout(() => {
-                    if (document.createRange && window.getSelection) {
-                      const range = document.createRange();
-                      range.selectNodeContents(nextInput);
-                      const selection = window.getSelection();
-                      selection?.removeAllRanges();
-                      selection?.addRange(range);
-                    }
-                  }, 10);
-                }
+          const inputs = document.querySelectorAll(
+            '.ghichu-input'
+          ) as NodeListOf<HTMLInputElement>;
+          if (index < this.dataSource.filteredData.length - 1) {
+            const nextInput = inputs[index + 1] as HTMLInputElement;
+            if (nextInput) {
+              if (nextInput instanceof HTMLInputElement) {
+                nextInput.focus();
+                nextInput.select();
               }
-        } 
-        
-        else if (field === 'slgiao') {
-          const newGiao = newValue
+              // Then select text using a different method that works on more element types
+              setTimeout(() => {
+                if (document.createRange && window.getSelection) {
+                  const range = document.createRange();
+                  range.selectNodeContents(nextInput);
+                  const selection = window.getSelection();
+                  selection?.removeAllRanges();
+                  selection?.addRange(range);
+                }
+              }, 10);
+            }
+          }
+        } else if (field === 'slgiao') {
+          const newGiao = newValue;
           if (newGiao < v.sanpham[index]['sldat']) {
             // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
             v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
             this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
               duration: 1000,
-              horizontalPosition: "end",
-              verticalPosition: "top",
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
               panelClass: ['snackbar-error'],
             });
           } else {
@@ -374,7 +428,13 @@ export class DetailDathangComponent {
     });
   }
 
-  UpdateBlurValue(event: Event, index: number | null, element: any, field: keyof any, type: 'number' | 'string') {
+  UpdateBlurValue(
+    event: Event,
+    index: number | null,
+    element: any,
+    field: keyof any,
+    type: 'number' | 'string'
+  ) {
     const newValue =
       type === 'number'
         ? Number((event.target as HTMLElement).innerText.trim()) || 0
@@ -392,8 +452,8 @@ export class DetailDathangComponent {
             v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
             this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
               duration: 1000,
-              horizontalPosition: "end",
-              verticalPosition: "top",
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
               panelClass: ['snackbar-error'],
             });
           } else {
@@ -408,11 +468,6 @@ export class DetailDathangComponent {
       return v;
     });
   }
-
-
-
-
-
 
   Tongcong: any = 0;
   Tong: any = 0;
@@ -455,7 +510,7 @@ export class DetailDathangComponent {
     'sldat',
     'slgiao',
     'slnhan',
-    'ghichu'
+    'ghichu',
   ];
   ColumnName: any = {
     STT: 'STT',
@@ -465,7 +520,7 @@ export class DetailDathangComponent {
     sldat: 'SL Đặt',
     slgiao: 'SL Giao',
     slnhan: 'SL Nhận',
-    ghichu: 'Ghi Chú'
+    ghichu: 'Ghi Chú',
   };
   dataSource = new MatTableDataSource<any>([]);
   CountItem = this.dataSource.data.length;
@@ -481,16 +536,18 @@ export class DetailDathangComponent {
     const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
     const data = ConvertDriveData(result.values);
     console.log(data);
-    this.DetailDathang.update((v:any)=>{
-      v.sanpham = data.map((v1:any) => {
-        v1.sldat = Number(v1.sldat)||0;
-        v1.slgiao = Number(v1.slgiao)||0;
-        v1.slnhan = Number(v1.slnhan)||0;
-        v1.ttdat = Number(v1.ttdat)||0;
-        v1.ttgiao = Number(v1.ttgiao)||0;
-        v1.ttnhan = Number(v1.ttnhan)||0;
-        const item = this._SanphamService.ListSanpham().find((v2) => v2.masp === v1.masp);
-        console.log(item); 
+    this.DetailDathang.update((v: any) => {
+      v.sanpham = data.map((v1: any) => {
+        v1.sldat = Number(v1.sldat) || 0;
+        v1.slgiao = Number(v1.slgiao) || 0;
+        v1.slnhan = Number(v1.slnhan) || 0;
+        v1.ttdat = Number(v1.ttdat) || 0;
+        v1.ttgiao = Number(v1.ttgiao) || 0;
+        v1.ttnhan = Number(v1.ttnhan) || 0;
+        const item = this._SanphamService
+          .ListSanpham()
+          .find((v2) => v2.masp === v1.masp);
+        console.log(item);
         if (item) {
           return { ...item, ...v1 };
         }
@@ -499,7 +556,7 @@ export class DetailDathangComponent {
       return v;
     });
     console.log(this.DetailDathang());
-        
+
     //  this.DetailBanggia.update((v:any)=>{
     //   const listdata = data.map((item:any) => {
     //     item.masp = item.masp?.trim()||'';
@@ -520,23 +577,25 @@ export class DetailDathangComponent {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
-  EmptyCart()
-  {
-    this.DetailDathang.update((v:any)=>{
-      v.sanpham = []
+  EmptyCart() {
+    this.DetailDathang.update((v: any) => {
+      v.sanpham = [];
       return v;
-    })
+    });
     this.dataSource.data = this.DetailDathang().sanpham;
     this.reloadfilter();
   }
-  getName(id:any)
-  {
-    return this.ListNhacungcap().find((v:any)=>v.id===id);
+  getName(id: any) {
+    return this.ListNhacungcap().find((v: any) => v.id === id);
   }
 
-
-  reloadfilter(){
-    this.filterSanpham = this._SanphamService.ListSanpham().filter((v:any) => !this.DetailDathang().sanpham.some((v2:any) => v2.id === v.id));
+  reloadfilter() {
+    this.filterSanpham = this._SanphamService
+      .ListSanpham()
+      .filter(
+        (v: any) =>
+          !this.DetailDathang().sanpham.some((v2: any) => v2.id === v.id)
+      );
   }
   // RemoveSanpham(item:any){
   //   this.DetailBanggia.update((v:any)=>{
@@ -548,129 +607,133 @@ export class DetailDathangComponent {
   //   this.dataSource().paginator = this.paginator;
   //   this.dataSource().sort = this.sort;
   // }
-  DoFindSanpham(event:any){
+  DoFindSanpham(event: any) {
     const value = event.target.value;
     console.log(value);
-    
-    this.filterSanpham = this._SanphamService.ListSanpham().filter((v) => v.title.toLowerCase().includes(value.toLowerCase()));
+
+    this.filterSanpham = this._SanphamService
+      .ListSanpham()
+      .filter((v) => v.title.toLowerCase().includes(value.toLowerCase()));
   }
-  SelectSanpham(event:any){
+  SelectSanpham(event: any) {
     const value = event.value;
     const item = this._SanphamService.ListSanpham().find((v) => v.id === value);
-    this.DetailDathang.update((v:any)=>{
-      if(!v.sanpham){
+    this.DetailDathang.update((v: any) => {
+      if (!v.sanpham) {
         v.sanpham = [];
         item.sldat = item.slgiao = 1;
         v.sanpham.push(item);
-      }
-      else{
-          item.sldat = item.slgiao = 1;
-          v.sanpham.push(item);
+      } else {
+        item.sldat = item.slgiao = 1;
+        v.sanpham.push(item);
       }
       this.reloadfilter();
       return v;
-    })
-    this.dataSource.data = this.DetailDathang().sanpham;   
-  }
-  RemoveSanpham(item:any){
-    this.DetailDathang.update((v:any)=>{
-      v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
-      this.reloadfilter();
-      return v;
-    })
+    });
     this.dataSource.data = this.DetailDathang().sanpham;
   }
-  GetGoiy(item:any){
-    const result = parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
-    if(Number(result) < 0){
+  RemoveSanpham(item: any) {
+    this.DetailDathang.update((v: any) => {
+      v.sanpham = v.sanpham.filter((v1: any) => v1.id !== item.id);
+      this.reloadfilter();
+      return v;
+    });
+    this.dataSource.data = this.DetailDathang().sanpham;
+  }
+  GetGoiy(item: any) {
+    const result = parseFloat(
+      ((item.soluongkho - item.soluong) * (1 + item.haohut / 100)).toString()
+    ).toFixed(2);
+    if (Number(result) < 0) {
       return 0;
     }
     return result;
-   }
-   doFilterSanpham(event: any): void {    
-    this.filterSanpham = this._SanphamService.ListSanpham().filter((v: any) => removeVietnameseAccents(v.title).includes(event.target.value.toLowerCase())|| v.title.toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();  
   }
-  ListFilter:any[] =[]
-  ChosenItem(item:any)
-  {
+  doFilterSanpham(event: any): void {
+    this.filterSanpham = this._SanphamService
+      .ListSanpham()
+      .filter(
+        (v: any) =>
+          removeVietnameseAccents(v.title).includes(
+            event.target.value.toLowerCase()
+          ) || v.title.toLowerCase().includes(event.target.value.toLowerCase())
+      );
+    const query = event.target.value.toLowerCase();
+  }
+  ListFilter: any[] = [];
+  ChosenItem(item: any) {
     console.log(item);
-    
-    const CheckItem = this.filterSanpham.filter((v:any)=>v.id===item.id);
-    const CheckItem1 = this.ListFilter.filter((v:any)=>v.id===item.id);
-    if(CheckItem1.length>0)
-    {
+
+    const CheckItem = this.filterSanpham.filter((v: any) => v.id === item.id);
+    const CheckItem1 = this.ListFilter.filter((v: any) => v.id === item.id);
+    if (CheckItem1.length > 0) {
       this.ListFilter = this.ListFilter.filter((v) => v.id !== item.id);
+    } else {
+      this.ListFilter = [...this.ListFilter, ...CheckItem];
     }
-    else{
-      this.ListFilter = [...this.ListFilter,...CheckItem];
-    }
-    this.ListFilter.forEach((v:any)=>{
-      v.idSP = v.id
-    })
+    this.ListFilter.forEach((v: any) => {
+      v.idSP = v.id;
+    });
   }
-  ChosenAll(list:any)
-  {
-    this.ListFilter =list
+  ChosenAll(list: any) {
+    this.ListFilter = list;
   }
-  ResetFilter()
-  {
+  ResetFilter() {
     this.ListFilter = this.filterSanpham;
     this.dataSource.data = this.filterSanpham;
   }
-  EmptyFiter()
-  {
+  EmptyFiter() {
     this.ListFilter = [];
   }
-  CheckItem(item:any)
-  {
-    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  CheckItem(item: any) {
+    return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
-  ApplyFilterColum(menu:any)
-  {    
+  ApplyFilterColum(menu: any) {
     console.log(this.ListFilter);
-    
-    this.ListFilter.forEach((v)=>{
-      v.sldat = v.slgiao = v.slnhan=1;
-    })
-    this.dataSource.data = this.ListFilter
-    this.DetailDathang.update((v:any)=>{
-      v.sanpham =  this.ListFilter
-      return v
-    })  
+
+    this.ListFilter.forEach((v) => {
+      v.sldat = v.slgiao = v.slnhan = 1;
+    });
+    this.dataSource.data = this.ListFilter;
+    this.DetailDathang.update((v: any) => {
+      v.sanpham = this.ListFilter;
+      return v;
+    });
     this.dataSource.data.sort((a, b) => a.order - b.order);
     menu.closeMenu();
   }
 
-  GiaoDonhang()
-  {
-    this.DetailDathang.update((v:any)=>{
+  GiaoDonhang() {
+    this.DetailDathang.update((v: any) => {
       v.status = 'dagiao';
       return v;
-    })
-    this._DathangService.updateDathang(this.DetailDathang()).then((res:any)=>{
-      this._snackBar.open('Giao Đơn Hàng Thành Công', '', {
-        duration: 1000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
+    });
+    this._DathangService
+      .updateDathang(this.DetailDathang())
+      .then((res: any) => {
+        this._snackBar.open('Giao Đơn Hàng Thành Công', '', {
+          duration: 1000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
       });
-    })
   }
-  Danhanhang(){
-    this.DetailDathang.update((v:any)=>{
+  Danhanhang() {
+    this.DetailDathang.update((v: any) => {
       v.status = 'danhan';
       return v;
-    })
-    this._DathangService.updateDathang(this.DetailDathang()).then((res:any)=>{
-      this._snackBar.open('Đã Nhận Hàng Thành Công', '', {
-        duration: 1000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
+    });
+    this._DathangService
+      .updateDathang(this.DetailDathang())
+      .then((res: any) => {
+        this._snackBar.open('Đã Nhận Hàng Thành Công', '', {
+          duration: 1000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+        this.isEdit.update((value) => !value);
       });
-      this.isEdit.update((value) => !value);
-    })
   }
 }
-
