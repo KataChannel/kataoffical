@@ -71,6 +71,34 @@ export class SanphamService {
     });
   }
 
+  async import(data: any[]) {
+    // Dữ liệu gửi lên là list sản phẩm
+    for (const sanpham of data) {
+      // Nếu không có masp thì gọi create để tự sinh masp
+      if (!sanpham.masp) {
+        await this.create(sanpham);
+      } else {
+        // Tìm sản phẩm tồn tại dựa trên masp
+        const existingSanpham = await this.prisma.sanpham.findUnique({
+          where: { masp: sanpham.masp },
+          select: { id: true },
+        });
+        if (existingSanpham) {
+          // Nếu sản phẩm đã tồn tại thì cập nhật
+          await this.prisma.sanpham.update({
+            where: { id: existingSanpham.id },
+            data: { ...sanpham },
+          });
+        } else {
+          // Nếu chưa tồn tại thì tạo mới
+          await this.create(sanpham);
+        }
+      }
+    }
+    return { message: 'Import completed' };
+  }
+
+
   async reorderSanphams(sanphamIds: string[]) {
     // Update the order of each sanpham based on its position in the array
     for (let i = 0; i < sanphamIds.length; i++) {

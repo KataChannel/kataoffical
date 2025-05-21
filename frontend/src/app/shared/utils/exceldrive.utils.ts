@@ -54,6 +54,7 @@ export function writeExcelFile(
   headers: string[] = [],
   mapping: { [key: string]: string } = {}
 ): void {
+
   const transfer = data.map((item: any) => {
     let newItem: { [key: string]: any } = {};
     headers.forEach((headerKey: string) => {
@@ -266,7 +267,8 @@ export function readExcelFile(event: any, sheetName?: any): Promise<any> {
       new URL('./excel.worker', import.meta.url),
       { type: 'module' }
     );
-    worker.postMessage({ file: event, sheetName });
+    const file = event.target?.files?.[0] || event;
+    worker.postMessage({ file, sheetName });
     worker.onmessage = (e: MessageEvent) => {
       if (e.data.result) {
         resolve(e.data.result);

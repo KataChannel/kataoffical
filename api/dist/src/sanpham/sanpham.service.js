@@ -62,6 +62,29 @@ let SanphamService = class SanphamService {
             },
         });
     }
+    async import(data) {
+        for (const sanpham of data) {
+            if (!sanpham.masp) {
+                await this.create(sanpham);
+            }
+            else {
+                const existingSanpham = await this.prisma.sanpham.findUnique({
+                    where: { masp: sanpham.masp },
+                    select: { id: true },
+                });
+                if (existingSanpham) {
+                    await this.prisma.sanpham.update({
+                        where: { id: existingSanpham.id },
+                        data: { ...sanpham },
+                    });
+                }
+                else {
+                    await this.create(sanpham);
+                }
+            }
+        }
+        return { message: 'Import completed' };
+    }
     async reorderSanphams(sanphamIds) {
         for (let i = 0; i < sanphamIds.length; i++) {
             await this.prisma.sanpham.update({

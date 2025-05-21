@@ -26,6 +26,9 @@ export declare class KhachhangController {
         hiengia: boolean;
         istitle2: boolean;
     }>;
+    import(data: any): Promise<{
+        message: string;
+    }>;
     findby(param: any): Promise<{
         id: string;
         subtitle: string | null;

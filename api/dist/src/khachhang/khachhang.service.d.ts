@@ -26,6 +26,9 @@ export declare class KhachhangService {
         hiengia: boolean;
         istitle2: boolean;
     }>;
+    import(data: any[]): Promise<{
+        message: string;
+    }>;
     findAll(): Promise<({
         banggia: {
             id: string;

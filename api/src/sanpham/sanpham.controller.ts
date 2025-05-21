@@ -9,6 +9,11 @@ export class SanphamController {
   create(@Body() createSanphamDto: any) {
     return this.sanphamService.create(createSanphamDto);
   }
+  @Post('import')
+  import(@Body() data: any) {
+    console.log(data);
+    return this.sanphamService.import(data);
+  }
   @Post('findby')
   findby(@Body() param: any) {
     return this.sanphamService.findby(param);

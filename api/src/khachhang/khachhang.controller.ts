@@ -12,6 +12,11 @@ export class KhachhangController {
   create(@Body() createKhachhangDto: any) {
     return this.khachhangService.create(createKhachhangDto);
   }
+  @Post('import')
+  import(@Body() data: any) {
+    console.log(data);
+    return this.khachhangService.import(data);
+  }
   @Post('findby')
   findby(@Body() param: any) {
     return this.khachhangService.findby(param);

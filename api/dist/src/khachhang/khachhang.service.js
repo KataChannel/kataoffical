@@ -23,13 +23,15 @@ let KhachhangService = class KhachhangService {
     `;
     }
     async create(data) {
-        const existingCustomer = await this.prisma.khachhang.findUnique({
-            where: { makh: data.makh },
-        });
-        if (existingCustomer) {
-            return existingCustomer;
-        }
         let newMakh = data.makh;
+        if (newMakh) {
+            const existingCustomer = await this.prisma.khachhang.findUnique({
+                where: { makh: newMakh },
+            });
+            if (existingCustomer) {
+                return existingCustomer;
+            }
+        }
         if (!newMakh) {
             const prefix = data.loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
             const lastCustomer = await this.prisma.khachhang.findFirst({
@@ -38,7 +40,7 @@ let KhachhangService = class KhachhangService {
                 select: { makh: true },
             });
             let nextNumber = 1;
-            if (lastCustomer) {
+            if (lastCustomer && lastCustomer.makh) {
                 const lastNumber = parseInt(lastCustomer.makh.slice(-5), 10);
                 nextNumber = lastNumber + 1;
             }
@@ -50,6 +52,29 @@ let KhachhangService = class KhachhangService {
                 ...data,
             },
         });
+    }
+    async import(data) {
+        for (const customer of data) {
+            if (!customer.makh) {
+                await this.create(customer);
+            }
+            else {
+                const existingCustomer = await this.prisma.khachhang.findUnique({
+                    where: { makh: customer.makh },
+                    select: { id: true },
+                });
+                if (existingCustomer) {
+                    await this.prisma.khachhang.update({
+                        where: { id: existingCustomer.id },
+                        data: { ...customer },
+                    });
+                }
+                else {
+                    await this.create(customer);
+                }
+            }
+        }
+        return { message: 'Import completed' };
     }
     async findAll() {
         return this.prisma.khachhang.findMany({

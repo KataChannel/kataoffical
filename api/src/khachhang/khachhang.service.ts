@@ -12,32 +12,32 @@ export class KhachhangService {
     `;
   }
   async create(data: any) {
-    // Kiểm tra xem data.makh gửi lên từ client có trong database chưa
-    const existingCustomer = await this.prisma.khachhang.findUnique({
-      where: { makh: data.makh },
-    });
-
-    if (existingCustomer) {
-      // Nếu đã tồn tại, bỏ qua
-      return existingCustomer;
-    }
-
     let newMakh = data.makh;
 
-    // Nếu data.makh khác null và rỗng thì lấy, không thì tạo mới newMakh
+    if (newMakh) {
+      const existingCustomer = await this.prisma.khachhang.findUnique({
+        where: { makh: newMakh },
+      });
+      if (existingCustomer) {
+        // Nếu đã tồn tại, bỏ qua
+        return existingCustomer;
+      }
+    }
+
     if (!newMakh) {
+      // Nếu chưa có mã khách hàng (data.makh rỗng), tạo mới dựa vào loại khách hàng
       const prefix = data.loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
 
-      // Lấy mã khách hàng lớn nhất trong loại này
+      // Lấy khách hàng có mã lớn nhất của loại này
       const lastCustomer = await this.prisma.khachhang.findFirst({
       where: { makh: { startsWith: prefix } },
-      orderBy: { makh: 'desc' }, // Sắp xếp giảm dần
+      orderBy: { makh: 'desc' },
       select: { makh: true },
       });
 
-      // Sinh số tiếp theo
+      // Nếu chưa có khách hàng nào thì nextNumber vẫn là 1
       let nextNumber = 1;
-      if (lastCustomer) {
+      if (lastCustomer && lastCustomer.makh) {
       const lastNumber = parseInt(lastCustomer.makh.slice(-5), 10); // Lấy 5 số cuối
       nextNumber = lastNumber + 1;
       }
@@ -49,10 +49,37 @@ export class KhachhangService {
     // Tạo khách hàng mới
     return this.prisma.khachhang.create({
       data: {
-      makh: newMakh,
-      ...data,
+        makh: newMakh,
+        ...data,
       },
     });
+  }
+
+  async import(data: any[]) {
+    // Dữ liệu gửi lên là một mảng khách hàng
+    for (const customer of data) {
+      // Nếu không có makh, gọi create để tự sinh makh
+      if (!customer.makh) {
+        await this.create(customer);
+      } else {
+        // Tìm khách hàng tồn tại theo makh
+        const existingCustomer = await this.prisma.khachhang.findUnique({
+          where: { makh: customer.makh },
+          select: { id: true },
+        });
+        if (existingCustomer) {
+          // Nếu khách hàng đã tồn tại thì cập nhật
+          await this.prisma.khachhang.update({
+            where: { id: existingCustomer.id },
+            data: { ...customer },
+          });
+        } else {
+          // Nếu chưa tồn tại thì tạo mới
+          await this.create(customer);
+        }
+      }
+    }
+    return { message: 'Import completed' };
   }
 
   async findAll() {

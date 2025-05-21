@@ -25,6 +25,10 @@ let KhachhangController = class KhachhangController {
     create(createKhachhangDto) {
         return this.khachhangService.create(createKhachhangDto);
     }
+    import(data) {
+        console.log(data);
+        return this.khachhangService.import(data);
+    }
     findby(param) {
         return this.khachhangService.findby(param);
     }
@@ -59,6 +63,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], KhachhangController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('import'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], KhachhangController.prototype, "import", null);
 __decorate([
     (0, common_1.Post)('findby'),
     __param(0, (0, common_1.Body)()),

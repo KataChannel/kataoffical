@@ -1,4 +1,12 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  ViewChild,
+} from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -16,8 +24,17 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { SanphamService } from '../sanpham.service';
 import { MatMenuModule } from '@angular/material/menu';
-import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
-import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
+import {
+  readExcelFile,
+  readExcelFileNoWorker,
+  writeExcelFile,
+  writeExcelMultiple,
+} from '../../../shared/utils/exceldrive.utils';
+import {
+  ConvertDriveData,
+  convertToSlug,
+  GenId,
+} from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
@@ -41,7 +58,7 @@ import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
     FormsModule,
     MatTooltipModule,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListSanphamComponent {
   Detail: any = {};
@@ -67,7 +84,7 @@ export class ListSanphamComponent {
     haohut: 'Hao Hụt',
     subtitle: 'Gợi ý',
     ghichu: 'Ghi Chú',
-    createdAt: 'Ngày Tạo'
+    createdAt: 'Ngày Tạo',
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('SanphamColFilter') || '[]'
@@ -82,15 +99,15 @@ export class ListSanphamComponent {
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _NhacungcapService: NhacungcapService = inject(NhacungcapService);
   private _router: Router = inject(Router);
-  Listsanpham:any = this._SanphamService.ListSanpham;
+  Listsanpham: any = this._SanphamService.ListSanpham;
   dataSource = new MatTableDataSource([]);
-  sanphamId:any = this._SanphamService.sanphamId;
+  sanphamId: any = this._SanphamService.sanphamId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   isSearch: boolean = false;
-  listNCC1:any[] =[];
+  listNCC1: any[] = [];
   constructor() {
-    this.displayedColumns.forEach(column => {
+    this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
   }
@@ -101,7 +118,7 @@ export class ListSanphamComponent {
       this.dataSource.paginator.firstPage();
     }
   }
-  async ngOnInit(): Promise<void> {    
+  async ngOnInit(): Promise<void> {
     await this._SanphamService.getAllSanpham();
     this.CountItem = this.Listsanpham().length;
     this.dataSource = new MatTableDataSource(this.Listsanpham());
@@ -116,7 +133,7 @@ export class ListSanphamComponent {
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
   // async UpdateNcc(){
-  //   const listNCC = await this._NhacungcapService.getAllNhacungcap();    
+  //   const listNCC = await this._NhacungcapService.getAllNhacungcap();
   //   this.initSP.forEach(async (v:any) => {
   //      v.Sanpham =[]
   //       for (let i = 1; i <= 30; i++) {
@@ -127,9 +144,9 @@ export class ListSanphamComponent {
   //         }
   //         const item = this.Listsanpham().find((v1: any) => removeVietnameseAccents(v1.title) === removeVietnameseAccents(v[tenspKey]))
   //         if(item){
-  //           v[idKey] = item.id; 
-  //           v.Sanpham.push(item) 
-  //         }  
+  //           v[idKey] = item.id;
+  //           v.Sanpham.push(item)
+  //         }
   //       }
   //   });
   //   this.listNCC1 = this.initSP.map((v:any) => {
@@ -149,7 +166,7 @@ export class ListSanphamComponent {
   //   })
   // }
   async refresh() {
-   await this._SanphamService.getAllSanpham();
+    await this._SanphamService.getAllSanpham();
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -160,7 +177,9 @@ export class ListSanphamComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('SanphamColFilter',JSON.stringify(this.FilterColumns)
+      localStorage.setItem(
+        'SanphamColFilter',
+        JSON.stringify(this.FilterColumns)
       );
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -192,63 +211,67 @@ export class ListSanphamComponent {
     }
   }
   @memoize()
-  FilterHederColumn(list:any,column:any)
-  {
-    const uniqueList = list.filter((obj: any, index: number, self: any) => 
-      index === self.findIndex((t: any) => t[column] === obj[column])
+  FilterHederColumn(list: any, column: any) {
+    const uniqueList = list.filter(
+      (obj: any, index: number, self: any) =>
+        index === self.findIndex((t: any) => t[column] === obj[column])
     );
-    return uniqueList
+    return uniqueList;
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listsanpham().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();  
+    this.dataSource.filteredData = this.Listsanpham().filter(
+      (v: any) =>
+        removeVietnameseAccents(v[column]).includes(
+          event.target.value.toLowerCase()
+        ) || v[column].toLowerCase().includes(event.target.value.toLowerCase())
+    );
+    const query = event.target.value.toLowerCase();
   }
-  ListFilter:any[] =[]
-  ChosenItem(item:any,column:any)
-  {
-    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
-    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
-    if(CheckItem1.length>0)
-    {
-      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
-    }
-    else{
-      this.ListFilter = [...this.ListFilter,...CheckItem];
+  ListFilter: any[] = [];
+  ChosenItem(item: any, column: any) {
+    const CheckItem = this.dataSource.filteredData.filter(
+      (v: any) => v[column] === item[column]
+    );
+    const CheckItem1 = this.ListFilter.filter(
+      (v: any) => v[column] === item[column]
+    );
+    if (CheckItem1.length > 0) {
+      this.ListFilter = this.ListFilter.filter(
+        (v) => v[column] !== item[column]
+      );
+    } else {
+      this.ListFilter = [...this.ListFilter, ...CheckItem];
     }
   }
-  ChosenAll(list:any)
-  {
-    list.forEach((v:any) => {
-      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
-      if(CheckItem)
-        {
-          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
-        }
-        else{
-          this.ListFilter.push(v);
-        }
+  ChosenAll(list: any) {
+    list.forEach((v: any) => {
+      const CheckItem = this.ListFilter.find((v1) => v1.id === v.id)
+        ? true
+        : false;
+      if (CheckItem) {
+        this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
+      } else {
+        this.ListFilter.push(v);
+      }
     });
   }
-  ResetFilter()
-  {
+  ResetFilter() {
     this.ListFilter = this.Listsanpham();
     this.dataSource.data = this.Listsanpham();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-  EmptyFiter()
-  {
+  EmptyFiter() {
     this.ListFilter = [];
   }
-  CheckItem(item:any)
-  {
-    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  CheckItem(item: any) {
+    return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
-  ApplyFilterColum(menu:any)
-  {    
-
-    this.dataSource.data = this.Listsanpham().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+  ApplyFilterColum(menu: any) {
+    this.dataSource.data = this.Listsanpham().filter((v: any) =>
+      this.ListFilter.some((v1) => v1.id === v.id)
+    );
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     menu.closeMenu();
@@ -261,7 +284,9 @@ export class ListSanphamComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('SanphamColFilter',JSON.stringify(this.FilterColumns)
+    localStorage.setItem(
+      'SanphamColFilter',
+      JSON.stringify(this.FilterColumns)
     );
   }
   doFilterColumns(event: any): void {
@@ -275,7 +300,7 @@ export class ListSanphamComponent {
     this._router.navigate(['admin/sanpham', 0]);
   }
   goToDetail(item: any): void {
-     this._SanphamService.setSanphamId(item.id);
+    this._SanphamService.setSanphamId(item.id);
     this.drawer.open();
     this._router.navigate(['admin/sanpham', item.id]);
   }
@@ -285,87 +310,79 @@ export class ListSanphamComponent {
       SheetName: 'SPImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
-   const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
-   const data = ConvertDriveData(result.values);
-   console.log(data);
-   this.DoImportData(data);
+    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
+    const data = ConvertDriveData(result.values);
+    console.log(data);
+    this.DoImportData(data);
   }
-  DoImportData(data:any)
-  {
+  async DoImportData(data: any) {
     const transformedData = data.map((v: any) => ({
-      title: v.title?.trim()||'',
-      title2: v.title2?.trim()||'',
-      subtitle: v.subtitle?.trim()||'',
-      masp: v.masp?.trim()||'',
-      giagoc: Number(v.giagoc)||0,
-      giaban: Number(v.giaban)||0,
-      dvt: v.dvt?.trim()||'',
-      soluong: Number(v.soluong)||0,
-      soluongkho: Number(v.soluongkho)||0,
-      haohut: Number(v.haohut)||0,
-      ghichu: v.ghichu?.trim()||'',
-   }));
-
-   // Filter out duplicate masp values
-   const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
-      index === self.findIndex((t:any) => (
-        t.masp === value.masp
-      ))
-   )
-    const listId2 = uniqueData.map((v: any) => v.masp);
-    const listId1 = this._SanphamService.ListSanpham().map((v: any) => v.masp);
-    const listId3 = listId2.filter((item:any) => !listId1.includes(item));
-    const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._SanphamService.ListSanpham().find((v1) => v1.masp === v.masp);
-        if (item) {
-          const item1 = { ...item, ...v };
-          await this._SanphamService.updateSanpham(item1);
-        }
-        else{
-          await this._SanphamService.CreateSanpham(v);
-        }
-      });
-     const disableItem = listId3.map(async (v: any) => {
-        const item = this._SanphamService.ListSanpham().find((v1) => v1.masp === v);
-        item.isActive = false;
-        await this._SanphamService.updateSanpham(item);
-      });
-      Promise.all([...createuppdateitem, ...disableItem]).then(() => {
-        this._snackBar.open('Cập Nhật Thành Công', '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-       // window.location.reload();
-      });
-  }
-  async ImporExcel(event: any) {
-  const data = await readExcelFile(event)
-  this.DoImportData(data);
-  }   
-  ExportExcel(data:any,title:any) {
-    const dulieu = data.map((v: any) => ({
-      title: v.title,
-      title2: v.title2,
-      subtitle: v.subtitle,
-      masp: v.masp,
-      giaban: v.giaban,
-      giagoc: v.giagoc,
-      dvt: v.dvt,
-      haohut: v.haohut,
-      ghichu: v.ghichu,
+      title: v.title ? v.title.toString().trim() : '',
+      title2: v.title2 ? v.title2.toString().trim() : '',
+      subtitle: v.subtitle ? v.subtitle.toString().trim() : '',
+      masp: v.masp ? v.masp.toString().trim() : '',
+      giagoc: Number(v.giagoc) || 0,
+      giaban: Number(v.giaban) || 0,
+      dvt: v.dvt ? v.dvt.toString().trim() : '',
+      soluong: Number(v.soluong) || 0,
+      soluongkho: Number(v.soluongkho) || 0,
+      haohut: Number(v.haohut) || 0,
+      ghichu: v.ghichu ? v.ghichu.toString().trim() : '',
     }));
-    writeExcelFile(dulieu,title);
+    await this._SanphamService.ImportSanpham(transformedData);
+    this._snackBar.open('Cập Nhật Thành Công', '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
+  }
+  async ImportExcel(event: any) {
+    console.log(event);
+
+    const data = await readExcelFileNoWorker(event, 'sanpham');
+    console.log(data);
+
+    this.DoImportData(data);
+  }
+  ExportExcel(data: any, title: any) {
+    let sanpham = [];
+    if (data.length === 0) {
+      sanpham = [
+        {
+          masp: '',
+          subtitle: '',
+          title: '',
+          title2: '',
+          giaban: 0,
+          giagoc: 0,
+          dvt: '',
+          haohut: 0,
+          ghichu: '',
+        },
+      ];
+    } else {
+      sanpham = data.map((v: any) => ({
+        masp: v.masp,
+        subtitle: v.subtitle,
+        title: v.title,
+        title2: v.title2,
+        giaban: v.giaban,
+        giagoc: v.giagoc,
+        dvt: v.dvt,
+        haohut: v.haohut,
+        ghichu: v.ghichu,
+      }));
+    }
+    writeExcelMultiple({ sanpham }, title);
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
-
 }
-
-
-
 
 function memoize() {
   return function (
@@ -409,4 +426,3 @@ function Debounce(delay: number = 300) {
     return descriptor;
   };
 }
-

@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { KhachhangService } from '../khachhang.service';
 import { MatMenuModule } from '@angular/material/menu';
-import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
+import { readExcelFile, readExcelFileNoWorker, writeExcelMultiple } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
@@ -261,10 +261,8 @@ export class ListKhachhangComponent {
    console.log(data);
    this.DoImportData(data);
   }
-  DoImportData(data:any)
+  async DoImportData(data:any)
   {
-    console.log(data);
-    
     const transformedData = data.map((v: any) => ({
       name: v.name?.trim()||'',
       makh: v.makh?.trim()||'',
@@ -275,51 +273,71 @@ export class ListKhachhangComponent {
       sdt: v.sdt?.trim()||'',
       mst: v.mst?.trim()||'',
       gionhanhang: v.gionhanhang?.trim()||'',
-      loaikh: v.loaikh?.trim()||'',
+      loaikh: v.loaikh?.trim()||'khachsi',
       hiengia:true,
       ghichu: v.ghichu?.trim()||'', 
    }));
-   // Filter out duplicate makh values
-   const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
-      index === self.findIndex((t:any) => (
-        t.makh === value.makh
-      ))
-   )
-    const listId2 = uniqueData.map((v: any) => v.makh);
-    const listId1 = this._KhachhangService.ListKhachhang().map((v: any) => v.makh);
-    const listId3 = listId2.filter((item:any) => !listId1.includes(item));
-    const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.makh === v.makh);
-        if (item) {
-          const item1 = { ...item, ...v };
-          // await this._KhachhangService.updateKhachhang(item1);
-        }
-        else{
-          v.subtitle = removeVietnameseAccents(v.name);
-          await this._KhachhangService.CreateKhachhang(v);
-        }
-      });
-     const disableItem = listId3.map(async (v: any) => {
-        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.makh === v);
-        // item.isActive = false;
-        await this._KhachhangService.updateKhachhang(item);
-      });
-      Promise.all([...createuppdateitem, ...disableItem]).then(() => {
-        this._snackBar.open('Cập Nhật Thành Công', '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-       // window.location.reload();
-      });
+    await this._KhachhangService.ImportKhachhang(transformedData);
+    this._snackBar.open('Cập Nhật Thành Công', '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
   }
-  async ImporExcel(event: any) {
-  const data = await readExcelFile(event)
-  this.DoImportData(data);
+  async ImportExcel(event: any) {
+    const data = await readExcelFileNoWorker(event, 'khachhang');
+    if (!Array.isArray(data) || data.some(item => typeof item !== 'object' || item === null)) {
+      this._snackBar.open('Dữ liệu không đúng định dạng. Vui lòng kiểm tra file Excel.', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+      return;
+    }
+    this.DoImportData(data);
   }   
   ExportExcel(data:any,title:any) {
-    writeExcelFile(data,title);
+    let khachhang = [];
+    if(!data || data.length === 0) {
+      khachhang =[
+        {
+          name: '',
+          makh: '',
+          namenn: '',
+          diachi: '',
+          quan: '',
+          email: '',
+          sdt: '',
+          mst: '',
+          gionhanhang: '',
+          loaikh: 'khachsi',
+          hiengia: true,
+          ghichu: ''
+        }
+      ]
+    }
+    else {
+      khachhang = data.map((v: any) => ({
+          name: v.name?.trim()||'',
+          makh: v.makh?.trim()||'',
+          namenn: v.namenn?.trim()||'',
+          diachi: v.diachi?.trim()||'',
+          quan: v.quan?.trim()||'',
+          email: v.email?.trim()||'',
+          sdt: v.sdt?.trim()||'',
+          mst: v.mst?.trim()||'',
+          gionhanhang: v.gionhanhang?.trim()||'',
+          loaikh: v.loaikh?.trim()||'khachsi',
+          hiengia:true,
+          ghichu: v.ghichu?.trim()||''
+        }))
+    }   
+    writeExcelMultiple({khachhang},title);
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier

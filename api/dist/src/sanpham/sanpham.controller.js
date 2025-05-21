@@ -22,6 +22,10 @@ let SanphamController = class SanphamController {
     create(createSanphamDto) {
         return this.sanphamService.create(createSanphamDto);
     }
+    import(data) {
+        console.log(data);
+        return this.sanphamService.import(data);
+    }
     findby(param) {
         return this.sanphamService.findby(param);
     }
@@ -55,6 +59,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], SanphamController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('import'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], SanphamController.prototype, "import", null);
 __decorate([
     (0, common_1.Post)('findby'),
     __param(0, (0, common_1.Body)()),

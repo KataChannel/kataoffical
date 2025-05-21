@@ -31,6 +31,9 @@ export declare class SanphamService {
         createdAt: Date;
         updatedAt: Date;
     }>;
+    import(data: any[]): Promise<{
+        message: string;
+    }>;
     reorderSanphams(sanphamIds: string[]): Promise<void>;
     findAll(): Promise<{
         id: string;

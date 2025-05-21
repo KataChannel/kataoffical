@@ -23,6 +23,9 @@ export declare class SanphamController {
         createdAt: Date;
         updatedAt: Date;
     }>;
+    import(data: any): Promise<{
+        message: string;
+    }>;
     findby(param: any): Promise<{
         id: string;
         title: string;
