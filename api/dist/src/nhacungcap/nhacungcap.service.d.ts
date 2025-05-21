@@ -16,6 +16,9 @@ export declare class NhacungcapService {
         mancc: string;
         manccold: string | null;
     }>;
+    import(data: any[]): Promise<{
+        message: string;
+    }>;
     findAll(): Promise<({
         Sanpham: {
             id: string;

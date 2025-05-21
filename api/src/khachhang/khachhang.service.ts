@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
@@ -11,49 +11,49 @@ export class KhachhangService {
       WHERE search_vector @@ to_tsquery('simple', ${query})
     `;
   }
-  async create(data: any) {
-    let newMakh = data.makh;
 
-    if (newMakh) {
+
+
+  async generateMakh(loaikh: string): Promise<string> {
+    try {
+      const prefix = loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
+      const latest = await this.prisma.khachhang.findFirst({
+        where: { makh: { startsWith: prefix } },
+        orderBy: { makh: 'desc' },
+        select: { makh: true },
+      });
+      let nextNumber = 1;
+      if (latest && latest.makh) {
+        const lastNumber = parseInt(latest.makh.slice(prefix.length), 10);
+        nextNumber = lastNumber + 1;
+      }
+      return `${prefix}${nextNumber.toString().padStart(5, '0')}`;
+    } catch (error) {
+      throw new InternalServerErrorException('Lỗi khi tạo mã khách hàng');
+    }
+  }
+
+  async create(data: any) {
+    // Nếu mã khách hàng không được truyền, tự động tạo mới
+    if (!data.makh) {
+      data.makh = await this.generateMakh(data.loaikh);
+    } else {
+      // Nếu mã khách hàng được truyền, kiểm tra xem có tồn tại chưa
       const existingCustomer = await this.prisma.khachhang.findUnique({
-        where: { makh: newMakh },
+        where: { makh: data.makh },
       });
       if (existingCustomer) {
-        // Nếu đã tồn tại, bỏ qua
+        // Nếu đã tồn tại, trả về khách hàng hiện có
         return existingCustomer;
       }
     }
-
-    if (!newMakh) {
-      // Nếu chưa có mã khách hàng (data.makh rỗng), tạo mới dựa vào loại khách hàng
-      const prefix = data.loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
-
-      // Lấy khách hàng có mã lớn nhất của loại này
-      const lastCustomer = await this.prisma.khachhang.findFirst({
-      where: { makh: { startsWith: prefix } },
-      orderBy: { makh: 'desc' },
-      select: { makh: true },
-      });
-
-      // Nếu chưa có khách hàng nào thì nextNumber vẫn là 1
-      let nextNumber = 1;
-      if (lastCustomer && lastCustomer.makh) {
-      const lastNumber = parseInt(lastCustomer.makh.slice(-5), 10); // Lấy 5 số cuối
-      nextNumber = lastNumber + 1;
-      }
-
-      // Format mã khách hàng mới
-      newMakh = `${prefix}${String(nextNumber).padStart(5, '0')}`;
-    }
-
-    // Tạo khách hàng mới
+    // Tạo khách hàng mới với dữ liệu đã có, bao gồm makh
     return this.prisma.khachhang.create({
-      data: {
-        makh: newMakh,
-        ...data,
-      },
+      data,
     });
   }
+
+
 
   async import(data: any[]) {
     // Dữ liệu gửi lên là một mảng khách hàng

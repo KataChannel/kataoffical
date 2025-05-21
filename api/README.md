@@ -7,7 +7,7 @@ npx bun prisma generate
 npx ts-node prisma/exportData.ts
 npx ts-node prisma/update.ts
 npx ts-node prisma/backup.ts
-npx ts-node prisma/restore.ts
+npx ts-node prisma/restorev2.ts
 
 
 npx prisma db seed

@@ -3,6 +3,7 @@ export declare class KhachhangService {
     private readonly prisma;
     constructor(prisma: PrismaService);
     timkiemkhachhang(query: string): Promise<unknown>;
+    generateMakh(loaikh: string): Promise<string>;
     create(data: any): Promise<{
         id: string;
         subtitle: string | null;

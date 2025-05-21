@@ -36,6 +36,10 @@ let NhacungcapController = class NhacungcapController {
             };
         }
     }
+    import(data) {
+        console.log(data);
+        return this.nhacungcapService.import(data);
+    }
     async findByProductIds(productIds) {
         try {
             const result = await this.nhacungcapService.findByProductIds(productIds);
@@ -136,6 +140,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], NhacungcapController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('import'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], NhacungcapController.prototype, "import", null);
 __decorate([
     (0, common_1.Post)('finbyids'),
     __param(0, (0, common_1.Body)()),

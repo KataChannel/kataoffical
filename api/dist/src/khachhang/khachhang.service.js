@@ -22,35 +22,39 @@ let KhachhangService = class KhachhangService {
       WHERE search_vector @@ to_tsquery('simple', ${query})
     `;
     }
-    async create(data) {
-        let newMakh = data.makh;
-        if (newMakh) {
-            const existingCustomer = await this.prisma.khachhang.findUnique({
-                where: { makh: newMakh },
-            });
-            if (existingCustomer) {
-                return existingCustomer;
-            }
-        }
-        if (!newMakh) {
-            const prefix = data.loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
-            const lastCustomer = await this.prisma.khachhang.findFirst({
+    async generateMakh(loaikh) {
+        try {
+            const prefix = loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
+            const latest = await this.prisma.khachhang.findFirst({
                 where: { makh: { startsWith: prefix } },
                 orderBy: { makh: 'desc' },
                 select: { makh: true },
             });
             let nextNumber = 1;
-            if (lastCustomer && lastCustomer.makh) {
-                const lastNumber = parseInt(lastCustomer.makh.slice(-5), 10);
+            if (latest && latest.makh) {
+                const lastNumber = parseInt(latest.makh.slice(prefix.length), 10);
                 nextNumber = lastNumber + 1;
             }
-            newMakh = `${prefix}${String(nextNumber).padStart(5, '0')}`;
+            return `${prefix}${nextNumber.toString().padStart(5, '0')}`;
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException('Lỗi khi tạo mã khách hàng');
+        }
+    }
+    async create(data) {
+        if (!data.makh) {
+            data.makh = await this.generateMakh(data.loaikh);
+        }
+        else {
+            const existingCustomer = await this.prisma.khachhang.findUnique({
+                where: { makh: data.makh },
+            });
+            if (existingCustomer) {
+                return existingCustomer;
+            }
         }
         return this.prisma.khachhang.create({
-            data: {
-                makh: newMakh,
-                ...data,
-            },
+            data,
         });
     }
     async import(data) {

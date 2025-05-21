@@ -56,6 +56,29 @@ let NhacungcapService = class NhacungcapService {
             throw new common_1.InternalServerErrorException('Lỗi khi tạo nhà cung cấp');
         }
     }
+    async import(data) {
+        for (const supplier of data) {
+            if (!supplier.mancc) {
+                await this.create(supplier);
+            }
+            else {
+                const existingSupplier = await this.prisma.nhacungcap.findUnique({
+                    where: { mancc: supplier.mancc },
+                    select: { id: true },
+                });
+                if (existingSupplier) {
+                    await this.prisma.nhacungcap.update({
+                        where: { id: existingSupplier.id },
+                        data: { ...supplier },
+                    });
+                }
+                else {
+                    await this.create(supplier);
+                }
+            }
+        }
+        return { message: 'Import completed' };
+    }
     async findAll() {
         try {
             return await this.prisma.nhacungcap.findMany({

@@ -280,9 +280,6 @@ export class ListNhacungcapComponent {
   }
   async DoImportData(data:any)
   {
-    console.log(data);
-    
-  const isUpdate = false
    const transformedData = data.map((v: any) => ({
       name: v.name?.trim()||'',
       mancc: v.mancc?.trim()||'',
@@ -292,34 +289,48 @@ export class ListNhacungcapComponent {
       sdt: v.sdt?.toString().trim()||'',
       ghichu: v.ghichu?.toString().trim()||'',       
    }));
-  for (const v of transformedData) {
-    await new Promise(resolve => setTimeout(resolve, 100)); // 100ms delay
-    await this._NhacungcapService.CreateNhacungcap(v);
+   await this._NhacungcapService.ImportNhacungcap(transformedData);
+    this._snackBar.open('Cập Nhật Thành Công', '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
   }
-   
-  //  if (isUpdate) {
-  //         await this._NhacungcapService.updateNhacungcap(item1);
-  //  }
-  //       else{
-  //       }
+  async ImportExcel(event: any) {
+    const data = await readExcelFileNoWorker(event, 'nhacungcap');
+    this.DoImportData(data);
   }
-  async ImporExcel(event: any) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const data = await readExcelFileNoWorker(file, 'Sheet1');
-  this.DoImportData(data);
-  }   
   ExportExcel(dulieu:any,title:any) {
-    const data = dulieu.map((v: any) => ({
-      name: v.name?.trim()||'',
-      mancc: v.mancc?.trim()||'',
-      manccold: v.manccold?.trim()||'',
-      diachi: v.diachi?.trim()||'',
-      email: v.email?.trim()||'',
-      sdt: v.sdt?.trim()||'',
-      ghichu: v.ghichu?.trim()||'',
-    }));
-    writeExcelFile(data,title);
+    let nhacungcap=[]
+      if(dulieu.length===0){
+        nhacungcap = [
+          {
+            name: '',
+            mancc: '',
+            manccold: '',
+            diachi: '',
+            email: '',
+            sdt: '',
+            ghichu: '',
+          }
+        ]
+      }
+      else {
+        nhacungcap = dulieu.map((v: any) => ({
+          name: v.name?.trim()||'',
+          mancc: v.mancc?.trim()||'',
+          manccold: v.manccold?.trim()||'',
+          diachi: v.diachi?.trim()||'',
+          email: v.email?.trim()||'',
+          sdt: v.sdt?.toString().trim()||'',
+          ghichu: v.ghichu?.toString().trim()||'',
+        }));
+      }
+    writeExcelFile({nhacungcap},title);
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier

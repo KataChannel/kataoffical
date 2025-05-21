@@ -341,11 +341,7 @@ export class ListSanphamComponent {
     }, 1000);
   }
   async ImportExcel(event: any) {
-    console.log(event);
-
     const data = await readExcelFileNoWorker(event, 'sanpham');
-    console.log(data);
-
     this.DoImportData(data);
   }
   ExportExcel(data: any, title: any) {

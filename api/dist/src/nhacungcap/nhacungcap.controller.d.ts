@@ -26,6 +26,9 @@ export declare class NhacungcapController {
         error: any;
         data?: undefined;
     }>;
+    import(data: any): Promise<{
+        message: string;
+    }>;
     findByProductIds(productIds: any): Promise<{
         statusCode: HttpStatus;
         message: string;

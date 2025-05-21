@@ -47,6 +47,34 @@ export class NhacungcapService {
     }
   }
 
+  async import(data: any[]) {
+    // Dữ liệu gửi lên là một mảng nhà cung cấp
+    for (const supplier of data) {
+      // Nếu không có mancc, gọi create để tự sinh mancc
+      if (!supplier.mancc) {
+        await this.create(supplier);
+      } else {
+        // Tìm nhà cung cấp tồn tại theo mancc
+        const existingSupplier = await this.prisma.nhacungcap.findUnique({
+          where: { mancc: supplier.mancc },
+          select: { id: true },
+        });
+        if (existingSupplier) {
+          // Nếu nhà cung cấp đã tồn tại thì cập nhật
+          await this.prisma.nhacungcap.update({
+            where: { id: existingSupplier.id },
+            data: { ...supplier },
+          });
+        } else {
+          // Nếu chưa tồn tại thì tạo mới
+          await this.create(supplier);
+        }
+      }
+    }
+    return { message: 'Import completed' };
+  }
+
+
   async findAll() {
     try {
       return await this.prisma.nhacungcap.findMany({
