@@ -22,6 +22,9 @@ let DonhangController = class DonhangController {
     create(createDonhangDto) {
         return this.donhangService.create(createDonhangDto);
     }
+    ImportDonhang(data) {
+        return this.donhangService.ImportDonhang(data);
+    }
     async search(params) {
         return this.donhangService.search(params);
     }
@@ -61,6 +64,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DonhangController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('import'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], DonhangController.prototype, "ImportDonhang", null);
 __decorate([
     (0, common_1.Post)('search'),
     __param(0, (0, common_1.Body)()),

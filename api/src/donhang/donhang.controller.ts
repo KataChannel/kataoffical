@@ -8,6 +8,10 @@ export class DonhangController {
   create(@Body() createDonhangDto: any) {
     return this.donhangService.create(createDonhangDto);
   }
+  @Post('import')
+  ImportDonhang(@Body() data: any) {
+    return this.donhangService.ImportDonhang(data);
+  }
   @Post('search')
   async search(@Body() params: any) {
     return this.donhangService.search(params);

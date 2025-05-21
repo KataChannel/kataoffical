@@ -21,6 +21,7 @@ let BanggiaController = class BanggiaController {
         this.banggiaService = banggiaService;
     }
     import(data) {
+        console.log('Importing banggia data:', data);
         return this.banggiaService.importBanggia(data);
     }
     importspbg(data) {
@@ -34,6 +35,12 @@ let BanggiaController = class BanggiaController {
     }
     findAll() {
         return this.banggiaService.findAll();
+    }
+    getbgsp() {
+        return this.banggiaService.getbgsp();
+    }
+    getbgkh() {
+        return this.banggiaService.getbgkh();
     }
     reorder(body) {
         return this.banggiaService.reorderBanggias(body.banggiaIds);
@@ -104,6 +111,24 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], BanggiaController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('getbgsp'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Return all banggias' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of banggias' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], BanggiaController.prototype, "getbgsp", null);
+__decorate([
+    (0, common_1.Get)('getbgkh'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Return all banggias' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of banggias' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], BanggiaController.prototype, "getbgkh", null);
 __decorate([
     (0, common_1.Post)('reorder'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),

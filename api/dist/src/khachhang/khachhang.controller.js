@@ -26,7 +26,6 @@ let KhachhangController = class KhachhangController {
         return this.khachhangService.create(createKhachhangDto);
     }
     import(data) {
-        console.log(data);
         return this.khachhangService.import(data);
     }
     findby(param) {

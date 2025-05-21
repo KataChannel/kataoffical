@@ -55,7 +55,6 @@ export class NhacungcapService {
           }
         }
         this.getAllNhacungcap()
-        this.nhacungcapId.set(data.data.id)
     } catch (error) {
         return console.error(error);
     }

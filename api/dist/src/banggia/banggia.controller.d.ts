@@ -2,29 +2,7 @@ import { BanggiaService } from './banggia.service';
 export declare class BanggiaController {
     private readonly banggiaService;
     constructor(banggiaService: BanggiaService);
-    import(data: any): Promise<{
-        sanpham: {
-            id: string;
-            giaban: number;
-            order: number | null;
-            isActive: boolean;
-            sanphamId: string;
-            banggiaId: string;
-        }[];
-    } & {
-        id: string;
-        title: string | null;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        mabanggia: string | null;
-        type: string | null;
-        batdau: Date | null;
-        ketthuc: Date | null;
-        status: string | null;
-    }>;
+    import(data: any): Promise<any[]>;
     importspbg(data: any): Promise<{}>;
     importbgkh(data: any): Promise<any[]>;
     create(createBanggiaDto: any): Promise<{
@@ -69,6 +47,16 @@ export declare class BanggiaController {
         batdau: Date | null;
         ketthuc: Date | null;
         status: string | null;
+    }[]>;
+    getbgsp(): Promise<{
+        mabanggia: string | null;
+        masp: string;
+        title: string;
+        giaban: number;
+    }[]>;
+    getbgkh(): Promise<{
+        mabanggia: string | null;
+        makh: string;
     }[]>;
     reorder(body: {
         banggiaIds: string[];

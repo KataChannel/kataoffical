@@ -45,8 +45,8 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
 export class ListKhachhangComponent {
   Detail: any = {};
   displayedColumns: string[] = [
-    'name',
     'makh',
+    'name',
     'namenn',
     'diachi',
     'quan',
@@ -61,8 +61,8 @@ export class ListKhachhangComponent {
   ];
 
   ColumnName: any = {
-    name: 'Tên Khách Hàng',
     makh: 'Mã Khách Hàng',
+    name: 'Tên Khách Hàng',
     namenn: 'Người Liên Hệ',
     diachi: 'Địa Chỉ',
     quan: 'Quận',

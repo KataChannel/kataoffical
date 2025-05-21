@@ -5,29 +5,7 @@ export declare class BanggiaService {
     private readonly _SocketGateway;
     constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
     importSPBG(listBanggia: any[]): Promise<{}>;
-    importBanggia(data: any): Promise<{
-        sanpham: {
-            id: string;
-            giaban: number;
-            order: number | null;
-            isActive: boolean;
-            sanphamId: string;
-            banggiaId: string;
-        }[];
-    } & {
-        id: string;
-        title: string | null;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        mabanggia: string | null;
-        type: string | null;
-        batdau: Date | null;
-        ketthuc: Date | null;
-        status: string | null;
-    }>;
+    importBanggia(data: any): Promise<any[]>;
     importBGKH(data: any[]): Promise<any[]>;
     create(data: any): Promise<{
         id: string;
@@ -67,6 +45,16 @@ export declare class BanggiaService {
         status: string | null;
     }>;
     reorderBanggias(banggiaIds: string[]): Promise<null>;
+    getbgsp(): Promise<{
+        mabanggia: string | null;
+        masp: string;
+        title: string;
+        giaban: number;
+    }[]>;
+    getbgkh(): Promise<{
+        mabanggia: string | null;
+        makh: string;
+    }[]>;
     findAll(): Promise<{
         sanpham: number;
         khachhang: number;

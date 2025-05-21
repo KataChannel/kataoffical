@@ -22,6 +22,8 @@ export class BanggiaController {
   @ApiOperation({ summary: 'Import banggia data' })
   @ApiResponse({ status: 201, description: 'Data imported successfully' })
   import(@Body() data: any) {
+    console.log('Importing banggia data:', data);
+    
     return this.banggiaService.importBanggia(data);
   }
 
@@ -54,6 +56,21 @@ export class BanggiaController {
   @ApiResponse({ status: 200, description: 'List of banggias' })
   findAll() {
     return this.banggiaService.findAll();
+  }
+
+  @Get('getbgsp')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Return all banggias' })
+  @ApiResponse({ status: 200, description: 'List of banggias' })
+  getbgsp() {
+    return this.banggiaService.getbgsp();
+  }
+  @Get('getbgkh')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Return all banggias' })
+  @ApiResponse({ status: 200, description: 'List of banggias' })
+  getbgkh() {
+    return this.banggiaService.getbgkh();
   }
 
   @Post('reorder')

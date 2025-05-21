@@ -125,6 +125,13 @@ export const routes: Routes = [
           },
         ],
       },
+    {
+            path: 'importdata',
+            canActivate: [PermissionGuard],
+            data: { permission: 'importdata.view' },
+            loadChildren: () =>
+              import('./admin/importdata/importdata.route').then(m => m.ImportdataRoutingModule),
+      },
       {
         path: 'danhmuc',
         loadComponent: () =>

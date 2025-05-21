@@ -72,17 +72,19 @@ let BanggiaService = class BanggiaService {
     }
     async importBanggia(data) {
         try {
-            const existing = await this.prisma.banggia.findFirst({
-                where: { mabanggia: data.mabanggia },
-            });
-            if (existing) {
-                const result = await this.update(existing.id, data);
-                return result;
-            }
-            else {
-                const result = await this.createBanggia(data);
-                return result;
-            }
+            const results = await Promise.all(data.map(async (item) => {
+                const existing = await this.prisma.banggia.findFirst({
+                    where: { mabanggia: item.mabanggia },
+                });
+                if (existing) {
+                    return await this.update(existing.id, item);
+                }
+                else {
+                    return await this.createBanggia(item);
+                }
+            }));
+            console.log('Import results:', results);
+            return results;
         }
         catch (error) {
             throw new common_1.InternalServerErrorException(error.message || 'Error importing bang gia');
@@ -207,6 +209,46 @@ let BanggiaService = class BanggiaService {
         }
         catch (error) {
             throw new common_1.InternalServerErrorException(error.message || 'Error reordering banggias');
+        }
+    }
+    async getbgsp() {
+        try {
+            const banggias = await this.prisma.banggia.findMany({
+                include: {
+                    sanpham: {
+                        include: { sanpham: true },
+                    },
+                },
+                orderBy: { order: 'asc' },
+            });
+            const result = banggias.flatMap(bg => bg.sanpham.map(sp => ({
+                mabanggia: bg.mabanggia,
+                masp: sp.sanpham.id,
+                title: sp.sanpham.title,
+                giaban: sp.sanpham.giaban,
+            })));
+            return result;
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException(error.message || 'Error retrieving banggias');
+        }
+    }
+    async getbgkh() {
+        try {
+            const banggias = await this.prisma.banggia.findMany({
+                include: {
+                    khachhang: true,
+                },
+                orderBy: { order: 'asc' },
+            });
+            const result = banggias.flatMap(bg => bg.khachhang.map(kh => ({
+                mabanggia: bg.mabanggia,
+                makh: kh.makh,
+            })));
+            return result;
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException(error.message || 'Error retrieving banggias');
         }
     }
     async findAll() {

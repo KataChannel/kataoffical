@@ -16,7 +16,7 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NhacungcapService } from '../nhacungcap.service';
 import { MatMenuModule } from '@angular/material/menu';
-import { readExcelFile, readExcelFileNoWorker, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
+import { readExcelFile, readExcelFileNoWorker, writeExcelFile, writeExcelFileSheets, writeExcelMultiple } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
@@ -330,7 +330,7 @@ export class ListNhacungcapComponent {
           ghichu: v.ghichu?.toString().trim()||'',
         }));
       }
-    writeExcelFile({nhacungcap},title);
+    writeExcelMultiple({nhacungcap},title);
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier

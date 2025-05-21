@@ -21,6 +21,10 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import moment from 'moment';
 import { SanphamService } from '../../sanpham/sanpham.service';
+import { KhachhangService } from '../../khachhang/khachhang.service';
+import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
+import { DonhangService } from '../../donhang/donhang.service';
+import { DathangService } from '../../dathang/dathang.service';
 @Component({
   selector: 'app-listbanggia',
   templateUrl: './listbanggia.component.html',
@@ -75,8 +79,14 @@ export class ListBanggiaComponent {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
+
   private _BanggiaService: BanggiaService = inject(BanggiaService);
   private _SanphamService: SanphamService = inject(SanphamService);
+  private _KhachhangService: KhachhangService = inject(KhachhangService);
+  private _NhacungcapService: NhacungcapService = inject(NhacungcapService);
+  private _DonhangService: DonhangService = inject(DonhangService);
+  private _DathangService: DathangService = inject(DathangService);
+
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
@@ -294,8 +304,11 @@ convertDataToData1(
       ghichu: v.ghichu,
       status: v.status,
     })).filter((v: any) => v.mabanggia !== undefined && v.mabanggia !== null && v.mabanggia !== '');
-    this._BanggiaService.importBanggia(ListBG);
+    
+    this._BanggiaService.ImportBanggia(ListBG);
     const ListData = this.convertDataToData1(data.SPBG);
+
+
     this._BanggiaService.importSPBG(ListData);
     const BGKH = (data.BGKH || []).map((v: any) => ({
         mabanggia: v.mabanggia,
@@ -318,7 +331,10 @@ convertDataToData1(
   async ExportExcel(data:any,title:any) {
     await this._SanphamService.getAllSanpham()
     const ListSP = this._SanphamService.ListSanpham()
+
     const result = this.convertToData3(data, ListSP)
+
+    
     await this._BanggiaService.getAllBanggia();
     let Banggia = this._BanggiaService.ListBanggia();
     const ListKH = Banggia.reduce((acc: any[], v: any) => {
@@ -344,7 +360,7 @@ convertDataToData1(
       };
     });
     writeExcelFileSheets({ 'SPBG': { data: result }, 'BG': { data: Banggia }, 'BGKH': { data: ListKH } }, title);
-  }
+}
   convertToData3(data: any, data2: any) {
     const pricingTables = new Set(data.map((item: any) => item.mabanggia));
     return data2.map((product: any) => ({

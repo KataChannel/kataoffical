@@ -1,0 +1,22 @@
+<div class="flex flex-col space-y-2 p-8">
+    <div class="flex flex-row space-x-2 items-center">
+      <button (click)="ExportExcel(TitleExport)" mat-flat-button color="primary">
+        Tải Xuống Tất Cả 
+        <mat-icon class="ml-1">download</mat-icon>
+      </button>
+      <button mat-flat-button color="primary" (click)="uploadfile.click()">
+        Tải Lên Tất Cả 
+        <mat-icon class="ml-1">upload</mat-icon>
+      </button>
+      <button mat-flat-button color="primary" (click)="toggleAll()">
+        Chọn Tất Cả
+      </button>
+    <input class="hidden" (change)="ImportExcel($event)" type="file" #uploadfile>     
+    </div>
+    <div class="grid grid-cols-3 gap-4">
+     <span *ngFor="let item of ListImportdata(); trackBy: trackByFn" (click)="toggleItem(item)" class="{{CheckItem(item) ? 'bg-blue-100' : ''}} cursor-pointer flex flex-row space-x-2 items-center p-4 rounded-lg border">
+        <mat-icon *ngIf="CheckItem(item)">check</mat-icon>
+        <span>{{item.title}}</span>
+      </span>
+    </div>
+</div>

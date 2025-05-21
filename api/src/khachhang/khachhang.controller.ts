@@ -14,7 +14,6 @@ export class KhachhangController {
   }
   @Post('import')
   import(@Body() data: any) {
-    console.log(data);
     return this.khachhangService.import(data);
   }
   @Post('findby')

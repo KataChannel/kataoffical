@@ -17,6 +17,30 @@ export class DonhangService {
   setDonhangId(id: string | null) {
     this.donhangId.set(id);
   }
+  async ImportDonhang(dulieu: any) {
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/donhang/import`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+
+        }
+        this.getAllDonhang()
+        this.donhangId.set(data.id)
+        return data;
+    } catch (error) {
+        return console.error(error);
+    }
+  }
   async CreateDonhang(dulieu: any) {
     try {
       const options = {

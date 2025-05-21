@@ -69,7 +69,7 @@ export class BanggiaService {
     }
   }
 
-  async importBanggia(dulieu: any) {
+  async ImportBanggia(dulieu: any) {
     console.log('bg', dulieu);
     
     try {
@@ -164,6 +164,44 @@ export class BanggiaService {
     } catch (error) {
       console.error(error);
       return cachedData;
+    }
+  }
+  async getAllBGSP() {
+    try {
+        const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+      };
+      const response = await fetch(`${environment.APIURL}/banggia/getbgsp`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  async getAllBGKH() {
+    try {
+        const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+      };
+      const response = await fetch(`${environment.APIURL}/banggia/getbgkh`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error(error);
     }
   }
 

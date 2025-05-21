@@ -393,7 +393,42 @@ export class DonhangService {
     };
     return result;
   }
+    async ImportDonhang(data: any) {
+      return this.prisma.$transaction(async (prisma) => {
+      const groups = data.reduce((acc: Record<string, any[]>, item: any) => {
+        const key = item.makh;
+        if (!acc[key]) {
+        acc[key] = [];
+        }
+        acc[key].push(item);
+        return acc;
+      }, {});
 
+      for (const makh in groups) {
+        const items = groups[makh];
+        const orderDate = new Date(items[0].ngay);
+        const data:any = {
+          title: `Import Order for ${makh}`,
+          type: 'donsi',
+          ngaygiao: orderDate,
+          khachhangId: makh,
+          isActive: true,
+          order: 0,
+          ghichu: '',
+          sanpham: {
+          create: items.map((item: any) => ({
+            idSP: item.masp,
+            ghichu: item.ghichu,
+            sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
+            slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
+            slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
+          })),
+          },
+        }
+        await prisma.donhang.create({ data });
+      }
+      });
+    }
   async create(dto: any) {
     const madonhang = await this.generateNextOrderCode();
     return this.prisma.$transaction(async (prisma) => {
@@ -441,7 +476,7 @@ export class DonhangService {
       }
       return newDonhang;
     });
-  }
+}
 
 async update(id: string, data: any) {
   return this.prisma.$transaction(async (prisma) => {
