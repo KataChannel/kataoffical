@@ -147,6 +147,10 @@ export class HomeComponent {
    _breakpointObserver:BreakpointObserver = inject(BreakpointObserver)
     @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
     ngOnInit() {
+    if (!this.token) {
+      this.drawer.close();
+    }
+
      this._breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       if (result.matches) {
         this.drawerMode.set('over');

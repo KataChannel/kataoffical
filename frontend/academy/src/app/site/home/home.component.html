@@ -10,7 +10,7 @@
     <div class="flex w-full bg-white shadow-md top-0 right-0 z-10">
         <div class="h-16 container mx-auto flex justify-between items-center px-2">
             <div class="cursor-pointer relative flex items-center space-x-2">
-                <button class="lg:hidden" (click)="drawer.toggle()" mat-icon-button
+                <button *ngIf="token" class="lg:hidden" (click)="drawer.toggle()" mat-icon-button
                     color="primary"><mat-icon>menu</mat-icon></button>
                 <a [href]="'/'" class="relative flex flex-col space-y-2 p-2">
                     <img [src]="'images/logo-timona-moi.webp'" class="m-auto h-10 object-cover" alt="Logo">
