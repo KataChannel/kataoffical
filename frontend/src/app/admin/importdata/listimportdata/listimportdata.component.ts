@@ -335,19 +335,22 @@ async ExportExcel(title:any) {
         }];
 
     const ListBGSP =this.convertBGSPToExport(this.rawListBG, this.rawListSP);
+        
     const ListBGKH:any[] =this.rawListKH.map((v: any) => {
             const result: any = {
             makh: v.makh || '',
             name: v.name || '',
            };
+       let i =1
        for (const banggia of this.rawListBG) {
         const banggiaExists = v.banggia?.some((bg: any) => bg.mabanggia === banggia.mabanggia);
-        result[banggia.mabanggia] = banggiaExists ? banggia.mabanggia : '';
+        if(banggiaExists){
+          result[i] = banggia.mabanggia;
+          i++;
+        }        
       }
       return result;
     });
-
-
     const dynamicKeys = this.rawListSP.reduce((acc: Record<string, string>, v: any) => {
       if (v && v.masp) {
       acc[v.masp] = '';
@@ -360,9 +363,14 @@ async ExportExcel(title:any) {
       mancc: supplier.mancc || '',
       name: supplier.name || '',
       };
+      let i =1
       for (const masp of Object.keys(dynamicKeys)) {
         const productExists = supplier.Sanpham?.some((sp: any) => sp.masp === masp);
-        result[masp] = productExists ? masp : '';
+        if(productExists){
+          result[i] = masp;
+        i++;
+        }
+
       }
        return result;
     });
@@ -472,7 +480,6 @@ convertBHKHToImport(data: any){
     (key) => !['makh', 'name'].includes(key)
   );
   data.forEach((v:any) => {
-    console.log(v);
     v.banggia = [];
     for (const key of boardKeys) {
       if (v[key] !== undefined && v[key] !== null && v[key] !== '') {
@@ -678,7 +685,7 @@ convertNCCSPToImport(data: any){
     }
     if(data.banggiakhachhang && data.banggiakhachhang.length > 0 && this.ListEdit().some((item: any) => item.value === 'banggiakhachhang'))
     {
-        const ListBGKH = this.convertBHKHToImport(data.banggiakhachhang).filter((v:any)=>v.banggia.length > 0);
+        const ListBGKH = this.convertBHKHToImport(data.banggiakhachhang).filter((v:any)=>v.banggia.length > 0);        
         await this._KhachhangService.ImportKhachhang(ListBGKH);
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,
@@ -690,6 +697,8 @@ convertNCCSPToImport(data: any){
     if(data.nhacungcapsanpham && data.nhacungcapsanpham.length > 0 && this.ListEdit().some((item: any) => item.value === 'nhacungcapsanpham'))
     {
       const convertedSuppliers = this.convertNCCSPToImport(data.nhacungcapsanpham);
+      console.log(convertedSuppliers);
+      
       const ListNCCSP = convertedSuppliers
         .filter((supplier:any) => supplier?.Sanpham?.length > 0)
         .map((supplier:any) => ({
