@@ -47,7 +47,6 @@ export class ListKhachhangComponent {
   displayedColumns: string[] = [
     'makh',
     'name',
-    'namenn',
     'diachi',
     'quan',
     'email',
@@ -63,7 +62,6 @@ export class ListKhachhangComponent {
   ColumnName: any = {
     makh: 'Mã Khách Hàng',
     name: 'Tên Khách Hàng',
-    namenn: 'Người Liên Hệ',
     diachi: 'Địa Chỉ',
     quan: 'Quận',
     email: 'Email',

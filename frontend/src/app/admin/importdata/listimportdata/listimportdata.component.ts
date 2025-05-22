@@ -538,16 +538,28 @@ convertNCCSPToImport(data: any){
     {
       const ListSP = (data.sanpham || []).map((v: any) => ({
         masp: v.masp,
-        subtitle: v.subtitle,
+        subtitle: v.subtitle.toString(),
         title: v.title,
         title2: v.title2,
-        giaban: v.giaban,
-        giagoc: v.giagoc,
+        giaban: Number(v.giaban)||Number(v.giagoc)||0,
+        giagoc: Number(v.giagoc)||0,
         dvt: v.dvt,
-        haohut: v.haohut,
+        haohut: Number(v.haohut)||0,
         ghichu: v.ghichu,
       })).filter((v: any) => v.masp !== undefined && v.masp !== null && v.masp !== '');
+      const importSnackbar = this._snackBar.open('Đang import Sản phẩm...', '', {
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-warning']
+      });
       await this._SanphamService.ImportSanpham(ListSP);
+      importSnackbar.dismiss();
+      this._snackBar.open('Import Sản phẩm thành công!', '', {
+        duration: 1000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-success']
+      });
     }
     if(data.khachhang && data.khachhang.length > 0 && this.ListEdit().some((item: any) => item.value === 'khachhang'))
     {
@@ -564,7 +576,20 @@ convertNCCSPToImport(data: any){
         loaikh: v.loaikh,
         ghichu: v.ghichu
       })).filter((v: any) => v.makh !== undefined && v.makh !== null && v.makh !== '');
-      await this._KhachhangService.ImportKhachhang(ListKH);
+
+      const importSnackbar = this._snackBar.open('Đang import Khách hàng...', '', {
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-warning']
+      });
+        await this._KhachhangService.ImportKhachhang(ListKH);
+      importSnackbar.dismiss();
+      this._snackBar.open('Import Khách hàng thành công!', '', {
+        duration: 1000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-success']
+      });
     }
 
     if(data.nhacungcap && data.nhacungcap.length > 0 && this.ListEdit().some((item: any) => item.value === 'nhacungcap'))
@@ -574,10 +599,22 @@ convertNCCSPToImport(data: any){
         mancc: v.mancc,
         diachi: v.diachi,
         email: v.email,
-        sdt: v.sdt,
+        sdt: v.sdt.toString(),
         ghichu: v.ghichu
       })).filter((v: any) => v.mancc !== undefined && v.mancc !== null && v.mancc !== '');
+      const importSnackbar = this._snackBar.open('Đang import Nhà cung cấp...', '', {
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-warning']
+      });
       await this._NhacungcapService.ImportNhacungcap(ListNCC);
+      importSnackbar.dismiss();
+      this._snackBar.open('Import Nhà cung cấp thành công!', '', {
+        duration: 1000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-success']
+      });
     }
     if(data.banggia && data.banggia.length > 0 && this.ListEdit().some((item: any) => item.value === 'banggia'))
     {
@@ -590,7 +627,19 @@ convertNCCSPToImport(data: any){
         ghichu: v.ghichu,
         status: v.status
       })).filter((v: any) => v.mabanggia !== undefined && v.mabanggia !== null && v.mabanggia !== '');
+      const importSnackbar = this._snackBar.open('Đang import Bảng giá...', '', {
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-warning']
+      });
       await this._BanggiaService.ImportBanggia(ListBG);
+      importSnackbar.dismiss();
+      this._snackBar.open('Import Bảng giá thành công!', '', {
+        duration: 1000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-success']
+      });
     }
     if(data.donhang && data.donhang.length > 0 && this.ListEdit().some((item: any) => item.value === 'donhang'))
     {
@@ -599,15 +648,27 @@ convertNCCSPToImport(data: any){
         makh: v.makh,
         mabangia: v.mabangia,
         masp: v.masp,
-        sldat: v.sldat,
-        slgiao: v.slgiao,
-        slnhan: v.slnhan,
+        sldat: Number(v.sldat),
+        slgiao: Number(v.slgiao),
+        slnhan: Number(v.slnhan),
         ghichu: v.ghichu,
       })).filter((v: any) => 
         v.makh !== undefined && v.makh !== null && v.makh !== '' && 
         v.masp !== undefined && v.masp !== null && v.masp !== ''
       );
+      const importSnackbar = this._snackBar.open('Đang import Đơn hàng...', '', {
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-warning']
+      });
        await this._DonhangService.ImportDonhang(ListDH);
+      importSnackbar.dismiss();
+      this._snackBar.open('Import Đơn hàng thành công!', '', {
+        duration: 1000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-success']
+      });
     }
 
     if(data.banggiasanpham && data.banggiasanpham.length > 0 && this.ListEdit().some((item: any) => item.value === 'banggiasanpham'))
@@ -629,8 +690,6 @@ convertNCCSPToImport(data: any){
     if(data.nhacungcapsanpham && data.nhacungcapsanpham.length > 0 && this.ListEdit().some((item: any) => item.value === 'nhacungcapsanpham'))
     {
       const convertedSuppliers = this.convertNCCSPToImport(data.nhacungcapsanpham);
-      console.log(convertedSuppliers);
-      
       const ListNCCSP = convertedSuppliers
         .filter((supplier:any) => supplier?.Sanpham?.length > 0)
         .map((supplier:any) => ({
@@ -639,12 +698,18 @@ convertNCCSPToImport(data: any){
         this.rawListSP.find(product => product?.masp === spId)
           )
         }));
+      const importSnackbar = this._snackBar.open('Đang import Nhà cung cấp sản phẩm...', '', {
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-warning']
+      });
       await this._NhacungcapService.ImportNhacungcap(ListNCCSP);
-      this._snackBar.open('Cập Nhật Thành Công', '', {
+      importSnackbar.dismiss();
+      this._snackBar.open('Import Nhà cung cấp sản phẩm thành công!', '', {
         duration: 1000,
         horizontalPosition: "end",
         verticalPosition: "top",
-        panelClass: ['snackbar-success'],
+        panelClass: ['snackbar-success']
       });
     }
     if(data.xuatnhapton && data.xuatnhapton.length > 0 && this.ListEdit().some((item: any) => item.value === 'xuatnhapton'))
@@ -713,14 +778,25 @@ convertNCCSPToImport(data: any){
           mancc: v.mancc,
           mabanggia: v.mabanggia,
           masp: v.masp,
-          sldat: v.sldat,
-          slgiao: v.slgiao,
-          slnhan: v.slnhan,
+          sldat: Number(v.sldat),
+          slgiao: Number(v.slgiao),
+          slnhan: Number(v.slnhan),
           ghichu: v.ghichu,
         }))
         console.log(ListDH);
-        
+        const importSnackbar = this._snackBar.open('Đang import Đặt hàng...', '', {
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-warning']
+        });
         await this._DathangService.ImportDathang(ListDH);
+        importSnackbar.dismiss();
+        this._snackBar.open('Import Đặt hàng thành công!', '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success']
+        });
     }
     if(data.donhang && this.ListEdit().some((item: any) => item.value === 'donhang'))
     {
@@ -729,12 +805,24 @@ convertNCCSPToImport(data: any){
           makh: v.makh,
           mabanggia: v.mabanggia,
           masp: v.masp,
-          sldat: v.sldat,
-          slgiao: v.slgiao,
-          slnhan: v.slnhan,
+          sldat: Number(v.sldat),
+          slgiao: Number(v.slgiao),
+          slnhan: Number(v.slnhan),
           ghichu: v.ghichu,
         }))
+        const importSnackbar = this._snackBar.open('Đang import Đơn hàng...', '', {
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-warning']
+        });
         await this._DonhangService.ImportDonhang(ListDH);
+        importSnackbar.dismiss();
+        this._snackBar.open('Import Đơn hàng thành công!', '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success']
+        });
     }
   }
 

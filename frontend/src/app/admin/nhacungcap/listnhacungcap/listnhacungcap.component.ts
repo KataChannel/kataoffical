@@ -44,8 +44,8 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
 export class ListNhacungcapComponent {
   Detail: any = {};
   displayedColumns: string[] = [
-    'name',
     'mancc',
+    'name',
     'Sanpham',
     'diachi',
     'email',
@@ -56,8 +56,8 @@ export class ListNhacungcapComponent {
     'updatedAt',
   ];
   ColumnName: any = {
-    name: 'Tên Nhà Cung Cấp',
     mancc: 'Mã Nhà Cung Cấp',
+    name: 'Tên Nhà Cung Cấp',
     Sanpham:'Sản Phẩm',
     diachi: 'Địa Chỉ',
     email: 'Email',

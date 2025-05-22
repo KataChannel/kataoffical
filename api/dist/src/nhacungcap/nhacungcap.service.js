@@ -62,28 +62,35 @@ let NhacungcapService = class NhacungcapService {
         catch (error) {
             if (error instanceof common_1.BadRequestException)
                 throw error;
+            console.log('error', error);
             throw new common_1.InternalServerErrorException('Lỗi khi tạo nhà cung cấp');
         }
     }
     async import(data) {
-        for (const supplier of data) {
-            if (!supplier.mancc) {
-                await this.create(supplier);
-            }
-            else {
-                const existingSupplier = await this.prisma.nhacungcap.findUnique({
-                    where: { mancc: supplier.mancc },
-                    select: { id: true },
-                });
-                if (existingSupplier) {
-                    this.update(existingSupplier.id, supplier);
-                }
-                else {
+        try {
+            for (const supplier of data) {
+                if (!supplier.mancc) {
                     await this.create(supplier);
                 }
+                else {
+                    const existingSupplier = await this.prisma.nhacungcap.findFirst({
+                        where: { mancc: supplier.mancc },
+                        select: { id: true },
+                    });
+                    if (existingSupplier) {
+                        await this.update(existingSupplier.id, supplier);
+                    }
+                    else {
+                        await this.create(supplier);
+                    }
+                }
             }
+            return { message: 'Import completed' };
         }
-        return { message: 'Import completed' };
+        catch (error) {
+            console.log('error', error);
+            throw new common_1.InternalServerErrorException('Lỗi khi nhập khẩu nhà cung cấp');
+        }
     }
     async findAll() {
         try {
