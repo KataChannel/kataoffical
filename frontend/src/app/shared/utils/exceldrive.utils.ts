@@ -36,6 +36,10 @@ export function writeExcelFileSheets(
     workbook.SheetNames.push(sheetName);
     workbook.Sheets[sheetName] = worksheet;
   });
+  if (workbook.SheetNames.length === 0) {
+    workbook.SheetNames.push('EmptySheet');
+    workbook.Sheets['EmptySheet'] = XLSX.utils.aoa_to_sheet([[]]);
+  }
 
   const excelBuffer: any = XLSX.write(workbook, {
     bookType: 'xlsx',

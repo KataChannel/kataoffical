@@ -26,21 +26,31 @@ export class NhacungcapService {
 
   async create(data: any) {
     try {
-      const existing = await this.prisma.nhacungcap.findUnique({
-        where: { mancc: data.mancc },
-      });
-
-      if (existing) {
-        throw new BadRequestException('Mã nhà cung cấp đã tồn tại');
+      if (data.mancc && data.mancc.trim() !== '') {
+        const existing = await this.prisma.nhacungcap.findUnique({
+          where: { mancc: data.mancc },
+        });
+        if (existing) {
+          throw new BadRequestException('Mã nhà cung cấp đã tồn tại');
+        }
       }
+      const mancc =
+        data.mancc && data.mancc.trim() !== ''
+          ? data.mancc
+          : await this.generateMancc();
 
-      const mancc = data.mancc || await this.generateMancc();
-      return await this.prisma.nhacungcap.create({
+      const { Sanpham, ...rest } = data;
+
+      const result = await this.prisma.nhacungcap.create({
         data: {
           mancc,
-          ...data,
+          ...rest,
+          Sanpham: {
+            connect: Sanpham?.map((sp: any) => ({ id: sp.id })) || [],
+          },
         },
       });
+      return result;
     } catch (error) {
       if (error instanceof BadRequestException) throw error;
       throw new InternalServerErrorException('Lỗi khi tạo nhà cung cấp');
@@ -61,10 +71,7 @@ export class NhacungcapService {
         });
         if (existingSupplier) {
           // Nếu nhà cung cấp đã tồn tại thì cập nhật
-          await this.prisma.nhacungcap.update({
-            where: { id: existingSupplier.id },
-            data: { ...supplier },
-          });
+          this.update(existingSupplier.id, supplier);
         } else {
           // Nếu chưa tồn tại thì tạo mới
           await this.create(supplier);

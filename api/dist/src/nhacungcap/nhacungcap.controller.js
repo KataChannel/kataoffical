@@ -37,7 +37,6 @@ let NhacungcapController = class NhacungcapController {
         }
     }
     import(data) {
-        console.log(data);
         return this.nhacungcapService.import(data);
     }
     async findByProductIds(productIds) {

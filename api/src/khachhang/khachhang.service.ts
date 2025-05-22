@@ -37,50 +37,91 @@ export class KhachhangService {
     // Nếu mã khách hàng không được truyền, tự động tạo mới
     if (!data.makh) {
       data.makh = await this.generateMakh(data.loaikh);
-    } else {
-      // Nếu mã khách hàng được truyền, kiểm tra xem có tồn tại chưa
-      const existingCustomer = await this.prisma.khachhang.findUnique({
-        where: { makh: data.makh },
-      });
-      if (existingCustomer) {
-        // Nếu đã tồn tại, trả về khách hàng hiện có
-        return existingCustomer;
-      }
     }
-    // Tạo khách hàng mới với dữ liệu đã có, bao gồm makh
+
+    // Xử lý kết nối banggia nếu có (thêm banggia thuộc khách hàng)
+    let banggiaData = {};
+    if (data.banggia && Array.isArray(data.banggia) && data.banggia.length > 0) {
+      banggiaData = { banggia: { connect: data.banggia.map((id: string) => ({ id })) } };
+    }
+
+    // Hợp nhất dữ liệu ban đầu và dữ liệu banggia
+    const newData = { ...data, ...banggiaData };
+
+    // Nếu mã khách hàng đã có, kiểm tra xem khách hàng đó đã tồn tại chưa
+    const existingCustomer = await this.prisma.khachhang.findUnique({
+      where: { makh: data.makh },
+      include: { banggia: true },
+    });
+    if (existingCustomer) {
+      // Nếu đã tồn tại, cập nhật thông tin khách hàng bằng hàm update
+      return this.prisma.khachhang.update({
+        where: { id: existingCustomer.id },
+        data: newData,
+        include: { banggia: true },
+      });
+    }
     return this.prisma.khachhang.create({
-      data,
+      data: newData,
     });
   }
 
 
 
   async import(data: any[]) {
-    // Dữ liệu gửi lên là một mảng khách hàng
+    // Dữ liệu gửi lên là một mảng khách hàng, mỗi khách hàng có thể chứa danh sách banggia dưới dạng các đối tượng với thuộc tính mabanggia
     for (const customer of data) {
-      // Nếu không có makh, gọi create để tự sinh makh
+      const { banggia, ...rest } = customer;
+      let banggiaData = {};
+      console.log('customer', customer);
+      
+      if (banggia !== undefined) {
+        if (banggia.length > 0) {
+          // Chuyển danh sách banggia từ mabanggia sang id thông qua lookup
+          const banggiaRecords = await Promise.all(
+            banggia.map(async (bg: any) => {
+              const bgRecord = await this.prisma.banggia.findFirst({
+                where: { mabanggia: bg },
+                select: { id: true }
+              });
+              if (!bgRecord) {
+                throw new NotFoundException(`Banggia với mabanggia ${bg} không tồn tại`);
+              }
+              return { id: bgRecord.id };
+            })
+          );
+          banggiaData = { banggia: { connect: banggiaRecords } };
+        } else {
+          // Nếu mảng rỗng thì đảm bảo các kết nối hiện có bị hủy
+          banggiaData = { banggia: { set: [] } };
+        }
+      }
+      
+      const dataToUse = { ...rest, ...banggiaData };
+
+      // Nếu mã khách hàng không tồn tại thì tạo mới
       if (!customer.makh) {
-        await this.create(customer);
+        await this.create(dataToUse);
       } else {
-        // Tìm khách hàng tồn tại theo makh
+        // Nếu khách hàng đã tồn tại, cập nhật thông qua hàm update
         const existingCustomer = await this.prisma.khachhang.findUnique({
           where: { makh: customer.makh },
           select: { id: true },
         });
         if (existingCustomer) {
-          // Nếu khách hàng đã tồn tại thì cập nhật
           await this.prisma.khachhang.update({
             where: { id: existingCustomer.id },
-            data: { ...customer },
+            data: dataToUse,
           });
         } else {
-          // Nếu chưa tồn tại thì tạo mới
-          await this.create(customer);
+          await this.create(dataToUse);
         }
       }
     }
     return { message: 'Import completed' };
   }
+
+
 
   async findAll() {
     return this.prisma.khachhang.findMany({

@@ -36,19 +36,28 @@ let NhacungcapService = class NhacungcapService {
     }
     async create(data) {
         try {
-            const existing = await this.prisma.nhacungcap.findUnique({
-                where: { mancc: data.mancc },
-            });
-            if (existing) {
-                throw new common_1.BadRequestException('Mã nhà cung cấp đã tồn tại');
+            if (data.mancc && data.mancc.trim() !== '') {
+                const existing = await this.prisma.nhacungcap.findUnique({
+                    where: { mancc: data.mancc },
+                });
+                if (existing) {
+                    throw new common_1.BadRequestException('Mã nhà cung cấp đã tồn tại');
+                }
             }
-            const mancc = data.mancc || await this.generateMancc();
-            return await this.prisma.nhacungcap.create({
+            const mancc = data.mancc && data.mancc.trim() !== ''
+                ? data.mancc
+                : await this.generateMancc();
+            const { Sanpham, ...rest } = data;
+            const result = await this.prisma.nhacungcap.create({
                 data: {
                     mancc,
-                    ...data,
+                    ...rest,
+                    Sanpham: {
+                        connect: Sanpham?.map((sp) => ({ id: sp.id })) || [],
+                    },
                 },
             });
+            return result;
         }
         catch (error) {
             if (error instanceof common_1.BadRequestException)
@@ -67,10 +76,7 @@ let NhacungcapService = class NhacungcapService {
                     select: { id: true },
                 });
                 if (existingSupplier) {
-                    await this.prisma.nhacungcap.update({
-                        where: { id: existingSupplier.id },
-                        data: { ...supplier },
-                    });
+                    this.update(existingSupplier.id, supplier);
                 }
                 else {
                     await this.create(supplier);

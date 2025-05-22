@@ -45,22 +45,52 @@ let KhachhangService = class KhachhangService {
         if (!data.makh) {
             data.makh = await this.generateMakh(data.loaikh);
         }
-        else {
-            const existingCustomer = await this.prisma.khachhang.findUnique({
-                where: { makh: data.makh },
+        let banggiaData = {};
+        if (data.banggia && Array.isArray(data.banggia) && data.banggia.length > 0) {
+            banggiaData = { banggia: { connect: data.banggia.map((id) => ({ id })) } };
+        }
+        const newData = { ...data, ...banggiaData };
+        const existingCustomer = await this.prisma.khachhang.findUnique({
+            where: { makh: data.makh },
+            include: { banggia: true },
+        });
+        if (existingCustomer) {
+            return this.prisma.khachhang.update({
+                where: { id: existingCustomer.id },
+                data: newData,
+                include: { banggia: true },
             });
-            if (existingCustomer) {
-                return existingCustomer;
-            }
         }
         return this.prisma.khachhang.create({
-            data,
+            data: newData,
         });
     }
     async import(data) {
         for (const customer of data) {
+            const { banggia, ...rest } = customer;
+            let banggiaData = {};
+            console.log('customer', customer);
+            if (banggia !== undefined) {
+                if (banggia.length > 0) {
+                    const banggiaRecords = await Promise.all(banggia.map(async (bg) => {
+                        const bgRecord = await this.prisma.banggia.findFirst({
+                            where: { mabanggia: bg },
+                            select: { id: true }
+                        });
+                        if (!bgRecord) {
+                            throw new common_1.NotFoundException(`Banggia với mabanggia ${bg} không tồn tại`);
+                        }
+                        return { id: bgRecord.id };
+                    }));
+                    banggiaData = { banggia: { connect: banggiaRecords } };
+                }
+                else {
+                    banggiaData = { banggia: { set: [] } };
+                }
+            }
+            const dataToUse = { ...rest, ...banggiaData };
             if (!customer.makh) {
-                await this.create(customer);
+                await this.create(dataToUse);
             }
             else {
                 const existingCustomer = await this.prisma.khachhang.findUnique({
@@ -70,11 +100,11 @@ let KhachhangService = class KhachhangService {
                 if (existingCustomer) {
                     await this.prisma.khachhang.update({
                         where: { id: existingCustomer.id },
-                        data: { ...customer },
+                        data: dataToUse,
                     });
                 }
                 else {
-                    await this.create(customer);
+                    await this.create(dataToUse);
                 }
             }
         }

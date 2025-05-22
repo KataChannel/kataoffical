@@ -56,14 +56,15 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
           this._ListnhacungcapComponent.drawer.close();
         }
         if(id === '0'){
-          this.DetailNhacungcap.set({ title: GenId(8, false), slug: GenId(8, false) });
+          this.DetailNhacungcap.set(
+            {Sanpham: [], isActive: true });
           this._ListnhacungcapComponent.drawer.open();
           this.isEdit.update(value => !value);
           this._router.navigate(['/admin/nhacungcap', "0"]);
         }
         else{
             await this._NhacungcapService.getNhacungcapByid(id);
-            this.ChosenListSanpham = this.DetailNhacungcap().Sanpham||[];
+            this.ChosenListSanpham = this.DetailNhacungcap()?.Sanpham||[];
             this._ListnhacungcapComponent.drawer.open();
             this._router.navigate(['/admin/nhacungcap', id]);
         }
@@ -76,7 +77,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     async ngOnInit() {     
       const id = this.nhacungcapId();
       await this._NhacungcapService.getNhacungcapByid(id);
-      this.ChosenListSanpham = this.DetailNhacungcap().Sanpham||[];
+      this.ChosenListSanpham = this.DetailNhacungcap()?.Sanpham||[];
     }
     async handleNhacungcapAction() {
       if (this.nhacungcapId() === '0') {

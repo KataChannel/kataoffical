@@ -30,6 +30,8 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import moment from 'moment';
+import { PhieukhoService } from '../../phieukho/phieukho.service';
+import { KhoService } from '../../kho/kho.service';
 
 @Component({
   selector: 'app-listimportdata',
@@ -79,6 +81,8 @@ export class ListImportdataComponent implements OnInit {
   private _NhacungcapService: NhacungcapService = inject(NhacungcapService);
   private _DonhangService: DonhangService = inject(DonhangService);
   private _DathangService: DathangService = inject(DathangService);
+  private _PhieukhoService: PhieukhoService = inject(PhieukhoService);
+  private _KhoService: KhoService = inject(KhoService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
@@ -93,24 +97,54 @@ export class ListImportdataComponent implements OnInit {
     {id:6,title:'Đặt Hàng',value:'dathang',status:true},
     {id:7,title:'Bảng Giá Khách Hàng',value:'banggiakhachhang',status:true},
     {id:8,title:'Bảng Giá Sản Phẩm',value:'banggiasanpham',status:true},
-    {id:9,title:'Bảng Giá Nhà Cung Cấp',value:'banggianhacungcap',status:true},
-    {id:10,title:'Bảng Giá Đơn Hàng',value:'banggiadonhang',status:true},
-    {id:11,title:'Bảng Giá Đặt Hàng',value:'banggiadathang',status:true},
-    {id:12,title:'Bảng Giá Đơn Hàng Khách Hàng',value:'banggiadonhangkhachhang',status:true},
-    {id:13,title:'Bảng Giá Đặt Hàng Khách Hàng',value:'banggiadathangkhachhang',status:true},
-    {id:14,title:'Bảng Giá Đơn Hàng Nhà Cung Cấp',value:'banggiadonhangnhacungcap',status:true},
-    {id:15,title:'Bảng Giá Đặt Hàng Nhà Cung Cấp',value:'banggiadathangnhacungcap',status:true},
+    {id:9,title:'Nhà Cung Cấp Sản Phẩm',value:'nhacungcapsanpham',status:true},
+    {id:10,title:'Xuất Nhập Tồn',value:'xuatnhapton',status:true},
   ]);
   ListEdit = signal<any[]>([]);
   TitleExport = "export";
+  rawListSP: any[] = [];
+  rawListKH: any[] = [];
+  rawListNCC: any[] = [];
+  rawListBG: any[] = [];
+  rawListDH: any[] = [];
+  rawListDathang: any[] = [];
+  rawListTonkho: any[] = [];
   constructor() {
-    effect(() => {
-      this.ListImportdata.set
+    effect(async () => {
+    await this._SanphamService.getAllSanpham();
+    this.rawListSP = this._SanphamService.ListSanpham();
+    await this._KhachhangService.getAllKhachhang();
+    this.rawListKH = this._KhachhangService.ListKhachhang();
+    await this._NhacungcapService.getAllNhacungcap();
+    this.rawListNCC = this._NhacungcapService.ListNhacungcap();
+    await this._BanggiaService.getAllBanggia();
+    this.rawListBG = this._BanggiaService.ListBanggia();
+    await this._DonhangService.getAllDonhang();
+    this.rawListDH = this._DonhangService.ListDonhang();
+    await this._DathangService.getAllDathang();
+    this.rawListDathang = this._DathangService.ListDathang();
+    await this._KhoService.getTonKho('1', '1000').then((res: any) => {
+      this.rawListTonkho = res.data;
     });
-  }
+  });
+}
 
   async ngOnInit(): Promise<void> {
-
+    await this._SanphamService.getAllSanpham();
+    this.rawListSP = this._SanphamService.ListSanpham();
+    await this._KhachhangService.getAllKhachhang();
+    this.rawListKH = this._KhachhangService.ListKhachhang();
+    await this._NhacungcapService.getAllNhacungcap()
+    this.rawListNCC = this._NhacungcapService.ListNhacungcap()
+    await this._BanggiaService.getAllBanggia();
+    this.rawListBG = this._BanggiaService.ListBanggia();
+    await this._DonhangService.getAllDonhang();
+    this.rawListDH = this._DonhangService.ListDonhang();
+    await this._DathangService.getAllDathang();
+    this.rawListDathang = this._DathangService.ListDathang();
+    await this._KhoService.getTonKho('1', '1000').then((res: any) => {
+      this.rawListTonkho = res.data;
+    });
   }
 
   applyFilter(event: Event) {
@@ -151,15 +185,14 @@ toggleItem(item: any) {
     }
   }
 async ExportExcel(title:any) {
-    await this._SanphamService.getAllSanpham();
-    const rawListSP = this._SanphamService.ListSanpham();
-    const ListSP = Array.isArray(rawListSP) && rawListSP.length
-      ? rawListSP.map((item: any) => ({
+
+    const ListSP = Array.isArray(this.rawListSP) && this.rawListSP.length
+      ? this.rawListSP.map((item: any) => ({
           masp: item.masp,
           subtitle: item.subtitle,
           title: item.title,
           title2: item.title2,
-          giaban: item.giaban,
+          giaban: item.giaban,  
           giagoc: item.giagoc,
           dvt: item.dvt,
           haohut: item.haohut,
@@ -176,10 +209,8 @@ async ExportExcel(title:any) {
           haohut: '',
           ghichu: '',
         }];
-    await this._KhachhangService.getAllKhachhang();
-    const rawListKH = this._KhachhangService.ListKhachhang();
-    const ListKH = Array.isArray(rawListKH) && rawListKH.length
-      ? rawListKH.map((v: any) => ({
+    const ListKH = Array.isArray(this.rawListKH) && this.rawListKH.length
+      ? this.rawListKH.map((v: any) => ({
           name: v.name?.trim() || '',
           makh: v.makh?.trim() || '',
           namenn: v.namenn?.trim() || '',
@@ -207,10 +238,8 @@ async ExportExcel(title:any) {
           ghichu: ''
         }];
 
-    await this._NhacungcapService.getAllNhacungcap()
-    const rawListNCC = this._NhacungcapService.ListNhacungcap()
-    const ListNCC = Array.isArray(rawListNCC) && rawListNCC.length
-      ? rawListNCC.map((v: any) => ({
+    const ListNCC = Array.isArray(this.rawListNCC) && this.rawListNCC.length
+      ? this.rawListNCC.map((v: any) => ({
           name: v.name?.trim() || '',
           mancc: v.mancc?.trim() || '',
           diachi: v.diachi?.trim() || '',
@@ -229,10 +258,8 @@ async ExportExcel(title:any) {
           }
         ];
 
-    await this._BanggiaService.getAllBanggia();
-    const rawListBG = this._BanggiaService.ListBanggia();
-    const ListBG = Array.isArray(rawListBG) && rawListBG.length
-      ? rawListBG.map((v: any) => ({
+    const ListBG = Array.isArray(this.rawListBG) && this.rawListBG.length
+      ? this.rawListBG.map((v: any) => ({
           title: v.title?.trim() || '',
           mabanggia: v.mabanggia?.trim() || '',
           type: v.type?.trim() || '',
@@ -250,10 +277,9 @@ async ExportExcel(title:any) {
           ghichu: '',
           status: ''
         }];
-    await this._DonhangService.getAllDonhang();
-    const rawListDH = this._DonhangService.ListDonhang();
-    const ListDH = Array.isArray(rawListDH) && rawListDH.length
-      ? rawListDH.map((v: any) => ({
+
+    const ListDH = Array.isArray(this.rawListDH) && this.rawListDH.length
+      ? this.rawListDH.map((v: any) => ({
           madonhang: v.madonhang?.trim() || '',
           makh: v.makh?.trim() || '',
           mancc: v.mancc?.trim() || '',
@@ -271,11 +297,8 @@ async ExportExcel(title:any) {
           giaban: '',
           ghichu: ''
         }];
-
-    await this._DathangService.getAllDathang();
-    const rawListDathang = this._DathangService.ListDathang();
-    const ListDathang = Array.isArray(rawListDathang) && rawListDathang.length
-      ? rawListDathang.map((v: any) => ({
+    const ListDathang = Array.isArray(this.rawListDathang) && this.rawListDathang.length
+      ? this.rawListDathang.map((v: any) => ({
           madathang: v.madathang?.trim() || '',
           makh: v.makh?.trim() || '',
           mancc: v.mancc?.trim() || '',
@@ -294,48 +317,46 @@ async ExportExcel(title:any) {
           ghichu: ''
         }];   
 
-    const ListBGSP =this.convertBGSPToExport(rawListBG, rawListSP);
+    const ListBGSP =this.convertBGSPToExport(this.rawListBG, this.rawListSP);
+
+    const ListBGKH:any[] =this.rawListKH.map((v: any) => {
+            const result: any = {
+            makh: v.makh || '',
+            name: v.name || '',
+           };
+       for (const banggia of this.rawListBG) {
+        const banggiaExists = v.banggia?.some((bg: any) => bg.mabanggia === banggia.mabanggia);
+        result[banggia.mabanggia] = banggiaExists ? banggia.mabanggia : '';
+      }
+      return result;
+    });
 
 
+    const dynamicKeys = this.rawListSP.reduce((acc: Record<string, string>, v: any) => {
+      if (v && v.masp) {
+      acc[v.masp] = '';
+      }
+      return acc;
+    }, {});
+    // Build ListNCCSP dynamically using rawListNCC and up to 5 product codes from dynamicKeys.
+    const ListNCCSP: any[] = this.rawListNCC.map((supplier: any) => {
+      const result: any = {
+      mancc: supplier.mancc || '',
+      name: supplier.name || '',
+      };
+      for (const masp of Object.keys(dynamicKeys)) {
+        const productExists = supplier.Sanpham?.some((sp: any) => sp.masp === masp);
+        result[masp] = productExists ? masp : '';
+      }
+       return result;
+    });
 
-    // const ListSPBG = (data.SPBG || []).map((v: any) => ({
-    //   idSP: v.idSP?.trim() || '',
-    //   ghichu: v.ghichu?.trim() || '',
-    //   sldat: parseFloat((v.sldat ?? 0).toFixed(2)),
-    //   slgiao: parseFloat((v.slgiao ?? 0).toFixed(2)),
-    //   slnhan: parseFloat((v.slnhan ?? 0).toFixed(2)),
-    // }));
-    // const ListBGKH = (data.BGKH || []).map((v: any) => ({
-    //   mabanggia: v.mabanggia?.trim() || '',
-    //   name: v.name?.trim() || '',
-    //   makh: v.makh?.trim() || '',
-    // }));
-
-    // rawListSPBG = this._BanggiaService.ListSPBG();
-    
-    // const ListSPBG = Array.isArray(rawListSPBG) && rawListSPBG.length
-    //   ? rawListSPBG.map((v: any) => ({
-    //       madathang: v.madathang?.trim() || '',
-    //       makh: v.makh?.trim() || '',
-    //       mancc: v.mancc?.trim() || '',
-    //       masp: v.masp?.trim() || '',
-    //       soluong: v.soluong?.trim() || '',
-    //       giaban: v.giaban?.trim() || '',
-    //       ghichu: v.ghichu?.trim() || ''
-    //     }))
-    //   : [{
-    //       madathang: '',
-    //       makh: '',
-    //       mancc: '',
-    //       masp: '',
-    //       soluong: '',
-    //       giaban: '',
-    //       ghichu: ''
-    //     }];
-
-
-
-
+    const ListTonkho = this.rawListTonkho.map((v: any) => ({
+      masp: v.masp,
+      title: v.title,
+      dvt: v.dvt,
+      slton: v.slton,
+    }));
 
 
 
@@ -360,6 +381,25 @@ async ExportExcel(title:any) {
       }
       if (this.ListEdit().some((item: any) => item.value === 'banggiasanpham')) {
         Exportdata['banggiasanpham'] = { data: ListBGSP };
+      }
+      if (this.ListEdit().some((item: any) => item.value === 'banggiakhachhang')) {
+        Exportdata['banggiakhachhang'] = { data: ListBGKH };
+      }
+      if (this.ListEdit().some((item: any) => item.value === 'nhacungcapsanpham')) {
+        Exportdata['nhacungcapsanpham'] = { data: ListNCCSP };
+      }     
+      if (this.ListEdit().some((item: any) => item.value === 'xuatnhapton')) {
+        Exportdata['xuatnhapton'] = { data: ListTonkho };
+      } 
+      if(Object.keys(Exportdata).length === 0)
+      {
+        this._snackBar.open('Không có dữ liệu để xuất', '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success'],
+        });
+        return;
       }
       writeExcelFileSheets(Exportdata, title);
 }
@@ -404,6 +444,48 @@ convertBGSPToImport(
     })),
   }));
   return data1;
+}
+
+
+convertBHKHToImport(data: any){ 
+  if (!data || data.length === 0) {
+    return [];
+  }
+  // Extract keys representing price boards (excluding makh, name)
+  const boardKeys = Object.keys(data[0]).filter(
+    (key) => !['makh', 'name'].includes(key)
+  );
+  data.forEach((v:any) => {
+    console.log(v);
+    v.banggia = [];
+    for (const key of boardKeys) {
+      if (v[key] !== undefined && v[key] !== null && v[key] !== '') {
+        v.banggia.push(v[key]);
+      }
+      delete v[key];
+    }
+  });
+  return data;
+}
+
+convertNCCSPToImport(data: any){ 
+  if (!data || data.length === 0) {
+    return [];
+  }
+  // Extract keys representing price boards (excluding mancc, name)
+  const boardKeys = Object.keys(data[0]).filter(
+    (key) => !['mancc', 'name'].includes(key)
+  );
+  data.forEach((v:any) => {
+    v.Sanpham = [];
+    for (const key of boardKeys) {
+      if (v[key] !== undefined && v[key] !== null && v[key] !== '') {
+        v.Sanpham.push(v[key]);
+      }
+      delete v[key];
+    }
+  });
+  return data;
 }
 
   async ImportExcel(event: any) {
@@ -494,58 +576,97 @@ convertBGSPToImport(
        const ListBGSP = this.convertBGSPToImport(data.banggiasanpham);
        await this._BanggiaService.importSPBG(ListBGSP);
     }
+    if(data.banggiakhachhang && data.banggiakhachhang.length > 0 && this.ListEdit().some((item: any) => item.value === 'banggiakhachhang'))
+    {
+        const ListBGKH = this.convertBHKHToImport(data.banggiakhachhang).filter((v:any)=>v.banggia.length > 0);
+        await this._KhachhangService.ImportKhachhang(ListBGKH);
+        this._snackBar.open('Cập Nhật Thành Công', '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success'],
+        });
+    }
+    if(data.nhacungcapsanpham && data.nhacungcapsanpham.length > 0 && this.ListEdit().some((item: any) => item.value === 'nhacungcapsanpham'))
+    {
+      const convertedSuppliers = this.convertNCCSPToImport(data.nhacungcapsanpham);
+      console.log(convertedSuppliers);
+      
+      const ListNCCSP = convertedSuppliers
+        .filter((supplier:any) => supplier?.Sanpham?.length > 0)
+        .map((supplier:any) => ({
+          ...supplier,
+          Sanpham: supplier?.Sanpham?.map((spId:any) =>
+        this.rawListSP.find(product => product?.masp === spId)
+          )
+        }));
+      await this._NhacungcapService.ImportNhacungcap(ListNCCSP);
+      this._snackBar.open('Cập Nhật Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-success'],
+      });
+    }
+    if(data.xuatnhapton && data.xuatnhapton.length > 0 && this.ListEdit().some((item: any) => item.value === 'xuatnhapton'))
+    {
 
+    const phieuNhapDetails: any[] = [];
+    const phieuXuatDetails: any[] = [];
+    data.xuatnhapton.forEach((v: any) => {
+      const exitItem = this.rawListTonkho.find((item: any) => item.masp === v.masp);
+      if (exitItem) {
+        if (v.slton > exitItem.slton) {
+          // Tính chênh lệch cho phiếu nhập
+          phieuNhapDetails.push({
+          sanphamId:this.rawListSP.find((item:any)=>item.masp===v.masp).id, 
+          soluong: v.slton - exitItem.slton,
+          // thêm các trường cần thiết
+          });
+        } else if (v.slton < exitItem.slton) {
+          // Tính chênh lệch cho phiếu xuất
+          phieuXuatDetails.push({
+          sanphamId:this.rawListSP.find((item:any)=>item.masp===v.masp).id,
+          soluong: exitItem.slton - v.slton,
+          // thêm các trường cần thiết
+          });
+        }
+      }
+    });
 
+    if (phieuNhapDetails.length > 0) {
+      // Tạo phiếu nhập một lần với danh sách chi tiết
+      this._PhieukhoService.CreatePhieukho(
+        {
+        title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
+        type:'nhap',
+        sanpham: phieuNhapDetails, 
+        ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
+        ngay: moment()
+      });
+    }
+    if (phieuXuatDetails.length > 0) {
+      // Tạo phiếu xuất một lần với danh sách chi tiết
+      this._PhieukhoService.CreatePhieukho(
+        {
+        title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
+        type:'xuat',
+        sanpham: phieuXuatDetails, 
+        ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
+        ngay: moment()
+      });
+    }
+    if (phieuNhapDetails.length === 0 && phieuXuatDetails.length === 0) {
+            this._snackBar.open('Kho không thay đổi', '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success'],
+        });
+    }
+     }
+}
 
-
-    // if(data.dathang && data.dathang.length > 0)
-    // {
-    //   const ListDH = (data.dathang || []).map((v: any) => ({
-    //     madathang: v.madathang,
-    //     makh: v.makh,
-    //     mancc: v.mancc,
-    //     masp: v.masp,
-    //     soluong: v.soluong,
-    //     giaban: v.giaban,
-    //     ghichu: v.ghichu
-    //   })).filter((v: any) => v.madathang !== undefined && v.madathang !== null && v.madathang !== '');
-    //   this._DathangService.ImportDathang(ListDH);
-    // }
-
-    // if (!data.SPBG || !data.BG || !data.BGKH) {
-    //   this._snackBar.open('SPBG hoặc BG hoặc BGKH không tồn tại', '', {
-    //     duration: 3000,
-    //     horizontalPosition: "end",
-    //     verticalPosition: "top",
-    //     panelClass: ['snackbar-error'],
-    //   });
-    //   return;
-    // }
-    // const ListBG = (data.BG || []).map((v: any) => ({
-    //   id: v.mabanggia,
-    //   mabanggia: v.mabanggia,
-    //   type: v.type,
-    //   batdau: moment(excelSerialDateToJSDate(v.batdau)).toDate(),
-    //   ketthuc: moment(excelSerialDateToJSDate(v.ketthuc)).toDate(),
-    //   ghichu: v.ghichu,
-    //   status: v.status,
-    // })).filter((v: any) => v.mabanggia !== undefined && v.mabanggia !== null && v.mabanggia !== '');
-    // this._BanggiaService.importBanggia(ListBG);
-    // const ListData = this.convertDataToData1(data.SPBG);
-    // this._BanggiaService.importSPBG(ListData);
-    // const BGKH = (data.BGKH || []).map((v: any) => ({
-    //     mabanggia: v.mabanggia,
-    //     name: v.name,
-    //     makh: v.makh,
-    //   }));
-    // this._BanggiaService.importBGKH(BGKH);
-    // this._snackBar.open('Import Thành Công', '', {
-    //   duration: 1000,
-    //   horizontalPosition: "end",
-    //   verticalPosition: "top",
-    //   panelClass: ['snackbar-success'],
-    // });
-  }
 
 
   trackByFn(index: number, item: any): any {

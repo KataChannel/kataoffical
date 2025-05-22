@@ -24,7 +24,6 @@ export class NhacungcapController {
   }
   @Post('import')
   import(@Body() data: any) {
-    console.log(data);
     return this.nhacungcapService.import(data);
   }
   @Post('finbyids')
