@@ -22,6 +22,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatInputModule,
     FormsModule,
     MatCardModule,
+    MatTabsModule,
     MatTabsModule
   ],
   templateUrl: './taikhoanctv.component.html',
@@ -31,14 +32,27 @@ export class TaikhoanctvComponent {
   _UserService:UserService = inject(UserService);
   _TrackingService:TrackingService = inject(TrackingService);
   _snackbar:MatSnackBar = inject(MatSnackBar);
-  profile:any = signal<any>({});
+  profile:any = signal<any>({
+    payment: {
+      bankName: '',
+      bankAccount: '',
+      bankAccountName: ''
+    }
+  });
+  passwords: any = signal<any>({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  isShowPassword: boolean = false;
   inviteLink:any = '';
   Views:any = signal<any>(0);
   constructor() {}
   async ngOnInit(): Promise<void> {
     await this._UserService.getProfile().then((res: any) => {
-      console.log(res);
-      this.profile.set(res);
+      const data = { ...this.profile(), ...res };
+      console.log(data);
+      this.profile.set(data);
       const domain = window.location.origin;
       this.inviteLink = `${domain}/dangkyctv?ref=${this.profile().phone}`;
     });
@@ -58,6 +72,58 @@ export class TaikhoanctvComponent {
         panelClass: ['snackbar-error'],
       });
     });
+  }
+  doUpdate() {
+      this.profile.update((v: any) => {
+        const { payment, referrals, referrerId, referrer, ...rest } = v;
+        return rest;
+      });
+    this._UserService.updateUser(this.profile()).then((res: any) => {
+      if (res) {
+        this._snackbar.open('Cập nhật thành công', 'Close', {
+          duration: 2000,
+          panelClass: ['snackbar-success'],
+        });
+      }
+    }).catch((err: any) => {
+      this._snackbar.open('Cập nhật thất bại', 'Close', {
+        duration: 2000,
+        panelClass: ['snackbar-error'],
+      });
+    });
+  }
+  doUpdatePayment() {
+    this._UserService.getProfile().then((res: any) => {
+      console.log(res);
+      this.profile.set(res);
+    });
+  }
+  changePassword() {
+    if (this.passwords().newPassword !== this.passwords().confirmPassword) {
+      this._snackbar.open('Mật khẩu không khớp', 'Close', {
+        duration: 2000,
+        panelClass: ['snackbar-error'],
+      });
+      return;
+    }
+    // this._UserService.changePassword(this.passwords()).then((res: any) => {
+    //   if (res) {
+    //     this._snackbar.open('Đổi mật khẩu thành công', 'Close', {
+    //       duration: 2000,
+    //       panelClass: ['snackbar-success'],
+    //     });
+    //     this.passwords.set({
+    //       oldPassword: '',
+    //       newPassword: '',
+    //       confirmPassword: ''
+    //     });
+    //   }
+    // }).catch((err: any) => {
+    //   this._snackbar.open('Đổi mật khẩu thất bại', 'Close', {
+    //     duration: 2000,
+    //     panelClass: ['snackbar-error'],
+    //   });
+    // });
   }
   logout() {    
     console.log('logout');

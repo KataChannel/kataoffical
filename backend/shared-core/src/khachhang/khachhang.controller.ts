@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common';
 import { KhachhangService } from './khachhang.service';
 
 @Controller('khachhang')
@@ -10,6 +10,17 @@ export class KhachhangController {
     return this.khachhangService.create(createKhachhangDto);
   }
 
+  
+  @Get('vttech')
+  findAllVttech(
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ) {
+    const pageNumber = Number(page) || 1;
+    const limitNumber = Number(limit) || 10;
+    return this.khachhangService.findAllVttech({ page: pageNumber, limit: limitNumber });
+  }
+  
   @Get()
   findAll() {
     return this.khachhangService.findAll();

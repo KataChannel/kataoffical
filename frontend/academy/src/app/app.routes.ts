@@ -392,6 +392,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'tainguyenctv',
+        loadComponent: () =>
+          import('./site/home/tainguyenctv/tainguyenctv.component').then(
+            (c) => c.TainguyenctvComponent
+          ),
+      },
+      {
         path: 'leaderboard',
         loadComponent: () =>
           import('./site/home/leaderboard/leaderboard.component').then(
@@ -404,6 +411,49 @@ export const routes: Routes = [
           import('./site/home/taikhoanctv/taikhoanctv.component').then(
             (c) => c.TaikhoanctvComponent
           ),
+        children: [
+          // {
+          //   path: '',
+          //   loadComponent: () =>
+          //     import(
+          //       './site/home/taikhoanctv/dashboardthongke/dashboardthongke.component'
+          //     ).then((c) => c.DashboardthongkeComponent),
+          // },
+          // {
+          //   path: 'thongketruycap',
+          //   loadComponent: () =>
+          //     import(
+          //       './site/home/taikhoanctv/thongketruycap/thongketruycap.component'
+          //     ).then((c) => c.ThongketruycapComponent),
+          // },
+        ],
+      },
+      {
+        path: 'dashboardctv',
+        loadComponent: () =>
+          import('./site/home/dashboardctv/dashboardctv.component').then(
+            (c) => c.DashboardctvComponent
+          ),
+        children: [
+        ],
+      },
+      {
+        path: 'thongkectv',
+        loadComponent: () =>
+          import('./site/home/thongkectv/thongkectv.component').then(
+            (c) => c.ThongkectvComponent
+          ),
+        children: [
+        ],
+      },
+      {
+        path: 'lienketctv',
+        loadComponent: () =>
+          import('./site/home/lienketctv/lienketctv.component').then(
+            (c) => c.LienketctvComponent
+          ),
+        children: [
+        ],
       },
       {
         path: 'faqctv',

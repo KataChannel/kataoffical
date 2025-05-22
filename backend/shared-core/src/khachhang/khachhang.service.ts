@@ -1,9 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { VttechPrismaService } from 'prisma/vttech.prisma.service';
 
 @Injectable()
 export class KhachhangService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService, 
+    private readonly vttechPrisma: VttechPrismaService
+  ) {}
 
   async create(data: any) {
     const prefix = data.loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
@@ -41,6 +45,24 @@ export class KhachhangService {
   async findAll() {
     return this.prisma.khachhang.findMany();
   }
+
+
+  async findAllVttech({ page, limit }: { page: number; limit: number }) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.vttechPrisma.customer.findMany({ skip, take: limit }),
+      this.vttechPrisma.customer.count(),
+    ]);
+    const pageCount = Math.ceil(total / limit); 
+    return {
+      data,
+      page: page || 1,
+      pageCount: pageCount || 1,
+      total,
+      pageSize: limit,
+    };
+  }
+
 
   async findOne(id: string) {
     const khachhang = await this.prisma.khachhang.findUnique({ where: { id } });

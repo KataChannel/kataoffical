@@ -1,7 +1,9 @@
 import { PrismaService } from 'prisma/prisma.service';
+import { VttechPrismaService } from 'prisma/vttech.prisma.service';
 export declare class KhachhangService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly vttechPrisma;
+    constructor(prisma: PrismaService, vttechPrisma: VttechPrismaService);
     create(data: any): Promise<{
         id: string;
         name: string | null;
@@ -42,6 +44,56 @@ export declare class KhachhangService {
         ghichu: string | null;
         hiengia: boolean;
     }[]>;
+    findAllVttech({ page, limit }: {
+        page: number;
+        limit: number;
+    }): Promise<{
+        data: {
+            id: number;
+            name: string | null;
+            gender: string | null;
+            email: string | null;
+            phone: string | null;
+            state: number | null;
+            address: string | null;
+            source_id: string | null;
+            code: string | null;
+            codeOld: string | null;
+            docCode: string | null;
+            phone2: string | null;
+            birthday: Date | null;
+            commune: string | null;
+            district: string | null;
+            city: string | null;
+            citizenIdentity: string | null;
+            identityGrantDate: Date | null;
+            identityIssuedBy: string | null;
+            customerSource: string | null;
+            customerGroup: string | null;
+            branchId: number | null;
+            firstPaidDate: Date | null;
+            firstCheckinDate: Date | null;
+            firstTreatmentDate: Date | null;
+            lastTreatmentDate: Date | null;
+            lastCheckinDate: Date | null;
+            ccStaffId: number | null;
+            caringStaffCode: string | null;
+            marStaffId: number | null;
+            marStaffCode: string | null;
+            staffId: number | null;
+            staffCode: string | null;
+            gclid: string | null;
+            createdDate: Date;
+            createdBy: string | null;
+            modifiedDate: Date;
+            modifiedBy: string | null;
+            extractedAt: Date;
+        }[];
+        page: number;
+        pageCount: number;
+        total: number;
+        pageSize: number;
+    }>;
     findOne(id: string): Promise<{
         id: string;
         name: string | null;

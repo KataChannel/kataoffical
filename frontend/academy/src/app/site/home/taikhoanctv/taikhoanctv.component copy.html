@@ -1,0 +1,47 @@
+<div class="min-h-screen bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-row gap-2 justify-between py-2">
+            <h1 class="text-2xl font-bold text-gray-900 mb-6">Tài khoản CTV cá nhân</h1>
+            <button mat-icon-button color="primary" (click)="logout()">
+                <mat-icon>logout</mat-icon>
+            </button>
+        </div>
+
+        <!-- Referral Link Section -->
+        <div class="mb-8 p-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="text-lg font-medium text-gray-900 flex items-center gap-2">
+                        <mat-icon color="primary">content_copy</mat-icon>
+                        Chia sẻ link này để nhận hoa hồng
+                    </div>
+                <mat-form-field appearance="outline" class="lg:w-1/2" subscriptSizing="dynamic">
+                    <mat-label>Link giới thiệu</mat-label>
+                    <input matInput [value]="inviteLink" [disabled]="true" readonly>
+                    <button matSuffix mat-icon-button color="primary" (click)="getCoppyLink(inviteLink)">
+                        <mat-icon>content_copy</mat-icon>
+                    </button>
+                </mat-form-field>
+            </div>
+        </div>
+
+        <!-- Performance Stats -->
+         <router-outlet></router-outlet>
+         
+
+
+        <!-- Tabs for additional views -->
+        <!-- <div class="mb-8 p-4">
+            <mat-tab-group>
+                <mat-tab label="Tổng quan">
+                    <p class="text-gray-500">Bảng tổng quan hiệu suất sẽ hiển thị tại đây</p>
+                </mat-tab>
+                <mat-tab label="Chuyển đổi theo nguồn">
+                    <p class="text-gray-500">Thống kê chuyển đổi theo nguồn traffic sẽ hiển thị tại đây</p>
+                </mat-tab>
+                <mat-tab label="Theo thời gian">
+                    <p class="text-gray-500">Biểu đồ hiệu suất theo thời gian sẽ hiển thị tại đây</p>
+                </mat-tab>
+            </mat-tab-group>
+        </div> -->
+    </div>
+</div>

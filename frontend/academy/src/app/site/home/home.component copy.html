@@ -1,0 +1,114 @@
+<mat-drawer-container [@.disabled]="true" class="w-full h-full" autosize>
+    <mat-drawer #drawer [@.disabled]="true" class="flex flex-col !w-auto h-full" [position]="'end'" [mode]="'side'" [opened]="true">
+        <div class="flex flex-col justify-center">
+            <div class="fixed top-0 right-0 z-20">
+                <div class="relative">
+                    <div (click)="drawer.toggle()" class="absolute top-4 -right-8 w-32 h-8 bg-red-500 text-white text-center leading-8 transform rotate-45 shadow-md">
+                        Demo
+                    </div>
+                </div>
+            </div>
+            <div class="lg:flex hidden w-full bg-white shadow-md  top-0 right-0 z-10">
+                <div class="h-[80px] container mx-auto flex justify-between items-center">
+                    <a [href]="'/'" class="relative flex flex-col space-y-2 p-2">
+                        <img [src]="'images/logo-timona-moi.webp'" class="m-auto h-10 object-cover" alt="Logo">
+                    </a>
+                     <button (click)="drawer.toggle()" mat-icon-button color="primary"><mat-icon>close</mat-icon></button>
+                    <div class="flex space-x-2">
+                        <button [routerLink]="['/gioithieuctv']" routerLinkActive="!bg-blue-200" mat-flat-button>Giới
+                            Thiệu</button>
+                        <button *ngIf="token" [routerLink]="['/leaderboard']" routerLinkActive="!bg-blue-200"
+                            mat-flat-button>Leader Board</button>
+                        <button *ngIf="!token" [routerLink]="['/dangkyctv']" routerLinkActive="!bg-blue-200"
+                            mat-flat-button>Đăng Ký CTV</button>
+                        <!-- <button *ngIf="token" [routerLink]="['/taikhoanctv']" routerLinkActive="!bg-blue-200" mat-flat-button>Tài Khoản CTV</button> -->
+                        <button *ngIf="token" [routerLink]="['/hotroctv']" routerLinkActive="!bg-blue-200"
+                            mat-flat-button>Hỗ Trợ</button>
+                        <button *ngIf="token" [routerLink]="['/ladictv']" routerLinkActive="!bg-blue-200"
+                            mat-flat-button>Ladi Page</button>
+                        <button *ngIf="token" [routerLink]="['/faqctv']" routerLinkActive="!bg-blue-200"
+                            mat-flat-button>FAQ</button>
+                    </div>
+                    <!-- <a href="taikhoanctv" *ngIf="token" mat-icon-button color="primary">
+                        <mat-icon>account_circle</mat-icon>
+                    </a> -->
+                    <button *ngIf="token" mat-icon-button [matMenuTriggerFor]="menu" color="primary">
+                        <mat-icon>account_circle</mat-icon>
+                    </button>
+
+                    <mat-menu #menu="matMenu">
+                    <a [routerLink]="['/taikhoanctv']" mat-menu-item>
+                       <mat-icon>manage_accounts</mat-icon>
+                       <span> Thông Tin</span>
+                    </a>
+                    <a [routerLink]="['/dashboardctv']" mat-menu-item>
+                       <mat-icon>dashboard</mat-icon>
+                       <span> Tổng Quan</span>
+                    </a>
+                    <a [routerLink]="['/thongkectv']" mat-menu-item>
+                       <mat-icon>analytics</mat-icon>
+                       <span> Phân Tích</span>
+                    </a>
+                    <a [routerLink]="['/lienketctv']" mat-menu-item>
+                       <mat-icon>link</mat-icon>
+                       <span> Liên Kết</span>
+                    </a>
+                    <button mat-menu-item (click)="logout()">
+                        <mat-icon>logout</mat-icon>
+                       <span> Đăng xuất</span>
+                    </button>
+                    </mat-menu>
+
+                    <a href="/loginctv?redirectURL=gioithieuctv" *ngIf="!token" mat-icon-button color="primary">
+                        <mat-icon>login</mat-icon>
+                    </a>
+                </div>
+            </div>
+            <div class="lg:hidden flex w-full bg-white shadow-md top-0 right-0 z-10">
+                <div class="h-[80px] px-4 container mx-auto flex justify-between items-center">
+                    <!-- <div class="flex space-x-2">
+                <button [routerLink]="['/gioithieuctv']" routerLinkActive="!bg-blue-200"  mat-flat-button>Trang Chủ</button>
+                <button [routerLink]="['/dangkyctv']" routerLinkActive="!bg-blue-200" mat-flat-button>Đăng Ký CTV</button>
+                <button [routerLink]="['/hotroctv']" routerLinkActive="!bg-blue-200" mat-flat-button>Hỗ Trợ</button>
+                <button [routerLink]="['/faqctv']" routerLinkActive="!bg-blue-200" mat-flat-button>FAQ</button>
+            </div> -->
+                    <button (click)="drawer.toggle()" mat-icon-button color="primary"><mat-icon>menu</mat-icon></button>
+                    <a [href]="'/'" class="relative flex flex-col space-y-2 p-2">
+                        <img [src]="'images/logo-timona-moi.webp'" class="m-auto h-10 object-cover" alt="Logo">
+                    </a>
+                    <a href="/loginctv?redirectURL=gioithieuctv" *ngIf="token" mat-icon-button
+                        color="primary"><mat-icon>account_circle</mat-icon></a>
+                    <button *ngIf="!token" mat-icon-button color="primary"><mat-icon>account_circle</mat-icon></button>
+                </div>
+            </div>
+            <div class="!mt-[80px] w-full h-full lg:p-8 p-2">
+                <router-outlet></router-outlet>
+            </div>
+            <footer class="bg-gray-800 text-white py-4 mt-16">
+                <div class="container mx-auto text-center">
+                    <p>&copy; 2023 Timona. All rights reserved.</p>
+                </div>
+            </footer>
+
+        </div>
+    </mat-drawer>
+
+    <div class="flex flex-col space-y-2 h-screen w-full justify-between p-2">
+        <div class="cursor-pointer w-full relative flex justify-between items-center space-x-2">
+            <a [href]="'/'" class="relative flex flex-col space-y-2 p-2">
+                <img [src]="'images/logo-timona-moi.webp'" class="m-auto h-10 object-cover" alt="Logo">
+            </a>
+            <button (click)="drawer.toggle()" mat-icon-button color="primary"><mat-icon>close</mat-icon></button>
+        </div>
+        <div class="my-2 relative flex flex-col h-full overflow-auto">
+            <a href="/gioithieuctv" (click)="drawer.close()" routerLinkActive="!bg-blue-200" mat-flat-button>Trang
+                Chủ</a>
+            <a href="/dangkyctv" (click)="drawer.close()" routerLinkActive="!bg-blue-200" mat-flat-button>Đăng Ký
+                CTV</a>
+            <a href="/hotroctv" (click)="drawer.close()" routerLinkActive="!bg-blue-200" mat-flat-button>Hỗ Trợ</a>
+            <a href="/ladictv" routerLinkActive="!bg-blue-200" mat-flat-button>Ladi Page</a>
+            <a href="/faqctv" (click)="drawer.close()" routerLinkActive="!bg-blue-200" mat-flat-button>FAQ</a>
+        </div>
+        <div class="relative flex flex-row justify-center items-center"></div>
+    </div>
+</mat-drawer-container>

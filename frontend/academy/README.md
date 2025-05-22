@@ -39,3 +39,8 @@ npx ng g c ladictv --skip-tests --standalone
 npx ng g c detailladictv --skip-tests --standalone
 npx ng g c loginctv --skip-tests --standalone
 npx ng g c thongkectv --skip-tests --standalone
+npx ng g c dashboardthongke --skip-tests --standalone
+npx ng g c dashboardctv --skip-tests --standalone
+npx ng g c thongkectv --skip-tests --standalone
+npx ng g c lienketctv --skip-tests --standalone
+npx ng g c tainguyenctv --skip-tests --standalone

@@ -1,136 +1,96 @@
-<div class="min-h-screen bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex flex-row gap-2 justify-between py-2">
-            <h1 class="text-2xl font-bold text-gray-900 mb-6">Tài khoản CTV cá nhân</h1>
-            <button mat-icon-button color="primary" (click)="logout()">
-                <mat-icon>logout</mat-icon>
-            </button>
-        </div>
+<div class="min-h-screen">
+    <div class="max-w-xl mx-auto px-4 py-8 space-y-3">
+        <mat-tab-group animationDuration="0ms">
+            <mat-tab label="Thông Tin">
 
-        <!-- Referral Link Section -->
-        <mat-card class="mb-8 p-4">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div class="text-lg font-medium text-gray-900 flex items-center gap-2">
-                        <mat-icon color="primary">content_copy</mat-icon>
-                        Chia sẻ link này để nhận hoa hồng
-                    </div>
-                <mat-form-field appearance="outline" class="lg:w-1/2" subscriptSizing="dynamic">
-                    <mat-label>Link giới thiệu</mat-label>
-                    <input matInput [value]="inviteLink" [disabled]="true" readonly>
-                    <button matSuffix mat-icon-button color="primary" (click)="getCoppyLink(inviteLink)">
-                        <mat-icon>content_copy</mat-icon>
-                    </button>
-                </mat-form-field>
-            </div>
-        </mat-card>
-
-        <!-- Performance Stats -->
-        <mat-card class="mb-8 p-4">
-            <h2 class="text-lg font-medium text-gray-900 flex items-center gap-2 mb-6">
-                <mat-icon color="primary">bar_chart</mat-icon>
-                Thống kê hiệu suất
-            </h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Total Clicks -->
-                <mat-card class="bg-gray-50 p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-full bg-blue-100 text-blue-600">
-                            <mat-icon>groups</mat-icon>
+                <div class="p-4">
+                    <div class="mb-8 lg:p-8 p-2 bg-white border rounded-lg">
+                        <div class="text-xl font-bold text-gray-900 mb-4">Hồ sơ</div>
+                        <div class="text-gray-500 mb-4">Cập nhật thông tin cá nhân của bạn.</div>
+                        <mat-form-field appearance="outline" class="w-full mb-4">
+                            <mat-label>Họ tên</mat-label>
+                            <input matInput [(ngModel)]="profile().name" name="fullName" required>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="w-full mb-4">
+                            <mat-label>Số Điện Thoại</mat-label>
+                            <input matInput [(ngModel)]="profile().phone" name="phone" required>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="w-full mb-4">
+                            <mat-label>Email</mat-label>
+                            <input matInput [(ngModel)]="profile().email" name="email" required>
+                        </mat-form-field>
+                        <!-- Affiliate Link -->
+                        <mat-form-field appearance="outline" class="w-full mb-4">
+                            <mat-label>Affiliate Link</mat-label>
+                            <input matInput [(ngModel)]="inviteLink" [disabled]="true" readonly>
+                            <button matSuffix mat-icon-button type="button" color="primary"
+                                (click)="getCoppyLink(inviteLink)">
+                                <mat-icon>content_copy</mat-icon>
+                            </button>
+                        </mat-form-field>
+                        <!-- Action Buttons -->
+                        <div class="flex justify-end gap-4">
+                            <button mat-raised-button color="primary" (click)="doUpdate()">Cập Nhật</button>
                         </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Tổng số click</p>
-                            <p class="text-2xl font-semibold text-gray-900">{{Views()}}</p>
-                        </div>
-                    </div>
-                </mat-card>
-                <!-- Successful Registrations -->
-                <mat-card class="bg-gray-50 p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-full bg-green-100 text-green-600">
-                            <mat-icon>check_circle</mat-icon>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Lượt đăng ký thành công</p>
-                            <p class="text-2xl font-semibold text-gray-900">{{profile()?.referrals?.length || 0}}</p>
-                        </div>
-                    </div>
-                </mat-card>
-                <!-- Course Purchases -->
-                <mat-card class="bg-gray-50 p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-full bg-purple-100 text-purple-600">
-                            <mat-icon>menu_book</mat-icon>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Người phát sinh khóa học</p>
-                            <p class="text-2xl font-semibold text-gray-900">42</p>
-                        </div>
-                    </div>
-                </mat-card>
-                <!-- Pending Commission -->
-                <mat-card class="bg-gray-50 p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-full bg-yellow-100 text-yellow-600">
-                            <mat-icon>hourglass_empty</mat-icon>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Hoa hồng đang chờ</p>
-                            <p class="text-2xl font-semibold text-gray-900">12,500,000 VND</p>
-                        </div>
-                    </div>
-                </mat-card>
-                <!-- Withdrawn Commission -->
-                <mat-card class="bg-gray-50 p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-full bg-green-100 text-green-600">
-                            <mat-icon>attach_money</mat-icon>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Hoa hồng đã rút</p>
-                            <p class="text-2xl font-semibold text-gray-900">37,500,000 VND</p>
-                        </div>
-                    </div>
-                </mat-card>
-                <!-- Processing Commission -->
-                <mat-card class="bg-gray-50 p-4 rounded-lg">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-full bg-blue-100 text-blue-600">
-                            <mat-icon>hourglass_top</mat-icon>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-500">Hoa hồng đang xử lý</p>
-                            <p class="text-2xl font-semibold text-gray-900">5,000,000 VND</p>
-                        </div>
-                    </div>
-                </mat-card>
-            </div>
-            <!-- Conversion Rate -->
-            <mat-card class="mt-6 bg-gray-50 p-4 rounded-lg">
-                <div class="flex items-center gap-3">
-                    <div class="p-2 rounded-full bg-indigo-100 text-indigo-600">
-                        <mat-icon>bar_chart</mat-icon>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-500">Tỉ lệ chuyển đổi</p>
-                        <p class="text-2xl font-semibold text-gray-900">3.4%</p>
                     </div>
                 </div>
-            </mat-card>
-        </mat-card>
-
-        <!-- Tabs for additional views -->
-        <mat-card class="mb-8 p-4">
-            <mat-tab-group>
-                <mat-tab label="Tổng quan">
-                    <p class="text-gray-500">Bảng tổng quan hiệu suất sẽ hiển thị tại đây</p>
-                </mat-tab>
-                <mat-tab label="Chuyển đổi theo nguồn">
-                    <p class="text-gray-500">Thống kê chuyển đổi theo nguồn traffic sẽ hiển thị tại đây</p>
-                </mat-tab>
-                <mat-tab label="Theo thời gian">
-                    <p class="text-gray-500">Biểu đồ hiệu suất theo thời gian sẽ hiển thị tại đây</p>
-                </mat-tab>
-            </mat-tab-group>
-        </mat-card>
+            </mat-tab>
+            <mat-tab label="Mật Khẩu">
+                <div class="p-4">
+                    <div class="mb-8 lg:p-8 p-2 bg-white border rounded-lg">
+                        <div class="text-xl font-bold text-gray-900 mb-4">Mật Khẩu</div>
+                        <div class="text-gray-500 mb-4">Cập nhật mật khẩu</div>
+                        <mat-form-field appearance="outline" class="w-full mb-4">
+                            <mat-label>Mật khẩu hiện tại</mat-label>
+                            <input matInput type="password" name="currentPassword" [(ngModel)]="passwords.current"
+                                required>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="w-full mb-4">
+                            <mat-label>Mật khẩu mới</mat-label>
+                            <input matInput type="password" name="newPassword" [(ngModel)]="passwords.new" required>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="w-full mb-4">
+                            <mat-label>Xác nhận mật khẩu mới</mat-label>
+                            <input matInput type="password" name="confirmPassword" [(ngModel)]="passwords.confirm"
+                                required>
+                        </mat-form-field>
+                        <div class="flex justify-end gap-4">
+                            <button mat-raised-button color="primary" (click)="changePassword()">
+                                Đổi mật khẩu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab label="Tài Khoản">
+                <div class="p-4">
+                    <div class="mb-8 lg:p-8 p-2 bg-white border rounded-lg">
+                        <div class="text-xl font-bold text-gray-900 mb-4">Thông tin thanh toán</div>
+                        <div class="text-gray-500 mb-4">Cập nhật thông tin thanh toán của bạn.</div>
+                        <mat-form-field appearance="outline" class="w-full mb-4">
+                            <mat-label>Số tài khoản</mat-label>
+                            <input matInput name="accountNumber" [(ngModel)]="profile().payment.accountNumber" required>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="w-full mb-4">
+                            <mat-label>Tên ngân hàng</mat-label>
+                            <input matInput name="bankName" [(ngModel)]="profile().payment.bankName" required>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="w-full mb-4">
+                            <mat-label>Tên chủ tài khoản</mat-label>
+                            <input matInput name="accountHolder" [(ngModel)]="profile().payment.accountHolder" required>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="w-full mb-4">
+                            <mat-label>Chi nhánh</mat-label>
+                            <input matInput name="branch" [(ngModel)]="profile().payment.branch">
+                        </mat-form-field>
+                        <div class="flex justify-end gap-4">
+                            <button mat-raised-button color="primary" (click)="doUpdatePayment()">
+                                Cập Nhật
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </mat-tab>
+        </mat-tab-group>
     </div>
 </div>

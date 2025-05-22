@@ -18,8 +18,8 @@ export declare class QuanlyqrcodeService {
         title: string | null;
         slug: string | null;
         order: number | null;
-        qrcode: string;
         code: string;
+        qrcode: string;
         isSentEmail: boolean;
         isSentZalo: boolean;
         checkedAt: Date | null;
@@ -35,8 +35,8 @@ export declare class QuanlyqrcodeService {
         title: string | null;
         slug: string | null;
         order: number | null;
-        qrcode: string;
         code: string;
+        qrcode: string;
         isSentEmail: boolean;
         isSentZalo: boolean;
         checkedAt: Date | null;
@@ -52,8 +52,8 @@ export declare class QuanlyqrcodeService {
         title: string | null;
         slug: string | null;
         order: number | null;
-        qrcode: string;
         code: string;
+        qrcode: string;
         isSentEmail: boolean;
         isSentZalo: boolean;
         checkedAt: Date | null;
@@ -69,8 +69,8 @@ export declare class QuanlyqrcodeService {
         title: string | null;
         slug: string | null;
         order: number | null;
-        qrcode: string;
         code: string;
+        qrcode: string;
         isSentEmail: boolean;
         isSentZalo: boolean;
         checkedAt: Date | null;
@@ -86,8 +86,8 @@ export declare class QuanlyqrcodeService {
         title: string | null;
         slug: string | null;
         order: number | null;
-        qrcode: string;
         code: string;
+        qrcode: string;
         isSentEmail: boolean;
         isSentZalo: boolean;
         checkedAt: Date | null;
@@ -103,8 +103,8 @@ export declare class QuanlyqrcodeService {
         title: string | null;
         slug: string | null;
         order: number | null;
-        qrcode: string;
         code: string;
+        qrcode: string;
         isSentEmail: boolean;
         isSentZalo: boolean;
         checkedAt: Date | null;

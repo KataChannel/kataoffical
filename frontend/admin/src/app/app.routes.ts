@@ -257,31 +257,38 @@ export const routes: Routes = [
             (c) => c.GooglesheetsComponent
           ),
       },
-      {
+        {
         path: 'khachhang',
         canActivate: [PermissionGuard],
         data: { permission: 'khachhang.view' },
-        loadComponent: () =>
-          import(
-            './admin/khachhang/listkhachhang/listkhachhang.component'
-          ).then((c) => c.ListKhachhangComponent),
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import(
-                './admin/khachhang/listkhachhang/listkhachhang.component'
-              ).then((c) => c.ListKhachhangComponent),
-          },
-          {
-            path: ':id',
-            loadComponent: () =>
-              import(
-                './admin/khachhang/detailkhachhang/detailkhachhang.component'
-              ).then((c) => c.DetailKhachhangComponent),
-          },
-        ],
-      },
+        loadChildren: () =>
+           import('./admin/khachhang/khachhang.route').then(m => m.KhachhangRoutingModule),
+     },
+      // {
+      //   path: 'khachhang',
+      //   canActivate: [PermissionGuard],
+      //   data: { permission: 'khachhang.view' },
+      //   loadComponent: () =>
+      //     import(
+      //       './admin/khachhang/listkhachhang/listkhachhang.component'
+      //     ).then((c) => c.ListKhachhangComponent),
+      //   children: [
+      //     {
+      //       path: '',
+      //       loadComponent: () =>
+      //         import(
+      //           './admin/khachhang/listkhachhang/listkhachhang.component'
+      //         ).then((c) => c.ListKhachhangComponent),
+      //     },
+      //     {
+      //       path: ':id',
+      //       loadComponent: () =>
+      //         import(
+      //           './admin/khachhang/detailkhachhang/detailkhachhang.component'
+      //         ).then((c) => c.DetailKhachhangComponent),
+      //     },
+      //   ],
+      // },
       {
         path: 'nhomkhachhang',
         canActivate: [PermissionGuard],

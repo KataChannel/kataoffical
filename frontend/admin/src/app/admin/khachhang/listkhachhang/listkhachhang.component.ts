@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal, TemplateRef, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -19,6 +19,12 @@ import { MatMenuModule } from '@angular/material/menu';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
+import { environment } from '../../../../environments/environment.development';
+import { memoize, Debounce } from '../../../shared/utils/decorators';
+
+
 @Component({
   selector: 'app-listkhachhang',
   templateUrl: './listkhachhang.component.html',
@@ -37,66 +43,115 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
     MatSelectModule,
     CommonModule,
     FormsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule,
+    SearchfilterComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ListKhachhangComponent {
-  Detail: any = {};
-  displayedColumns: string[] = [
-    'name',
-    'makh',
-    'namenn',
-    'diachi',
-    'quan',
-    'email',
-    'sdt',
-    'mst',
-    'gionhanhang',
-    'loaikh',
-    'ghichu',
-    'isActive',
-    'createdAt',
-  ];
+export class ListKhachhangComponent implements OnInit {
+  displayedColumns: string[] = [];
 
   ColumnName: any = {
-    name: 'Tên Khách Hàng',
-    makh: 'Mã Khách Hàng',
-    namenn: 'Người Liên Hệ',
-    diachi: 'Địa Chỉ',
-    quan: 'Quận',
+    id: 'ID',
+    source_id: 'Source ID',
+    name: 'Name',
+    code: 'Code',
+    docCode: 'Document Code',
     email: 'Email',
-    sdt: 'Số Điện Thoại',
-    mst: 'Mã Số Thuế',
-    gionhanhang: 'Giờ Nhận Hàng',
-    loaikh: 'Loại Khách Hàng',
-    ghichu: 'Ghi Chú',
-    isActive: 'Trạng Thái',
-    createdAt: 'Ngày Tạo',
+    phone: 'Phone',
+    phone2: 'Alternate Phone',
+    birthday: 'Birthday',
+    gender: 'Gender',
+    address: 'Address',
+    commune: 'Commune',
+    district: 'District',
+    city: 'City',
+    citizenIdentity: 'Citizen Identity',
+    identityGrantDate: 'Identity Grant Date',
+    identityIssuedBy: 'Identity Issued By',
+    customerSource: 'Customer Source',
+    customerGroup: 'Customer Group',
+    branchId: 'Branch ID',
+    firstPaidDate: 'First Paid Date',
+    firstCheckinDate: 'First Checkin Date',
+    firstTreatmentDate: 'First Treatment Date',
+    lastTreatmentDate: 'Last Treatment Date',
+    lastCheckinDate: 'Last Checkin Date',
+    ccStaffId: 'CC Staff ID',
+    caringStaffCode: 'Caring Staff Code',
+    marStaffId: 'Mar Staff ID',
+    marStaffCode: 'Mar Staff Code',
+    staffId: 'Staff ID',
+    staffCode: 'Staff Code',
+    gclid: 'GCLID',
+    state: 'State',
+    createdDate: 'Created Date',
+    createdBy: 'Created By',
+    modifiedDate: 'Modified Date',
+    modifiedBy: 'Modified By',
+    extractedAt: 'Extracted At'
   };
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('KhachhangColFilter') || '[]'
-  );
+
+
+
+  FilterColumns: any[] = JSON.parse(localStorage.getItem('KhachhangColFilter') || '[]');
   Columns: any[] = [];
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
-  filterValues: { [key: string]: string } = {};
+
   private _KhachhangService: KhachhangService = inject(KhachhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
-  Listkhachhang:any = this._KhachhangService.ListKhachhang;
-  dataSource = new MatTableDataSource([]);
-  khachhangId:any = this._KhachhangService.khachhangId;
-  _snackBar: MatSnackBar = inject(MatSnackBar);
-  CountItem: any = 0;
-  isSearch: boolean = false;
+  private _dialog: MatDialog = inject(MatDialog);
+  private _snackBar: MatSnackBar = inject(MatSnackBar);
+
+  Listkhachhang = this._KhachhangService.ListKhachhang;
+  page = this._KhachhangService.page;
+  pageCount = this._KhachhangService.pageCount;
+  total = this._KhachhangService.total;
+  pageSize = this._KhachhangService.pageSize;
+  khachhangId = this._KhachhangService.khachhangId;
+  dataSource:any = new MatTableDataSource([]);
+  EditList: any[] = [];
+  isSearch = signal<boolean>(false);
+
   constructor() {
-    this.displayedColumns.forEach(column => {
-      this.filterValues[column] = '';
+    effect(() => {
+      this.dataSource.data = this.Listkhachhang();
+      this.dataSource.sort = this.sort;
+      if (this.paginator) {
+        this.paginator.pageIndex = this.page() - 1;
+        this.paginator.pageSize = this.pageSize();
+        this.paginator.length = this.total();
+      }
     });
   }
+
+  async ngOnInit(): Promise<void> {
+    this._KhachhangService.listenKhachhangUpdates();
+    await this._KhachhangService.getAllKhachhang(this.pageSize(),true);
+    console.log(this.Listkhachhang());
+    
+    this.displayedColumns = Object.keys(this.ColumnName);
+    this.dataSource = new MatTableDataSource(this.Listkhachhang());
+    this.dataSource.sort = this.sort;
+    this.initializeColumns();
+    this.setupDrawer();
+  }
+
+  private initializeColumns(): void {
+    this.Columns = Object.entries(this.ColumnName).map(([key, value]) => ({ key, value, isShow: true }));
+    this.FilterColumns = this.FilterColumns.length ? this.FilterColumns : this.Columns;
+    localStorage.setItem('KhachhangColFilter', JSON.stringify(this.FilterColumns));
+    this.displayedColumns = this.FilterColumns.filter(col => col.isShow).map(col => col.key);
+    this.ColumnName = this.FilterColumns.reduce((acc, { key, value, isShow }) => 
+      isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
+  }
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -104,42 +159,9 @@ export class ListKhachhangComponent {
       this.dataSource.paginator.firstPage();
     }
   }
-  async ngOnInit(): Promise<void> {    
-    await this._KhachhangService.getAllKhachhang();
-    this.CountItem = this.Listkhachhang().length;
-    this.dataSource = new MatTableDataSource(this.Listkhachhang());
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.initializeColumns();
-    this.setupDrawer();
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
-  }
-  async refresh() {
-   await this._KhachhangService.getAllKhachhang();
-  }
-  private initializeColumns(): void {
-    this.Columns = Object.keys(this.ColumnName).map((key) => ({
-      key,
-      value: this.ColumnName[key],
-      isShow: true,
-    }));
-    if (this.FilterColumns.length === 0) {
-      this.FilterColumns = this.Columns;
-    } else {
-      localStorage.setItem('KhachhangColFilter',JSON.stringify(this.FilterColumns)
-      );
-    }
-    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
-      (item) => item.key
-    );
-    this.ColumnName = this.FilterColumns.reduce((obj, item) => {
-      if (item.isShow) obj[item.key] = item.value;
-      return obj;
-    }, {} as Record<string, string>);
+
+  async getUpdatedCodeIds() {
+    await this._KhachhangService.getUpdatedCodeIds();
   }
 
   private setupDrawer(): void {
@@ -148,12 +170,12 @@ export class ListKhachhangComponent {
       .subscribe((result) => {
         if (result.matches) {
           this.drawer.mode = 'over';
-          this.paginator.hidePageSize = true;
         } else {
           this.drawer.mode = 'side';
         }
       });
   }
+
   toggleColumn(item: any): void {
     const column = this.FilterColumns.find((v) => v.key === item.key);
     if (column) {
@@ -161,204 +183,251 @@ export class ListKhachhangComponent {
       this.updateDisplayedColumns();
     }
   }
+
   @memoize()
-  FilterHederColumn(list:any,column:any)
-  {
+  FilterHederColumn(list: any, column: any) {
     const uniqueList = list.filter((obj: any, index: number, self: any) => 
       index === self.findIndex((t: any) => t[column] === obj[column])
     );
-    return uniqueList
+    return uniqueList;
   }
+
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listkhachhang().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();  
+    this.dataSource.filteredData = this.Listkhachhang().filter((v: any) => 
+      v[column].toLowerCase().includes(event.target.value.toLowerCase())
+    );
   }
-  ListFilter:any[] =[]
-  ChosenItem(item:any,column:any)
-  {
-    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
-    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
-    if(CheckItem1.length>0)
-    {
+
+  ListFilter: any[] = [];
+  ChosenItem(item: any, column: any) {
+    const CheckItem = this.dataSource.filteredData.filter((v: any) => v[column] === item[column]);
+    const CheckItem1 = this.ListFilter.filter((v: any) => v[column] === item[column]);
+    if (CheckItem1.length > 0) {
       this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
-    }
-    else{
-      this.ListFilter = [...this.ListFilter,...CheckItem];
+    } else {
+      this.ListFilter = [...this.ListFilter, ...CheckItem];
     }
   }
-  ChosenAll(list:any)
-  {
-    list.forEach((v:any) => {
-      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
-      if(CheckItem)
-        {
-          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
-        }
-        else{
-          this.ListFilter.push(v);
-        }
+
+  ChosenAll(list: any) {
+    list.forEach((v: any) => {
+      const CheckItem = this.ListFilter.find((v1) => v1.id === v.id) ? true : false;
+      if (CheckItem) {
+        this.ListFilter = this.ListFilter.filter((v1) => v1.id !== v.id);
+      } else {
+        this.ListFilter.push(v);
+      }
     });
   }
-  ResetFilter()
-  {
+
+  ResetFilter() {
     this.ListFilter = this.Listkhachhang();
-    this.dataSource.data = this.Listkhachhang();
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
   }
-  EmptyFiter()
-  {
+
+  EmptyFiter() {
     this.ListFilter = [];
   }
-  CheckItem(item:any)
-  {
-    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
-  }
-  ApplyFilterColum(menu:any)
-  {    
 
-    this.dataSource.data = this.Listkhachhang().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+  CheckItem(item: any) {
+    return this.ListFilter.find((v) => v.id === item.id) ? true : false;
+  }
+
+  ApplyFilterColum(menu: any) {
+    this.dataSource.data = this.Listkhachhang().filter((v: any) => 
+      this.ListFilter.some((v1) => v1.id === v.id)
+    );
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     menu.closeMenu();
   }
+
+  onOutFilter(event: any) {
+    this.dataSource.data = event;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
   private updateDisplayedColumns(): void {
-    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
-      (item) => item.key
-    );
+    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map((item) => item.key);
     this.ColumnName = this.FilterColumns.reduce((obj, item) => {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('KhachhangColFilter',JSON.stringify(this.FilterColumns)
-    );
+    localStorage.setItem('KhachhangColFilter', JSON.stringify(this.FilterColumns));
   }
+
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();
-    this.FilterColumns = this.Columns.filter((v) =>
-      v.value.toLowerCase().includes(query)
-    );
+    this.FilterColumns = this.Columns.filter((v) => v.value.toLowerCase().includes(query));
   }
+
   create(): void {
     this.drawer.open();
-    this._router.navigate(['admin/khachhang', 0]);
+    this._router.navigate(['admin/khachhang', 'new']);
   }
+
+  openDeleteDialog(template: TemplateRef<any>) {
+    const dialogDeleteRef = this._dialog.open(template, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+    dialogDeleteRef.afterClosed().subscribe((result) => {
+      if (result === "true") {
+        this.DeleteListItem();
+      }
+    });
+  }
+
+  DeleteListItem(): void {
+    this.EditList.forEach((item: any) => {
+      this._KhachhangService.DeleteKhachhang(item);
+    });
+    this.EditList = [];
+    this._snackBar.open('Xóa Thành Công', '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+  }
+
+  AddToEdit(item: any): void {
+    const existingItem = this.EditList.find((v: any) => v.id === item.id);
+    if (existingItem) {
+      this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
+    } else {
+      this.EditList.push(item);
+    }
+  }
+
+  CheckItemInEdit(item: any): boolean {
+    return this.EditList.some((v: any) => v.id === item.id);
+  }
+
   goToDetail(item: any): void {
-     this._KhachhangService.setKhachhangId(item.id);
     this.drawer.open();
+    this._KhachhangService.setKhachhangId(item.id);
     this._router.navigate(['admin/khachhang', item.id]);
   }
+
+  OpenLoadDrive(template: TemplateRef<any>) {
+    const dialogDeleteRef = this._dialog.open(template, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+    dialogDeleteRef.afterClosed().subscribe((result) => {
+      if (result === "true") {
+        // Handle action if needed
+      }
+    });
+  }
+
+  IdSheet: any = '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk';
+  SheetName: any = 'SPImport';
+  ImportIteam: any[] = [];
+  ImportColumnName: any = {};
+  ImportdisplayedColumns: any[] = [];
+
   async LoadDrive() {
     const DriveInfo = {
-      IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'KHImport',
-      ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
+      IdSheet: this.IdSheet,
+      SheetName: this.SheetName,
+      ApiKey: environment.GSApiKey,
     };
-   const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
-   const data = ConvertDriveData(result.values);
-   console.log(data);
-   this.DoImportData(data);
+    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
+    this.ImportIteam = ConvertDriveData(result.values);
+    this.ImportColumnName = Object.fromEntries(result.values[0].map((key: any, i: any) => [key, result.values[1][i]]));
+    this.ImportdisplayedColumns = result.values[0];
   }
-  DoImportData(data:any)
-  {
-    console.log(data);
-    
+
+  async DoImportData(data: any) {
     const transformedData = data.map((v: any) => ({
-      name: v.name?.trim()||'',
-      mancc: v.mancc?.trim()||'',
-      sdt: v.sdt?.trim()||'',
-      diachi: v.diachi?.trim()||'',
-      ghichu: v.ghichu?.trim()||'',
-   }));
-   // Filter out duplicate mancc values
-   const uniqueData = transformedData.filter((value:any, index:any, self:any) => 
-      index === self.findIndex((t:any) => (
-        t.mancc === value.mancc
-      ))
-   )
-    const listId2 = uniqueData.map((v: any) => v.mancc);
-    const listId1 = this._KhachhangService.ListKhachhang().map((v: any) => v.mancc);
-    const listId3 = listId2.filter((item:any) => !listId1.includes(item));
-    const createuppdateitem = uniqueData.map(async (v: any) => {
-        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.mancc === v.mancc);
-        if (item) {
-          const item1 = { ...item, ...v };
-          await this._KhachhangService.updateKhachhang(item1);
-        }
-        else{
-          await this._KhachhangService.CreateKhachhang(v);
-        }
-      });
-     const disableItem = listId3.map(async (v: any) => {
-        const item = this._KhachhangService.ListKhachhang().find((v1) => v1.mancc === v);
-        item.isActive = false;
-        await this._KhachhangService.updateKhachhang(item);
-      });
-      Promise.all([...createuppdateitem, ...disableItem]).then(() => {
-        this._snackBar.open('Cập Nhật Thành Công', '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-       // window.location.reload();
-      });
-  }
-  async ImporExcel(event: any) {
-  const data = await readExcelFile(event)
-  this.DoImportData(data);
-  }   
-  ExportExcel(data:any,title:any) {
-    writeExcelFile(data,title);
-  }
-  trackByFn(index: number, item: any): any {
-    return item.id; // Use a unique identifier
-  }
-}
+      title: v.title?.trim() || '',
+      masp: v.masp?.trim() || '',
+      giagoc: Number(v.giagoc) || 0,
+      dvt: v.dvt?.trim() || '',
+      soluong: Number(v.soluong) || 0,
+      soluongkho: Number(v.soluongkho) || 0,
+      haohut: Number(v.haohut) || 0,
+      ghichu: v.ghichu?.trim() || '',
+    }));
 
+    const uniqueData = Array.from(new Map(transformedData.map((item: any) => [item.masp, item])).values());
+    const existingKhachhang = this._KhachhangService.ListKhachhang();
+    const existingMasp = existingKhachhang.map((v: any) => v.masp);
+    const newMasp = uniqueData.map((v: any) => v.masp).filter((item: any) => !existingMasp.includes(item));
 
-
-
-function memoize() {
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
-    const originalMethod = descriptor.value;
-    const cache = new Map();
-
-    descriptor.value = function (...args: any[]) {
-      const key = JSON.stringify(args);
-      if (cache.has(key)) {
-        return cache.get(key);
+    await Promise.all(uniqueData.map(async (v: any) => {
+      const existingItem = existingKhachhang.find((v1: any) => v1.masp === v.masp);
+      if (existingItem) {
+        const updatedItem = { ...existingItem, ...v };
+        await this._KhachhangService.updateKhachhang(updatedItem);
+      } else {
+        await this._KhachhangService.CreateKhachhang(v);
       }
-      const result = originalMethod.apply(this, args);
-      cache.set(key, result);
-      return result;
-    };
+    }));
+    await Promise.all(existingKhachhang
+      .filter(sp => !uniqueData.some((item: any) => item.masp === sp.masp))
+      .map(sp => this._KhachhangService.updateKhachhang({ ...sp, isActive: false }))
+    );
 
-    return descriptor;
-  };
-}
+    this._snackBar.open('Cập Nhật Thành Công', '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+  }
 
-function Debounce(delay: number = 300) {
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
-    const originalMethod = descriptor.value;
-    let timeoutId: any;
+  async ImporExcel(event: any) {
+    const data = await readExcelFile(event);
+    this.DoImportData(data);
+  }
 
-    descriptor.value = function (...args: any[]) {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        originalMethod.apply(this, args);
-      }, delay);
-    };
+  ExportExcel(data: any, title: any) {
+    const dulieu = data.map((v: any) => ({
+      title: v.title,
+      masp: v.masp,
+      giagoc: v.giagoc,
+      dvt: v.dvt,
+      soluong: v.soluong,
+      soluongkho: v.soluongkho,
+      haohut: v.haohut,
+      ghichu: v.ghichu,
+    }));
+    writeExcelFile(dulieu, title);
+  }
 
-    return descriptor;
-  };
+  trackByFn(index: number, item: any): any {
+    return item.id;
+  }
+
+  onPageSizeChange(size: number, menuHienthi: any) {
+    if (size > this.total()) {
+      this._snackBar.open(`Số lượng tối đa ${this.total()}`, '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      size = this.total();
+    }
+    this._KhachhangService.page.set(1);
+    this._KhachhangService.getAllKhachhang(size, true);
+    menuHienthi.closeMenu();
+  }
+  onPreviousPage(){
+    if (this.page() > 1) {
+      this._KhachhangService.page.set(this.page() - 1);
+      this._KhachhangService.getAllKhachhang(this.pageSize(), true);
+    }
+  }
+
+  onNextPage(){
+    if (this.page() < this.pageCount()) {
+      this._KhachhangService.page.set(this.page() + 1);
+      this._KhachhangService.getAllKhachhang(this.pageSize(), true);
+    }
+  }
 }

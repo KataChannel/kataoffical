@@ -22,6 +22,11 @@ let KhachhangController = class KhachhangController {
     create(createKhachhangDto) {
         return this.khachhangService.create(createKhachhangDto);
     }
+    findAllVttech(page, limit) {
+        const pageNumber = Number(page) || 1;
+        const limitNumber = Number(limit) || 10;
+        return this.khachhangService.findAllVttech({ page: pageNumber, limit: limitNumber });
+    }
     findAll() {
         return this.khachhangService.findAll();
     }
@@ -43,6 +48,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], KhachhangController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)('vttech'),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], KhachhangController.prototype, "findAllVttech", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

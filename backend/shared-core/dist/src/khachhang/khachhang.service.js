@@ -12,9 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.KhachhangService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const vttech_prisma_service_1 = require("../../prisma/vttech.prisma.service");
 let KhachhangService = class KhachhangService {
-    constructor(prisma) {
+    constructor(prisma, vttechPrisma) {
         this.prisma = prisma;
+        this.vttechPrisma = vttechPrisma;
     }
     async create(data) {
         const prefix = data.loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
@@ -43,6 +45,21 @@ let KhachhangService = class KhachhangService {
     async findAll() {
         return this.prisma.khachhang.findMany();
     }
+    async findAllVttech({ page, limit }) {
+        const skip = (page - 1) * limit;
+        const [data, total] = await Promise.all([
+            this.vttechPrisma.customer.findMany({ skip, take: limit }),
+            this.vttechPrisma.customer.count(),
+        ]);
+        const pageCount = Math.ceil(total / limit);
+        return {
+            data,
+            page: page || 1,
+            pageCount: pageCount || 1,
+            total,
+            pageSize: limit,
+        };
+    }
     async findOne(id) {
         const khachhang = await this.prisma.khachhang.findUnique({ where: { id } });
         if (!khachhang)
@@ -59,6 +76,7 @@ let KhachhangService = class KhachhangService {
 exports.KhachhangService = KhachhangService;
 exports.KhachhangService = KhachhangService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        vttech_prisma_service_1.VttechPrismaService])
 ], KhachhangService);
 //# sourceMappingURL=khachhang.service.js.map
