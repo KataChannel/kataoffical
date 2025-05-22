@@ -333,7 +333,10 @@ export declare class DonhangService {
         khachhangId: string;
         printCount: number | null;
     }>;
-    ImportDonhang(data: any): Promise<void>;
+    ImportDonhang(data: any): Promise<{
+        success: number;
+        fail: number;
+    }>;
     create(dto: any): Promise<{
         sanpham: {
             id: string;

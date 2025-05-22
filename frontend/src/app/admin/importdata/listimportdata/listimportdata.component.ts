@@ -144,7 +144,7 @@ export class ListImportdataComponent implements OnInit {
     this.rawListDathang = this._DathangService.ListDathang();
     await this._KhoService.getTonKho('1', '1000').then((res: any) => {
       this.rawListTonkho = res.data;
-    });
+    }); 
   }
 
   applyFilter(event: Event) {
@@ -171,10 +171,7 @@ toggleItem(item: any) {
     } else {  
       this.TitleExport = this.TitleExport.replace('_'+item.value, '')
       this.ListEdit.update((prev) => prev.filter((i) => i.id !== item.id));
-    }
-    console.log(item);
-    console.log(this.ListEdit());
-    
+    }   
   }
   CheckItem(item: any) {
     const index = this.ListEdit().findIndex((i) => i.id === item.id);
@@ -238,7 +235,7 @@ async ExportExcel(title:any) {
           ghichu: ''
         }];
 
-    const ListNCC = Array.isArray(this.rawListNCC) && this.rawListNCC.length
+    const ListNCC = Array.isArray(this.rawListNCC) && this.rawListNCC.length>0
       ? this.rawListNCC.map((v: any) => ({
           name: v.name?.trim() || '',
           mancc: v.mancc?.trim() || '',
@@ -258,7 +255,7 @@ async ExportExcel(title:any) {
           }
         ];
 
-    const ListBG = Array.isArray(this.rawListBG) && this.rawListBG.length
+    const ListBG = Array.isArray(this.rawListBG) && this.rawListBG.length>0
       ? this.rawListBG.map((v: any) => ({
           title: v.title?.trim() || '',
           mabanggia: v.mabanggia?.trim() || '',
@@ -278,47 +275,66 @@ async ExportExcel(title:any) {
           status: ''
         }];
 
-    const ListDH = Array.isArray(this.rawListDH) && this.rawListDH.length
-      ? this.rawListDH.map((v: any) => ({
-          madonhang: v.madonhang?.trim() || '',
-          makh: v.makh?.trim() || '',
-          mancc: v.mancc?.trim() || '',
-          masp: v.masp?.trim() || '',
-          soluong: v.soluong?.trim() || '',
-          giaban: v.giaban?.trim() || '',
-          ghichu: v.ghichu?.trim() || '',
-        }))
+    // Flatten donhang items from nested 'sanpham'
+    const ListDH = Array.isArray(this.rawListDH) && this.rawListDH.length>0
+      ? this.rawListDH.flatMap((record: any) => {
+          if (!Array.isArray(record.sanpham)) return [];
+          return record.sanpham.map((sp: any) => ({
+            ngaygiao: moment(record.ngaygiao).format('DD/MM/YYYY'),
+            makh: record.khachhang?.makh,
+            name: record.khachhang?.name,
+            mabanggia: record.khachhang?.banggia?.[0]?.mabanggia,
+            masp: sp.masp,
+            tensp: sp.title,
+            sldat: sp.sldat,
+            slgiao: sp.slgiao,
+            slnhan: sp.slnhan,
+            ghichu: sp.ghichu
+          }));
+        })
+      : [
+          {
+            ngaygiao: moment().format('DD/MM/YYYY'),
+            makh: '',
+            mabanggia: '',
+            masp: '',
+            tensp: '',
+            sldat: 0,
+            slgiao: 0,
+            slnhan: 0,
+            ghichu: ''
+          }
+      ];
+    const ListDathang = Array.isArray(this.rawListDathang) && this.rawListDathang.length>0
+      ? this.rawListDathang.flatMap((record: any) => {
+          if (!Array.isArray(record.sanpham)) return [];
+          return record.sanpham.map((sp: any) => ({
+            ngaynhan: moment(record.ngaynhan).format('DD/MM/YYYY'),
+            mancc: record.nhacungcap?.mancc,
+            name: record.nhacungcap?.name,
+            mabanggia: record.banggia?.[0]?.mabanggia,
+            masp: sp.masp,
+            tensp: sp.title,
+            sldat: sp.sldat,
+            slgiao: sp.slgiao,
+            slnhan: sp.slnhan,
+            ghichu: sp.ghichu
+          }));
+        })
       : [{
-          madonhang: '',
-          makh: '',
+          ngaynhan: moment().format('DD/MM/YYYY'),
           mancc: '',
+          name: '',
+          mabanggia: '',
           masp: '',
-          soluong: '',
-          giaban: '',
+          tensp: '',
+          sldat: 0,
+          slgiao: 0,
+          slnhan: 0,
           ghichu: ''
         }];
-    const ListDathang = Array.isArray(this.rawListDathang) && this.rawListDathang.length
-      ? this.rawListDathang.map((v: any) => ({
-          madathang: v.madathang?.trim() || '',
-          makh: v.makh?.trim() || '',
-          mancc: v.mancc?.trim() || '',
-          masp: v.masp?.trim() || '',
-          soluong: v.soluong?.trim() || '',
-          giaban: v.giaban?.trim() || '',
-          ghichu: v.ghichu?.trim() || ''
-        }))
-      : [{
-          madathang: '',
-          makh: '',
-          mancc: '',
-          masp: '',
-          soluong: '',
-          giaban: '',
-          ghichu: ''
-        }];   
 
     const ListBGSP =this.convertBGSPToExport(this.rawListBG, this.rawListSP);
-
     const ListBGKH:any[] =this.rawListKH.map((v: any) => {
             const result: any = {
             makh: v.makh || '',
@@ -495,6 +511,29 @@ convertNCCSPToImport(data: any){
 
   async DoImportData(data:any)
   {
+
+    console.log(data.dathang);
+    if(Object.keys(this.ListEdit()).length === 0) 
+    {
+      this._snackBar.open('Chưa Chọn Loại Dữ Liệu', '', {
+        duration: 1000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-success'],
+      });
+      return;
+    }
+    if(Object.keys(data).length === 0) 
+    {
+      this._snackBar.open('Không có dữ liệu để nhập', '', {
+        duration: 1000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-success'],
+      });
+      return;
+    }
+
     if(data.sanpham && data.sanpham.length > 0 && this.ListEdit().some((item: any) => item.value === 'sanpham'))
     {
       const ListSP = (data.sanpham || []).map((v: any) => ({
@@ -665,8 +704,39 @@ convertNCCSPToImport(data: any){
         });
     }
      }
-}
 
+
+    if(data.dathang && this.ListEdit().some((item: any) => item.value === 'dathang'))
+    {
+        const ListDH = (data.dathang || []).map((v: any) => ({
+          ngaynhan: moment(excelSerialDateToJSDate(v.ngaynhan)).toDate(),
+          mancc: v.mancc,
+          mabanggia: v.mabanggia,
+          masp: v.masp,
+          sldat: v.sldat,
+          slgiao: v.slgiao,
+          slnhan: v.slnhan,
+          ghichu: v.ghichu,
+        }))
+        console.log(ListDH);
+        
+        await this._DathangService.ImportDathang(ListDH);
+    }
+    if(data.donhang && this.ListEdit().some((item: any) => item.value === 'donhang'))
+    {
+        const ListDH = (data.donhang || []).map((v: any) => ({
+          ngaygiao: moment(excelSerialDateToJSDate(v.ngaygiao)).toDate(),
+          makh: v.makh,
+          mabanggia: v.mabanggia,
+          masp: v.masp,
+          sldat: v.sldat,
+          slgiao: v.slgiao,
+          slnhan: v.slnhan,
+          ghichu: v.ghichu,
+        }))
+        await this._DonhangService.ImportDonhang(ListDH);
+    }
+  }
 
 
   trackByFn(index: number, item: any): any {

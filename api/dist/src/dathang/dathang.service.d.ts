@@ -100,6 +100,10 @@ export declare class DathangService {
         ngaynhan: Date | null;
         nhacungcapId: string;
     }>;
+    import(data: any): Promise<{
+        success: number;
+        fail: number;
+    }>;
     create(dto: any): Promise<{
         sanpham: {
             id: string;

@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import moment from 'moment';
 import { PrismaService } from 'prisma/prisma.service';
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258'; // Kho mặc định, cần thay đổi theo yêu cầu thực tế
 @Injectable()
@@ -131,80 +132,57 @@ export class DathangService {
     };
   }
 
-  // async create(data: any) {
-  //   return this.prisma.$transaction(async (prisma) => {
-  //     const madathang = await this.generateNextOrderCode();
-  //     console.log(madathang);
-
-  //     const newDathang = await prisma.dathang.create({
-  //       data: {
-  //         title: data.title,
-  //         type: data.type,
-  //         madncc: madathang,
-  //         ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
-  //         ghichu: data.ghichu,
-  //         nhacungcapId: data.nhacungcapId,
-  //         order: data.order,
-  //         isActive: data.isActive,
-  //         sanpham: {
-  //           create: data.sanpham?.map((sp: any) => ({
-  //             idSP: sp.id,
-  //             sldat: sp.sldat,
-  //             slgiao: sp.slgiao,
-  //             slnhan: sp.slnhan,
-  //             ttdat: sp.ttdat || 0,
-  //             ttgiao: sp.ttgiao || 0,
-  //             ttnhan: sp.ttnhan || 0,
-  //             ghichu: sp.ghichu,
-  //             order: sp.order,
-  //             isActive: sp.isActive,
-  //           })),
-  //         },
-  //       },
-  //       include: { sanpham: true },
-  //     });
-
-  //     // Cập nhật số lượng sản phẩm trong kho (tăng số lượng nhận)
-  //     for (const sp of data.sanpham) {
-  //       await prisma.sanpham.update({
-  //         where: { id: sp.id },
-  //         data: {
-  //           soluong: {
-  //             decrement: parseFloat((sp.sldat ?? 0).toFixed(2))
-  //           },
-  //         },
-  //       });
-  //     }
-
-  //     // Tạo phiếu nhập kho tương ứng
-  //     await prisma.phieuKho.create({
-  //       data: {
-  //         maphieu: `PN-${newDathang.madncc}`, // Mã phiếu nhập kho dựa trên ID đơn hàng
-  //         khoId: DEFAUL_KHO_ID,        // Cập nhật khoId phù hợp
-  //         type: 'nhap',                   // Loại phiếu nhập (nhập kho)
-  //         ngay: newDathang.ngaynhan || new Date(),        // Sử dụng ngày nhận từ đơn hàng
-  //         ghichu: `Phiếu nhập kho cho đơn hàng ${newDathang.title}`,
-  //         sanpham: {
-  //           create: data?.sanpham?.map((sp: any) => ({
-  //             sanphamId: sp.id,
-  //             sldat: sp.sldat,
-  //             soluong: sp.sldat,
-  //             ghichu: sp.ghichu,
-  //           })),
-  //         },
-  //       },
-  //     });
-
-  //     return newDathang;
-  //   });
-  // }
+  async import(data: any) {    
+    const acc: Record<string, any> = {};
+    for (const curr of data) {
+      if (!acc[curr.mancc]) {
+        const nhacungcap = await this.prisma.nhacungcap.findFirst({ where: { mancc: curr.mancc } });
+        acc[curr.mancc] = {
+          title: `Import ${moment().format('DD_MM_YYYY')}`,
+          ngaynhan: curr.ngaynhan,
+          mancc: curr.mancc,
+          name: nhacungcap?.name,
+          mabanggia: curr.mabanggia,
+          sanpham: [],
+          nhacungcap: {
+            mancc: curr.mancc,
+          }
+        };
+      }
+      const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: curr.masp } });
+      acc[curr.mancc].sanpham.push({
+        masp: curr.masp,
+        id: sanphamRecord?.id,
+        sldat: Number(curr.sldat),
+        slgiao: Number(curr.slgiao),
+        slnhan: Number(curr.slnhan),
+        ghichu: curr.ghichu,
+      });
+    }
+    const convertData: any = Object.values(acc);
+    let success = 0;
+    let fail = 0;  
+    for (const element of convertData) {
+      try {
+        await this.create(element);
+        success += 1;
+      } catch (error) {
+        fail += 1;
+      }
+    }
+    return {
+      success,
+      fail,
+    };
+  }
 
   async create(dto: any) {
     const madathang = await this.generateNextOrderCode();
-    return this.prisma.$transaction(async (prisma) => {
-      // Verify that the associated supplier (nhacungcap) exists
-      const nhacungcap = await prisma.nhacungcap.findUnique({
-        where: { id: dto.id },
+    return this.prisma.$transaction(async (prisma) => {      
+      const nhacungcap = await prisma.nhacungcap.findFirst({
+        where: {
+          mancc: dto.nhacungcap.mancc,
+        },
       });
       if (!nhacungcap)
         throw new NotFoundException('Nhà cung cấp không tồn tại');
@@ -224,13 +202,13 @@ export class DathangService {
             create: dto?.sanpham?.map((sp: any) => ({
               idSP: sp.id,
               ghichu: sp.ghichu,
-              sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
-              slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-              slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
-              slhuy: parseFloat((sp.slhuy ?? 0).toFixed(2)),
-              ttdat: parseFloat((sp.ttdat ?? 0).toFixed(2)),
-              ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
-              ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
+              sldat: sp.sldat || 0,
+              slgiao: sp.slgiao || 0,
+              slnhan: sp.slnhan || 0,
+              slhuy: sp.slhuy || 0,
+              ttdat: sp.ttdat || 0,
+              ttgiao: sp.ttgiao || 0,
+              ttnhan: sp.ttnhan || 0,
             })),
           },
         },

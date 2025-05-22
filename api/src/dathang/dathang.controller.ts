@@ -9,6 +9,10 @@ export class DathangController {
   create(@Body() createDathangDto: any) {
     return this.dathangService.create(createDathangDto);
   }
+  @Post('import')
+  import(@Body() data: any) {
+    return this.dathangService.import(data);
+  }
   @Post('bynhucau')
   createbynhucau(@Body() data: any) {
     return this.dathangService.createbynhucau(data);

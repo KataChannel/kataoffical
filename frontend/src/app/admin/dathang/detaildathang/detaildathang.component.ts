@@ -490,6 +490,7 @@ export class DetailDathangComponent {
       this.DetailDathang.update((v: any) => {
         const nhacungcap = {
           name: selectedNhacungcap.name,
+          mancc: selectedNhacungcap.mancc,
           diachi: selectedNhacungcap.diachi,
           sdt: selectedNhacungcap.sdt,
           ghichu: selectedNhacungcap.ghichu,

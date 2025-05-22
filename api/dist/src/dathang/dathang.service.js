@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DathangService = void 0;
 const common_1 = require("@nestjs/common");
+const moment_1 = require("moment");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 let DathangService = class DathangService {
@@ -131,11 +132,57 @@ let DathangService = class DathangService {
             }),
         };
     }
+    async import(data) {
+        const acc = {};
+        for (const curr of data) {
+            if (!acc[curr.mancc]) {
+                const nhacungcap = await this.prisma.nhacungcap.findFirst({ where: { mancc: curr.mancc } });
+                acc[curr.mancc] = {
+                    title: `Import ${(0, moment_1.default)().format('DD_MM_YYYY')}`,
+                    ngaynhan: curr.ngaynhan,
+                    mancc: curr.mancc,
+                    name: nhacungcap?.name,
+                    mabanggia: curr.mabanggia,
+                    sanpham: [],
+                    nhacungcap: {
+                        mancc: curr.mancc,
+                    }
+                };
+            }
+            const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: curr.masp } });
+            acc[curr.mancc].sanpham.push({
+                masp: curr.masp,
+                id: sanphamRecord?.id,
+                sldat: Number(curr.sldat),
+                slgiao: Number(curr.slgiao),
+                slnhan: Number(curr.slnhan),
+                ghichu: curr.ghichu,
+            });
+        }
+        const convertData = Object.values(acc);
+        let success = 0;
+        let fail = 0;
+        for (const element of convertData) {
+            try {
+                await this.create(element);
+                success += 1;
+            }
+            catch (error) {
+                fail += 1;
+            }
+        }
+        return {
+            success,
+            fail,
+        };
+    }
     async create(dto) {
         const madathang = await this.generateNextOrderCode();
         return this.prisma.$transaction(async (prisma) => {
-            const nhacungcap = await prisma.nhacungcap.findUnique({
-                where: { id: dto.id },
+            const nhacungcap = await prisma.nhacungcap.findFirst({
+                where: {
+                    mancc: dto.nhacungcap.mancc,
+                },
             });
             if (!nhacungcap)
                 throw new common_1.NotFoundException('Nhà cung cấp không tồn tại');
@@ -153,13 +200,13 @@ let DathangService = class DathangService {
                         create: dto?.sanpham?.map((sp) => ({
                             idSP: sp.id,
                             ghichu: sp.ghichu,
-                            sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
-                            slhuy: parseFloat((sp.slhuy ?? 0).toFixed(2)),
-                            ttdat: parseFloat((sp.ttdat ?? 0).toFixed(2)),
-                            ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
-                            ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
+                            sldat: sp.sldat || 0,
+                            slgiao: sp.slgiao || 0,
+                            slnhan: sp.slnhan || 0,
+                            slhuy: sp.slhuy || 0,
+                            ttdat: sp.ttdat || 0,
+                            ttgiao: sp.ttgiao || 0,
+                            ttnhan: sp.ttnhan || 0,
                         })),
                     },
                 },

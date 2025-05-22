@@ -22,6 +22,28 @@ export class DathangService {
   // getDetailDathang(): Signal<any | null> {
   //   return this.DetailDathang;
   // }
+  async ImportDathang(dulieu: any) {
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/dathang/import`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+            console.log(response.status);     
+        }
+        this.getAllDathang()
+    } catch (error) {
+        return console.error(error);
+    }
+  }
   async CreateDathang(dulieu: any) {
     try {
       const options = {

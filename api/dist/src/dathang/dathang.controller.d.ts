@@ -33,6 +33,10 @@ export declare class DathangController {
         ngaynhan: Date | null;
         nhacungcapId: string;
     }>;
+    import(data: any): Promise<{
+        success: number;
+        fail: number;
+    }>;
     createbynhucau(data: any): Promise<{
         sanpham: {
             id: string;

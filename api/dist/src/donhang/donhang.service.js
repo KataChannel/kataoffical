@@ -362,39 +362,50 @@ let DonhangService = class DonhangService {
         return result;
     }
     async ImportDonhang(data) {
-        return this.prisma.$transaction(async (prisma) => {
-            const groups = data.reduce((acc, item) => {
-                const key = item.makh;
-                if (!acc[key]) {
-                    acc[key] = [];
-                }
-                acc[key].push(item);
-                return acc;
-            }, {});
-            for (const makh in groups) {
-                const items = groups[makh];
-                const orderDate = new Date(items[0].ngay);
-                const data = {
-                    title: `Import Order for ${makh}`,
-                    type: 'donsi',
-                    ngaygiao: orderDate,
-                    khachhangId: makh,
-                    isActive: true,
-                    order: 0,
-                    ghichu: '',
-                    sanpham: {
-                        create: items.map((item) => ({
-                            idSP: item.masp,
-                            ghichu: item.ghichu,
-                            sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
-                            slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
-                            slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
-                        })),
-                    },
+        const acc = {};
+        for (const curr of data) {
+            if (!acc[curr.makh]) {
+                const khachhang = await this.prisma.khachhang.findFirst({ where: { makh: curr.makh } });
+                acc[curr.makh] = {
+                    title: `Import ${moment().format('DD_MM_YYYY')}`,
+                    ngaygiao: curr.ngaygiao,
+                    makh: curr.makh,
+                    khachhangId: khachhang?.id,
+                    name: khachhang?.name,
+                    mabanggia: curr.mabanggia,
+                    sanpham: [],
+                    khachhang: {
+                        makh: curr.makh,
+                    }
                 };
-                await prisma.donhang.create({ data });
             }
-        });
+            const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: curr.masp } });
+            acc[curr.makh].sanpham.push({
+                masp: curr.masp,
+                id: sanphamRecord?.id,
+                sldat: Number(curr.sldat),
+                slgiao: Number(curr.slgiao),
+                slnhan: Number(curr.slnhan),
+                ghichu: curr.ghichu,
+            });
+        }
+        const convertData = Object.values(acc);
+        let success = 0;
+        let fail = 0;
+        for (const element of convertData) {
+            try {
+                await this.create(element);
+                success += 1;
+            }
+            catch (error) {
+                console.log('error', error);
+                fail += 1;
+            }
+        }
+        return {
+            success,
+            fail,
+        };
     }
     async create(dto) {
         const madonhang = await this.generateNextOrderCode();
