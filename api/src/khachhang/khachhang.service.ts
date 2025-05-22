@@ -69,53 +69,56 @@ export class KhachhangService {
 
 
   async import(data: any[]) {
-    // Dữ liệu gửi lên là một mảng khách hàng, mỗi khách hàng có thể chứa danh sách banggia dưới dạng các đối tượng với thuộc tính mabanggia
     for (const customer of data) {
-      const { banggia, ...rest } = customer;
-      let banggiaData = {};
-      console.log('customer', customer);
-      
-      if (banggia !== undefined) {
-        if (banggia.length > 0) {
-          // Chuyển danh sách banggia từ mabanggia sang id thông qua lookup
-          const banggiaRecords = await Promise.all(
-            banggia.map(async (bg: any) => {
-              const bgRecord = await this.prisma.banggia.findFirst({
-                where: { mabanggia: bg },
-                select: { id: true }
-              });
-              if (!bgRecord) {
-                throw new NotFoundException(`Banggia với mabanggia ${bg} không tồn tại`);
-              }
-              return { id: bgRecord.id };
-            })
-          );
-          banggiaData = { banggia: { connect: banggiaRecords } };
-        } else {
-          // Nếu mảng rỗng thì đảm bảo các kết nối hiện có bị hủy
-          banggiaData = { banggia: { set: [] } };
+      try {
+        // Dữ liệu gửi lên là một mảng khách hàng, mỗi khách hàng có thể chứa danh sách banggia dưới dạng các đối tượng với thuộc tính mabanggia
+        const { banggia, ...rest } = customer;
+        let banggiaData = {};        
+        if (banggia !== undefined) {
+          if (banggia.length > 0) {
+            // Chuyển danh sách banggia từ mabanggia sang id thông qua lookup
+            const banggiaRecords = await Promise.all(
+              banggia.map(async (bg: any) => {
+                const bgRecord = await this.prisma.banggia.findFirst({
+                  where: { mabanggia: bg },
+                  select: { id: true }
+                });
+                if (!bgRecord) {
+                  throw new NotFoundException(`Banggia với mabanggia ${bg} không tồn tại`);
+                }
+                return { id: bgRecord.id };
+              })
+            );
+            banggiaData = { banggia: { connect: banggiaRecords } };
+          } else {
+            // Nếu mảng rỗng thì đảm bảo các kết nối hiện có bị hủy
+            banggiaData = { banggia: { set: [] } };
+          }
         }
-      }
-      
-      const dataToUse = { ...rest, ...banggiaData };
+        
+        const dataToUse = { ...rest, ...banggiaData };
 
-      // Nếu mã khách hàng không tồn tại thì tạo mới
-      if (!customer.makh) {
-        await this.create(dataToUse);
-      } else {
-        // Nếu khách hàng đã tồn tại, cập nhật thông qua hàm update
-        const existingCustomer = await this.prisma.khachhang.findUnique({
-          where: { makh: customer.makh },
-          select: { id: true },
-        });
-        if (existingCustomer) {
-          await this.prisma.khachhang.update({
-            where: { id: existingCustomer.id },
-            data: dataToUse,
-          });
-        } else {
+        // Nếu mã khách hàng không tồn tại thì tạo mới
+        if (!customer.makh) {
           await this.create(dataToUse);
+        } else {
+          // Nếu khách hàng đã tồn tại, cập nhật thông qua hàm update
+          const existingCustomer = await this.prisma.khachhang.findUnique({
+            where: { makh: customer.makh },
+            select: { id: true },
+          });
+          if (existingCustomer) {
+            await this.prisma.khachhang.update({
+              where: { id: existingCustomer.id },
+              data: dataToUse,
+            });
+          } else {
+            await this.create(dataToUse);
+          }
         }
+      } catch (error) {
+        console.error(`Error processing customer with makh ${customer.makh}:`, error);
+        // Log error and continue with next customer
       }
     }
     return { message: 'Import completed' };

@@ -519,7 +519,6 @@ convertNCCSPToImport(data: any){
   async DoImportData(data:any)
   {
 
-    console.log(data.dathang);
     if(Object.keys(this.ListEdit()).length === 0) 
     {
       this._snackBar.open('Chưa Chọn Loại Dữ Liệu', '', {

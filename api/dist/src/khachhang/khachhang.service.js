@@ -67,45 +67,49 @@ let KhachhangService = class KhachhangService {
     }
     async import(data) {
         for (const customer of data) {
-            const { banggia, ...rest } = customer;
-            let banggiaData = {};
-            console.log('customer', customer);
-            if (banggia !== undefined) {
-                if (banggia.length > 0) {
-                    const banggiaRecords = await Promise.all(banggia.map(async (bg) => {
-                        const bgRecord = await this.prisma.banggia.findFirst({
-                            where: { mabanggia: bg },
-                            select: { id: true }
-                        });
-                        if (!bgRecord) {
-                            throw new common_1.NotFoundException(`Banggia với mabanggia ${bg} không tồn tại`);
-                        }
-                        return { id: bgRecord.id };
-                    }));
-                    banggiaData = { banggia: { connect: banggiaRecords } };
+            try {
+                const { banggia, ...rest } = customer;
+                let banggiaData = {};
+                if (banggia !== undefined) {
+                    if (banggia.length > 0) {
+                        const banggiaRecords = await Promise.all(banggia.map(async (bg) => {
+                            const bgRecord = await this.prisma.banggia.findFirst({
+                                where: { mabanggia: bg },
+                                select: { id: true }
+                            });
+                            if (!bgRecord) {
+                                throw new common_1.NotFoundException(`Banggia với mabanggia ${bg} không tồn tại`);
+                            }
+                            return { id: bgRecord.id };
+                        }));
+                        banggiaData = { banggia: { connect: banggiaRecords } };
+                    }
+                    else {
+                        banggiaData = { banggia: { set: [] } };
+                    }
                 }
-                else {
-                    banggiaData = { banggia: { set: [] } };
-                }
-            }
-            const dataToUse = { ...rest, ...banggiaData };
-            if (!customer.makh) {
-                await this.create(dataToUse);
-            }
-            else {
-                const existingCustomer = await this.prisma.khachhang.findUnique({
-                    where: { makh: customer.makh },
-                    select: { id: true },
-                });
-                if (existingCustomer) {
-                    await this.prisma.khachhang.update({
-                        where: { id: existingCustomer.id },
-                        data: dataToUse,
-                    });
-                }
-                else {
+                const dataToUse = { ...rest, ...banggiaData };
+                if (!customer.makh) {
                     await this.create(dataToUse);
                 }
+                else {
+                    const existingCustomer = await this.prisma.khachhang.findUnique({
+                        where: { makh: customer.makh },
+                        select: { id: true },
+                    });
+                    if (existingCustomer) {
+                        await this.prisma.khachhang.update({
+                            where: { id: existingCustomer.id },
+                            data: dataToUse,
+                        });
+                    }
+                    else {
+                        await this.create(dataToUse);
+                    }
+                }
+            }
+            catch (error) {
+                console.error(`Error processing customer with makh ${customer.makh}:`, error);
             }
         }
         return { message: 'Import completed' };
