@@ -4,6 +4,7 @@ export declare class LandingpageController {
     constructor(landingpageService: landingPageService);
     create(data: any): Promise<{
         id: string;
+        codeId: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -20,11 +21,11 @@ export declare class LandingpageController {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
-        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     findby(param: any): Promise<{
         id: string;
+        codeId: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -41,11 +42,11 @@ export declare class LandingpageController {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
-        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     findAll(): Promise<{
         id: string;
+        codeId: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -62,11 +63,11 @@ export declare class LandingpageController {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
-        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }[]>;
     findOne(id: string): Promise<{
         id: string;
+        codeId: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -83,11 +84,11 @@ export declare class LandingpageController {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
-        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
+        codeId: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -104,11 +105,11 @@ export declare class LandingpageController {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
-        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     remove(id: string): Promise<{
         id: string;
+        codeId: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -125,7 +126,6 @@ export declare class LandingpageController {
         seoDescription: string | null;
         seoKeywords: string | null;
         ownerId: string | null;
-        codeId: string;
         contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     reorder(body: {

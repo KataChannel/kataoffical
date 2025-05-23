@@ -15,10 +15,11 @@ enum Gender {
 }
 model User {
   id        String   @id @default(uuid())
-  name        String?
-  avatar      String?
-  gender      Gender?
-  email       String?   @unique
+  codeId    String?   @unique // Mã đề xuất duy nhất
+  name      String?
+  avatar    String?
+  gender    Gender?
+  email     String?   @unique
   SDT        String?   @unique
   phone         String?  @unique
   zaloId        String?  @unique

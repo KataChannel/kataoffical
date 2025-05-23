@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <div *ngFor="let item of ListData; let i=index" class="card overflow-hidden transition-transform hover:scale-[1.02]">
+            <div *ngFor="let item of ListData; let i=index" class="border bg-white rounded-lg overflow-hidden transition-transform hover:scale-[1.02]">
                 <div class="aspect-video bg-gray-100 overflow-hidden">
                     <img src="{{item.image.src}}" alt="{{item.image.alt}}" class="w-full h-full object-cover">
                 </div>

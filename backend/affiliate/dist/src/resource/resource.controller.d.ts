@@ -4,12 +4,12 @@ export declare class ResourceController {
     constructor(resourceService: ResourceService);
     create(data: any): Promise<{
         id: string;
+        codeId: string | null;
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
         title: string | null;
         order: number | null;
-        codeId: string | null;
         url: string | null;
         fileType: string | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
@@ -18,12 +18,12 @@ export declare class ResourceController {
     }>;
     findby(param: any): Promise<{
         id: string;
+        codeId: string | null;
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
         title: string | null;
         order: number | null;
-        codeId: string | null;
         url: string | null;
         fileType: string | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
@@ -32,12 +32,12 @@ export declare class ResourceController {
     } | {
         data: {
             id: string;
+            codeId: string | null;
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
             title: string | null;
             order: number | null;
-            codeId: string | null;
             url: string | null;
             fileType: string | null;
             metaData: import(".prisma/client/runtime/library").JsonValue | null;
@@ -51,12 +51,12 @@ export declare class ResourceController {
     findAll(): Promise<{
         data: {
             id: string;
+            codeId: string | null;
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
             title: string | null;
             order: number | null;
-            codeId: string | null;
             url: string | null;
             fileType: string | null;
             metaData: import(".prisma/client/runtime/library").JsonValue | null;
@@ -72,12 +72,12 @@ export declare class ResourceController {
     }>;
     findOne(id: string): Promise<{
         id: string;
+        codeId: string | null;
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
         title: string | null;
         order: number | null;
-        codeId: string | null;
         url: string | null;
         fileType: string | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;

@@ -379,6 +379,7 @@ export const routes: Routes = [
       },
       {
         path: 'hotroctv',
+        canActivate: [AuthGuard],
         loadComponent: () =>
           import('./site/home/hotroctv/hotroctv.component').then(
             (c) => c.HotroctvComponent
@@ -386,6 +387,7 @@ export const routes: Routes = [
       },
       {
         path: 'ladictv',
+        canActivate: [AuthGuard],
         loadComponent: () =>
           import('./site/home/ladictv/ladictv.component').then(
             (c) => c.LadictvComponent
@@ -393,6 +395,7 @@ export const routes: Routes = [
       },
       {
         path: 'tainguyenctv',
+        canActivate: [AuthGuard],
         loadComponent: () =>
           import('./site/home/tainguyenctv/tainguyenctv.component').then(
             (c) => c.TainguyenctvComponent
@@ -407,6 +410,7 @@ export const routes: Routes = [
       },
       {
         path: 'taikhoanctv',
+        canActivate: [AuthGuard],
         loadComponent: () =>
           import('./site/home/taikhoanctv/taikhoanctv.component').then(
             (c) => c.TaikhoanctvComponent
@@ -430,6 +434,7 @@ export const routes: Routes = [
       },
       {
         path: 'dashboardctv',
+        canActivate: [AuthGuard],
         loadComponent: () =>
           import('./site/home/dashboardctv/dashboardctv.component').then(
             (c) => c.DashboardctvComponent
@@ -439,6 +444,7 @@ export const routes: Routes = [
       },
       {
         path: 'thongkectv',
+        canActivate: [AuthGuard],
         loadComponent: () =>
           import('./site/home/thongkectv/thongkectv.component').then(
             (c) => c.ThongkectvComponent
@@ -448,6 +454,7 @@ export const routes: Routes = [
       },
       {
         path: 'lienketctv',
+        canActivate: [AuthGuard],
         loadComponent: () =>
           import('./site/home/lienketctv/lienketctv.component').then(
             (c) => c.LienketctvComponent
@@ -457,6 +464,7 @@ export const routes: Routes = [
       },
       {
         path: 'faqctv',
+        canActivate: [AuthGuard],
         loadComponent: () =>
           import('./site/home/faqctv/faqctv.component').then(
             (c) => c.FaqctvComponent

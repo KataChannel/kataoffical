@@ -84,8 +84,6 @@ export class AdminmainComponent {
         this.User = res;  
         const permissionsadmin = this.User?.permissions?.map((v:any)=>v.name);   
         const params = {permissions:permissionsadmin,serviceType:'affiliate'}    
-        console.log('params',params);
-         
         await this._MenuService.getTreeMenu(params)
         this.ListMenu = this._MenuService.ListMenu()    
         this.dataSource.data = this._MenuService.ListMenu()

@@ -31,35 +31,21 @@
   <ng-container *ngIf="!isDelete()">
     <div class="w-full flex flex-col space-y-2">
       <mat-form-field appearance="outline">
-        <mat-label>Tiêu Đề</mat-label>
-        <input matInput [(ngModel)]="DetailQuanlyctv().title" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
+        <mat-label>Họ Tên</mat-label>
+        <input matInput [(ngModel)]="DetailQuanlyctv().name" [disabled]="!isEdit()" placeholder="Vui lòng nhập Họ Tên"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Mã Sản Phẩm</mat-label>
-        <input matInput [(ngModel)]="DetailQuanlyctv().masp" [disabled]="true" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+        <mat-label>Giới Tính</mat-label>
+        <input matInput [(ngModel)]="DetailQuanlyctv().gender" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giới Tính"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Giá Gốc</mat-label>
-        <input matInput type="number" [(ngModel)]="DetailQuanlyctv().giagoc" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giá Gốc"/>
+        <mat-label>Email</mat-label>
+        <input matInput [(ngModel)]="DetailQuanlyctv().email" [disabled]="!isEdit()" placeholder="Vui lòng nhập Email"/>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Đơn Vị Tính</mat-label>
-        <input matInput [(ngModel)]="DetailQuanlyctv().dvt" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
+        <mat-label>Số Điện Thoại</mat-label>
+        <input matInput [(ngModel)]="DetailQuanlyctv().SDT" [disabled]="!isEdit()" placeholder="Vui lòng nhập Số Điện Thoại"/>
       </mat-form-field>
-      <div class="flex flex-row space-x-2">
-        <mat-form-field appearance="outline">
-          <mat-label>Số Lượng</mat-label>
-          <input matInput type="number" [(ngModel)]="DetailQuanlyctv().soluong" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Số Lượng Kho</mat-label>
-          <input matInput type="number" [(ngModel)]="DetailQuanlyctv().soluongkho" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
-        </mat-form-field>
-        <mat-form-field appearance="outline">
-          <mat-label>Hao Hụt %</mat-label>
-          <input matInput type="number" [(ngModel)]="DetailQuanlyctv().haohut" [disabled]="!isEdit()" placeholder="Vui lòng nhập haohut"/>
-        </mat-form-field>
-      </div>
     </div>
   </ng-container>
 </div>

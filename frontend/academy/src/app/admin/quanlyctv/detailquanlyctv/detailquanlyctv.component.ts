@@ -38,7 +38,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     constructor(){
       this._route.paramMap.subscribe((params) => {
         const id = params.get('id');
-        this._QuanlyctvService.setQuanlyctvId(id);
+         this._QuanlyctvService.setQuanlyctvId(id);
       });
   
       effect(async () => {
@@ -64,7 +64,8 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     isEdit = signal(false);
     isDelete = signal(false);  
     quanlyctvId:any = this._QuanlyctvService.quanlyctvId
-    async ngOnInit() {       
+    async ngOnInit() {  
+       await this._QuanlyctvService.getQuanlyctvBy({id:this.quanlyctvId()});            
     }
     async handleQuanlyctvAction() {
       if (this.quanlyctvId() === 'new') {

@@ -4,18 +4,20 @@ export declare class AuthService {
     private prisma;
     private jwtService;
     constructor(prisma: PrismaService, jwtService: JwtService);
+    generateCodeId(): Promise<string>;
     register(data: any, affiliateCode?: string): Promise<{
-        email: string | null;
-        phone: string | null;
-        password: string | null;
-        facebookId: string | null;
-        googleId: string | null;
-        zaloId: string | null;
         id: string;
+        codeId: string | null;
         name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
+        email: string | null;
         SDT: string | null;
+        phone: string | null;
+        zaloId: string | null;
+        facebookId: string | null;
+        googleId: string | null;
+        password: string | null;
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
@@ -32,17 +34,18 @@ export declare class AuthService {
         user: any;
     }>;
     changePassword(userId: string, oldPassword: string, newPassword: string): Promise<{
-        email: string | null;
-        phone: string | null;
-        password: string | null;
-        facebookId: string | null;
-        googleId: string | null;
-        zaloId: string | null;
         id: string;
+        codeId: string | null;
         name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
+        email: string | null;
         SDT: string | null;
+        phone: string | null;
+        zaloId: string | null;
+        facebookId: string | null;
+        googleId: string | null;
+        password: string | null;
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
@@ -60,17 +63,18 @@ export declare class AuthService {
     validateOAuthLogin(provider: string, providerId: string, email?: string): Promise<{
         token: string;
         user: {
-            email: string | null;
-            phone: string | null;
-            password: string | null;
-            facebookId: string | null;
-            googleId: string | null;
-            zaloId: string | null;
             id: string;
+            codeId: string | null;
             name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
+            email: string | null;
             SDT: string | null;
+            phone: string | null;
+            zaloId: string | null;
+            facebookId: string | null;
+            googleId: string | null;
+            password: string | null;
             provider: string | null;
             providerId: string | null;
             isSuperAdmin: boolean;

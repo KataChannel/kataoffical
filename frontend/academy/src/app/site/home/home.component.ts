@@ -28,22 +28,27 @@ import { title } from 'process';
     CommonModule,
   ],
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent {
-  _StorageService:StorageService = inject(StorageService)
-  _UserService:UserService = inject(UserService)  
+  _StorageService: StorageService = inject(StorageService);
+  _UserService: UserService = inject(UserService);
   constructor() {}
-  ListSanpham: any[]=Sanphams;
-  ListReview: any[]=Reviews;
-  ListBaiviet: any[]=Baiviets;
+  ListSanpham: any[] = Sanphams;
+  ListReview: any[] = Reviews;
+  ListBaiviet: any[] = Baiviets;
   token: string | null = this._StorageService.getItem('token');
   ListMenu: any[] = [
-    {id:1,title:'Tổng Quan',icon:'home',link:'/dashboardctv'},
-    {id:2,title:'Phân Tích',icon:'info',link:'/thongkectv'},
-    {id:3,title:'Liên Kết',icon:'support_agent',link:'/ladictv'},
-    {id:3,title:'Tài Nguyên',icon:'photo_library',link:'/tainguyenctv'},
-  ]
+    { id: 1, title: 'Tổng Quan', icon: 'home', link: '/dashboardctv' },
+    { id: 2, title: 'Phân Tích', icon: 'info', link: '/thongkectv' },
+    { id: 3, title: 'Liên Kết', icon: 'support_agent', link: '/ladictv' },
+    {
+      id: 3,
+      title: 'Tài Nguyên',
+      icon: 'photo_library',
+      link: '/tainguyenctv',
+    },
+  ];
   drawerMode = signal<any>('side');
   drawerOpened = signal<any>(true);
   ChuyenGiaConfig = {
@@ -64,20 +69,20 @@ export class HomeComponent {
       // when window width is >= 320px
       320: {
         slidesPerView: 1,
-        spaceBetween: 20
+        spaceBetween: 20,
       },
       // when window width is >= 480px
       480: {
         slidesPerView: 1,
-        spaceBetween: 30
+        spaceBetween: 30,
       },
       // when window width is >= 640px
       640: {
         slidesPerView: 1,
-        spaceBetween: 40
-      }
-    }
-  }
+        spaceBetween: 40,
+      },
+    },
+  };
 
   SanphamNoibatConfig = {
     // Các tùy chọn của Swiper
@@ -97,20 +102,20 @@ export class HomeComponent {
       // when window width is >= 320px
       320: {
         slidesPerView: 1,
-        spaceBetween: 20
+        spaceBetween: 20,
       },
       // when window width is >= 480px
       480: {
         slidesPerView: 1,
-        spaceBetween: 30
+        spaceBetween: 30,
       },
       // when window width is >= 640px
       640: {
         slidesPerView: 5,
-        spaceBetween: 40
-      }
-    }
-  }
+        spaceBetween: 40,
+      },
+    },
+  };
 
   BaivietConfig = {
     // Các tùy chọn của Swiper
@@ -130,49 +135,53 @@ export class HomeComponent {
       // when window width is >= 320px
       320: {
         slidesPerView: 1,
-        spaceBetween: 20
+        spaceBetween: 20,
       },
       // when window width is >= 480px
       480: {
         slidesPerView: 1,
-        spaceBetween: 30
+        spaceBetween: 30,
       },
       // when window width is >= 640px
       640: {
         slidesPerView: 3,
-        spaceBetween: 40
-      }
-    }
+        spaceBetween: 40,
+      },
+    },
+  };
+  _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
+  @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
+  ngOnInit() {
+    this._breakpointObserver
+      .observe([Breakpoints.Handset])
+      .subscribe((result) => {
+        if (result.matches) {
+          this.drawerMode.set('over');
+          this.drawerOpened.set(false);
+        } else {
+          if (!this.token) {
+            this.drawer.close();
+            this.drawerOpened.set(false);
+          } else {
+            this.drawerMode.set('side');
+            this.drawerOpened.set(true);
+          }
+        }
+      });
   }
-   _breakpointObserver:BreakpointObserver = inject(BreakpointObserver)
-    @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
-    ngOnInit() {
-    if (!this.token) {
-      this.drawer.close();
-    }
-
-     this._breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
-      if (result.matches) {
-        this.drawerMode.set('over');
-        this.drawerOpened.set(false);
-      } else {
-        this.drawerMode.set('side');
-        this.drawerOpened.set(true);
-      }
-    });
-  }
-  ChosenMenu(){
-    this._breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
+  ChosenMenu() {
+    this._breakpointObserver
+      .observe([Breakpoints.Handset])
+      .subscribe((result) => {
         console.log(result.matches);
-      if (result.matches) {
-        this.drawer.close();
-      }
-      else {
-        // this.drawerOpened.set(false);
-      }
-    });
+        if (result.matches) {
+          this.drawer.close();
+        } else {
+          // this.drawerOpened.set(false);
+        }
+      });
   }
-    logout() {    
+  logout() {
     console.log('logout');
     this._UserService.logout().then((res: any) => {
       if (res) {

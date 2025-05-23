@@ -1,6 +1,7 @@
 <div class="flex flex-col space-y-4 container mx-auto">
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4">
+  <div class="flex lg:flex-row flex-col gap-2 py-4">
     <span class="text-2xl font-bold">Landing Pages</span>
+    <div class="flex flex-row items-center justify-end">
     <div class="relative w-full">
       <input type="text" placeholder="Tìm Kiếm..." (input)="applyFilters($event)"
         class="block lg:w-auto w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
@@ -8,6 +9,8 @@
         <span class="material-symbols-outlined text-gray-500">search</span>
       </div>
     </div>
+    </div>
+
   </div>
   <!-- Item List -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

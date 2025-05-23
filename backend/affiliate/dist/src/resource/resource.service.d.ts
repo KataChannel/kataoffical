@@ -14,12 +14,12 @@ export declare class ResourceService {
     generateCodeId(): Promise<string>;
     create(data: any): Promise<{
         id: string;
+        codeId: string | null;
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
         title: string | null;
         order: number | null;
-        codeId: string | null;
         url: string | null;
         fileType: string | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
@@ -28,12 +28,12 @@ export declare class ResourceService {
     }>;
     findBy(param: any): Promise<{
         id: string;
+        codeId: string | null;
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
         title: string | null;
         order: number | null;
-        codeId: string | null;
         url: string | null;
         fileType: string | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
@@ -42,12 +42,12 @@ export declare class ResourceService {
     } | {
         data: {
             id: string;
+            codeId: string | null;
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
             title: string | null;
             order: number | null;
-            codeId: string | null;
             url: string | null;
             fileType: string | null;
             metaData: import(".prisma/client/runtime/library").JsonValue | null;
@@ -61,12 +61,12 @@ export declare class ResourceService {
     findAll(page?: number, limit?: number): Promise<{
         data: {
             id: string;
+            codeId: string | null;
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
             title: string | null;
             order: number | null;
-            codeId: string | null;
             url: string | null;
             fileType: string | null;
             metaData: import(".prisma/client/runtime/library").JsonValue | null;
@@ -79,12 +79,12 @@ export declare class ResourceService {
     }>;
     findOne(id: string): Promise<{
         id: string;
+        codeId: string | null;
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
         title: string | null;
         order: number | null;
-        codeId: string | null;
         url: string | null;
         fileType: string | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;

@@ -52,11 +52,12 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
   export class ListQuanlyctvComponent {
     displayedColumns: string[] = [];
     ColumnName: any = {
+      codeId: 'Mã ID',
       name: 'Họ Tên',
-      avatar: 'Avatar',
-      gender: 'Giới Tính',
       email: 'Email',
       phone: 'Số Điện Thoại',
+      avatar: 'Avatar',
+      gender: 'Giới Tính',
       createdAt: 'Ngày Tạo',
       inviteCode: 'Mã Giới Thiệu',
       affiliateCode: 'Giới Thiệu Bởi',
@@ -89,8 +90,6 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
     constructor() {
       effect(() => {
         this.dataSource.data = this.Listquanlyctv();
-        console.log(this.Listquanlyctv());
-        
         this.totalItems = this.Listquanlyctv().length;
         this.calculateTotalPages();
       });
@@ -106,7 +105,6 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
       this._QuanlyctvService.listenQuanlyctvUpdates();
       await this._QuanlyctvService.getAllQuanlyctv();
       this.displayedColumns = Object.keys(this.ColumnName)
-      console.log(this.displayedColumns);
       this.updateDisplayData();
       this.dataSource = new MatTableDataSource(this.Listquanlyctv());
       this.dataSource.paginator = this.paginator;
@@ -309,15 +307,8 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
       };
      const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
      this.ImportIteam = ConvertDriveData(result.values);
-    //  console.log(result.values[0]);
-    //  console.log(result.values[1]);
      this.ImportColumnName = Object.fromEntries(result.values[0].map((key:any, i:any) => [key, result.values[1][i]]));
      this.ImportdisplayedColumns = result.values[0]
-    //  console.log(this.ImportColumnName);
-    //  console.log(this.ImportdisplayedColumns);
-    //  console.log(this.ImportIteam);
-     
-    //  this.DoImportData(data);
     }
   
     async DoImportData(data: any) {

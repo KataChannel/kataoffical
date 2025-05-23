@@ -19,6 +19,24 @@ let AuthService = class AuthService {
         this.prisma = prisma;
         this.jwtService = jwtService;
     }
+    async generateCodeId() {
+        try {
+            const latest = await this.prisma.user.findFirst({
+                orderBy: { codeId: 'desc' },
+            });
+            let nextNumber = 1;
+            if (latest && latest.codeId) {
+                const match = latest.codeId.match(/CTV(\d+)/);
+                if (match) {
+                    nextNumber = parseInt(match[1]) + 1;
+                }
+            }
+            return `CTV${nextNumber.toString().padStart(5, '0')}`;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
     async register(data, affiliateCode) {
         try {
             const { email, phone, password, facebookId, googleId, zaloId } = data;
@@ -47,8 +65,10 @@ let AuthService = class AuthService {
             }
             const hashedPassword = await bcrypt.hash(password, 10);
             const inviteCode = phone || Math.random().toString(36).slice(-8);
+            const codeId = await this.generateCodeId();
             const user = await this.prisma.user.create({
                 data: {
+                    codeId,
                     email: email || null,
                     phone: phone || null,
                     password: hashedPassword,
@@ -73,7 +93,13 @@ let AuthService = class AuthService {
         const user = await this.prisma.user.findFirst({
             where: { OR: [{ email }, { phone }, { SDT: phone }] },
             include: {
-                roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } },
+                roles: {
+                    include: {
+                        role: {
+                            include: { permissions: { include: { permission: true } } },
+                        },
+                    },
+                },
             },
         });
         if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -87,7 +113,11 @@ let AuthService = class AuthService {
             }),
             permissions: Array.from(new Set(user.roles.flatMap((role) => role.role.permissions.map((p) => p.permission)))),
         };
-        const payload = { id: user.id, role: user.role, permissions: user.permissions };
+        const payload = {
+            id: user.id,
+            role: user.role,
+            permissions: user.permissions,
+        };
         const result = {
             access_token: this.jwtService.sign(payload),
             user: resultUser,
@@ -95,8 +125,12 @@ let AuthService = class AuthService {
         return result;
     }
     async changePassword(userId, oldPassword, newPassword) {
-        const user = await this.prisma.user.findUnique({ where: { id: userId } });
-        if (!user || !user.password || !(await bcrypt.compare(oldPassword, user.password))) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+        if (!user ||
+            !user.password ||
+            !(await bcrypt.compare(oldPassword, user.password))) {
             throw new common_1.UnauthorizedException('Mật Khẩu Cũ Không Đúng');
         }
         const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -120,16 +154,26 @@ let AuthService = class AuthService {
             const newPassword = Math.random().toString(36).slice(-8);
             const hashedPassword = await bcrypt.hash(newPassword, 10);
             user = await this.prisma.user.create({
-                data: { provider, providerId, email: email || '', password: hashedPassword },
+                data: {
+                    provider,
+                    providerId,
+                    email: email || '',
+                    password: hashedPassword,
+                },
             });
         }
-        const token = this.jwtService.sign({ id: user.id, provider: user.provider });
+        const token = this.jwtService.sign({
+            id: user.id,
+            provider: user.provider,
+        });
         return { token, user };
     }
     async getUserRoles(userId) {
         return this.prisma.userRole.findMany({
             where: { userId },
-            include: { role: { include: { permissions: { include: { permission: true } } } } },
+            include: {
+                role: { include: { permissions: { include: { permission: true } } } },
+            },
         });
     }
     async hasPermission(userId, permissionName) {
@@ -146,6 +190,7 @@ let AuthService = class AuthService {
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService, jwt_1.JwtService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        jwt_1.JwtService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

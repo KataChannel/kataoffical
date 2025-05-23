@@ -9,6 +9,7 @@ export declare class UserService {
     getLastUpdated(): Promise<{
         updatedAt: number | Date;
     }>;
+    generateCodeId(): Promise<string>;
     createUser(dto: any): Promise<{
         email: string | null;
         phone: string | null;
@@ -17,6 +18,7 @@ export declare class UserService {
         googleId: string | null;
         zaloId: string | null;
         id: string;
+        codeId: string | null;
         name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
@@ -53,6 +55,7 @@ export declare class UserService {
         googleId: string | null;
         zaloId: string | null;
         id: string;
+        codeId: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         SDT: string | null;
@@ -87,6 +90,7 @@ export declare class UserService {
         googleId: string | null;
         zaloId: string | null;
         id: string;
+        codeId: string | null;
         name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
@@ -122,6 +126,7 @@ export declare class UserService {
         googleId: string | null;
         zaloId: string | null;
         id: string;
+        codeId: string | null;
         name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
@@ -151,6 +156,7 @@ export declare class UserService {
             googleId: string | null;
             zaloId: string | null;
             id: string;
+            codeId: string | null;
             name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
@@ -170,6 +176,7 @@ export declare class UserService {
         googleId: string | null;
         zaloId: string | null;
         id: string;
+        codeId: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         provider: string | null;
@@ -205,6 +212,7 @@ export declare class UserService {
             googleId: string | null;
             zaloId: string | null;
             id: string;
+            codeId: string | null;
             name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
@@ -228,6 +236,7 @@ export declare class UserService {
             googleId: string | null;
             zaloId: string | null;
             id: string;
+            codeId: string | null;
             name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
@@ -249,6 +258,7 @@ export declare class UserService {
         googleId: string | null;
         zaloId: string | null;
         id: string;
+        codeId: string | null;
         name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
@@ -271,6 +281,7 @@ export declare class UserService {
         googleId: string | null;
         zaloId: string | null;
         id: string;
+        codeId: string | null;
         name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
@@ -294,6 +305,7 @@ export declare class UserService {
         googleId: string | null;
         zaloId: string | null;
         id: string;
+        codeId: string | null;
         name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;

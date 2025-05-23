@@ -25,11 +25,30 @@ export class UserService {
       throw error;
     }
   }
-
+  async generateCodeId(): Promise<string> {
+    try {
+      const latest = await this.prisma.user.findFirst({
+        orderBy: { codeId: 'desc' },
+      });
+      let nextNumber = 1;
+      if (latest && latest.codeId) {
+        const match = latest.codeId.match(/CTV(\d+)/);
+        if (match) {
+          nextNumber = parseInt(match[1]) + 1;
+        }
+      }
+      return `CTV${nextNumber.toString().padStart(5, '0')}`;
+    } catch (error) {
+      this._ErrorlogService.logError('generateCodeId', error);
+      throw error;
+    }
+  }
   async createUser(dto: any) {
+    const codeId = await this.generateCodeId();
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     return this.prisma.user.create({
       data: {
+        codeId,
         email: dto.email,
         password: hashedPassword, // Hash password in real app
       },

@@ -1,5 +1,4 @@
-<div class="bg-gray-50 h-full">
-    <div *ngIf="!isRegister" class="container mx-auto px-4 py-8 max-w-2xl">
+    <div *ngIf="!isRegister" class="container mx-auto p-4 py-8 max-w-2xl">
         <mat-card class="rounded-lg shadow-md overflow-hidden">
             <mat-card-header class="bg-blue-600 py-4 px-6">
                 <mat-card-title>
@@ -41,7 +40,7 @@
             </mat-card-content>
         </mat-card>
     </div>
-    <div *ngIf="isRegister" class="container mx-auto px-4 py-8 max-w-2xl flex flex-col items-center">
+    <div *ngIf="isRegister" class="container mx-auto p-4 py-8 max-w-2xl flex flex-col items-center">
         <mat-card class="rounded-lg shadow-md overflow-hidden w-full text-center">
             <mat-card-content>
                 <h2 class="text-2xl font-bold text-green-600 mb-4">Cảm ơn bạn đã đăng ký làm Cộng tác viên!</h2>
@@ -50,4 +49,3 @@
             </mat-card-content>
         </mat-card>
     </div>
-</div>
