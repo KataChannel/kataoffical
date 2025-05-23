@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
+import { ImportdataService } from 'src/importdata/importdata.service';
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258'; // Kho mặc định, cần thay đổi theo yêu cầu thực tế
 @Injectable()
 export class DathangService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly  _ImportdataService: ImportdataService
+  ) {}
 
   async generateNextOrderCode(): Promise<string> {
     // Lấy mã đơn hàng gần nhất
@@ -132,6 +136,10 @@ export class DathangService {
     };
   }
 
+
+
+  
+
   async import(data: any) {    
     const acc: Record<string, any> = {};
     for (const curr of data) {
@@ -168,6 +176,17 @@ export class DathangService {
         success += 1;
       } catch (error) {
         fail += 1;
+        await this._ImportdataService.create({
+          caseDetail: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+            additionalInfo: 'Error during import process',
+          },
+          order: 1,
+          createdBy: 'system',
+          title: `Import Đặt hàng ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+          type: 'dathang',
+        });
       }
     }
     return {

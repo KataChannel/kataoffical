@@ -11,10 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NhacungcapService = void 0;
 const common_1 = require("@nestjs/common");
+const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const importdata_service_1 = require("../importdata/importdata.service");
 let NhacungcapService = class NhacungcapService {
-    constructor(prisma) {
+    constructor(prisma, _ImportdataService) {
         this.prisma = prisma;
+        this._ImportdataService = _ImportdataService;
     }
     async generateMancc() {
         try {
@@ -62,7 +65,17 @@ let NhacungcapService = class NhacungcapService {
         catch (error) {
             if (error instanceof common_1.BadRequestException)
                 throw error;
-            console.log('error', error);
+            await this._ImportdataService.create({
+                caseDetail: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                    additionalInfo: 'Error during import process',
+                },
+                order: 1,
+                createdBy: 'system',
+                title: `Import Nhà Cung Cấp Lỗi Tạo Nhà Cung Cấp ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                type: 'nhacungcap',
+            });
             throw new common_1.InternalServerErrorException('Lỗi khi tạo nhà cung cấp');
         }
     }
@@ -88,7 +101,17 @@ let NhacungcapService = class NhacungcapService {
             return { message: 'Import completed' };
         }
         catch (error) {
-            console.log('error', error);
+            await this._ImportdataService.create({
+                caseDetail: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                    additionalInfo: 'Error during import process',
+                },
+                order: 1,
+                createdBy: 'system',
+                title: `Import Nhà Cung Cấp ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                type: 'nhacungcap',
+            });
             throw new common_1.InternalServerErrorException('Lỗi khi nhập khẩu nhà cung cấp');
         }
     }
@@ -175,6 +198,7 @@ let NhacungcapService = class NhacungcapService {
 exports.NhacungcapService = NhacungcapService;
 exports.NhacungcapService = NhacungcapService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        importdata_service_1.ImportdataService])
 ], NhacungcapService);
 //# sourceMappingURL=nhacungcap.service.js.map

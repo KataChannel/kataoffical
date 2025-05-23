@@ -1,13 +1,15 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
-import { title } from 'process';
+import { ImportdataService } from 'src/importdata/importdata.service';
 import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
 export class BanggiaService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly _SocketGateway: SocketGateway
+    private readonly _SocketGateway: SocketGateway,
+    private readonly _ImportdataService: ImportdataService,
   ) {}
 
   async importSPBG(listBanggia: any[]) {
@@ -23,9 +25,6 @@ export class BanggiaService {
          console.log(`Updated sanpham ${sp.masp} giaban successfully`, result);
        }));
       }
-
-
-
       const productIds = Array.from(
         listBanggia.flatMap(bg => bg?.sanpham?.map((sp: any) => sp.masp) || [])
       );
@@ -37,6 +36,17 @@ export class BanggiaService {
       for (const bg of listBanggia) {
         for (const sp of bg.sanpham) {
           if (!productMap.has(sp.masp)) {
+            await this._ImportdataService.create({
+              caseDetail: {
+                errorMessage: `Sanpham with ID "${sp.masp}" not found`,
+                errorStack: '',
+                additionalInfo: 'Error during import process',
+              },
+              order: 1,
+              createdBy: 'system',
+              title: `Import Sản Phẩm Bảng giá ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+              type: 'banggia',
+            });
             throw new NotFoundException(`Sanpham with ID "${sp.masp}" not found`);
           }
           sp.id = productMap.get(sp.masp)!.id;
@@ -70,7 +80,17 @@ export class BanggiaService {
       return {};
     } catch (error) {
       console.log('Error importing san pham bang gia:', error);
-      
+      await this._ImportdataService.create({
+        caseDetail: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+          additionalInfo: 'Error during import process',
+        },
+        order: 1, // cập nhật nếu cần theo thứ tự của bạn
+        createdBy: 'system', // thay bằng ID người dùng thực nếu có
+        title: `Import Sản Phẩm Bảng giá ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+        type: 'banggia',
+      });
       throw new InternalServerErrorException(
         error.message || 'Error importing san pham bang gia'
       );
@@ -95,6 +115,18 @@ export class BanggiaService {
       
       return results;
     } catch (error) {
+      await this._ImportdataService.create({
+          caseDetail: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+            additionalInfo: 'Error during import process',
+          },
+          order: 1, // cập nhật nếu cần theo thứ tự của bạn
+          createdBy: 'system', // thay bằng ID người dùng thực nếu có
+          title: `Import Bảng giá ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+          type: 'banggia',
+        });
+        
       throw new InternalServerErrorException(
       error.message || 'Error importing bang gia'
       );
@@ -166,6 +198,17 @@ export class BanggiaService {
       }
       return results;
     } catch (error) {
+      await this._ImportdataService.create({
+        caseDetail: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+          additionalInfo: 'Error during import process',
+        },
+        order: 1, // cập nhật nếu cần theo thứ tự của bạn
+        createdBy: 'system', // thay bằng ID người dùng thực nếu có
+        title: `Import Bảng giá khách hàng ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+        type: 'banggia',
+      });
       throw new InternalServerErrorException(
         error.message || 'Error importing bang gia'
       );

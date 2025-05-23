@@ -1,7 +1,9 @@
 import { PrismaService } from 'prisma/prisma.service';
+import { ImportdataService } from 'src/importdata/importdata.service';
 export declare class PhieukhoService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private _ImportdataService;
+    constructor(prisma: PrismaService, _ImportdataService: ImportdataService);
     generateNextOrderCode(type: any): Promise<string>;
     private incrementOrderCode;
     private incrementLetters;

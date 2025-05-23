@@ -13,12 +13,13 @@ const banggia_controller_1 = require("./banggia.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const errorlogs_module_1 = require("../errorlogs/errorlogs.module");
 const socket_gateway_1 = require("../socket.gateway");
+const importdata_module_1 = require("../importdata/importdata.module");
 let BanggiaModule = class BanggiaModule {
 };
 exports.BanggiaModule = BanggiaModule;
 exports.BanggiaModule = BanggiaModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlogs_module_1.ErrorlogsModule],
+        imports: [prisma_module_1.PrismaModule, errorlogs_module_1.ErrorlogsModule, importdata_module_1.ImportdataModule],
         controllers: [banggia_controller_1.BanggiaController],
         providers: [banggia_service_1.BanggiaService, socket_gateway_1.SocketGateway],
         exports: [banggia_service_1.BanggiaService]

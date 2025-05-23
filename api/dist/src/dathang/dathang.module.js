@@ -11,12 +11,13 @@ const common_1 = require("@nestjs/common");
 const dathang_service_1 = require("./dathang.service");
 const dathang_controller_1 = require("./dathang.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
+const importdata_module_1 = require("../importdata/importdata.module");
 let DathangModule = class DathangModule {
 };
 exports.DathangModule = DathangModule;
 exports.DathangModule = DathangModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, importdata_module_1.ImportdataModule],
         controllers: [dathang_controller_1.DathangController],
         providers: [dathang_service_1.DathangService],
         exports: [dathang_service_1.DathangService]

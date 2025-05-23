@@ -13,10 +13,12 @@ exports.DathangService = void 0;
 const common_1 = require("@nestjs/common");
 const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const importdata_service_1 = require("../importdata/importdata.service");
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 let DathangService = class DathangService {
-    constructor(prisma) {
+    constructor(prisma, _ImportdataService) {
         this.prisma = prisma;
+        this._ImportdataService = _ImportdataService;
     }
     async generateNextOrderCode() {
         const lastOrder = await this.prisma.dathang.findFirst({
@@ -169,6 +171,17 @@ let DathangService = class DathangService {
             }
             catch (error) {
                 fail += 1;
+                await this._ImportdataService.create({
+                    caseDetail: {
+                        errorMessage: error.message,
+                        errorStack: error.stack,
+                        additionalInfo: 'Error during import process',
+                    },
+                    order: 1,
+                    createdBy: 'system',
+                    title: `Import Đặt hàng ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+                    type: 'dathang',
+                });
             }
         }
         return {
@@ -618,6 +631,7 @@ let DathangService = class DathangService {
 exports.DathangService = DathangService;
 exports.DathangService = DathangService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        importdata_service_1.ImportdataService])
 ], DathangService);
 //# sourceMappingURL=dathang.service.js.map

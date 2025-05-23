@@ -1,9 +1,14 @@
 import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
+import { ImportdataService } from 'src/importdata/importdata.service';
 
 @Injectable()
 export class NhacungcapService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private _ImportdataService: ImportdataService,
+  ) {}
 
   async generateMancc(): Promise<string> {
     try {
@@ -53,8 +58,18 @@ export class NhacungcapService {
       return result;
     } catch (error) {
       if (error instanceof BadRequestException) throw error;
-      console.log('error',error);
-      
+          await this._ImportdataService.create({
+              caseDetail: {
+                errorMessage: error.message,
+                errorStack: error.stack,
+                additionalInfo: 'Error during import process',
+              },
+              order: 1, // cập nhật nếu cần theo thứ tự của bạn
+              createdBy: 'system', // thay bằng ID người dùng thực nếu có
+              title: `Import Nhà Cung Cấp Lỗi Tạo Nhà Cung Cấp ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+              type: 'nhacungcap',
+            });
+  
       throw new InternalServerErrorException('Lỗi khi tạo nhà cung cấp');
     }
   }
@@ -83,8 +98,18 @@ export class NhacungcapService {
       }
       return { message: 'Import completed' };
     } catch (error) {
-      console.log('error',error);
-      
+      await this._ImportdataService.create({
+          caseDetail: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+            additionalInfo: 'Error during import process',
+          },
+          order: 1, // cập nhật nếu cần theo thứ tự của bạn
+          createdBy: 'system', // thay bằng ID người dùng thực nếu có
+          title: `Import Nhà Cung Cấp ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+          type: 'nhacungcap',
+        });
+        
       throw new InternalServerErrorException('Lỗi khi nhập khẩu nhà cung cấp');
     }
   }

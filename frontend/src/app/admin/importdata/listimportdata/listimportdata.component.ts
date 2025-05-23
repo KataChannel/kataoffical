@@ -320,9 +320,9 @@ async ExportExcel(title:any) {
             mabanggia: record.banggia?.[0]?.mabanggia,
             masp: sp.masp,
             tensp: sp.title,
-            sldat: sp.sldat,
-            slgiao: sp.slgiao,
-            slnhan: sp.slnhan,
+            sldat: Number(sp.sldat) || 0,
+            slgiao: Number(sp.slgiao) || 0,
+            slnhan: Number(sp.slnhan) || 0,
             ghichu: sp.ghichu
           }));
         })

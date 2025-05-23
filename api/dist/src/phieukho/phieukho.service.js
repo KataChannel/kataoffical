@@ -11,11 +11,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PhieukhoService = void 0;
 const common_1 = require("@nestjs/common");
+const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const importdata_service_1 = require("../importdata/importdata.service");
 const xuatnhapton_utils_1 = require("../shared/utils/xuatnhapton.utils");
 let PhieukhoService = class PhieukhoService {
-    constructor(prisma) {
+    constructor(prisma, _ImportdataService) {
         this.prisma = prisma;
+        this._ImportdataService = _ImportdataService;
     }
     async generateNextOrderCode(type) {
         const lastOrder = await this.prisma.phieuKho.findFirst({
@@ -113,7 +116,6 @@ let PhieukhoService = class PhieukhoService {
         return phieuKho;
     }
     async create(data) {
-        console.log('Creating new PhieuKho with data:', data);
         return this.prisma.$transaction(async (prisma) => {
             let attempts = 0;
             let newPhieuKho;
@@ -142,6 +144,17 @@ let PhieukhoService = class PhieukhoService {
                     break;
                 }
                 catch (error) {
+                    await this._ImportdataService.create({
+                        caseDetail: {
+                            errorMessage: error.message,
+                            errorStack: error.stack,
+                            additionalInfo: 'Error during import process',
+                        },
+                        order: 1,
+                        createdBy: 'system',
+                        title: `Import Khách Hàng ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+                        type: 'sanpham',
+                    });
                     if (error.code === 'P2002' &&
                         error.meta &&
                         error.meta.target &&
@@ -264,6 +277,7 @@ let PhieukhoService = class PhieukhoService {
 exports.PhieukhoService = PhieukhoService;
 exports.PhieukhoService = PhieukhoService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        importdata_service_1.ImportdataService])
 ], PhieukhoService);
 //# sourceMappingURL=phieukho.service.js.map

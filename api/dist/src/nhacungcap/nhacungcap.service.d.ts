@@ -1,7 +1,9 @@
 import { PrismaService } from 'prisma/prisma.service';
+import { ImportdataService } from 'src/importdata/importdata.service';
 export declare class NhacungcapService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private _ImportdataService;
+    constructor(prisma: PrismaService, _ImportdataService: ImportdataService);
     generateMancc(): Promise<string>;
     create(data: any): Promise<{
         id: string;

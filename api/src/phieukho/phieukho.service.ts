@@ -1,10 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
+import { ImportdataService } from 'src/importdata/importdata.service';
 import { convertXuatnhapton } from 'src/shared/utils/xuatnhapton.utils';
 
 @Injectable()
 export class PhieukhoService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private _ImportdataService: ImportdataService,
+  ) {}
 
   async generateNextOrderCode(type: any): Promise<string> {
     // Lấy mã đơn hàng gần nhất theo type nhap hoặc xuat
@@ -117,9 +122,12 @@ export class PhieukhoService {
     return phieuKho;
   }
 
+
+
+  
+
+
   async create(data: any) {
-    console.log('Creating new PhieuKho with data:', data);
-    
     return this.prisma.$transaction(async (prisma) => {
       let attempts = 0;
       let newPhieuKho: any;
@@ -147,6 +155,17 @@ export class PhieukhoService {
           });
           break;
         } catch (error: any) {
+          await this._ImportdataService.create({
+            caseDetail: {
+              errorMessage: error.message,
+              errorStack: error.stack,
+              additionalInfo: 'Error during import process',
+            },
+            order: 1, // Cập nhật nếu cần theo thứ tự của bạn
+            createdBy: 'system', // Thay bằng ID người dùng thực nếu có
+            title: `Import Khách Hàng ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+            type: 'sanpham',
+          });
           if (
             error.code === 'P2002' &&
             error.meta &&

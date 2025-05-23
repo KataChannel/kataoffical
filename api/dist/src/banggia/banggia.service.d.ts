@@ -1,9 +1,11 @@
 import { PrismaService } from 'prisma/prisma.service';
+import { ImportdataService } from 'src/importdata/importdata.service';
 import { SocketGateway } from 'src/socket.gateway';
 export declare class BanggiaService {
     private readonly prisma;
     private readonly _SocketGateway;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
+    private readonly _ImportdataService;
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ImportdataService: ImportdataService);
     importSPBG(listBanggia: any[]): Promise<{}>;
     importBanggia(data: any): Promise<any[]>;
     importBGKH(data: any[]): Promise<any[]>;

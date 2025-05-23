@@ -11,12 +11,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BanggiaService = void 0;
 const common_1 = require("@nestjs/common");
+const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const importdata_service_1 = require("../importdata/importdata.service");
 const socket_gateway_1 = require("../socket.gateway");
 let BanggiaService = class BanggiaService {
-    constructor(prisma, _SocketGateway) {
+    constructor(prisma, _SocketGateway, _ImportdataService) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
+        this._ImportdataService = _ImportdataService;
     }
     async importSPBG(listBanggia) {
         try {
@@ -38,6 +41,17 @@ let BanggiaService = class BanggiaService {
             for (const bg of listBanggia) {
                 for (const sp of bg.sanpham) {
                     if (!productMap.has(sp.masp)) {
+                        await this._ImportdataService.create({
+                            caseDetail: {
+                                errorMessage: `Sanpham with ID "${sp.masp}" not found`,
+                                errorStack: '',
+                                additionalInfo: 'Error during import process',
+                            },
+                            order: 1,
+                            createdBy: 'system',
+                            title: `Import Sản Phẩm Bảng giá ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                            type: 'banggia',
+                        });
                         throw new common_1.NotFoundException(`Sanpham with ID "${sp.masp}" not found`);
                     }
                     sp.id = productMap.get(sp.masp).id;
@@ -68,6 +82,17 @@ let BanggiaService = class BanggiaService {
         }
         catch (error) {
             console.log('Error importing san pham bang gia:', error);
+            await this._ImportdataService.create({
+                caseDetail: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                    additionalInfo: 'Error during import process',
+                },
+                order: 1,
+                createdBy: 'system',
+                title: `Import Sản Phẩm Bảng giá ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                type: 'banggia',
+            });
             throw new common_1.InternalServerErrorException(error.message || 'Error importing san pham bang gia');
         }
     }
@@ -88,6 +113,17 @@ let BanggiaService = class BanggiaService {
             return results;
         }
         catch (error) {
+            await this._ImportdataService.create({
+                caseDetail: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                    additionalInfo: 'Error during import process',
+                },
+                order: 1,
+                createdBy: 'system',
+                title: `Import Bảng giá ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                type: 'banggia',
+            });
             throw new common_1.InternalServerErrorException(error.message || 'Error importing bang gia');
         }
     }
@@ -153,6 +189,17 @@ let BanggiaService = class BanggiaService {
             return results;
         }
         catch (error) {
+            await this._ImportdataService.create({
+                caseDetail: {
+                    errorMessage: error.message,
+                    errorStack: error.stack,
+                    additionalInfo: 'Error during import process',
+                },
+                order: 1,
+                createdBy: 'system',
+                title: `Import Bảng giá khách hàng ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                type: 'banggia',
+            });
             throw new common_1.InternalServerErrorException(error.message || 'Error importing bang gia');
         }
     }
@@ -383,6 +430,7 @@ exports.BanggiaService = BanggiaService;
 exports.BanggiaService = BanggiaService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway])
+        socket_gateway_1.SocketGateway,
+        importdata_service_1.ImportdataService])
 ], BanggiaService);
 //# sourceMappingURL=banggia.service.js.map
