@@ -141,6 +141,7 @@ export class DathangService {
       const data = await response.json();           
       this.ListDathang.set(data.data)
       return data
+      return data
     } catch (error) {
       return console.error(error);
     }
@@ -174,6 +175,7 @@ export class DathangService {
       }
       const data = await response.json();           
       this.ListDathang.set(data)
+      return data
     } catch (error) {
       return console.error(error);
     }

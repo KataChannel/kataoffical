@@ -1,0 +1,322 @@
+[
+  {
+    "id": "6c7d1c9e-0cc0-4c13-ac91-8e71ef68591c",
+    "codeId": "PEM00022",
+    "name": "banhang.view",
+    "group": "banhang",
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-04-02T07:05:31.162Z",
+    "updatedAt": "2025-05-14T15:00:12.934Z"
+  },
+  {
+    "id": "c89288b2-bcf0-46ca-9fbf-300d6921731b",
+    "codeId": "PEM00020",
+    "name": "nhucaudathang.view",
+    "group": "nhucaudathang",
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-21T06:32:59.745Z",
+    "updatedAt": "2025-05-14T15:00:23.806Z"
+  },
+  {
+    "id": "fc09df94-493e-4002-a978-6fb08d831f5d",
+    "codeId": "PEM00019",
+    "name": "role.view",
+    "group": "role",
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-11T06:48:00.736Z",
+    "updatedAt": "2025-05-14T15:00:35.646Z"
+  },
+  {
+    "id": "c0d9eecb-8cfc-4ee3-ae10-261310736012",
+    "codeId": "PEM00030",
+    "name": "donhang.soluonggiao",
+    "group": "donhang",
+    "description": null,
+    "order": 3,
+    "createdAt": "2025-05-14T17:49:07.638Z",
+    "updatedAt": "2025-05-14T17:49:07.638Z"
+  },
+  {
+    "id": "1f58b1b9-44c7-42f5-a8c8-5829b6c77610",
+    "codeId": "PEM00031",
+    "name": "donhang.soluongnhan",
+    "group": "donhang",
+    "description": null,
+    "order": 4,
+    "createdAt": "2025-05-14T17:49:22.396Z",
+    "updatedAt": "2025-05-14T17:49:22.396Z"
+  },
+  {
+    "id": "e02b505e-20fc-4f69-aa02-2fa009bcf04a",
+    "codeId": "PEM00029",
+    "name": "donhang.sldat",
+    "group": "donhang",
+    "description": null,
+    "order": 2,
+    "createdAt": "2025-05-14T17:48:02.392Z",
+    "updatedAt": "2025-05-14T18:18:24.391Z"
+  },
+  {
+    "id": "5c7aac74-796d-4c18-a1a3-061b3c011ded",
+    "codeId": "PEM00001",
+    "name": "donhang.edit",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T01:07:00.598Z",
+    "updatedAt": "2025-05-14T13:19:06.737Z"
+  },
+  {
+    "id": "cb5f970d-dd64-4652-bf4e-26c391bb2ea1",
+    "codeId": "PEM00002",
+    "name": "donhang.delete",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T01:07:24.834Z",
+    "updatedAt": "2025-05-14T13:19:06.763Z"
+  },
+  {
+    "id": "55a32069-092c-45de-83ca-5e9a3c62c6cf",
+    "codeId": "PEM00003",
+    "name": "user.view",
+    "group": null,
+    "description": "Xem Module Users",
+    "order": 1,
+    "createdAt": "2025-03-07T02:20:20.487Z",
+    "updatedAt": "2025-05-14T13:19:06.768Z"
+  },
+  {
+    "id": "b32d40d3-c7b6-407d-a346-3303b153322a",
+    "codeId": "PEM00004",
+    "name": "menu.view",
+    "group": null,
+    "description": "Xem Menu",
+    "order": 1,
+    "createdAt": "2025-03-07T04:03:41.982Z",
+    "updatedAt": "2025-05-14T13:19:06.772Z"
+  },
+  {
+    "id": "9d41b26c-2cc9-473e-a197-9c400ffe0ce1",
+    "codeId": "PEM00005",
+    "name": "permission.view",
+    "group": null,
+    "description": "Xem Permission",
+    "order": 1,
+    "createdAt": "2025-03-07T04:03:41.982Z",
+    "updatedAt": "2025-05-14T13:19:06.777Z"
+  },
+  {
+    "id": "6712fb26-0aa5-425f-9182-9a82c9c918ab",
+    "codeId": "PEM00006",
+    "name": "nhomuser.view",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T04:12:54.868Z",
+    "updatedAt": "2025-05-14T13:19:06.782Z"
+  },
+  {
+    "id": "549ec602-49b9-488f-999c-2684f23939be",
+    "codeId": "PEM00007",
+    "name": "banggia.view",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T06:26:45.691Z",
+    "updatedAt": "2025-05-14T13:19:06.787Z"
+  },
+  {
+    "id": "20a631c0-837c-4121-8c84-dd6402e83f6c",
+    "codeId": "PEM00008",
+    "name": "khachhang.view",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T06:29:23.536Z",
+    "updatedAt": "2025-05-14T13:19:06.791Z"
+  },
+  {
+    "id": "7b4fb065-2f2a-4ddb-8923-ebb4b90a90a8",
+    "codeId": "PEM00009",
+    "name": "sanpham.view",
+    "group": "sanpham",
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T06:24:24.837Z",
+    "updatedAt": "2025-05-14T13:19:06.796Z"
+  },
+  {
+    "id": "4ee1dfd7-f83e-4c2c-8e94-8c578240afe3",
+    "codeId": "PEM00010",
+    "name": "dathang.view",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T08:17:45.092Z",
+    "updatedAt": "2025-05-14T13:19:06.800Z"
+  },
+  {
+    "id": "ba7537a1-1169-416b-904c-143663db9fbe",
+    "codeId": "PEM00011",
+    "name": "vandon.view",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T08:18:13.098Z",
+    "updatedAt": "2025-05-14T13:19:06.806Z"
+  },
+  {
+    "id": "f8b0b02a-d6a2-4986-9105-07853a48929b",
+    "codeId": "PEM00012",
+    "name": "phieukho.view",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T08:18:24.131Z",
+    "updatedAt": "2025-05-14T13:19:06.811Z"
+  },
+  {
+    "id": "aedcf410-70e8-47ad-b8e5-78b7aa745c87",
+    "codeId": "PEM00013",
+    "name": "kho.view",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T08:18:36.946Z",
+    "updatedAt": "2025-05-14T13:19:06.815Z"
+  },
+  {
+    "id": "8085621f-05b8-4ca9-9315-9bb74df6125f",
+    "codeId": "PEM00014",
+    "name": "phieugiaohang.view",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T08:18:57.098Z",
+    "updatedAt": "2025-05-14T13:19:06.821Z"
+  },
+  {
+    "id": "99ec5c98-c25e-43fc-a4a4-f83a3f4763f1",
+    "codeId": "PEM00015",
+    "name": "nhomkhachhang.view",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T08:19:23.146Z",
+    "updatedAt": "2025-05-14T13:19:06.826Z"
+  },
+  {
+    "id": "39d7782e-c621-4acd-b2d5-c3746b672e7d",
+    "codeId": "PEM00016",
+    "name": "cnkh.view",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T08:20:08.298Z",
+    "updatedAt": "2025-05-14T13:19:06.833Z"
+  },
+  {
+    "id": "0f59dc0c-9780-4eb0-a7ed-ab65d30ce610",
+    "codeId": "PEM00017",
+    "name": "dashboard.view",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T18:11:36.973Z",
+    "updatedAt": "2025-05-14T13:19:06.838Z"
+  },
+  {
+    "id": "bcf5164a-592a-49e2-b5e1-5c6afbd464f6",
+    "codeId": "PEM00018",
+    "name": "congnoncc.view",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-10T09:56:31.764Z",
+    "updatedAt": "2025-05-14T13:19:06.842Z"
+  },
+  {
+    "id": "3c9c7d8c-82ce-486a-93d2-a9f420753d26",
+    "codeId": "PEM00023",
+    "name": "userguide.view",
+    "group": null,
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-05-09T02:49:40.431Z",
+    "updatedAt": "2025-05-14T13:19:06.872Z"
+  },
+  {
+    "id": "057045f2-49f9-48ef-89f7-4a8dc62c53be",
+    "codeId": "PEM00024",
+    "name": "nhacungcap.view",
+    "group": "nhacungcap",
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T06:30:02.573Z",
+    "updatedAt": "2025-05-14T13:19:06.877Z"
+  },
+  {
+    "id": "0d28ab2b-a14c-44f1-8d1f-c16eae764c8c",
+    "codeId": "PEM00025",
+    "name": "phieuchiahang.view",
+    "group": "phieuchiahang",
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-09T15:21:15.359Z",
+    "updatedAt": "2025-05-14T13:19:06.881Z"
+  },
+  {
+    "id": "8c39977e-2556-464e-8cb6-14bc78338d55",
+    "codeId": "PEM00026",
+    "name": "donhang.view",
+    "group": "donhang",
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T01:03:13.245Z",
+    "updatedAt": "2025-05-14T13:19:06.885Z"
+  },
+  {
+    "id": "e3c22901-d960-4645-9bfb-b0790a506e40",
+    "codeId": "PEM00027",
+    "name": "congnokhachhang.view",
+    "group": "congnokhachhang",
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T08:20:35.219Z",
+    "updatedAt": "2025-05-14T13:19:06.890Z"
+  },
+  {
+    "id": "1d53086e-c6d6-4dca-941d-3e4cfd18c0fd",
+    "codeId": "PEM00028",
+    "name": "xuatnhapton.view",
+    "group": "xuatnhapton",
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-07T08:19:52.828Z",
+    "updatedAt": "2025-05-14T13:19:06.895Z"
+  },
+  {
+    "id": "fd35e729-a35e-431f-be33-335a06b1f364",
+    "codeId": "PEM00021",
+    "name": "phieuchuyen.view",
+    "group": "phieuchuyen",
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-03-25T01:07:27.377Z",
+    "updatedAt": "2025-05-14T14:59:58.848Z"
+  },
+  {
+    "id": "000c8112-c9df-4b2e-9d5a-42b0493f758f",
+    "codeId": "PEM00032",
+    "name": "importdata.view",
+    "group": "importdata",
+    "description": null,
+    "order": 5,
+    "createdAt": "2025-05-21T04:59:40.757Z",
+    "updatedAt": "2025-05-21T04:59:40.757Z"
+  }
+]

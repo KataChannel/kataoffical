@@ -92,13 +92,7 @@ export class ListDathangComponent {
   private _BanggiaService: BanggiaService = inject(BanggiaService);
   private _router: Router = inject(Router);
   Listdathang:any = this._DathangService.ListDathang;
-  dataSource = computed(() => {
-    const ds = new MatTableDataSource(this.Listdathang());
-    ds.filterPredicate = this.createFilter();
-    ds.paginator = this.paginator;
-    ds.sort = this.sort;
-    return ds;
-  });
+  dataSource = new MatTableDataSource([]);
   dathangId:any = this._DathangService.dathangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
@@ -108,6 +102,8 @@ export class ListDathangComponent {
       pageSize: 10,
       pageNumber: 1,
   };
+  pageSize: number = 10;
+  totalItems: number = 0;
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
@@ -127,21 +123,44 @@ export class ListDathangComponent {
     };
   }
   applyFilter() {
-    this.dataSource().filter = JSON.stringify(this.filterValues);
+    this.dataSource.filter = JSON.stringify(this.filterValues);
   }
+
+  async onPageChange(event: any): Promise<void> {
+    console.log('Page changed:', event);
+    this.SearchParams.pageSize = event.pageSize;
+    this.SearchParams.pageNumber = event.pageIndex + 1;
+    this.pageSize = event.pageSize;
+    const result = await this._DathangService.getAllDathang();
+    this.CountItem = this.Listdathang().length;
+    this.totalItems = result.length;
+    this.dataSource = new MatTableDataSource(result);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+
   onDateChange(event: any): void {
     this.ngOnInit();
   }
   async ngOnInit(): Promise<void> {
-    await this._DathangService.searchDathang(this.SearchParams);
-    this.CountItem = this.Listdathang().length;
-    this.initializeColumns();
-    this.setupDrawer();
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
+   await this._DathangService.getAllDathang().then((result) => {
+      if(result){
+        this.CountItem = this.Listdathang().length;
+        this.dataSource = new MatTableDataSource(result);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.totalItems = result.length; 
+        this.initializeColumns();
+        this.setupDrawer();
+        this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+        this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+        this.paginator._intl.previousPageLabel = 'Về Trước';
+        this.paginator._intl.firstPageLabel = 'Trang Đầu';
+        this.paginator._intl.lastPageLabel = 'Trang Cuối';
+      }
+    });
+
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({

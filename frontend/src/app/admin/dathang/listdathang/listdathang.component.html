@@ -77,7 +77,7 @@
             </mat-form-field>
         </div>
         <div class="w-full overflow-auto">
-            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource()" matSort>
+            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
                     <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -157,6 +157,11 @@
                 </tr>
             </table>
         </div>
-        <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
+        <mat-paginator 
+            [pageSizeOptions]="[10, 25, 100]" 
+            [pageSize]="pageSize" 
+            [length]="totalItems"           
+            (page)="onPageChange($event)">
+        </mat-paginator>
     </div>
 </mat-drawer-container>
