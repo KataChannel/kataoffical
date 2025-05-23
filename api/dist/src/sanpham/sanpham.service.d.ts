@@ -1,11 +1,13 @@
 import { PrismaService } from 'prisma/prisma.service';
 import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
+import { ImportdataService } from 'src/importdata/importdata.service';
 import { SocketGateway } from 'src/socket.gateway';
 export declare class SanphamService {
     private readonly prisma;
     private _SocketGateway;
     private _ErrorlogsService;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogsService: ErrorlogsService);
+    private _ImportdataService;
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogsService: ErrorlogsService, _ImportdataService: ImportdataService);
     getLastUpdatedSanpham(): Promise<{
         updatedAt: number | Date;
     }>;
@@ -33,6 +35,12 @@ export declare class SanphamService {
     }>;
     import(data: any[]): Promise<{
         message: string;
+        results: {
+            masp: any;
+            status: string;
+            action?: string;
+            error?: string;
+        }[];
     }>;
     reorderSanphams(sanphamIds: string[]): Promise<void>;
     findAll(): Promise<{

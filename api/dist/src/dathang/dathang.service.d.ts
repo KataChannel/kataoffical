@@ -104,6 +104,78 @@ export declare class DathangService {
         success: number;
         fail: number;
     }>;
+    search(params: any): Promise<{
+        data: ({
+            sanpham: ({
+                sanpham: {
+                    id: string;
+                    title: string;
+                    title2: string | null;
+                    slug: string | null;
+                    masp: string;
+                    subtitle: string | null;
+                    giagoc: number;
+                    giaban: number;
+                    dvt: string | null;
+                    hinhanh: string | null;
+                    loadpoint: number | null;
+                    soluong: import("@prisma/client/runtime/library").Decimal | null;
+                    soluongkho: import("@prisma/client/runtime/library").Decimal | null;
+                    haohut: number;
+                    ghichu: string | null;
+                    order: number | null;
+                    isActive: boolean;
+                    createdAt: Date;
+                    updatedAt: Date;
+                };
+            } & {
+                id: string;
+                ghichu: string | null;
+                order: number | null;
+                isActive: boolean;
+                idSP: string;
+                sldat: import("@prisma/client/runtime/library").Decimal;
+                slgiao: import("@prisma/client/runtime/library").Decimal;
+                slnhan: import("@prisma/client/runtime/library").Decimal;
+                slhuy: import("@prisma/client/runtime/library").Decimal;
+                ttdat: import("@prisma/client/runtime/library").Decimal;
+                ttgiao: import("@prisma/client/runtime/library").Decimal;
+                ttnhan: import("@prisma/client/runtime/library").Decimal;
+                dathangId: string;
+            })[];
+            nhacungcap: {
+                id: string;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string | null;
+                diachi: string | null;
+                sdt: string | null;
+                email: string | null;
+                mancc: string;
+                manccold: string | null;
+            };
+        } & {
+            id: string;
+            title: string | null;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date | null;
+            type: string | null;
+            status: import(".prisma/client").$Enums.StatusDonhang;
+            printCount: number | null;
+            madncc: string | null;
+            ngaynhan: Date | null;
+            nhacungcapId: string;
+        })[];
+        total: number;
+        pageNumber: any;
+        pageSize: any;
+        totalPages: number;
+    }>;
     create(dto: any): Promise<{
         sanpham: {
             id: string;

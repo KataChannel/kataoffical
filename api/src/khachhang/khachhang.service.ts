@@ -1,9 +1,18 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
+import { ImportdataService } from 'src/importdata/importdata.service';
 
 @Injectable()
 export class KhachhangService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private _ImportdataService: ImportdataService,
+  ) {}
 
   async timkiemkhachhang(query: string) {
     return this.prisma.$queryRaw`
@@ -11,8 +20,6 @@ export class KhachhangService {
       WHERE search_vector @@ to_tsquery('simple', ${query})
     `;
   }
-
-
 
   async generateMakh(loaikh: string): Promise<string> {
     try {
@@ -41,8 +48,14 @@ export class KhachhangService {
 
     // Xử lý kết nối banggia nếu có (thêm banggia thuộc khách hàng)
     let banggiaData = {};
-    if (data.banggia && Array.isArray(data.banggia) && data.banggia.length > 0) {
-      banggiaData = { banggia: { connect: data.banggia.map((id: string) => ({ id })) } };
+    if (
+      data.banggia &&
+      Array.isArray(data.banggia) &&
+      data.banggia.length > 0
+    ) {
+      banggiaData = {
+        banggia: { connect: data.banggia.map((id: string) => ({ id })) },
+      };
     }
 
     // Hợp nhất dữ liệu ban đầu và dữ liệu banggia
@@ -66,14 +79,12 @@ export class KhachhangService {
     });
   }
 
-
-
   async import(data: any[]) {
     for (const customer of data) {
       try {
         // Dữ liệu gửi lên là một mảng khách hàng, mỗi khách hàng có thể chứa danh sách banggia dưới dạng các đối tượng với thuộc tính mabanggia
         const { banggia, ...rest } = customer;
-        let banggiaData = {};        
+        let banggiaData = {};
         if (banggia !== undefined) {
           if (banggia.length > 0) {
             // Chuyển danh sách banggia từ mabanggia sang id thông qua lookup
@@ -81,13 +92,15 @@ export class KhachhangService {
               banggia.map(async (bg: any) => {
                 const bgRecord = await this.prisma.banggia.findFirst({
                   where: { mabanggia: bg },
-                  select: { id: true }
+                  select: { id: true },
                 });
                 if (!bgRecord) {
-                  throw new NotFoundException(`Banggia với mabanggia ${bg} không tồn tại`);
+                  throw new NotFoundException(
+                    `Banggia với mabanggia ${bg} không tồn tại`,
+                  );
                 }
                 return { id: bgRecord.id };
-              })
+              }),
             );
             banggiaData = { banggia: { connect: banggiaRecords } };
           } else {
@@ -95,12 +108,13 @@ export class KhachhangService {
             banggiaData = { banggia: { set: [] } };
           }
         }
-        
+
         const dataToUse = { ...rest, ...banggiaData };
 
+        let processedCustomer;
         // Nếu mã khách hàng không tồn tại thì tạo mới
         if (!customer.makh) {
-          await this.create(dataToUse);
+          processedCustomer = await this.create(dataToUse);
         } else {
           // Nếu khách hàng đã tồn tại, cập nhật thông qua hàm update
           const existingCustomer = await this.prisma.khachhang.findUnique({
@@ -108,27 +122,40 @@ export class KhachhangService {
             select: { id: true },
           });
           if (existingCustomer) {
-            await this.prisma.khachhang.update({
+            processedCustomer = await this.prisma.khachhang.update({
               where: { id: existingCustomer.id },
               data: dataToUse,
             });
           } else {
-            await this.create(dataToUse);
+            processedCustomer = await this.create(dataToUse);
           }
         }
       } catch (error) {
-        console.error(`Error processing customer with makh ${customer.makh}:`, error);
+        console.error(
+          `Error processing customer with makh ${customer.makh}:`,
+          error,
+        );
+        // Lưu lịch sử import lỗi với chi tiết
+        await this._ImportdataService.create({
+          caseDetail: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+            additionalInfo: 'Error during product import process',
+          },
+          order: 1, // cập nhật nếu cần theo thứ tự của bạn
+          createdBy: 'system', // thay bằng ID người dùng thực nếu có
+          title: `Import Khách Hàng ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+          type: 'khachhang',
+        });
         // Log error and continue with next customer
       }
     }
     return { message: 'Import completed' };
   }
 
-
-
   async findAll() {
     return this.prisma.khachhang.findMany({
-      include: {banggia: true}
+      include: { banggia: true },
     });
   }
   async findby(param: any) {
@@ -143,10 +170,12 @@ export class KhachhangService {
     }
   }
   async findOne(id: string) {
-    const khachhang = await this.prisma.khachhang.findUnique({ where: { id },    
-      include:{
-      banggia: true
-    } });
+    const khachhang = await this.prisma.khachhang.findUnique({
+      where: { id },
+      include: {
+        banggia: true,
+      },
+    });
     if (!khachhang) throw new NotFoundException('Khachhang not found');
     return khachhang;
   }
@@ -164,10 +193,11 @@ export class KhachhangService {
         where[key] = { contains: value, mode: 'insensitive' }; // Tìm gần đúng với string
       }
     }
-    const khachhang = await this.prisma.khachhang.findUnique({ where,
-      include:{
-        banggia: true
-      }
+    const khachhang = await this.prisma.khachhang.findUnique({
+      where,
+      include: {
+        banggia: true,
+      },
     });
     if (!khachhang) throw new NotFoundException('Khachhang not found');
     return khachhang;
@@ -179,17 +209,20 @@ export class KhachhangService {
       where: { id },
       select: { banggia: { select: { id: true } } }, // Chỉ lấy ID của bảng giá
     });
-  
+
     if (!existingCustomer) {
-      throw new Error("Khách hàng không tồn tại");
+      throw new Error('Khách hàng không tồn tại');
     }
-  
+
     // Ngắt kết nối tất cả bảng giá cũ
-    const disconnectBanggia = existingCustomer.banggia.map(({ id }) => ({ id }));
-  
+    const disconnectBanggia = existingCustomer.banggia.map(({ id }) => ({
+      id,
+    }));
+
     // Lấy danh sách bảng giá mới từ payload
-    const newBanggiaIds = data.banggia?.map(({ id }: { id: string }) => ({ id })) || [];
-  
+    const newBanggiaIds =
+      data.banggia?.map(({ id }: { id: string }) => ({ id })) || [];
+
     // Cập nhật dữ liệu khách hàng
     return this.prisma.khachhang.update({
       where: { id },
@@ -203,7 +236,6 @@ export class KhachhangService {
       include: { banggia: true },
     });
   }
-  
 
   async remove(id: string) {
     return this.prisma.khachhang.delete({ where: { id } });

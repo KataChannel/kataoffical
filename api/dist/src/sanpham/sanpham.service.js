@@ -11,14 +11,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SanphamService = void 0;
 const common_1 = require("@nestjs/common");
+const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const errorlogs_service_1 = require("../errorlogs/errorlogs.service");
+const importdata_service_1 = require("../importdata/importdata.service");
 const socket_gateway_1 = require("../socket.gateway");
 let SanphamService = class SanphamService {
-    constructor(prisma, _SocketGateway, _ErrorlogsService) {
+    constructor(prisma, _SocketGateway, _ErrorlogsService, _ImportdataService) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
         this._ErrorlogsService = _ErrorlogsService;
+        this._ImportdataService = _ImportdataService;
     }
     async getLastUpdatedSanpham() {
         const lastUpdated = await this.prisma.sanpham.aggregate({
@@ -63,27 +66,60 @@ let SanphamService = class SanphamService {
         });
     }
     async import(data) {
+        const importResults = [];
         for (const sanpham of data) {
-            if (!sanpham.masp) {
-                await this.create(sanpham);
-            }
-            else {
-                const existingSanpham = await this.prisma.sanpham.findUnique({
-                    where: { masp: sanpham.masp },
-                    select: { id: true },
-                });
-                if (existingSanpham) {
-                    await this.prisma.sanpham.update({
-                        where: { id: existingSanpham.id },
-                        data: { ...sanpham },
-                    });
+            try {
+                let action = '';
+                if (!sanpham.masp) {
+                    await this.create(sanpham);
+                    action = 'created';
                 }
                 else {
-                    await this.create(sanpham);
+                    const existingSanpham = await this.prisma.sanpham.findUnique({
+                        where: { masp: sanpham.masp },
+                        select: { id: true },
+                    });
+                    if (existingSanpham) {
+                        await this.prisma.sanpham.update({
+                            where: { id: existingSanpham.id },
+                            data: { ...sanpham },
+                        });
+                        action = 'updated';
+                    }
+                    else {
+                        await this.create(sanpham);
+                        action = 'created';
+                    }
                 }
+                importResults.push({ masp: sanpham.masp || 'generated', status: 'success', action });
+            }
+            catch (error) {
+                const importData = {
+                    caseDetail: {
+                        errorMessage: error.message,
+                        errorStack: error.stack,
+                        additionalInfo: 'Error during product import process',
+                    },
+                    order: 1,
+                    createdBy: 'system',
+                    title: `Import Sản Phẩm ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                    type: 'sanpham',
+                };
+                this._ImportdataService.create(importData);
+                importResults.push({ masp: sanpham.masp || 'unknown', status: 'failed', error: error.message });
             }
         }
-        return { message: 'Import completed' };
+        const importData = {
+            caseDetail: {
+                additionalInfo: JSON.stringify(importResults),
+            },
+            order: 0,
+            createdBy: 'system',
+            title: `Import ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+            type: 'sanpham',
+        };
+        this._ImportdataService.create(importData);
+        return { message: 'Import completed', results: importResults };
     }
     async reorderSanphams(sanphamIds) {
         for (let i = 0; i < sanphamIds.length; i++) {
@@ -245,6 +281,7 @@ exports.SanphamService = SanphamService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         socket_gateway_1.SocketGateway,
-        errorlogs_service_1.ErrorlogsService])
+        errorlogs_service_1.ErrorlogsService,
+        importdata_service_1.ImportdataService])
 ], SanphamService);
 //# sourceMappingURL=sanpham.service.js.map

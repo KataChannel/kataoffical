@@ -25,7 +25,7 @@ let BanggiaService = class BanggiaService {
                 await Promise.all(banggiagoc.sanpham.map(async (sp) => {
                     const result = await this.prisma.sanpham.update({
                         where: { masp: sp.masp },
-                        data: { giaban: sp.giaban }
+                        data: { giaban: Number(sp.giaban) }
                     });
                     console.log(`Updated sanpham ${sp.masp} giaban successfully`, result);
                 }));
@@ -67,6 +67,7 @@ let BanggiaService = class BanggiaService {
             return {};
         }
         catch (error) {
+            console.log('Error importing san pham bang gia:', error);
             throw new common_1.InternalServerErrorException(error.message || 'Error importing san pham bang gia');
         }
     }
@@ -225,7 +226,7 @@ let BanggiaService = class BanggiaService {
                 mabanggia: bg.mabanggia,
                 masp: sp.sanpham.id,
                 title: sp.sanpham.title,
-                giaban: sp.sanpham.giaban,
+                giaban: Number(sp.sanpham.giaban),
             })));
             return result;
         }
@@ -291,7 +292,7 @@ let BanggiaService = class BanggiaService {
                 ...banggia,
                 sanpham: banggia.sanpham.map(item => ({
                     ...item.sanpham,
-                    giaban: item.giaban,
+                    giaban: Number(item.giaban),
                 })),
             };
             return result;

@@ -83,12 +83,13 @@ export class ListImportdataComponent implements OnInit {
   private _DathangService: DathangService = inject(DathangService);
   private _PhieukhoService: PhieukhoService = inject(PhieukhoService);
   private _KhoService: KhoService = inject(KhoService);
+  private _ImportdataService: ImportdataService = inject(ImportdataService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   private _dialog: MatDialog = inject(MatDialog);
   private _snackBar: MatSnackBar = inject(MatSnackBar);
-  ListImportdata = signal<any[]>([
+  ListImportType = signal<any[]>([
     {id:1,title:'Sản Phẩm',value:'sanpham',status:true},
     {id:2,title:'Khách Hàng',value:'khachhang',status:true},
     {id:3,title:'Nhà Cung Cấp',value:'nhacungcap',status:true},
@@ -101,6 +102,7 @@ export class ListImportdataComponent implements OnInit {
     {id:10,title:'Xuất Nhập Tồn',value:'xuatnhapton',status:true},
   ]);
   ListEdit = signal<any[]>([]);
+  ListImportdata: any = this._ImportdataService.ListImportdata;
   TitleExport = "export";
   rawListSP: any[] = [];
   rawListKH: any[] = [];
@@ -111,6 +113,7 @@ export class ListImportdataComponent implements OnInit {
   rawListTonkho: any[] = [];
   constructor() {
     effect(async () => {
+    await this._ImportdataService.getAllImportdata(100, true);
     await this._SanphamService.getAllSanpham();
     this.rawListSP = this._SanphamService.ListSanpham();
     await this._KhachhangService.getAllKhachhang();
@@ -130,6 +133,8 @@ export class ListImportdataComponent implements OnInit {
 }
 
   async ngOnInit(): Promise<void> {
+    await this._ImportdataService.getAllImportdata(100, true);
+    console.log(this.ListImportdata());
     await this._SanphamService.getAllSanpham();
     this.rawListSP = this._SanphamService.ListSanpham();
     await this._KhachhangService.getAllKhachhang();
@@ -148,18 +153,18 @@ export class ListImportdataComponent implements OnInit {
   }
 
   applyFilter(event: Event) {
-
+    
   }
 
 
 
 toggleAll() {
-    const allSelected = this.ListEdit().length === this.ListImportdata().length;
+    const allSelected = this.ListEdit().length === this.ListImportType().length;
     if (allSelected) {
       this.ListEdit.set([]);
       this.TitleExport = "export";
     } else {
-      this.ListEdit.set(this.ListImportdata());
+      this.ListEdit.set(this.ListImportType());
       this.TitleExport = "export_all";
     }
   }
@@ -677,10 +682,38 @@ convertNCCSPToImport(data: any){
       });
     }
 
-    if(data.banggiasanpham && data.banggiasanpham.length > 0 && this.ListEdit().some((item: any) => item.value === 'banggiasanpham'))
-    {
-       const ListBGSP = this.convertBGSPToImport(data.banggiasanpham);
-       await this._BanggiaService.importSPBG(ListBGSP);
+    if (
+      data.banggiasanpham &&
+      data.banggiasanpham.length > 0 &&
+      this.ListEdit().some((item: any) => item.value === 'banggiasanpham')
+    ) {
+      const listBGSP = this.convertBGSPToImport(data.banggiasanpham);
+      console.log(listBGSP);
+      const giabanList = listBGSP.find((item) => item.mabanggia === 'giaban');
+      if (!giabanList) {
+        // Optionally handle missing 'giaban' list
+        return;
+      }
+      const fixedListBGSP = listBGSP.map((banggia) => {
+        if (banggia.mabanggia === 'giaban') {
+          return banggia;
+        }
+
+        const fixedSanpham = banggia.sanpham.map((sp:any) => {
+          if (sp.giaban === '0') {
+            const match:any = giabanList.sanpham.find(
+              (giabanSp) => giabanSp.masp === sp.masp
+            );
+            return {
+              ...sp,
+              giaban: match ? match.giaban : sp.giaban,
+            };
+          }
+          return sp;
+        });
+        return { ...banggia, sanpham: fixedSanpham };
+      });
+      await this._BanggiaService.importSPBG(fixedListBGSP);
     }
     if(data.banggiakhachhang && data.banggiakhachhang.length > 0 && this.ListEdit().some((item: any) => item.value === 'banggiakhachhang'))
     {

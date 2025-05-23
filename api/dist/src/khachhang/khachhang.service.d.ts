@@ -1,7 +1,9 @@
 import { PrismaService } from 'prisma/prisma.service';
+import { ImportdataService } from 'src/importdata/importdata.service';
 export declare class KhachhangService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private _ImportdataService;
+    constructor(prisma: PrismaService, _ImportdataService: ImportdataService);
     timkiemkhachhang(query: string): Promise<unknown>;
     generateMakh(loaikh: string): Promise<string>;
     create(data: any): Promise<{

@@ -732,7 +732,7 @@ export class DetailDonhangComponent {
     if (event.key === 'Enter') {      
       if (this.filterSanpham.length > 0) {
         this.ChosenItem(this.filterSanpham[0]);
-        this.filterSanpham = [...this._SanphamService.ListSanpham()];
+        // this.filterSanpham = [...this._SanphamService.ListSanpham()];
       }
     }
   }

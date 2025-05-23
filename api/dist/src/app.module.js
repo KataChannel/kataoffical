@@ -32,6 +32,7 @@ const errorlogs_module_1 = require("./errorlogs/errorlogs.module");
 const callback_module_1 = require("./callback/callback.module");
 const dashboard_module_1 = require("./dashboard/dashboard.module");
 const userguide_module_1 = require("./userguide/userguide.module");
+const importdata_module_1 = require("./importdata/importdata.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -60,7 +61,8 @@ exports.AppModule = AppModule = __decorate([
             errorlogs_module_1.ErrorlogsModule,
             callback_module_1.CallbackModule,
             dashboard_module_1.DashboardModule,
-            userguide_module_1.UserguideModule
+            userguide_module_1.UserguideModule,
+            importdata_module_1.ImportdataModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

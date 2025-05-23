@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
+import { ImportdataService } from 'src/importdata/importdata.service';
 import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
@@ -9,6 +11,7 @@ export class SanphamService {
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
     private _ErrorlogsService: ErrorlogsService,
+    private _ImportdataService: ImportdataService,
   ) {}
 
   // async create(data: any) {
@@ -72,30 +75,64 @@ export class SanphamService {
   }
 
   async import(data: any[]) {
+    const importResults: { masp: any; status: string; action?: string; error?: string }[] = [];
     // Dữ liệu gửi lên là list sản phẩm
     for (const sanpham of data) {
-      // Nếu không có masp thì gọi create để tự sinh masp
-      if (!sanpham.masp) {
-        await this.create(sanpham);
-      } else {
-        // Tìm sản phẩm tồn tại dựa trên masp
-        const existingSanpham = await this.prisma.sanpham.findUnique({
-          where: { masp: sanpham.masp },
-          select: { id: true },
-        });
-        if (existingSanpham) {
-          // Nếu sản phẩm đã tồn tại thì cập nhật
-          await this.prisma.sanpham.update({
-            where: { id: existingSanpham.id },
-            data: { ...sanpham },
-          });
-        } else {
-          // Nếu chưa tồn tại thì tạo mới
+      try {
+        let action = '';
+        // Nếu không có masp thì gọi create để tự sinh masp
+        if (!sanpham.masp) {
           await this.create(sanpham);
+          action = 'created';
+        } else {
+          // Tìm sản phẩm tồn tại dựa trên masp
+          const existingSanpham = await this.prisma.sanpham.findUnique({
+            where: { masp: sanpham.masp },
+            select: { id: true },
+          });
+          if (existingSanpham) {
+            // Nếu sản phẩm đã tồn tại thì cập nhật
+            await this.prisma.sanpham.update({
+              where: { id: existingSanpham.id },
+              data: { ...sanpham },
+            });
+            action = 'updated';
+          } else {
+            // Nếu chưa tồn tại thì tạo mới
+            await this.create(sanpham);
+            action = 'created';
+          }
         }
+        importResults.push({ masp: sanpham.masp || 'generated', status: 'success', action });
+      } catch (error) {
+        // Lưu lại lịch sử lỗi import cho sản phẩm đang xử lý
+        const importData =  {
+            caseDetail: {
+              errorMessage: error.message,
+              errorStack: error.stack,
+              additionalInfo: 'Error during product import process',
+            },
+            order: 1, // cập nhật nếu cần theo thứ tự của bạn
+            createdBy: 'system', // thay bằng ID người dùng thực nếu có
+            title: `Import Sản Phẩm ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+            type: 'sanpham',
+          };
+        this._ImportdataService.create(importData );
+        importResults.push({ masp: sanpham.masp || 'unknown', status: 'failed', error: error.message });
       }
     }
-    return { message: 'Import completed' };
+    // Lưu lại lịch sử tổng hợp quá trình import
+    const importData = {
+      caseDetail: {
+        additionalInfo: JSON.stringify(importResults),
+      },
+      order: 0,
+      createdBy: 'system',
+      title: `Import ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+      type: 'sanpham',
+    };
+    this._ImportdataService.create(importData);
+    return { message: 'Import completed', results: importResults };
   }
 
 

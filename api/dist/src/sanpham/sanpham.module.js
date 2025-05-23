@@ -13,12 +13,13 @@ const sanpham_controller_1 = require("./sanpham.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const socket_gateway_1 = require("../socket.gateway");
 const errorlogs_module_1 = require("../errorlogs/errorlogs.module");
+const importdata_module_1 = require("../importdata/importdata.module");
 let SanphamModule = class SanphamModule {
 };
 exports.SanphamModule = SanphamModule;
 exports.SanphamModule = SanphamModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlogs_module_1.ErrorlogsModule],
+        imports: [prisma_module_1.PrismaModule, errorlogs_module_1.ErrorlogsModule, importdata_module_1.ImportdataModule],
         controllers: [sanpham_controller_1.SanphamController],
         providers: [sanpham_service_1.SanphamService, socket_gateway_1.SocketGateway],
         exports: [sanpham_service_1.SanphamService]

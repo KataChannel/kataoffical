@@ -25,6 +25,12 @@ export declare class SanphamController {
     }>;
     import(data: any): Promise<{
         message: string;
+        results: {
+            masp: any;
+            status: string;
+            action?: string;
+            error?: string;
+        }[];
     }>;
     findby(param: any): Promise<{
         id: string;

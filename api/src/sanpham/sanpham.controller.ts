@@ -11,7 +11,6 @@ export class SanphamController {
   }
   @Post('import')
   import(@Body() data: any) {
-    console.log(data);
     return this.sanphamService.import(data);
   }
   @Post('findby')

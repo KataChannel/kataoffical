@@ -2,6 +2,7 @@ import { Inject, Injectable, signal,Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
+import moment from 'moment';
 @Injectable({
   providedIn: 'root'
 })
@@ -120,7 +121,30 @@ export class DathangService {
         return console.error(error);
     }
   }
+  async searchDathang(SearchParams: any) {
+    const payload = {...SearchParams}
+    payload.Batdau = moment(payload.Batdau).utc()
+    payload.Ketthuc = moment(payload.Ketthuc).utc()
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer '+this._StorageService.getItem('token')
+        },
+        body: JSON.stringify(payload),
+      };
+      const response = await fetch(`${environment.APIURL}/dathang/search`, options);
+      if (!response.ok) {
 
+      }
+      const data = await response.json();           
+      this.ListDathang.set(data.data)
+      return data
+    } catch (error) {
+      return console.error(error);
+    }
+  }
   async getAllDathang() {
     try {
       const options = {
@@ -130,7 +154,7 @@ export class DathangService {
           'Authorization': 'Bearer '+this._StorageService.getItem('token')
         },
       };
-      const response = await fetch(`${environment.APIURL}/dathang`, options);
+      const response = await fetch(`${environment.APIURL}/dathang?`, options);
       if (!response.ok) {
         if (response.status === 401) {
           const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })

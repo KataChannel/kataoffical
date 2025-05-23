@@ -11,10 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.KhachhangService = void 0;
 const common_1 = require("@nestjs/common");
+const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const importdata_service_1 = require("../importdata/importdata.service");
 let KhachhangService = class KhachhangService {
-    constructor(prisma) {
+    constructor(prisma, _ImportdataService) {
         this.prisma = prisma;
+        this._ImportdataService = _ImportdataService;
     }
     async timkiemkhachhang(query) {
         return this.prisma.$queryRaw `
@@ -46,8 +49,12 @@ let KhachhangService = class KhachhangService {
             data.makh = await this.generateMakh(data.loaikh);
         }
         let banggiaData = {};
-        if (data.banggia && Array.isArray(data.banggia) && data.banggia.length > 0) {
-            banggiaData = { banggia: { connect: data.banggia.map((id) => ({ id })) } };
+        if (data.banggia &&
+            Array.isArray(data.banggia) &&
+            data.banggia.length > 0) {
+            banggiaData = {
+                banggia: { connect: data.banggia.map((id) => ({ id })) },
+            };
         }
         const newData = { ...data, ...banggiaData };
         const existingCustomer = await this.prisma.khachhang.findUnique({
@@ -75,7 +82,7 @@ let KhachhangService = class KhachhangService {
                         const banggiaRecords = await Promise.all(banggia.map(async (bg) => {
                             const bgRecord = await this.prisma.banggia.findFirst({
                                 where: { mabanggia: bg },
-                                select: { id: true }
+                                select: { id: true },
                             });
                             if (!bgRecord) {
                                 throw new common_1.NotFoundException(`Banggia với mabanggia ${bg} không tồn tại`);
@@ -89,8 +96,9 @@ let KhachhangService = class KhachhangService {
                     }
                 }
                 const dataToUse = { ...rest, ...banggiaData };
+                let processedCustomer;
                 if (!customer.makh) {
-                    await this.create(dataToUse);
+                    processedCustomer = await this.create(dataToUse);
                 }
                 else {
                     const existingCustomer = await this.prisma.khachhang.findUnique({
@@ -98,25 +106,36 @@ let KhachhangService = class KhachhangService {
                         select: { id: true },
                     });
                     if (existingCustomer) {
-                        await this.prisma.khachhang.update({
+                        processedCustomer = await this.prisma.khachhang.update({
                             where: { id: existingCustomer.id },
                             data: dataToUse,
                         });
                     }
                     else {
-                        await this.create(dataToUse);
+                        processedCustomer = await this.create(dataToUse);
                     }
                 }
             }
             catch (error) {
                 console.error(`Error processing customer with makh ${customer.makh}:`, error);
+                await this._ImportdataService.create({
+                    caseDetail: {
+                        errorMessage: error.message,
+                        errorStack: error.stack,
+                        additionalInfo: 'Error during product import process',
+                    },
+                    order: 1,
+                    createdBy: 'system',
+                    title: `Import Khách Hàng ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                    type: 'khachhang',
+                });
             }
         }
         return { message: 'Import completed' };
     }
     async findAll() {
         return this.prisma.khachhang.findMany({
-            include: { banggia: true }
+            include: { banggia: true },
         });
     }
     async findby(param) {
@@ -132,10 +151,12 @@ let KhachhangService = class KhachhangService {
         }
     }
     async findOne(id) {
-        const khachhang = await this.prisma.khachhang.findUnique({ where: { id },
+        const khachhang = await this.prisma.khachhang.findUnique({
+            where: { id },
             include: {
-                banggia: true
-            } });
+                banggia: true,
+            },
+        });
         if (!khachhang)
             throw new common_1.NotFoundException('Khachhang not found');
         return khachhang;
@@ -155,10 +176,11 @@ let KhachhangService = class KhachhangService {
                 where[key] = { contains: value, mode: 'insensitive' };
             }
         }
-        const khachhang = await this.prisma.khachhang.findUnique({ where,
+        const khachhang = await this.prisma.khachhang.findUnique({
+            where,
             include: {
-                banggia: true
-            }
+                banggia: true,
+            },
         });
         if (!khachhang)
             throw new common_1.NotFoundException('Khachhang not found');
@@ -170,9 +192,11 @@ let KhachhangService = class KhachhangService {
             select: { banggia: { select: { id: true } } },
         });
         if (!existingCustomer) {
-            throw new Error("Khách hàng không tồn tại");
+            throw new Error('Khách hàng không tồn tại');
         }
-        const disconnectBanggia = existingCustomer.banggia.map(({ id }) => ({ id }));
+        const disconnectBanggia = existingCustomer.banggia.map(({ id }) => ({
+            id,
+        }));
         const newBanggiaIds = data.banggia?.map(({ id }) => ({ id })) || [];
         return this.prisma.khachhang.update({
             where: { id },
@@ -193,6 +217,7 @@ let KhachhangService = class KhachhangService {
 exports.KhachhangService = KhachhangService;
 exports.KhachhangService = KhachhangService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        importdata_service_1.ImportdataService])
 ], KhachhangService);
 //# sourceMappingURL=khachhang.service.js.map

@@ -399,6 +399,20 @@ let DonhangService = class DonhangService {
             }
             catch (error) {
                 console.log('error', error);
+                await this.prisma.importHistory.create({
+                    data: {
+                        codeId: element.madonhang,
+                        title: element.title,
+                        type: 'donhang',
+                        caseDetail: {
+                            errorMessage: error.message,
+                            errorStack: error.stack,
+                            additionalInfo: 'Failed during donhang import process',
+                        },
+                        order: 1,
+                        createdBy: 'system',
+                    },
+                });
                 fail += 1;
             }
         }

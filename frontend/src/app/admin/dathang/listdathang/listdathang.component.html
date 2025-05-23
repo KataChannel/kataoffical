@@ -3,19 +3,23 @@
         <router-outlet></router-outlet>
     </mat-drawer>
     <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
-        <div class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
+        <div
+            class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
             <div class="flex flex-row space-x-2 items-center">
-                <button class="flex flex-row items-center btn-primary" matTooltip="Thêm mới" (click)="create()" mat-flat-button>
+                <button class="flex flex-row items-center btn-primary" matTooltip="Thêm mới" (click)="create()"
+                    mat-flat-button>
                     <mat-icon>add_circle</mat-icon>
                     <span class="whitespace-nowrap">Tạo Mới</span>
                 </button>
-                <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu"
+                    aria-label="Example icon-button with a menu">
                     <mat-icon>tune</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
                     <div class="p-4">
                         <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-                            <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput placeholder="Tìm Kiếm" />
+                            <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput
+                                placeholder="Tìm Kiếm" />
                             <mat-icon matPrefix>search</mat-icon>
                         </mat-form-field>
                     </div>
@@ -28,10 +32,12 @@
                         }
                     </div>
                 </mat-menu>
-                <button matTooltip="Bộ Lọc" color="primary" class="{{isFilter ? '!bg-slate-200' : ''}}" (click)="isFilter = !isFilter" mat-icon-button>
+                <button matTooltip="Bộ Lọc" color="primary" class="{{isFilter ? '!bg-slate-200' : ''}}"
+                    (click)="isFilter = !isFilter" mat-icon-button>
                     <mat-icon>filter_list</mat-icon>
                 </button>
-                <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(Listdathang(),'Dathang')" color="primary" mat-icon-button>
+                <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(Listdathang(),'Dathang')" color="primary"
+                    mat-icon-button>
                     <mat-icon>file_download</mat-icon>
                 </button>
                 <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
@@ -49,7 +55,25 @@
         <div *ngIf="isFilter" class="w-full grid grid-cols-2 gap-2 lg:flex lg:flex-row lg:space-x-2 items-center">
             <mat-form-field *ngFor="let column of displayedColumns" appearance="outline" subscriptSizing="dynamic">
                 <mat-label>{{ ColumnName[column] }}</mat-label>
-                <input matInput (keyup)="applyFilter()" [(ngModel)]="filterValues[column]" [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập {{ column }}" />
+                <input matInput (keyup)="applyFilter()" [(ngModel)]="filterValues[column]"
+                    [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập {{ column }}" />
+            </mat-form-field>
+        </div>
+        <div class="flex flex-row space-x-2 items-center">
+            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+                <mat-label>Bắt Đầu</mat-label>
+                <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau"
+                    [(ngModel)]="SearchParams.Batdau" [ngModelOptions]="{standalone: true}">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau"></mat-datepicker-toggle>
+                <mat-datepicker #pickerBatdau></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+                <mat-label>Kết Thúc</mat-label>
+                <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerKetthuc"
+                    [(ngModel)]="SearchParams.Ketthuc" [ngModelOptions]="{standalone: true}">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
+                <mat-datepicker #pickerKetthuc></mat-datepicker>
             </mat-form-field>
         </div>
         <div class="w-full overflow-auto">
@@ -88,9 +112,8 @@
                             {{ row[column]|date:'dd/MM/yyyy'}}
                         </span>
                         }
-                                          @case ('status') {
-                        <span class="max-w-40 line-clamp-4 font-bold"
-                                  [ngClass]="{
+                        @case ('status') {
+                        <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
                           'text-blue-500': row[column] === 'dadat',
                           'text-yellow-500': row[column] === 'dagiao',
                           'text-green-500': row[column] === 'danhan',
@@ -126,7 +149,9 @@
                 </ng-container>
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{dathangId()==row.id?'!bg-slate-200':''}}" (click)="goToDetail(row);"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                    class="hover:bg-slate-100 {{dathangId()==row.id?'!bg-slate-200':''}}" (click)="goToDetail(row);">
+                </tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>

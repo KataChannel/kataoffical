@@ -23,6 +23,8 @@ import { ErrorlogsModule } from './errorlogs/errorlogs.module';
 import { CallbackModule } from './callback/callback.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { UserguideModule } from './userguide/userguide.module';
+import { ImportdataModule } from './importdata/importdata.module';
+import { ImportdataService } from './importdata/importdata.service';
 
 @Module({
   imports: [
@@ -45,7 +47,8 @@ import { UserguideModule } from './userguide/userguide.module';
     ErrorlogsModule,
     CallbackModule,
     DashboardModule,
-    UserguideModule
+    UserguideModule,
+    ImportdataModule,
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

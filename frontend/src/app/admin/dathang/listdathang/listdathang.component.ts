@@ -23,6 +23,8 @@ import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { BanggiaService } from '../../banggia/banggia.service';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
+import moment from 'moment';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 @Component({
   selector: 'app-listdathang',
   templateUrl: './listdathang.component.html',
@@ -41,7 +43,8 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
     MatSelectModule,
     CommonModule,
     FormsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDatepickerModule,
   ],
 })
 export class ListDathangComponent {
@@ -99,6 +102,12 @@ export class ListDathangComponent {
   dathangId:any = this._DathangService.dathangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
+  SearchParams: any = {
+      Batdau: moment().toDate(),
+      Ketthuc: moment().toDate(),
+      pageSize: 10,
+      pageNumber: 1,
+  };
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
@@ -120,8 +129,11 @@ export class ListDathangComponent {
   applyFilter() {
     this.dataSource().filter = JSON.stringify(this.filterValues);
   }
-  async ngOnInit(): Promise<void> {    
-    await this._DathangService.getAllDathang();
+  onDateChange(event: any): void {
+    this.ngOnInit();
+  }
+  async ngOnInit(): Promise<void> {
+    await this._DathangService.searchDathang(this.SearchParams);
     this.CountItem = this.Listdathang().length;
     this.initializeColumns();
     this.setupDrawer();
@@ -130,9 +142,6 @@ export class ListDathangComponent {
     this.paginator._intl.previousPageLabel = 'Về Trước';
     this.paginator._intl.firstPageLabel = 'Trang Đầu';
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
-  }
-  async refresh() {
-   await this._DathangService.getAllDathang();
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({

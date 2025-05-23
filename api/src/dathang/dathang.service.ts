@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import moment from 'moment';
+import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258'; // Kho mặc định, cần thay đổi theo yêu cầu thực tế
 @Injectable()
@@ -175,6 +175,51 @@ export class DathangService {
       fail,
     };
   }
+
+
+  async search(params: any) {
+    const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1 } = params;
+    const where = {
+      ngaynhan: {
+        gte: Batdau
+          ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+          : undefined,
+        lte: Ketthuc
+          ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
+          : undefined,
+      },
+      type: Type,
+      status: Array.isArray(params.Status)
+        ? { in: params.Status }
+        : params.Status,
+    };
+
+    const [total, dathangs] = await Promise.all([
+      this.prisma.dathang.count({ where }),
+      this.prisma.dathang.findMany({
+        where,
+        include: {
+          sanpham: {
+            include: {
+              sanpham: true,
+            },
+          },
+          nhacungcap: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (Number(pageNumber) - 1) * Number(pageSize),
+        take: Number(pageSize),
+      }),
+    ]);
+    return {
+      data: dathangs,
+      total,
+      pageNumber,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    };
+  }
+
 
   async create(dto: any) {
     const madathang = await this.generateNextOrderCode();

@@ -414,3 +414,17 @@ model UserguidStep {
   updatedAt     DateTime       @updatedAt
   @@index([id])
 }
+
+model ImportHistory {
+  id         String   @id @default(uuid())
+  codeId     String?   @unique // Mã đề xuất duy nhất
+  title      String?   // Tên import
+  caseDetail Json?    // Chi tiết từng case import
+  importTime DateTime @default(now())
+  type       String?   // Loại import (vd: "sanpham", "khachhang", ...)
+  status     String?   // Trạng thái import
+  order     Int?    @default(1)
+  createdBy String?  @default("system") // Người tạo import
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

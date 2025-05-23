@@ -23,7 +23,6 @@ let SanphamController = class SanphamController {
         return this.sanphamService.create(createSanphamDto);
     }
     import(data) {
-        console.log(data);
         return this.sanphamService.import(data);
     }
     findby(param) {

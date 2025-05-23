@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DathangService = void 0;
 const common_1 = require("@nestjs/common");
-const moment_1 = require("moment");
+const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 let DathangService = class DathangService {
@@ -138,7 +138,7 @@ let DathangService = class DathangService {
             if (!acc[curr.mancc]) {
                 const nhacungcap = await this.prisma.nhacungcap.findFirst({ where: { mancc: curr.mancc } });
                 acc[curr.mancc] = {
-                    title: `Import ${(0, moment_1.default)().format('DD_MM_YYYY')}`,
+                    title: `Import ${moment().format('DD_MM_YYYY')}`,
                     ngaynhan: curr.ngaynhan,
                     mancc: curr.mancc,
                     name: nhacungcap?.name,
@@ -174,6 +174,47 @@ let DathangService = class DathangService {
         return {
             success,
             fail,
+        };
+    }
+    async search(params) {
+        const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1 } = params;
+        const where = {
+            ngaynhan: {
+                gte: Batdau
+                    ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+                    : undefined,
+                lte: Ketthuc
+                    ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
+                    : undefined,
+            },
+            type: Type,
+            status: Array.isArray(params.Status)
+                ? { in: params.Status }
+                : params.Status,
+        };
+        const [total, dathangs] = await Promise.all([
+            this.prisma.dathang.count({ where }),
+            this.prisma.dathang.findMany({
+                where,
+                include: {
+                    sanpham: {
+                        include: {
+                            sanpham: true,
+                        },
+                    },
+                    nhacungcap: true,
+                },
+                orderBy: { createdAt: 'desc' },
+                skip: (Number(pageNumber) - 1) * Number(pageSize),
+                take: Number(pageSize),
+            }),
+        ]);
+        return {
+            data: dathangs,
+            total,
+            pageNumber,
+            pageSize,
+            totalPages: Math.ceil(total / pageSize),
         };
     }
     async create(dto) {

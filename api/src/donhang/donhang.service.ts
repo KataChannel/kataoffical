@@ -430,7 +430,21 @@ export class DonhangService {
         success += 1;
       } catch (error) {
         console.log('error', error);
-        
+
+      await this.prisma.importHistory.create({
+         data: {
+           codeId: element.madonhang, // using madonhang as the unique code identifier
+           title: element.title,      // new field: title
+           type: 'donhang',        // new field: type
+           caseDetail: {
+        errorMessage: error.message,
+        errorStack: error.stack,
+        additionalInfo: 'Failed during donhang import process',
+           },
+           order: 1, // update based on your ordering logic if needed
+           createdBy: 'system', // replace with the actual account ID if available
+         },
+       });
         fail += 1;
       }
     }

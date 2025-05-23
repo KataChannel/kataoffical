@@ -172,21 +172,10 @@
                            </div>
                            </div>
                </mat-menu>
-
                 <mat-form-field appearance="outline" subscriptSizing="dynamic">
                     <mat-label>Tìm Kiếm</mat-label>
                     <input matInput (keyup)="applyFilter($event)" placeholder="Tìm Kiếm" />
                 </mat-form-field>
-                <!-- <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(dataSource().data,'Sanpham_donhang')" color="primary" mat-icon-button>
-                  <mat-icon>file_download</mat-icon>
-              </button>
-              <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
-                  <mat-icon>file_upload</mat-icon>
-              </button>
-              <input class="hidden" (change)="ImporExcel($event)" type="file" #uploadfile>
-                <button [disabled]="!isEdit()" matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
-                  <mat-icon>cloud_download</mat-icon>
-              </button> -->
                    <button [disabled]="!isEdit()" matTooltip="Làm Trống Giỏ Hàng" (click)="EmptyCart()" color="warn" mat-icon-button>
                      <mat-icon>delete</mat-icon>
                  </button>

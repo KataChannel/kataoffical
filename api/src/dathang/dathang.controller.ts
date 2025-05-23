@@ -17,6 +17,10 @@ export class DathangController {
   createbynhucau(@Body() data: any) {
     return this.dathangService.createbynhucau(data);
   }
+  @Post('search')
+    async search(@Body() params: any) {
+    return this.dathangService.search(params);
+  }
   @Get()
   findAll() {
     return this.dathangService.findAll();
