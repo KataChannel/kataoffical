@@ -1,0 +1,1 @@
+import{$b as i,Bb as t,ac as o,xc as l}from"./chunk-THWSJBHS.js";import"./chunk-EU2KAMEK.js";import"./chunk-47CWAPKR.js";var a=class n{static \u0275fac=function(e){return new(e||n)};static \u0275cmp=t({type:n,selectors:[["app-billing"]],decls:2,vars:0,template:function(e,p){e&1&&(i(0,"p"),l(1,"billing works!"),o())},encapsulation:2})};export{a as BillingComponent};

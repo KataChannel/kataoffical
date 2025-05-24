@@ -26,6 +26,7 @@ import { memoize, Debounce } from '../../../shared/utils/decorators';
 import { StorageService } from '../../../shared/utils/storage.service';
 import { HoadonService } from '../../hoadon/hoadon.service';
 import { SharepaginationComponent } from '../../../shared/common/sharepagination/sharepagination.component';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 
 @Component({
   selector: 'app-listhoadonchitiet',
@@ -61,7 +62,30 @@ export class ListHoadonchitietComponent implements OnInit {
     sluong: 'Số Lượng',
     dgia: 'Đơn Giá',
     thtien: 'Thành Tiền',
+    tthai: 'Trạng Thái',
+    ttxly: 'Xử Lý',
+    thlap: 'Tháng Lập',
   };
+ ListXuly:any={
+    0:'Cục Thuế Đã Nhận',
+    1:'Đang tiến hành kiểm tra điều kiện cấp mã',
+    2:'CQT Từ Chối HĐ Theo Từng Lần Phát Sinh',
+    3:'HĐ Đủ Điều Kiện Cấp Mã',
+    4:'HĐ Không Đủ Điều Kiện Cấp Mã',
+    5:'Đã Cấp Mã Hóa Đơn',
+    6:'Cục Thuế Đã Nhận Không Mã',
+    7:'Đã Kiểm Tra Định Kỳ HĐ ĐT Không Có Mã',
+    8:'Cục Thuế Đã Nhận Hóa Đơn Có Mã Khởi Tạo Từ Máy Tính Tiền',
+  }
+
+  ListTrangthai:any={
+    1:'Hóa Đơn Mới',
+    2:'Hóa Đơn Thay Thế',
+    3:'Hóa Đơn Điều Chỉnh',
+    4:'Hóa Đơn đã bị thay thế',
+    5:'Hóa Đơn đã bị điều chỉnh',
+    6:'Hóa Đơn đã bị hủy',
+  }
   FilterColumns: any[] = JSON.parse(localStorage.getItem('HoadonchitietColFilter') || '[]');
   Columns: any[] = [];
 
@@ -90,6 +114,10 @@ export class ListHoadonchitietComponent implements OnInit {
   token: any= this._StorageService.getItem('token') || '';
   hoadon_token: any= this._StorageService.getItem('hoadon_token') || '';
   Detail:any={thang:'01', nam:'2025'};
+  Condition: any = {
+    thang:false,
+    shdon:false,
+  }
   constructor() {
     effect(() => {
       this.dataSource.data = this.Listhoadonchitiet();
@@ -112,6 +140,33 @@ export class ListHoadonchitietComponent implements OnInit {
     this.setupDrawer();
   }
   soluong: any = 0;
+  getTotal(field: string) {
+  const total = this.dataSource.filteredData.reduce((acc: number, item: any) => {
+    const value = item[field] || 0;
+    return acc + Number(value);
+  }, 0);
+  return total;
+}
+  @Debounce(300)  
+  async applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+
+    const params:any = {
+      hoadon: {
+        thlap: this.Condition.thang ? Number(filterValue) : undefined,
+        shdon: this.Condition.shdon ? Number(filterValue) : undefined,
+      }
+    };
+
+    await this._HoadonchitietService.getHoadonchitietBy(params);
+
+    if (filterValue === '') {
+      this._HoadonchitietService.getAllHoadonchitiet(this.pageSize(), true);
+    }
+
+  }
+
+
 async fetchData() {
     this._StorageService.setItem('hoadon_token', this.hoadon_token);
     const listHoadon = await this._HoadonService.getAllHoadon(this.soluong, false,true);
@@ -133,9 +188,10 @@ async fetchData() {
       } else {
         if (result.hdhhdvu && Array.isArray(result.hdhhdvu)) {
           // Create an array of items to send through the worker
-          const itemsToCreate = result.hdhhdvu.map((item1: any) => ({
+            const itemsToCreate = result.hdhhdvu.map((item1: any) => ({
             id: item1.id,
-            idhoadon:item.id,
+            codeId: removeVietnameseAccents(`${result.khhdon}-${result.nbmst}-${result.khmshdon}-${result.shdon}-${result.thlap}`),
+            idhoadon: item.id,
             idhdon: item1.idhdon,
             dvtinh: item1.dvtinh,
             ltsuat: item1.ltsuat,
@@ -154,7 +210,7 @@ async fetchData() {
             sxep: item1.sxep,
             dvtte: item1.dvtte,
             tgia: item1.tgia,
-          }));
+            }));
           
           // Initialize Worker (ensure the worker file exists at the corresponding path)
           const worker = new Worker(new URL('../create-hoadonchitiet.worker', import.meta.url));
@@ -189,7 +245,7 @@ async fetchData() {
     }
   async onPageChange(event: any): Promise<void> {
     this._HoadonchitietService.page.set(event.page);
-    await this._HoadonchitietService.getAllHoadonchitiet(event.pageSize,true);
+    await this._HoadonchitietService.getAllHoadonchitiet(Number(event.pageSize),true);
   }
   private initializeColumns(): void {
     this.Columns = Object.entries(this.ColumnName).map(([key, value]) => ({ key, value, isShow: true }));
@@ -198,14 +254,6 @@ async fetchData() {
     this.displayedColumns = this.FilterColumns.filter(col => col.isShow).map(col => col.key);
     this.ColumnName = this.FilterColumns.reduce((acc, { key, value, isShow }) => 
       isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
-  }
-
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
   }
 
   async getUpdatedCodeIds() {
@@ -462,7 +510,7 @@ async fetchData() {
       size = this.total();
     }
     this._HoadonchitietService.page.set(1);
-    this._HoadonchitietService.getAllHoadonchitiet(size, true);
+    this._HoadonchitietService.getAllHoadonchitiet(Number(size), true);
     menuHienthi.closeMenu();
   }
   onPreviousPage(){

@@ -37,6 +37,7 @@ export declare class HoadonchitietController {
         data: any[];
         total: number;
         totalSP: any;
+        totalmh: number;
         page: any;
         pageCount: number;
     } | StreamableFile>;
@@ -46,7 +47,15 @@ export declare class HoadonchitietController {
         page: any;
         pageCount: number;
     }>;
-    findby(param: any): Promise<{
+    findby(param: any): Promise<({
+        hoadon: {
+            ntao: Date | null;
+            tdlap: Date | null;
+            thlap: number | null;
+            tthai: number | null;
+            ttxly: number | null;
+        };
+    } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -74,8 +83,13 @@ export declare class HoadonchitietController {
         tthue: number | null;
         sxep: number | null;
         isproduct: boolean | null;
-    } | {
+    }) | {
         data: {
+            ttxly: number;
+            tthai: number;
+            ntao: string;
+            tdlap: string;
+            thlap: string | number;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -110,6 +124,8 @@ export declare class HoadonchitietController {
     } | null>;
     findAll(page?: string, limit?: string): Promise<{
         data: {
+            ttxly: number;
+            tthai: number;
             ntao: string;
             tdlap: string;
             thlap: string;

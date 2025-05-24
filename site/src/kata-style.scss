@@ -1,0 +1,9 @@
+// src/custom.scss
+@use '@angular/material' as mat;
+
+:root {
+  @include mat.button-overrides((
+    filled-container-color: orange,
+    filled-label-text-color: red,
+  ));
+}

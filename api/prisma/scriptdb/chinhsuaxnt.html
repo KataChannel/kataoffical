@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventory Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Inventory Management</h1>
+        <div class="mb-4 flex items-center space-x-2"></div>
+            <button id="loadJson" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Load JSON
+            </button>
+            <button id="saveJson" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                Save JSON
+            </button>
+            <input id="searchInput" type="text" placeholder="Search title..." class="ml-4 border rounded px-2 py-1" />
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="px-4 py-2 border">Tên</th>
+                        <th class="px-4 py-2 border">ĐVT</th>
+                        <th class="px-4 py-2 border">Group</th>
+                        <th class="px-4 py-2 border">SL Đầu</th>
+                        <th class="px-4 py-2 border">TT Đầu</th>
+                        <th class="px-4 py-2 border">SL Nhập</th>
+                        <th class="px-4 py-2 border">TT Nhập</th>
+                        <th class="px-4 py-2 border">SL Xuất</th>
+                        <th class="px-4 py-2 border">TT Xuất</th>
+                        <th class="px-4 py-2 border">SL Tồn</th>
+                        <th class="px-4 py-2 border">TT Tồn</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryTable">
+                    <!-- Rows will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4 flex justify-center items-center space-x-2">
+            <button id="prevPage" class="bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400">Prev</button>
+            <span id="pageInfo" class="font-medium"></span>
+            <button id="nextPage" class="bg-gray-300 text-gray-700 px-3 py-1 rounded hover:bg-gray-400">Next</button>
+        </div>
+    </div>
+
+    <script>
+        let inventoryData = [];
+        let currentPage = 1;
+        const rowsPerPage = 20;
+        let searchKeyword = '';
+
+        // Load JSON data
+        document.getElementById('loadJson').addEventListener('click', () => {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.onchange = () => {
+                const file = fileInput.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        // Ensure each item has a group property
+                        inventoryData = data.map(item => ({ ...item, group: item.group || '' }));
+                        currentPage = 1;
+                        renderTable();
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            fileInput.click();
+        });
+
+        // Save JSON data
+        document.getElementById('saveJson').addEventListener('click', () => {
+            const blob = new Blob([JSON.stringify(inventoryData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'xuatnhapton.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // Search input event listener
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchKeyword = e.target.value.toLowerCase();
+            currentPage = 1;
+            renderTable();
+        });
+
+        // Render table with pagination and search filtering based on "Tên"
+        function renderTable() {
+            const tbody = document.getElementById('inventoryTable');
+            // Filter data based on searchKeyword if provided
+            const filteredData = inventoryData.filter(item => item.ten.toLowerCase().includes(searchKeyword));
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            // Ensure currentPage is not out of bounds
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            const start = (currentPage - 1) * rowsPerPage;
+            const paginatedData = filteredData.slice(start, start + rowsPerPage);
+
+            let html = '';
+            paginatedData.forEach((item, index) => {
+                // Calculate the index relative to the whole inventoryData
+                const globalIndex = inventoryData.indexOf(item);
+                html += `
+                    <tr>
+                        <td class="flex flex-col px-4 py-2 border">
+                           <span>${item.ten}</span>
+                            <span>${item.title}</span>
+                        </td>
+                        <td class="px-4 py-2 border">${item.dvt}</td>
+                        <td class="px-4 py-2 border">
+                            <input type="text" value="${item.group}" class="w-full border rounded px-2 py-1" onchange="updateGroup(${globalIndex}, this.value)">
+                        </td>
+                        <td class="px-4 py-2 border">${item.sldau}</td>
+                        <td class="px-4 py-2 border">${item.ttdau}</td>
+                        <td class="px-4 py-2 border">${item.slnhap}</td>
+                        <td class="px-4 py-2 border">${item.ttnhap}</td>
+                        <td class="px-4 py-2 border">${item.slxuat}</td>
+                        <td class="px-4 py-2 border">${item.ttxuat}</td>
+                        <td class="px-4 py-2 border">${item.slton}</td>
+                        <td class="px-4 py-2 border">${item.ttton}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+
+            // Update pagination info
+            document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages || 1}`;
+        }
+
+        // Update only the group field and re-render the table
+        function updateGroup(index, groupValue) {
+            inventoryData[index].group = groupValue;
+            renderTable();
+        }
+
+        // Pagination controls
+        document.getElementById('prevPage').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        });
+        document.getElementById('nextPage').addEventListener('click', () => {
+            const filteredData = inventoryData.filter(item => item.ten.toLowerCase().includes(searchKeyword));
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -98,8 +98,21 @@ let HoadonchitietService = class HoadonchitietService {
     async findBy(param) {
         try {
             const { isOne, page = 1, limit = 20, ...where } = param;
+            console.log(param);
+            console.log(where);
             if (isOne) {
                 const result = await this.prisma.hoadonChitiet.findFirst({
+                    include: {
+                        hoadon: {
+                            select: {
+                                ntao: true,
+                                tdlap: true,
+                                thlap: true,
+                                ttxly: true,
+                                tthai: true,
+                            },
+                        },
+                    },
                     where,
                     orderBy: { order: 'asc' },
                 });
@@ -108,6 +121,17 @@ let HoadonchitietService = class HoadonchitietService {
             const skip = (page - 1) * limit;
             const [data, total] = await Promise.all([
                 this.prisma.hoadonChitiet.findMany({
+                    include: {
+                        hoadon: {
+                            select: {
+                                ntao: true,
+                                tdlap: true,
+                                thlap: true,
+                                ttxly: true,
+                                tthai: true,
+                            },
+                        },
+                    },
                     where,
                     skip,
                     take: limit,
@@ -116,7 +140,21 @@ let HoadonchitietService = class HoadonchitietService {
                 this.prisma.hoadonChitiet.count({ where }),
             ]);
             return {
-                data,
+                data: data.map((item) => {
+                    const { hoadon, ...rest } = item;
+                    return {
+                        ...rest,
+                        ttxly: hoadon?.ttxly || 0,
+                        tthai: hoadon?.tthai || 0,
+                        ntao: hoadon?.ntao
+                            ? new Date(hoadon.ntao).toLocaleDateString()
+                            : '',
+                        tdlap: hoadon?.tdlap
+                            ? new Date(hoadon.tdlap).toLocaleDateString() : '',
+                        thlap: hoadon?.thlap
+                            ? hoadon?.thlap : ''
+                    };
+                }),
                 total,
                 page,
                 pageCount: Math.ceil(total / limit),
@@ -143,16 +181,21 @@ let HoadonchitietService = class HoadonchitietService {
                                 ntao: true,
                                 tdlap: true,
                                 thlap: true,
+                                ttxly: true,
+                                tthai: true,
                             },
                         },
                     },
                 }),
                 this.prisma.hoadonChitiet.count(),
             ]);
+            console.log('data', data[0]);
             const result = data.map((item) => {
                 const { hoadon, ...rest } = item;
                 return {
                     ...rest,
+                    ttxly: hoadon?.ttxly || 0,
+                    tthai: hoadon?.tthai || 0,
                     ntao: hoadon?.ntao ? new Date(hoadon.ntao).toLocaleDateString() : '',
                     tdlap: hoadon?.tdlap
                         ? new Date(hoadon.tdlap).toLocaleDateString()
@@ -209,7 +252,7 @@ let HoadonchitietService = class HoadonchitietService {
                     },
                 }
                 : {};
-            const [hoadonchitiets, total, mathangs] = await Promise.all([
+            const [hoadonchitiets, total, mathangs, totalmh] = await Promise.all([
                 this.prisma.hoadonChitiet.findMany({
                     skip,
                     take: limit,
@@ -225,6 +268,7 @@ let HoadonchitietService = class HoadonchitietService {
                     where: { ...where, ...dateFilter },
                 }),
                 this.prisma.mathang.findMany(),
+                this.prisma.mathang.count(),
             ]);
             const productDetails = {};
             mathangs.forEach((item) => {
@@ -323,6 +367,7 @@ let HoadonchitietService = class HoadonchitietService {
                 data: filteredBaoCaoTongHop.slice(0, sizesp),
                 total,
                 totalSP: sizesp,
+                totalmh: totalmh,
                 page,
                 pageCount: Math.ceil(total / limit),
             };

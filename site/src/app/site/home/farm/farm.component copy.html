@@ -1,0 +1,97 @@
+<div class="flex w-screen h-screen overflow-hidden font-sans">
+
+  <div class="w-64 p-4 bg-gray-100 border-r border-gray-300 flex flex-col gap-4 overflow-y-auto shrink-0">
+     <h1 class="text-xl font-bold text-center text-gray-800">Nông Trại Vui Vẻ</h1>
+     <div class="bg-white p-3 rounded-lg shadow-md">
+      <h2 class="text-lg font-semibold text-center text-gray-800 mb-2">Trạng Thái</h2>
+      <div>Tiền: <span class="font-medium">{{ money() }}</span></div>
+      <div>Cấp độ: <span class="font-medium">{{ playerLevel() }}</span></div>
+      <div>Kinh nghiệm: <span class="font-medium">{{ playerXP() }} / {{ playerLevel() * 20 }}</span></div>
+    </div>
+     <div class="bg-white p-3 rounded-lg shadow-md">
+        <h2 class="text-lg font-semibold text-center text-gray-800 mb-2">Chọn Hạt Giống (1-5)</h2>
+        <div *ngFor="let c of crops; let i = index"
+             (click)="selectSeed(c.id)"
+             class="p-2 border-2 border-gray-300 rounded-md cursor-pointer mb-1 flex justify-between items-center transition duration-200 ease-in-out hover:bg-gray-200"
+             [ngClass]="{ 'border-blue-600 font-bold bg-blue-100 transform scale-105': selectedCropId() === c.id }"
+             [style.borderColor]="selectedCropId() === c.id ? 'blue' : c.color">
+          <span>{{ i + 1 }}. {{ c.name }}</span>
+          <span class="text-sm text-gray-600">({{ inventory()['crop' + c.id] || 0 }})</span>
+        </div>
+    </div>
+      <div class="bg-white p-3 rounded-lg shadow-md flex justify-around">
+          <button (click)="zoomIn()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-lg font-bold">+</button>
+          <span class="text-center self-center">{{ zoomLevel() | number:'1.1-1' }}x</span>
+          <button (click)="zoomOut()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-lg font-bold">-</button>
+      </div>
+     <button (click)="toggleInventoryDialog()" class="w-full p-3 bg-green-600 text-white rounded-md cursor-pointer text-center hover:bg-green-700 transition">
+        Mở Túi Đồ (I)
+     </button>
+    <div class="mt-3 p-3 bg-green-50 border border-green-300 rounded-md min-h-[50px] text-sm text-gray-800">
+      {{ lastHarvestInfo }}
+    </div>
+  </div>
+
+  <div #mapContainer
+       class="flex-grow overflow-hidden bg-green-800 relative cursor-grab"
+       (wheel)="handleWheel($event)"
+       (mousedown)="onMouseDown($event)">
+
+      <div class="absolute top-0 left-0"
+           style="transform-origin: 0 0;"
+           [style.transform]="mapTransform()">
+
+            <div *ngFor="let tile of visibleTiles(); trackBy: trackTileById"
+                 class="absolute border border-black/10 box-border
+                        flex flex-col items-center justify-center text-xs"
+                 [style.width.px]="baseTileSize"
+                 [style.height.px]="baseTileSize"
+                 [style.left.px]="tile.col * baseTileSize"
+                 [style.top.px]="tile.row * baseTileSize"
+                 [ngClass]="{
+                   'bg-green-700': tile.type === 'grass',
+                   'bg-yellow-800': tile.type === 'soil' && tile.state !== 'empty',
+                   'bg-yellow-600': tile.type === 'pen',
+                   'border-2 border-black z-10': tile.isPenTopLeft
+                 }"
+                 [style.backgroundColor]="tile.type === 'soil' && tile.state === 'empty' ? getSoilColor(tile) : null"
+                 (click)="onTileClick(tile)">
+
+                 <ng-container *ngIf="tile.type === 'soil'">
+                    <ng-container [ngSwitch]="tile.state">
+                        <span *ngSwitchCase="'empty'" class="font-bold text-white/60">Đất</span>
+                        <ng-container *ngSwitchCase="'seed'">
+                            <span class="font-bold text-center leading-tight" [style.color]="getCropById(tile.cropId)?.color">{{ getCropById(tile.cropId)?.name?.substring(0, 3) }}</span>
+                            <span class="text-[0.55rem] text-white bg-black/30 px-1 rounded-sm">{{ getRemainingTime(tile) }}s</span>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="'growing'">
+                            <span class="font-bold text-center leading-tight" [style.color]="getCropById(tile.cropId)?.color">{{ getCropById(tile.cropId)?.name?.substring(0, 3) }}..</span>
+                            <span class="text-[0.55rem] text-white bg-black/30 px-1 rounded-sm">{{ getRemainingTime(tile) }}s</span>
+                        </ng-container>
+                        <span *ngSwitchCase="'ready'" class="font-bold text-sm animate-pulse" [style.color]="getCropById(tile.cropId)?.color">Sẵn Sàng!</span>
+                    </ng-container>
+                </ng-container>
+                <ng-container *ngIf="tile.type === 'pen' && tile.isPenTopLeft">
+                    <span class="text-2xl font-bold text-gray-800/70"> P </span>
+                </ng-container>
+            </div>
+      </div>
+  </div>
+
+   <div *ngIf="showInventoryDialog" class="fixed inset-0 bg-black/60 flex justify-center items-center z-50" (click)="toggleInventoryDialog()">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-4/5 max-w-2xl max-h-[80vh] relative flex flex-col" (click)="$event.stopPropagation()">
+            <h2 class="text-2xl font-bold text-center mb-5">Túi Đồ</h2>
+            <button (click)="toggleInventoryDialog()" class="absolute top-2 right-4 bg-transparent border-none text-3xl cursor-pointer text-gray-400 hover:text-black transition">&times;</button>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 overflow-y-auto p-3 border border-gray-200 min-h-[200px] rounded-md">
+                <div *ngFor="let item of inventoryItems()" class="border border-gray-300 rounded-lg p-3 text-center bg-gray-50 flex flex-col items-center justify-between hover:shadow-lg transition">
+                   <div class="w-10 h-10 rounded-full flex justify-center items-center text-lg font-bold text-white mb-2 shadow-sm" [style.backgroundColor]="item.color || '#9ca3af'">
+                       {{ item.name.substring(0, 1) | uppercase }}
+                   </div>
+                   <div class="text-sm font-bold mb-1 break-words w-full">{{ item.name }}</div>
+                   <div class="text-xs text-gray-600">x {{ item.quantity }}</div>
+                </div>
+                 <div *ngIf="inventoryItems().length === 0" class="col-span-full text-center p-8 text-gray-500">Túi đồ trống.</div>
+            </div>
+        </div>
+    </div>
+</div>

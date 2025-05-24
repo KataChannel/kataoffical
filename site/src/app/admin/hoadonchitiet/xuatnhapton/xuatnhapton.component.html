@@ -236,6 +236,26 @@
               {{ getTotal(dataSource.filteredData, 'cuoiNgay')||0|number:'1.0-0'}}
             </span>
             }
+            @case ('ttdauNgay') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ getTotal(dataSource.filteredData, 'ttdauNgay')||0|number:'1.0-0'}}
+            </span>
+            }
+            @case ('ttnhapNgay') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ getTotal(dataSource.filteredData, 'ttnhapNgay')||0|number:'1.0-0'}}
+            </span>
+            }
+            @case ('ttxuatNgay') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ getTotal(dataSource.filteredData, 'ttxuatNgay')||0|number:'1.0-0'}}
+            </span>
+            }
+            @case ('ttcuoiNgay') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ getTotal(dataSource.filteredData, 'ttcuoiNgay')||0|number:'1.0-0'}}
+            </span>
+            }
             @case ('tongNhapThang') {
             <span class="max-w-40 line-clamp-4 text-end">
               {{ getTotal(dataSource.filteredData, 'tongNhapThang')||0|number:'1.0-0'}}

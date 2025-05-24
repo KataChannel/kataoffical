@@ -3,6 +3,7 @@
 @use 'swiper/css/pagination';
 @use 'swiper/css/autoplay'; // Nếu sử dụng autoplay
 @use '@angular/material' as mat;
+@use './kata-style' as *;
 :root {
   @include mat.button-overrides((
     // filled-container-color: white,   // Background color of the button

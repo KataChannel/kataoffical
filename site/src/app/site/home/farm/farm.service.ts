@@ -47,6 +47,25 @@ export class FarmService {
     { name: 'potato', growthTime: 11, harvestValue: 7, color: 'brown' }, // nâu
   ];
 
+  // --- Thêm level và kinh nghiệm cho nhân vật chính ---
+  private _characterLevel: WritableSignal<number> = signal(1);
+  characterLevel: Signal<number> = this._characterLevel.asReadonly();
+  private _characterExp: WritableSignal<number> = signal(0);
+  characterExp: Signal<number> = this._characterExp.asReadonly();
+
+  // Hàm cộng kinh nghiệm và cập nhật level (ngưỡng mỗi level = level * 20)
+  private addExperience(exp: number): void {
+    let newExp = this._characterExp() + exp;
+    let level = this._characterLevel();
+    while (newExp >= level * 20) {
+      newExp -= level * 20;
+      level++;
+      console.log(`Level up! New level: ${level}`);
+    }
+    this._characterLevel.set(level);
+    this._characterExp.set(newExp);
+  }
+
   constructor() {
     console.log('FarmService initialized');
     this.initializeFarm(this.rows, this.cols);
@@ -138,9 +157,23 @@ export class FarmService {
       p.growthProgress = 0;
       p.watered = false;
       this.farmPlots.set(newPlots);
+
+      // Tăng kinh nghiệm dựa trên giá trị thu hoạch
+      const crop = this.crops.find(c => c.name === harvestedCrop);
+      if (crop) {
+        this.addExperience(crop.harvestValue);
+      }
       return true;
     }
     return false;
+  }
+
+  // Phương thức cho nuôi thú - ví dụ tăng kinh nghiệm khi chăm sóc thú cưng
+  feedAnimal(animalName: string): boolean {
+    // Giả sử mỗi lần nuôi thú thành công, nhân vật nhận được +3 kinh nghiệm
+    console.log(`Fed animal: ${animalName}`);
+    this.addExperience(3);
+    return true;
   }
 
   // Bắt đầu vòng lặp game tick

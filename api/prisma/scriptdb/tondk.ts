@@ -21,20 +21,11 @@ async function importData() {
         idhoadon: item.idhoadon,
         idhdon: item.idhoadon,
         dvtinh: item.dvtinh,
-        sluong:
-          typeof item.sluong === "string"
-          ? parseInt(item.sluong, 10)
-          : item.sluong,
-        dgia:
-          typeof item.dgia === "string"
-          ? parseInt(item.dgia, 10)
-          : item.dgia,
-        thtien:
-          typeof item.thtien === "string"
-          ? parseInt(item.thtien, 10)
-          : item.thtien
-        }
-      })
+        sluong: Number(item.sluong),
+        dgia: Number(item.dgia),
+        thtien: Number(item.thtien)
+      }
+    })
       )
     );
 

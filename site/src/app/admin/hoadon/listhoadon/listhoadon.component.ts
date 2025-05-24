@@ -57,8 +57,18 @@ export class ListHoadonComponent implements OnInit {
     nbmst: 'Người bán MST',
     khmshdon: 'KHMS Hóa Đơn',
     shdon: 'Số Hóa Đơn',
+    tgtcthue: 'TT Chưa Thuế',
+    tgtthue: 'TT Thuế',
+    tgtttbso: 'TT Thanh Toán',
+    tthai: 'Trạng Thái',
+    ttxly: 'Xử Lý',
     thlap: 'Tháng Lập',
   };
+  ListTrangthai:any={
+
+  }
+  ListXuly:any={
+  }
   FilterColumns: any[] = JSON.parse(localStorage.getItem('HoadonColFilter') || '[]');
   Columns: any[] = [];
 
@@ -84,6 +94,10 @@ export class ListHoadonComponent implements OnInit {
   EditList: any[] = [];
   isSearch = signal<boolean>(false);
   Detail: any=this._StorageService.getItem('Hoadon') || {type:'banra'};
+  Condition: any = {
+    thang:false,
+    shdon:false,
+  }
   constructor() {
     effect(() => {
       this.dataSource.data = this.Listhoadon();
@@ -114,10 +128,16 @@ export class ListHoadonComponent implements OnInit {
     this.ColumnName = this.FilterColumns.reduce((acc, { key, value, isShow }) => 
       isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
   }
-
+getTotal(field: string) {
+  const total = this.dataSource.filteredData.reduce((acc: number, item: any) => {
+    const value = item[field] || 0;
+    return acc + Number(value);
+  }, 0);
+  return total;
+}
     async fetchData(startMonth?: number) {
       this._StorageService.setItem('Hoadon', this.Detail);
-      for (let m = startMonth ?? 0; m < 12; m++) {
+      for (let m = startMonth ?? 0; m < 2; m++) {
         const startDay = 1;
         const daysInMonth = new Date(Number(this.Detail.nam), m + 1, 0).getDate();
         const batdau = `${String(startDay).padStart(2, '0')}/${String(m + 1).padStart(2, '0')}/${this.Detail.nam}T00:00:00`;
@@ -156,12 +176,24 @@ export class ListHoadonComponent implements OnInit {
    async refresh() {
      await this._HoadonService.getAllHoadon();
     }
-  applyFilter(event: Event) {
+  @Debounce(300)  
+  async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+
+    const params:any = {}
+    if (this.Condition.thang) {
+      params.thlap = Number(filterValue);
     }
+    if (this.Condition.shdon) {
+      params.shdon = Number(filterValue);
+    }
+
+    await this._HoadonService.getHoadonBy(params);
+
+    if (filterValue === '') {
+      this._HoadonService.getAllHoadon(this.pageSize(), true);
+    }
+    
   }
 
   async getUpdatedCodeIds() {

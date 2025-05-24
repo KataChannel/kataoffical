@@ -39,7 +39,15 @@ export declare class HoadonchitietService {
         sxep: number | null;
         isproduct: boolean | null;
     }>;
-    findBy(param: any): Promise<{
+    findBy(param: any): Promise<({
+        hoadon: {
+            ntao: Date | null;
+            tdlap: Date | null;
+            thlap: number | null;
+            tthai: number | null;
+            ttxly: number | null;
+        };
+    } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -67,8 +75,13 @@ export declare class HoadonchitietService {
         tthue: number | null;
         sxep: number | null;
         isproduct: boolean | null;
-    } | {
+    }) | {
         data: {
+            ttxly: number;
+            tthai: number;
+            ntao: string;
+            tdlap: string;
+            thlap: string | number;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -103,6 +116,8 @@ export declare class HoadonchitietService {
     } | null>;
     findAll(page?: number, limit?: number): Promise<{
         data: {
+            ttxly: number;
+            tthai: number;
             ntao: string;
             tdlap: string;
             thlap: string;
@@ -144,6 +159,7 @@ export declare class HoadonchitietService {
         data: any[];
         total: number;
         totalSP: any;
+        totalmh: number;
         page: any;
         pageCount: number;
     }>;
