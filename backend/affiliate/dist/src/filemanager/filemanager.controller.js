@@ -31,6 +31,7 @@ let FilemanagerController = class FilemanagerController {
     }
     async findby(param) {
         try {
+            console.log('Find by parameters:', param);
             return await this.filemanagerService.findBy(param);
         }
         catch (error) {

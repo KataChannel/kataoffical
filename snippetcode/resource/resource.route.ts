@@ -2,6 +2,13 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { ListResourceComponent } from './listresource/listresource.component';
 const routes: Routes = [
+  // {
+  //       path: 'resource',
+  //       canActivate: [PermissionGuard],
+  //       data: { permission: 'resource.view' },
+  //       loadChildren: () =>
+  //          import('./admin/resource/resource.route').then(m => m.ResourceRoutingModule),
+  // },
   {
     path: 'dashboard',
     loadComponent: () =>

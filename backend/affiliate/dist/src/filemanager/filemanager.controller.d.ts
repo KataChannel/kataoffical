@@ -12,6 +12,7 @@ export declare class FilemanagerController {
         order: number | null;
         url: string | null;
         fileType: string | null;
+        fileSize: number | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
         category: string | null;
         group: string | null;
@@ -26,6 +27,7 @@ export declare class FilemanagerController {
         order: number | null;
         url: string | null;
         fileType: string | null;
+        fileSize: number | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
         category: string | null;
         group: string | null;
@@ -40,6 +42,7 @@ export declare class FilemanagerController {
             order: number | null;
             url: string | null;
             fileType: string | null;
+            fileSize: number | null;
             metaData: import(".prisma/client/runtime/library").JsonValue | null;
             category: string | null;
             group: string | null;
@@ -59,6 +62,7 @@ export declare class FilemanagerController {
             order: number | null;
             url: string | null;
             fileType: string | null;
+            fileSize: number | null;
             metaData: import(".prisma/client/runtime/library").JsonValue | null;
             category: string | null;
             group: string | null;
@@ -80,25 +84,13 @@ export declare class FilemanagerController {
         order: number | null;
         url: string | null;
         fileType: string | null;
+        fileSize: number | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
         category: string | null;
         group: string | null;
     }>;
     update(id: string, data: any): Promise<any>;
-    remove(id: string): Promise<{
-        id: string;
-        codeId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        description: string | null;
-        title: string | null;
-        order: number | null;
-        url: string | null;
-        fileType: string | null;
-        metaData: import(".prisma/client/runtime/library").JsonValue | null;
-        category: string | null;
-        group: string | null;
-    }>;
+    remove(id: string): Promise<true>;
     reorder(body: {
         filemanagerIds: string[];
     }): Promise<{

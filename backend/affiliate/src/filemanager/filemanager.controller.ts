@@ -23,6 +23,8 @@ export class FilemanagerController {
   @Post('findby')
   async findby(@Body() param: any) {
     try {
+      console.log('Find by parameters:', param);
+      
       return await this.filemanagerService.findBy(param);
     } catch (error) {
       throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);

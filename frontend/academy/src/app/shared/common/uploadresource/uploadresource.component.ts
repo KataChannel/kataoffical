@@ -270,7 +270,7 @@ export class UploadresourceComponent implements OnInit, OnChanges {
     this.isUploading = false;
     this.uploadMessage = `Upload thành công ${uploadedCount} file!`;
     this.isUploadSuccess = uploadedCount === totalCount;
-
+    
     // Cập nhật lại selectedFiles cho component
     this.filesSelectedEvent.emit(this.selectedFiles.length === 0 ? [] : this.selectedFiles);
   }

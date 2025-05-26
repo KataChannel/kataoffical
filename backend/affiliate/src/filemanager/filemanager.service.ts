@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service'; 
 import { ErrorlogService } from 'src/errorlog/errorlog.service'; 
+import { MinioService } from 'src/minio/minio.service';
 import { SocketGateway } from 'src/socket.gateway'; 
 @Injectable()
 export class fileManagerService { 
@@ -8,6 +9,7 @@ export class fileManagerService {
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway, 
     private _ErrorlogService: ErrorlogService,
+    private _MinioService: MinioService,
   ) {}
   async getLastUpdatedfileManager(): Promise<{ updatedAt: number }> { 
     try {
@@ -69,6 +71,8 @@ export class fileManagerService {
           where,
           orderBy: { order: 'asc' },
         });
+        console.log('Find by parameters:', param, 'Result:', result);
+        
         return result;
       }
       const skip = (page - 1) * limit;
@@ -141,13 +145,23 @@ export class fileManagerService {
       throw error;
     }
   }
-  async remove(id: string) { 
+  async remove(id: string) {
     try {
-      const deleted = await this.prisma.fileManager.delete({ where: { id } });
-      this._SocketGateway.sendUpdate('fileManager');
-      return deleted;
+      
+      const filemanager = await this.prisma.fileManager.findUnique({ where: { id } });
+      console.log('File filemanager from Minio:', filemanager);
+      if (!filemanager) throw new NotFoundException('Filemanager not found');
+
+      // Delete file from Minio and check if deletion was successful
+      const fileDeleted = await this._MinioService.deleteFile(filemanager.id); 
+            console.log('File deleted from Minio:', fileDeleted);     
+      if (!fileDeleted) {
+        throw new Error('File deletion from Minio failed');
+      }
+      this._SocketGateway.sendUpdate('filemanager');
+      return fileDeleted;
     } catch (error) {
-      this._ErrorlogService.logError('removefileManager', error);
+      this._ErrorlogService.logError('removeFilemanager', error);
       throw error;
     }
   }

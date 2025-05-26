@@ -91,7 +91,7 @@ import { UploadresourceComponent } from '../../../shared/common/uploadresource/u
     isSearch: boolean = false;
     uploadUrl: string = `${environment.ACADEMY_APIURL}/minio/upload`;
     category: string = 'default';
-    group: string = 'default';
+    group: string = 'timona';
     constructor() {
       effect(() => {
         this.dataSource.data = this.Listfilemanager();
@@ -261,6 +261,33 @@ import { UploadresourceComponent } from '../../../shared/common/uploadresource/u
           }
         });
     }
+    openUploadResource(teamplate: TemplateRef<any>) {
+        const dialogDeleteRef = this._dialog.open(teamplate, {
+          hasBackdrop: true,
+          disableClose: true,
+        });
+        dialogDeleteRef.afterClosed().subscribe((result) => {
+          if (result=="true") {
+            
+          }
+        });
+    }
+  filesSelectedEvent(event:any) {
+      console.log('Files selected:', event);
+      
+  }
+  uploadSuccessEvent(event:any) {
+      this._snackBar.open('Tải lên thành công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      this._FilemanagerService.getAllFilemanager();
+  }
+  uploadErrorEvent(event:any) {
+      console.error('Upload failed:', event);
+  }
     openImageViewDialog(teamplate: TemplateRef<any>) {
         const dialogDeleteRef = this._dialog.open(teamplate, {
           hasBackdrop: true,

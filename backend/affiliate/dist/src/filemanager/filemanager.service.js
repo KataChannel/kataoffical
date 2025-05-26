@@ -13,12 +13,14 @@ exports.fileManagerService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const errorlog_service_1 = require("../errorlog/errorlog.service");
+const minio_service_1 = require("../minio/minio.service");
 const socket_gateway_1 = require("../socket.gateway");
 let fileManagerService = class fileManagerService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway, _ErrorlogService, _MinioService) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
         this._ErrorlogService = _ErrorlogService;
+        this._MinioService = _MinioService;
     }
     async getLastUpdatedfileManager() {
         try {
@@ -83,6 +85,7 @@ let fileManagerService = class fileManagerService {
                     where,
                     orderBy: { order: 'asc' },
                 });
+                console.log('Find by parameters:', param, 'Result:', result);
                 return result;
             }
             const skip = (page - 1) * limit;
@@ -163,12 +166,20 @@ let fileManagerService = class fileManagerService {
     }
     async remove(id) {
         try {
-            const deleted = await this.prisma.fileManager.delete({ where: { id } });
-            this._SocketGateway.sendUpdate('fileManager');
-            return deleted;
+            const filemanager = await this.prisma.fileManager.findUnique({ where: { id } });
+            console.log('File filemanager from Minio:', filemanager);
+            if (!filemanager)
+                throw new common_1.NotFoundException('Filemanager not found');
+            const fileDeleted = await this._MinioService.deleteFile(filemanager.id);
+            console.log('File deleted from Minio:', fileDeleted);
+            if (!fileDeleted) {
+                throw new Error('File deletion from Minio failed');
+            }
+            this._SocketGateway.sendUpdate('filemanager');
+            return fileDeleted;
         }
         catch (error) {
-            this._ErrorlogService.logError('removefileManager', error);
+            this._ErrorlogService.logError('removeFilemanager', error);
             throw error;
         }
     }
@@ -194,6 +205,7 @@ exports.fileManagerService = fileManagerService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        errorlog_service_1.ErrorlogService,
+        minio_service_1.MinioService])
 ], fileManagerService);
 //# sourceMappingURL=filemanager.service.js.map

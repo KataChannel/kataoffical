@@ -355,8 +355,16 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
       this._StorageService.setItem('token', token);
     }
   }
+  set accessTokenadmin(token: string) {
+    if (this.isBrowser) {
+      this._StorageService.setItem('tokenadmin', token);
+    }
+  }
   get accessToken(): string {
     return this.isBrowser ? (this._StorageService.getItem('token') ?? '') : '';
+  }
+  get accessTokenadmin(): string {
+    return this.isBrowser ? (this._StorageService.getItem('tokenadmin') ?? '') : '';
   }
 
 
@@ -459,6 +467,22 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
       return of(false);
     }
     if (AuthUtils.isTokenExpired(this.accessToken)) {
+      return of(false);
+    }
+    return of(true);
+    // return this.signInUsingToken();
+  }
+  checkAdminDangnhap(): Observable<boolean> {
+    if (this._authenticated) {
+      return of(true);
+    }
+    if (!this.accessTokenadmin || this.accessTokenadmin === 'undefined') {
+      if (this.isBrowser) {
+        this._StorageService.removeItem('tokenadmin');
+      }
+      return of(false);
+    }
+    if (AuthUtils.isTokenExpired(this.accessTokenadmin)) {
       return of(false);
     }
     return of(true);

@@ -211,9 +211,12 @@
       <div class="font-bold text-lg">Upload Tài Nguyên</div>
     </div>
     <div class="relative h-full w-full overflow-auto">
-      <app-uploadresource [uploadUrl]="uploadUrl" [category]="category" [group]="group" class="col-span-2"></app-uploadresource>  
+      <app-uploadresource [uploadUrl]="uploadUrl" [category]="category" 
+      (filesSelectedEvent)="filesSelectedEvent($event)"
+      (uploadSuccessEvent)="uploadSuccessEvent($event)"
+      (uploadErrorEvent)="uploadErrorEvent($event)"
+      [group]="group" class="col-span-2"></app-uploadresource>  
     </div>
-
     <div class="relative flex flex-row space-x-2 items-center justify-center">
       <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
     </div>

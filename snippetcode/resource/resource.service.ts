@@ -91,7 +91,7 @@ export class ResourceService {
         },
         body: JSON.stringify(dulieu),
       };
-      const response = await fetch(`${environment.ACADEMY_APIURL}/resource`, options);
+      const response = await fetch(`${environment.APIURL}/resource`, options);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -130,7 +130,7 @@ export class ResourceService {
 
       // Kiểm tra thời gian cập nhật từ server, trừ khi được yêu cầu forceRefresh
       if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.ACADEMY_APIURL}/resource/lastupdated`, options);
+        const lastUpdatedResponse = await fetch(`${environment.APIURL}/resource/lastupdated`, options);
         if (!lastUpdatedResponse.ok) {
           this.handleError(lastUpdatedResponse.status);
           this.ListResource.set(cached.resources);
@@ -159,7 +159,7 @@ export class ResourceService {
         page: this.page().toString(),
         limit: pageSize.toString()
       });
-      const response = await fetch(`${environment.ACADEMY_APIURL}/resource?${query}`, options);
+      const response = await fetch(`${environment.APIURL}/resource?${query}`, options);
       if (!response.ok) {
         this.handleError(response.status);
         this.ListResource.set(cached.resources);
@@ -179,7 +179,7 @@ export class ResourceService {
       });
       // Với forceRefresh, cập nhật luôn với thời gian mới từ server, nếu không thì sử dụng thời gian lấy từ lastUpdatedResponse
       if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.ACADEMY_APIURL}/resource/lastupdated`, options);
+        const lastUpdatedResponse = await fetch(`${environment.APIURL}/resource/lastupdated`, options);
         const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
         this._StorageService.setItem('resources_updatedAt', updatedAtServer);
       } else {
@@ -212,7 +212,7 @@ export class ResourceService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-      const response = await fetch(`${environment.ACADEMY_APIURL}/resource/updateCodeIds`, options);
+      const response = await fetch(`${environment.APIURL}/resource/updateCodeIds`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -245,7 +245,7 @@ export class ResourceService {
         },
         body: JSON.stringify({ ...param, page: this.page(), limit: pageSize }),
       };
-      const response = await fetch(`${environment.ACADEMY_APIURL}/resource/findby`, options);
+      const response = await fetch(`${environment.APIURL}/resource/findby`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -290,7 +290,7 @@ export class ResourceService {
         },
         body: JSON.stringify(dulieu),
       };
-      const response = await fetch(`${environment.ACADEMY_APIURL}/resource/${dulieu.id}`, options);
+      const response = await fetch(`${environment.APIURL}/resource/${dulieu.id}`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }
@@ -312,7 +312,7 @@ export class ResourceService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-      const response = await fetch(`${environment.ACADEMY_APIURL}/resource/${item.id}`, options);
+      const response = await fetch(`${environment.APIURL}/resource/${item.id}`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }

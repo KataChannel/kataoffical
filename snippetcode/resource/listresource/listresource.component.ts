@@ -53,10 +53,8 @@ export class ListResourceComponent implements OnInit {
   ColumnName: any = {
     stt: '#',
     codeId: 'Code',
-    title: 'Tiêu Đề',
-    category: 'Danh Mục',
+    name: 'Tiêu Đề',
     group: 'Nhóm',
-    fileType: 'Loại Tập Tin',
     description: 'Mô Tả',
     status: 'Trạng Thái',
     order: 'Thứ Tự',

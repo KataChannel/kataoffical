@@ -14,12 +14,13 @@ const errorlog_module_1 = require("../errorlog/errorlog.module");
 const auth_module_1 = require("../auth/auth.module");
 const filemanager_controller_1 = require("./filemanager.controller");
 const filemanager_service_1 = require("./filemanager.service");
+const minio_module_1 = require("../minio/minio.module");
 let FilemanagerModule = class FilemanagerModule {
 };
 exports.FilemanagerModule = FilemanagerModule;
 exports.FilemanagerModule = FilemanagerModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule, auth_module_1.AuthModule],
+        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule, auth_module_1.AuthModule, minio_module_1.MinioModule],
         controllers: [filemanager_controller_1.FilemanagerController],
         providers: [filemanager_service_1.fileManagerService, socket_gateway_1.SocketGateway],
         exports: [filemanager_service_1.fileManagerService]

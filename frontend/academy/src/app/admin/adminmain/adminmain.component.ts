@@ -18,6 +18,7 @@ import moment from 'moment';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { MenuService } from '../menu/menu.service';
 import { UserAdminService } from '../user/useradmin.service';
+import { StorageService } from '../../shared/utils/storage.service';
 @Component({
   selector: 'app-adminmain',
   imports: [
@@ -70,6 +71,7 @@ export class AdminmainComponent {
   constructor(
     private _breakpointObserver:BreakpointObserver,
     private _UserService:UserAdminService,
+    private _StorageService:StorageService,
     private _ErrorLogService:ErrorLogService,
   ) {}
 
@@ -110,21 +112,30 @@ export class AdminmainComponent {
       }
     });
   }
-  async ClearCache(){
-    const token = localStorage.getItem('tokenadmin');
-    const permissionsadmin = localStorage.getItem('permissionsadmin');
-    localStorage.clear();
+  async ClearCache(): Promise<void> {
+    const token = this._StorageService.getItem('token');
+    const tokenadmin = this._StorageService.getItem('tokenadmin');
+    const permissions = this._StorageService.getItem('permissions');
+    const permissionsadmin = this._StorageService.getItem('permissionsadmin');
+    this._StorageService.clearAllIndexedDB()
+    this._StorageService.clear()
     if (token) {
-      localStorage.setItem('tokenadmin', token);
+      this._StorageService.setItem('token', token);
+    }
+    if (permissions) {
+      this._StorageService.setItem('permissions', permissions);
+    }
+    if (tokenadmin) {
+      this._StorageService.setItem('tokenadmin', tokenadmin);
     }
     if (permissionsadmin) {
-      localStorage.setItem('permissionsadmin', permissionsadmin);
+      this._StorageService.setItem('permissionsadmin', permissionsadmin);
     }
     await this._ErrorLogService.ClearRedisCache()
-    this._snackBar.open('Xoá Cache Thành Công', '', {
+    this._snackBar.open('Xóa Cache Thành Công', '', {
       duration: 1000,
-      horizontalPosition: "end",
-      verticalPosition: "top",
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
       panelClass: ['snackbar-success'],
     });
   }

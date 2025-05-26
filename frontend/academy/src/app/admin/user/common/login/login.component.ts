@@ -138,12 +138,13 @@ export class LoginComponent implements OnInit {
     ) {
       try {
         this._UserService.login(this.User).then((data: any) => {
-          console.log(data);
           if (data&&data[0]) {
             setTimeout(() => {
-              window.location.reload();
+                window.location.href = '/admin';
             }, 100);
-          } else {
+          } 
+          
+          else {
             this._snackBar.open('Thông Tin Đăng Nhập Chưa Đúng', '', {
               duration: 1000,
               horizontalPosition: 'end',

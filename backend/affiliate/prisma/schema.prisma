@@ -191,6 +191,7 @@ model Resource {
   createdAt     DateTime @default(now())
   updatedAt     DateTime       @updatedAt
 }
+
 model FileManager {
   id        String   @id @default(uuid())
   codeId    String?   @unique // Mã đề xuất duy nhất
@@ -198,6 +199,7 @@ model FileManager {
   url       String?
   description String?
   fileType  String?
+  fileSize  Int?     // Kích thước tệp tin (tính bằng byte)
   metaData  Json?
   category  String?
   group     String?

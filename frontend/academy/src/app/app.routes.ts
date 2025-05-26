@@ -4,6 +4,7 @@ import { AuthGuard } from './admin/user/common/guards/auth.guard';
 import { GuestGuard } from './admin/user/common/guards/guest.guard';
 import { PermissionGuard } from './admin/user/common/guards/permission.guard';
 import { AuthAdminGuard } from './admin/user/common/guards/auth.guardadmin';
+import { GuestAdminGuard } from './admin/user/common/guards/guest.guardadmin';
 export const routes: Routes = [
   // { path: '', redirectTo: 'admin/profile', pathMatch: 'full' },
   {
@@ -326,8 +327,8 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    canActivate: [GuestGuard],
-    canActivateChild: [GuestGuard],
+    canActivate: [GuestAdminGuard],
+    canActivateChild: [GuestAdminGuard],
     loadComponent: () =>
       import('./admin/user/common/login/login.component').then(
         (c) => c.LoginComponent

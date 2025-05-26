@@ -89,6 +89,7 @@ export class MinioService {
           codeId: codeId, 
           url,
           fileType: file.mimetype,
+          fileSize: file.size,
           title: extra.title || file.originalname,
           description: extra.description || null,
           metaData,

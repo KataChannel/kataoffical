@@ -1,11 +1,13 @@
 import { PrismaService } from 'prisma/prisma.service';
 import { ErrorlogService } from 'src/errorlog/errorlog.service';
+import { MinioService } from 'src/minio/minio.service';
 import { SocketGateway } from 'src/socket.gateway';
 export declare class fileManagerService {
     private readonly prisma;
     private _SocketGateway;
     private _ErrorlogService;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogService: ErrorlogService);
+    private _MinioService;
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogService: ErrorlogService, _MinioService: MinioService);
     getLastUpdatedfileManager(): Promise<{
         updatedAt: number;
     }>;
@@ -20,6 +22,7 @@ export declare class fileManagerService {
         order: number | null;
         url: string | null;
         fileType: string | null;
+        fileSize: number | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
         category: string | null;
         group: string | null;
@@ -34,6 +37,7 @@ export declare class fileManagerService {
         order: number | null;
         url: string | null;
         fileType: string | null;
+        fileSize: number | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
         category: string | null;
         group: string | null;
@@ -48,6 +52,7 @@ export declare class fileManagerService {
             order: number | null;
             url: string | null;
             fileType: string | null;
+            fileSize: number | null;
             metaData: import(".prisma/client/runtime/library").JsonValue | null;
             category: string | null;
             group: string | null;
@@ -67,6 +72,7 @@ export declare class fileManagerService {
             order: number | null;
             url: string | null;
             fileType: string | null;
+            fileSize: number | null;
             metaData: import(".prisma/client/runtime/library").JsonValue | null;
             category: string | null;
             group: string | null;
@@ -85,25 +91,13 @@ export declare class fileManagerService {
         order: number | null;
         url: string | null;
         fileType: string | null;
+        fileSize: number | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
         category: string | null;
         group: string | null;
     }>;
     update(id: string, data: any): Promise<any>;
-    remove(id: string): Promise<{
-        id: string;
-        codeId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        description: string | null;
-        title: string | null;
-        order: number | null;
-        url: string | null;
-        fileType: string | null;
-        metaData: import(".prisma/client/runtime/library").JsonValue | null;
-        category: string | null;
-        group: string | null;
-    }>;
+    remove(id: string): Promise<true>;
     reorderfileManagers(fileManagerIds: string[]): Promise<{
         status: string;
     }>;

@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal, TemplateRef } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,14 +7,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { ListResourceComponent } from '../listresource/listresource.component';
 import { ResourceService } from '../resource.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
-import { FilemanagerService } from '../../filemanager/filemanager.service';
-import { environment } from '../../../../environments/environment.development';
   @Component({
     selector: 'app-detailresource',
     imports: [
@@ -26,7 +24,7 @@ import { environment } from '../../../../environments/environment.development';
       MatSelectModule,
       MatDialogModule,
       CommonModule,
-      MatSlideToggleModule,
+      MatSlideToggleModule
     ],
     templateUrl: './detailresource.component.html',
     styleUrl: './detailresource.component.scss'
@@ -34,12 +32,9 @@ import { environment } from '../../../../environments/environment.development';
   export class DetailResourceComponent {
     _ListResourceComponent:ListResourceComponent = inject(ListResourceComponent)
     _ResourceService:ResourceService = inject(ResourceService)
-    _FilemanagerService:FilemanagerService = inject(FilemanagerService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
-    ListFilemanager = this._FilemanagerService.ListFilemanager;
-    ImageURL=environment.ImageURL
     constructor(){
       this._route.paramMap.subscribe((params) => {
         const id = params.get('id');
@@ -70,21 +65,6 @@ import { environment } from '../../../../environments/environment.development';
     isDelete = signal(false);  
     resourceId:any = this._ResourceService.resourceId
     async ngOnInit() {       
-    }
-    private _dialog: MatDialog = inject(MatDialog);
-    async openChosenFileDialog(template: TemplateRef<any>) {
-      await this._FilemanagerService.getFilemanagerBy({ group: 'timona' });
-      console.log('ListFM', this.ListFilemanager());
-
-      const dialogDeleteRef = this._dialog.open(template, {
-        hasBackdrop: true,
-        disableClose: true,
-      });
-      dialogDeleteRef.afterClosed().subscribe((result) => {
-        if (result === "true") {
-
-        }
-      });
     }
     async handleResourceAction() {
       if (this.resourceId() === 'new') {
