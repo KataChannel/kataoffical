@@ -99,6 +99,13 @@ export const routes: Routes = [
             (m) => m.ResourceRoutingModule
           ),
       },
+        {
+        path: 'filemanager',
+        canActivate: [PermissionGuard],
+        data: { permission: 'filemanager.view' },
+        loadChildren: () =>
+           import('./admin/filemanager/filemanager.route').then(m => m.FilemanagerRoutingModule),
+      },
       {
         path: 'quanlyctv',
         canActivate: [PermissionGuard],

@@ -36,7 +36,7 @@ export class MinioService {
   }
   async generateCodeId(): Promise<string> {
     try {
-      const latest = await this.prisma.resource.findFirst({
+      const latest = await this.prisma.fileManager.findFirst({
         orderBy: { codeId: 'desc' },
       });
       let nextNumber = 1;
@@ -84,7 +84,7 @@ export class MinioService {
       const url = `${this.bucketName}/${fileName}`;
       // const url = `${publicUrl}/${this.bucketName}/${fileName}`;
       const codeId = await this.generateCodeId();
-      await this.prisma.resource.create({
+      await this.prisma.fileManager.create({
         data: {
           codeId: codeId, 
           url,
@@ -101,23 +101,23 @@ export class MinioService {
     } catch (error) {
       console.error('Error uploading file to Minio or saving to DB:', error);
       throw new InternalServerErrorException(
-        'Unable to upload resource or save to the database',
+        'Unable to upload fileManager or save to the database',
       );
     }
   }
 
   async deleteFile(id: any): Promise<boolean> {
-    const resource = await this.prisma.resource.findUnique({
+    const fileManager = await this.prisma.fileManager.findUnique({
       where: { id: id },
     });
-    if (!resource) {
-      throw new NotFoundException('resource not found');
+    if (!fileManager) {
+      throw new NotFoundException('fileManager not found');
     }
 
-    const fileName = resource?.url?.split('/').pop();
+    const fileName = fileManager?.url?.split('/').pop();
     if (!fileName) {
       throw new InternalServerErrorException(
-        'Invalid resource URL: file name not found',
+        'Invalid fileManager URL: file name not found',
       );
     }
 
@@ -127,7 +127,7 @@ export class MinioService {
       console.error('Error deleting file from Minio:', error);
       throw new InternalServerErrorException('Error deleting file from Minio');
     }
-    await this.prisma.resource.delete({ where: { id: id } });
+    await this.prisma.fileManager.delete({ where: { id: id } });
     return true;
   }
 }

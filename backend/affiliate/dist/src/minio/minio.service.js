@@ -43,7 +43,7 @@ let MinioService = class MinioService {
     }
     async generateCodeId() {
         try {
-            const latest = await this.prisma.resource.findFirst({
+            const latest = await this.prisma.fileManager.findFirst({
                 orderBy: { codeId: 'desc' },
             });
             let nextNumber = 1;
@@ -72,7 +72,7 @@ let MinioService = class MinioService {
             const publicUrl = process.env.MINIO_PUBLIC_URL?.trim() || 'http://localhost:9000';
             const url = `${this.bucketName}/${fileName}`;
             const codeId = await this.generateCodeId();
-            await this.prisma.resource.create({
+            await this.prisma.fileManager.create({
                 data: {
                     codeId: codeId,
                     url,
@@ -88,19 +88,19 @@ let MinioService = class MinioService {
         }
         catch (error) {
             console.error('Error uploading file to Minio or saving to DB:', error);
-            throw new common_1.InternalServerErrorException('Unable to upload resource or save to the database');
+            throw new common_1.InternalServerErrorException('Unable to upload fileManager or save to the database');
         }
     }
     async deleteFile(id) {
-        const resource = await this.prisma.resource.findUnique({
+        const fileManager = await this.prisma.fileManager.findUnique({
             where: { id: id },
         });
-        if (!resource) {
-            throw new common_2.NotFoundException('resource not found');
+        if (!fileManager) {
+            throw new common_2.NotFoundException('fileManager not found');
         }
-        const fileName = resource?.url?.split('/').pop();
+        const fileName = fileManager?.url?.split('/').pop();
         if (!fileName) {
-            throw new common_1.InternalServerErrorException('Invalid resource URL: file name not found');
+            throw new common_1.InternalServerErrorException('Invalid fileManager URL: file name not found');
         }
         try {
             await this.client.removeObject(this.bucketName, fileName);
@@ -109,7 +109,7 @@ let MinioService = class MinioService {
             console.error('Error deleting file from Minio:', error);
             throw new common_1.InternalServerErrorException('Error deleting file from Minio');
         }
-        await this.prisma.resource.delete({ where: { id: id } });
+        await this.prisma.fileManager.delete({ where: { id: id } });
         return true;
     }
 };

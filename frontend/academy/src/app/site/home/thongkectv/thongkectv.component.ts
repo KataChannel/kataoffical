@@ -14,7 +14,7 @@ import { ChartComponent, NgApexchartsModule } from 'ng-apexcharts';
 @Component({
   selector: 'app-thongkectv',
   imports: [
-    RouterLink, 
+    // RouterLink, 
     MatIconModule,
     NgApexchartsModule,
     FormsModule,
