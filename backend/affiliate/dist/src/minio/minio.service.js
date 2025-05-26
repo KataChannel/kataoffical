@@ -48,12 +48,12 @@ let MinioService = class MinioService {
             });
             let nextNumber = 1;
             if (latest && latest.codeId) {
-                const match = latest.codeId.match(/RS(\d+)/);
+                const match = latest.codeId.match(/FILE(\d+)/);
                 if (match) {
                     nextNumber = parseInt(match[1]) + 1;
                 }
             }
-            return `RS${nextNumber.toString().padStart(5, '0')}`;
+            return `FILE${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
             throw error;
