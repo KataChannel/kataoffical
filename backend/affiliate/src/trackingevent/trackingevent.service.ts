@@ -17,14 +17,8 @@ export class TrackingeventService {
 
     try {
       if (!data) throw new NotFoundException('Data not found');
-      const { eventType, pageUrl, pageType, pageIdentifier, refCode, referrer } = data;
       const payload = {
-        eventType,
-        pageUrl,
-        pageType,
-        pageIdentifier,
-        refCode,
-        referrer,
+        ...data,
         ...(ipAddress && { ipAddress }),
         ...(userAgent && { userAgent }),
       };

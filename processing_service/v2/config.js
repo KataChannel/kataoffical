@@ -16,7 +16,6 @@ const externalApiUrl = process.env.EXTERNAL_API_URL;
 console.log(process.env.EXTERNAL_API_URL);
 
 const apiAuthUrl = externalApiUrl + 'Client/Autho'; // Hardcoded from process.js
-console.log(apiAuthUrl);
 //Khách Hàng
 const apiCustomerListUrl = externalApiUrl + 'Customer/GetList';
 //Thanh toán
@@ -25,6 +24,8 @@ const apiRevenueListUrl = externalApiUrl + 'Revenue/GetList';
 const apiTreatmentListUrl = externalApiUrl + 'Customer/GetTreat';
 //Lịch Hẹn
 const apiAppointmentListUrl = externalApiUrl + 'Appointment/GetList';
+
+const apiDichvuListUrl = externalApiUrl + 'Customer/GetTab';
 
 
 // --- Cấu hình Cron ---
@@ -55,6 +56,7 @@ module.exports = {
         apiRevenueListUrl: apiRevenueListUrl, // URL danh sách thanh toán (được dùng trong task)
         apiTreatmentListUrl: apiTreatmentListUrl,
         apiAppointmentListUrl: apiAppointmentListUrl,
+        apiDichvuListUrl: apiDichvuListUrl,
         timeout: 30000 // Timeout từ code gốc
     },
     dbConfig: {

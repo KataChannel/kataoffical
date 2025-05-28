@@ -30,7 +30,7 @@ export class fileManagerService {
       let nextNumber = 1;
       if (latest && latest.codeId) {
         const prefix = 'FILE';
-        const match = latest.codeId.match(new RegExp(prefix + '(\d+)'));
+        const match = latest.codeId.match(new RegExp(prefix + '(\\d+)'));
         if (match) {
           nextNumber = parseInt(match[1]) + 1;
         }

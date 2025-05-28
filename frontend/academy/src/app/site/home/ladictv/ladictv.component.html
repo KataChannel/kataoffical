@@ -14,7 +14,7 @@
   </div>
   <!-- Item List -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    <div *ngFor="let item of Filerladi" class="bg-white flex flex-col space-y-2 rounded-lg border">
+    <div *ngFor="let item of Filerladi; let i = index" class="bg-white flex flex-col space-y-2 rounded-lg border">
       <img [src]="item.thumbnail" [alt]="item.title" class="w-full h-24 object-cover" loading="lazy">
       <div class="p-4">
         <h2 class="text-xl font-semibold text-gray-800 mb-2 line-clamp-1">{{item.title}}</h2>
@@ -26,11 +26,9 @@
         <div class="flex flex-row space-x-2 items-center justify-between">
           <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
             <mat-label>Liên Kết</mat-label>
-            <input matInput value="/ladictv/{{item?.slug}}?ref={{profile()?.inviteCode}}" [disabled]="true"
-              placeholder="Vui lòng Nhập Liên Kết" />
+            <input matInput [value]="getUrl(item)" [disabled]="true" placeholder="Vui lòng Nhập Liên Kết" />
           </mat-form-field>
-          <button (click)="getCoppyLink('/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode)" mat-icon-button
-            color="primary">
+          <button (click)="getCoppyLink(getUrl(item))" class="!text-xs" mat-icon-button color="primary">
             <mat-icon>content_copy</mat-icon>
           </button>
           <button mat-icon-button color="primary" [matMenuTriggerFor]="menu">
@@ -38,38 +36,39 @@
           </button>
           <mat-menu #menu="matMenu">
             <button mat-menu-item
-              (click)="share('facebook', '/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode, item?.title, item?.description, item?.thumbnail)">
+              (click)="share('facebook', getUrl(item), item?.title, item?.description, item?.thumbnail)">
               <mat-icon class="!text-blue-500">facebook</mat-icon>
               <span>Facebook</span>
             </button>
             <button mat-menu-item
-              (click)="share('twitter', '/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode, item?.title, item?.description, item?.thumbnail)">
+              (click)="share('twitter', getUrl(item), item?.title, item?.description, item?.thumbnail)">
               <mat-icon class="!text-blue-500">linkedin</mat-icon>
               <span>Twitter</span>
             </button>
             <button mat-menu-item color="primary"
-              (click)="share('linkedin', '/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode, item?.title, item?.description, item?.thumbnail)">
+              (click)="share('linkedin', getUrl(item), item?.title, item?.description, item?.thumbnail)">
               <mat-icon class="!text-blue-500">linkedin</mat-icon>
               <span>LinkedIn</span>
             </button>
             <button mat-menu-item color="primary"
-              (click)="share('pinterest', '/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode, item?.title, item?.description, item?.thumbnail)">
+              (click)="share('pinterest', getUrl(item), item?.title, item?.description, item?.thumbnail)">
               <mat-icon class="!text-blue-500">pinterest</mat-icon>
               <span>Pinterest</span>
             </button>
             <button mat-menu-item color="primary"
-              (click)="share('whatsapp', '/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode, item?.title, item?.description, item?.thumbnail)">
+              (click)="share('whatsapp', getUrl(item), item?.title, item?.description, item?.thumbnail)">
               <mat-icon class="!text-blue-500">link</mat-icon>
               <span>WhatsApp</span>
             </button>
             <button mat-menu-item color="primary"
-              (click)="share('email', '/ladictv/' + item?.slug + '?ref=' + profile()?.inviteCode, item?.title, item?.description, item?.thumbnail)">
+              (click)="share('email', getUrl(item), item?.title, item?.description, item?.thumbnail)">
               <mat-icon class="!text-blue-500">email</mat-icon>
               <span>Email</span>
             </button>
           </mat-menu>
+
         </div>
-      </div>
+
     </div>
   </div>
 

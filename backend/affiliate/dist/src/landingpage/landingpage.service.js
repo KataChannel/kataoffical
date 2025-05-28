@@ -99,15 +99,41 @@ let landingPageService = class landingPageService {
             throw error;
         }
     }
-    async findby(param) {
+    async findBy(param) {
         try {
-            const landingPage = await this.prisma.landingPage.findUnique({ where: param });
-            if (!landingPage)
-                throw new common_1.NotFoundException('landingPage not found');
-            return landingPage;
+            const { isOne, page = 1, limit = 20, ...where } = param;
+            if (where.title) {
+                where.title = {
+                    contains: where.title,
+                    mode: 'insensitive',
+                };
+            }
+            if (isOne) {
+                const result = await this.prisma.landingPage.findFirst({
+                    where,
+                    orderBy: { order: 'asc' },
+                });
+                return result;
+            }
+            const skip = (page - 1) * limit;
+            const [data, total] = await Promise.all([
+                this.prisma.landingPage.findMany({
+                    where,
+                    skip,
+                    take: limit,
+                    orderBy: { order: 'asc' },
+                }),
+                this.prisma.landingPage.count({ where }),
+            ]);
+            return {
+                data,
+                total,
+                page,
+                pageCount: Math.ceil(total / limit)
+            };
         }
         catch (error) {
-            this._ErrorlogService.logError('findby', error);
+            this._ErrorlogService.logError('findBylandingPage', error);
             throw error;
         }
     }

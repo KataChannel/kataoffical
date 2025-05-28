@@ -37,6 +37,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     Listladipage = signal<any[]>([]);
     Filerladi:any=[];
     profile:any = signal<any>({});
+    isShowUTM:any=[]
     constructor() {
         effect(async() => {
          await this._LandingpageService.getAllLandingpage()
@@ -55,8 +56,12 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
       const query = (event.target as HTMLInputElement).value;
       this.Filerladi = this.Listladipage().filter(item => item.title.toLowerCase().includes(query));
     }
-  
-   
+    getUrl(item:any){
+      const result = `/ladictv/${item?.slug}?ref=${this.profile()?.inviteCode}`;
+      return result;
+    }
+
+
   private encode(str: string): string {
     return encodeURIComponent(str);
   }

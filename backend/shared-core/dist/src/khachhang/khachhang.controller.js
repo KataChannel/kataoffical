@@ -27,6 +27,22 @@ let KhachhangController = class KhachhangController {
         const limitNumber = Number(limit) || 10;
         return this.khachhangService.findAllVttech({ page: pageNumber, limit: limitNumber });
     }
+    async findKhachhangDoanhthu(param) {
+        try {
+            return await this.khachhangService.findKhachhangDoanhthu(param);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async findby(param) {
+        try {
+            return await this.khachhangService.findBy(param);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     findAll() {
         return this.khachhangService.findAll();
     }
@@ -56,6 +72,20 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], KhachhangController.prototype, "findAllVttech", null);
+__decorate([
+    (0, common_1.Post)('vttech/doanhthu'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], KhachhangController.prototype, "findKhachhangDoanhthu", null);
+__decorate([
+    (0, common_1.Post)('findby'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], KhachhangController.prototype, "findby", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),

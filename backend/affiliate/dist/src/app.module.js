@@ -24,6 +24,7 @@ const landingpage_module_1 = require("./landingpage/landingpage.module");
 const trackingevent_module_1 = require("./trackingevent/trackingevent.module");
 const resource_module_1 = require("./resource/resource.module");
 const filemanager_module_1 = require("./filemanager/filemanager.module");
+const affiliatelink_module_1 = require("./affiliatelink/affiliatelink.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -44,7 +45,8 @@ exports.AppModule = AppModule = __decorate([
             landingpage_module_1.LandingPageModule,
             trackingevent_module_1.TrackingeventModule,
             resource_module_1.ResourceModule,
-            filemanager_module_1.FilemanagerModule
+            filemanager_module_1.FilemanagerModule,
+            affiliatelink_module_1.AffiliatelinkModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

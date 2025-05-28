@@ -5,26 +5,41 @@
             <p class="mt-1 text-sm text-gray-500">Truy cập các biểu ngữ, hình ảnh và tài liệu quảng cáo có sẵn.</p>
         </div>
         <div class="flex flex-col sm:flex-row gap-4">
-            
+
             <div class="relative w-full">
-                <input type="text"
-                    placeholder="Tìm Kiếm..."
+                <input type="text" (keyup)="Applyfilter($event)" placeholder="Tìm Kiếm..."
                     class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                     <span class="material-symbols-outlined text-gray-500">search</span>
                 </div>
             </div>
-            <div class="w-full flex gap-2 overflow-x-auto pb-1">
-                <button *ngFor="let item of Listfilters; let i=index"
-                    class="px-3 py-1.5 text-sm rounded-full transition-colors whitespace-nowrap"
-                    [ngClass]="{'bg-gray-900 text-white': item.active, 'bg-gray-100 text-gray-700 hover:bg-gray-200': !item.active}"
-                    (click)="toggleFilter(i)">
-                    {{item.label}}
-                </button>
-            </div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            <div *ngFor="let item of ListData; let i=index" class="border bg-white rounded-lg overflow-hidden transition-transform hover:scale-[1.02]">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <div *ngFor="let item of Listresource(); let i=index"
+                class="border bg-white rounded-lg overflow-hidden transition-transform hover:scale-[1.02]">
+                <div class="aspect-video bg-white overflow-hidden">
+                    <img [src]="ImageURL +'/'+item.url" class="w-full h-full object-contain">
+                </div>
+                <div class="p-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-medium text-gray-900">{{item.title}}</h3><span
+                            class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800">{{item.category}}</span>
+                    </div>
+                    <p class="mt-1 text-sm text-gray-500">{{item.description||'Chưa Có mô tả'}}</p>
+                    <p class="mt-1 text-sm text-gray-500">{{item.file}}</p>
+                    <div class="mt-4 flex gap-2">
+                        <button mat-flat-button color="primary">
+                            <span>Tải xuống</span>
+                            <mat-icon>download</mat-icon>
+                        </button>
+                        <button mat-flat-button color="primary">
+                            <span>Lấy Mã</span>
+                            <mat-icon>content_copy</mat-icon>
+                        </button>
+                    </div>
+                </div>
+                <!-- <div *ngFor="let item of ListData; let i=index" class="border bg-white rounded-lg overflow-hidden transition-transform hover:scale-[1.02]">
                 <div class="aspect-video bg-gray-100 overflow-hidden">
                     <img src="{{item.image.src}}" alt="{{item.image.alt}}" class="w-full h-full object-cover">
                 </div>
@@ -51,7 +66,7 @@
                                 <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
                             </svg>Get Code</button></div>
                 </div>
+            </div> -->
             </div>
         </div>
     </div>
-</div>

@@ -11,7 +11,7 @@ export class LandingpageController {
   }
   @Post('findby')
   findby(@Body() param: any) {
-    return this.landingpageService.findby(param);
+    return this.landingpageService.findBy(param);
   }
   @Get()
   findAll() {

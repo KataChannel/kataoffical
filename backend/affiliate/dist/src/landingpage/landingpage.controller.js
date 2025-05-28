@@ -24,7 +24,7 @@ let LandingpageController = class LandingpageController {
         return this.landingpageService.create(data);
     }
     findby(param) {
-        return this.landingpageService.findby(param);
+        return this.landingpageService.findBy(param);
     }
     findAll() {
         return this.landingpageService.findAll();

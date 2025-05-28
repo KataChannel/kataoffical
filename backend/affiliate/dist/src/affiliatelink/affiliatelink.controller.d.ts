@@ -1,0 +1,201 @@
+import { affiliateLinkService } from './affiliatelink.service';
+export declare class AffiliatelinkController {
+    private readonly affiliatelinkService;
+    constructor(affiliatelinkService: affiliateLinkService);
+    create(data: any): Promise<{
+        id: string;
+        codeId: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        order: number | null;
+        url: string | null;
+        landingPageId: string | null;
+        campaignName: string | null;
+        utmSource: string | null;
+        utmMedium: string | null;
+        utmCampaign: string | null;
+        utmTerm: string | null;
+        utmContent: string | null;
+    }>;
+    findby(param: any): Promise<({
+        landingPage: {
+            id: string;
+            codeId: string;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            title: string;
+            slug: string;
+            order: number | null;
+            thumbnail: string | null;
+            status: string;
+            contentHtml: string | null;
+            customCss: string | null;
+            customJs: string | null;
+            seoTitle: string | null;
+            seoDescription: string | null;
+            seoKeywords: string | null;
+            ownerId: string | null;
+            contentJson: import(".prisma/client/runtime/library").JsonValue | null;
+        } | null;
+        trackingEvents: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            referrer: string | null;
+            userId: string | null;
+            eventType: string | null;
+            pageUrl: string | null;
+            refCode: string | null;
+            pageIdentifier: string | null;
+            pageType: string | null;
+            ipAddress: string | null;
+            userAgent: string | null;
+            affiliateLinkId: string | null;
+            sharePlatform: string | null;
+        }[];
+    } & {
+        id: string;
+        codeId: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        order: number | null;
+        url: string | null;
+        landingPageId: string | null;
+        campaignName: string | null;
+        utmSource: string | null;
+        utmMedium: string | null;
+        utmCampaign: string | null;
+        utmTerm: string | null;
+        utmContent: string | null;
+    }) | {
+        data: {
+            id: string;
+            codeId: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            order: number | null;
+            url: string | null;
+            landingPageId: string | null;
+            campaignName: string | null;
+            utmSource: string | null;
+            utmMedium: string | null;
+            utmCampaign: string | null;
+            utmTerm: string | null;
+            utmContent: string | null;
+        }[];
+        total: number;
+        page: any;
+        pageCount: number;
+    } | null>;
+    findAll(page?: string, limit?: string): Promise<{
+        data: ({
+            landingPage: {
+                id: string;
+                codeId: string;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                description: string | null;
+                title: string;
+                slug: string;
+                order: number | null;
+                thumbnail: string | null;
+                status: string;
+                contentHtml: string | null;
+                customCss: string | null;
+                customJs: string | null;
+                seoTitle: string | null;
+                seoDescription: string | null;
+                seoKeywords: string | null;
+                ownerId: string | null;
+                contentJson: import(".prisma/client/runtime/library").JsonValue | null;
+            } | null;
+            trackingEvents: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                referrer: string | null;
+                userId: string | null;
+                eventType: string | null;
+                pageUrl: string | null;
+                refCode: string | null;
+                pageIdentifier: string | null;
+                pageType: string | null;
+                ipAddress: string | null;
+                userAgent: string | null;
+                affiliateLinkId: string | null;
+                sharePlatform: string | null;
+            }[];
+        } & {
+            id: string;
+            codeId: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            order: number | null;
+            url: string | null;
+            landingPageId: string | null;
+            campaignName: string | null;
+            utmSource: string | null;
+            utmMedium: string | null;
+            utmCampaign: string | null;
+            utmTerm: string | null;
+            utmContent: string | null;
+        })[];
+        total: number;
+        page: number;
+        pageCount: number;
+    }>;
+    getLastUpdatedAffiliatelink(): Promise<{
+        updatedAt: number;
+    }>;
+    findOne(id: string): Promise<{
+        id: string;
+        codeId: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        order: number | null;
+        url: string | null;
+        landingPageId: string | null;
+        campaignName: string | null;
+        utmSource: string | null;
+        utmMedium: string | null;
+        utmCampaign: string | null;
+        utmTerm: string | null;
+        utmContent: string | null;
+    }>;
+    update(id: string, data: any): Promise<any>;
+    remove(id: string): Promise<{
+        id: string;
+        codeId: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        order: number | null;
+        url: string | null;
+        landingPageId: string | null;
+        campaignName: string | null;
+        utmSource: string | null;
+        utmMedium: string | null;
+        utmCampaign: string | null;
+        utmTerm: string | null;
+        utmContent: string | null;
+    }>;
+    reorder(body: {
+        affiliatelinkIds: string[];
+    }): Promise<{
+        status: string;
+    }>;
+}

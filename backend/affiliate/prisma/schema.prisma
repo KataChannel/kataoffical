@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
+  provider      = "prisma-client-js"
+  output        = "../node_modules/.prisma/client"
   binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
@@ -8,68 +8,69 @@ datasource postgres {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 enum Gender {
   MALE
   FEMALE
   OTHER
 }
+
 model User {
-  id        String   @id @default(uuid())
-  codeId    String?   @unique // Mã đề xuất duy nhất
-  name      String?
-  avatar    String?
-  gender    Gender?
-  email     String?   @unique
-  SDT        String?   @unique
-  phone         String?  @unique
-  zaloId        String?  @unique
-  facebookId    String?  @unique
-  googleId    String?  @unique
-  password      String?
-  provider  String?  // "google", "facebook", "zalo"
-  providerId String? @unique
-  isSuperAdmin Boolean @default(false)
-  roles     UserRole[]
-  isActive  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  audits    AuditLog[]
-  Notification Notification[]
-  LandingPage LandingPage[]
-  registrationSource String?  // Nguồn đăng ký, ví dụ: "website", "mobile_app", "referral"
-  inviteCode String?   @unique // Mã invateCode riêng của user này
-  affiliateCode String? 
-  referrerId    String?   // ID của user đã giới thiệu user này
-  referrer      User?     @relation("Referrals", fields: [referrerId], references: [id])
-  referrals     User[]    @relation("Referrals")
-  TrackingEvent TrackingEvent[]
+  id                 String          @id @default(uuid())
+  codeId             String?         @unique // Mã đề xuất duy nhất
+  name               String?
+  avatar             String?
+  gender             Gender?
+  email              String?         @unique
+  SDT                String?         @unique
+  phone              String?         @unique
+  zaloId             String?         @unique
+  facebookId         String?         @unique
+  googleId           String?         @unique
+  password           String?
+  provider           String? // "google", "facebook", "zalo"
+  providerId         String?         @unique
+  isSuperAdmin       Boolean         @default(false)
+  roles              UserRole[]
+  isActive           Boolean         @default(false)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  audits             AuditLog[]
+  Notification       Notification[]
+  LandingPage        LandingPage[]
+  registrationSource String? // Nguồn đăng ký, ví dụ: "website", "mobile_app", "referral"
+  inviteCode         String?         @unique // Mã invateCode riêng của user này
+  affiliateCode      String?
+  referrerId         String? // ID của user đã giới thiệu user này
+  referrer           User?           @relation("Referrals", fields: [referrerId], references: [id])
+  referrals          User[]          @relation("Referrals")
+  TrackingEvent      TrackingEvent[]
 }
 
 model Role {
-  id          String         @id @default(uuid())
-  name        String         @unique
+  id          String           @id @default(uuid())
+  name        String           @unique
   permissions RolePermission[]
   users       UserRole[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
 
 model UserRole {
-  id      String @id @default(uuid())
-  userId  String
-  roleId  String
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role    Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String
+  roleId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
 }
 
-
 model Permission {
-  id          String         @id @default(uuid())
-  name        String         @unique
+  id          String           @id @default(uuid())
+  name        String           @unique
   description String?
   roles       RolePermission[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 }
 
 model RolePermission {
@@ -83,19 +84,19 @@ model RolePermission {
 model Menu {
   id        String   @id @default(uuid())
   title     String
-  icon      String?  // Optional icon for menu
-  slug      String?  // URL of the menu item
-  parentId  String?  // Reference to parent menu (null if root)
+  icon      String? // Optional icon for menu
+  slug      String? // URL of the menu item
+  parentId  String? // Reference to parent menu (null if root)
   parent    Menu?    @relation("MenuChildren", fields: [parentId], references: [id])
   children  Menu[]   @relation("MenuChildren")
-  order     Int?      // For sorting menus
+  order     Int? // For sorting menus
   isActive  Boolean  @default(false) // Enable/Disable menu
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model ChatAIMessage {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
   userId    String
   message   String
   reply     String
@@ -106,7 +107,7 @@ model ChatAIHistory {
   id        String   @id @default(uuid())
   userId    String
   message   String
-  sender    String   // 'user' hoặc 'bot'
+  sender    String // 'user' hoặc 'bot'
   createdAt DateTime @default(now())
 }
 
@@ -114,25 +115,25 @@ model ErrorLog {
   id        String   @id @default(uuid())
   timestamp DateTime
   message   String
-  details   Json?    // Lưu thông tin bổ sung dưới dạng JSON
-  source    String   // "client" hoặc "server" để phân biệt nguồn lỗi
+  details   Json? // Lưu thông tin bổ sung dưới dạng JSON
+  source    String // "client" hoặc "server" để phân biệt nguồn lỗi
   createdAt DateTime @default(now())
 }
 
 model AuditLog {
-  id         String      @id @default(uuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  action     String?
-  entity     String?
-  entityId   String?
-  oldValue   Json?
-  newValue   Json?
-  createdAt  DateTime @default(now())
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String?
+  entity    String?
+  entityId  String?
+  oldValue  Json?
+  newValue  Json?
+  createdAt DateTime @default(now())
 }
 
 model Notification {
-  id        String      @id @default(uuid())
+  id        String   @id @default(uuid())
   message   String
   userId    String
   user      User     @relation(fields: [userId], references: [id])
@@ -141,70 +142,122 @@ model Notification {
 }
 
 model LandingPage {
-  id             String    @id @default(uuid())
+  id             String   @id @default(uuid())
   title          String
-  slug           String    @unique // URL thân thiện, ví dụ: "chien-dich-thang-4"
+  slug           String   @unique // URL thân thiện, ví dụ: "chien-dich-thang-4"
   description    String?
-  thumbnail      String?   // Hình ảnh thumbnail cho trang
-  status         String    @default("draft") // "draft", "published", "archived"
+  thumbnail      String? // Hình ảnh thumbnail cho trang
+  status         String   @default("draft") // "draft", "published", "archived"
   contentJson    Json?
   contentHtml    String?
   customCss      String?
   customJs       String?
   seoTitle       String?
   seoDescription String?
-  seoKeywords    String?   // Có thể là String[]
-  ownerId        String?   // User quản lý trang này
-  owner          User?     @relation(fields: [ownerId], references: [id])
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  codeId         String    @unique // Mã đề xuất duy nhất
-  order          Int?      @default(1)
-  isActive       Boolean   @default(true)
+  seoKeywords    String? // Có thể là String[]
+  ownerId        String? // User quản lý trang này
+  owner          User?    @relation(fields: [ownerId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  codeId         String   @unique // Mã đề xuất duy nhất
+  order          Int?     @default(1)
+  isActive       Boolean  @default(true)
+  AffiliateLink AffiliateLink[]
 }
+
 model TrackingEvent {
-  id        String   @id @default(uuid())
-  eventType String?   // Loại sự kiện, ví dụ: "page_view", "form_interaction", "registration_success"
-  pageUrl   String?  // URL của trang mà sự kiện xảy ra
-  refCode   String?  // Mã giới thiệu (referral code) nếu có
-  referrer  String?  // ID của người giới thiệu (nếu có)
-  pageIdentifier String? // ID hoặc slug của trang (nếu có)
-  pageType  String?  // Loại trang, ví dụ: "LadiCTV", "LandingPage", "Blog", "Product"
-  userId    String?  // Link to the user performing the action, if logged in or just registered
-  user      User?    @relation(fields: [userId], references: [id])
-  ipAddress String?
-  userAgent String? // Browser/device information
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String         @id @default(uuid())
+  eventType       String?        // Loại sự kiện, ví dụ: "page_view", "form_interaction", "registration_success"
+  pageUrl         String?        // URL của trang mà sự kiện xảy ra
+  refCode         String?        // Mã giới thiệu (referral code) nếu có
+  referrer        String?        // ID của người giới thiệu (nếu có)
+  pageIdentifier  String?        // ID hoặc slug của trang (nếu có)
+  pageType        String?        // Loại trang, ví dụ: "LadiCTV", "LandingPage", "Blog", "Product"
+  userId          String?        // Link to the user performing the action, if logged in or just registered
+  user            User?          @relation(fields: [userId], references: [id])
+  ipAddress       String?
+  userAgent       String?        // Browser/device information
+  affiliateLinkId String?        // Foreign key to AffiliateLink, if available
+  affiliateLink   AffiliateLink? @relation(fields: [affiliateLinkId], references: [id])
+  sharePlatform   String?        // Nền tảng chia sẻ, ví dụ: "google", "facebook", "tiktok"
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
+
+model AffiliateLink {
+  id             String         @id @default(uuid())
+  codeId         String?        @unique // Mã đề xuất duy nhất
+  landingPageId  String?
+  landingPage    LandingPage?   @relation(fields: [landingPageId], references: [id])
+  campaignName   String?
+  description    String?
+  utmSource      String?
+  utmMedium      String?
+  utmCampaign    String?
+  utmTerm        String?
+  utmContent     String?
+  url            String?        // Tracking URL generated with UTM parameters
+  trackingEvents TrackingEvent[]
+  order          Int?           @default(1)
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+
 model Resource {
-  id        String   @id @default(uuid())
-  codeId    String?   @unique // Mã đề xuất duy nhất
-  title     String?
-  url       String?
+  id          String   @id @default(uuid())
+  codeId      String?  @unique // Mã đề xuất duy nhất
+  title       String?
+  url         String?
   description String?
-  fileType  String?
-  metaData  Json?
-  category  String?
-  group     String?
+  fileType    String?
+  metaData    Json?
+  category    String?
+  group       String?
   order       Int?     @default(1)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model FileManager {
-  id        String   @id @default(uuid())
-  codeId    String?   @unique // Mã đề xuất duy nhất
-  title     String?
-  url       String?
+  id          String   @id @default(uuid())
+  codeId      String?  @unique // Mã đề xuất duy nhất
+  title       String?
+  url         String?
   description String?
-  fileType  String?
-  fileSize  Int?     // Kích thước tệp tin (tính bằng byte)
-  metaData  Json?
-  category  String?
-  group     String?
+  fileType    String?
+  fileSize    Int? // Kích thước tệp tin (tính bằng byte)
+  metaData    Json?
+  category    String?
+  group       String?
   order       Int?     @default(1)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
+
+
+  model KhachHang {
+    id        String   @id @default(uuid())
+    codeId    String?  @unique // Mã đề xuất duy nhất
+    ten       String
+    email     String?  @unique
+    sdt       String?
+    order     Int? @default(1)  
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    doanhthus DoanhThu[]
+  }
+
+  model DoanhThu {
+    id           String   @id @default(uuid())
+    codeId       String?  @unique // Mã đề xuất duy nhất
+    khachHangId  String?
+    soTien       Float
+    ngay         DateTime @default(now())
+    order         Int? @default(1)
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    khachHang    KhachHang? @relation(fields: [khachHangId], references: [id])
+  }

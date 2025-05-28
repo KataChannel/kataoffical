@@ -141,11 +141,15 @@ export class LandingpageService {
         this.handleError(response.status);
       }
       const data = await response.json();      
-      this.DetailLandingpage.set(data)
+      if (param.isOne === true) {
+        this.DetailLandingpage.set(data);
+      } else {
+        this.ListLandingpage.set(data.data);
+      }
     } catch (error) {
       this._ErrorLogService.logError('Failed to getLandingpageBy', error);
-      return console.error(error);
-    }
+      console.error(error);
+  }
   }
   async updateLandingpage(dulieu: any) {
     try {

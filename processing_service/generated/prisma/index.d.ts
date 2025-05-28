@@ -38,6 +38,11 @@ export type Treatment = $Result.DefaultSelection<Prisma.$TreatmentPayload>
  * 
  */
 export type Appointment = $Result.DefaultSelection<Prisma.$AppointmentPayload>
+/**
+ * Model Dichvu
+ * 
+ */
+export type Dichvu = $Result.DefaultSelection<Prisma.$DichvuPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -213,6 +218,16 @@ export class PrismaClient<
     * ```
     */
   get appointment(): Prisma.AppointmentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.dichvu`: Exposes CRUD operations for the **Dichvu** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Dichvus
+    * const dichvus = await prisma.dichvu.findMany()
+    * ```
+    */
+  get dichvu(): Prisma.DichvuDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -657,7 +672,8 @@ export namespace Prisma {
     Customer: 'Customer',
     Revenue: 'Revenue',
     Treatment: 'Treatment',
-    Appointment: 'Appointment'
+    Appointment: 'Appointment',
+    Dichvu: 'Dichvu'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -676,7 +692,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "processedPost" | "customer" | "revenue" | "treatment" | "appointment"
+      modelProps: "processedPost" | "customer" | "revenue" | "treatment" | "appointment" | "dichvu"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1050,6 +1066,80 @@ export namespace Prisma {
           }
         }
       }
+      Dichvu: {
+        payload: Prisma.$DichvuPayload<ExtArgs>
+        fields: Prisma.DichvuFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DichvuFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DichvuPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DichvuFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DichvuPayload>
+          }
+          findFirst: {
+            args: Prisma.DichvuFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DichvuPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DichvuFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DichvuPayload>
+          }
+          findMany: {
+            args: Prisma.DichvuFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DichvuPayload>[]
+          }
+          create: {
+            args: Prisma.DichvuCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DichvuPayload>
+          }
+          createMany: {
+            args: Prisma.DichvuCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DichvuCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DichvuPayload>[]
+          }
+          delete: {
+            args: Prisma.DichvuDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DichvuPayload>
+          }
+          update: {
+            args: Prisma.DichvuUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DichvuPayload>
+          }
+          deleteMany: {
+            args: Prisma.DichvuDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DichvuUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DichvuUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DichvuPayload>[]
+          }
+          upsert: {
+            args: Prisma.DichvuUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DichvuPayload>
+          }
+          aggregate: {
+            args: Prisma.DichvuAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDichvu>
+          }
+          groupBy: {
+            args: Prisma.DichvuGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DichvuGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DichvuCountArgs<ExtArgs>
+            result: $Utils.Optional<DichvuCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1139,6 +1229,7 @@ export namespace Prisma {
     revenue?: RevenueOmit
     treatment?: TreatmentOmit
     appointment?: AppointmentOmit
+    dichvu?: DichvuOmit
   }
 
   /* Types for Logging */
@@ -8660,6 +8751,1840 @@ export namespace Prisma {
 
 
   /**
+   * Model Dichvu
+   */
+
+  export type AggregateDichvu = {
+    _count: DichvuCountAggregateOutputType | null
+    _avg: DichvuAvgAggregateOutputType | null
+    _sum: DichvuSumAggregateOutputType | null
+    _min: DichvuMinAggregateOutputType | null
+    _max: DichvuMaxAggregateOutputType | null
+  }
+
+  export type DichvuAvgAggregateOutputType = {
+    id: number | null
+    serviceId: number | null
+    serviceTypeId: number | null
+    tabId: number | null
+    comboId: number | null
+    timeToTreatment: number | null
+    priceUnit: number | null
+    quantity: number | null
+    discount: number | null
+    priceRoot: number | null
+    priceDiscounted: number | null
+    doctor: number | null
+    doctor2: number | null
+    doctor3: number | null
+    doctor4: number | null
+    assistant: number | null
+    assistant2: number | null
+    assistant3: number | null
+    assistant4: number | null
+    technician: number | null
+    technician2: number | null
+    timeTreatIndex: number | null
+    percent: number | null
+    percentNew: number | null
+    percentStage: number | null
+    percentNewStage: number | null
+    branchId: number | null
+    createdBy: number | null
+    modifiedBy: number | null
+    state: number | null
+  }
+
+  export type DichvuSumAggregateOutputType = {
+    id: number | null
+    serviceId: number | null
+    serviceTypeId: number | null
+    tabId: number | null
+    comboId: number | null
+    timeToTreatment: number | null
+    priceUnit: number | null
+    quantity: number | null
+    discount: number | null
+    priceRoot: number | null
+    priceDiscounted: number | null
+    doctor: number | null
+    doctor2: number | null
+    doctor3: number | null
+    doctor4: number | null
+    assistant: number | null
+    assistant2: number | null
+    assistant3: number | null
+    assistant4: number | null
+    technician: number | null
+    technician2: number | null
+    timeTreatIndex: number | null
+    percent: number | null
+    percentNew: number | null
+    percentStage: number | null
+    percentNewStage: number | null
+    branchId: number | null
+    createdBy: number | null
+    modifiedBy: number | null
+    state: number | null
+  }
+
+  export type DichvuMinAggregateOutputType = {
+    id: number | null
+    source_id: string | null
+    name: string | null
+    code: string | null
+    codeOld: string | null
+    docCode: string | null
+    email: string | null
+    phone: string | null
+    phone2: string | null
+    birthday: Date | null
+    gender: string | null
+    address: string | null
+    commune: string | null
+    district: string | null
+    city: string | null
+    serviceId: number | null
+    serviceTypeId: number | null
+    serviceCode: string | null
+    tabId: number | null
+    tabCode: string | null
+    comboId: number | null
+    comboCode: string | null
+    serviceName: string | null
+    timeIndex: string | null
+    timeToTreatment: number | null
+    teethChoosing: string | null
+    priceUnit: number | null
+    quantity: number | null
+    discount: number | null
+    priceRoot: number | null
+    priceDiscounted: number | null
+    doctor: number | null
+    doctor2: number | null
+    doctor3: number | null
+    doctor4: number | null
+    assistant: number | null
+    assistant2: number | null
+    assistant3: number | null
+    assistant4: number | null
+    technician: number | null
+    technician2: number | null
+    timeTreatIndex: number | null
+    percent: number | null
+    percentNew: number | null
+    percentStage: number | null
+    percentNewStage: number | null
+    note: string | null
+    content: string | null
+    contentNext: string | null
+    symptoms: string | null
+    treatDateNext: Date | null
+    branchId: number | null
+    createdDate: Date | null
+    createdBy: number | null
+    modifiedDate: Date | null
+    modifiedBy: number | null
+    state: number | null
+    extractedAt: Date | null
+  }
+
+  export type DichvuMaxAggregateOutputType = {
+    id: number | null
+    source_id: string | null
+    name: string | null
+    code: string | null
+    codeOld: string | null
+    docCode: string | null
+    email: string | null
+    phone: string | null
+    phone2: string | null
+    birthday: Date | null
+    gender: string | null
+    address: string | null
+    commune: string | null
+    district: string | null
+    city: string | null
+    serviceId: number | null
+    serviceTypeId: number | null
+    serviceCode: string | null
+    tabId: number | null
+    tabCode: string | null
+    comboId: number | null
+    comboCode: string | null
+    serviceName: string | null
+    timeIndex: string | null
+    timeToTreatment: number | null
+    teethChoosing: string | null
+    priceUnit: number | null
+    quantity: number | null
+    discount: number | null
+    priceRoot: number | null
+    priceDiscounted: number | null
+    doctor: number | null
+    doctor2: number | null
+    doctor3: number | null
+    doctor4: number | null
+    assistant: number | null
+    assistant2: number | null
+    assistant3: number | null
+    assistant4: number | null
+    technician: number | null
+    technician2: number | null
+    timeTreatIndex: number | null
+    percent: number | null
+    percentNew: number | null
+    percentStage: number | null
+    percentNewStage: number | null
+    note: string | null
+    content: string | null
+    contentNext: string | null
+    symptoms: string | null
+    treatDateNext: Date | null
+    branchId: number | null
+    createdDate: Date | null
+    createdBy: number | null
+    modifiedDate: Date | null
+    modifiedBy: number | null
+    state: number | null
+    extractedAt: Date | null
+  }
+
+  export type DichvuCountAggregateOutputType = {
+    id: number
+    source_id: number
+    name: number
+    code: number
+    codeOld: number
+    docCode: number
+    email: number
+    phone: number
+    phone2: number
+    birthday: number
+    gender: number
+    address: number
+    commune: number
+    district: number
+    city: number
+    serviceId: number
+    serviceTypeId: number
+    serviceCode: number
+    tabId: number
+    tabCode: number
+    comboId: number
+    comboCode: number
+    serviceName: number
+    timeIndex: number
+    timeToTreatment: number
+    teethChoosing: number
+    priceUnit: number
+    quantity: number
+    discount: number
+    priceRoot: number
+    priceDiscounted: number
+    doctor: number
+    doctor2: number
+    doctor3: number
+    doctor4: number
+    assistant: number
+    assistant2: number
+    assistant3: number
+    assistant4: number
+    technician: number
+    technician2: number
+    timeTreatIndex: number
+    percent: number
+    percentNew: number
+    percentStage: number
+    percentNewStage: number
+    note: number
+    content: number
+    contentNext: number
+    symptoms: number
+    treatDateNext: number
+    branchId: number
+    createdDate: number
+    createdBy: number
+    modifiedDate: number
+    modifiedBy: number
+    state: number
+    extractedAt: number
+    _all: number
+  }
+
+
+  export type DichvuAvgAggregateInputType = {
+    id?: true
+    serviceId?: true
+    serviceTypeId?: true
+    tabId?: true
+    comboId?: true
+    timeToTreatment?: true
+    priceUnit?: true
+    quantity?: true
+    discount?: true
+    priceRoot?: true
+    priceDiscounted?: true
+    doctor?: true
+    doctor2?: true
+    doctor3?: true
+    doctor4?: true
+    assistant?: true
+    assistant2?: true
+    assistant3?: true
+    assistant4?: true
+    technician?: true
+    technician2?: true
+    timeTreatIndex?: true
+    percent?: true
+    percentNew?: true
+    percentStage?: true
+    percentNewStage?: true
+    branchId?: true
+    createdBy?: true
+    modifiedBy?: true
+    state?: true
+  }
+
+  export type DichvuSumAggregateInputType = {
+    id?: true
+    serviceId?: true
+    serviceTypeId?: true
+    tabId?: true
+    comboId?: true
+    timeToTreatment?: true
+    priceUnit?: true
+    quantity?: true
+    discount?: true
+    priceRoot?: true
+    priceDiscounted?: true
+    doctor?: true
+    doctor2?: true
+    doctor3?: true
+    doctor4?: true
+    assistant?: true
+    assistant2?: true
+    assistant3?: true
+    assistant4?: true
+    technician?: true
+    technician2?: true
+    timeTreatIndex?: true
+    percent?: true
+    percentNew?: true
+    percentStage?: true
+    percentNewStage?: true
+    branchId?: true
+    createdBy?: true
+    modifiedBy?: true
+    state?: true
+  }
+
+  export type DichvuMinAggregateInputType = {
+    id?: true
+    source_id?: true
+    name?: true
+    code?: true
+    codeOld?: true
+    docCode?: true
+    email?: true
+    phone?: true
+    phone2?: true
+    birthday?: true
+    gender?: true
+    address?: true
+    commune?: true
+    district?: true
+    city?: true
+    serviceId?: true
+    serviceTypeId?: true
+    serviceCode?: true
+    tabId?: true
+    tabCode?: true
+    comboId?: true
+    comboCode?: true
+    serviceName?: true
+    timeIndex?: true
+    timeToTreatment?: true
+    teethChoosing?: true
+    priceUnit?: true
+    quantity?: true
+    discount?: true
+    priceRoot?: true
+    priceDiscounted?: true
+    doctor?: true
+    doctor2?: true
+    doctor3?: true
+    doctor4?: true
+    assistant?: true
+    assistant2?: true
+    assistant3?: true
+    assistant4?: true
+    technician?: true
+    technician2?: true
+    timeTreatIndex?: true
+    percent?: true
+    percentNew?: true
+    percentStage?: true
+    percentNewStage?: true
+    note?: true
+    content?: true
+    contentNext?: true
+    symptoms?: true
+    treatDateNext?: true
+    branchId?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    modifiedBy?: true
+    state?: true
+    extractedAt?: true
+  }
+
+  export type DichvuMaxAggregateInputType = {
+    id?: true
+    source_id?: true
+    name?: true
+    code?: true
+    codeOld?: true
+    docCode?: true
+    email?: true
+    phone?: true
+    phone2?: true
+    birthday?: true
+    gender?: true
+    address?: true
+    commune?: true
+    district?: true
+    city?: true
+    serviceId?: true
+    serviceTypeId?: true
+    serviceCode?: true
+    tabId?: true
+    tabCode?: true
+    comboId?: true
+    comboCode?: true
+    serviceName?: true
+    timeIndex?: true
+    timeToTreatment?: true
+    teethChoosing?: true
+    priceUnit?: true
+    quantity?: true
+    discount?: true
+    priceRoot?: true
+    priceDiscounted?: true
+    doctor?: true
+    doctor2?: true
+    doctor3?: true
+    doctor4?: true
+    assistant?: true
+    assistant2?: true
+    assistant3?: true
+    assistant4?: true
+    technician?: true
+    technician2?: true
+    timeTreatIndex?: true
+    percent?: true
+    percentNew?: true
+    percentStage?: true
+    percentNewStage?: true
+    note?: true
+    content?: true
+    contentNext?: true
+    symptoms?: true
+    treatDateNext?: true
+    branchId?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    modifiedBy?: true
+    state?: true
+    extractedAt?: true
+  }
+
+  export type DichvuCountAggregateInputType = {
+    id?: true
+    source_id?: true
+    name?: true
+    code?: true
+    codeOld?: true
+    docCode?: true
+    email?: true
+    phone?: true
+    phone2?: true
+    birthday?: true
+    gender?: true
+    address?: true
+    commune?: true
+    district?: true
+    city?: true
+    serviceId?: true
+    serviceTypeId?: true
+    serviceCode?: true
+    tabId?: true
+    tabCode?: true
+    comboId?: true
+    comboCode?: true
+    serviceName?: true
+    timeIndex?: true
+    timeToTreatment?: true
+    teethChoosing?: true
+    priceUnit?: true
+    quantity?: true
+    discount?: true
+    priceRoot?: true
+    priceDiscounted?: true
+    doctor?: true
+    doctor2?: true
+    doctor3?: true
+    doctor4?: true
+    assistant?: true
+    assistant2?: true
+    assistant3?: true
+    assistant4?: true
+    technician?: true
+    technician2?: true
+    timeTreatIndex?: true
+    percent?: true
+    percentNew?: true
+    percentStage?: true
+    percentNewStage?: true
+    note?: true
+    content?: true
+    contentNext?: true
+    symptoms?: true
+    treatDateNext?: true
+    branchId?: true
+    createdDate?: true
+    createdBy?: true
+    modifiedDate?: true
+    modifiedBy?: true
+    state?: true
+    extractedAt?: true
+    _all?: true
+  }
+
+  export type DichvuAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Dichvu to aggregate.
+     */
+    where?: DichvuWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Dichvus to fetch.
+     */
+    orderBy?: DichvuOrderByWithRelationInput | DichvuOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DichvuWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Dichvus from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Dichvus.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Dichvus
+    **/
+    _count?: true | DichvuCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DichvuAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DichvuSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DichvuMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DichvuMaxAggregateInputType
+  }
+
+  export type GetDichvuAggregateType<T extends DichvuAggregateArgs> = {
+        [P in keyof T & keyof AggregateDichvu]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDichvu[P]>
+      : GetScalarType<T[P], AggregateDichvu[P]>
+  }
+
+
+
+
+  export type DichvuGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DichvuWhereInput
+    orderBy?: DichvuOrderByWithAggregationInput | DichvuOrderByWithAggregationInput[]
+    by: DichvuScalarFieldEnum[] | DichvuScalarFieldEnum
+    having?: DichvuScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DichvuCountAggregateInputType | true
+    _avg?: DichvuAvgAggregateInputType
+    _sum?: DichvuSumAggregateInputType
+    _min?: DichvuMinAggregateInputType
+    _max?: DichvuMaxAggregateInputType
+  }
+
+  export type DichvuGroupByOutputType = {
+    id: number
+    source_id: string | null
+    name: string | null
+    code: string | null
+    codeOld: string | null
+    docCode: string | null
+    email: string | null
+    phone: string | null
+    phone2: string | null
+    birthday: Date | null
+    gender: string | null
+    address: string | null
+    commune: string | null
+    district: string | null
+    city: string | null
+    serviceId: number
+    serviceTypeId: number
+    serviceCode: string
+    tabId: number
+    tabCode: string
+    comboId: number
+    comboCode: string | null
+    serviceName: string
+    timeIndex: string | null
+    timeToTreatment: number
+    teethChoosing: string | null
+    priceUnit: number
+    quantity: number
+    discount: number
+    priceRoot: number
+    priceDiscounted: number
+    doctor: number
+    doctor2: number
+    doctor3: number
+    doctor4: number
+    assistant: number
+    assistant2: number
+    assistant3: number
+    assistant4: number
+    technician: number
+    technician2: number
+    timeTreatIndex: number
+    percent: number
+    percentNew: number
+    percentStage: number
+    percentNewStage: number
+    note: string | null
+    content: string | null
+    contentNext: string | null
+    symptoms: string | null
+    treatDateNext: Date | null
+    branchId: number
+    createdDate: Date
+    createdBy: number
+    modifiedDate: Date
+    modifiedBy: number
+    state: number
+    extractedAt: Date
+    _count: DichvuCountAggregateOutputType | null
+    _avg: DichvuAvgAggregateOutputType | null
+    _sum: DichvuSumAggregateOutputType | null
+    _min: DichvuMinAggregateOutputType | null
+    _max: DichvuMaxAggregateOutputType | null
+  }
+
+  type GetDichvuGroupByPayload<T extends DichvuGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DichvuGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DichvuGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DichvuGroupByOutputType[P]>
+            : GetScalarType<T[P], DichvuGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DichvuSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    name?: boolean
+    code?: boolean
+    codeOld?: boolean
+    docCode?: boolean
+    email?: boolean
+    phone?: boolean
+    phone2?: boolean
+    birthday?: boolean
+    gender?: boolean
+    address?: boolean
+    commune?: boolean
+    district?: boolean
+    city?: boolean
+    serviceId?: boolean
+    serviceTypeId?: boolean
+    serviceCode?: boolean
+    tabId?: boolean
+    tabCode?: boolean
+    comboId?: boolean
+    comboCode?: boolean
+    serviceName?: boolean
+    timeIndex?: boolean
+    timeToTreatment?: boolean
+    teethChoosing?: boolean
+    priceUnit?: boolean
+    quantity?: boolean
+    discount?: boolean
+    priceRoot?: boolean
+    priceDiscounted?: boolean
+    doctor?: boolean
+    doctor2?: boolean
+    doctor3?: boolean
+    doctor4?: boolean
+    assistant?: boolean
+    assistant2?: boolean
+    assistant3?: boolean
+    assistant4?: boolean
+    technician?: boolean
+    technician2?: boolean
+    timeTreatIndex?: boolean
+    percent?: boolean
+    percentNew?: boolean
+    percentStage?: boolean
+    percentNewStage?: boolean
+    note?: boolean
+    content?: boolean
+    contentNext?: boolean
+    symptoms?: boolean
+    treatDateNext?: boolean
+    branchId?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    state?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["dichvu"]>
+
+  export type DichvuSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    name?: boolean
+    code?: boolean
+    codeOld?: boolean
+    docCode?: boolean
+    email?: boolean
+    phone?: boolean
+    phone2?: boolean
+    birthday?: boolean
+    gender?: boolean
+    address?: boolean
+    commune?: boolean
+    district?: boolean
+    city?: boolean
+    serviceId?: boolean
+    serviceTypeId?: boolean
+    serviceCode?: boolean
+    tabId?: boolean
+    tabCode?: boolean
+    comboId?: boolean
+    comboCode?: boolean
+    serviceName?: boolean
+    timeIndex?: boolean
+    timeToTreatment?: boolean
+    teethChoosing?: boolean
+    priceUnit?: boolean
+    quantity?: boolean
+    discount?: boolean
+    priceRoot?: boolean
+    priceDiscounted?: boolean
+    doctor?: boolean
+    doctor2?: boolean
+    doctor3?: boolean
+    doctor4?: boolean
+    assistant?: boolean
+    assistant2?: boolean
+    assistant3?: boolean
+    assistant4?: boolean
+    technician?: boolean
+    technician2?: boolean
+    timeTreatIndex?: boolean
+    percent?: boolean
+    percentNew?: boolean
+    percentStage?: boolean
+    percentNewStage?: boolean
+    note?: boolean
+    content?: boolean
+    contentNext?: boolean
+    symptoms?: boolean
+    treatDateNext?: boolean
+    branchId?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    state?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["dichvu"]>
+
+  export type DichvuSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    source_id?: boolean
+    name?: boolean
+    code?: boolean
+    codeOld?: boolean
+    docCode?: boolean
+    email?: boolean
+    phone?: boolean
+    phone2?: boolean
+    birthday?: boolean
+    gender?: boolean
+    address?: boolean
+    commune?: boolean
+    district?: boolean
+    city?: boolean
+    serviceId?: boolean
+    serviceTypeId?: boolean
+    serviceCode?: boolean
+    tabId?: boolean
+    tabCode?: boolean
+    comboId?: boolean
+    comboCode?: boolean
+    serviceName?: boolean
+    timeIndex?: boolean
+    timeToTreatment?: boolean
+    teethChoosing?: boolean
+    priceUnit?: boolean
+    quantity?: boolean
+    discount?: boolean
+    priceRoot?: boolean
+    priceDiscounted?: boolean
+    doctor?: boolean
+    doctor2?: boolean
+    doctor3?: boolean
+    doctor4?: boolean
+    assistant?: boolean
+    assistant2?: boolean
+    assistant3?: boolean
+    assistant4?: boolean
+    technician?: boolean
+    technician2?: boolean
+    timeTreatIndex?: boolean
+    percent?: boolean
+    percentNew?: boolean
+    percentStage?: boolean
+    percentNewStage?: boolean
+    note?: boolean
+    content?: boolean
+    contentNext?: boolean
+    symptoms?: boolean
+    treatDateNext?: boolean
+    branchId?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    state?: boolean
+    extractedAt?: boolean
+  }, ExtArgs["result"]["dichvu"]>
+
+  export type DichvuSelectScalar = {
+    id?: boolean
+    source_id?: boolean
+    name?: boolean
+    code?: boolean
+    codeOld?: boolean
+    docCode?: boolean
+    email?: boolean
+    phone?: boolean
+    phone2?: boolean
+    birthday?: boolean
+    gender?: boolean
+    address?: boolean
+    commune?: boolean
+    district?: boolean
+    city?: boolean
+    serviceId?: boolean
+    serviceTypeId?: boolean
+    serviceCode?: boolean
+    tabId?: boolean
+    tabCode?: boolean
+    comboId?: boolean
+    comboCode?: boolean
+    serviceName?: boolean
+    timeIndex?: boolean
+    timeToTreatment?: boolean
+    teethChoosing?: boolean
+    priceUnit?: boolean
+    quantity?: boolean
+    discount?: boolean
+    priceRoot?: boolean
+    priceDiscounted?: boolean
+    doctor?: boolean
+    doctor2?: boolean
+    doctor3?: boolean
+    doctor4?: boolean
+    assistant?: boolean
+    assistant2?: boolean
+    assistant3?: boolean
+    assistant4?: boolean
+    technician?: boolean
+    technician2?: boolean
+    timeTreatIndex?: boolean
+    percent?: boolean
+    percentNew?: boolean
+    percentStage?: boolean
+    percentNewStage?: boolean
+    note?: boolean
+    content?: boolean
+    contentNext?: boolean
+    symptoms?: boolean
+    treatDateNext?: boolean
+    branchId?: boolean
+    createdDate?: boolean
+    createdBy?: boolean
+    modifiedDate?: boolean
+    modifiedBy?: boolean
+    state?: boolean
+    extractedAt?: boolean
+  }
+
+  export type DichvuOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "source_id" | "name" | "code" | "codeOld" | "docCode" | "email" | "phone" | "phone2" | "birthday" | "gender" | "address" | "commune" | "district" | "city" | "serviceId" | "serviceTypeId" | "serviceCode" | "tabId" | "tabCode" | "comboId" | "comboCode" | "serviceName" | "timeIndex" | "timeToTreatment" | "teethChoosing" | "priceUnit" | "quantity" | "discount" | "priceRoot" | "priceDiscounted" | "doctor" | "doctor2" | "doctor3" | "doctor4" | "assistant" | "assistant2" | "assistant3" | "assistant4" | "technician" | "technician2" | "timeTreatIndex" | "percent" | "percentNew" | "percentStage" | "percentNewStage" | "note" | "content" | "contentNext" | "symptoms" | "treatDateNext" | "branchId" | "createdDate" | "createdBy" | "modifiedDate" | "modifiedBy" | "state" | "extractedAt", ExtArgs["result"]["dichvu"]>
+
+  export type $DichvuPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Dichvu"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      source_id: string | null
+      name: string | null
+      code: string | null
+      codeOld: string | null
+      docCode: string | null
+      email: string | null
+      phone: string | null
+      phone2: string | null
+      birthday: Date | null
+      gender: string | null
+      address: string | null
+      commune: string | null
+      district: string | null
+      city: string | null
+      serviceId: number
+      serviceTypeId: number
+      serviceCode: string
+      tabId: number
+      tabCode: string
+      comboId: number
+      comboCode: string | null
+      serviceName: string
+      timeIndex: string | null
+      timeToTreatment: number
+      teethChoosing: string | null
+      priceUnit: number
+      quantity: number
+      discount: number
+      priceRoot: number
+      priceDiscounted: number
+      doctor: number
+      doctor2: number
+      doctor3: number
+      doctor4: number
+      assistant: number
+      assistant2: number
+      assistant3: number
+      assistant4: number
+      technician: number
+      technician2: number
+      timeTreatIndex: number
+      percent: number
+      percentNew: number
+      percentStage: number
+      percentNewStage: number
+      note: string | null
+      content: string | null
+      contentNext: string | null
+      symptoms: string | null
+      treatDateNext: Date | null
+      branchId: number
+      createdDate: Date
+      createdBy: number
+      modifiedDate: Date
+      modifiedBy: number
+      state: number
+      extractedAt: Date
+    }, ExtArgs["result"]["dichvu"]>
+    composites: {}
+  }
+
+  type DichvuGetPayload<S extends boolean | null | undefined | DichvuDefaultArgs> = $Result.GetResult<Prisma.$DichvuPayload, S>
+
+  type DichvuCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DichvuFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DichvuCountAggregateInputType | true
+    }
+
+  export interface DichvuDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Dichvu'], meta: { name: 'Dichvu' } }
+    /**
+     * Find zero or one Dichvu that matches the filter.
+     * @param {DichvuFindUniqueArgs} args - Arguments to find a Dichvu
+     * @example
+     * // Get one Dichvu
+     * const dichvu = await prisma.dichvu.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DichvuFindUniqueArgs>(args: SelectSubset<T, DichvuFindUniqueArgs<ExtArgs>>): Prisma__DichvuClient<$Result.GetResult<Prisma.$DichvuPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Dichvu that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DichvuFindUniqueOrThrowArgs} args - Arguments to find a Dichvu
+     * @example
+     * // Get one Dichvu
+     * const dichvu = await prisma.dichvu.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DichvuFindUniqueOrThrowArgs>(args: SelectSubset<T, DichvuFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DichvuClient<$Result.GetResult<Prisma.$DichvuPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Dichvu that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DichvuFindFirstArgs} args - Arguments to find a Dichvu
+     * @example
+     * // Get one Dichvu
+     * const dichvu = await prisma.dichvu.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DichvuFindFirstArgs>(args?: SelectSubset<T, DichvuFindFirstArgs<ExtArgs>>): Prisma__DichvuClient<$Result.GetResult<Prisma.$DichvuPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Dichvu that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DichvuFindFirstOrThrowArgs} args - Arguments to find a Dichvu
+     * @example
+     * // Get one Dichvu
+     * const dichvu = await prisma.dichvu.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DichvuFindFirstOrThrowArgs>(args?: SelectSubset<T, DichvuFindFirstOrThrowArgs<ExtArgs>>): Prisma__DichvuClient<$Result.GetResult<Prisma.$DichvuPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Dichvus that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DichvuFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Dichvus
+     * const dichvus = await prisma.dichvu.findMany()
+     * 
+     * // Get first 10 Dichvus
+     * const dichvus = await prisma.dichvu.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const dichvuWithIdOnly = await prisma.dichvu.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DichvuFindManyArgs>(args?: SelectSubset<T, DichvuFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DichvuPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Dichvu.
+     * @param {DichvuCreateArgs} args - Arguments to create a Dichvu.
+     * @example
+     * // Create one Dichvu
+     * const Dichvu = await prisma.dichvu.create({
+     *   data: {
+     *     // ... data to create a Dichvu
+     *   }
+     * })
+     * 
+     */
+    create<T extends DichvuCreateArgs>(args: SelectSubset<T, DichvuCreateArgs<ExtArgs>>): Prisma__DichvuClient<$Result.GetResult<Prisma.$DichvuPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Dichvus.
+     * @param {DichvuCreateManyArgs} args - Arguments to create many Dichvus.
+     * @example
+     * // Create many Dichvus
+     * const dichvu = await prisma.dichvu.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DichvuCreateManyArgs>(args?: SelectSubset<T, DichvuCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Dichvus and returns the data saved in the database.
+     * @param {DichvuCreateManyAndReturnArgs} args - Arguments to create many Dichvus.
+     * @example
+     * // Create many Dichvus
+     * const dichvu = await prisma.dichvu.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Dichvus and only return the `id`
+     * const dichvuWithIdOnly = await prisma.dichvu.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DichvuCreateManyAndReturnArgs>(args?: SelectSubset<T, DichvuCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DichvuPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Dichvu.
+     * @param {DichvuDeleteArgs} args - Arguments to delete one Dichvu.
+     * @example
+     * // Delete one Dichvu
+     * const Dichvu = await prisma.dichvu.delete({
+     *   where: {
+     *     // ... filter to delete one Dichvu
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DichvuDeleteArgs>(args: SelectSubset<T, DichvuDeleteArgs<ExtArgs>>): Prisma__DichvuClient<$Result.GetResult<Prisma.$DichvuPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Dichvu.
+     * @param {DichvuUpdateArgs} args - Arguments to update one Dichvu.
+     * @example
+     * // Update one Dichvu
+     * const dichvu = await prisma.dichvu.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DichvuUpdateArgs>(args: SelectSubset<T, DichvuUpdateArgs<ExtArgs>>): Prisma__DichvuClient<$Result.GetResult<Prisma.$DichvuPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Dichvus.
+     * @param {DichvuDeleteManyArgs} args - Arguments to filter Dichvus to delete.
+     * @example
+     * // Delete a few Dichvus
+     * const { count } = await prisma.dichvu.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DichvuDeleteManyArgs>(args?: SelectSubset<T, DichvuDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Dichvus.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DichvuUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Dichvus
+     * const dichvu = await prisma.dichvu.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DichvuUpdateManyArgs>(args: SelectSubset<T, DichvuUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Dichvus and returns the data updated in the database.
+     * @param {DichvuUpdateManyAndReturnArgs} args - Arguments to update many Dichvus.
+     * @example
+     * // Update many Dichvus
+     * const dichvu = await prisma.dichvu.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Dichvus and only return the `id`
+     * const dichvuWithIdOnly = await prisma.dichvu.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DichvuUpdateManyAndReturnArgs>(args: SelectSubset<T, DichvuUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DichvuPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Dichvu.
+     * @param {DichvuUpsertArgs} args - Arguments to update or create a Dichvu.
+     * @example
+     * // Update or create a Dichvu
+     * const dichvu = await prisma.dichvu.upsert({
+     *   create: {
+     *     // ... data to create a Dichvu
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Dichvu we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DichvuUpsertArgs>(args: SelectSubset<T, DichvuUpsertArgs<ExtArgs>>): Prisma__DichvuClient<$Result.GetResult<Prisma.$DichvuPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Dichvus.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DichvuCountArgs} args - Arguments to filter Dichvus to count.
+     * @example
+     * // Count the number of Dichvus
+     * const count = await prisma.dichvu.count({
+     *   where: {
+     *     // ... the filter for the Dichvus we want to count
+     *   }
+     * })
+    **/
+    count<T extends DichvuCountArgs>(
+      args?: Subset<T, DichvuCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DichvuCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Dichvu.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DichvuAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DichvuAggregateArgs>(args: Subset<T, DichvuAggregateArgs>): Prisma.PrismaPromise<GetDichvuAggregateType<T>>
+
+    /**
+     * Group by Dichvu.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DichvuGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DichvuGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DichvuGroupByArgs['orderBy'] }
+        : { orderBy?: DichvuGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DichvuGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDichvuGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Dichvu model
+   */
+  readonly fields: DichvuFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Dichvu.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DichvuClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Dichvu model
+   */
+  interface DichvuFieldRefs {
+    readonly id: FieldRef<"Dichvu", 'Int'>
+    readonly source_id: FieldRef<"Dichvu", 'String'>
+    readonly name: FieldRef<"Dichvu", 'String'>
+    readonly code: FieldRef<"Dichvu", 'String'>
+    readonly codeOld: FieldRef<"Dichvu", 'String'>
+    readonly docCode: FieldRef<"Dichvu", 'String'>
+    readonly email: FieldRef<"Dichvu", 'String'>
+    readonly phone: FieldRef<"Dichvu", 'String'>
+    readonly phone2: FieldRef<"Dichvu", 'String'>
+    readonly birthday: FieldRef<"Dichvu", 'DateTime'>
+    readonly gender: FieldRef<"Dichvu", 'String'>
+    readonly address: FieldRef<"Dichvu", 'String'>
+    readonly commune: FieldRef<"Dichvu", 'String'>
+    readonly district: FieldRef<"Dichvu", 'String'>
+    readonly city: FieldRef<"Dichvu", 'String'>
+    readonly serviceId: FieldRef<"Dichvu", 'Int'>
+    readonly serviceTypeId: FieldRef<"Dichvu", 'Int'>
+    readonly serviceCode: FieldRef<"Dichvu", 'String'>
+    readonly tabId: FieldRef<"Dichvu", 'Int'>
+    readonly tabCode: FieldRef<"Dichvu", 'String'>
+    readonly comboId: FieldRef<"Dichvu", 'Int'>
+    readonly comboCode: FieldRef<"Dichvu", 'String'>
+    readonly serviceName: FieldRef<"Dichvu", 'String'>
+    readonly timeIndex: FieldRef<"Dichvu", 'String'>
+    readonly timeToTreatment: FieldRef<"Dichvu", 'Int'>
+    readonly teethChoosing: FieldRef<"Dichvu", 'String'>
+    readonly priceUnit: FieldRef<"Dichvu", 'Float'>
+    readonly quantity: FieldRef<"Dichvu", 'Float'>
+    readonly discount: FieldRef<"Dichvu", 'Float'>
+    readonly priceRoot: FieldRef<"Dichvu", 'Float'>
+    readonly priceDiscounted: FieldRef<"Dichvu", 'Float'>
+    readonly doctor: FieldRef<"Dichvu", 'Int'>
+    readonly doctor2: FieldRef<"Dichvu", 'Int'>
+    readonly doctor3: FieldRef<"Dichvu", 'Int'>
+    readonly doctor4: FieldRef<"Dichvu", 'Int'>
+    readonly assistant: FieldRef<"Dichvu", 'Int'>
+    readonly assistant2: FieldRef<"Dichvu", 'Int'>
+    readonly assistant3: FieldRef<"Dichvu", 'Int'>
+    readonly assistant4: FieldRef<"Dichvu", 'Int'>
+    readonly technician: FieldRef<"Dichvu", 'Int'>
+    readonly technician2: FieldRef<"Dichvu", 'Int'>
+    readonly timeTreatIndex: FieldRef<"Dichvu", 'Int'>
+    readonly percent: FieldRef<"Dichvu", 'Float'>
+    readonly percentNew: FieldRef<"Dichvu", 'Float'>
+    readonly percentStage: FieldRef<"Dichvu", 'Float'>
+    readonly percentNewStage: FieldRef<"Dichvu", 'Float'>
+    readonly note: FieldRef<"Dichvu", 'String'>
+    readonly content: FieldRef<"Dichvu", 'String'>
+    readonly contentNext: FieldRef<"Dichvu", 'String'>
+    readonly symptoms: FieldRef<"Dichvu", 'String'>
+    readonly treatDateNext: FieldRef<"Dichvu", 'DateTime'>
+    readonly branchId: FieldRef<"Dichvu", 'Int'>
+    readonly createdDate: FieldRef<"Dichvu", 'DateTime'>
+    readonly createdBy: FieldRef<"Dichvu", 'Int'>
+    readonly modifiedDate: FieldRef<"Dichvu", 'DateTime'>
+    readonly modifiedBy: FieldRef<"Dichvu", 'Int'>
+    readonly state: FieldRef<"Dichvu", 'Int'>
+    readonly extractedAt: FieldRef<"Dichvu", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Dichvu findUnique
+   */
+  export type DichvuFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Dichvu
+     */
+    select?: DichvuSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Dichvu
+     */
+    omit?: DichvuOmit<ExtArgs> | null
+    /**
+     * Filter, which Dichvu to fetch.
+     */
+    where: DichvuWhereUniqueInput
+  }
+
+  /**
+   * Dichvu findUniqueOrThrow
+   */
+  export type DichvuFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Dichvu
+     */
+    select?: DichvuSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Dichvu
+     */
+    omit?: DichvuOmit<ExtArgs> | null
+    /**
+     * Filter, which Dichvu to fetch.
+     */
+    where: DichvuWhereUniqueInput
+  }
+
+  /**
+   * Dichvu findFirst
+   */
+  export type DichvuFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Dichvu
+     */
+    select?: DichvuSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Dichvu
+     */
+    omit?: DichvuOmit<ExtArgs> | null
+    /**
+     * Filter, which Dichvu to fetch.
+     */
+    where?: DichvuWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Dichvus to fetch.
+     */
+    orderBy?: DichvuOrderByWithRelationInput | DichvuOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Dichvus.
+     */
+    cursor?: DichvuWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Dichvus from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Dichvus.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Dichvus.
+     */
+    distinct?: DichvuScalarFieldEnum | DichvuScalarFieldEnum[]
+  }
+
+  /**
+   * Dichvu findFirstOrThrow
+   */
+  export type DichvuFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Dichvu
+     */
+    select?: DichvuSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Dichvu
+     */
+    omit?: DichvuOmit<ExtArgs> | null
+    /**
+     * Filter, which Dichvu to fetch.
+     */
+    where?: DichvuWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Dichvus to fetch.
+     */
+    orderBy?: DichvuOrderByWithRelationInput | DichvuOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Dichvus.
+     */
+    cursor?: DichvuWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Dichvus from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Dichvus.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Dichvus.
+     */
+    distinct?: DichvuScalarFieldEnum | DichvuScalarFieldEnum[]
+  }
+
+  /**
+   * Dichvu findMany
+   */
+  export type DichvuFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Dichvu
+     */
+    select?: DichvuSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Dichvu
+     */
+    omit?: DichvuOmit<ExtArgs> | null
+    /**
+     * Filter, which Dichvus to fetch.
+     */
+    where?: DichvuWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Dichvus to fetch.
+     */
+    orderBy?: DichvuOrderByWithRelationInput | DichvuOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Dichvus.
+     */
+    cursor?: DichvuWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Dichvus from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Dichvus.
+     */
+    skip?: number
+    distinct?: DichvuScalarFieldEnum | DichvuScalarFieldEnum[]
+  }
+
+  /**
+   * Dichvu create
+   */
+  export type DichvuCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Dichvu
+     */
+    select?: DichvuSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Dichvu
+     */
+    omit?: DichvuOmit<ExtArgs> | null
+    /**
+     * The data needed to create a Dichvu.
+     */
+    data: XOR<DichvuCreateInput, DichvuUncheckedCreateInput>
+  }
+
+  /**
+   * Dichvu createMany
+   */
+  export type DichvuCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Dichvus.
+     */
+    data: DichvuCreateManyInput | DichvuCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Dichvu createManyAndReturn
+   */
+  export type DichvuCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Dichvu
+     */
+    select?: DichvuSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Dichvu
+     */
+    omit?: DichvuOmit<ExtArgs> | null
+    /**
+     * The data used to create many Dichvus.
+     */
+    data: DichvuCreateManyInput | DichvuCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Dichvu update
+   */
+  export type DichvuUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Dichvu
+     */
+    select?: DichvuSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Dichvu
+     */
+    omit?: DichvuOmit<ExtArgs> | null
+    /**
+     * The data needed to update a Dichvu.
+     */
+    data: XOR<DichvuUpdateInput, DichvuUncheckedUpdateInput>
+    /**
+     * Choose, which Dichvu to update.
+     */
+    where: DichvuWhereUniqueInput
+  }
+
+  /**
+   * Dichvu updateMany
+   */
+  export type DichvuUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Dichvus.
+     */
+    data: XOR<DichvuUpdateManyMutationInput, DichvuUncheckedUpdateManyInput>
+    /**
+     * Filter which Dichvus to update
+     */
+    where?: DichvuWhereInput
+    /**
+     * Limit how many Dichvus to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Dichvu updateManyAndReturn
+   */
+  export type DichvuUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Dichvu
+     */
+    select?: DichvuSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Dichvu
+     */
+    omit?: DichvuOmit<ExtArgs> | null
+    /**
+     * The data used to update Dichvus.
+     */
+    data: XOR<DichvuUpdateManyMutationInput, DichvuUncheckedUpdateManyInput>
+    /**
+     * Filter which Dichvus to update
+     */
+    where?: DichvuWhereInput
+    /**
+     * Limit how many Dichvus to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Dichvu upsert
+   */
+  export type DichvuUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Dichvu
+     */
+    select?: DichvuSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Dichvu
+     */
+    omit?: DichvuOmit<ExtArgs> | null
+    /**
+     * The filter to search for the Dichvu to update in case it exists.
+     */
+    where: DichvuWhereUniqueInput
+    /**
+     * In case the Dichvu found by the `where` argument doesn't exist, create a new Dichvu with this data.
+     */
+    create: XOR<DichvuCreateInput, DichvuUncheckedCreateInput>
+    /**
+     * In case the Dichvu was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DichvuUpdateInput, DichvuUncheckedUpdateInput>
+  }
+
+  /**
+   * Dichvu delete
+   */
+  export type DichvuDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Dichvu
+     */
+    select?: DichvuSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Dichvu
+     */
+    omit?: DichvuOmit<ExtArgs> | null
+    /**
+     * Filter which Dichvu to delete.
+     */
+    where: DichvuWhereUniqueInput
+  }
+
+  /**
+   * Dichvu deleteMany
+   */
+  export type DichvuDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Dichvus to delete
+     */
+    where?: DichvuWhereInput
+    /**
+     * Limit how many Dichvus to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Dichvu without action
+   */
+  export type DichvuDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Dichvu
+     */
+    select?: DichvuSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Dichvu
+     */
+    omit?: DichvuOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -8879,6 +10804,70 @@ export namespace Prisma {
   };
 
   export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
+
+
+  export const DichvuScalarFieldEnum: {
+    id: 'id',
+    source_id: 'source_id',
+    name: 'name',
+    code: 'code',
+    codeOld: 'codeOld',
+    docCode: 'docCode',
+    email: 'email',
+    phone: 'phone',
+    phone2: 'phone2',
+    birthday: 'birthday',
+    gender: 'gender',
+    address: 'address',
+    commune: 'commune',
+    district: 'district',
+    city: 'city',
+    serviceId: 'serviceId',
+    serviceTypeId: 'serviceTypeId',
+    serviceCode: 'serviceCode',
+    tabId: 'tabId',
+    tabCode: 'tabCode',
+    comboId: 'comboId',
+    comboCode: 'comboCode',
+    serviceName: 'serviceName',
+    timeIndex: 'timeIndex',
+    timeToTreatment: 'timeToTreatment',
+    teethChoosing: 'teethChoosing',
+    priceUnit: 'priceUnit',
+    quantity: 'quantity',
+    discount: 'discount',
+    priceRoot: 'priceRoot',
+    priceDiscounted: 'priceDiscounted',
+    doctor: 'doctor',
+    doctor2: 'doctor2',
+    doctor3: 'doctor3',
+    doctor4: 'doctor4',
+    assistant: 'assistant',
+    assistant2: 'assistant2',
+    assistant3: 'assistant3',
+    assistant4: 'assistant4',
+    technician: 'technician',
+    technician2: 'technician2',
+    timeTreatIndex: 'timeTreatIndex',
+    percent: 'percent',
+    percentNew: 'percentNew',
+    percentStage: 'percentStage',
+    percentNewStage: 'percentNewStage',
+    note: 'note',
+    content: 'content',
+    contentNext: 'contentNext',
+    symptoms: 'symptoms',
+    treatDateNext: 'treatDateNext',
+    branchId: 'branchId',
+    createdDate: 'createdDate',
+    createdBy: 'createdBy',
+    modifiedDate: 'modifiedDate',
+    modifiedBy: 'modifiedBy',
+    state: 'state',
+    extractedAt: 'extractedAt'
+  };
+
+  export type DichvuScalarFieldEnum = (typeof DichvuScalarFieldEnum)[keyof typeof DichvuScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -10003,6 +11992,325 @@ export namespace Prisma {
     modifiedDate?: DateTimeNullableWithAggregatesFilter<"Appointment"> | Date | string | null
     modifiedBy?: StringNullableWithAggregatesFilter<"Appointment"> | string | null
     extractedAt?: DateTimeWithAggregatesFilter<"Appointment"> | Date | string
+  }
+
+  export type DichvuWhereInput = {
+    AND?: DichvuWhereInput | DichvuWhereInput[]
+    OR?: DichvuWhereInput[]
+    NOT?: DichvuWhereInput | DichvuWhereInput[]
+    id?: IntFilter<"Dichvu"> | number
+    source_id?: StringNullableFilter<"Dichvu"> | string | null
+    name?: StringNullableFilter<"Dichvu"> | string | null
+    code?: StringNullableFilter<"Dichvu"> | string | null
+    codeOld?: StringNullableFilter<"Dichvu"> | string | null
+    docCode?: StringNullableFilter<"Dichvu"> | string | null
+    email?: StringNullableFilter<"Dichvu"> | string | null
+    phone?: StringNullableFilter<"Dichvu"> | string | null
+    phone2?: StringNullableFilter<"Dichvu"> | string | null
+    birthday?: DateTimeNullableFilter<"Dichvu"> | Date | string | null
+    gender?: StringNullableFilter<"Dichvu"> | string | null
+    address?: StringNullableFilter<"Dichvu"> | string | null
+    commune?: StringNullableFilter<"Dichvu"> | string | null
+    district?: StringNullableFilter<"Dichvu"> | string | null
+    city?: StringNullableFilter<"Dichvu"> | string | null
+    serviceId?: IntFilter<"Dichvu"> | number
+    serviceTypeId?: IntFilter<"Dichvu"> | number
+    serviceCode?: StringFilter<"Dichvu"> | string
+    tabId?: IntFilter<"Dichvu"> | number
+    tabCode?: StringFilter<"Dichvu"> | string
+    comboId?: IntFilter<"Dichvu"> | number
+    comboCode?: StringNullableFilter<"Dichvu"> | string | null
+    serviceName?: StringFilter<"Dichvu"> | string
+    timeIndex?: StringNullableFilter<"Dichvu"> | string | null
+    timeToTreatment?: IntFilter<"Dichvu"> | number
+    teethChoosing?: StringNullableFilter<"Dichvu"> | string | null
+    priceUnit?: FloatFilter<"Dichvu"> | number
+    quantity?: FloatFilter<"Dichvu"> | number
+    discount?: FloatFilter<"Dichvu"> | number
+    priceRoot?: FloatFilter<"Dichvu"> | number
+    priceDiscounted?: FloatFilter<"Dichvu"> | number
+    doctor?: IntFilter<"Dichvu"> | number
+    doctor2?: IntFilter<"Dichvu"> | number
+    doctor3?: IntFilter<"Dichvu"> | number
+    doctor4?: IntFilter<"Dichvu"> | number
+    assistant?: IntFilter<"Dichvu"> | number
+    assistant2?: IntFilter<"Dichvu"> | number
+    assistant3?: IntFilter<"Dichvu"> | number
+    assistant4?: IntFilter<"Dichvu"> | number
+    technician?: IntFilter<"Dichvu"> | number
+    technician2?: IntFilter<"Dichvu"> | number
+    timeTreatIndex?: IntFilter<"Dichvu"> | number
+    percent?: FloatFilter<"Dichvu"> | number
+    percentNew?: FloatFilter<"Dichvu"> | number
+    percentStage?: FloatFilter<"Dichvu"> | number
+    percentNewStage?: FloatFilter<"Dichvu"> | number
+    note?: StringNullableFilter<"Dichvu"> | string | null
+    content?: StringNullableFilter<"Dichvu"> | string | null
+    contentNext?: StringNullableFilter<"Dichvu"> | string | null
+    symptoms?: StringNullableFilter<"Dichvu"> | string | null
+    treatDateNext?: DateTimeNullableFilter<"Dichvu"> | Date | string | null
+    branchId?: IntFilter<"Dichvu"> | number
+    createdDate?: DateTimeFilter<"Dichvu"> | Date | string
+    createdBy?: IntFilter<"Dichvu"> | number
+    modifiedDate?: DateTimeFilter<"Dichvu"> | Date | string
+    modifiedBy?: IntFilter<"Dichvu"> | number
+    state?: IntFilter<"Dichvu"> | number
+    extractedAt?: DateTimeFilter<"Dichvu"> | Date | string
+  }
+
+  export type DichvuOrderByWithRelationInput = {
+    id?: SortOrder
+    source_id?: SortOrderInput | SortOrder
+    name?: SortOrderInput | SortOrder
+    code?: SortOrderInput | SortOrder
+    codeOld?: SortOrderInput | SortOrder
+    docCode?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    phone2?: SortOrderInput | SortOrder
+    birthday?: SortOrderInput | SortOrder
+    gender?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    commune?: SortOrderInput | SortOrder
+    district?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    serviceCode?: SortOrder
+    tabId?: SortOrder
+    tabCode?: SortOrder
+    comboId?: SortOrder
+    comboCode?: SortOrderInput | SortOrder
+    serviceName?: SortOrder
+    timeIndex?: SortOrderInput | SortOrder
+    timeToTreatment?: SortOrder
+    teethChoosing?: SortOrderInput | SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    note?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
+    contentNext?: SortOrderInput | SortOrder
+    symptoms?: SortOrderInput | SortOrder
+    treatDateNext?: SortOrderInput | SortOrder
+    branchId?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type DichvuWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    source_id?: string
+    AND?: DichvuWhereInput | DichvuWhereInput[]
+    OR?: DichvuWhereInput[]
+    NOT?: DichvuWhereInput | DichvuWhereInput[]
+    name?: StringNullableFilter<"Dichvu"> | string | null
+    code?: StringNullableFilter<"Dichvu"> | string | null
+    codeOld?: StringNullableFilter<"Dichvu"> | string | null
+    docCode?: StringNullableFilter<"Dichvu"> | string | null
+    email?: StringNullableFilter<"Dichvu"> | string | null
+    phone?: StringNullableFilter<"Dichvu"> | string | null
+    phone2?: StringNullableFilter<"Dichvu"> | string | null
+    birthday?: DateTimeNullableFilter<"Dichvu"> | Date | string | null
+    gender?: StringNullableFilter<"Dichvu"> | string | null
+    address?: StringNullableFilter<"Dichvu"> | string | null
+    commune?: StringNullableFilter<"Dichvu"> | string | null
+    district?: StringNullableFilter<"Dichvu"> | string | null
+    city?: StringNullableFilter<"Dichvu"> | string | null
+    serviceId?: IntFilter<"Dichvu"> | number
+    serviceTypeId?: IntFilter<"Dichvu"> | number
+    serviceCode?: StringFilter<"Dichvu"> | string
+    tabId?: IntFilter<"Dichvu"> | number
+    tabCode?: StringFilter<"Dichvu"> | string
+    comboId?: IntFilter<"Dichvu"> | number
+    comboCode?: StringNullableFilter<"Dichvu"> | string | null
+    serviceName?: StringFilter<"Dichvu"> | string
+    timeIndex?: StringNullableFilter<"Dichvu"> | string | null
+    timeToTreatment?: IntFilter<"Dichvu"> | number
+    teethChoosing?: StringNullableFilter<"Dichvu"> | string | null
+    priceUnit?: FloatFilter<"Dichvu"> | number
+    quantity?: FloatFilter<"Dichvu"> | number
+    discount?: FloatFilter<"Dichvu"> | number
+    priceRoot?: FloatFilter<"Dichvu"> | number
+    priceDiscounted?: FloatFilter<"Dichvu"> | number
+    doctor?: IntFilter<"Dichvu"> | number
+    doctor2?: IntFilter<"Dichvu"> | number
+    doctor3?: IntFilter<"Dichvu"> | number
+    doctor4?: IntFilter<"Dichvu"> | number
+    assistant?: IntFilter<"Dichvu"> | number
+    assistant2?: IntFilter<"Dichvu"> | number
+    assistant3?: IntFilter<"Dichvu"> | number
+    assistant4?: IntFilter<"Dichvu"> | number
+    technician?: IntFilter<"Dichvu"> | number
+    technician2?: IntFilter<"Dichvu"> | number
+    timeTreatIndex?: IntFilter<"Dichvu"> | number
+    percent?: FloatFilter<"Dichvu"> | number
+    percentNew?: FloatFilter<"Dichvu"> | number
+    percentStage?: FloatFilter<"Dichvu"> | number
+    percentNewStage?: FloatFilter<"Dichvu"> | number
+    note?: StringNullableFilter<"Dichvu"> | string | null
+    content?: StringNullableFilter<"Dichvu"> | string | null
+    contentNext?: StringNullableFilter<"Dichvu"> | string | null
+    symptoms?: StringNullableFilter<"Dichvu"> | string | null
+    treatDateNext?: DateTimeNullableFilter<"Dichvu"> | Date | string | null
+    branchId?: IntFilter<"Dichvu"> | number
+    createdDate?: DateTimeFilter<"Dichvu"> | Date | string
+    createdBy?: IntFilter<"Dichvu"> | number
+    modifiedDate?: DateTimeFilter<"Dichvu"> | Date | string
+    modifiedBy?: IntFilter<"Dichvu"> | number
+    state?: IntFilter<"Dichvu"> | number
+    extractedAt?: DateTimeFilter<"Dichvu"> | Date | string
+  }, "id" | "source_id">
+
+  export type DichvuOrderByWithAggregationInput = {
+    id?: SortOrder
+    source_id?: SortOrderInput | SortOrder
+    name?: SortOrderInput | SortOrder
+    code?: SortOrderInput | SortOrder
+    codeOld?: SortOrderInput | SortOrder
+    docCode?: SortOrderInput | SortOrder
+    email?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
+    phone2?: SortOrderInput | SortOrder
+    birthday?: SortOrderInput | SortOrder
+    gender?: SortOrderInput | SortOrder
+    address?: SortOrderInput | SortOrder
+    commune?: SortOrderInput | SortOrder
+    district?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    serviceCode?: SortOrder
+    tabId?: SortOrder
+    tabCode?: SortOrder
+    comboId?: SortOrder
+    comboCode?: SortOrderInput | SortOrder
+    serviceName?: SortOrder
+    timeIndex?: SortOrderInput | SortOrder
+    timeToTreatment?: SortOrder
+    teethChoosing?: SortOrderInput | SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    note?: SortOrderInput | SortOrder
+    content?: SortOrderInput | SortOrder
+    contentNext?: SortOrderInput | SortOrder
+    symptoms?: SortOrderInput | SortOrder
+    treatDateNext?: SortOrderInput | SortOrder
+    branchId?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+    _count?: DichvuCountOrderByAggregateInput
+    _avg?: DichvuAvgOrderByAggregateInput
+    _max?: DichvuMaxOrderByAggregateInput
+    _min?: DichvuMinOrderByAggregateInput
+    _sum?: DichvuSumOrderByAggregateInput
+  }
+
+  export type DichvuScalarWhereWithAggregatesInput = {
+    AND?: DichvuScalarWhereWithAggregatesInput | DichvuScalarWhereWithAggregatesInput[]
+    OR?: DichvuScalarWhereWithAggregatesInput[]
+    NOT?: DichvuScalarWhereWithAggregatesInput | DichvuScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Dichvu"> | number
+    source_id?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    name?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    code?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    codeOld?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    docCode?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    email?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    phone2?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    birthday?: DateTimeNullableWithAggregatesFilter<"Dichvu"> | Date | string | null
+    gender?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    address?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    commune?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    district?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    city?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    serviceId?: IntWithAggregatesFilter<"Dichvu"> | number
+    serviceTypeId?: IntWithAggregatesFilter<"Dichvu"> | number
+    serviceCode?: StringWithAggregatesFilter<"Dichvu"> | string
+    tabId?: IntWithAggregatesFilter<"Dichvu"> | number
+    tabCode?: StringWithAggregatesFilter<"Dichvu"> | string
+    comboId?: IntWithAggregatesFilter<"Dichvu"> | number
+    comboCode?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    serviceName?: StringWithAggregatesFilter<"Dichvu"> | string
+    timeIndex?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    timeToTreatment?: IntWithAggregatesFilter<"Dichvu"> | number
+    teethChoosing?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    priceUnit?: FloatWithAggregatesFilter<"Dichvu"> | number
+    quantity?: FloatWithAggregatesFilter<"Dichvu"> | number
+    discount?: FloatWithAggregatesFilter<"Dichvu"> | number
+    priceRoot?: FloatWithAggregatesFilter<"Dichvu"> | number
+    priceDiscounted?: FloatWithAggregatesFilter<"Dichvu"> | number
+    doctor?: IntWithAggregatesFilter<"Dichvu"> | number
+    doctor2?: IntWithAggregatesFilter<"Dichvu"> | number
+    doctor3?: IntWithAggregatesFilter<"Dichvu"> | number
+    doctor4?: IntWithAggregatesFilter<"Dichvu"> | number
+    assistant?: IntWithAggregatesFilter<"Dichvu"> | number
+    assistant2?: IntWithAggregatesFilter<"Dichvu"> | number
+    assistant3?: IntWithAggregatesFilter<"Dichvu"> | number
+    assistant4?: IntWithAggregatesFilter<"Dichvu"> | number
+    technician?: IntWithAggregatesFilter<"Dichvu"> | number
+    technician2?: IntWithAggregatesFilter<"Dichvu"> | number
+    timeTreatIndex?: IntWithAggregatesFilter<"Dichvu"> | number
+    percent?: FloatWithAggregatesFilter<"Dichvu"> | number
+    percentNew?: FloatWithAggregatesFilter<"Dichvu"> | number
+    percentStage?: FloatWithAggregatesFilter<"Dichvu"> | number
+    percentNewStage?: FloatWithAggregatesFilter<"Dichvu"> | number
+    note?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    content?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    contentNext?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    symptoms?: StringNullableWithAggregatesFilter<"Dichvu"> | string | null
+    treatDateNext?: DateTimeNullableWithAggregatesFilter<"Dichvu"> | Date | string | null
+    branchId?: IntWithAggregatesFilter<"Dichvu"> | number
+    createdDate?: DateTimeWithAggregatesFilter<"Dichvu"> | Date | string
+    createdBy?: IntWithAggregatesFilter<"Dichvu"> | number
+    modifiedDate?: DateTimeWithAggregatesFilter<"Dichvu"> | Date | string
+    modifiedBy?: IntWithAggregatesFilter<"Dichvu"> | number
+    state?: IntWithAggregatesFilter<"Dichvu"> | number
+    extractedAt?: DateTimeWithAggregatesFilter<"Dichvu"> | Date | string
   }
 
   export type ProcessedPostCreateInput = {
@@ -11341,6 +13649,430 @@ export namespace Prisma {
     extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DichvuCreateInput = {
+    source_id?: string | null
+    name?: string | null
+    code?: string | null
+    codeOld?: string | null
+    docCode?: string | null
+    email?: string | null
+    phone?: string | null
+    phone2?: string | null
+    birthday?: Date | string | null
+    gender?: string | null
+    address?: string | null
+    commune?: string | null
+    district?: string | null
+    city?: string | null
+    serviceId: number
+    serviceTypeId: number
+    serviceCode: string
+    tabId: number
+    tabCode: string
+    comboId: number
+    comboCode?: string | null
+    serviceName: string
+    timeIndex?: string | null
+    timeToTreatment: number
+    teethChoosing?: string | null
+    priceUnit: number
+    quantity: number
+    discount: number
+    priceRoot: number
+    priceDiscounted: number
+    doctor: number
+    doctor2: number
+    doctor3: number
+    doctor4: number
+    assistant: number
+    assistant2: number
+    assistant3: number
+    assistant4: number
+    technician: number
+    technician2: number
+    timeTreatIndex: number
+    percent: number
+    percentNew: number
+    percentStage: number
+    percentNewStage: number
+    note?: string | null
+    content?: string | null
+    contentNext?: string | null
+    symptoms?: string | null
+    treatDateNext?: Date | string | null
+    branchId: number
+    createdDate: Date | string
+    createdBy: number
+    modifiedDate: Date | string
+    modifiedBy: number
+    state: number
+    extractedAt?: Date | string
+  }
+
+  export type DichvuUncheckedCreateInput = {
+    id?: number
+    source_id?: string | null
+    name?: string | null
+    code?: string | null
+    codeOld?: string | null
+    docCode?: string | null
+    email?: string | null
+    phone?: string | null
+    phone2?: string | null
+    birthday?: Date | string | null
+    gender?: string | null
+    address?: string | null
+    commune?: string | null
+    district?: string | null
+    city?: string | null
+    serviceId: number
+    serviceTypeId: number
+    serviceCode: string
+    tabId: number
+    tabCode: string
+    comboId: number
+    comboCode?: string | null
+    serviceName: string
+    timeIndex?: string | null
+    timeToTreatment: number
+    teethChoosing?: string | null
+    priceUnit: number
+    quantity: number
+    discount: number
+    priceRoot: number
+    priceDiscounted: number
+    doctor: number
+    doctor2: number
+    doctor3: number
+    doctor4: number
+    assistant: number
+    assistant2: number
+    assistant3: number
+    assistant4: number
+    technician: number
+    technician2: number
+    timeTreatIndex: number
+    percent: number
+    percentNew: number
+    percentStage: number
+    percentNewStage: number
+    note?: string | null
+    content?: string | null
+    contentNext?: string | null
+    symptoms?: string | null
+    treatDateNext?: Date | string | null
+    branchId: number
+    createdDate: Date | string
+    createdBy: number
+    modifiedDate: Date | string
+    modifiedBy: number
+    state: number
+    extractedAt?: Date | string
+  }
+
+  export type DichvuUpdateInput = {
+    source_id?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    codeOld?: NullableStringFieldUpdateOperationsInput | string | null
+    docCode?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    commune?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: IntFieldUpdateOperationsInput | number
+    serviceTypeId?: IntFieldUpdateOperationsInput | number
+    serviceCode?: StringFieldUpdateOperationsInput | string
+    tabId?: IntFieldUpdateOperationsInput | number
+    tabCode?: StringFieldUpdateOperationsInput | string
+    comboId?: IntFieldUpdateOperationsInput | number
+    comboCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: StringFieldUpdateOperationsInput | string
+    timeIndex?: NullableStringFieldUpdateOperationsInput | string | null
+    timeToTreatment?: IntFieldUpdateOperationsInput | number
+    teethChoosing?: NullableStringFieldUpdateOperationsInput | string | null
+    priceUnit?: FloatFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    priceRoot?: FloatFieldUpdateOperationsInput | number
+    priceDiscounted?: FloatFieldUpdateOperationsInput | number
+    doctor?: IntFieldUpdateOperationsInput | number
+    doctor2?: IntFieldUpdateOperationsInput | number
+    doctor3?: IntFieldUpdateOperationsInput | number
+    doctor4?: IntFieldUpdateOperationsInput | number
+    assistant?: IntFieldUpdateOperationsInput | number
+    assistant2?: IntFieldUpdateOperationsInput | number
+    assistant3?: IntFieldUpdateOperationsInput | number
+    assistant4?: IntFieldUpdateOperationsInput | number
+    technician?: IntFieldUpdateOperationsInput | number
+    technician2?: IntFieldUpdateOperationsInput | number
+    timeTreatIndex?: IntFieldUpdateOperationsInput | number
+    percent?: FloatFieldUpdateOperationsInput | number
+    percentNew?: FloatFieldUpdateOperationsInput | number
+    percentStage?: FloatFieldUpdateOperationsInput | number
+    percentNewStage?: FloatFieldUpdateOperationsInput | number
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentNext?: NullableStringFieldUpdateOperationsInput | string | null
+    symptoms?: NullableStringFieldUpdateOperationsInput | string | null
+    treatDateNext?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branchId?: IntFieldUpdateOperationsInput | number
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: IntFieldUpdateOperationsInput | number
+    modifiedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    modifiedBy?: IntFieldUpdateOperationsInput | number
+    state?: IntFieldUpdateOperationsInput | number
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DichvuUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    source_id?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    codeOld?: NullableStringFieldUpdateOperationsInput | string | null
+    docCode?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    commune?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: IntFieldUpdateOperationsInput | number
+    serviceTypeId?: IntFieldUpdateOperationsInput | number
+    serviceCode?: StringFieldUpdateOperationsInput | string
+    tabId?: IntFieldUpdateOperationsInput | number
+    tabCode?: StringFieldUpdateOperationsInput | string
+    comboId?: IntFieldUpdateOperationsInput | number
+    comboCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: StringFieldUpdateOperationsInput | string
+    timeIndex?: NullableStringFieldUpdateOperationsInput | string | null
+    timeToTreatment?: IntFieldUpdateOperationsInput | number
+    teethChoosing?: NullableStringFieldUpdateOperationsInput | string | null
+    priceUnit?: FloatFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    priceRoot?: FloatFieldUpdateOperationsInput | number
+    priceDiscounted?: FloatFieldUpdateOperationsInput | number
+    doctor?: IntFieldUpdateOperationsInput | number
+    doctor2?: IntFieldUpdateOperationsInput | number
+    doctor3?: IntFieldUpdateOperationsInput | number
+    doctor4?: IntFieldUpdateOperationsInput | number
+    assistant?: IntFieldUpdateOperationsInput | number
+    assistant2?: IntFieldUpdateOperationsInput | number
+    assistant3?: IntFieldUpdateOperationsInput | number
+    assistant4?: IntFieldUpdateOperationsInput | number
+    technician?: IntFieldUpdateOperationsInput | number
+    technician2?: IntFieldUpdateOperationsInput | number
+    timeTreatIndex?: IntFieldUpdateOperationsInput | number
+    percent?: FloatFieldUpdateOperationsInput | number
+    percentNew?: FloatFieldUpdateOperationsInput | number
+    percentStage?: FloatFieldUpdateOperationsInput | number
+    percentNewStage?: FloatFieldUpdateOperationsInput | number
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentNext?: NullableStringFieldUpdateOperationsInput | string | null
+    symptoms?: NullableStringFieldUpdateOperationsInput | string | null
+    treatDateNext?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branchId?: IntFieldUpdateOperationsInput | number
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: IntFieldUpdateOperationsInput | number
+    modifiedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    modifiedBy?: IntFieldUpdateOperationsInput | number
+    state?: IntFieldUpdateOperationsInput | number
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DichvuCreateManyInput = {
+    id?: number
+    source_id?: string | null
+    name?: string | null
+    code?: string | null
+    codeOld?: string | null
+    docCode?: string | null
+    email?: string | null
+    phone?: string | null
+    phone2?: string | null
+    birthday?: Date | string | null
+    gender?: string | null
+    address?: string | null
+    commune?: string | null
+    district?: string | null
+    city?: string | null
+    serviceId: number
+    serviceTypeId: number
+    serviceCode: string
+    tabId: number
+    tabCode: string
+    comboId: number
+    comboCode?: string | null
+    serviceName: string
+    timeIndex?: string | null
+    timeToTreatment: number
+    teethChoosing?: string | null
+    priceUnit: number
+    quantity: number
+    discount: number
+    priceRoot: number
+    priceDiscounted: number
+    doctor: number
+    doctor2: number
+    doctor3: number
+    doctor4: number
+    assistant: number
+    assistant2: number
+    assistant3: number
+    assistant4: number
+    technician: number
+    technician2: number
+    timeTreatIndex: number
+    percent: number
+    percentNew: number
+    percentStage: number
+    percentNewStage: number
+    note?: string | null
+    content?: string | null
+    contentNext?: string | null
+    symptoms?: string | null
+    treatDateNext?: Date | string | null
+    branchId: number
+    createdDate: Date | string
+    createdBy: number
+    modifiedDate: Date | string
+    modifiedBy: number
+    state: number
+    extractedAt?: Date | string
+  }
+
+  export type DichvuUpdateManyMutationInput = {
+    source_id?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    codeOld?: NullableStringFieldUpdateOperationsInput | string | null
+    docCode?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    commune?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: IntFieldUpdateOperationsInput | number
+    serviceTypeId?: IntFieldUpdateOperationsInput | number
+    serviceCode?: StringFieldUpdateOperationsInput | string
+    tabId?: IntFieldUpdateOperationsInput | number
+    tabCode?: StringFieldUpdateOperationsInput | string
+    comboId?: IntFieldUpdateOperationsInput | number
+    comboCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: StringFieldUpdateOperationsInput | string
+    timeIndex?: NullableStringFieldUpdateOperationsInput | string | null
+    timeToTreatment?: IntFieldUpdateOperationsInput | number
+    teethChoosing?: NullableStringFieldUpdateOperationsInput | string | null
+    priceUnit?: FloatFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    priceRoot?: FloatFieldUpdateOperationsInput | number
+    priceDiscounted?: FloatFieldUpdateOperationsInput | number
+    doctor?: IntFieldUpdateOperationsInput | number
+    doctor2?: IntFieldUpdateOperationsInput | number
+    doctor3?: IntFieldUpdateOperationsInput | number
+    doctor4?: IntFieldUpdateOperationsInput | number
+    assistant?: IntFieldUpdateOperationsInput | number
+    assistant2?: IntFieldUpdateOperationsInput | number
+    assistant3?: IntFieldUpdateOperationsInput | number
+    assistant4?: IntFieldUpdateOperationsInput | number
+    technician?: IntFieldUpdateOperationsInput | number
+    technician2?: IntFieldUpdateOperationsInput | number
+    timeTreatIndex?: IntFieldUpdateOperationsInput | number
+    percent?: FloatFieldUpdateOperationsInput | number
+    percentNew?: FloatFieldUpdateOperationsInput | number
+    percentStage?: FloatFieldUpdateOperationsInput | number
+    percentNewStage?: FloatFieldUpdateOperationsInput | number
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentNext?: NullableStringFieldUpdateOperationsInput | string | null
+    symptoms?: NullableStringFieldUpdateOperationsInput | string | null
+    treatDateNext?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branchId?: IntFieldUpdateOperationsInput | number
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: IntFieldUpdateOperationsInput | number
+    modifiedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    modifiedBy?: IntFieldUpdateOperationsInput | number
+    state?: IntFieldUpdateOperationsInput | number
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DichvuUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    source_id?: NullableStringFieldUpdateOperationsInput | string | null
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: NullableStringFieldUpdateOperationsInput | string | null
+    codeOld?: NullableStringFieldUpdateOperationsInput | string | null
+    docCode?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone2?: NullableStringFieldUpdateOperationsInput | string | null
+    birthday?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    gender?: NullableStringFieldUpdateOperationsInput | string | null
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    commune?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceId?: IntFieldUpdateOperationsInput | number
+    serviceTypeId?: IntFieldUpdateOperationsInput | number
+    serviceCode?: StringFieldUpdateOperationsInput | string
+    tabId?: IntFieldUpdateOperationsInput | number
+    tabCode?: StringFieldUpdateOperationsInput | string
+    comboId?: IntFieldUpdateOperationsInput | number
+    comboCode?: NullableStringFieldUpdateOperationsInput | string | null
+    serviceName?: StringFieldUpdateOperationsInput | string
+    timeIndex?: NullableStringFieldUpdateOperationsInput | string | null
+    timeToTreatment?: IntFieldUpdateOperationsInput | number
+    teethChoosing?: NullableStringFieldUpdateOperationsInput | string | null
+    priceUnit?: FloatFieldUpdateOperationsInput | number
+    quantity?: FloatFieldUpdateOperationsInput | number
+    discount?: FloatFieldUpdateOperationsInput | number
+    priceRoot?: FloatFieldUpdateOperationsInput | number
+    priceDiscounted?: FloatFieldUpdateOperationsInput | number
+    doctor?: IntFieldUpdateOperationsInput | number
+    doctor2?: IntFieldUpdateOperationsInput | number
+    doctor3?: IntFieldUpdateOperationsInput | number
+    doctor4?: IntFieldUpdateOperationsInput | number
+    assistant?: IntFieldUpdateOperationsInput | number
+    assistant2?: IntFieldUpdateOperationsInput | number
+    assistant3?: IntFieldUpdateOperationsInput | number
+    assistant4?: IntFieldUpdateOperationsInput | number
+    technician?: IntFieldUpdateOperationsInput | number
+    technician2?: IntFieldUpdateOperationsInput | number
+    timeTreatIndex?: IntFieldUpdateOperationsInput | number
+    percent?: FloatFieldUpdateOperationsInput | number
+    percentNew?: FloatFieldUpdateOperationsInput | number
+    percentStage?: FloatFieldUpdateOperationsInput | number
+    percentNewStage?: FloatFieldUpdateOperationsInput | number
+    note?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    contentNext?: NullableStringFieldUpdateOperationsInput | string | null
+    symptoms?: NullableStringFieldUpdateOperationsInput | string | null
+    treatDateNext?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    branchId?: IntFieldUpdateOperationsInput | number
+    createdDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: IntFieldUpdateOperationsInput | number
+    modifiedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    modifiedBy?: IntFieldUpdateOperationsInput | number
+    state?: IntFieldUpdateOperationsInput | number
+    extractedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -12338,6 +15070,255 @@ export namespace Prisma {
     reasonCancelId?: SortOrder
     typeId?: SortOrder
     typeDetailId?: SortOrder
+    state?: SortOrder
+  }
+
+  export type DichvuCountOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    codeOld?: SortOrder
+    docCode?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    phone2?: SortOrder
+    birthday?: SortOrder
+    gender?: SortOrder
+    address?: SortOrder
+    commune?: SortOrder
+    district?: SortOrder
+    city?: SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    serviceCode?: SortOrder
+    tabId?: SortOrder
+    tabCode?: SortOrder
+    comboId?: SortOrder
+    comboCode?: SortOrder
+    serviceName?: SortOrder
+    timeIndex?: SortOrder
+    timeToTreatment?: SortOrder
+    teethChoosing?: SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    note?: SortOrder
+    content?: SortOrder
+    contentNext?: SortOrder
+    symptoms?: SortOrder
+    treatDateNext?: SortOrder
+    branchId?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type DichvuAvgOrderByAggregateInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    tabId?: SortOrder
+    comboId?: SortOrder
+    timeToTreatment?: SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    branchId?: SortOrder
+    createdBy?: SortOrder
+    modifiedBy?: SortOrder
+    state?: SortOrder
+  }
+
+  export type DichvuMaxOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    codeOld?: SortOrder
+    docCode?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    phone2?: SortOrder
+    birthday?: SortOrder
+    gender?: SortOrder
+    address?: SortOrder
+    commune?: SortOrder
+    district?: SortOrder
+    city?: SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    serviceCode?: SortOrder
+    tabId?: SortOrder
+    tabCode?: SortOrder
+    comboId?: SortOrder
+    comboCode?: SortOrder
+    serviceName?: SortOrder
+    timeIndex?: SortOrder
+    timeToTreatment?: SortOrder
+    teethChoosing?: SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    note?: SortOrder
+    content?: SortOrder
+    contentNext?: SortOrder
+    symptoms?: SortOrder
+    treatDateNext?: SortOrder
+    branchId?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type DichvuMinOrderByAggregateInput = {
+    id?: SortOrder
+    source_id?: SortOrder
+    name?: SortOrder
+    code?: SortOrder
+    codeOld?: SortOrder
+    docCode?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    phone2?: SortOrder
+    birthday?: SortOrder
+    gender?: SortOrder
+    address?: SortOrder
+    commune?: SortOrder
+    district?: SortOrder
+    city?: SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    serviceCode?: SortOrder
+    tabId?: SortOrder
+    tabCode?: SortOrder
+    comboId?: SortOrder
+    comboCode?: SortOrder
+    serviceName?: SortOrder
+    timeIndex?: SortOrder
+    timeToTreatment?: SortOrder
+    teethChoosing?: SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    note?: SortOrder
+    content?: SortOrder
+    contentNext?: SortOrder
+    symptoms?: SortOrder
+    treatDateNext?: SortOrder
+    branchId?: SortOrder
+    createdDate?: SortOrder
+    createdBy?: SortOrder
+    modifiedDate?: SortOrder
+    modifiedBy?: SortOrder
+    state?: SortOrder
+    extractedAt?: SortOrder
+  }
+
+  export type DichvuSumOrderByAggregateInput = {
+    id?: SortOrder
+    serviceId?: SortOrder
+    serviceTypeId?: SortOrder
+    tabId?: SortOrder
+    comboId?: SortOrder
+    timeToTreatment?: SortOrder
+    priceUnit?: SortOrder
+    quantity?: SortOrder
+    discount?: SortOrder
+    priceRoot?: SortOrder
+    priceDiscounted?: SortOrder
+    doctor?: SortOrder
+    doctor2?: SortOrder
+    doctor3?: SortOrder
+    doctor4?: SortOrder
+    assistant?: SortOrder
+    assistant2?: SortOrder
+    assistant3?: SortOrder
+    assistant4?: SortOrder
+    technician?: SortOrder
+    technician2?: SortOrder
+    timeTreatIndex?: SortOrder
+    percent?: SortOrder
+    percentNew?: SortOrder
+    percentStage?: SortOrder
+    percentNewStage?: SortOrder
+    branchId?: SortOrder
+    createdBy?: SortOrder
+    modifiedBy?: SortOrder
     state?: SortOrder
   }
 

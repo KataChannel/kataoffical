@@ -50,7 +50,13 @@ export class KhachhangService {
   async findAllVttech({ page, limit }: { page: number; limit: number }) {
     const skip = (page - 1) * limit;
     const [data, total] = await Promise.all([
-      this.vttechPrisma.customer.findMany({ skip, take: limit }),
+      this.vttechPrisma.customer.findMany({
+        where: {
+          // Add your filtering conditions here
+        },
+        skip,
+        take: limit
+      }),
       this.vttechPrisma.customer.count(),
     ]);
     const pageCount = Math.ceil(total / limit); 
@@ -63,11 +69,71 @@ export class KhachhangService {
     };
   }
 
+  async findKhachhangDoanhthu(param: any) {
+    try {
+      if (param.listphone && param.listphone.length > 0) {
+        const khachhangs = await this.vttechPrisma.customer.findMany({
+          where: {
+            OR: param.listphone.map(phone => ({ phone })),
+          },
+        });
+        const doanhthus = await this.vttechPrisma.revenue.findMany({
+          where: {
+            custPhone: { in: param.listphone },
+          },
+        });
+        const dieutris = await this.vttechPrisma.treatment.findMany({
+          where: {
+            phone: { in: param.listphone },
+          },
+        });
+        return { khachhangs, doanhthus, dieutris };
+      }
+      return { khachhangs: [], doanhthus: [], dieutris: [] };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findBy(param: any) {
+    try {
+      const { isOne, page = 1, limit = 20, ...where } = param;
+      if(where.branchId){
+        where.branchId = {
+          in: where.branchId
+        };
+      }
+      if (isOne) {
+        const result = await this.vttechPrisma.customer.findFirst({
+          where,
+        });
+        return result;
+      }
+      const skip = (page - 1) * limit;
+      const [data, total] = await Promise.all([
+        this.vttechPrisma.customer.findMany({
+          where,
+          skip,
+          take: limit,
+        }),
+        this.vttechPrisma.customer.count({ where }),
+      ]);
+      return {
+        data,
+        total,
+        page,
+        pageCount: Math.ceil(total / limit)
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async findOne(id: string) {
-    const khachhang = await this.prisma.khachhang.findUnique({ where: { id } });
-    if (!khachhang) throw new NotFoundException('Khachhang not found');
-    return khachhang;
+    console.log(id);
+     const khachhang = await this.vttechPrisma.customer.findFirst({ where: { OR: [ { phone: id }, { phone2: id } ] } }); 
+     const doanhthu = await this.vttechPrisma.revenue.findMany({ where: { custPhone: id } });
+    return {khachhang, doanhthu};
   }
 
   async update(id: string, data: any) {

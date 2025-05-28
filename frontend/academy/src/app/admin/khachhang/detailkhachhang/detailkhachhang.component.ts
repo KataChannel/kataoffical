@@ -30,7 +30,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     styleUrl: './detailkhachhang.component.scss'
   })
   export class DetailKhachhangComponent {
-    _ListkhachhangComponent:ListKhachhangComponent = inject(ListKhachhangComponent)
+    _ListKhachhangComponent:ListKhachhangComponent = inject(ListKhachhangComponent)
     _KhachhangService:KhachhangService = inject(KhachhangService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
@@ -43,20 +43,19 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   
       effect(async () => {
         const id = this._KhachhangService.khachhangId();
-      
         if (!id){
           this._router.navigate(['/admin/khachhang']);
-          this._ListkhachhangComponent.drawer.close();
+          this._ListKhachhangComponent.drawer.close();
         }
-        if(id === '0'){
-          this.DetailKhachhang.set({loaikh:'khachsi'});
-          this._ListkhachhangComponent.drawer.open();
+        if(id === 'new'){
+          this.DetailKhachhang.set({});
+          this._ListKhachhangComponent.drawer.open();
           this.isEdit.update(value => !value);
-          this._router.navigate(['/admin/khachhang', "0"]);
+          this._router.navigate(['/admin/khachhang', "new"]);
         }
         else{
-            await this._KhachhangService.getKhachhangByid(id);
-            this._ListkhachhangComponent.drawer.open();
+            await this._KhachhangService.getKhachhangBy({id:id,isOne:true});
+            this._ListKhachhangComponent.drawer.open();
             this._router.navigate(['/admin/khachhang', id]);
         }
       });
@@ -68,7 +67,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     async ngOnInit() {       
     }
     async handleKhachhangAction() {
-      if (this.khachhangId() === '0') {
+      if (this.khachhangId() === 'new') {
         await this.createKhachhang();
       }
       else {
@@ -123,7 +122,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     }
     goBack(){
       this._router.navigate(['/admin/khachhang'])
-      this._ListkhachhangComponent.drawer.close();
+      this._ListKhachhangComponent.drawer.close();
     }
     trackByFn(index: number, item: any): any {
       return item.id;

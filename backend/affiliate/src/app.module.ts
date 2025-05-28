@@ -15,6 +15,7 @@ import { LandingPageModule } from './landingpage/landingpage.module';
 import { TrackingeventModule } from './trackingevent/trackingevent.module';
 import { ResourceModule } from './resource/resource.module';
 import { FilemanagerModule } from './filemanager/filemanager.module';
+import { AffiliatelinkModule } from './affiliatelink/affiliatelink.module';
 @Module({
   imports: [
     AuthModule, 
@@ -28,7 +29,8 @@ import { FilemanagerModule } from './filemanager/filemanager.module';
     LandingPageModule,
     TrackingeventModule,
     ResourceModule,
-    FilemanagerModule
+    FilemanagerModule,
+    AffiliatelinkModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

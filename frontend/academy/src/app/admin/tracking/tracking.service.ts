@@ -46,7 +46,7 @@ import { inject, Inject, Injectable, signal, Signal } from '@angular/core';
           if (!response.ok) {
             this.handleError(response.status);
           }
-          this.getAllTracking()
+          // this.getAllTracking()
           this.trackingId.set(data.id)
       } catch (error) {
           this._ErrorLogService.logError('Failed to CreateTracking', error);

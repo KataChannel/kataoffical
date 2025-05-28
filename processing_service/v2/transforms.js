@@ -112,7 +112,7 @@ function transformRevenueData(rawData) {
             tele2: item.Tele2 || 0,
             createdDate: item.Created ? new Date(item.Created) : null,
             createdBy: item.CreatedBy?.toString(),
-            modifiedDate: item.Modified ? (item.Modified !== "1900-01-01T00:00:00" ? new Date(item.Modified) : null) : null,
+            modifiedDate: item.ModifiedDate ? new Date(item.ModifiedDate) : null,
             state: item.State,
             extractedAt: new Date()
         };
@@ -196,7 +196,7 @@ function transformTreatmentData(rawData) {
             // Metadata
             createdDate: item.CreatedDate ? new Date(item.CreatedDate) : null,
             createdBy: item.CreatedBy?.toString() || null,
-            modifiedDate: item.ModifiedDate && item.ModifiedDate !== "1900-01-01T00:00:00" ? new Date(item.ModifiedDate) : null,
+            modifiedDate: item.ModifiedDate ? new Date(item.ModifiedDate) : null,
             modifiedBy: item.ModifiedBy || 0,
             state: item.State || 0,
             extractedAt: new Date()
@@ -263,10 +263,97 @@ function transformAppointmentData(rawData) {
     return transformedRecords;
 }
 
+/**
+ * Biến đổi dữ liệu dịch vụ thô từ API thành định dạng cho model Prisma Dichvu (Giả định).
+ * @param {Array} rawData - Dữ liệu thô từ hàm getAllDichvu.
+ * @returns {Array} - Mảng các record dịch vụ đã được biến đổi.
+ */
+function transformDichvuData(rawData) {
+    if (!Array.isArray(rawData)) {
+        console.warn('Dichvu Transform: Input data is not an array. Returning empty array.');
+        return [];
+    }
+    const transformedRecords = [];
+    // !!! LƯU Ý: Cấu trúc này là giả định. Bạn cần điều chỉnh dựa trên
+    // !!! phản hồi thực tế của API 'Customer/GetTab' và model Prisma.Dichvu của bạn.
+    rawData.forEach(item => {
+        // Cần đảm bảo có một ID duy nhất. Nếu API không cung cấp, bạn cần tạo ra.
+        // Giả sử API trả về 'ID'.
+        const sourceId = item.ID?.toString() || `${item.Code}_${item.Phone}_${item.CreatedDate}`;
+
+        const record = {
+            // Basic Fields
+            source_id: sourceId,
+            name: item.Name || "",
+            code: item.Code?.toString() || "",
+            codeOld: item.CodeOld || null,
+            docCode: item.DocCode || null,
+            email: item.Email || null,
+            phone: item.Phone || null,
+            phone2: item.Phone2 || null,
+            birthday: item.Birthday ? new Date(item.Birthday) : null,
+            gender: item.Gender || null,
+            address: item.Address || null,
+            commune: item.Commune || null,
+            district: item.District || null,
+            city: item.City || null,
+            // Service Fields
+            serviceId: item.Service?.ServiceID || 0,
+            serviceTypeId: item.Service?.ServiceTypeID || 0,
+            serviceCode: item.Service?.ServiceCode || "",
+            tabId: item.Service?.TabID || 0,
+            tabCode: item.Service?.TabCode || "",
+            comboId: item.Service?.ComboID || 0,
+            comboCode: item.Service?.ComboCode || null,
+            serviceName: item.Service?.ServiceName || "",
+            timeIndex: item.Service?.TimeIndex || "",
+            timeToTreatment: Number(item.Service?.TimeToTreatment) || 0,
+            teethChoosing: item.Service?.TeethChoosing || "",
+            priceUnit: item.Service?.PriceUnit || 0,
+            quantity: item.Service?.Quantity || 0,
+            discount: item.Service?.Discount ?? 0,
+            priceRoot: item.Service?.PriceRoot || 0,
+            priceDiscounted: item.Service?.PriceDiscounted ?? 0,
+            // Participation Fields
+            doctor: item.Participate?.Doctor || 0,
+            doctor2: item.Participate?.Doctor2 || 0,
+            doctor3: item.Participate?.Doctor3 || 0,
+            doctor4: item.Participate?.Doctor4 || 0,
+            assistant: item.Participate?.Assistant || 0,
+            assistant2: item.Participate?.Assistant2 || 0,
+            assistant3: item.Participate?.Assistant3 || 0,
+            assistant4: item.Participate?.Assistant4 || 0,
+            technician: item.Participate?.Technician || 0,
+            technician2: item.Participate?.Technician2 || 0,
+            // Additional Fields
+            timeTreatIndex: item.TimeTreatIndex || 0,
+            percent: item.Percent || 0,
+            percentNew: item.PercentNew || 0,
+            percentStage: item.PercentStage || 0,
+            percentNewStage: item.PercentNewStage || 0,
+            note: item.Note || null,
+            content: item.Content || null,
+            contentNext: item.ContentNext || null,
+            symptoms: item.Symptoms || null,
+            treatDateNext: item.TreatDateNext ? new Date(item.TreatDateNext) : null,
+            branchId: item.BranchID || 0,
+            createdDate: item.CreatedDate ? new Date(item.CreatedDate) : new Date(),
+            createdBy: item.CreatedBy ? Number(item.CreatedBy) : 0,
+            modifiedDate: item.ModifiedDate ? new Date(item.ModifiedDate) : null,
+            modifiedBy: item.ModifiedBy ? Number(item.ModifiedBy) : 0,
+            state: item.State || 0,
+            extractedAt: new Date()
+        };
+        transformedRecords.push(record);
+    });
+    return transformedRecords;
+}
+
 
 module.exports = {
     transformCustomerData,
     transformRevenueData,
     transformAppointmentData,
-    transformTreatmentData
+    transformTreatmentData,
+    transformDichvuData
 };

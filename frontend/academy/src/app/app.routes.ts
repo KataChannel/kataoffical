@@ -100,12 +100,23 @@ export const routes: Routes = [
             (m) => m.ResourceRoutingModule
           ),
       },
-        {
+      {
         path: 'filemanager',
         canActivate: [PermissionGuard],
         data: { permission: 'filemanager.view' },
         loadChildren: () =>
-           import('./admin/filemanager/filemanager.route').then(m => m.FilemanagerRoutingModule),
+          import('./admin/filemanager/filemanager.route').then(
+            (m) => m.FilemanagerRoutingModule
+          ),
+      },
+      {
+        path: 'affiliatelink',
+        canActivate: [PermissionGuard],
+        data: { permission: 'affiliatelink.view' },
+        loadChildren: () =>
+          import('./admin/affiliatelink/affiliatelink.route').then(
+            (m) => m.AffiliatelinkRoutingModule
+          ),
       },
       {
         path: 'quanlyctv',
@@ -394,6 +405,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'affiliatectv',
+        canActivate: [AuthGuard],
+        loadComponent: () =>
+          import('./site/home/ladictv/listaffiliatelink/listaffiliatelink.component').then(
+            (c) => c.ListAffiliatelinkComponent
+          ),
+      },
+      {
         path: 'ladictv',
         canActivate: [AuthGuard],
         loadComponent: () =>
@@ -447,8 +466,7 @@ export const routes: Routes = [
           import('./site/home/dashboardctv/dashboardctv.component').then(
             (c) => c.DashboardctvComponent
           ),
-        children: [
-        ],
+        children: [],
       },
       {
         path: 'thongkectv',
@@ -457,8 +475,7 @@ export const routes: Routes = [
           import('./site/home/thongkectv/thongkectv.component').then(
             (c) => c.ThongkectvComponent
           ),
-        children: [
-        ],
+        children: [],
       },
       {
         path: 'lienketctv',
@@ -467,8 +484,7 @@ export const routes: Routes = [
           import('./site/home/lienketctv/lienketctv.component').then(
             (c) => c.LienketctvComponent
           ),
-        children: [
-        ],
+        children: [],
       },
       {
         path: 'faqctv',

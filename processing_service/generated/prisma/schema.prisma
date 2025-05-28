@@ -222,3 +222,69 @@ model Appointment {
 
   @@map("appointments")
 }
+
+model Dichvu {
+  id              Int       @id @default(autoincrement())
+  source_id       String?   @unique
+  name            String?
+  code            String?
+  codeOld         String?
+  docCode         String?
+  email           String?
+  phone           String?
+  phone2          String?
+  birthday        DateTime?
+  gender          String?
+  address         String?
+  commune         String?
+  district        String?
+  city            String?
+  // Service Fields
+  serviceId       Int
+  serviceTypeId   Int
+  serviceCode     String
+  tabId           Int
+  tabCode         String
+  comboId         Int
+  comboCode       String?
+  serviceName     String
+  timeIndex       String?
+  timeToTreatment Int
+  teethChoosing   String?
+  priceUnit       Float
+  quantity        Float
+  discount        Float
+  priceRoot       Float
+  priceDiscounted Float
+  // Participate Fields
+  doctor          Int
+  doctor2         Int
+  doctor3         Int
+  doctor4         Int
+  assistant       Int
+  assistant2      Int
+  assistant3      Int
+  assistant4      Int
+  technician      Int
+  technician2     Int
+  // Additional Fields
+  timeTreatIndex  Int
+  percent         Float
+  percentNew      Float
+  percentStage    Float
+  percentNewStage Float
+  note            String?
+  content         String?
+  contentNext     String?
+  symptoms        String?
+  treatDateNext   DateTime?
+  branchId        Int
+  createdDate     DateTime
+  createdBy       Int
+  modifiedDate    DateTime
+  modifiedBy      Int
+  state           Int
+  extractedAt     DateTime  @default(now())
+
+  @@map("dichvu")
+}

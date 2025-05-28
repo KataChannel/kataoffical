@@ -96,6 +96,7 @@ export class ResourceService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
+      await this.getResourceBy({ id: data.id, isOne: true });
       this.getAllResource(this.pageSize());
       this.resourceId.set(data.id);
     } catch (error) {

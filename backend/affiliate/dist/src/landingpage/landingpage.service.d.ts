@@ -53,7 +53,7 @@ export declare class landingPageService {
         ownerId: string | null;
         contentJson: import(".prisma/client/runtime/library").JsonValue | null;
     }[]>;
-    findby(param: any): Promise<{
+    findBy(param: any): Promise<{
         id: string;
         codeId: string;
         isActive: boolean;
@@ -73,7 +73,32 @@ export declare class landingPageService {
         seoKeywords: string | null;
         ownerId: string | null;
         contentJson: import(".prisma/client/runtime/library").JsonValue | null;
-    }>;
+    } | {
+        data: {
+            id: string;
+            codeId: string;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            title: string;
+            slug: string;
+            order: number | null;
+            thumbnail: string | null;
+            status: string;
+            contentHtml: string | null;
+            customCss: string | null;
+            customJs: string | null;
+            seoTitle: string | null;
+            seoDescription: string | null;
+            seoKeywords: string | null;
+            ownerId: string | null;
+            contentJson: import(".prisma/client/runtime/library").JsonValue | null;
+        }[];
+        total: number;
+        page: any;
+        pageCount: number;
+    } | null>;
     findOne(id: string): Promise<{
         id: string;
         codeId: string;

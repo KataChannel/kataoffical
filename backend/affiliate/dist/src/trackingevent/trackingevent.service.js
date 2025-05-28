@@ -22,14 +22,8 @@ let TrackingeventService = class TrackingeventService {
         try {
             if (!data)
                 throw new common_1.NotFoundException('Data not found');
-            const { eventType, pageUrl, pageType, pageIdentifier, refCode, referrer } = data;
             const payload = {
-                eventType,
-                pageUrl,
-                pageType,
-                pageIdentifier,
-                refCode,
-                referrer,
+                ...data,
                 ...(ipAddress && { ipAddress }),
                 ...(userAgent && { userAgent }),
             };

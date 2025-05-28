@@ -68,15 +68,18 @@ export class ResourceService {
 
   async findBy(param: any) {
     try {
-      const { isOne, ...rest } = param;
+      const { isOne,page = 1, limit = 20, ...where } = param;
+      if (where.title) {
+        where.title = { contains: where.title, mode: 'insensitive' };
+      }   
       if (isOne) {
         const result = await this.prisma.resource.findFirst({
-          where: rest,
+          where: where,
           orderBy: { order: 'asc' },
         });
         return result;
       }
-      const { page = 1, limit = 20, ...where } = rest;
+      else {
       const skip = (page - 1) * limit;
       const [data, total] = await Promise.all([
         this.prisma.resource.findMany({
@@ -93,6 +96,7 @@ export class ResourceService {
         page,
         pageCount: Math.ceil(total / limit)
       };
+     }
     } catch (error) {
       this._ErrorlogService.logError('findByResource', error);
       throw error;

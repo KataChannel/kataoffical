@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
+import { KhachhangService } from '../../../admin/khachhang/khachhang.service';
 @Component({
   selector: 'app-dashboardctv',
   imports: [
@@ -32,12 +33,13 @@ import { CommonModule } from '@angular/common';
 })
 
 export class DashboardctvComponent {
-  profile: any = signal<any>({});
-  Views: any = signal<any>(0);
   _UserService: UserService = inject(UserService);
   _TrackingService: TrackingService = inject(TrackingService);
+  _KhachhangService: KhachhangService = inject(KhachhangService);
   _snackbar: MatSnackBar = inject(MatSnackBar);
   @ViewChild('chart') chart!: ChartComponent;
+  profile: any = this._UserService.profile;
+  Views: any = this._TrackingService.ListTracking;
   public chartOptions:any = {};
   private chartTypes = ['line', 'bar', 'area'];
   private dataSets = [
@@ -186,18 +188,16 @@ export class DashboardctvComponent {
     };
   }
   async ngOnInit(): Promise<void> {
-    await this._UserService.getProfile().then((res: any) => {
-      console.log(res);
-      this.profile.set(res);
-    });
-    await this._TrackingService
-      .getTrackingBy({
+    await this._UserService.getProfile()
+    await this._TrackingService.getTrackingBy({
         eventType: 'page_view',
         refCode: this.profile().inviteCode,
         isCount: true,
       })
-      .then((res: any) => {
-        this.Views.set(res.count);
-      });
+    const listphone = this.profile()?.referrals?.map((item: any) => item.phone);
+    await this._KhachhangService.getKhachhangDoanhthu({
+            listphone: listphone
+    });
+    
   }
 }

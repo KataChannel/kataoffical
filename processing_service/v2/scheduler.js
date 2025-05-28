@@ -7,8 +7,9 @@ const { getAllKhachhang } = require('./customer'); //
 const { getAllThanhtoan } = require('./revenue'); //
 const { getAllDieutri } = require('./treatment'); //
 const { getAllLichhen } = require('./appointment'); //
+const { getAllDichvu } = require('./dichvu'); //
 
-const { transformCustomerData, transformRevenueData,transformAppointmentData,transformTreatmentData } = require('./transforms');
+const { transformCustomerData, transformRevenueData,transformAppointmentData,transformTreatmentData,transformDichvuData } = require('./transforms');
 
 const prisma = require('./databaseClient'); //
 
@@ -52,7 +53,14 @@ const appointmentTaskConfig = {
     minioDataPrefix: 'appointments' // (Optional) Subdirectory in MinIO
 };
 
-
+const dichvuTaskConfig = {
+    taskName: "Dichvu",
+    fetchDataFunction: getAllDichvu,
+    transformFunction: transformDichvuData,
+    prismaModel: prisma.Dichvu, // !!! Đảm bảo bạn có model Dichvu trong Prisma !!!
+    sourceIdField: 'source_id',
+    minioDataPrefix: 'dichvu'
+};
 
 
 // === Lên lịch chạy các Task ===
@@ -81,6 +89,7 @@ cron.schedule('0 */3 * * *', async () => {
     } catch (error) {
         console.error('[Scheduler] Error running Revenue task:', error);
     }
+    await new Promise(resolve => setTimeout(resolve, 5000));  
     try {
         console.log('\n--- Starting Treatment Task ---');
         await runGenericTask(treatmentTaskConfig);
@@ -88,12 +97,21 @@ cron.schedule('0 */3 * * *', async () => {
     } catch (error) {
         console.error('[Scheduler] Error running Treatment task:', error);
     }
+    await new Promise(resolve => setTimeout(resolve, 5000));
     try {
         console.log('\n--- Starting Appointment Task ---');
         await runGenericTask(appointmentTaskConfig);
         console.log('--- Finished Appointment Task ---');
     } catch (error) {
         console.error('[Scheduler] Error running Appointment task:', error);
+    }
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    try {
+        console.log('\n--- Starting Dichvu Task ---');
+        await runGenericTask(dichvuTaskConfig);
+        console.log('--- Finished Dichvu Task ---');
+    } catch (error) {
+        console.error('[Scheduler] Error running Dichvu task:', error);
     }
 
     console.log('\n========================================');
@@ -131,6 +149,17 @@ async function gracefulShutdown() {
     console.log('Graceful shutdown complete. Exiting.');
     process.exit(0);
 }
+
+async function getDichvu() {
+    try {
+        console.log('\n--- Starting Dichvu Task ---');
+        await runGenericTask(dichvuTaskConfig);
+        console.log('--- Finished Dichvu Task ---');
+    } catch (error) {
+        console.error('[Scheduler] Error running Dichvu task:', error);
+    }
+}
+getDichvu();
 
 process.on('SIGTERM', gracefulShutdown); // Tín hiệu tắt từ Docker/Kubernetes
 process.on('SIGINT', gracefulShutdown);  // Tín hiệu tắt từ Ctrl+C

@@ -310,6 +310,67 @@ exports.Prisma.AppointmentScalarFieldEnum = {
   extractedAt: 'extractedAt'
 };
 
+exports.Prisma.DichvuScalarFieldEnum = {
+  id: 'id',
+  source_id: 'source_id',
+  name: 'name',
+  code: 'code',
+  codeOld: 'codeOld',
+  docCode: 'docCode',
+  email: 'email',
+  phone: 'phone',
+  phone2: 'phone2',
+  birthday: 'birthday',
+  gender: 'gender',
+  address: 'address',
+  commune: 'commune',
+  district: 'district',
+  city: 'city',
+  serviceId: 'serviceId',
+  serviceTypeId: 'serviceTypeId',
+  serviceCode: 'serviceCode',
+  tabId: 'tabId',
+  tabCode: 'tabCode',
+  comboId: 'comboId',
+  comboCode: 'comboCode',
+  serviceName: 'serviceName',
+  timeIndex: 'timeIndex',
+  timeToTreatment: 'timeToTreatment',
+  teethChoosing: 'teethChoosing',
+  priceUnit: 'priceUnit',
+  quantity: 'quantity',
+  discount: 'discount',
+  priceRoot: 'priceRoot',
+  priceDiscounted: 'priceDiscounted',
+  doctor: 'doctor',
+  doctor2: 'doctor2',
+  doctor3: 'doctor3',
+  doctor4: 'doctor4',
+  assistant: 'assistant',
+  assistant2: 'assistant2',
+  assistant3: 'assistant3',
+  assistant4: 'assistant4',
+  technician: 'technician',
+  technician2: 'technician2',
+  timeTreatIndex: 'timeTreatIndex',
+  percent: 'percent',
+  percentNew: 'percentNew',
+  percentStage: 'percentStage',
+  percentNewStage: 'percentNewStage',
+  note: 'note',
+  content: 'content',
+  contentNext: 'contentNext',
+  symptoms: 'symptoms',
+  treatDateNext: 'treatDateNext',
+  branchId: 'branchId',
+  createdDate: 'createdDate',
+  createdBy: 'createdBy',
+  modifiedDate: 'modifiedDate',
+  modifiedBy: 'modifiedBy',
+  state: 'state',
+  extractedAt: 'extractedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -331,7 +392,8 @@ exports.Prisma.ModelName = {
   Customer: 'Customer',
   Revenue: 'Revenue',
   Treatment: 'Treatment',
-  Appointment: 'Appointment'
+  Appointment: 'Appointment',
+  Dichvu: 'Dichvu'
 };
 
 /**
