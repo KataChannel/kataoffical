@@ -150,16 +150,16 @@ async function gracefulShutdown() {
     process.exit(0);
 }
 
-async function getDichvu() {
-    try {
-        console.log('\n--- Starting Dichvu Task ---');
-        await runGenericTask(dichvuTaskConfig);
-        console.log('--- Finished Dichvu Task ---');
-    } catch (error) {
-        console.error('[Scheduler] Error running Dichvu task:', error);
-    }
-}
-getDichvu();
+// async function getDichvu() {
+//     try {
+//         console.log('\n--- Starting Dichvu Task ---');
+//         await runGenericTask(dichvuTaskConfig);
+//         console.log('--- Finished Dichvu Task ---');
+//     } catch (error) {
+//         console.error('[Scheduler] Error running Dichvu task:', error);
+//     }
+// }
+// getDichvu();
 
 process.on('SIGTERM', gracefulShutdown); // Tín hiệu tắt từ Docker/Kubernetes
 process.on('SIGINT', gracefulShutdown);  // Tín hiệu tắt từ Ctrl+C

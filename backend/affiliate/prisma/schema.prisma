@@ -235,29 +235,3 @@ model FileManager {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
-
-
-
-  model KhachHang {
-    id        String   @id @default(uuid())
-    codeId    String?  @unique // Mã đề xuất duy nhất
-    ten       String
-    email     String?  @unique
-    sdt       String?
-    order     Int? @default(1)  
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    doanhthus DoanhThu[]
-  }
-
-  model DoanhThu {
-    id           String   @id @default(uuid())
-    codeId       String?  @unique // Mã đề xuất duy nhất
-    khachHangId  String?
-    soTien       Float
-    ngay         DateTime @default(now())
-    order         Int? @default(1)
-    createdAt    DateTime @default(now())
-    updatedAt    DateTime @updatedAt
-    khachHang    KhachHang? @relation(fields: [khachHangId], references: [id])
-  }
