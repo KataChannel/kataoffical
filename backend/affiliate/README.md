@@ -2,11 +2,14 @@ git add .
 git commit -m "update"
 git push
 
+  git config --global user.email "katachanneloffical@gmail.com"
+  git config --global user.name "Kata Channel"
+
 
 npx bun add @nestjs/config @nestjs/jwt @nestjs/passport passport passport-jwt bcryptjs
 npx bun add @prisma/client
 npx bun add -d prisma
-npx bun prisma migrate dev --name affiliate 3.2
+npx bun prisma migrate dev --name affiliate 9.1
 npx prisma db push
 npx bun prisma generate 
 npx ts-node prisma/scriptdb/exportData.ts

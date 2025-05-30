@@ -6,8 +6,13 @@ COPY package.json bun.lock ./
 RUN bun install --no-cache
 COPY . .
 RUN bun install -g prisma
+
+RUN bun prisma migrate dev --name hethong3.1
+RUN bun prisma migrate dev --name vttech3.1
+RUN bun prisma generate --schema=prisma/schema.prisma
 RUN bun prisma generate --schema=prisma/vttech.prisma
-RUN bun prisma migrate dev --name hethong1.1
+# RUN bun prisma migrate dev --name hethong1.1
+
 RUN bun prisma generate
 FROM oven/bun:latest
 RUN apt-get update -y && apt-get install -y openssl libssl-dev
