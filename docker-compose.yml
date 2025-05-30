@@ -145,20 +145,20 @@ services:
       - "3105:3105"
     restart: unless-stopped  
 
-  academy-api:
-    build:
-      context: ./backend/academy
-      dockerfile: Dockerfile
-    container_name: academy_api
-    environment:
-      NODE_ENV: development
-      PORT: 3101
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      SHARED_CORE_API_URL: http://shared-core-api:3101
-      JWT_SECRET: ${JWT_SECRET}
-    ports:
-      - "3101:3101"
+  # academy-api:
+  #   build:
+  #     context: ./backend/academy
+  #     dockerfile: Dockerfile
+  #   container_name: academy_api
+  #   environment:
+  #     NODE_ENV: development
+  #     PORT: 3101
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: 6379
+  #     SHARED_CORE_API_URL: http://shared-core-api:3101
+  #     JWT_SECRET: ${JWT_SECRET}
+  #   ports:
+  #     - "3101:3101"
     # depends_on:
     #   postgres:
     #     condition: service_healthy
@@ -169,7 +169,7 @@ services:
     # networks:
     #   - app-network
     # command: bun run start:dev
-    restart: unless-stopped
+    # restart: unless-stopped
 
   # cosmetics-api:
   #   build:
