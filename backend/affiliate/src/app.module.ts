@@ -16,6 +16,8 @@ import { TrackingeventModule } from './trackingevent/trackingevent.module';
 import { ResourceModule } from './resource/resource.module';
 import { FilemanagerModule } from './filemanager/filemanager.module';
 import { AffiliatelinkModule } from './affiliatelink/affiliatelink.module';
+import { DichvuModule } from './dichvu/dichvu.module';
+import { DoanhsoModule } from './doanhso/doanhso.module';
 @Module({
   imports: [
     AuthModule, 
@@ -30,7 +32,9 @@ import { AffiliatelinkModule } from './affiliatelink/affiliatelink.module';
     TrackingeventModule,
     ResourceModule,
     FilemanagerModule,
-    AffiliatelinkModule
+    AffiliatelinkModule,
+    DichvuModule,
+    DoanhsoModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

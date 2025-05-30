@@ -277,11 +277,14 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
       };
       const response = await fetch(`${environment.SHARED_APIURL}/users/profile`, options);
       if (!response.ok) {
-        console.log(response.status);
+        // console.log(response.status);
         this.handleError(response.status);
       }
       const data = await response.json();
       const permissionsadmin = data.permissions.map((p: any) => p.name);
+      console.log(data);
+      console.log(permissionsadmin);
+      
       this.profile.set(data)     
       if(permissionsadmin.length>0)
       {

@@ -42,7 +42,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Phát sinh khóa học</p>
-                        <p class="text-2xl font-semibold text-gray-900">10</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{Doanhthu?.dichvus?.length || 0}}</p>
                     </div>
                 </a>
             </div>
@@ -66,7 +66,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Tổng Doanh Số</p>
-                        <p class="text-base font-semibold text-gray-900">5,000,000đ</p>
+                        <p class="text-base font-semibold text-gray-900">{{Doanhthu?.doanhso?.total||0 | number: '1.0-0'}}đ</p>
                     </div>
                 </a>
             </div>
@@ -77,7 +77,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Tổng Doanh Thu</p>
-                        <p class="text-base font-semibold text-gray-900">5,000,000đ</p>
+                        <p class="text-base font-semibold text-gray-900">{{Doanhthu?.doanhthu?.total||0 | number: '1.0-0'}}đ</p>
                     </div>
                 </a>
             </div>
@@ -88,7 +88,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Tổng Hoa Hồng</p>
-                        <p class="text-base font-semibold text-gray-900">1,000,000đ</p>
+                        <p class="text-base font-semibold text-gray-900">{{Doanhthu.Hoahong ||0 | number: '1.0-0'}}đ</p>
                     </div>
                 </a>
             </div>
@@ -99,7 +99,7 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Hoa Hồng Đã Rút</p>
-                        <p class="text-base font-semibold text-gray-900">600,000đ</p>
+                        <p class="text-base font-semibold text-gray-900">{{Doanhthu.HoahongDaRut || 0 | number: '1.0-0'}}đ</p>
                     </div>
                 </a>
             </div>

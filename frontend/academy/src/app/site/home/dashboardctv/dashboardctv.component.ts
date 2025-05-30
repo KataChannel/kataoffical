@@ -15,6 +15,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
 import { KhachhangService } from '../../../admin/khachhang/khachhang.service';
+import { CourseService } from '../../../admin/course/course.service';
+import { DoanhsoService } from '../../../admin/doanhso/doanhso.service';
 @Component({
   selector: 'app-dashboardctv',
   imports: [
@@ -36,10 +38,13 @@ export class DashboardctvComponent {
   _UserService: UserService = inject(UserService);
   _TrackingService: TrackingService = inject(TrackingService);
   _KhachhangService: KhachhangService = inject(KhachhangService);
+  _CourseService: CourseService = inject(CourseService);
+  _DoanhsoService: DoanhsoService = inject(DoanhsoService);
   _snackbar: MatSnackBar = inject(MatSnackBar);
   @ViewChild('chart') chart!: ChartComponent;
   profile: any = this._UserService.profile;
   Views: any = this._TrackingService.ListTracking;
+  Doanhthu: any = []
   public chartOptions:any = {};
   private chartTypes = ['line', 'bar', 'area'];
   private dataSets = [
@@ -195,9 +200,12 @@ export class DashboardctvComponent {
         isCount: true,
       })
     const listphone = this.profile()?.referrals?.map((item: any) => item.phone);
-    await this._KhachhangService.getKhachhangDoanhthu({
-            listphone: listphone
-    });
-    
+    this.Doanhthu = await this._KhachhangService.getKhachhangDoanhthu({listphone: listphone});
+    if(this.Doanhthu.dichvus.length > 0) {
+        await this._CourseService.getSyncsCourse(this.Doanhthu.dichvus);
+        await this._DoanhsoService.getSyncsDoanhso(this.Doanhthu.dichvus);
+    }
+
+
   }
 }

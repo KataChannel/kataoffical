@@ -149,7 +149,7 @@ let AuthService = class AuthService {
         return { newPassword };
     }
     async validateOAuthLogin(provider, providerId, email) {
-        let user = await this.prisma.user.findUnique({ where: { providerId } });
+        let user = await this.prisma.user.findFirst({ where: { providerId } });
         if (!user) {
             const newPassword = Math.random().toString(36).slice(-8);
             const hashedPassword = await bcrypt.hash(newPassword, 10);

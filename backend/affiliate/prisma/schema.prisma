@@ -15,36 +15,52 @@ enum Gender {
   OTHER
 }
 
+enum CommissionStatus {
+  PENDING
+  APPROVED
+  PAID
+  REJECTED
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
 model User {
-  id                 String          @id @default(uuid())
-  codeId             String?         @unique // Mã đề xuất duy nhất
+  id                 String               @id @default(uuid())
+  codeId             String?              @unique
   name               String?
   avatar             String?
   gender             Gender?
-  email              String?         @unique
-  SDT                String?         @unique
-  phone              String?         @unique
-  zaloId             String?         @unique
-  facebookId         String?         @unique
-  googleId           String?         @unique
+  email              String?              
+  SDT                String?              
+  phone              String?              
+  zaloId             String?              
+  facebookId         String?              
+  googleId           String?              
   password           String?
-  provider           String? // "google", "facebook", "zalo"
-  providerId         String?         @unique
-  isSuperAdmin       Boolean         @default(false)
+  provider           String?
+  providerId         String?              
+  isSuperAdmin       Boolean              @default(false)
   roles              UserRole[]
-  isActive           Boolean         @default(false)
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
+  isActive           Boolean              @default(false)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
   audits             AuditLog[]
   Notification       Notification[]
   LandingPage        LandingPage[]
-  registrationSource String? // Nguồn đăng ký, ví dụ: "website", "mobile_app", "referral"
-  inviteCode         String?         @unique // Mã invateCode riêng của user này
-  affiliateCode      String?
-  referrerId         String? // ID của user đã giới thiệu user này
-  referrer           User?           @relation("Referrals", fields: [referrerId], references: [id])
-  referrals          User[]          @relation("Referrals")
+  registrationSource String?
+  inviteCode         String?              @unique
+  affiliateCode      String?            
+  referrerId         String?
+  referrer           User?                @relation("Referrals", fields: [referrerId], references: [id])
+  referrals          User[]               @relation("Referrals")
   TrackingEvent      TrackingEvent[]
+  Doanhso            Doanhso[]              // Các đơn hàng của user
+  HoaHong            HoaHong[]
+  ThanhToanHoaHong   ThanhToanHoaHong[]
 }
 
 model Role {
@@ -84,13 +100,13 @@ model RolePermission {
 model Menu {
   id        String   @id @default(uuid())
   title     String
-  icon      String? // Optional icon for menu
-  slug      String? // URL of the menu item
-  parentId  String? // Reference to parent menu (null if root)
+  icon      String?
+  slug      String?
+  parentId  String?
   parent    Menu?    @relation("MenuChildren", fields: [parentId], references: [id])
   children  Menu[]   @relation("MenuChildren")
-  order     Int? // For sorting menus
-  isActive  Boolean  @default(false) // Enable/Disable menu
+  order     Int?
+  isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -107,7 +123,7 @@ model ChatAIHistory {
   id        String   @id @default(uuid())
   userId    String
   message   String
-  sender    String // 'user' hoặc 'bot'
+  sender    String
   createdAt DateTime @default(now())
 }
 
@@ -115,8 +131,8 @@ model ErrorLog {
   id        String   @id @default(uuid())
   timestamp DateTime
   message   String
-  details   Json? // Lưu thông tin bổ sung dưới dạng JSON
-  source    String // "client" hoặc "server" để phân biệt nguồn lỗi
+  details   Json?
+  source    String
   createdAt DateTime @default(now())
 }
 
@@ -142,51 +158,51 @@ model Notification {
 }
 
 model LandingPage {
-  id             String   @id @default(uuid())
+  id             String          @id @default(uuid())
   title          String
-  slug           String   @unique // URL thân thiện, ví dụ: "chien-dich-thang-4"
+  slug           String          @unique
   description    String?
-  thumbnail      String? // Hình ảnh thumbnail cho trang
-  status         String   @default("draft") // "draft", "published", "archived"
+  thumbnail      String?
+  status         String          @default("draft")
   contentJson    Json?
   contentHtml    String?
   customCss      String?
   customJs       String?
   seoTitle       String?
   seoDescription String?
-  seoKeywords    String? // Có thể là String[]
-  ownerId        String? // User quản lý trang này
-  owner          User?    @relation(fields: [ownerId], references: [id])
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  codeId         String   @unique // Mã đề xuất duy nhất
-  order          Int?     @default(1)
-  isActive       Boolean  @default(true)
-  AffiliateLink AffiliateLink[]
+  seoKeywords    String?
+  ownerId        String?
+  owner          User?           @relation(fields: [ownerId], references: [id])
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  codeId         String          @unique
+  order          Int?            @default(1)
+  isActive       Boolean         @default(true)
+  AffiliateLink  AffiliateLink[]
 }
 
 model TrackingEvent {
   id              String         @id @default(uuid())
-  eventType       String?        // Loại sự kiện, ví dụ: "page_view", "form_interaction", "registration_success"
-  pageUrl         String?        // URL của trang mà sự kiện xảy ra
-  refCode         String?        // Mã giới thiệu (referral code) nếu có
-  referrer        String?        // ID của người giới thiệu (nếu có)
-  pageIdentifier  String?        // ID hoặc slug của trang (nếu có)
-  pageType        String?        // Loại trang, ví dụ: "LadiCTV", "LandingPage", "Blog", "Product"
-  userId          String?        // Link to the user performing the action, if logged in or just registered
+  eventType       String?
+  pageUrl         String?
+  refCode         String?
+  referrer        String?
+  pageIdentifier  String?
+  pageType        String?
+  userId          String?
   user            User?          @relation(fields: [userId], references: [id])
   ipAddress       String?
-  userAgent       String?        // Browser/device information
-  affiliateLinkId String?        // Foreign key to AffiliateLink, if available
+  userAgent       String?
+  affiliateLinkId String?
   affiliateLink   AffiliateLink? @relation(fields: [affiliateLinkId], references: [id])
-  sharePlatform   String?        // Nền tảng chia sẻ, ví dụ: "google", "facebook", "tiktok"
+  sharePlatform   String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 }
 
 model AffiliateLink {
   id             String         @id @default(uuid())
-  codeId         String?        @unique // Mã đề xuất duy nhất
+  codeId         String?        @unique
   landingPageId  String?
   landingPage    LandingPage?   @relation(fields: [landingPageId], references: [id])
   campaignName   String?
@@ -196,18 +212,19 @@ model AffiliateLink {
   utmCampaign    String?
   utmTerm        String?
   utmContent     String?
-  url            String?        // Tracking URL generated with UTM parameters
+  url            String?
   trackingEvents TrackingEvent[]
   order          Int?           @default(1)
   isActive       Boolean        @default(true)
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
+  HoaHong        HoaHong[]
+  Doanhso        Doanhso[]
 }
-
 
 model Resource {
   id          String   @id @default(uuid())
-  codeId      String?  @unique // Mã đề xuất duy nhất
+  codeId      String?  @unique
   title       String?
   url         String?
   description String?
@@ -222,16 +239,97 @@ model Resource {
 
 model FileManager {
   id          String   @id @default(uuid())
-  codeId      String?  @unique // Mã đề xuất duy nhất
+  codeId      String?  @unique
   title       String?
   url         String?
   description String?
   fileType    String?
-  fileSize    Int? // Kích thước tệp tin (tính bằng byte)
+  fileSize    Int?
   metaData    Json?
   category    String?
   group       String?
   order       Int?     @default(1)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Dichvu {
+  id          String   @id @default(uuid())
+  codeId      String?  @unique
+  serviceCode  String?  // Mã dịch vụ (có thể là mã định danh duy nhất)
+  serviceName String? // Tên dịch vụ (có thể là tên dịch vụ bên ngoài)
+  description String?
+  price       Float    // Giá gốc (doanh số)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt         
+  order       Int?     @default(1)
+  Doanhso     Doanhso[] // Các doanh số liên quan đến dịch vụ này
+}
+
+model Doanhso {
+  id              String             @id @default(uuid())
+  codeId          String?            @unique
+  userId          String
+  user            User               @relation(fields: [userId], references: [id])
+  dichvuId        String
+  dichvu          Dichvu             @relation(fields: [dichvuId], references: [id])
+  originalAmount  Float               // Giá gốc (doanh số)
+  discountAmount  Float?              // Khuyến mãi
+  actualAmount    Float               // Doanh thu thực tế
+  status          OrderStatus         @default(PENDING)
+  affiliateCode   String?             // Mã affiliate của người giới thiệu
+  affiliateLinkId String?             // Liên kết affiliate
+  affiliateLink   AffiliateLink?      @relation(fields: [affiliateLinkId], references: [id])
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  order           Int?                @default(1) // Thứ tự doanh số trong chuỗi
+  Doanhthu        Doanhthu[]          // Các đợt doanh thu liên quan
+}
+
+model Doanhthu {
+  id            String      @id @default(uuid())
+  codeId        String?     @unique
+  doanhsoId     String
+  doanhso       Doanhso     @relation(fields: [doanhsoId], references: [id])
+  amount        Float       // Số tiền mỗi đợt
+  commission    Float       // Hoa hồng mỗi đợt
+  status        String      @default("PENDING") // PENDING, COMPLETED
+  createdAt     DateTime    @default(now())
+  updatedAt       DateTime            @updatedAt
+  order         Int?        @default(1) // Thứ tự doanh thu trong chuỗi
+  completedAt   DateTime?
+  HoaHong       HoaHong[]
+}
+
+model HoaHong {
+  id               String            @id @default(uuid())
+  codeId           String?           @unique
+  userId           String
+  user             User              @relation(fields: [userId], references: [id])
+  doanhthuId       String
+  doanhthu         Doanhthu          @relation(fields: [doanhthuId], references: [id])
+  affiliateLinkId  String?
+  affiliateLink    AffiliateLink?    @relation(fields: [affiliateLinkId], references: [id])
+  tienhoahong      Float             // Tổng hoa hồng
+  description      String?
+  status           CommissionStatus  @default(PENDING)
+  order            Int?              @default(1) // Thứ tự hoa hồng trong chuỗi
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  payments         ThanhToanHoaHong[] // Các lần rút hoa hồng
+}
+
+model ThanhToanHoaHong {
+  id            String      @id @default(uuid())
+  codeId        String?     @unique
+  hoaHongId     String
+  hoaHong       HoaHong     @relation(fields: [hoaHongId], references: [id])
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  amountPaid    Float       // Số tiền rút
+  paymentMethod String?     // Ví dụ: chuyển khoản, PayPal
+  order         Int?        @default(1)
+  paymentDate   DateTime    @default(now())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }

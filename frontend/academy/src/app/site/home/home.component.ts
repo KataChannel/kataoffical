@@ -174,7 +174,6 @@ export class HomeComponent {
     this._breakpointObserver
       .observe([Breakpoints.Handset])
       .subscribe((result) => {
-        console.log(result.matches);
         if (result.matches) {
           this.drawer.close();
         } else {

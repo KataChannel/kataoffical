@@ -25,6 +25,8 @@ const trackingevent_module_1 = require("./trackingevent/trackingevent.module");
 const resource_module_1 = require("./resource/resource.module");
 const filemanager_module_1 = require("./filemanager/filemanager.module");
 const affiliatelink_module_1 = require("./affiliatelink/affiliatelink.module");
+const dichvu_module_1 = require("./dichvu/dichvu.module");
+const doanhso_module_1 = require("./doanhso/doanhso.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -46,7 +48,9 @@ exports.AppModule = AppModule = __decorate([
             trackingevent_module_1.TrackingeventModule,
             resource_module_1.ResourceModule,
             filemanager_module_1.FilemanagerModule,
-            affiliatelink_module_1.AffiliatelinkModule
+            affiliatelink_module_1.AffiliatelinkModule,
+            dichvu_module_1.DichvuModule,
+            doanhso_module_1.DoanhsoModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

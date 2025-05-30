@@ -17,6 +17,25 @@ let KhachhangService = class KhachhangService {
     constructor(prisma, vttechPrisma) {
         this.prisma = prisma;
         this.vttechPrisma = vttechPrisma;
+        this.Doanhthu = {
+            "paidAmount": "Thanh Toán",
+            "discountAmount": "Giảm Giá",
+            "depositAmountUsing": "Tiền Đặt Cọc",
+            "totalPaid": "Tổng Thanh Toán",
+            "debtAmount": "Số Dư",
+            "methodName": "Hình Thức",
+            "content": "Nội Dung",
+            "serviceId": 1253,
+            "isProduct": 0,
+            "quantity": "Số Lượng",
+            "priceRoot": "Giá Gốc",
+            "priceUnit": "Giá Đơn Vị",
+            "price": "Giá",
+            "amount": "Số Tiền",
+            "timeToTreatment": "Thời Gian Điều Trị",
+            "percentOfService": "Phần Trăm Dịch Vụ",
+            "treatIndex": 0,
+        };
     }
     async create(data) {
         const prefix = data.loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
@@ -72,19 +91,32 @@ let KhachhangService = class KhachhangService {
                         OR: param.listphone.map(phone => ({ phone })),
                     },
                 });
-                const doanhthus = await this.vttechPrisma.revenue.findMany({
+                let doanhthus = await this.vttechPrisma.revenue.findMany({
                     where: {
                         custPhone: { in: param.listphone },
                     },
                 });
-                const dieutris = await this.vttechPrisma.treatment.findMany({
+                let dieutris = await this.vttechPrisma.treatment.findMany({
                     where: {
                         phone: { in: param.listphone },
                     },
                 });
-                return { khachhangs, doanhthus, dieutris };
+                let dichvus = await this.vttechPrisma.dichvu.findMany({
+                    where: {
+                        phone: { in: param.listphone },
+                    },
+                });
+                const doanhthu = doanhthus.reduce((acc, item) => {
+                    acc.total = (acc.total || 0) + Number(item.amount);
+                    return acc;
+                }, {});
+                const doanhso = doanhthus.reduce((acc, item) => {
+                    acc.total = (acc.total || 0) + Number(item.totalPaid);
+                    return acc;
+                }, {});
+                return { khachhangs, doanhthus, dieutris, dichvus, doanhthu, doanhso };
             }
-            return { khachhangs: [], doanhthus: [], dieutris: [] };
+            return { khachhangs: [], doanhthus: [], dieutris: [], dichvus: [] };
         }
         catch (error) {
             throw error;

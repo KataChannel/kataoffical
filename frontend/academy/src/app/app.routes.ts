@@ -101,6 +101,15 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'course',
+        canActivate: [PermissionGuard],
+        data: { permission: 'course.view' },
+        loadChildren: () =>
+          import('./admin/course/course.route').then(
+            (m) => m.CourseRoutingModule
+          ),
+      },
+      {
         path: 'filemanager',
         canActivate: [PermissionGuard],
         data: { permission: 'filemanager.view' },
@@ -116,6 +125,15 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./admin/affiliatelink/affiliatelink.route').then(
             (m) => m.AffiliatelinkRoutingModule
+          ),
+      },
+      {
+        path: 'doanhso',
+        canActivate: [PermissionGuard],
+        data: { permission: 'doanhso.view' },
+        loadChildren: () =>
+          import('./admin/doanhso/doanhso.route').then(
+            (m) => m.DoanhsoRoutingModule
           ),
       },
       {
@@ -408,9 +426,9 @@ export const routes: Routes = [
         path: 'affiliatectv',
         canActivate: [AuthGuard],
         loadComponent: () =>
-          import('./site/home/ladictv/listaffiliatelink/listaffiliatelink.component').then(
-            (c) => c.ListAffiliatelinkComponent
-          ),
+          import(
+            './site/home/ladictv/listaffiliatelink/listaffiliatelink.component'
+          ).then((c) => c.ListAffiliatelinkComponent),
       },
       {
         path: 'ladictv',

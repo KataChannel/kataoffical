@@ -168,7 +168,7 @@ export class AuthService {
     providerId: string,
     email?: string,
   ) {
-    let user = await this.prisma.user.findUnique({ where: { providerId } });
+    let user = await this.prisma.user.findFirst({ where: { providerId } });
 
     if (!user) {
       const newPassword = Math.random().toString(36).slice(-8); // Tạo password ngẫu nhiên

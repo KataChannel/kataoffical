@@ -12,6 +12,7 @@ npx bun prisma generate
 npx ts-node prisma/scriptdb/exportData.ts
 npx ts-node prisma/scriptdb/seed.ts
 npx ts-node prisma/scriptdb/backup.ts
+npx prisma migrate reset
 npx ts-node prisma/scriptdb/restore.ts
 npx ts-node prisma/scriptdb/user.ts
 node createmodule.js
