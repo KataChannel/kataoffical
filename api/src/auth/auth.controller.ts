@@ -53,7 +53,6 @@ export class AuthController {
   }
   @Post('login')
   login(@Body() body: {SDT:string; email: string; password: string }) {
-    console.log(body);
     return this.authService.login(body.SDT, body.email, body.password);
   }
 

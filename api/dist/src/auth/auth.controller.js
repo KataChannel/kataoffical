@@ -48,7 +48,6 @@ let AuthController = class AuthController {
         }
     }
     login(body) {
-        console.log(body);
         return this.authService.login(body.SDT, body.email, body.password);
     }
     async changePassword(req, body) {

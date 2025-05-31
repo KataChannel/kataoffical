@@ -615,91 +615,107 @@ export const routes: Routes = [
       ),
   },
   {
-    path: '',
-    canActivate: [AuthGuard],
-    loadComponent: () =>
-      import('./site/sitemain/sitemain.component').then(
-        (c) => c.SitemainComponent
-      ),
-    // loadComponent: () =>import('./admin/hotro/listhotro/listhotro.component').then((c) => c.ListHotroComponent),
-    // loadComponent: () =>import('./admin/vantay/vantay.component').then((c) => c.VantayComponent),
-    //loadComponent: () =>import('./admin/facecomparison/facecomparison.component').then((c) => c.FacecomparisonComponent),
-    children: [
-      {
-        path: '',
-        loadComponent: () =>
-          import('./site/home/home.component').then((c) => c.HomeComponent),
-      },
-      {
-        path: 'game1',
-        loadComponent: () =>
-          import('./site/home/game1/game1.component').then(
-            (c) => c.Game1Component
-          ),
-      },
-      {
-        path: 'game2',
-        loadComponent: () =>
-          import('./site/home/farm/farm.component').then(
-            (c) => c.FarmComponent
-          ),
-      },
-      {
-        path: 'game3',
-        loadComponent: () =>
-          import('./site/home/townerdefense/townerdefense.component').then(
-            (c) => c.TownerdefenseComponent
-          ),
-      },
-      {
-        path: 'lien-he',
-        loadComponent: () =>
-          import('./site/lienhe/lienhe.component').then(
-            (c) => c.LienheComponent
-          ),
-      },
-      {
-        path: ':slug',
-        resolve: { componentType: DynamicComponentResolver },
-        loadComponent: async () => {
-          const componentType = history?.state?.componentType;
-          if (componentType) {
-            switch (componentType) {
-              case 'danhmucbaiviet':
-                const c = await import(
-                  './site/danhmucbaiviet/danhmucbaiviet.component'
-                );
-                return c.DanhmucbaivietComponent;
-              case 'baiviet':
-                const c_1 = await import('./site/baiviet/baiviet.component');
-                return c_1.BaivietComponent;
-              case 'danhmuc':
-                const c_2 = await import('./site/danhmuc/danhmuc.component');
-                return c_2.DanhmucComponent;
-              case 'sanpham':
-                const c_3 = await import('./site/sanpham/sanpham.component');
-                return c_3.SanphamComponent;
-              case 'danhmucgioithieu':
-                const c_5 = await import(
-                  './site/danhmucgioithieu/danhmucgioithieu.component'
-                );
-                return c_5.DanhmucgioithieuComponent;
-              case 'gioithieu':
-                const c_6 = await import(
-                  './site/gioithieu/gioithieu.component'
-                );
-                return c_6.GioithieuComponent;
-              default:
-                const c_4 = await import('./site/notfound/notfound.component');
-                return c_4.NotfoundComponent; // Component mặc định
-            }
-          } else {
-            return import('./site/home/home.component').then(
-              (c) => c.HomeComponent
-            );
-          }
-        },
-      },
-    ],
+        path: 'kata',
+        canActivate: [AuthGuard],
+        // data: { permission: 'site.view' },
+        loadChildren: () =>
+           import('./site/site.route').then(m => m.SiteRoutingModule),
   },
+  {
+        path: '',
+        canActivate: [AuthGuard],
+        // data: { permission: 'site.view' },
+        loadChildren: () =>
+           import('./site/namno/namno.route').then(m => m.NamnoRoutingModule),
+  },
+
+
+  // {
+  //   path: '',
+  //   canActivate: [AuthGuard],
+  //   loadComponent: () =>
+  //     import('./site/sitemain/sitemain.component').then(
+  //       (c) => c.SitemainComponent
+  //     ),
+  //   // loadComponent: () =>import('./admin/hotro/listhotro/listhotro.component').then((c) => c.ListHotroComponent),
+  //   // loadComponent: () =>import('./admin/vantay/vantay.component').then((c) => c.VantayComponent),
+  //   //loadComponent: () =>import('./admin/facecomparison/facecomparison.component').then((c) => c.FacecomparisonComponent),
+  //   children: [
+  //     {
+  //       path: '',
+  //       loadComponent: () =>
+  //         import('./site/home/home.component').then((c) => c.HomeComponent),
+  //     },
+  //     {
+  //       path: 'game1',
+  //       loadComponent: () =>
+  //         import('./site/home/game1/game1.component').then(
+  //           (c) => c.Game1Component
+  //         ),
+  //     },
+  //     {
+  //       path: 'game2',
+  //       loadComponent: () =>
+  //         import('./site/home/farm/farm.component').then(
+  //           (c) => c.FarmComponent
+  //         ),
+  //     },
+  //     {
+  //       path: 'game3',
+  //       loadComponent: () =>
+  //         import('./site/home/townerdefense/townerdefense.component').then(
+  //           (c) => c.TownerdefenseComponent
+  //         ),
+  //     },
+  //     {
+  //       path: 'lien-he',
+  //       loadComponent: () =>
+  //         import('./site/lienhe/lienhe.component').then(
+  //           (c) => c.LienheComponent
+  //         ),
+  //     },
+  //     {
+  //       path: ':slug',
+  //       resolve: { componentType: DynamicComponentResolver },
+  //       loadComponent: async () => {
+  //         const componentType = history?.state?.componentType;
+  //         if (componentType) {
+  //           switch (componentType) {
+  //             case 'danhmucbaiviet':
+  //               const c = await import(
+  //                 './site/danhmucbaiviet/danhmucbaiviet.component'
+  //               );
+  //               return c.DanhmucbaivietComponent;
+  //             case 'baiviet':
+  //               const c_1 = await import('./site/baiviet/baiviet.component');
+  //               return c_1.BaivietComponent;
+  //             case 'danhmuc':
+  //               const c_2 = await import('./site/danhmuc/danhmuc.component');
+  //               return c_2.DanhmucComponent;
+  //             case 'sanpham':
+  //               const c_3 = await import('./site/sanpham/sanpham.component');
+  //               return c_3.SanphamComponent;
+  //             case 'danhmucgioithieu':
+  //               const c_5 = await import(
+  //                 './site/danhmucgioithieu/danhmucgioithieu.component'
+  //               );
+  //               return c_5.DanhmucgioithieuComponent;
+  //             case 'gioithieu':
+  //               const c_6 = await import(
+  //                 './site/gioithieu/gioithieu.component'
+  //               );
+  //               return c_6.GioithieuComponent;
+  //             default:
+  //               const c_4 = await import('./site/notfound/notfound.component');
+  //               return c_4.NotfoundComponent; // Component mặc định
+  //           }
+  //         } else {
+  //           return import('./site/home/home.component').then(
+  //             (c) => c.HomeComponent
+  //           );
+  //         }
+  //       },
+  //     },
+  //   ],
+  // },
 ];

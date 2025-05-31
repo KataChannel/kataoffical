@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{Ac as c,Cb as t,cc as a,dc as o}from"./chunk-U47UC6MM.mjs";import"./chunk-KB5IWD3E.mjs";import"./chunk-RIAI3ORJ.mjs";var h=class n{static \u0275fac=function(e){return new(e||n)};static \u0275cmp=t({type:n,selectors:[["app-khachhang"]],decls:2,vars:0,template:function(e,i){e&1&&(a(0,"p"),c(1,"khachhang works!"),o())},encapsulation:2})};export{h as KhachhangComponent};

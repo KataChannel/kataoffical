@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{Ac as p,Cb as n,cc as a,dc as o}from"./chunk-U47UC6MM.mjs";import"./chunk-KB5IWD3E.mjs";import"./chunk-RIAI3ORJ.mjs";var i=class e{static \u0275fac=function(t){return new(t||e)};static \u0275cmp=n({type:e,selectors:[["app-dathang"]],decls:2,vars:0,template:function(t,m){t&1&&(a(0,"p"),p(1,"dathang works!"),o())},encapsulation:2})};export{i as DathangComponent};

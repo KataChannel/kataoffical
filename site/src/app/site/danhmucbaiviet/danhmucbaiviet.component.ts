@@ -50,7 +50,7 @@ export class DanhmucbaivietComponent {
     const result = slugDM?.split("-v4")[0];
     console.log(result); 
     const Danhmuc = this.Danhmucs.find(v=>v.Slug==result);
-    console.log(Danhmuc);
+    // console.log(Danhmuc);
     if(!Danhmuc)
     {
       location.href="/404";

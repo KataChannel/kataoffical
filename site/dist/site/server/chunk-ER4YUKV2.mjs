@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{Ac as i,Cb as t,cc as a,dc as n}from"./chunk-U47UC6MM.mjs";import"./chunk-KB5IWD3E.mjs";import"./chunk-RIAI3ORJ.mjs";var p=class o{static \u0275fac=function(e){return new(e||o)};static \u0275cmp=t({type:o,selectors:[["app-baogia"]],decls:2,vars:0,template:function(e,m){e&1&&(a(0,"p"),i(1,"baogia works!"),n())},encapsulation:2})};export{p as BaogiaComponent};

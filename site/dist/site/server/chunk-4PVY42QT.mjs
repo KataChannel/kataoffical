@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{Ac as o,Cb as t,cc as a,dc as c}from"./chunk-U47UC6MM.mjs";import"./chunk-KB5IWD3E.mjs";import"./chunk-RIAI3ORJ.mjs";var p=class e{static \u0275fac=function(n){return new(n||e)};static \u0275cmp=t({type:e,selectors:[["app-nhacungcap"]],decls:2,vars:0,template:function(n,s){n&1&&(a(0,"p"),o(1,"nhacungcap works!"),c())},encapsulation:2})};export{p as NhacungcapComponent};

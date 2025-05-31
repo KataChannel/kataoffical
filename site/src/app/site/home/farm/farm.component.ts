@@ -66,8 +66,8 @@ export type ToolType = 'harvest' | 'plant' | 'place_soil' | 'place_pen';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FarmComponent implements OnInit, OnDestroy, AfterViewInit {
-  rows = 70; // MỚI: Kích thước bản đồ 70
-  cols = 70; // MỚI: Kích thước bản đồ 70
+  rows = 30; // MỚI: Kích thước bản đồ 30
+  cols = 30; // MỚI: Kích thước bản đồ 30
   baseTileSize = 32;
 
   private mapTilesSignal: WritableSignal<MapTile[][]> = signal([]); //
@@ -219,11 +219,11 @@ export class FarmComponent implements OnInit, OnDestroy, AfterViewInit {
   private initMap() {
     const grid: MapTile[][] = [];
     let id = 0;
-    const islandSize = 50;
-    const startRow = (this.rows - islandSize) / 2; // (70 - 50) / 2 = 10
-    const endRow = startRow + islandSize - 1;       // 10 + 50 - 1 = 59
-    const startCol = (this.cols - islandSize) / 2; // (70 - 50) / 2 = 10
-    const endCol = startCol + islandSize - 1;       // 10 + 50 - 1 = 59
+    const islandSize = 20;
+    const startRow = (this.rows - islandSize) / 2; // (30 - 20) / 2 = 5
+    const endRow = startRow + islandSize - 1;       // 5 + 20 - 1 = 24
+    const startCol = (this.cols - islandSize) / 2; // (30 - 20) / 2 = 5
+    const endCol = startCol + islandSize - 1;       // 5 + 20 - 1 = 24
 
     for (let r = 0; r < this.rows; r++) {
       grid[r] = [];
@@ -434,9 +434,9 @@ export class FarmComponent implements OnInit, OnDestroy, AfterViewInit {
     let newZoom;
 
     if (event.deltaY < 0) {
-        newZoom = Math.min(4, oldZoom * zoomFactor);
+        newZoom = Math.min(1, oldZoom * zoomFactor);
     } else {
-        newZoom = Math.max(0.1, oldZoom / zoomFactor);
+        newZoom = Math.max(0.5, oldZoom / zoomFactor);
     }
 
     if (newZoom !== oldZoom) {

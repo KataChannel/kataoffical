@@ -14,6 +14,6 @@ import { RouterLink } from '@angular/router';
 export class BreadscrumbComponent {
   @Input() Breadcrumbs:any[]= [];
   constructor() { 
-    console.log('Breadcrumbs',this.Breadcrumbs);
+    // console.log('Breadcrumbs',this.Breadcrumbs);
   }
 }

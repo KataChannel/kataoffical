@@ -12,8 +12,8 @@ import { ListSanphamComponent } from './listsanpham/listsanpham.component';
 const routes: Routes = [
   // {
   //       path: 'sanpham',
-  //       canActivate: [SanphamGuard],
-  //       data: { sanpham: 'sanpham.view' },
+  //       canActivate: [PermissionGuard],
+  //       data: { permission: 'sanpham.view' },
   //       loadChildren: () =>
   //          import('./admin/sanpham/sanpham.route').then(m => m.SanphamRoutingModule),
   // },

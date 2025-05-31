@@ -1,0 +1,1 @@
+import{$b as o,Ab as t,_b as a,wc as c}from"./chunk-7U7GNSSJ.js";import"./chunk-EU2KAMEK.js";import"./chunk-47CWAPKR.js";var h=class n{static \u0275fac=function(e){return new(e||n)};static \u0275cmp=t({type:n,selectors:[["app-khachhang"]],decls:2,vars:0,template:function(e,i){e&1&&(a(0,"p"),c(1,"khachhang works!"),o())},encapsulation:2})};export{h as KhachhangComponent};

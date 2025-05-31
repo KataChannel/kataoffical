@@ -1,0 +1,1 @@
+import{$b as o,Ab as n,_b as a,wc as p}from"./chunk-7U7GNSSJ.js";import"./chunk-EU2KAMEK.js";import"./chunk-47CWAPKR.js";var i=class e{static \u0275fac=function(t){return new(t||e)};static \u0275cmp=n({type:e,selectors:[["app-dathang"]],decls:2,vars:0,template:function(t,m){t&1&&(a(0,"p"),p(1,"dathang works!"),o())},encapsulation:2})};export{i as DathangComponent};

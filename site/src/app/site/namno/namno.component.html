@@ -1,0 +1,47 @@
+<mat-drawer-container class="w-screen h-screen" autosize>
+    <mat-drawer #drawer class="relative min-w-64 h-full" mode="side" opened="true">
+    <div class="relative flex flex-col space-y-2 w-full h-full">
+       
+        <div class="relative flex flex-col space-y-2 p-2">
+            <h1 class="text-center text-xl font-bold">Cafe</h1>
+            <p class="text-center text-gray-600">Welcome to Cafe</p>
+        </div>
+        <div class="relative overflow-auto w-full h-full flex flex-col space-y-2 cursor-pointer p-2">
+
+            <div class="relative w-full">
+                <input type="text" placeholder="Tìm Kiếm..."
+                    class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <span class="material-symbols-outlined text-gray-500">search</span>
+                </div>
+            </div>
+
+            <a *ngFor="let item of ListMenu"
+                class="p-2 rounded-lg flex flex-row space-x-2 items-center text-gray-600 hover:bg-blue-200"
+                [routerLink]="item.slug" [routerLinkActive]="'bg-blue-500 text-white'">
+                <mat-icon>{{ item.icon }}</mat-icon>
+                <span>{{ item.name }}</span>
+            </a>
+        </div>
+        <div class="relative p-2 flex flex-row space-x-2 items-center justify-between">
+            <div class="flex flex-row space-x-2 items-center">
+                <span>Guest</span>
+            </div>
+            <button mat-icon-button color="primary">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+        </div>
+     </div>
+          
+    </mat-drawer>
+    <div class="relative flex flex-col w-full h-full">
+        <div class="relative px-2 w-full flex flex-row space-x-2">
+            <button type="button" mat-icon-button color="primary" (click)="drawer.toggle()">
+                <mat-icon>menu</mat-icon>
+            </button>
+        </div>
+        <div class="relative p-2 w-full h-full overflow-auto">
+            <router-outlet />
+        </div>
+    </div>
+</mat-drawer-container>

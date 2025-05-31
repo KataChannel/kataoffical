@@ -67,9 +67,9 @@ export class DanhmucComponent {
 
     const slugDM = this.route.snapshot.paramMap.get('slug');
     const result = slugDM?.split("-v2")[0];
-    console.log(result); 
+    // console.log(result); 
     const Danhmuc = this.Danhmucs.find(v=>v.Slug==result);
-    console.log(Danhmuc);
+    // console.log(Danhmuc);
     if(!Danhmuc)
     {
       //location.href="/404";

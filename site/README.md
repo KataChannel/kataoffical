@@ -37,3 +37,17 @@ npx ng g c sharedsanpham --skip-tests --standalone
 npx ng g c dashboarsanpham --skip-tests --standalone
 npx ng g c xuatnhapton --skip-tests --standalone
 npx ng g c mathang --skip-tests --standalone
+npx ng g c namno --skip-tests --standalone
+
+npx ng g c donhang          --skip-tests --standalone
+npx ng g c dathang          --skip-tests --standalone
+npx ng g c baogia           --skip-tests --standalone
+npx ng g c kho              --skip-tests --standalone
+npx ng g c vanchuyen        --skip-tests --standalone
+npx ng g c khachhang        --skip-tests --standalone
+npx ng g c nhacungcap       --skip-tests --standalone
+npx ng g c sanpham          --skip-tests --standalone
+npx ng g c danhmuc          --skip-tests --standalone
+
+
+
