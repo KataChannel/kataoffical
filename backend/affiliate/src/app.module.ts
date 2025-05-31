@@ -18,6 +18,7 @@ import { FilemanagerModule } from './filemanager/filemanager.module';
 import { AffiliatelinkModule } from './affiliatelink/affiliatelink.module';
 import { DichvuModule } from './dichvu/dichvu.module';
 import { DoanhsoModule } from './doanhso/doanhso.module';
+import { DoanhthuModule } from './doanhthu/doanhthu.module';
 @Module({
   imports: [
     AuthModule, 
@@ -34,7 +35,8 @@ import { DoanhsoModule } from './doanhso/doanhso.module';
     FilemanagerModule,
     AffiliatelinkModule,
     DichvuModule,
-    DoanhsoModule
+    DoanhsoModule,
+    DoanhthuModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

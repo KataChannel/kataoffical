@@ -28,6 +28,7 @@ export class DoanhsoController {
       throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+  
   @ApiOperation({ summary: 'Find doanhsos by parameters' })
   @ApiBody({ type: Object }) 
   @Post('findby')

@@ -61,6 +61,91 @@ export class DoanhthuService {
       throw error;
     }
   }
+
+    async syncsdoanhthu(param: any) {
+    if (!param || !Array.isArray(param) || param.length === 0) {
+      throw new NotFoundException('Invalid parameters for syncsdoanhthu');
+    }
+    console.log(param);
+    
+    const concurrencyLimit = 50;
+    let successCount = 0;
+    let failureCount = 0;
+
+    // Create an array of tasks to process each item
+    const tasks = param.map((item: any) => async () => {
+      try {
+        const existing = await this.prisma.doanhthu.findFirst({
+          where: { codeId: item.source_id },
+        });
+        
+        const user = await this.prisma.user.findFirst({
+          where: { phone: item.phone },
+        });
+        
+        if (!user) {
+          throw new NotFoundException(`User not found for phone: ${item.phone}`);
+        }
+        const dichvu = await this.prisma.dichvu.findFirst({
+          where: { OR: [
+            { tabCode: item.tabCode },
+            { TabCardCode: item.TabCardCode },
+            { TabMedicineCode: item.TabMedicineCode }
+          ] },
+        });
+        if (!dichvu) {
+          throw new NotFoundException(`Dichvu not found for serviceCode: ${item.serviceCode}`);
+        }
+        console.log(`Processing item with source_id ${item.source_id} for user ${user.id} and dichvu ${dichvu.id}`);
+        
+        if (!existing) {
+          console.log(`Creating new doanhthu for source_id ${item.source_id}`);
+          
+          const data = {
+            codeId: item.source_id, // using source_id as codeId
+            userId: user.id || null,
+            dichvuId: dichvu.id || null,
+            originalAmount: item.priceRoot || 0,
+            discountAmount: item.discount || 0,
+            actualAmount: item.priceDiscounted || 0,
+          };
+
+
+
+
+
+  // codeId        String?     @unique
+  // doanhsoId     String
+  // doanhso       Doanhso     @relation(fields: [doanhsoId], references: [id])
+  // amount        Float       // Số tiền mỗi đợt
+  // commission    Float       // Hoa hồng mỗi đợt
+
+
+
+          
+          // await this.create(data);
+        }
+      } catch (error) {        
+        throw error;
+      }
+    });
+    
+    // Process tasks in chunks with limited concurrency
+    for (let i = 0; i < tasks.length; i += concurrencyLimit) {
+      const chunk = tasks.slice(i, i + concurrencyLimit);
+      const results = await Promise.allSettled(chunk.map((task) => task()));
+      results.forEach((result) => {
+        if (result.status === 'fulfilled') {
+          successCount++;
+        } else {
+          failureCount++;
+        }
+      });
+    }
+    return { success: successCount, failure: failureCount };
+  }
+
+
   async findBy(param: any) {
     try {
       const { isOne, page = 1, limit = 20, ...where } = param;

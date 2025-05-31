@@ -77,10 +77,11 @@ export class DoanhsoService {
         const existing = await this.prisma.doanhso.findFirst({
           where: { codeId: item.source_id },
         });
+        
         const user = await this.prisma.user.findFirst({
           where: { phone: item.phone },
         });
-
+        
         if (!user) {
           throw new NotFoundException(`User not found for phone: ${item.phone}`);
         }
@@ -93,15 +94,34 @@ export class DoanhsoService {
         console.log(`Processing item with source_id ${item.source_id} for user ${user.id} and dichvu ${dichvu.id}`);
         
         if (!existing) {
-          const data = {
-            codeId: item.source_id, // using source_id as codeId
-            userId: user.id || null,
-            dichvuId: dichvu.id || null,
-            originalAmount: item.priceRoot || 0,
-            discountAmount: item.discount || 0,
-            actualAmount: item.priceDiscounted || 0,
-          };
-          await this.create(data);
+          console.log(`Creating new doanhso for source_id ${item.source_id}`);
+          if(item.priceDiscounted>0) {
+            const data = {
+              codeId: item.source_id, // using source_id as codeId
+              userId: user.id || null,
+              dichvuId: dichvu.id || null,
+              originalAmount: item.priceRoot || 0,
+              discountAmount: item.discount || 0,
+              actualAmount: item.priceDiscounted || 0,
+            };
+            console.log(data);
+            await this.create(data);
+          }
+        }
+        else {
+          console.log(`Updating doanhso for source_id ${item.source_id}`);
+          if(item.priceDiscounted>0) {
+            const data = {
+              codeId: item.source_id,
+              userId: user.id || null,
+              dichvuId: dichvu.id || null,
+              originalAmount: item.priceRoot || 0,
+              discountAmount: item.discount || 0,
+              actualAmount: item.priceDiscounted || 0,
+            };
+            console.log(data);
+            await this.update(existing.id, data);
+          }
         }
       } catch (error) {        
         throw error;

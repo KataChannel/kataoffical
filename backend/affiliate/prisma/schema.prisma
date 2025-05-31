@@ -256,6 +256,9 @@ model FileManager {
 model Dichvu {
   id          String   @id @default(uuid())
   codeId      String?  @unique
+  tabCode     String?  // Mã tab (nếu có)
+  TabCardCode String? // Mã tab card (nếu có)
+  TabMedicineCode String? // Mã tab thuốc (nếu có)
   serviceCode  String?  // Mã dịch vụ (có thể là mã định danh duy nhất)
   serviceName String? // Tên dịch vụ (có thể là tên dịch vụ bên ngoài)
   description String?

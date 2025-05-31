@@ -75,6 +75,66 @@ let DoanhthuService = class DoanhthuService {
             throw error;
         }
     }
+    async syncsdoanhthu(param) {
+        if (!param || !Array.isArray(param) || param.length === 0) {
+            throw new common_1.NotFoundException('Invalid parameters for syncsdoanhthu');
+        }
+        console.log(param);
+        const concurrencyLimit = 50;
+        let successCount = 0;
+        let failureCount = 0;
+        const tasks = param.map((item) => async () => {
+            try {
+                const existing = await this.prisma.doanhthu.findFirst({
+                    where: { codeId: item.source_id },
+                });
+                const user = await this.prisma.user.findFirst({
+                    where: { phone: item.phone },
+                });
+                if (!user) {
+                    throw new common_1.NotFoundException(`User not found for phone: ${item.phone}`);
+                }
+                const dichvu = await this.prisma.dichvu.findFirst({
+                    where: { OR: [
+                            { tabCode: item.tabCode },
+                            { TabCardCode: item.TabCardCode },
+                            { TabMedicineCode: item.TabMedicineCode }
+                        ] },
+                });
+                if (!dichvu) {
+                    throw new common_1.NotFoundException(`Dichvu not found for serviceCode: ${item.serviceCode}`);
+                }
+                console.log(`Processing item with source_id ${item.source_id} for user ${user.id} and dichvu ${dichvu.id}`);
+                if (!existing) {
+                    console.log(`Creating new doanhthu for source_id ${item.source_id}`);
+                    const data = {
+                        codeId: item.source_id,
+                        userId: user.id || null,
+                        dichvuId: dichvu.id || null,
+                        originalAmount: item.priceRoot || 0,
+                        discountAmount: item.discount || 0,
+                        actualAmount: item.priceDiscounted || 0,
+                    };
+                }
+            }
+            catch (error) {
+                throw error;
+            }
+        });
+        for (let i = 0; i < tasks.length; i += concurrencyLimit) {
+            const chunk = tasks.slice(i, i + concurrencyLimit);
+            const results = await Promise.allSettled(chunk.map((task) => task()));
+            results.forEach((result) => {
+                if (result.status === 'fulfilled') {
+                    successCount++;
+                }
+                else {
+                    failureCount++;
+                }
+            });
+        }
+        return { success: successCount, failure: failureCount };
+    }
     async findBy(param) {
         try {
             const { isOne, page = 1, limit = 20, ...where } = param;

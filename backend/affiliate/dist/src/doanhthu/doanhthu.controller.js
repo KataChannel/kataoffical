@@ -29,6 +29,14 @@ let DoanhthuController = class DoanhthuController {
             throw new common_1.HttpException(error.message || 'Create failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async syncsdoanhthu(param) {
+        try {
+            return await this.doanhthuService.syncsdoanhthu(param);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async findby(param) {
         try {
             return await this.doanhthuService.findBy(param);
@@ -106,6 +114,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], DoanhthuController.prototype, "create", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Find courses by parameters' }),
+    (0, swagger_1.ApiBody)({ type: Object }),
+    (0, common_1.Post)('syncsdoanhthu'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DoanhthuController.prototype, "syncsdoanhthu", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Find doanhthus by parameters' }),
     (0, swagger_1.ApiBody)({ type: Object }),

@@ -161,5 +161,16 @@ async function gracefulShutdown() {
 // }
 // getDichvu();
 
+async function getDoanhthu() {
+    try {
+        console.log('\n--- Starting Doanhthu Task ---');
+        await runGenericTask(revenueTaskConfig);
+        console.log('--- Finished Doanhthu Task ---');
+    } catch (error) {
+        console.error('[Scheduler] Error running Doanhthu task:', error);
+    }
+}
+getDoanhthu();
+
 process.on('SIGTERM', gracefulShutdown); // Tín hiệu tắt từ Docker/Kubernetes
 process.on('SIGINT', gracefulShutdown);  // Tín hiệu tắt từ Ctrl+C

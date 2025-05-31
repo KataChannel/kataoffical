@@ -5,17 +5,17 @@ export declare class DoanhsoController {
     create(data: any): Promise<{
         id: string;
         codeId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        affiliateCode: string | null;
         userId: string;
-        order: number | null;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        affiliateLinkId: string | null;
         dichvuId: string;
         originalAmount: number;
         discountAmount: number | null;
         actualAmount: number;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        affiliateCode: string | null;
+        affiliateLinkId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        order: number | null;
     }>;
     syncsdoanhso(param: any): Promise<{
         success: number;
@@ -24,32 +24,32 @@ export declare class DoanhsoController {
     findby(param: any): Promise<{
         id: string;
         codeId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        affiliateCode: string | null;
         userId: string;
-        order: number | null;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        affiliateLinkId: string | null;
         dichvuId: string;
         originalAmount: number;
         discountAmount: number | null;
         actualAmount: number;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        affiliateCode: string | null;
+        affiliateLinkId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        order: number | null;
     } | {
         data: {
             id: string;
             codeId: string | null;
-            createdAt: Date;
-            updatedAt: Date;
-            affiliateCode: string | null;
             userId: string;
-            order: number | null;
-            status: import(".prisma/client").$Enums.OrderStatus;
-            affiliateLinkId: string | null;
             dichvuId: string;
             originalAmount: number;
             discountAmount: number | null;
             actualAmount: number;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            affiliateCode: string | null;
+            affiliateLinkId: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            order: number | null;
         }[];
         total: number;
         page: any;
@@ -59,17 +59,17 @@ export declare class DoanhsoController {
         data: {
             id: string;
             codeId: string | null;
-            createdAt: Date;
-            updatedAt: Date;
-            affiliateCode: string | null;
             userId: string;
-            order: number | null;
-            status: import(".prisma/client").$Enums.OrderStatus;
-            affiliateLinkId: string | null;
             dichvuId: string;
             originalAmount: number;
             discountAmount: number | null;
             actualAmount: number;
+            status: import(".prisma/client").$Enums.OrderStatus;
+            affiliateCode: string | null;
+            affiliateLinkId: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            order: number | null;
         }[];
         total: number;
         page: number;
@@ -81,33 +81,33 @@ export declare class DoanhsoController {
     findOne(id: string): Promise<{
         id: string;
         codeId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        affiliateCode: string | null;
         userId: string;
-        order: number | null;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        affiliateLinkId: string | null;
         dichvuId: string;
         originalAmount: number;
         discountAmount: number | null;
         actualAmount: number;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        affiliateCode: string | null;
+        affiliateLinkId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        order: number | null;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
         id: string;
         codeId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
-        affiliateCode: string | null;
         userId: string;
-        order: number | null;
-        status: import(".prisma/client").$Enums.OrderStatus;
-        affiliateLinkId: string | null;
         dichvuId: string;
         originalAmount: number;
         discountAmount: number | null;
         actualAmount: number;
+        status: import(".prisma/client").$Enums.OrderStatus;
+        affiliateCode: string | null;
+        affiliateLinkId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        order: number | null;
     }>;
     reorder(body: {
         doanhsoIds: string[];

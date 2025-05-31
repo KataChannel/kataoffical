@@ -3956,6 +3956,9 @@ export namespace Prisma {
     id: number | null
     source_id: string | null
     code: string | null
+    TabCode: string | null
+    TabCardCode: string | null
+    TabMedicineCode: string | null
     branchId: number | null
     custCode: string | null
     custName: string | null
@@ -4000,6 +4003,9 @@ export namespace Prisma {
     id: number | null
     source_id: string | null
     code: string | null
+    TabCode: string | null
+    TabCardCode: string | null
+    TabMedicineCode: string | null
     branchId: number | null
     custCode: string | null
     custName: string | null
@@ -4044,6 +4050,9 @@ export namespace Prisma {
     id: number
     source_id: number
     code: number
+    TabCode: number
+    TabCardCode: number
+    TabMedicineCode: number
     branchId: number
     custCode: number
     custName: number
@@ -4148,6 +4157,9 @@ export namespace Prisma {
     id?: true
     source_id?: true
     code?: true
+    TabCode?: true
+    TabCardCode?: true
+    TabMedicineCode?: true
     branchId?: true
     custCode?: true
     custName?: true
@@ -4192,6 +4204,9 @@ export namespace Prisma {
     id?: true
     source_id?: true
     code?: true
+    TabCode?: true
+    TabCardCode?: true
+    TabMedicineCode?: true
     branchId?: true
     custCode?: true
     custName?: true
@@ -4236,6 +4251,9 @@ export namespace Prisma {
     id?: true
     source_id?: true
     code?: true
+    TabCode?: true
+    TabCardCode?: true
+    TabMedicineCode?: true
     branchId?: true
     custCode?: true
     custName?: true
@@ -4367,6 +4385,9 @@ export namespace Prisma {
     id: number
     source_id: string
     code: string | null
+    TabCode: string | null
+    TabCardCode: string | null
+    TabMedicineCode: string | null
     branchId: number | null
     custCode: string | null
     custName: string | null
@@ -4430,6 +4451,9 @@ export namespace Prisma {
     id?: boolean
     source_id?: boolean
     code?: boolean
+    TabCode?: boolean
+    TabCardCode?: boolean
+    TabMedicineCode?: boolean
     branchId?: boolean
     custCode?: boolean
     custName?: boolean
@@ -4474,6 +4498,9 @@ export namespace Prisma {
     id?: boolean
     source_id?: boolean
     code?: boolean
+    TabCode?: boolean
+    TabCardCode?: boolean
+    TabMedicineCode?: boolean
     branchId?: boolean
     custCode?: boolean
     custName?: boolean
@@ -4518,6 +4545,9 @@ export namespace Prisma {
     id?: boolean
     source_id?: boolean
     code?: boolean
+    TabCode?: boolean
+    TabCardCode?: boolean
+    TabMedicineCode?: boolean
     branchId?: boolean
     custCode?: boolean
     custName?: boolean
@@ -4562,6 +4592,9 @@ export namespace Prisma {
     id?: boolean
     source_id?: boolean
     code?: boolean
+    TabCode?: boolean
+    TabCardCode?: boolean
+    TabMedicineCode?: boolean
     branchId?: boolean
     custCode?: boolean
     custName?: boolean
@@ -4602,7 +4635,7 @@ export namespace Prisma {
     extractedAt?: boolean
   }
 
-  export type RevenueOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "source_id" | "code" | "branchId" | "custCode" | "custName" | "custPhone" | "custAddress" | "custBirthday" | "depositId" | "paidAmount" | "discountAmount" | "depositAmountUsing" | "totalPaid" | "debtAmount" | "methodName" | "content" | "serviceId" | "isProduct" | "quantity" | "priceRoot" | "priceUnit" | "price" | "amount" | "timeToTreatment" | "percentOfService" | "treatIndex" | "type" | "typeName" | "consultId1" | "consultId2" | "consultId3" | "consultId4" | "techId" | "tele1" | "tele2" | "createdDate" | "createdBy" | "modifiedDate" | "state" | "extractedAt", ExtArgs["result"]["revenue"]>
+  export type RevenueOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "source_id" | "code" | "TabCode" | "TabCardCode" | "TabMedicineCode" | "branchId" | "custCode" | "custName" | "custPhone" | "custAddress" | "custBirthday" | "depositId" | "paidAmount" | "discountAmount" | "depositAmountUsing" | "totalPaid" | "debtAmount" | "methodName" | "content" | "serviceId" | "isProduct" | "quantity" | "priceRoot" | "priceUnit" | "price" | "amount" | "timeToTreatment" | "percentOfService" | "treatIndex" | "type" | "typeName" | "consultId1" | "consultId2" | "consultId3" | "consultId4" | "techId" | "tele1" | "tele2" | "createdDate" | "createdBy" | "modifiedDate" | "state" | "extractedAt", ExtArgs["result"]["revenue"]>
 
   export type $RevenuePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Revenue"
@@ -4611,6 +4644,9 @@ export namespace Prisma {
       id: number
       source_id: string
       code: string | null
+      TabCode: string | null
+      TabCardCode: string | null
+      TabMedicineCode: string | null
       branchId: number | null
       custCode: string | null
       custName: string | null
@@ -5075,6 +5111,9 @@ export namespace Prisma {
     readonly id: FieldRef<"Revenue", 'Int'>
     readonly source_id: FieldRef<"Revenue", 'String'>
     readonly code: FieldRef<"Revenue", 'String'>
+    readonly TabCode: FieldRef<"Revenue", 'String'>
+    readonly TabCardCode: FieldRef<"Revenue", 'String'>
+    readonly TabMedicineCode: FieldRef<"Revenue", 'String'>
     readonly branchId: FieldRef<"Revenue", 'Int'>
     readonly custCode: FieldRef<"Revenue", 'String'>
     readonly custName: FieldRef<"Revenue", 'String'>
@@ -10660,6 +10699,9 @@ export namespace Prisma {
     id: 'id',
     source_id: 'source_id',
     code: 'code',
+    TabCode: 'TabCode',
+    TabCardCode: 'TabCardCode',
+    TabMedicineCode: 'TabMedicineCode',
     branchId: 'branchId',
     custCode: 'custCode',
     custName: 'custName',
@@ -11253,6 +11295,9 @@ export namespace Prisma {
     id?: IntFilter<"Revenue"> | number
     source_id?: StringFilter<"Revenue"> | string
     code?: StringNullableFilter<"Revenue"> | string | null
+    TabCode?: StringNullableFilter<"Revenue"> | string | null
+    TabCardCode?: StringNullableFilter<"Revenue"> | string | null
+    TabMedicineCode?: StringNullableFilter<"Revenue"> | string | null
     branchId?: IntNullableFilter<"Revenue"> | number | null
     custCode?: StringNullableFilter<"Revenue"> | string | null
     custName?: StringNullableFilter<"Revenue"> | string | null
@@ -11297,6 +11342,9 @@ export namespace Prisma {
     id?: SortOrder
     source_id?: SortOrder
     code?: SortOrderInput | SortOrder
+    TabCode?: SortOrderInput | SortOrder
+    TabCardCode?: SortOrderInput | SortOrder
+    TabMedicineCode?: SortOrderInput | SortOrder
     branchId?: SortOrderInput | SortOrder
     custCode?: SortOrderInput | SortOrder
     custName?: SortOrderInput | SortOrder
@@ -11344,6 +11392,9 @@ export namespace Prisma {
     OR?: RevenueWhereInput[]
     NOT?: RevenueWhereInput | RevenueWhereInput[]
     code?: StringNullableFilter<"Revenue"> | string | null
+    TabCode?: StringNullableFilter<"Revenue"> | string | null
+    TabCardCode?: StringNullableFilter<"Revenue"> | string | null
+    TabMedicineCode?: StringNullableFilter<"Revenue"> | string | null
     branchId?: IntNullableFilter<"Revenue"> | number | null
     custCode?: StringNullableFilter<"Revenue"> | string | null
     custName?: StringNullableFilter<"Revenue"> | string | null
@@ -11388,6 +11439,9 @@ export namespace Prisma {
     id?: SortOrder
     source_id?: SortOrder
     code?: SortOrderInput | SortOrder
+    TabCode?: SortOrderInput | SortOrder
+    TabCardCode?: SortOrderInput | SortOrder
+    TabMedicineCode?: SortOrderInput | SortOrder
     branchId?: SortOrderInput | SortOrder
     custCode?: SortOrderInput | SortOrder
     custName?: SortOrderInput | SortOrder
@@ -11440,6 +11494,9 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"Revenue"> | number
     source_id?: StringWithAggregatesFilter<"Revenue"> | string
     code?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
+    TabCode?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
+    TabCardCode?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
+    TabMedicineCode?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
     branchId?: IntNullableWithAggregatesFilter<"Revenue"> | number | null
     custCode?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
     custName?: StringNullableWithAggregatesFilter<"Revenue"> | string | null
@@ -12674,6 +12731,9 @@ export namespace Prisma {
   export type RevenueCreateInput = {
     source_id: string
     code?: string | null
+    TabCode?: string | null
+    TabCardCode?: string | null
+    TabMedicineCode?: string | null
     branchId?: number | null
     custCode?: string | null
     custName?: string | null
@@ -12718,6 +12778,9 @@ export namespace Prisma {
     id?: number
     source_id: string
     code?: string | null
+    TabCode?: string | null
+    TabCardCode?: string | null
+    TabMedicineCode?: string | null
     branchId?: number | null
     custCode?: string | null
     custName?: string | null
@@ -12761,6 +12824,9 @@ export namespace Prisma {
   export type RevenueUpdateInput = {
     source_id?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    TabCode?: NullableStringFieldUpdateOperationsInput | string | null
+    TabCardCode?: NullableStringFieldUpdateOperationsInput | string | null
+    TabMedicineCode?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: NullableIntFieldUpdateOperationsInput | number | null
     custCode?: NullableStringFieldUpdateOperationsInput | string | null
     custName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12805,6 +12871,9 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     source_id?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    TabCode?: NullableStringFieldUpdateOperationsInput | string | null
+    TabCardCode?: NullableStringFieldUpdateOperationsInput | string | null
+    TabMedicineCode?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: NullableIntFieldUpdateOperationsInput | number | null
     custCode?: NullableStringFieldUpdateOperationsInput | string | null
     custName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12849,6 +12918,9 @@ export namespace Prisma {
     id?: number
     source_id: string
     code?: string | null
+    TabCode?: string | null
+    TabCardCode?: string | null
+    TabMedicineCode?: string | null
     branchId?: number | null
     custCode?: string | null
     custName?: string | null
@@ -12892,6 +12964,9 @@ export namespace Prisma {
   export type RevenueUpdateManyMutationInput = {
     source_id?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    TabCode?: NullableStringFieldUpdateOperationsInput | string | null
+    TabCardCode?: NullableStringFieldUpdateOperationsInput | string | null
+    TabMedicineCode?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: NullableIntFieldUpdateOperationsInput | number | null
     custCode?: NullableStringFieldUpdateOperationsInput | string | null
     custName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12936,6 +13011,9 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     source_id?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
+    TabCode?: NullableStringFieldUpdateOperationsInput | string | null
+    TabCardCode?: NullableStringFieldUpdateOperationsInput | string | null
+    TabMedicineCode?: NullableStringFieldUpdateOperationsInput | string | null
     branchId?: NullableIntFieldUpdateOperationsInput | number | null
     custCode?: NullableStringFieldUpdateOperationsInput | string | null
     custName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14444,6 +14522,9 @@ export namespace Prisma {
     id?: SortOrder
     source_id?: SortOrder
     code?: SortOrder
+    TabCode?: SortOrder
+    TabCardCode?: SortOrder
+    TabMedicineCode?: SortOrder
     branchId?: SortOrder
     custCode?: SortOrder
     custName?: SortOrder
@@ -14517,6 +14598,9 @@ export namespace Prisma {
     id?: SortOrder
     source_id?: SortOrder
     code?: SortOrder
+    TabCode?: SortOrder
+    TabCardCode?: SortOrder
+    TabMedicineCode?: SortOrder
     branchId?: SortOrder
     custCode?: SortOrder
     custName?: SortOrder
@@ -14561,6 +14645,9 @@ export namespace Prisma {
     id?: SortOrder
     source_id?: SortOrder
     code?: SortOrder
+    TabCode?: SortOrder
+    TabCardCode?: SortOrder
+    TabMedicineCode?: SortOrder
     branchId?: SortOrder
     custCode?: SortOrder
     custName?: SortOrder

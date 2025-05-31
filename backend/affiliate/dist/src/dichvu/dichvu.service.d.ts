@@ -17,6 +17,9 @@ export declare class DichvuService {
         updatedAt: Date;
         description: string | null;
         order: number | null;
+        tabCode: string | null;
+        TabCardCode: string | null;
+        TabMedicineCode: string | null;
         serviceCode: string | null;
         serviceName: string | null;
         price: number;
@@ -32,6 +35,9 @@ export declare class DichvuService {
         updatedAt: Date;
         description: string | null;
         order: number | null;
+        tabCode: string | null;
+        TabCardCode: string | null;
+        TabMedicineCode: string | null;
         serviceCode: string | null;
         serviceName: string | null;
         price: number;
@@ -43,6 +49,9 @@ export declare class DichvuService {
             updatedAt: Date;
             description: string | null;
             order: number | null;
+            tabCode: string | null;
+            TabCardCode: string | null;
+            TabMedicineCode: string | null;
             serviceCode: string | null;
             serviceName: string | null;
             price: number;
@@ -59,6 +68,9 @@ export declare class DichvuService {
             updatedAt: Date;
             description: string | null;
             order: number | null;
+            tabCode: string | null;
+            TabCardCode: string | null;
+            TabMedicineCode: string | null;
             serviceCode: string | null;
             serviceName: string | null;
             price: number;
@@ -74,6 +86,9 @@ export declare class DichvuService {
         updatedAt: Date;
         description: string | null;
         order: number | null;
+        tabCode: string | null;
+        TabCardCode: string | null;
+        TabMedicineCode: string | null;
         serviceCode: string | null;
         serviceName: string | null;
         price: number;
@@ -86,6 +101,9 @@ export declare class DichvuService {
         updatedAt: Date;
         description: string | null;
         order: number | null;
+        tabCode: string | null;
+        TabCardCode: string | null;
+        TabMedicineCode: string | null;
         serviceCode: string | null;
         serviceName: string | null;
         price: number;

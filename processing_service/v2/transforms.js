@@ -78,6 +78,9 @@ function transformRevenueData(rawData) {
             source_id: item.ID.toString(), // Dùng ID làm source_id (đảm bảo là string)
             code: item.Code,
             branchId: item.BranchID,
+            TabCode: item.TabCode || null,
+            TabCardCode: item.TabCardCode || null,
+            TabMedicineCode: item.TabMedicineCode || null,
             custCode: item.CustCode,
             custName: item.CustName,
             custPhone: item.CustPhone,
@@ -116,8 +119,7 @@ function transformRevenueData(rawData) {
             state: item.State,
             extractedAt: new Date()
         };
-        
-        transformedRecords.push(record);
+         transformedRecords.push(record);
     });
     return transformedRecords;
 }

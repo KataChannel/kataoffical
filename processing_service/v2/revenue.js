@@ -58,8 +58,8 @@ async function makeApiRequest(token, cookies, params) {
  * @param {number} initialDelay - Initial delay in ms for retries (default: 2000)
  * @returns {Promise<Object>} - API response data
  */
-async function makeApiRequestWithRetry(token, cookies, params, maxRetries = 5, initialDelay = 2000) {
-    let delay = 2000; // Initial delay: 2 giây
+async function makeApiRequestWithRetry(token, cookies, params, maxRetries = 5, initialDelay = 10000) {
+    let delay = initialDelay; // Initial delay: 5 giây
     let retries = 0; // Initialize retry count
    
     while (retries <= maxRetries) {
@@ -115,7 +115,7 @@ async function makeApiRequestWithRetry(token, cookies, params, maxRetries = 5, i
  * @param {number} delayBetweenRequests - Delay in ms between page requests (default: 1000)
  * @returns {Promise<Array>} Complete array of customer data
  */
-async function getAllThanhtoan(startDate = '2019-01-01', batchSize = 100, delayBetweenRequests = 1000) {
+async function getAllThanhtoan(startDate = '2023-01-01', batchSize = 100, delayBetweenRequests = 5000) {
     let authData, cookies; // Declare variables to hold auth info
 
     try {

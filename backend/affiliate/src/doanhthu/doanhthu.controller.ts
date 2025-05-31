@@ -18,6 +18,19 @@ export class DoanhthuController {
       throw new HttpException(error.message || 'Create failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @ApiOperation({ summary: 'Find courses by parameters' })
+  @ApiBody({ type: Object }) 
+  @Post('syncsdoanhthu')
+  async syncsdoanhthu(@Body() param: any) {
+    try {
+      return await this.doanhthuService.syncsdoanhthu(param);
+    } catch (error) {
+      throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+
   @ApiOperation({ summary: 'Find doanhthus by parameters' })
   @ApiBody({ type: Object }) 
   @Post('findby')

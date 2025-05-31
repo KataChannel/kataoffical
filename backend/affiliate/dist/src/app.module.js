@@ -27,6 +27,7 @@ const filemanager_module_1 = require("./filemanager/filemanager.module");
 const affiliatelink_module_1 = require("./affiliatelink/affiliatelink.module");
 const dichvu_module_1 = require("./dichvu/dichvu.module");
 const doanhso_module_1 = require("./doanhso/doanhso.module");
+const doanhthu_module_1 = require("./doanhthu/doanhthu.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -50,7 +51,8 @@ exports.AppModule = AppModule = __decorate([
             filemanager_module_1.FilemanagerModule,
             affiliatelink_module_1.AffiliatelinkModule,
             dichvu_module_1.DichvuModule,
-            doanhso_module_1.DoanhsoModule
+            doanhso_module_1.DoanhsoModule,
+            doanhthu_module_1.DoanhthuModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

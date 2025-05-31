@@ -71,6 +71,9 @@ model Revenue {
   id                 Int       @id @default(autoincrement())
   source_id          String    @unique
   code               String?
+  TabCode            String?
+  TabCardCode        String?
+  TabMedicineCode    String?
   branchId           Int?
   custCode           String?
   custName           String?
