@@ -616,6 +616,7 @@ export const routes: Routes = [
   },
   {
     path: '',
+    canActivate: [AuthGuard],
     loadComponent: () =>
       import('./site/sitemain/sitemain.component').then(
         (c) => c.SitemainComponent
