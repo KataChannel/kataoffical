@@ -1,5 +1,5 @@
 <mat-drawer-container class="w-full h-full" autosize>
-  <mat-drawer #drawer class="flex flex-col lg:!w-1/2 !w-full h-full" [position]="'end'" mode="over">
+  <mat-drawer #drawer class="flex flex-col !w-full h-full" [position]="'end'" mode="over">
     <router-outlet></router-outlet>
   </mat-drawer>
   <div class="flex flex-col space-y-2 h-screen-16 w-full p-2">
@@ -98,25 +98,56 @@
               {{ idx + 1 }}
             </span>
             }
+            @case ('khachhang') {
+            <span class="max-w-40 line-clamp-4">
+              {{ row[column].title }}
+              {{ row[column].email }}
+              {{ row[column].phone }}
+            </span>
+            }
+            @case ('donhangsanpham') {
+            <span class="max-w-40 line-clamp-4">
+              {{ row[column].length }}
+            </span>
+            }
             @case ('createdAt') {
             <span class="max-w-40 line-clamp-4">
               {{ row[column]|date:'dd/MM/yyyy'}}
             </span>
             }
-            @case ('haohut') {
-            <span class="max-w-40 line-clamp-4">
-              {{ row[column]}}%
-            </span>
-            }
-            @case ('isActive') {
-            <span class="max-w-40 line-clamp-4">
-              @if (row[column]) {
-              <mat-icon class="text-green-500">check_circle</mat-icon>
+            @case ('status') {
+              @switch (row[column]) {
+                @case ('pending') {
+                  <span class="rounded-lg p-2 text-white bg-green-500">
+                    Chờ Xử Lý
+                  </span>
+                }
+                @case ('processing') {
+                  <span class="rounded-lg line-clamp-4 p-2 border text-white bg-blue-500">
+                    Đang Xử Lý
+                  </span>
+                }
+                @case ('completed') {
+                  <span class="rounded-lg p-2 border text-white bg-yellow-500">
+                    Đã Hoàn Thành
+                  </span>
+                }
+                @case ('cancelled') {
+                  <span class="rounded-lg p-2 border text-white bg-red-500">
+                    Đã Hoàn Thành
+                  </span>
+                }
+                @case ('cancelled') {
+                  <span class="text-red-500">
+                    Đã Huỷ
+                  </span>
+                }
+                @default {
+                  <span class="text-gray-500">
+                    Không Xác Định
+                  </span>
+                }
               }
-              @else {
-              <mat-icon class="text-red-500">cancel</mat-icon>
-              }
-            </span>
             }
             @case ('updatedAt') {
             <span class="max-w-40 line-clamp-4">

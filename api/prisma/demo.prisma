@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model KhachHang {
+  id            Int       @id @default(autoincrement())
+  hoTen         String    @db.VarChar(255)
+  email         String    @unique @db.VarChar(255)
+  soDienThoai   String?   @db.VarChar(20)
+  diaChi        String?   @db.Text
+  ngayTao       DateTime  @default(now()) @db.Timestamptz
+  ngayCapNhat   DateTime  @updatedAt @db.Timestamptz
+  donHangs      DonHang[]
+  @@index([email])
+  @@map("khach_hang")
+}
+
+model SanPham {
+  id            Int       @id @default(autoincrement())
+  tenSanPham    String    @db.VarChar(255)
+  moTa          String?   @db.Text
+  gia           Decimal   @db.Decimal(15, 2)
+  soLuongTon    Int       @default(0)
+  ngayTao       DateTime  @default(now()) @db.Timestamptz
+  ngayCapNhat   DateTime  @updatedAt @db.Timestamptz
+  donHangSanPhams DonHangSanPham[]
+
+  @@index([tenSanPham])
+  @@map("san_pham")
+}
+
+model DonHang {
+  id            Int       @id @default(autoincrement())
+  khachHangId   Int
+  khachHang     KhachHang @relation(fields: [khachHangId], references: [id], onDelete: Restrict)
+  ngayDatHang   DateTime  @default(now()) @db.Timestamptz
+  tongTien      Decimal   @db.Decimal(15, 2)
+  trangThai     String    @db.VarChar(50)
+  donHangSanPhams DonHangSanPham[]
+
+  @@index([khachHangId])
+  @@index([ngayDatHang])
+  @@map("don_hang")
+}
+
+model DonHangSanPham {
+  donHangId     Int
+  sanPhamId     Int
+  donHang       DonHang   @relation(fields: [donHangId], references: [id], onDelete: Cascade)
+  sanPham       SanPham   @relation(fields: [sanPhamId], references: [id], onDelete: Restrict)
+  soLuong       Int
+  giaBan        Decimal   @db.Decimal(15, 2)
+
+  @@id([donHangId, sanPhamId])
+  @@index([donHangId])
+  @@index([sanPhamId])
+  @@map("don_hang_san_pham")
+}

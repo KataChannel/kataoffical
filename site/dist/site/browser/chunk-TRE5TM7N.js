@@ -1,1 +1,0 @@
-import{$b as c,Ab as t,_b as a,wc as o}from"./chunk-7U7GNSSJ.js";import"./chunk-EU2KAMEK.js";import"./chunk-47CWAPKR.js";var p=class e{static \u0275fac=function(n){return new(n||e)};static \u0275cmp=t({type:e,selectors:[["app-nhacungcap"]],decls:2,vars:0,template:function(n,s){n&1&&(a(0,"p"),o(1,"nhacungcap works!"),c())},encapsulation:2})};export{p as NhacungcapComponent};

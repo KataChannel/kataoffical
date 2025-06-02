@@ -12,23 +12,16 @@ export declare class NhomkhachhangService {
     findAll(): Promise<({
         khachhang: {
             id: string;
-            name: string | null;
             email: string | null;
             phone: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            namenn: string | null;
-            makh: string;
+            description: string | null;
+            title: string;
+            order: number | null;
+            codeId: string;
             diachi: string | null;
-            sdt: string | null;
-            mst: string | null;
-            gionhanhang: string | null;
-            quan: string | null;
-            address: string | null;
-            loaikh: string | null;
-            ghichu: string | null;
-            hiengia: boolean;
+            nhomkhachhangId: string | null;
         }[];
     } & {
         id: string;
@@ -40,23 +33,16 @@ export declare class NhomkhachhangService {
     findOne(id: string): Promise<{
         khachhang: {
             id: string;
-            name: string | null;
             email: string | null;
             phone: string | null;
-            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            namenn: string | null;
-            makh: string;
+            description: string | null;
+            title: string;
+            order: number | null;
+            codeId: string;
             diachi: string | null;
-            sdt: string | null;
-            mst: string | null;
-            gionhanhang: string | null;
-            quan: string | null;
-            address: string | null;
-            loaikh: string | null;
-            ghichu: string | null;
-            hiengia: boolean;
+            nhomkhachhangId: string | null;
         }[];
     } & {
         id: string;

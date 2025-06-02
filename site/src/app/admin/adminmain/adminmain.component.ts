@@ -16,7 +16,6 @@ import { MenuService } from '../menu/menu/menu.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TreemenuComponent } from '../../shared/common/treemenu/treemenu.component';
 import { UserService } from '../user/user.service';
-import moment from 'moment';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { StorageService } from '../../shared/utils/storage.service';
 import { SettingService } from '../setting/setting.service';

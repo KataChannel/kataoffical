@@ -34,6 +34,12 @@ const sanpham_module_1 = require("./sanpham/sanpham.module");
 const resource_module_1 = require("./resource/resource.module");
 const donhang_module_1 = require("./hoadon/donhang.module");
 const hoadonchitiet_module_1 = require("./hoadonchitiet/hoadonchitiet.module");
+const danhmuc_module_1 = require("./danhmuc/danhmuc.module");
+const donhang_module_2 = require("./donhang/donhang.module");
+const banggia_module_1 = require("./banggia/banggia.module");
+const nhacungcap_module_1 = require("./nhacungcap/nhacungcap.module");
+const phieukho_module_1 = require("./phieukho/phieukho.module");
+const dathang_module_1 = require("./dathang/dathang.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -64,7 +70,14 @@ exports.AppModule = AppModule = __decorate([
             donhang_module_1.HoadonModule,
             minio_module_1.MinioModule,
             sanpham_module_1.SanphamModule,
-            resource_module_1.ResourceModule
+            resource_module_1.ResourceModule,
+            danhmuc_module_1.DanhmucModule,
+            khachhang_module_1.KhachhangModule,
+            donhang_module_2.DonhangModule,
+            banggia_module_1.BanggiaModule,
+            nhacungcap_module_1.NhacungcapModule,
+            dathang_module_1.DathangModule,
+            phieukho_module_1.PhieukhoModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

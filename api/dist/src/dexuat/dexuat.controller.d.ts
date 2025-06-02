@@ -10,8 +10,8 @@ export declare class DexuatController {
             updatedAt: Date;
             title: string;
             order: number | null;
-            ghichu: string | null;
             thanhtien: number | null;
+            ghichu: string | null;
             dexuatId: string;
         }[];
     } & {
@@ -21,6 +21,7 @@ export declare class DexuatController {
         updatedAt: Date;
         title: string;
         order: number | null;
+        codeId: string;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -31,7 +32,6 @@ export declare class DexuatController {
         bophan: string | null;
         vitri: string | null;
         tamung: number | null;
-        codeId: string;
         createdById: string;
     }>;
     findby(param: any): Promise<{
@@ -42,8 +42,8 @@ export declare class DexuatController {
             updatedAt: Date;
             title: string;
             order: number | null;
-            ghichu: string | null;
             thanhtien: number | null;
+            ghichu: string | null;
             dexuatId: string;
         }[];
     } & {
@@ -53,6 +53,7 @@ export declare class DexuatController {
         updatedAt: Date;
         title: string;
         order: number | null;
+        codeId: string;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -63,7 +64,6 @@ export declare class DexuatController {
         bophan: string | null;
         vitri: string | null;
         tamung: number | null;
-        codeId: string;
         createdById: string;
     }>;
     findAll(): Promise<{
@@ -73,6 +73,7 @@ export declare class DexuatController {
         updatedAt: Date;
         title: string;
         order: number | null;
+        codeId: string;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -83,7 +84,6 @@ export declare class DexuatController {
         bophan: string | null;
         vitri: string | null;
         tamung: number | null;
-        codeId: string;
         createdById: string;
     }[]>;
     getLastUpdatedDexuat(): Promise<{
@@ -96,6 +96,7 @@ export declare class DexuatController {
         updatedAt: Date;
         title: string;
         order: number | null;
+        codeId: string;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -106,7 +107,6 @@ export declare class DexuatController {
         bophan: string | null;
         vitri: string | null;
         tamung: number | null;
-        codeId: string;
         createdById: string;
     }>;
     update(id: string, data: any): Promise<({
@@ -117,8 +117,8 @@ export declare class DexuatController {
             updatedAt: Date;
             title: string;
             order: number | null;
-            ghichu: string | null;
             thanhtien: number | null;
+            ghichu: string | null;
             dexuatId: string;
         }[];
     } & {
@@ -128,6 +128,7 @@ export declare class DexuatController {
         updatedAt: Date;
         title: string;
         order: number | null;
+        codeId: string;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -138,7 +139,6 @@ export declare class DexuatController {
         bophan: string | null;
         vitri: string | null;
         tamung: number | null;
-        codeId: string;
         createdById: string;
     }) | null>;
     remove(id: string): Promise<{
@@ -148,6 +148,7 @@ export declare class DexuatController {
         updatedAt: Date;
         title: string;
         order: number | null;
+        codeId: string;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -158,7 +159,6 @@ export declare class DexuatController {
         bophan: string | null;
         vitri: string | null;
         tamung: number | null;
-        codeId: string;
         createdById: string;
     }>;
     reorder(body: {

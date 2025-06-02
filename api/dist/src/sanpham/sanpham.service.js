@@ -39,15 +39,17 @@ let SanphamService = class SanphamService {
             });
             let nextNumber = 1;
             if (latest && latest.codeId) {
-                const match = latest.codeId.match(/I1(\d+)/);
+                const prefix = 'SP';
+                const match = latest.codeId.match(new RegExp(prefix + '(\\d+)'));
                 if (match) {
                     nextNumber = parseInt(match[1]) + 1;
                 }
             }
-            return `I1${nextNumber.toString().padStart(5, '0')}`;
+            const newPrefix = 'SP';
+            return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generateCodeId', error);
+            this._ErrorlogService.logError('generateSanphamCodeId', error);
             throw error;
         }
     }
@@ -58,17 +60,25 @@ let SanphamService = class SanphamService {
             });
             const newOrder = (maxOrder._max?.order || 0) + 1;
             const codeId = await this.generateCodeId();
+            const { title, danhmucId, bienthe, donvitinh, price, status, ...restData } = data;
             const created = await this.prisma.sanpham.create({
                 data: {
-                    ...data,
+                    title,
+                    bienthe,
+                    donvitinh,
+                    giagoc: price || 0,
+                    status: status || 'draft',
+                    ...restData,
                     order: newOrder,
-                    codeId: codeId
+                    codeId: codeId,
+                    ...(danhmucId && { danhmuc: { connect: { id: danhmucId } } }),
                 },
             });
             this._SocketGateway.sendUpdate('sanpham');
             return created;
         }
         catch (error) {
+            console.log('Error creating sanpham:', error);
             this._ErrorlogService.logError('createSanpham', error);
             throw error;
         }
@@ -113,6 +123,7 @@ let SanphamService = class SanphamService {
                     skip,
                     take: limit,
                     orderBy: { order: 'asc' },
+                    include: { danhmuc: true },
                 }),
                 this.prisma.sanpham.count(),
             ]);
@@ -142,15 +153,21 @@ let SanphamService = class SanphamService {
     }
     async update(id, data) {
         try {
-            let updated;
-            if (data.order) {
-                const { order, ...rest } = data;
-                await this.prisma.sanpham.update({ where: { id }, data: rest });
-                updated = await this.prisma.sanpham.update({ where: { id }, data: { order } });
-            }
-            else {
-                updated = await this.prisma.sanpham.update({ where: { id }, data });
-            }
+            const { title, danhmucId, bienthe, donvitinh, price, status, order, ...restData } = data;
+            const updated = await this.prisma.sanpham.update({
+                where: { id },
+                data: {
+                    title,
+                    bienthe,
+                    donvitinh,
+                    giagoc: price || 0,
+                    status: status || 'draft',
+                    order: order || undefined,
+                    ...restData,
+                    ...(danhmucId && { danhmuc: { connect: { id: danhmucId } } }),
+                    ...(data.danhmucId === null && { danhmuc: { disconnect: true } }),
+                },
+            });
             this._SocketGateway.sendUpdate('sanpham');
             return updated;
         }

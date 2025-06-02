@@ -2,26 +2,39 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 const routes: Routes = [
   {
-    path: '', 
+    path: '',
     loadComponent: () =>
-      import('./namno.component').then(
-        (c) => c.NamnoComponent
-      ),
+      import('./namno.component').then((c) => c.NamnoComponent),
     children: [
       {
-            path: 'donhang',
-            loadChildren: () =>
-              import('./donhang/donhang.route').then(m => m.DonhangRoutingModule),
+        path: '',
+        redirectTo: 'donhang',
+        pathMatch: 'full',
       },
       {
+        path: 'donhang',
+        loadChildren: () =>
+          import('./donhang/donhang.route').then((m) => m.DonhangRoutingModule),
+      },
+      {
+        path: 'sanpham',
+        loadChildren: () =>
+          import('./sanpham/sanpham.route').then((m) => m.SanphamRoutingModule),
+      },
+      {
+        path: 'danhmuc',
+        loadChildren: () =>
+          import('./danhmuc/danhmuc.route').then((m) => m.DanhmucRoutingModule),
+      },
+  {
         path: 'dathang',
-        loadComponent: () =>
-          import('./dathang/dathang.component').then((c) => c.DathangComponent),
-      },
+        loadChildren: () =>
+           import('./dathang/dathang.route').then(m => m.DathangRoutingModule),
+  },
       {
-        path: 'baogia',
-        loadComponent: () =>
-          import('./baogia/baogia.component').then((c) => c.BaogiaComponent),
+        path: 'banggia',
+        loadChildren: () =>
+          import('./banggia/banggia.route').then((m) => m.BanggiaRoutingModule),
       },
       {
         path: 'kho',
@@ -31,28 +44,29 @@ const routes: Routes = [
       {
         path: 'vanchuyen',
         loadComponent: () =>
-          import('./vanchuyen/vanchuyen.component').then((c) => c.VanchuyenComponent),
+          import('./vanchuyen/vanchuyen.component').then(
+            (c) => c.VanchuyenComponent
+          ),
       },
       {
         path: 'khachhang',
-        loadComponent: () =>
-          import('./khachhang/khachhang.component').then((c) => c.KhachhangComponent),
+        loadChildren: () =>
+          import('./khachhang/khachhang.route').then(
+            (m) => m.KhachhangRoutingModule
+          ),
       },
       {
         path: 'nhacungcap',
-        loadComponent: () =>
-          import('./nhacungcap/nhacungcap.component').then((c) => c.NhacungcapComponent),
+        loadChildren: () =>
+          import('./nhacungcap/nhacungcap.route').then(
+            (m) => m.NhacungcapRoutingModule
+          ),
       },
-      {
-        path: 'sanpham',
-        loadComponent: () =>
-          import('./sanpham/sanpham.component').then((c) => c.SanphamComponent),
-      },
-      {
-        path: 'danhmuc',
-        loadComponent: () =>
-          import('./danhmuc/danhmuc.component').then((c) => c.DanhmucComponent),
-      },
+        {
+        path: 'phieukho',
+        loadChildren: () =>
+           import('./phieukho/phieukho.route').then(m => m.PhieukhoRoutingModule),
+  },
     ],
   },
 ];

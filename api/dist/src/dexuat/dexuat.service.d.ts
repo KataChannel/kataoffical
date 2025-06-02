@@ -18,8 +18,8 @@ export declare class DexuatService {
             updatedAt: Date;
             title: string;
             order: number | null;
-            ghichu: string | null;
             thanhtien: number | null;
+            ghichu: string | null;
             dexuatId: string;
         }[];
     } & {
@@ -29,6 +29,7 @@ export declare class DexuatService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        codeId: string;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -39,7 +40,6 @@ export declare class DexuatService {
         bophan: string | null;
         vitri: string | null;
         tamung: number | null;
-        codeId: string;
         createdById: string;
     }>;
     reorderDexuats(dexuatIds: string[]): Promise<void>;
@@ -50,6 +50,7 @@ export declare class DexuatService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        codeId: string;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -60,7 +61,6 @@ export declare class DexuatService {
         bophan: string | null;
         vitri: string | null;
         tamung: number | null;
-        codeId: string;
         createdById: string;
     }[]>;
     findby(param: any): Promise<{
@@ -71,8 +71,8 @@ export declare class DexuatService {
             updatedAt: Date;
             title: string;
             order: number | null;
-            ghichu: string | null;
             thanhtien: number | null;
+            ghichu: string | null;
             dexuatId: string;
         }[];
     } & {
@@ -82,6 +82,7 @@ export declare class DexuatService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        codeId: string;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -92,7 +93,6 @@ export declare class DexuatService {
         bophan: string | null;
         vitri: string | null;
         tamung: number | null;
-        codeId: string;
         createdById: string;
     }>;
     findOne(id: string): Promise<{
@@ -102,6 +102,7 @@ export declare class DexuatService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        codeId: string;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -112,7 +113,6 @@ export declare class DexuatService {
         bophan: string | null;
         vitri: string | null;
         tamung: number | null;
-        codeId: string;
         createdById: string;
     }>;
     update(id: string, data: any): Promise<({
@@ -123,8 +123,8 @@ export declare class DexuatService {
             updatedAt: Date;
             title: string;
             order: number | null;
-            ghichu: string | null;
             thanhtien: number | null;
+            ghichu: string | null;
             dexuatId: string;
         }[];
     } & {
@@ -134,6 +134,7 @@ export declare class DexuatService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        codeId: string;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -144,7 +145,6 @@ export declare class DexuatService {
         bophan: string | null;
         vitri: string | null;
         tamung: number | null;
-        codeId: string;
         createdById: string;
     }) | null>;
     remove(id: string): Promise<{
@@ -154,6 +154,7 @@ export declare class DexuatService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        codeId: string;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -164,7 +165,6 @@ export declare class DexuatService {
         bophan: string | null;
         vitri: string | null;
         tamung: number | null;
-        codeId: string;
         createdById: string;
     }>;
 }

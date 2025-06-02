@@ -11,14 +11,17 @@ const common_1 = require("@nestjs/common");
 const khachhang_service_1 = require("./khachhang.service");
 const khachhang_controller_1 = require("./khachhang.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
+const socket_gateway_1 = require("../socket.gateway");
+const errorlog_module_1 = require("../errorlog/errorlog.module");
+const auth_module_1 = require("../auth/auth.module");
 let KhachhangModule = class KhachhangModule {
 };
 exports.KhachhangModule = KhachhangModule;
 exports.KhachhangModule = KhachhangModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule, auth_module_1.AuthModule],
         controllers: [khachhang_controller_1.KhachhangController],
-        providers: [khachhang_service_1.KhachhangService],
+        providers: [khachhang_service_1.KhachhangService, socket_gateway_1.SocketGateway],
         exports: [khachhang_service_1.KhachhangService]
     })
 ], KhachhangModule);

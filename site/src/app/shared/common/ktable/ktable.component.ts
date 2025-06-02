@@ -61,11 +61,12 @@ export class KtableComponent {
     if (changes['ColumnName'] && changes['ColumnName'].currentValue) {
       this.ColumnName = { ...this.ColumnName };
     }
+    console.log(this.ListItem);
+    
     this.totalItems = this.ListItem.length;
     this.pageSize = this.pageSize || 10; // Default page size
     this.currentPage = 1; // Reset to first page when data changes
     this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-    console.log(this.pageSize);
     this.calculateTotalPages();
     this.updateDataSource();   
   }

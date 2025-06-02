@@ -12,53 +12,188 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.KhachhangService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const errorlog_service_1 = require("../errorlog/errorlog.service");
+const socket_gateway_1 = require("../socket.gateway");
 let KhachhangService = class KhachhangService {
-    constructor(prisma) {
+    constructor(prisma, _SocketGateway, _ErrorlogService) {
         this.prisma = prisma;
+        this._SocketGateway = _SocketGateway;
+        this._ErrorlogService = _ErrorlogService;
+    }
+    async getLastUpdatedKhachhang() {
+        try {
+            const lastUpdated = await this.prisma.khachhang.aggregate({
+                _max: { updatedAt: true },
+            });
+            return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
+        }
+        catch (error) {
+            this._ErrorlogService.logError('getLastUpdatedKhachhang', error);
+            throw error;
+        }
+    }
+    async generateCodeId() {
+        try {
+            const latest = await this.prisma.khachhang.findFirst({
+                orderBy: { codeId: 'desc' },
+            });
+            let nextNumber = 1;
+            if (latest && latest.codeId) {
+                const prefix = 'KH';
+                const match = latest.codeId.match(new RegExp(prefix + '(\\d+)'));
+                if (match) {
+                    nextNumber = parseInt(match[1]) + 1;
+                }
+            }
+            const newPrefix = 'KH';
+            return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
+        }
+        catch (error) {
+            this._ErrorlogService.logError('generateKhachhangCodeId', error);
+            throw error;
+        }
     }
     async create(data) {
-        const prefix = data.loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
-        const lastCustomer = await this.prisma.khachhang.findFirst({
-            where: { makh: { startsWith: prefix } },
-            orderBy: { makh: 'desc' },
-            select: { makh: true },
-        });
-        let nextNumber = 1;
-        if (lastCustomer) {
-            const lastNumber = parseInt(lastCustomer.makh.slice(-5), 10);
-            nextNumber = lastNumber + 1;
+        try {
+            const maxOrder = await this.prisma.khachhang.aggregate({
+                _max: { order: true },
+            });
+            const newOrder = (maxOrder._max?.order || 0) + 1;
+            const codeId = await this.generateCodeId();
+            const created = await this.prisma.khachhang.create({
+                data: {
+                    ...data,
+                    order: newOrder,
+                    codeId: codeId
+                },
+            });
+            this._SocketGateway.sendUpdate('khachhang');
+            return created;
         }
-        const newMakh = `${prefix}${String(nextNumber).padStart(5, '0')}`;
-        return this.prisma.khachhang.create({
-            data: {
-                makh: newMakh,
-                loaikh: data.loaikh,
-                name: data.name,
-                diachi: data.diachi,
-                sdt: data.sdt,
-                email: data.email,
-            },
-        });
+        catch (error) {
+            this._ErrorlogService.logError('createKhachhang', error);
+            throw error;
+        }
     }
-    async findAll() {
-        return this.prisma.khachhang.findMany();
+    async findBy(param) {
+        try {
+            const { isOne, page = 1, limit = 20, ...where } = param;
+            if (isOne) {
+                const result = await this.prisma.khachhang.findFirst({
+                    where,
+                    orderBy: { order: 'asc' },
+                });
+                return result;
+            }
+            const skip = (page - 1) * limit;
+            const [data, total] = await Promise.all([
+                this.prisma.khachhang.findMany({
+                    where,
+                    skip,
+                    take: limit,
+                    orderBy: { order: 'asc' },
+                }),
+                this.prisma.khachhang.count({ where }),
+            ]);
+            return {
+                data,
+                total,
+                page,
+                pageCount: Math.ceil(total / limit)
+            };
+        }
+        catch (error) {
+            this._ErrorlogService.logError('findByKhachhang', error);
+            throw error;
+        }
+    }
+    async findAll(page = 1, limit = 20) {
+        try {
+            const skip = (page - 1) * limit;
+            const [data, total] = await Promise.all([
+                this.prisma.khachhang.findMany({
+                    skip,
+                    take: limit,
+                    orderBy: { order: 'asc' },
+                }),
+                this.prisma.khachhang.count(),
+            ]);
+            return {
+                data,
+                total,
+                page,
+                pageCount: Math.ceil(total / limit)
+            };
+        }
+        catch (error) {
+            this._ErrorlogService.logError('findAllKhachhang', error);
+            throw error;
+        }
     }
     async findOne(id) {
-        const khachhang = await this.prisma.khachhang.findUnique({ where: { id } });
-        if (!khachhang)
-            throw new common_1.NotFoundException('Khachhang not found');
-        return khachhang;
+        try {
+            const item = await this.prisma.khachhang.findUnique({ where: { id } });
+            if (!item)
+                throw new common_1.NotFoundException('Khachhang not found');
+            return item;
+        }
+        catch (error) {
+            this._ErrorlogService.logError('findOneKhachhang', error);
+            throw error;
+        }
     }
     async update(id, data) {
-        return this.prisma.khachhang.update({ where: { id }, data });
+        try {
+            let updated;
+            if (data.order) {
+                const { order, ...rest } = data;
+                await this.prisma.khachhang.update({ where: { id }, data: rest });
+                updated = await this.prisma.khachhang.update({ where: { id }, data: { order } });
+            }
+            else {
+                updated = await this.prisma.khachhang.update({ where: { id }, data });
+            }
+            this._SocketGateway.sendUpdate('khachhang');
+            return updated;
+        }
+        catch (error) {
+            this._ErrorlogService.logError('updateKhachhang', error);
+            throw error;
+        }
     }
     async remove(id) {
-        return this.prisma.khachhang.delete({ where: { id } });
+        try {
+            const deleted = await this.prisma.khachhang.delete({ where: { id } });
+            this._SocketGateway.sendUpdate('khachhang');
+            return deleted;
+        }
+        catch (error) {
+            this._ErrorlogService.logError('removeKhachhang', error);
+            throw error;
+        }
+    }
+    async reorderKhachhangs(khachhangIds) {
+        try {
+            for (let i = 0; i < khachhangIds.length; i++) {
+                await this.prisma.khachhang.update({
+                    where: { id: khachhangIds[i] },
+                    data: { order: i + 1 }
+                });
+            }
+            this._SocketGateway.sendUpdate('khachhang');
+            return { status: 'success' };
+        }
+        catch (error) {
+            this._ErrorlogService.logError('reorderKhachhangs', error);
+            throw error;
+        }
     }
 };
 exports.KhachhangService = KhachhangService;
 exports.KhachhangService = KhachhangService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        socket_gateway_1.SocketGateway,
+        errorlog_service_1.ErrorlogService])
 ], KhachhangService);
 //# sourceMappingURL=khachhang.service.js.map

@@ -1,6 +1,6 @@
 import { PrismaService } from 'prisma/prisma.service';
 import { ErrorlogService } from 'src/errorlog/errorlog.service';
-import { SocketGateway } from '../socket.gateway';
+import { SocketGateway } from 'src/socket.gateway';
 export declare class SanphamService {
     private readonly prisma;
     private _SocketGateway;
@@ -19,8 +19,12 @@ export declare class SanphamService {
         order: number | null;
         codeId: string;
         status: string;
-        price: number;
+        subtitle: string | null;
+        donvitinh: string | null;
+        bienthe: string | null;
+        giagoc: number;
         inStock: boolean;
+        danhmucId: string | null;
     }>;
     findBy(param: any): Promise<{
         id: string;
@@ -31,8 +35,12 @@ export declare class SanphamService {
         order: number | null;
         codeId: string;
         status: string;
-        price: number;
+        subtitle: string | null;
+        donvitinh: string | null;
+        bienthe: string | null;
+        giagoc: number;
         inStock: boolean;
+        danhmucId: string | null;
     } | {
         data: {
             id: string;
@@ -43,15 +51,29 @@ export declare class SanphamService {
             order: number | null;
             codeId: string;
             status: string;
-            price: number;
+            subtitle: string | null;
+            donvitinh: string | null;
+            bienthe: string | null;
+            giagoc: number;
             inStock: boolean;
+            danhmucId: string | null;
         }[];
         total: number;
         page: any;
         pageCount: number;
     } | null>;
     findAll(page?: number, limit?: number): Promise<{
-        data: {
+        data: ({
+            danhmuc: {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                description: string | null;
+                title: string;
+                order: number | null;
+                codeId: string;
+            } | null;
+        } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -60,9 +82,13 @@ export declare class SanphamService {
             order: number | null;
             codeId: string;
             status: string;
-            price: number;
+            subtitle: string | null;
+            donvitinh: string | null;
+            bienthe: string | null;
+            giagoc: number;
             inStock: boolean;
-        }[];
+            danhmucId: string | null;
+        })[];
         total: number;
         page: number;
         pageCount: number;
@@ -76,10 +102,29 @@ export declare class SanphamService {
         order: number | null;
         codeId: string;
         status: string;
-        price: number;
+        subtitle: string | null;
+        donvitinh: string | null;
+        bienthe: string | null;
+        giagoc: number;
         inStock: boolean;
+        danhmucId: string | null;
     }>;
-    update(id: string, data: any): Promise<any>;
+    update(id: string, data: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        title: string;
+        order: number | null;
+        codeId: string;
+        status: string;
+        subtitle: string | null;
+        donvitinh: string | null;
+        bienthe: string | null;
+        giagoc: number;
+        inStock: boolean;
+        danhmucId: string | null;
+    }>;
     remove(id: string): Promise<{
         id: string;
         createdAt: Date;
@@ -89,8 +134,12 @@ export declare class SanphamService {
         order: number | null;
         codeId: string;
         status: string;
-        price: number;
+        subtitle: string | null;
+        donvitinh: string | null;
+        bienthe: string | null;
+        giagoc: number;
         inStock: boolean;
+        danhmucId: string | null;
     }>;
     reorderSanphams(sanphamIds: string[]): Promise<{
         status: string;

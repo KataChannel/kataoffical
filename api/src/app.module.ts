@@ -25,6 +25,12 @@ import { SanphamModule } from './sanpham/sanpham.module';
 import { ResourceModule } from './resource/resource.module';
 import { HoadonModule } from './hoadon/donhang.module';
 import { HoadonchitietModule } from './hoadonchitiet/hoadonchitiet.module';
+import { DanhmucModule } from './danhmuc/danhmuc.module';
+import { DonhangModule } from './donhang/donhang.module';
+import { BanggiaModule } from './banggia/banggia.module';
+import { NhacungcapModule } from './nhacungcap/nhacungcap.module';
+import { PhieukhoModule } from './phieukho/phieukho.module';
+import { DathangModule } from './dathang/dathang.module';
 
 @Module({
   imports: [
@@ -49,7 +55,14 @@ import { HoadonchitietModule } from './hoadonchitiet/hoadonchitiet.module';
     HoadonModule,
     MinioModule,
     SanphamModule,
-    ResourceModule
+    ResourceModule,
+    DanhmucModule,
+    KhachhangModule,
+    DonhangModule,
+    BanggiaModule,
+    NhacungcapModule, 
+    DathangModule,
+    PhieukhoModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

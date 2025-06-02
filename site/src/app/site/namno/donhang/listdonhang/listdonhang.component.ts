@@ -53,13 +53,11 @@ export class ListDonhangComponent implements OnInit {
   ColumnName: any = {
     stt: '#',
     codeId: 'Code',
-    name: 'Tiêu Đề',
-    group: 'Nhóm',
-    description: 'Mô Tả',
+    khachhang: 'Khách Hàng',
+    total: 'Tổng Tiền',
+    donhangsanpham: 'Sản Phẩm',
     status: 'Trạng Thái',
-    order: 'Thứ Tự',
-    createdAt: 'Ngày Tạo',
-    updatedAt: 'Ngày Cập Nhật'
+    createdAt: 'Ngày Tạo'
   };
   FilterColumns: any[] = JSON.parse(localStorage.getItem('DonhangColFilter') || '[]');
   Columns: any[] = [];

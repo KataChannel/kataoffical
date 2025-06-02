@@ -125,33 +125,11 @@ model Menu {
   updatedAt   DateTime     @updatedAt
 }
 
-model Khachhang {
-  id            String          @id @default(uuid())
-  name          String?
-  namenn        String?
-  makh          String          @unique
-  diachi        String?
-  sdt           String?
-  mst           String?
-  gionhanhang   String?
-  quan          String?
-  email         String?
-  phone         String?
-  address       String?
-  loaikh        String?
-  ghichu        String?
-  hiengia       Boolean         @default(false)
-  isActive      Boolean         @default(false)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  nhomkhachhang Nhomkhachhang[] @relation("KhachhangNhom")
-}
-
 model Nhomkhachhang {
   id          String      @id @default(uuid())
   name        String      @unique
   description String?
-  khachhang   Khachhang[] @relation("KhachhangNhom")
+  khachhang   khachhang[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
@@ -453,9 +431,9 @@ model Hoadon {
 
 model HoadonChitiet {
   id        String   @id @default(uuid())
-  codeId    String? 
+  codeId    String?
   title     String?
-  title2     String?
+  title2    String?
   idhdon    String
   idhoadon  String
   hoadon    Hoadon   @relation(fields: [idhoadon], references: [id], onDelete: Cascade)
@@ -476,12 +454,14 @@ model HoadonChitiet {
   sxep      Int?
   dvtte     String?
   tgia      Int?
-  order     Int? @default(1)
+  order     Int?     @default(1)
   isproduct Boolean? @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+
   @@index([idhdon])
 }
+
 model Mathang {
   id        String   @id @default(uuid())
   codeId    String?  @unique // Mã đề xuất duy nhất
@@ -497,62 +477,231 @@ model Mathang {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 model UserguidBlock {
   id        String        @id @default(uuid())
   codeId    String?       @unique // Mã đề xuất duy nhất
-  type      String        
-  text      String?       
-  listItems String?       
-  imageUrl  String?       
-  imageAlt  String?       
-  videoUrl  String?       
-  videoType String?       
-  caption   String?     
+  type      String
+  text      String?
+  listItems String?
+  imageUrl  String?
+  imageAlt  String?
+  videoUrl  String?
+  videoType String?
+  caption   String?
   stepId    String?
-  step      UserguidStep?  @relation(fields: [stepId], references: [id], onDelete: Cascade)
+  step      UserguidStep? @relation(fields: [stepId], references: [id], onDelete: Cascade)
   order     Int?          @default(1)
   isActive  Boolean       @default(true)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 }
-  
+
 model UserguidStep {
-  id            String   @id @default(uuid())
-  codeId        String?       @unique // Mã đề xuất duy nhất
-  time          String?         
-  title         String?        
-  description   String? 
-  order         Int?          @default(1)       
+  id             String          @id @default(uuid())
+  codeId         String?         @unique // Mã đề xuất duy nhất
+  time           String?
+  title          String?
+  description    String?
+  order          Int?            @default(1)
   UserguidBlocks UserguidBlock[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
   @@index([id])
 }
 
 model Resource {
-  id        String   @id @default(uuid())
-  codeId    String?   @unique // Mã đề xuất duy nhất
-  title     String?
-  url       String?
+  id          String   @id @default(uuid())
+  codeId      String?  @unique // Mã đề xuất duy nhất
+  title       String?
+  url         String?
   description String?
-  fileType  String?
-  metaData  Json?
-  category  String?
-  group     String?
+  fileType    String?
+  metaData    Json?
+  category    String?
+  group       String?
   order       Int?     @default(1)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
+model danhmuc {
+  id          String    @id @default(uuid())
+  codeId      String    @unique
+  title       String
+  description String?
+  order       Int?      @default(1)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  sanphams    sanpham[] // Each category can have multiple products
+}
 
 model sanpham {
+  id             String           @id @default(uuid())
+  codeId         String           @unique
+  title          String
+  subtitle       String? // Tiêu đề phụ, có thể dùng để mô tả ngắn gọn về sản phẩm
+  donvitinh      String?
+  description    String?
+  bienthe        String? // Biến thể của sản phẩm, ví dụ: "Màu sắc", "Kích thước"
+  giagoc         Float            @default(0)
+  inStock        Boolean          @default(true)
+  status         String           @default("draft") // "draft", "published", "archived"
+  order          Int?             @default(1)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  danhmucId      String?         // Foreign key referencing danhmuc
+  danhmuc        danhmuc?         @relation(fields: [danhmucId], references: [id])
+  donhangsanpham donhangsanpham[]
+  dathangsanpham dathangsanpham[]
+  banggia        BangGiaSanPham[] @relation("SanphamBangGia")
+}
+
+model khachhang {
+  id              String             @id @default(uuid())
+  codeId          String             @unique
+  title           String
+  description     String?
+  email           String?            @unique
+  phone           String?            @unique
+  diachi          String?
+  donhangs        donhang[]          @relation("KhachhangDonhang")
+  order           Int?               @default(1)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  Nhomkhachhang   Nhomkhachhang?     @relation(fields: [nhomkhachhangId], references: [id])
+  nhomkhachhangId String?
+  banggia         BangGiaKhachHang[] @relation("KhachhangBangGia")
+}
+
+model banggia {
+  id        String             @id @default(uuid())
+  codeId    String             @unique // Unique code for the price list
+  title     String? // Title of the price list
+  sanpham   BangGiaSanPham[]   @relation("BangGiaSanPham")
+  khachhang BangGiaKhachHang[] @relation("BangGiaKhachHang")
+  batdau    DateTime?
+  ketthuc   DateTime?
+  status    String             @default("baogia") // "baogia" or "dangban"
+  order     Int?               @default(1)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+}
+
+model BangGiaSanPham {
+  id        String   @id @default(uuid())
+  banggiaId String
+  sanphamId String
+  banggia   banggia  @relation("BangGiaSanPham", fields: [banggiaId], references: [id], onDelete: Cascade)
+  sanpham   sanpham  @relation("SanphamBangGia", fields: [sanphamId], references: [id], onDelete: Cascade)
+  giaban    Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([banggiaId, sanphamId])
+}
+
+model BangGiaKhachHang {
+  id          String    @id @default(uuid())
+  banggiaId   String
+  khachhangId String
+  banggia     banggia   @relation("BangGiaKhachHang", fields: [banggiaId], references: [id], onDelete: Cascade)
+  khachhang   khachhang @relation("KhachhangBangGia", fields: [khachhangId], references: [id], onDelete: Cascade)
+  status      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  @@unique([banggiaId, khachhangId])
+}
+
+model donhang {
+  id             String           @id @default(uuid())
+  codeId         String           @unique
+  khachhangId    String
+  khachhang      khachhang        @relation("KhachhangDonhang", fields: [khachhangId], references: [id])
+  total          Float            @default(0)
+  status         String           @default("pending") // pending, completed, cancelled, etc.
+  order          Int?             @default(1)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  donhangsanpham donhangsanpham[]
+}
+
+model donhangsanpham {
+  id        String   @id @default(uuid())
+  donhangId String
+  sanphamId String
+  sldat     Float    @default(0)
+  slgiao    Float    @default(0)
+  slnhan    Float    @default(0)
+  slhuy     Float    @default(0)
+  giaban    Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  donhang   donhang  @relation(fields: [donhangId], references: [id], onDelete: Cascade)
+  sanpham   sanpham  @relation(fields: [sanphamId], references: [id], onDelete: Cascade)
+
+  @@unique([donhangId, sanphamId])
+}
+
+model dathang {
+  id             String   @id @default(uuid())
+  codeId         String   @unique
+  nhacungcapId   String
+  nhacungcap     nhacungcap       @relation("NhacungcapDathang", fields: [nhacungcapId], references: [id])
+  total          Float            @default(0)
+  status         String           @default("pending") // pending, completed, cancelled, etc.
+  order          Int?             @default(1)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  dathangsanpham dathangsanpham[]
+}
+
+model dathangsanpham {
+  id        String   @id @default(uuid())
+  dathangId String
+  sanphamId String
+  sldat     Float    @default(0)
+  slgiao    Float    @default(0)
+  slnhan    Float    @default(0)
+  slhuy     Float    @default(0)
+  giaban    Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  dathang   dathang  @relation(fields: [dathangId], references: [id], onDelete: Cascade)
+  sanpham   sanpham  @relation(fields: [sanphamId], references: [id], onDelete: Cascade)
+  @@unique([dathangId, sanphamId])
+}
+
+model kho {
   id          String   @id @default(uuid())
   codeId      String   @unique
   title       String
   description String?
-  price       Float    @default(0)
-  inStock     Boolean  @default(true)
-  status      String   @default("draft") // "draft", "published", "archived"
+  order       Int?     @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model nhacungcap {
+  id              String   @id @default(uuid())
+  codeId          String   @unique
+  title           String?
+  description     String?
+  email           String?            @unique
+  phone           String?            @unique
+  diachi          String?
+  dathangs        dathang[]          @relation("NhacungcapDathang")
+  order           Int?               @default(1)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
+
+model phieukho {
+  id          String   @id @default(uuid())
+  codeId      String   @unique
+  title       String
+  description String?
   order       Int?     @default(1)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

@@ -37,12 +37,20 @@ let SanphamController = class SanphamController {
             throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async findAll() {
+    async findAll(page = '1', limit = '10') {
         try {
-            return await this.sanphamService.findAll();
+            const pageNum = parseInt(page, 10);
+            const limitNum = parseInt(limit, 10);
+            if (isNaN(pageNum) || pageNum < 1) {
+                throw new common_1.HttpException('Page must be a positive integer', common_1.HttpStatus.BAD_REQUEST);
+            }
+            if (isNaN(limitNum) || limitNum < 1) {
+                throw new common_1.HttpException('Limit must be a positive integer', common_1.HttpStatus.BAD_REQUEST);
+            }
+            return await this.sanphamService.findAll(pageNum, limitNum);
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Find all failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException(error.message || 'Failed to fetch sanphams', error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async getLastUpdatedSanpham() {
@@ -108,10 +116,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SanphamController.prototype, "findby", null);
 __decorate([
-    (0, swagger_1.ApiOperation)({ summary: 'Get all sanphams' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all sanphams with pagination' }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Number of items per page (default: 10)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of sanphams with pagination info' }),
+    (0, swagger_1.ApiResponse)({ status: 500, description: 'Internal server error' }),
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], SanphamController.prototype, "findAll", null);
 __decorate([

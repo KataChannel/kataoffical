@@ -1,1 +1,0 @@
-import{$b as n,Ab as t,_b as a,wc as i}from"./chunk-7U7GNSSJ.js";import"./chunk-EU2KAMEK.js";import"./chunk-47CWAPKR.js";var p=class o{static \u0275fac=function(e){return new(e||o)};static \u0275cmp=t({type:o,selectors:[["app-baogia"]],decls:2,vars:0,template:function(e,m){e&1&&(a(0,"p"),i(1,"baogia works!"),n())},encapsulation:2})};export{p as BaogiaComponent};
