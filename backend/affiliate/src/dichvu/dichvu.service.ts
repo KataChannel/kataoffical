@@ -80,7 +80,7 @@ export class DichvuService {
         if (!existing) {
           const data = {
             codeId: item.source_id, // using source_id as codeId
-            tabCode: item.tabCode,
+            TabCode: item.TabCode,
             TabCardCode: item.TabCardCode,
             TabMedicineCode: item.TabMedicineCode,
             serviceCode: item.serviceCode,
@@ -90,19 +90,19 @@ export class DichvuService {
           };
           await this.create(data);
         }
-        else {
-          const data = {
-            codeId: item.source_id,
-            tabCode: item.tabCode,
-            TabCardCode: item.TabCardCode,
-            TabMedicineCode: item.TabMedicineCode,
-            serviceCode: item.serviceCode,
-            serviceName: item.serviceName,
-            description: item.description,
-            price: item.priceRoot,
-          };
-          await this.update(existing.id, data);
-        }
+        // else {
+        //   const data = {
+        //     codeId: item.source_id,
+        //     TabCode: item.TabCode,
+        //     TabCardCode: item.TabCardCode,
+        //     TabMedicineCode: item.TabMedicineCode,
+        //     serviceCode: item.serviceCode,
+        //     serviceName: item.serviceName,
+        //     description: item.description,
+        //     price: item.priceRoot,
+        //   };
+        //   await this.update(existing.id, data);
+        // }
       } catch (error) {
         throw error;
       }

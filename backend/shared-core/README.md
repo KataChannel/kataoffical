@@ -7,9 +7,12 @@ npx bun add @nestjs/config @nestjs/jwt @nestjs/passport passport passport-jwt bc
 npx bun add @prisma/client
 npx bun add -d prisma
 npx prisma migrate dev --name hethong3.1
-npx prisma migrate dev --name vttech3.1
+npx prisma migrate dev --name vttech3.9
 npx prisma generate --schema=prisma/schema.prisma
 npx prisma generate --schema=prisma/vttech.prisma
+npx prisma studio --schema=./prisma/schema.prisma
+npx prisma studio --schema=./prisma/vttech.prisma
+
 npx prisma db push
 npx bun prisma generate 
 npx ts-node prisma/scriptdb/exportData.ts

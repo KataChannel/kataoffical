@@ -90,7 +90,7 @@ let DichvuService = class DichvuService {
                 if (!existing) {
                     const data = {
                         codeId: item.source_id,
-                        tabCode: item.tabCode,
+                        TabCode: item.TabCode,
                         TabCardCode: item.TabCardCode,
                         TabMedicineCode: item.TabMedicineCode,
                         serviceCode: item.serviceCode,
@@ -99,19 +99,6 @@ let DichvuService = class DichvuService {
                         price: item.priceRoot,
                     };
                     await this.create(data);
-                }
-                else {
-                    const data = {
-                        codeId: item.source_id,
-                        tabCode: item.tabCode,
-                        TabCardCode: item.TabCardCode,
-                        TabMedicineCode: item.TabMedicineCode,
-                        serviceCode: item.serviceCode,
-                        serviceName: item.serviceName,
-                        description: item.description,
-                        price: item.priceRoot,
-                    };
-                    await this.update(existing.id, data);
                 }
             }
             catch (error) {

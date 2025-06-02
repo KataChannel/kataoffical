@@ -1,0 +1,5674 @@
+[
+  {
+    "id": "817021d0-c03c-4094-942a-9eb53f1304a9",
+    "timestamp": "2025-04-30T07:37:55.381Z",
+    "message": "Failed to create getAllQuanlyctv",
+    "details": {
+      "url": "http://localhost:4405/admin/quanlyctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-04-30T07:37:55.439Z"
+  },
+  {
+    "id": "ac9b3e2e-76c7-4c27-bd73-2691d85256ee",
+    "timestamp": "2025-05-02T04:34:20.270Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/admin/landingpage/new",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T04:34:20.274Z"
+  },
+  {
+    "id": "f0586da4-1d65-4b8d-8e3f-b5b9891e81d5",
+    "timestamp": "2025-05-02T04:35:00.483Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/admin/landingpage/new",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T04:35:00.485Z"
+  },
+  {
+    "id": "8ede03a3-2c84-4afc-b98f-4907a3f93358",
+    "timestamp": "2025-05-02T04:40:13.467Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/admin/landingpage/new",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T04:40:13.468Z"
+  },
+  {
+    "id": "106ac8d7-2d54-47a3-8df8-f7b7d2d8904f",
+    "timestamp": "2025-05-02T04:41:38.932Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/admin/landingpage/new",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T04:41:38.933Z"
+  },
+  {
+    "id": "b924ecaf-97e2-4df3-96c4-9a306f767214",
+    "timestamp": "2025-05-02T04:43:26.427Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/admin/landingpage/new",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T04:43:26.429Z"
+  },
+  {
+    "id": "622de14a-fc61-480e-938d-955e91de5ef9",
+    "timestamp": "2025-05-02T06:34:08.344Z",
+    "message": "Failed to create getAllLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T06:34:08.347Z"
+  },
+  {
+    "id": "cc0c83f4-f058-4b4c-ba18-7990e23d83ac",
+    "timestamp": "2025-05-02T06:55:45.718Z",
+    "message": "Failed to create getAllLandingpage",
+    "details": {
+      "url": "http://localhost:4405/admin/landingpage",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T06:55:45.720Z"
+  },
+  {
+    "id": "627b5a9a-70c1-4b2e-a5f3-7d1f0c4ac106",
+    "timestamp": "2025-05-02T09:45:33.539Z",
+    "message": "createTrackingevent",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-02T09:45:33.541Z"
+  },
+  {
+    "id": "5c6345e4-3043-4f01-b92a-1cb3c4dd058d",
+    "timestamp": "2025-05-02T09:45:33.565Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T09:45:33.567Z"
+  },
+  {
+    "id": "8bb99227-78c7-414f-9b3c-8a29cd451bbc",
+    "timestamp": "2025-05-02T09:45:34.226Z",
+    "message": "createTrackingevent",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-02T09:45:34.228Z"
+  },
+  {
+    "id": "0214b658-c7b2-4798-abdf-4a5dff5f7916",
+    "timestamp": "2025-05-02T09:45:34.246Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T09:45:34.248Z"
+  },
+  {
+    "id": "b8137bca-c676-49f0-adef-c1bb0542bd50",
+    "timestamp": "2025-05-02T09:47:45.830Z",
+    "message": "createTrackingevent",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-02T09:47:45.837Z"
+  },
+  {
+    "id": "c253b455-a638-4157-9e96-74d748fa23fe",
+    "timestamp": "2025-05-02T09:47:45.913Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T09:47:45.922Z"
+  },
+  {
+    "id": "d9147ed5-fa87-49fd-815c-97d5907e37ec",
+    "timestamp": "2025-05-02T09:48:03.908Z",
+    "message": "createTrackingevent",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-02T09:48:03.915Z"
+  },
+  {
+    "id": "3be08fb6-4762-4dc4-b621-399fe02ea8f2",
+    "timestamp": "2025-05-02T09:48:03.932Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T09:48:03.939Z"
+  },
+  {
+    "id": "19f673d3-a86f-43bb-8ddd-199e9e57edcb",
+    "timestamp": "2025-05-02T09:48:32.267Z",
+    "message": "createTrackingevent",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-02T09:48:32.273Z"
+  },
+  {
+    "id": "403a3c24-df4a-4b60-a1ff-9c8b1d7875a4",
+    "timestamp": "2025-05-02T09:48:32.280Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T09:48:32.287Z"
+  },
+  {
+    "id": "ffb2c06f-6516-4571-9558-52a0e3540799",
+    "timestamp": "2025-05-02T09:48:52.627Z",
+    "message": "createTrackingevent",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-02T09:48:52.628Z"
+  },
+  {
+    "id": "7ba0031f-5a43-410d-9c77-6481916a1d70",
+    "timestamp": "2025-05-02T09:48:52.649Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T09:48:52.650Z"
+  },
+  {
+    "id": "98f04868-913c-41eb-ad25-f11a0191f2e2",
+    "timestamp": "2025-05-02T09:48:59.740Z",
+    "message": "createTrackingevent",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-02T09:48:59.743Z"
+  },
+  {
+    "id": "e948aedd-5972-4290-9312-8a4c16bf267a",
+    "timestamp": "2025-05-02T09:48:59.768Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T09:48:59.769Z"
+  },
+  {
+    "id": "e6360772-3c31-443d-8f13-e88b1294ebf2",
+    "timestamp": "2025-05-02T09:50:43.747Z",
+    "message": "createTrackingevent",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-02T09:50:43.748Z"
+  },
+  {
+    "id": "4630f370-ba2c-4547-b879-bb2fcf77d615",
+    "timestamp": "2025-05-02T09:50:43.776Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T09:50:43.778Z"
+  },
+  {
+    "id": "1afd31c7-fcfc-4f0f-abcc-7a0a8c0eb67e",
+    "timestamp": "2025-05-02T09:51:08.543Z",
+    "message": "createTrackingevent",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-02T09:51:08.544Z"
+  },
+  {
+    "id": "71e94529-c815-4d8c-8603-1c77a2e21dc8",
+    "timestamp": "2025-05-02T09:51:08.566Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-02T09:51:08.567Z"
+  },
+  {
+    "id": "459a5912-408b-4380-a80e-cdb9ceba110c",
+    "timestamp": "2025-05-03T01:31:17.458Z",
+    "message": "createTrackingevent",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-03T01:31:17.462Z"
+  },
+  {
+    "id": "8a9f86be-a2e8-4e13-aca9-6dc44f011dd9",
+    "timestamp": "2025-05-03T01:31:17.511Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-03T01:31:17.514Z"
+  },
+  {
+    "id": "26b4a356-6598-4fa8-bd28-c0465d305494",
+    "timestamp": "2025-05-03T01:31:21.568Z",
+    "message": "createTrackingevent",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-03T01:31:21.570Z"
+  },
+  {
+    "id": "45ded8a1-af65-4a4d-a857-f87cf2b4f33e",
+    "timestamp": "2025-05-03T01:31:21.598Z",
+    "message": "Failed to CreateLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-03T01:31:21.601Z"
+  },
+  {
+    "id": "e9046b6d-016e-4590-ba04-dfbc6df87e73",
+    "timestamp": "2025-05-03T02:15:33.967Z",
+    "message": "Failed to create getAllQuanlyctv",
+    "details": {
+      "url": "http://localhost:4405/admin/quanlyctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-03T02:15:33.970Z"
+  },
+  {
+    "id": "43c75a70-a48e-4cdb-a6d9-521cca1dc90b",
+    "timestamp": "2025-05-03T02:15:33.969Z",
+    "message": "Failed to create getAllQuanlyctv",
+    "details": {
+      "url": "http://localhost:4405/admin/quanlyctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-03T02:15:33.971Z"
+  },
+  {
+    "id": "d4506b46-e164-4ada-85ce-417582b9f862",
+    "timestamp": "2025-05-13T02:21:12.945Z",
+    "message": "Failed to create getAllQuanlyctv",
+    "details": {
+      "url": "http://localhost:4405/admin/quanlyctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-13T02:21:12.949Z"
+  },
+  {
+    "id": "00633891-95fd-411d-8306-0415d90e833d",
+    "timestamp": "2025-05-13T02:21:12.948Z",
+    "message": "Failed to create getAllQuanlyctv",
+    "details": {
+      "url": "http://localhost:4405/admin/quanlyctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-13T02:21:12.951Z"
+  },
+  {
+    "id": "d9591f45-57f2-431f-b791-7a510cf37439",
+    "timestamp": "2025-05-16T14:37:41.605Z",
+    "message": "Failed to updateResource",
+    "details": {
+      "url": "http://localhost:4405/admin/resource/1b1b42fb-ff39-4e1e-8d15-110e5651f8f0",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-16T14:37:41.607Z"
+  },
+  {
+    "id": "5f0d81a2-5f4c-4f60-8b6d-ce8705c70a2e",
+    "timestamp": "2025-05-18T17:43:21.241Z",
+    "message": "Failed to create getAllResource",
+    "details": {
+      "url": "http://localhost:4405/admin/resource",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-18T17:43:21.242Z"
+  },
+  {
+    "id": "66817691-7b78-4e3c-bd5f-a70df5fb3138",
+    "timestamp": "2025-05-20T03:06:37.887Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "https://affiliate.timona.edu.vn/gioithieuctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T03:06:37.890Z"
+  },
+  {
+    "id": "cee13e6c-2ecd-4add-976f-53f58df4d1e8",
+    "timestamp": "2025-05-20T03:07:11.585Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "https://affiliate.timona.edu.vn/taikhoanctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T03:07:11.586Z"
+  },
+  {
+    "id": "323cc5b6-1f03-43a5-8f01-9e9e0dc5e058",
+    "timestamp": "2025-05-20T14:04:53.081Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/taikhoanctv/thongketruycap",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T14:04:53.087Z"
+  },
+  {
+    "id": "50dbe90d-5e2d-4c37-b63f-3c206d062a6f",
+    "timestamp": "2025-05-20T14:06:00.646Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/taikhoanctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T14:06:00.647Z"
+  },
+  {
+    "id": "73323fd4-7b7b-4ecd-a584-272ab786fb2e",
+    "timestamp": "2025-05-20T15:12:03.464Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T15:12:03.466Z"
+  },
+  {
+    "id": "5501f369-cc74-4213-9792-b4fbc898ede8",
+    "timestamp": "2025-05-20T16:01:00.546Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/taikhoanctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T16:01:00.548Z"
+  },
+  {
+    "id": "532f7ad0-0586-43af-b4ee-a9ddf962d040",
+    "timestamp": "2025-05-20T16:14:43.788Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/taikhoanctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T16:14:43.789Z"
+  },
+  {
+    "id": "348a0330-37a4-4626-8ef8-1d899e61197a",
+    "timestamp": "2025-05-20T16:18:53.302Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/taikhoanctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T16:18:53.303Z"
+  },
+  {
+    "id": "06bc85d5-13c5-4433-ab3f-69e305184706",
+    "timestamp": "2025-05-20T16:25:29.071Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/taikhoanctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T16:25:29.073Z"
+  },
+  {
+    "id": "c84ff143-e5a2-4ca4-a7e8-e1f04d45975e",
+    "timestamp": "2025-05-20T16:25:29.459Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/taikhoanctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T16:25:29.460Z"
+  },
+  {
+    "id": "772e25e9-271f-4ee2-bf99-b5692974ef2e",
+    "timestamp": "2025-05-20T16:39:31.985Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/taikhoanctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T16:39:31.987Z"
+  },
+  {
+    "id": "4f6945b1-e1d2-44c1-b05b-0fe2c566c0e2",
+    "timestamp": "2025-05-20T16:41:54.496Z",
+    "message": "update",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-20T16:41:54.498Z"
+  },
+  {
+    "id": "d60d905e-c560-4ac3-b153-ef5f0b595659",
+    "timestamp": "2025-05-20T16:41:54.526Z",
+    "message": "Failed to updateUser",
+    "details": {
+      "url": "http://localhost:4405/taikhoanctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T16:41:54.528Z"
+  },
+  {
+    "id": "19fc1ff0-f8d9-4486-a50a-268b3fe6f5ee",
+    "timestamp": "2025-05-20T16:45:28.804Z",
+    "message": "update",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-20T16:45:28.806Z"
+  },
+  {
+    "id": "0d60de9b-76f8-40d3-a8eb-0efc6d1570c3",
+    "timestamp": "2025-05-20T16:45:28.851Z",
+    "message": "Failed to updateUser",
+    "details": {
+      "url": "http://localhost:4405/taikhoanctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T16:45:28.852Z"
+  },
+  {
+    "id": "cdaf8e91-3b6e-4935-a47a-08f4cb9c7f64",
+    "timestamp": "2025-05-20T16:46:21.110Z",
+    "message": "update",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-20T16:46:21.112Z"
+  },
+  {
+    "id": "2fac370a-df67-4a7d-935a-0b2ba8fa14d8",
+    "timestamp": "2025-05-20T16:46:21.157Z",
+    "message": "Failed to updateUser",
+    "details": {
+      "url": "http://localhost:4405/taikhoanctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T16:46:21.158Z"
+  },
+  {
+    "id": "cf00169e-3fa9-43b7-a30c-66251b12a829",
+    "timestamp": "2025-05-20T16:47:23.415Z",
+    "message": "update",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-20T16:47:23.416Z"
+  },
+  {
+    "id": "87401f1f-b10e-4c64-9c31-cf9bed2d8a27",
+    "timestamp": "2025-05-20T16:47:23.427Z",
+    "message": "Failed to updateUser",
+    "details": {
+      "url": "http://localhost:4405/taikhoanctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T16:47:23.430Z"
+  },
+  {
+    "id": "01f225d7-f680-4dfd-8301-cfcfb296d282",
+    "timestamp": "2025-05-20T16:48:14.099Z",
+    "message": "update",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-20T16:48:14.100Z"
+  },
+  {
+    "id": "29b09ada-7fc7-4b65-a15e-2b1ac79b6e1b",
+    "timestamp": "2025-05-20T16:48:14.122Z",
+    "message": "Failed to updateUser",
+    "details": {
+      "url": "http://localhost:4405/taikhoanctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-20T16:48:14.126Z"
+  },
+  {
+    "id": "5d6e04b2-3b67-48d2-90b6-3a076386ca6c",
+    "timestamp": "2025-05-22T15:31:27.239Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/thongkectv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-22T15:31:27.245Z"
+  },
+  {
+    "id": "9215cb4c-4043-4c27-8537-02c961834011",
+    "timestamp": "2025-05-22T16:26:45.342Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-22T16:26:45.382Z"
+  },
+  {
+    "id": "048ef160-f7c7-492e-bd1a-b31ca77c2866",
+    "timestamp": "2025-05-22T16:42:08.835Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-22T16:42:08.836Z"
+  },
+  {
+    "id": "e28a5f50-963a-459d-bde6-38a25aab4257",
+    "timestamp": "2025-05-22T16:44:09.992Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-22T16:44:09.993Z"
+  },
+  {
+    "id": "edcd09ee-7e9c-4f5c-a792-a656a6bf85a3",
+    "timestamp": "2025-05-22T16:47:20.400Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-22T16:47:20.401Z"
+  },
+  {
+    "id": "e7f9c0a4-5ed5-4235-83f0-1dee16cce289",
+    "timestamp": "2025-05-22T16:52:14.927Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-22T16:52:14.929Z"
+  },
+  {
+    "id": "70103b05-1c66-40f8-85aa-35be023d1307",
+    "timestamp": "2025-05-22T16:54:04.471Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-22T16:54:04.472Z"
+  },
+  {
+    "id": "f9a19a8b-6e45-4925-ae62-2153f15b9382",
+    "timestamp": "2025-05-22T16:54:04.656Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-22T16:54:04.658Z"
+  },
+  {
+    "id": "186b6746-a421-47a7-a165-9160c2ee4497",
+    "timestamp": "2025-05-22T16:54:04.654Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-22T16:54:04.656Z"
+  },
+  {
+    "id": "844d3c21-47cd-4e87-8996-aa89fd180dff",
+    "timestamp": "2025-05-22T17:39:26.750Z",
+    "message": "Failed to create getAllLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-22T17:39:26.752Z"
+  },
+  {
+    "id": "28ff8380-ab08-457f-9ad9-da1de385093f",
+    "timestamp": "2025-05-22T17:48:34.646Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-22T17:48:34.647Z"
+  },
+  {
+    "id": "4ce8a60a-00ac-476e-bb5d-732885f1fd9f",
+    "timestamp": "2025-05-22T18:30:34.125Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-22T18:30:34.127Z"
+  },
+  {
+    "id": "1dc0feb0-1c25-4250-972a-292c4e7f0d6c",
+    "timestamp": "2025-05-23T01:40:08.745Z",
+    "message": "Failed to create getAllLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-23T01:40:08.750Z"
+  },
+  {
+    "id": "86a9d355-92fd-4f40-bc2c-da448f1f8505",
+    "timestamp": "2025-05-23T01:40:09.988Z",
+    "message": "Failed to create getAllLandingpage",
+    "details": {
+      "url": "http://localhost:4405/ladictv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-23T01:40:09.990Z"
+  },
+  {
+    "id": "052bfa47-ac43-4a5d-810b-f481f64a0a3d",
+    "timestamp": "2025-05-23T02:33:47.881Z",
+    "message": "Failed to create getAllQuanlyctv",
+    "details": {
+      "url": "http://localhost:4405/admin/quanlyctv/2e482f8a-130f-4b7c-a391-d6c496db2fae",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-23T02:33:47.884Z"
+  },
+  {
+    "id": "eea2b87a-bfe7-4c6d-9ccb-0231969e402d",
+    "timestamp": "2025-05-26T03:42:47.210Z",
+    "message": "removefileManager",
+    "details": {
+      "code": "P2025",
+      "meta": {
+        "cause": "Record to delete does not exist.",
+        "modelName": "FileManager"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:42:47.214Z"
+  },
+  {
+    "id": "d74799b1-1f1a-420b-bcb4-fc0585f172b6",
+    "timestamp": "2025-05-26T03:43:02.665Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/536e5601-512d-4518-a320-d5c035e7b971",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:43:02.667Z"
+  },
+  {
+    "id": "33b7e289-3f01-4eb7-9440-a4de03f3ec10",
+    "timestamp": "2025-05-26T03:43:13.090Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/536e5601-512d-4518-a320-d5c035e7b971",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:43:13.091Z"
+  },
+  {
+    "id": "527265f9-7265-47dc-811b-8447f65d527a",
+    "timestamp": "2025-05-26T03:43:17.338Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/b23c8d45-3d60-4f97-a164-72fd12662758",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:43:17.339Z"
+  },
+  {
+    "id": "fa64cb00-0019-44ba-a50b-36dd152e238d",
+    "timestamp": "2025-05-26T03:43:19.281Z",
+    "message": "removefileManager",
+    "details": {
+      "code": "P2025",
+      "meta": {
+        "cause": "Record to delete does not exist.",
+        "modelName": "FileManager"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:43:19.282Z"
+  },
+  {
+    "id": "a241ed97-c76f-4fe7-84e1-0af9253ad652",
+    "timestamp": "2025-05-26T03:43:22.267Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/536e5601-512d-4518-a320-d5c035e7b971",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:43:22.268Z"
+  },
+  {
+    "id": "4a62adfd-c714-48f2-bb2c-4221d43069f2",
+    "timestamp": "2025-05-26T03:43:23.781Z",
+    "message": "removefileManager",
+    "details": {
+      "code": "P2025",
+      "meta": {
+        "cause": "Record to delete does not exist.",
+        "modelName": "FileManager"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:43:23.785Z"
+  },
+  {
+    "id": "284b3e7d-22cd-4d66-a4b5-e4117398fcc0",
+    "timestamp": "2025-05-26T03:44:59.702Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/536e5601-512d-4518-a320-d5c035e7b971",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:44:59.712Z"
+  },
+  {
+    "id": "7188e9ac-e88a-4a16-b63a-f87c3c7737cc",
+    "timestamp": "2025-05-26T03:45:03.391Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "Resource not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:45:03.402Z"
+  },
+  {
+    "id": "d8b4056e-fb65-4b41-85a3-d376d66b26b2",
+    "timestamp": "2025-05-26T03:45:06.768Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/536e5601-512d-4518-a320-d5c035e7b971",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:45:06.778Z"
+  },
+  {
+    "id": "816b3e17-842a-47ce-beeb-bcfcee5938c4",
+    "timestamp": "2025-05-26T03:45:08.710Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/b23c8d45-3d60-4f97-a164-72fd12662758",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:45:08.720Z"
+  },
+  {
+    "id": "11d43265-1b6f-4469-9ed7-8709ae789a83",
+    "timestamp": "2025-05-26T03:45:10.596Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "Resource not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "Resource not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:45:10.605Z"
+  },
+  {
+    "id": "66f4a5ea-20c0-452e-81bd-2d7ca7aacc9c",
+    "timestamp": "2025-05-26T03:46:10.305Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/b23c8d45-3d60-4f97-a164-72fd12662758",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:46:10.318Z"
+  },
+  {
+    "id": "f09eeed0-db8b-4d99-8ec5-455fd9c25454",
+    "timestamp": "2025-05-26T03:46:13.827Z",
+    "message": "removeFilemanager",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "Filemanager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "Filemanager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:46:13.840Z"
+  },
+  {
+    "id": "5a8bd5b6-756b-481c-8824-e8820922f27c",
+    "timestamp": "2025-05-26T03:46:46.187Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/b23c8d45-3d60-4f97-a164-72fd12662758",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:46:46.197Z"
+  },
+  {
+    "id": "0690c724-1dac-4779-a261-f75df0ea31c1",
+    "timestamp": "2025-05-26T03:47:07.282Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/b23c8d45-3d60-4f97-a164-72fd12662758",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:47:07.292Z"
+  },
+  {
+    "id": "c0f6e6cd-21a9-47cf-a64a-d95565d711b3",
+    "timestamp": "2025-05-26T03:47:19.514Z",
+    "message": "removeFilemanager",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "Filemanager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "Filemanager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:47:19.524Z"
+  },
+  {
+    "id": "be75a3c0-9873-4158-b7cd-1a63fdaab612",
+    "timestamp": "2025-05-26T03:48:32.162Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/b23c8d45-3d60-4f97-a164-72fd12662758",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:48:32.165Z"
+  },
+  {
+    "id": "56255f06-c54b-4d55-9adf-5ad1d940f99a",
+    "timestamp": "2025-05-26T03:49:14.507Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/b23c8d45-3d60-4f97-a164-72fd12662758",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:49:14.509Z"
+  },
+  {
+    "id": "d1a029c2-39b9-4a82-9ea5-cc3e30d054aa",
+    "timestamp": "2025-05-26T03:51:44.863Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/b23c8d45-3d60-4f97-a164-72fd12662758",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:51:44.870Z"
+  },
+  {
+    "id": "37c56b52-65ab-409c-a982-81f142bb2831",
+    "timestamp": "2025-05-26T03:51:47.406Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/b23c8d45-3d60-4f97-a164-72fd12662758",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:51:47.413Z"
+  },
+  {
+    "id": "c84fa6f9-1851-4682-a0f8-380021bdc5d2",
+    "timestamp": "2025-05-26T03:51:57.420Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/filemanager/536e5601-512d-4518-a320-d5c035e7b971",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T03:51:57.428Z"
+  },
+  {
+    "id": "83d7b77a-917f-40c6-bc1d-f4212587c747",
+    "timestamp": "2025-05-26T03:55:32.843Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "fileManager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "fileManager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:55:32.845Z"
+  },
+  {
+    "id": "1ed76018-a275-4046-b5c7-f0eb610331d5",
+    "timestamp": "2025-05-26T03:55:32.873Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "fileManager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "fileManager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:55:32.874Z"
+  },
+  {
+    "id": "86fc67f7-f993-46e2-916a-5abd8d5b4e2d",
+    "timestamp": "2025-05-26T03:55:32.874Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "fileManager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "fileManager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:55:32.875Z"
+  },
+  {
+    "id": "bb8a3c0f-3aa1-495c-8a71-dff2ee10da36",
+    "timestamp": "2025-05-26T03:55:32.877Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "fileManager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "fileManager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:55:32.878Z"
+  },
+  {
+    "id": "c62a94ce-2d55-433d-93fe-bd16484eca62",
+    "timestamp": "2025-05-26T03:55:32.884Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "fileManager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "fileManager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:55:32.886Z"
+  },
+  {
+    "id": "ff724be2-f04a-4ff3-a84f-df1f4665d09a",
+    "timestamp": "2025-05-26T03:55:32.887Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "fileManager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "fileManager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:55:32.889Z"
+  },
+  {
+    "id": "7818d11e-e70d-4e12-8057-9b2cfa3d4efa",
+    "timestamp": "2025-05-26T03:55:32.849Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "fileManager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "fileManager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:55:32.851Z"
+  },
+  {
+    "id": "6301c890-7730-4976-bc3d-1ba374e6edee",
+    "timestamp": "2025-05-26T03:55:32.892Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "fileManager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "fileManager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T03:55:32.893Z"
+  },
+  {
+    "id": "7f38ee7b-4a44-423a-b2b6-d83f1eaab6a1",
+    "timestamp": "2025-05-26T04:38:25.511Z",
+    "message": "Failed to create getAllResource",
+    "details": {
+      "url": "http://localhost:4405/admin/resource",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T04:38:25.512Z"
+  },
+  {
+    "id": "8d59b954-4efb-4ee1-bea7-c10e087c5cd8",
+    "timestamp": "2025-05-26T07:58:33.550Z",
+    "message": "findByResource",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T07:58:33.553Z"
+  },
+  {
+    "id": "07ec2e8c-c823-468b-83c4-b12bbc5ffcb4",
+    "timestamp": "2025-05-26T07:58:42.885Z",
+    "message": "updateResource",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T07:58:42.886Z"
+  },
+  {
+    "id": "9ddeed84-9ac4-4b83-8051-c1a52a85e1ed",
+    "timestamp": "2025-05-26T07:58:42.915Z",
+    "message": "findByResource",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T07:58:42.917Z"
+  },
+  {
+    "id": "ad5913e6-8a6e-48b0-a8c6-8409ee222196",
+    "timestamp": "2025-05-26T08:00:32.871Z",
+    "message": "Failed to getFilemanagerBy",
+    "details": {
+      "url": "http://localhost:4405/admin/resource/new",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T08:00:32.872Z"
+  },
+  {
+    "id": "90404de3-d045-4481-b6eb-0de7d7d8f821",
+    "timestamp": "2025-05-26T08:00:55.305Z",
+    "message": "findByResource",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T08:00:55.306Z"
+  },
+  {
+    "id": "6c541e99-cc5a-44f5-8312-add4e75ed996",
+    "timestamp": "2025-05-26T08:11:18.152Z",
+    "message": "findByResource",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T08:11:18.154Z"
+  },
+  {
+    "id": "53359115-1b00-42e8-8707-e30ccf7f8f35",
+    "timestamp": "2025-05-26T08:12:24.015Z",
+    "message": "findByResource",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T08:12:24.017Z"
+  },
+  {
+    "id": "8b23c865-8ae8-467d-b534-ea6c1da900c2",
+    "timestamp": "2025-05-26T08:13:11.484Z",
+    "message": "findByResource",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T08:13:11.487Z"
+  },
+  {
+    "id": "85ad835a-a6ed-4af2-8f94-002712f1fdc3",
+    "timestamp": "2025-05-26T08:13:46.627Z",
+    "message": "findByResource",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T08:13:46.629Z"
+  },
+  {
+    "id": "940c9963-4308-4f4a-a9b8-39e20d48c948",
+    "timestamp": "2025-05-26T08:20:21.582Z",
+    "message": "findByResource",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T08:20:21.584Z"
+  },
+  {
+    "id": "c1bb0279-dd26-474e-9cfa-dd53c763d757",
+    "timestamp": "2025-05-26T09:09:34.675Z",
+    "message": "Failed to getAllResource",
+    "details": {
+      "url": "http://localhost:4405/tainguyenctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T09:09:34.677Z"
+  },
+  {
+    "id": "4cecf0f0-b13a-4dc8-843f-acc69269b892",
+    "timestamp": "2025-05-26T09:09:34.678Z",
+    "message": "Failed to getAllResource",
+    "details": {
+      "url": "http://localhost:4405/tainguyenctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T09:09:34.679Z"
+  },
+  {
+    "id": "177b90e0-8460-40fc-8bb2-67415478699a",
+    "timestamp": "2025-05-26T17:12:10.212Z",
+    "message": "Failed to getAllKhachhang",
+    "details": {
+      "url": "http://localhost:4405/admin/khachhang",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T17:12:10.214Z"
+  },
+  {
+    "id": "57dd0fae-54a7-4ecf-b047-bde88dd4b44f",
+    "timestamp": "2025-05-26T17:24:12.227Z",
+    "message": "Failed to getAllAffiliatelink",
+    "details": {
+      "url": "http://localhost:4405/affiliatectv",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T17:24:12.229Z"
+  },
+  {
+    "id": "051fd3ed-cbc1-4361-829f-eafebd2ba9c1",
+    "timestamp": "2025-05-26T17:38:51.053Z",
+    "message": "Failed to getAllAffiliatelink",
+    "details": {
+      "url": "http://localhost:4405/affiliatectv",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T17:38:51.054Z"
+  },
+  {
+    "id": "2f1dd694-c421-4666-a7be-2438f04c2102",
+    "timestamp": "2025-05-26T18:13:04.758Z",
+    "message": "findby",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T18:13:04.759Z"
+  },
+  {
+    "id": "0021c0af-dd42-47f0-8b47-9836479311fc",
+    "timestamp": "2025-05-26T18:13:04.926Z",
+    "message": "findby",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T18:13:04.928Z"
+  },
+  {
+    "id": "dab783c3-640e-4b52-b4c9-fad13aed40a4",
+    "timestamp": "2025-05-26T18:13:05.107Z",
+    "message": "findby",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T18:13:05.110Z"
+  },
+  {
+    "id": "d50987db-daf5-4e62-9a6f-76b526882722",
+    "timestamp": "2025-05-26T18:13:05.279Z",
+    "message": "findby",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T18:13:05.282Z"
+  },
+  {
+    "id": "078634b4-ccfe-4b84-9e97-9b215f427569",
+    "timestamp": "2025-05-26T18:13:05.437Z",
+    "message": "findby",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T18:13:05.439Z"
+  },
+  {
+    "id": "76db31bc-522e-4263-be41-88906e1bcaf9",
+    "timestamp": "2025-05-26T18:13:05.997Z",
+    "message": "findby",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T18:13:05.998Z"
+  },
+  {
+    "id": "7413c738-32ca-46c6-ba47-d6af7da90cc4",
+    "timestamp": "2025-05-26T18:18:06.034Z",
+    "message": "findby",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T18:18:06.036Z"
+  },
+  {
+    "id": "1e228e6b-2eb6-434e-942f-0b85a6fc82dd",
+    "timestamp": "2025-05-26T18:18:06.168Z",
+    "message": "findby",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T18:18:06.170Z"
+  },
+  {
+    "id": "8e08d0c9-eeab-4e2c-ba21-e83f0080495a",
+    "timestamp": "2025-05-26T18:18:06.369Z",
+    "message": "findby",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T18:18:06.370Z"
+  },
+  {
+    "id": "f61ff438-e030-4f50-bfce-bb11df461c14",
+    "timestamp": "2025-05-26T18:18:08.247Z",
+    "message": "findby",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T18:18:08.249Z"
+  },
+  {
+    "id": "3c800542-f31c-4a5c-82f6-0bbbee18b93c",
+    "timestamp": "2025-05-26T18:25:19.414Z",
+    "message": "findby",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-26T18:25:19.415Z"
+  },
+  {
+    "id": "0e54f64f-a185-4797-a4f0-269cf5d45603",
+    "timestamp": "2025-05-26T18:36:29.409Z",
+    "message": "Failed to getAllAffiliatelink",
+    "details": {
+      "url": "http://localhost:4405/affiliatectv",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T18:36:29.411Z"
+  },
+  {
+    "id": "b804e366-1c4f-419e-9c3d-e1d19b985120",
+    "timestamp": "2025-05-26T18:54:36.879Z",
+    "message": "Failed to getAllAffiliatelink",
+    "details": {
+      "url": "http://localhost:4405/admin/affiliatelink",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-26T18:54:36.881Z"
+  },
+  {
+    "id": "97597638-fb0a-42cf-9202-28bf28e3cbc8",
+    "timestamp": "2025-05-27T01:09:17.748Z",
+    "message": "createaffiliateLink",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "AffiliateLink"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T01:09:17.750Z"
+  },
+  {
+    "id": "46ef7b9f-adc0-4046-b493-a8b3e0092b69",
+    "timestamp": "2025-05-27T01:09:17.757Z",
+    "message": "Failed to CreateAffiliatelink",
+    "details": {
+      "url": "http://localhost:4405/affiliatectv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T01:09:17.759Z"
+  },
+  {
+    "id": "4f012a3a-e665-4c68-a922-0636e6ea7623",
+    "timestamp": "2025-05-27T01:23:12.592Z",
+    "message": "createaffiliateLink",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "AffiliateLink"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T01:23:12.594Z"
+  },
+  {
+    "id": "b0245309-53ee-47ab-b76c-4d7443fb9ea7",
+    "timestamp": "2025-05-27T01:23:12.618Z",
+    "message": "Failed to CreateAffiliatelink",
+    "details": {
+      "url": "http://localhost:4405/affiliatectv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T01:23:12.620Z"
+  },
+  {
+    "id": "9fb61eb1-62e2-4090-b4a7-b27808ce40c3",
+    "timestamp": "2025-05-27T01:24:55.433Z",
+    "message": "createaffiliateLink",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "AffiliateLink"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T01:24:55.436Z"
+  },
+  {
+    "id": "b8136dbb-b061-445a-8bce-b56319ed91c7",
+    "timestamp": "2025-05-27T01:24:55.444Z",
+    "message": "Failed to CreateAffiliatelink",
+    "details": {
+      "url": "http://localhost:4405/affiliatectv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T01:24:55.445Z"
+  },
+  {
+    "id": "d0d9af45-d743-4328-b268-45180c5ba9a6",
+    "timestamp": "2025-05-27T01:27:31.360Z",
+    "message": "createaffiliateLink",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "AffiliateLink"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T01:27:31.363Z"
+  },
+  {
+    "id": "45185080-ecd2-4a45-94e6-6e8e8f3948e7",
+    "timestamp": "2025-05-27T01:27:31.373Z",
+    "message": "Failed to CreateAffiliatelink",
+    "details": {
+      "url": "http://localhost:4405/affiliatectv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T01:27:31.375Z"
+  },
+  {
+    "id": "8cde9f97-db5b-44d5-941a-b01907a0935f",
+    "timestamp": "2025-05-27T01:51:33.068Z",
+    "message": "Failed to getAllAffiliatelink",
+    "details": {
+      "url": "http://localhost:4405/affiliatectv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T01:51:33.070Z"
+  },
+  {
+    "id": "85bc5dd7-107a-4a62-aa43-62371207c1fb",
+    "timestamp": "2025-05-27T02:12:29.563Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T02:12:29.564Z"
+  },
+  {
+    "id": "8bc5a40a-c7ea-41c7-b318-60d5e73c8c6f",
+    "timestamp": "2025-05-27T02:24:10.114Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967&utm_source=123&utm_medium=abc&utm_campaign=456&utm_term=def&utm_content=zxc789",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T02:24:10.116Z"
+  },
+  {
+    "id": "79ed800f-a158-443d-9bf5-d4ecc1fa7567",
+    "timestamp": "2025-05-27T02:24:10.426Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/undefined?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T02:24:10.428Z"
+  },
+  {
+    "id": "4d2f8dd2-8361-4458-b43d-09c5143ad66c",
+    "timestamp": "2025-05-27T02:24:10.694Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967&utm_source=123&utm_medium=abc&utm_campaign=456&utm_term=def&utm_content=zxc789",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T02:24:10.696Z"
+  },
+  {
+    "id": "c523e2ad-090a-41f9-9e1c-87a945e49efa",
+    "timestamp": "2025-05-27T02:24:15.913Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967&utm_source=123&utm_medium=abc&utm_campaign=456&utm_term=def&utm_content=zxc789",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T02:24:15.915Z"
+  },
+  {
+    "id": "4d0be676-2e43-4218-add8-fa11fe9a2980",
+    "timestamp": "2025-05-27T02:24:15.911Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/undefined?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T02:24:15.913Z"
+  },
+  {
+    "id": "e3d8bf04-a47d-47d7-8560-86de80925e96",
+    "timestamp": "2025-05-27T02:24:15.988Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967&utm_source=123&utm_medium=abc&utm_campaign=456&utm_term=def&utm_content=zxc789",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T02:24:15.990Z"
+  },
+  {
+    "id": "3280b24c-53ed-48b9-8f85-0da20bd056a8",
+    "timestamp": "2025-05-27T02:25:13.047Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967&codeId=AL00001&utm_source=123&utm_medium=abc&utm_campaign=456&utm_term=def&utm_content=zxc789",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T02:25:13.049Z"
+  },
+  {
+    "id": "46371eca-a835-4848-be97-f7526942dd68",
+    "timestamp": "2025-05-27T02:25:52.250Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967&codeId=AL00001&utm_source=123&utm_medium=abc&utm_campaign=456&utm_term=def&utm_content=zxc789",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T02:25:52.252Z"
+  },
+  {
+    "id": "838f4036-ca15-42e4-8129-1078e782ca16",
+    "timestamp": "2025-05-27T03:04:44.254Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T03:04:44.268Z"
+  },
+  {
+    "id": "ffed26de-620a-4e28-b39d-c4914135a60e",
+    "timestamp": "2025-05-27T03:51:16.132Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T03:51:16.134Z"
+  },
+  {
+    "id": "33c1ddd9-5ea8-4b86-8d37-5b4ad78f6c0f",
+    "timestamp": "2025-05-27T03:51:19.547Z",
+    "message": "Failed to getAllResource",
+    "details": {
+      "url": "http://localhost:4405/admin/resource/new",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T03:51:19.549Z"
+  },
+  {
+    "id": "a5396327-4ec6-449f-bdc5-10f8431cfc9e",
+    "timestamp": "2025-05-27T03:53:15.160Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T03:53:15.162Z"
+  },
+  {
+    "id": "b71f4c5f-ef87-4081-9ba8-2deafef5c033",
+    "timestamp": "2025-05-27T04:12:53.660Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:12:53.663Z"
+  },
+  {
+    "id": "0b7a8cbe-8d78-4b71-9c7f-3ca327bf6663",
+    "timestamp": "2025-05-27T04:15:48.979Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:15:48.981Z"
+  },
+  {
+    "id": "a2b88029-4907-4128-a538-5a34ed3272a1",
+    "timestamp": "2025-05-27T04:16:04.320Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:16:04.322Z"
+  },
+  {
+    "id": "9df827fa-8555-4b77-8665-1a1ba4579c8e",
+    "timestamp": "2025-05-27T04:16:10.369Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:16:10.371Z"
+  },
+  {
+    "id": "c8c6eb9a-9a30-49b0-830e-6cf57e9cf731",
+    "timestamp": "2025-05-27T04:19:17.314Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:19:17.316Z"
+  },
+  {
+    "id": "e4bc8942-c242-43af-9520-76470ad17799",
+    "timestamp": "2025-05-27T04:19:33.176Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:19:33.178Z"
+  },
+  {
+    "id": "c189059c-57ac-42a4-8593-72ac18133c48",
+    "timestamp": "2025-05-27T04:19:56.216Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:19:56.218Z"
+  },
+  {
+    "id": "10d973b9-c5ec-4679-8420-6e98e12c9b32",
+    "timestamp": "2025-05-27T04:19:57.377Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:19:57.378Z"
+  },
+  {
+    "id": "68d7061b-99bf-4619-8982-ca2422bddc70",
+    "timestamp": "2025-05-27T04:20:01.361Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:20:01.363Z"
+  },
+  {
+    "id": "c7172cdc-5487-459b-b7dc-9e406401ece9",
+    "timestamp": "2025-05-27T04:20:05.267Z",
+    "message": "Failed to getAffiliatelinkBy",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967",
+      "message": "Failed to execute 'json' on 'Response': Unexpected end of JSON input",
+      "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:20:05.269Z"
+  },
+  {
+    "id": "def62997-a868-4e9d-97e5-21c84bc3a41a",
+    "timestamp": "2025-05-27T04:21:28.469Z",
+    "message": "createTrackingevent",
+    "details": {
+      "code": "P2003",
+      "meta": {
+        "modelName": "TrackingEvent",
+        "field_name": "TrackingEvent_affiliateLinkId_fkey (index)"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T04:21:28.473Z"
+  },
+  {
+    "id": "6d1cb299-60a5-473b-ad5e-f55a571bc530",
+    "timestamp": "2025-05-27T04:21:29.320Z",
+    "message": "createTrackingevent",
+    "details": {
+      "code": "P2003",
+      "meta": {
+        "modelName": "TrackingEvent",
+        "field_name": "TrackingEvent_affiliateLinkId_fkey (index)"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T04:21:29.323Z"
+  },
+  {
+    "id": "bef87a8c-6204-4440-a2a4-f15dca30ab6d",
+    "timestamp": "2025-05-27T04:21:29.336Z",
+    "message": "Failed to CreateTracking",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:21:29.340Z"
+  },
+  {
+    "id": "cb9f4e9b-18d9-4137-a7c6-d38f2eced4bd",
+    "timestamp": "2025-05-27T04:21:29.819Z",
+    "message": "createTrackingevent",
+    "details": {
+      "code": "P2003",
+      "meta": {
+        "modelName": "TrackingEvent",
+        "field_name": "TrackingEvent_affiliateLinkId_fkey (index)"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T04:21:29.824Z"
+  },
+  {
+    "id": "357d8bd3-598a-4439-b9aa-3f35de1ea35f",
+    "timestamp": "2025-05-27T04:21:29.866Z",
+    "message": "Failed to CreateTracking",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:21:29.870Z"
+  },
+  {
+    "id": "97dee03b-9c40-476c-8a16-cb13e0b5078a",
+    "timestamp": "2025-05-27T04:21:34.427Z",
+    "message": "createTrackingevent",
+    "details": {
+      "code": "P2003",
+      "meta": {
+        "modelName": "TrackingEvent",
+        "field_name": "TrackingEvent_affiliateLinkId_fkey (index)"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T04:21:34.431Z"
+  },
+  {
+    "id": "b57ab9c0-8c32-476f-9103-c49bd086f1f9",
+    "timestamp": "2025-05-27T04:21:34.447Z",
+    "message": "Failed to CreateTracking",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:21:34.451Z"
+  },
+  {
+    "id": "6a5cc9e3-385d-4a1e-a517-0beb49310530",
+    "timestamp": "2025-05-27T04:22:13.045Z",
+    "message": "createTrackingevent",
+    "details": {
+      "code": "P2003",
+      "meta": {
+        "modelName": "TrackingEvent",
+        "field_name": "TrackingEvent_affiliateLinkId_fkey (index)"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T04:22:13.053Z"
+  },
+  {
+    "id": "b4af5bce-8868-4311-9b80-ab117d02a011",
+    "timestamp": "2025-05-27T04:22:13.111Z",
+    "message": "Failed to CreateTracking",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-cham-soc-da?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:22:13.121Z"
+  },
+  {
+    "id": "e63fc2a6-b8f3-4d0f-9db3-ac847f618d32",
+    "timestamp": "2025-05-27T04:22:13.997Z",
+    "message": "createTrackingevent",
+    "details": {
+      "code": "P2003",
+      "meta": {
+        "modelName": "TrackingEvent",
+        "field_name": "TrackingEvent_affiliateLinkId_fkey (index)"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T04:22:14.001Z"
+  },
+  {
+    "id": "6ed904dd-bca1-4bad-a3a9-cd85c7e50162",
+    "timestamp": "2025-05-27T04:22:14.017Z",
+    "message": "Failed to CreateTracking",
+    "details": {
+      "url": "http://localhost:4405/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967",
+      "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:22:14.020Z"
+  },
+  {
+    "id": "e1eddb53-477d-43a3-aa99-bcc7f7cea223",
+    "timestamp": "2025-05-27T04:35:37.178Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "fileManager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "fileManager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T04:35:37.180Z"
+  },
+  {
+    "id": "66cbaf63-99d8-44a0-a110-fc5c2d9008ac",
+    "timestamp": "2025-05-27T04:35:37.180Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "fileManager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "fileManager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T04:35:37.181Z"
+  },
+  {
+    "id": "0d42532e-1df3-4320-aaf6-a8e7dcc9b880",
+    "timestamp": "2025-05-27T04:35:37.181Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "fileManager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "fileManager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T04:35:37.182Z"
+  },
+  {
+    "id": "6a0bc249-76f1-4327-9e3a-fe1b6295419f",
+    "timestamp": "2025-05-27T04:35:37.182Z",
+    "message": "removeResource",
+    "details": {
+      "name": "NotFoundException",
+      "status": 404,
+      "message": "fileManager not found",
+      "options": {},
+      "response": {
+        "error": "Not Found",
+        "message": "fileManager not found",
+        "statusCode": 404
+      }
+    },
+    "source": "server",
+    "createdAt": "2025-05-27T04:35:37.183Z"
+  },
+  {
+    "id": "65b1c890-66b6-429f-8ee0-ab51e35665ff",
+    "timestamp": "2025-05-27T04:59:54.415Z",
+    "message": "Failed to getAllKhachhang",
+    "details": {
+      "url": "http://localhost:4405/admin/khachhang",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T04:59:54.417Z"
+  },
+  {
+    "id": "87f46dc3-7a26-41e6-adbc-53d2a16d053b",
+    "timestamp": "2025-05-27T06:14:33.844Z",
+    "message": "Failed to getKhachhangBy",
+    "details": {
+      "url": "http://localhost:4405/admin/khachhang",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T06:14:33.851Z"
+  },
+  {
+    "id": "ccda38e2-ebdb-4272-bdca-1505518d273c",
+    "timestamp": "2025-05-27T06:14:33.857Z",
+    "message": "Failed to getKhachhangBy",
+    "details": {
+      "url": "http://localhost:4405/admin/khachhang",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T06:14:33.859Z"
+  },
+  {
+    "id": "fff10727-b879-42d5-82a4-c17cee4c7d60",
+    "timestamp": "2025-05-27T06:14:33.944Z",
+    "message": "Failed to getKhachhangBy",
+    "details": {
+      "url": "http://localhost:4405/admin/khachhang",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T06:14:33.946Z"
+  },
+  {
+    "id": "b4c5d830-9010-4676-9cbe-7f0c8beed9a1",
+    "timestamp": "2025-05-27T06:48:30.973Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T06:48:30.975Z"
+  },
+  {
+    "id": "0b683515-b26a-4c07-bbcb-c51fb5541b96",
+    "timestamp": "2025-05-27T06:48:31.580Z",
+    "message": "Failed to getTrackingBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-27T06:48:31.583Z"
+  },
+  {
+    "id": "90cfe9d2-a9e5-41bf-8c49-afed95dd4372",
+    "timestamp": "2025-05-28T17:24:51.380Z",
+    "message": "Failed to create getAllTracking",
+    "details": {
+      "url": "http://localhost:4405/admin/tracking",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-28T17:24:51.381Z"
+  },
+  {
+    "id": "79f5e443-093c-4b8e-853b-c98623587d10",
+    "timestamp": "2025-05-28T17:24:51.382Z",
+    "message": "Failed to create getAllTracking",
+    "details": {
+      "url": "http://localhost:4405/admin/tracking",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-28T17:24:51.383Z"
+  },
+  {
+    "id": "ca003bfc-4f17-4769-948e-179b88fa83e0",
+    "timestamp": "2025-05-29T09:22:06.684Z",
+    "message": "findByCourse",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:22:06.686Z"
+  },
+  {
+    "id": "b302138f-4af5-4b6c-a073-4ca6a515a7c2",
+    "timestamp": "2025-05-29T09:22:06.734Z",
+    "message": "Failed to getCourseBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-29T09:22:06.735Z"
+  },
+  {
+    "id": "51ce4fb8-3ce2-4071-a498-37f98691855a",
+    "timestamp": "2025-05-29T09:22:09.277Z",
+    "message": "findByCourse",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:22:09.278Z"
+  },
+  {
+    "id": "856c4034-6a3f-49d1-b174-e6233b3c02b1",
+    "timestamp": "2025-05-29T09:22:09.321Z",
+    "message": "Failed to getCourseBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-29T09:22:09.322Z"
+  },
+  {
+    "id": "05a93087-3e55-45ae-90a1-51af3fa80779",
+    "timestamp": "2025-05-29T09:22:20.571Z",
+    "message": "findByCourse",
+    "details": {
+      "name": "PrismaClientValidationError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:22:20.574Z"
+  },
+  {
+    "id": "6b83a5b8-421f-4511-859f-68017b530409",
+    "timestamp": "2025-05-29T09:22:20.696Z",
+    "message": "Failed to getCourseBy",
+    "details": {
+      "url": "http://localhost:4405/dashboardctv",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"
+    },
+    "source": "client",
+    "createdAt": "2025-05-29T09:22:20.697Z"
+  },
+  {
+    "id": "c16a0d35-44b8-4c9d-9276-44d81ab4ab58",
+    "timestamp": "2025-05-29T09:59:15.369Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.371Z"
+  },
+  {
+    "id": "a957d1b3-d69e-4689-a7c4-dabd1f9d412e",
+    "timestamp": "2025-05-29T09:59:15.373Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.374Z"
+  },
+  {
+    "id": "cc7d097f-189b-4ea6-882c-88e331d51967",
+    "timestamp": "2025-05-29T09:59:15.375Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.376Z"
+  },
+  {
+    "id": "7b175c1b-6090-467b-bd11-5e5190d7ad5f",
+    "timestamp": "2025-05-29T09:59:15.390Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.391Z"
+  },
+  {
+    "id": "da032d65-8029-4c7d-9709-ac50b0070a32",
+    "timestamp": "2025-05-29T09:59:15.391Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.392Z"
+  },
+  {
+    "id": "9829d40a-d493-4281-8397-8e768b054a3d",
+    "timestamp": "2025-05-29T09:59:15.393Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.394Z"
+  },
+  {
+    "id": "2969d0cf-84d7-4e1e-b2e6-9b6e4de89d38",
+    "timestamp": "2025-05-29T09:59:15.396Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.397Z"
+  },
+  {
+    "id": "ad08dcec-3515-477f-8c12-0c80fb3d5bf0",
+    "timestamp": "2025-05-29T09:59:15.394Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.395Z"
+  },
+  {
+    "id": "4bb0354f-22e1-43b3-9b48-279212b1e573",
+    "timestamp": "2025-05-29T09:59:15.399Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.400Z"
+  },
+  {
+    "id": "364cb6b8-e709-4b04-ba0d-adab766a5553",
+    "timestamp": "2025-05-29T09:59:15.400Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.401Z"
+  },
+  {
+    "id": "08a20792-5767-4032-8de1-187c4538da27",
+    "timestamp": "2025-05-29T09:59:15.402Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.403Z"
+  },
+  {
+    "id": "847bb4a0-e9e1-4dbe-8cba-ed33fc0e8540",
+    "timestamp": "2025-05-29T09:59:15.403Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.404Z"
+  },
+  {
+    "id": "488ac818-269c-428e-b2ff-79c03440ce63",
+    "timestamp": "2025-05-29T09:59:15.404Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.405Z"
+  },
+  {
+    "id": "1d5b29fd-a2f0-4880-96d1-e8905a7d8bf5",
+    "timestamp": "2025-05-29T09:59:15.405Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.406Z"
+  },
+  {
+    "id": "730b5569-ffc8-449f-9bdb-d0ff3a58a663",
+    "timestamp": "2025-05-29T09:59:15.407Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.407Z"
+  },
+  {
+    "id": "a19470e5-335b-4ac6-b791-8e7264cfd7ef",
+    "timestamp": "2025-05-29T09:59:15.407Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.408Z"
+  },
+  {
+    "id": "ad7d42d3-2800-42fc-98c5-32a14cc82c25",
+    "timestamp": "2025-05-29T09:59:15.408Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.409Z"
+  },
+  {
+    "id": "49b14d0f-c8f5-4649-b409-1b07d2d38795",
+    "timestamp": "2025-05-29T09:59:15.410Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.411Z"
+  },
+  {
+    "id": "44b1ed75-3dcc-4e37-9386-3f0c344d43e0",
+    "timestamp": "2025-05-29T09:59:15.409Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.410Z"
+  },
+  {
+    "id": "049c4625-173e-45b5-b542-c07ea515f710",
+    "timestamp": "2025-05-29T09:59:15.419Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.420Z"
+  },
+  {
+    "id": "303a2e23-fe9d-4837-80ea-1e690a8e1ce2",
+    "timestamp": "2025-05-29T09:59:15.418Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.419Z"
+  },
+  {
+    "id": "7c584018-285c-4783-b8af-a50b993659d5",
+    "timestamp": "2025-05-29T09:59:15.424Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T09:59:15.425Z"
+  },
+  {
+    "id": "4d70a94b-bfa7-4f74-811f-677e1ac03e3f",
+    "timestamp": "2025-05-29T10:00:59.920Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:00:59.922Z"
+  },
+  {
+    "id": "3d360b0d-099d-4edb-b9a8-0311cfb6c89e",
+    "timestamp": "2025-05-29T10:00:59.924Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:00:59.925Z"
+  },
+  {
+    "id": "da6461f2-bfa4-45cd-8fd4-5b2ee338dfc6",
+    "timestamp": "2025-05-29T10:00:59.928Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:00:59.930Z"
+  },
+  {
+    "id": "73f22683-345c-4901-b4d4-81b1fdb9cc9d",
+    "timestamp": "2025-05-29T10:00:59.926Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:00:59.927Z"
+  },
+  {
+    "id": "c414a444-167b-42e1-b421-3dae81227234",
+    "timestamp": "2025-05-29T10:00:59.933Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:00:59.935Z"
+  },
+  {
+    "id": "4a472c92-5572-4d11-89bd-97b1291022bb",
+    "timestamp": "2025-05-29T10:00:59.940Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:00:59.941Z"
+  },
+  {
+    "id": "136131a2-1555-4d15-9bb5-c3cfe2fe3979",
+    "timestamp": "2025-05-29T10:00:59.942Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:00:59.943Z"
+  },
+  {
+    "id": "c2737f2b-93b2-46ee-88a5-b906358a0ba8",
+    "timestamp": "2025-05-29T10:00:59.946Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:00:59.947Z"
+  },
+  {
+    "id": "31b9ecd5-f02c-48fb-ab0b-cb10cc7e7310",
+    "timestamp": "2025-05-29T10:00:59.950Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:00:59.952Z"
+  },
+  {
+    "id": "d0ae126f-28a0-4abd-92ca-9db22c4746b8",
+    "timestamp": "2025-05-29T10:05:28.128Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.129Z"
+  },
+  {
+    "id": "be3a4511-7195-4974-8b15-01b6c065babe",
+    "timestamp": "2025-05-29T10:05:28.129Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.130Z"
+  },
+  {
+    "id": "7ef06739-c25e-4e80-8b92-4203240ce8ec",
+    "timestamp": "2025-05-29T10:05:28.130Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.131Z"
+  },
+  {
+    "id": "1df1713f-63b5-4fbd-a36c-a9e7bf21e0fe",
+    "timestamp": "2025-05-29T10:05:28.132Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.132Z"
+  },
+  {
+    "id": "5c506600-aea7-425e-9269-3119d1ffe309",
+    "timestamp": "2025-05-29T10:05:28.131Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.132Z"
+  },
+  {
+    "id": "b8eab648-0461-49e7-81bf-eeeaf5fa3de8",
+    "timestamp": "2025-05-29T10:05:28.136Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.137Z"
+  },
+  {
+    "id": "31a4b1ba-ecee-4de4-b223-adbeaf615b0e",
+    "timestamp": "2025-05-29T10:05:28.137Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.138Z"
+  },
+  {
+    "id": "caa3f6e5-d6a3-44a8-a4b0-88c6439d78fc",
+    "timestamp": "2025-05-29T10:05:28.133Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.134Z"
+  },
+  {
+    "id": "45579b85-df00-454c-a487-70c5b85102e2",
+    "timestamp": "2025-05-29T10:05:28.138Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.139Z"
+  },
+  {
+    "id": "e861d4c2-07d1-48de-b5e0-52c8b4811d4a",
+    "timestamp": "2025-05-29T10:05:28.135Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.136Z"
+  },
+  {
+    "id": "6c0522ac-3609-46b7-9ae4-8ffa40d68a6e",
+    "timestamp": "2025-05-29T10:05:28.134Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.135Z"
+  },
+  {
+    "id": "ba2829e9-1248-4f15-8cb3-0f55312ec03a",
+    "timestamp": "2025-05-29T10:05:28.139Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.140Z"
+  },
+  {
+    "id": "e244fe3d-61f3-4fd6-b315-cdd6637e2a76",
+    "timestamp": "2025-05-29T10:05:28.140Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.141Z"
+  },
+  {
+    "id": "1beb2294-f7a2-4b41-ab97-dab5fb4d6a7c",
+    "timestamp": "2025-05-29T10:05:28.141Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.142Z"
+  },
+  {
+    "id": "46867e66-c10a-4dcb-b471-d35118751322",
+    "timestamp": "2025-05-29T10:05:28.143Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.143Z"
+  },
+  {
+    "id": "03da3698-7b90-4d40-85fa-40c005420532",
+    "timestamp": "2025-05-29T10:05:28.144Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.145Z"
+  },
+  {
+    "id": "1cfc2f97-a84b-4848-b926-1bc5b043201b",
+    "timestamp": "2025-05-29T10:05:28.145Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.146Z"
+  },
+  {
+    "id": "9847cc30-6ad8-4348-b3e4-e409248f9160",
+    "timestamp": "2025-05-29T10:05:28.146Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.147Z"
+  },
+  {
+    "id": "a8798144-8a61-4918-818e-0fe9e8ac3d28",
+    "timestamp": "2025-05-29T10:05:28.147Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.147Z"
+  },
+  {
+    "id": "7cb5287d-7971-41f0-a181-2037e9fe8346",
+    "timestamp": "2025-05-29T10:05:28.147Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.148Z"
+  },
+  {
+    "id": "ca32b5f4-6e98-4414-91ec-3d6c6f2ab7f6",
+    "timestamp": "2025-05-29T10:05:28.148Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.149Z"
+  },
+  {
+    "id": "ca271fca-2aef-4da6-891b-f5b27402d828",
+    "timestamp": "2025-05-29T10:05:28.149Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.150Z"
+  },
+  {
+    "id": "283663c0-b31d-44c3-8fe7-55735129a7e3",
+    "timestamp": "2025-05-29T10:05:28.149Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:05:28.149Z"
+  },
+  {
+    "id": "b55a9b91-8a65-4db2-b18e-9a02c15f4ae6",
+    "timestamp": "2025-05-29T10:13:50.566Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.567Z"
+  },
+  {
+    "id": "5f83daf8-88f2-4a5e-8c7c-d065ff3f508f",
+    "timestamp": "2025-05-29T10:13:50.569Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.570Z"
+  },
+  {
+    "id": "d3e9ff2c-7e7a-4cad-998d-8144cb03a596",
+    "timestamp": "2025-05-29T10:13:50.578Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.579Z"
+  },
+  {
+    "id": "9683dd77-1b11-4e99-be13-00eac7f2b85e",
+    "timestamp": "2025-05-29T10:13:50.585Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.587Z"
+  },
+  {
+    "id": "1ebda9a8-193e-4bcd-8ba4-5d9accd49df6",
+    "timestamp": "2025-05-29T10:13:50.603Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.604Z"
+  },
+  {
+    "id": "2fc0fda9-26e3-44b0-92da-e414075dd7fb",
+    "timestamp": "2025-05-29T10:13:50.605Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.606Z"
+  },
+  {
+    "id": "06cc4fc0-6f1a-4b34-b088-c116eff1b886",
+    "timestamp": "2025-05-29T10:13:50.608Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.608Z"
+  },
+  {
+    "id": "03aa297e-c6c9-442c-8031-633de2b2c69b",
+    "timestamp": "2025-05-29T10:13:50.606Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.607Z"
+  },
+  {
+    "id": "651e7c48-3e1c-4a36-ade3-a66eed5a4720",
+    "timestamp": "2025-05-29T10:13:50.610Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.611Z"
+  },
+  {
+    "id": "b2854b27-70d5-4324-afe5-598d6fdfe333",
+    "timestamp": "2025-05-29T10:13:50.609Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.610Z"
+  },
+  {
+    "id": "457549c7-9a7a-4bc2-bb6e-836067446b7e",
+    "timestamp": "2025-05-29T10:13:50.611Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.612Z"
+  },
+  {
+    "id": "9de490fc-fdc3-4bd3-b3e2-4f1635f17552",
+    "timestamp": "2025-05-29T10:13:50.620Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.621Z"
+  },
+  {
+    "id": "dcbb1336-13d6-4138-a94f-d85f09aee3a7",
+    "timestamp": "2025-05-29T10:13:50.626Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.627Z"
+  },
+  {
+    "id": "9b854cb1-c0f4-4c21-8efa-11fc3dbf01c1",
+    "timestamp": "2025-05-29T10:13:50.624Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.625Z"
+  },
+  {
+    "id": "37e45d18-7c77-4180-ad47-ab63e93d5ea4",
+    "timestamp": "2025-05-29T10:13:50.622Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.623Z"
+  },
+  {
+    "id": "16036dbc-08e5-4881-8d56-058847d70de3",
+    "timestamp": "2025-05-29T10:13:50.628Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.629Z"
+  },
+  {
+    "id": "9b899de2-c8a4-4131-95b3-2a6de2618a69",
+    "timestamp": "2025-05-29T10:13:50.628Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.628Z"
+  },
+  {
+    "id": "6cf58683-047b-4941-bc7d-799bdaefb9ae",
+    "timestamp": "2025-05-29T10:13:50.632Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.633Z"
+  },
+  {
+    "id": "a0fe0382-a0fd-44eb-95cd-25c01239f5fb",
+    "timestamp": "2025-05-29T10:13:50.631Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.632Z"
+  },
+  {
+    "id": "29bb952b-df1f-45e9-a0e1-a28c883eb3ed",
+    "timestamp": "2025-05-29T10:13:50.634Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.635Z"
+  },
+  {
+    "id": "bff76077-2668-432b-b1bf-b0f679753262",
+    "timestamp": "2025-05-29T10:13:50.636Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.637Z"
+  },
+  {
+    "id": "715fc509-80b8-441e-8545-936377c209ba",
+    "timestamp": "2025-05-29T10:13:50.637Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.638Z"
+  },
+  {
+    "id": "1f9cc4b9-bc2c-4167-8217-bd956608756d",
+    "timestamp": "2025-05-29T10:13:50.638Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T10:13:50.640Z"
+  },
+  {
+    "id": "eaf0e2ba-e7fa-4550-b3cb-56f48933f801",
+    "timestamp": "2025-05-29T14:10:18.767Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.768Z"
+  },
+  {
+    "id": "56eaea98-a173-49a7-b9d1-9d8da5a6c7d0",
+    "timestamp": "2025-05-29T14:10:18.781Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.788Z"
+  },
+  {
+    "id": "558e3293-a53f-4f7c-8148-6e500bb1d0d0",
+    "timestamp": "2025-05-29T14:10:18.792Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.793Z"
+  },
+  {
+    "id": "e2479b7d-d7cf-45fb-ab59-79363cb95e15",
+    "timestamp": "2025-05-29T14:10:18.799Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.800Z"
+  },
+  {
+    "id": "53dd2832-d601-462a-9f99-37922e984a66",
+    "timestamp": "2025-05-29T14:10:18.796Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.797Z"
+  },
+  {
+    "id": "80f216c4-be8d-40e1-8466-bf21ebf5c8b4",
+    "timestamp": "2025-05-29T14:10:18.794Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.795Z"
+  },
+  {
+    "id": "6906872e-e1a0-43a3-966b-ef2a27d753d8",
+    "timestamp": "2025-05-29T14:10:18.801Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.802Z"
+  },
+  {
+    "id": "3d0187aa-936b-47fc-ba13-7341ead9c481",
+    "timestamp": "2025-05-29T14:10:18.805Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.806Z"
+  },
+  {
+    "id": "fc71a24c-380a-41ef-98b7-30252a95d04b",
+    "timestamp": "2025-05-29T14:10:18.802Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.805Z"
+  },
+  {
+    "id": "52f73f55-3d5f-4218-8b91-335486ee0b25",
+    "timestamp": "2025-05-29T14:10:18.808Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.809Z"
+  },
+  {
+    "id": "de905a70-e7bb-4033-9943-8f480d4ea7ac",
+    "timestamp": "2025-05-29T14:10:18.812Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.813Z"
+  },
+  {
+    "id": "b2a85e59-38c2-4980-a921-377fdd73c62c",
+    "timestamp": "2025-05-29T14:10:18.810Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.811Z"
+  },
+  {
+    "id": "57283a95-c967-4a1c-9b80-b0a4a547611d",
+    "timestamp": "2025-05-29T14:10:18.817Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.818Z"
+  },
+  {
+    "id": "aee9c0cc-59d1-456a-b11d-4e4a028b0ecf",
+    "timestamp": "2025-05-29T14:10:18.822Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.823Z"
+  },
+  {
+    "id": "2617547b-030b-4ab7-af2c-a678a8a397e9",
+    "timestamp": "2025-05-29T14:10:18.827Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.828Z"
+  },
+  {
+    "id": "899b07a9-5e74-4984-910c-21ed8fe26d58",
+    "timestamp": "2025-05-29T14:10:18.824Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.825Z"
+  },
+  {
+    "id": "bb03e7f3-f258-445d-af04-4ded7bce0904",
+    "timestamp": "2025-05-29T14:10:18.829Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.831Z"
+  },
+  {
+    "id": "6ace038f-a38d-4276-ae46-8db152ac2969",
+    "timestamp": "2025-05-29T14:10:18.826Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.827Z"
+  },
+  {
+    "id": "49034fee-c96c-4e06-9e86-3a4f2e0fa37f",
+    "timestamp": "2025-05-29T14:10:18.831Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.832Z"
+  },
+  {
+    "id": "80631ce0-ac19-4bd1-ad73-f900d006c035",
+    "timestamp": "2025-05-29T14:10:18.837Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.838Z"
+  },
+  {
+    "id": "593d17c3-bf07-4076-9dd1-1be7e5fece47",
+    "timestamp": "2025-05-29T14:10:18.839Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.840Z"
+  },
+  {
+    "id": "3883b2b0-bd23-4329-933f-ecefc6658cea",
+    "timestamp": "2025-05-29T14:10:18.841Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.841Z"
+  },
+  {
+    "id": "343028b7-9dbe-429a-a8cc-c28eb94c9ce8",
+    "timestamp": "2025-05-29T14:10:18.845Z",
+    "message": "createCourse",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Course"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T14:10:18.846Z"
+  },
+  {
+    "id": "94a24c7c-90be-4baf-af1d-33d55c7582b9",
+    "timestamp": "2025-05-29T15:37:50.346Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.348Z"
+  },
+  {
+    "id": "c7a2f396-ffbf-4c39-959b-1577e117b6e7",
+    "timestamp": "2025-05-29T15:37:50.349Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.349Z"
+  },
+  {
+    "id": "79da35b6-1d7d-4fe1-87b6-5ed8dd787f76",
+    "timestamp": "2025-05-29T15:37:50.351Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.353Z"
+  },
+  {
+    "id": "dceb4e28-cd32-4a47-b761-52bcdc1f3313",
+    "timestamp": "2025-05-29T15:37:50.355Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.357Z"
+  },
+  {
+    "id": "82d0493a-21f8-44dc-8398-1eccee9edf72",
+    "timestamp": "2025-05-29T15:37:50.380Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.381Z"
+  },
+  {
+    "id": "4e37706b-5465-4baa-b30e-555af793e241",
+    "timestamp": "2025-05-29T15:37:50.388Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.389Z"
+  },
+  {
+    "id": "2b6626ea-cca7-40a7-b751-3cb0044d5dc7",
+    "timestamp": "2025-05-29T15:37:50.385Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.386Z"
+  },
+  {
+    "id": "2fcd4158-da20-439a-b243-91668b4e1176",
+    "timestamp": "2025-05-29T15:37:50.387Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.388Z"
+  },
+  {
+    "id": "98138a4b-2ca3-427b-b1bd-04a2b2e2f80a",
+    "timestamp": "2025-05-29T15:37:50.391Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.393Z"
+  },
+  {
+    "id": "39ca5aa1-87fd-49f9-9e8a-3f022d876445",
+    "timestamp": "2025-05-29T15:37:50.395Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.396Z"
+  },
+  {
+    "id": "792230b3-bb00-492e-a01a-143b8f97d81e",
+    "timestamp": "2025-05-29T15:37:50.397Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.398Z"
+  },
+  {
+    "id": "8ea39f1b-1680-4e70-8bbc-12180412b731",
+    "timestamp": "2025-05-29T15:37:50.402Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.405Z"
+  },
+  {
+    "id": "6f484465-9d29-4b55-a1aa-53af16d6b7a0",
+    "timestamp": "2025-05-29T15:37:50.404Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.406Z"
+  },
+  {
+    "id": "e500d6c7-4e60-4822-8c0a-b1449452f1cf",
+    "timestamp": "2025-05-29T15:37:50.410Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.412Z"
+  },
+  {
+    "id": "d26c28f7-65cd-4514-a554-6c28992dbd65",
+    "timestamp": "2025-05-29T15:37:50.419Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.420Z"
+  },
+  {
+    "id": "0d58c41d-c77d-459c-9643-741c81a5edd1",
+    "timestamp": "2025-05-29T15:37:50.423Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.424Z"
+  },
+  {
+    "id": "294370bb-14f8-44b8-abf3-2ada384be312",
+    "timestamp": "2025-05-29T15:37:50.427Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.429Z"
+  },
+  {
+    "id": "d27632f2-1001-4b4c-baa6-f4f97efaeb86",
+    "timestamp": "2025-05-29T15:37:50.431Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.433Z"
+  },
+  {
+    "id": "aef3185b-1592-4eab-b9f2-236eda525718",
+    "timestamp": "2025-05-29T15:37:50.399Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.400Z"
+  },
+  {
+    "id": "4ce6d2cb-77fc-48f6-afa2-bd8787ba3caf",
+    "timestamp": "2025-05-29T15:37:50.407Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.409Z"
+  },
+  {
+    "id": "f47413b3-6940-4904-aa01-ae6c9824f874",
+    "timestamp": "2025-05-29T15:37:50.415Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.417Z"
+  },
+  {
+    "id": "0c602c82-8a2c-4a14-ade7-17295499af48",
+    "timestamp": "2025-05-29T15:37:50.421Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:37:50.423Z"
+  },
+  {
+    "id": "d9265c04-1b6f-46b0-915f-ccfc68821065",
+    "timestamp": "2025-05-29T15:38:55.069Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.070Z"
+  },
+  {
+    "id": "d2907e22-a8ba-4b41-8508-a9ff9a038a8b",
+    "timestamp": "2025-05-29T15:38:55.070Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.071Z"
+  },
+  {
+    "id": "fd56bef5-df16-431a-b772-5899871c2ed1",
+    "timestamp": "2025-05-29T15:38:55.072Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.072Z"
+  },
+  {
+    "id": "e6593ddf-b35b-4068-b911-c944dd8e6d8b",
+    "timestamp": "2025-05-29T15:38:55.073Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.073Z"
+  },
+  {
+    "id": "6b3fe27d-65f2-4ae6-a0c0-4f968f3d7941",
+    "timestamp": "2025-05-29T15:38:55.075Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.076Z"
+  },
+  {
+    "id": "73de622a-a745-43f9-a4c4-46e072eba0f7",
+    "timestamp": "2025-05-29T15:38:55.076Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.077Z"
+  },
+  {
+    "id": "7237d121-63aa-4d90-ba06-51c989e7adad",
+    "timestamp": "2025-05-29T15:38:55.081Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.082Z"
+  },
+  {
+    "id": "f3825885-b13c-473f-afc5-1ca05d5aaca4",
+    "timestamp": "2025-05-29T15:38:55.089Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.090Z"
+  },
+  {
+    "id": "fa5e517a-0541-4cd8-8b9f-c5e4a38ff316",
+    "timestamp": "2025-05-29T15:38:55.088Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.089Z"
+  },
+  {
+    "id": "da7e767d-1588-47f6-a453-1aacd072246c",
+    "timestamp": "2025-05-29T15:38:55.093Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.095Z"
+  },
+  {
+    "id": "b0c479f4-b79a-416c-80b0-2bb483f737da",
+    "timestamp": "2025-05-29T15:38:55.092Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.093Z"
+  },
+  {
+    "id": "b04ccffa-85b3-403b-9fcb-f390ec2f49dc",
+    "timestamp": "2025-05-29T15:38:55.097Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.098Z"
+  },
+  {
+    "id": "c32dc128-d918-4243-86e9-326d33bf15fb",
+    "timestamp": "2025-05-29T15:38:55.096Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.097Z"
+  },
+  {
+    "id": "25cc2bfc-5093-455c-b262-8db8921b4d3b",
+    "timestamp": "2025-05-29T15:38:55.101Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.102Z"
+  },
+  {
+    "id": "a17eb269-5e87-4d7f-b804-30c9738d9041",
+    "timestamp": "2025-05-29T15:38:55.105Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.106Z"
+  },
+  {
+    "id": "cad7c624-7768-4696-a5f7-e61a8e2f2140",
+    "timestamp": "2025-05-29T15:38:55.108Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.108Z"
+  },
+  {
+    "id": "0749c746-fbd2-42ed-a3df-cd1a5911d78e",
+    "timestamp": "2025-05-29T15:38:55.108Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.109Z"
+  },
+  {
+    "id": "a0d285e6-5675-4f9d-bf36-27f24d755bb6",
+    "timestamp": "2025-05-29T15:38:55.109Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.110Z"
+  },
+  {
+    "id": "b37692e0-91d5-4c25-8d20-c60c54862a13",
+    "timestamp": "2025-05-29T15:38:55.110Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.112Z"
+  },
+  {
+    "id": "a6280bae-438d-49c7-a86e-6a7febdce130",
+    "timestamp": "2025-05-29T15:38:55.113Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:55.114Z"
+  },
+  {
+    "id": "326c3801-de8a-40c3-87ba-8dc4d85f544b",
+    "timestamp": "2025-05-29T15:38:57.369Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.371Z"
+  },
+  {
+    "id": "356f1359-a7c6-41f9-9423-825017d24603",
+    "timestamp": "2025-05-29T15:38:57.373Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.374Z"
+  },
+  {
+    "id": "6ef7cfe1-d4a2-4fe5-b581-fa82eea23635",
+    "timestamp": "2025-05-29T15:38:57.380Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.384Z"
+  },
+  {
+    "id": "ed0553d0-bcba-4989-92eb-f517ab3c9cfe",
+    "timestamp": "2025-05-29T15:38:57.383Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.384Z"
+  },
+  {
+    "id": "aec6418e-08d5-484a-8088-3b27d8d681c2",
+    "timestamp": "2025-05-29T15:38:57.385Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.388Z"
+  },
+  {
+    "id": "a2b9027f-46c2-42f1-9a9a-d10549cfcff6",
+    "timestamp": "2025-05-29T15:38:57.387Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.388Z"
+  },
+  {
+    "id": "0a8ee562-8101-4592-b3a2-ec31a390881e",
+    "timestamp": "2025-05-29T15:38:57.394Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.397Z"
+  },
+  {
+    "id": "87c0c99d-6c6c-4ee1-9c63-3bcc3dc4165f",
+    "timestamp": "2025-05-29T15:38:57.407Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.408Z"
+  },
+  {
+    "id": "9815e961-40b1-4054-9ba2-850b7379f9b0",
+    "timestamp": "2025-05-29T15:38:57.422Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.423Z"
+  },
+  {
+    "id": "d7697d0e-9cca-42e5-8d97-d8e0906843ef",
+    "timestamp": "2025-05-29T15:38:57.389Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.390Z"
+  },
+  {
+    "id": "eda4dd60-5ff7-4d06-b35b-fd985955d42d",
+    "timestamp": "2025-05-29T15:38:57.399Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.400Z"
+  },
+  {
+    "id": "cd2a9179-c745-45f7-92be-1ca1504961f7",
+    "timestamp": "2025-05-29T15:38:57.405Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.406Z"
+  },
+  {
+    "id": "e9846363-2a4a-4306-8778-3164e63287ac",
+    "timestamp": "2025-05-29T15:38:57.410Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.411Z"
+  },
+  {
+    "id": "81696277-fd20-46d7-ab30-c0bca2a5bd72",
+    "timestamp": "2025-05-29T15:38:57.417Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.423Z"
+  },
+  {
+    "id": "511d62a3-115e-4b02-86c7-09ac7df2959d",
+    "timestamp": "2025-05-29T15:38:57.390Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.393Z"
+  },
+  {
+    "id": "7a1312c4-cd01-49c0-8dfc-aa8761ab0b3d",
+    "timestamp": "2025-05-29T15:38:57.395Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.398Z"
+  },
+  {
+    "id": "fc585564-634a-46fc-bf0e-e5cd7c3b7607",
+    "timestamp": "2025-05-29T15:38:57.403Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.404Z"
+  },
+  {
+    "id": "85019adc-6720-4945-b0d8-29d11958686b",
+    "timestamp": "2025-05-29T15:38:57.401Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.402Z"
+  },
+  {
+    "id": "6b78369a-4a6f-4b36-973f-62201a4d8530",
+    "timestamp": "2025-05-29T15:38:57.424Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.425Z"
+  },
+  {
+    "id": "2a9bc807-060f-4fc0-a597-fd549ccd4e5a",
+    "timestamp": "2025-05-29T15:38:57.431Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.432Z"
+  },
+  {
+    "id": "97ab6768-a658-40e6-bc60-849f1f5df54c",
+    "timestamp": "2025-05-29T15:38:57.439Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:38:57.440Z"
+  },
+  {
+    "id": "8e5addf3-46e8-4f88-bc9e-e9639c63cbf4",
+    "timestamp": "2025-05-29T15:42:59.877Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.880Z"
+  },
+  {
+    "id": "e6250a08-febc-47ac-a77d-c31fe79cf951",
+    "timestamp": "2025-05-29T15:42:59.884Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.885Z"
+  },
+  {
+    "id": "ad75e9fa-b005-4698-953a-8026f4c74538",
+    "timestamp": "2025-05-29T15:42:59.887Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.888Z"
+  },
+  {
+    "id": "6d44fccd-14f8-49e6-b641-0f192e19243b",
+    "timestamp": "2025-05-29T15:42:59.894Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.895Z"
+  },
+  {
+    "id": "ed335c18-a799-4a87-8ebb-16bd22634753",
+    "timestamp": "2025-05-29T15:42:59.890Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.891Z"
+  },
+  {
+    "id": "ceaacdbe-6514-4c2e-b17d-55669baa14f6",
+    "timestamp": "2025-05-29T15:42:59.897Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.898Z"
+  },
+  {
+    "id": "f7c165ce-b974-48ab-88a7-02a1e250901f",
+    "timestamp": "2025-05-29T15:42:59.893Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.894Z"
+  },
+  {
+    "id": "7b9b3c3e-9140-465c-a4e7-1a172eb7aa85",
+    "timestamp": "2025-05-29T15:42:59.895Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.896Z"
+  },
+  {
+    "id": "8d660a3a-0332-413a-82d0-b85d63b19e2e",
+    "timestamp": "2025-05-29T15:42:59.899Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.900Z"
+  },
+  {
+    "id": "bf8efc6c-dfe8-42cf-bcab-6d1156fded7d",
+    "timestamp": "2025-05-29T15:42:59.900Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.901Z"
+  },
+  {
+    "id": "1e010160-008b-4b38-b70a-088cd567298d",
+    "timestamp": "2025-05-29T15:42:59.906Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.908Z"
+  },
+  {
+    "id": "9d8a790e-5d8b-469c-9990-5c4a91187956",
+    "timestamp": "2025-05-29T15:42:59.910Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.912Z"
+  },
+  {
+    "id": "d7285468-b68c-47a7-9ccc-25afc1cf5e40",
+    "timestamp": "2025-05-29T15:42:59.912Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.913Z"
+  },
+  {
+    "id": "60eda15a-ddde-4a55-a229-80c2f12c6c60",
+    "timestamp": "2025-05-29T15:42:59.914Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.915Z"
+  },
+  {
+    "id": "5891a0f3-2d76-4d42-9d7b-c51de1de4bf1",
+    "timestamp": "2025-05-29T15:42:59.915Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.915Z"
+  },
+  {
+    "id": "c44db23b-47d1-4708-ba92-82d968df2b2e",
+    "timestamp": "2025-05-29T15:42:59.915Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.916Z"
+  },
+  {
+    "id": "396888eb-127b-4dc3-9436-762fec1cfe1a",
+    "timestamp": "2025-05-29T15:42:59.916Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.917Z"
+  },
+  {
+    "id": "79e5f57b-0794-4e38-abfa-81638f861a4d",
+    "timestamp": "2025-05-29T15:42:59.920Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.921Z"
+  },
+  {
+    "id": "d1f8d28f-1299-4fc6-aa53-2f43046762bb",
+    "timestamp": "2025-05-29T15:42:59.921Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.922Z"
+  },
+  {
+    "id": "90cebd8e-66d3-4834-955c-6b47f8adce7e",
+    "timestamp": "2025-05-29T15:42:59.917Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.918Z"
+  },
+  {
+    "id": "7d6bf064-844d-474e-8a65-6e5e62d944e0",
+    "timestamp": "2025-05-29T15:42:59.927Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.928Z"
+  },
+  {
+    "id": "aadb1968-a84d-481e-88e5-175f7126fe98",
+    "timestamp": "2025-05-29T15:42:59.929Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.930Z"
+  },
+  {
+    "id": "5acb788c-eb42-4737-8384-3332cc523e4f",
+    "timestamp": "2025-05-29T15:42:59.931Z",
+    "message": "createDichvu",
+    "details": {
+      "code": "P2002",
+      "meta": {
+        "target": [
+          "codeId"
+        ],
+        "modelName": "Dichvu"
+      },
+      "name": "PrismaClientKnownRequestError",
+      "clientVersion": "6.6.0"
+    },
+    "source": "server",
+    "createdAt": "2025-05-29T15:42:59.932Z"
+  }
+]

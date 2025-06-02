@@ -27,13 +27,13 @@ export class DoanhthuService {
       });
       let nextNumber = 1;
       if (latest && latest.codeId) {
-        const prefix = 'DONHANG';
-        const match = latest.codeId.match(new RegExp(prefix + '(\d+)'));
+        const prefix = 'DT';
+        const match = latest.codeId.match(new RegExp(prefix + '(\\d+)'));
         if (match) {
           nextNumber = parseInt(match[1]) + 1;
         }
       }
-      const newPrefix = 'DONHANG'; 
+      const newPrefix = 'DT'; 
       return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
       this._ErrorlogService.logError('generateDoanhthuCodeId', error);
@@ -46,7 +46,7 @@ export class DoanhthuService {
         _max: { order: true },
       });
       const newOrder = (maxOrder._max?.order || 0) + 1;
-      const codeId = await this.generateCodeId();
+      const codeId = data.codeId || await this.generateCodeId();
       const created = await this.prisma.doanhthu.create({
         data: {
           ...data,
@@ -66,7 +66,7 @@ export class DoanhthuService {
     if (!param || !Array.isArray(param) || param.length === 0) {
       throw new NotFoundException('Invalid parameters for syncsdoanhthu');
     }
-    console.log(param);
+    // console.log(param);
     
     const concurrencyLimit = 50;
     let successCount = 0;
@@ -79,16 +79,9 @@ export class DoanhthuService {
           where: { codeId: item.source_id },
         });
         
-        const user = await this.prisma.user.findFirst({
-          where: { phone: item.phone },
-        });
-        
-        if (!user) {
-          throw new NotFoundException(`User not found for phone: ${item.phone}`);
-        }
         const dichvu = await this.prisma.dichvu.findFirst({
           where: { OR: [
-            { tabCode: item.tabCode },
+            { TabCode: item.TabCode },
             { TabCardCode: item.TabCardCode },
             { TabMedicineCode: item.TabMedicineCode }
           ] },
@@ -96,35 +89,28 @@ export class DoanhthuService {
         if (!dichvu) {
           throw new NotFoundException(`Dichvu not found for serviceCode: ${item.serviceCode}`);
         }
-        console.log(`Processing item with source_id ${item.source_id} for user ${user.id} and dichvu ${dichvu.id}`);
         
         if (!existing) {
-          console.log(`Creating new doanhthu for source_id ${item.source_id}`);
-          
-          const data = {
+         const data = {
             codeId: item.source_id, // using source_id as codeId
-            userId: user.id || null,
             dichvuId: dichvu.id || null,
-            originalAmount: item.priceRoot || 0,
-            discountAmount: item.discount || 0,
-            actualAmount: item.priceDiscounted || 0,
+            codeDT: item.code || null,
+            amount: item.amount || 0,
+            commission: item.amount * 0.2 || 0,
           };
-
-
-
-
-
-  // codeId        String?     @unique
-  // doanhsoId     String
-  // doanhso       Doanhso     @relation(fields: [doanhsoId], references: [id])
-  // amount        Float       // Số tiền mỗi đợt
-  // commission    Float       // Hoa hồng mỗi đợt
-
-
-
-          
-          // await this.create(data);
+         await this.create(data);
         }
+        // else {
+        //   const data = {
+        //     codeId: item.source_id, // using source_id as codeId
+        //     dichvuId: dichvu.id || null,
+        //     codeDT: item.code || null,
+        //     amount: item.amount || 0,
+        //     commission: item.amount * 0.2 || 0,
+        //   };
+        //   await this.update(existing.id, data);
+        // }
+        // successCount++;
       } catch (error) {        
         throw error;
       }

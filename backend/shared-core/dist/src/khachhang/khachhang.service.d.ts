@@ -407,6 +407,9 @@ export declare class KhachhangService {
             createdBy: string | null;
             modifiedDate: Date | null;
             extractedAt: Date;
+            TabCode: string | null;
+            TabCardCode: string | null;
+            TabMedicineCode: string | null;
             custCode: string | null;
             custName: string | null;
             custPhone: string | null;

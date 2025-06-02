@@ -1,1 +1,0 @@
-import{Zb as o,_b as i,wc as c,zb as n}from"./chunk-QCPI2IR7.js";import"./chunk-EU2KAMEK.js";import"./chunk-47CWAPKR.js";var p=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=n({type:t,selectors:[["app-lienketctv"]],decls:2,vars:0,template:function(e,a){e&1&&(o(0,"p"),c(1,"lienketctv works!"),i())},encapsulation:2})};export{p as LienketctvComponent};

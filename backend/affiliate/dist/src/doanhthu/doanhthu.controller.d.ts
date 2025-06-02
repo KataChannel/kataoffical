@@ -5,13 +5,14 @@ export declare class DoanhthuController {
     create(data: any): Promise<{
         id: string;
         codeId: string | null;
-        doanhsoId: string;
-        amount: number;
-        commission: number;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         order: number | null;
+        status: string;
+        dichvuId: string;
+        codeDT: string | null;
+        amount: number | null;
+        commission: number | null;
         completedAt: Date | null;
     }>;
     syncsdoanhthu(param: any): Promise<{
@@ -21,25 +22,27 @@ export declare class DoanhthuController {
     findby(param: any): Promise<{
         id: string;
         codeId: string | null;
-        doanhsoId: string;
-        amount: number;
-        commission: number;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         order: number | null;
+        status: string;
+        dichvuId: string;
+        codeDT: string | null;
+        amount: number | null;
+        commission: number | null;
         completedAt: Date | null;
     } | {
         data: {
             id: string;
             codeId: string | null;
-            doanhsoId: string;
-            amount: number;
-            commission: number;
-            status: string;
             createdAt: Date;
             updatedAt: Date;
             order: number | null;
+            status: string;
+            dichvuId: string;
+            codeDT: string | null;
+            amount: number | null;
+            commission: number | null;
             completedAt: Date | null;
         }[];
         total: number;
@@ -50,13 +53,14 @@ export declare class DoanhthuController {
         data: {
             id: string;
             codeId: string | null;
-            doanhsoId: string;
-            amount: number;
-            commission: number;
-            status: string;
             createdAt: Date;
             updatedAt: Date;
             order: number | null;
+            status: string;
+            dichvuId: string;
+            codeDT: string | null;
+            amount: number | null;
+            commission: number | null;
             completedAt: Date | null;
         }[];
         total: number;
@@ -69,26 +73,28 @@ export declare class DoanhthuController {
     findOne(id: string): Promise<{
         id: string;
         codeId: string | null;
-        doanhsoId: string;
-        amount: number;
-        commission: number;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         order: number | null;
+        status: string;
+        dichvuId: string;
+        codeDT: string | null;
+        amount: number | null;
+        commission: number | null;
         completedAt: Date | null;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
         id: string;
         codeId: string | null;
-        doanhsoId: string;
-        amount: number;
-        commission: number;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
         order: number | null;
+        status: string;
+        dichvuId: string;
+        codeDT: string | null;
+        amount: number | null;
+        commission: number | null;
         completedAt: Date | null;
     }>;
     reorder(body: {

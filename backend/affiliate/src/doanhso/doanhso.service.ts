@@ -54,6 +54,7 @@ export class DoanhsoService {
           codeId: codeId
         },
       });
+      
       this._SocketGateway.sendUpdate('doanhso'); 
       return created;
     } catch (error) {
@@ -108,21 +109,21 @@ export class DoanhsoService {
             await this.create(data);
           }
         }
-        else {
-          console.log(`Updating doanhso for source_id ${item.source_id}`);
-          if(item.priceDiscounted>0) {
-            const data = {
-              codeId: item.source_id,
-              userId: user.id || null,
-              dichvuId: dichvu.id || null,
-              originalAmount: item.priceRoot || 0,
-              discountAmount: item.discount || 0,
-              actualAmount: item.priceDiscounted || 0,
-            };
-            console.log(data);
-            await this.update(existing.id, data);
-          }
-        }
+        // else {
+        //   console.log(`Updating doanhso for source_id ${item.source_id}`);
+        //   if(item.priceDiscounted>0) {
+        //     const data = {
+        //       codeId: item.source_id,
+        //       userId: user.id || null,
+        //       dichvuId: dichvu.id || null,
+        //       originalAmount: item.priceRoot || 0,
+        //       discountAmount: item.discount || 0,
+        //       actualAmount: item.priceDiscounted || 0,
+        //     };
+        //     console.log(data);
+        //     await this.update(existing.id, data);
+        //   }
+        // }
       } catch (error) {        
         throw error;
       }

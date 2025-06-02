@@ -9,7 +9,7 @@ export declare class DichvuController {
         updatedAt: Date;
         description: string | null;
         order: number | null;
-        tabCode: string | null;
+        TabCode: string | null;
         TabCardCode: string | null;
         TabMedicineCode: string | null;
         serviceCode: string | null;
@@ -27,7 +27,7 @@ export declare class DichvuController {
         updatedAt: Date;
         description: string | null;
         order: number | null;
-        tabCode: string | null;
+        TabCode: string | null;
         TabCardCode: string | null;
         TabMedicineCode: string | null;
         serviceCode: string | null;
@@ -41,7 +41,7 @@ export declare class DichvuController {
             updatedAt: Date;
             description: string | null;
             order: number | null;
-            tabCode: string | null;
+            TabCode: string | null;
             TabCardCode: string | null;
             TabMedicineCode: string | null;
             serviceCode: string | null;
@@ -60,7 +60,7 @@ export declare class DichvuController {
             updatedAt: Date;
             description: string | null;
             order: number | null;
-            tabCode: string | null;
+            TabCode: string | null;
             TabCardCode: string | null;
             TabMedicineCode: string | null;
             serviceCode: string | null;
@@ -81,7 +81,7 @@ export declare class DichvuController {
         updatedAt: Date;
         description: string | null;
         order: number | null;
-        tabCode: string | null;
+        TabCode: string | null;
         TabCardCode: string | null;
         TabMedicineCode: string | null;
         serviceCode: string | null;
@@ -96,7 +96,7 @@ export declare class DichvuController {
         updatedAt: Date;
         description: string | null;
         order: number | null;
-        tabCode: string | null;
+        TabCode: string | null;
         TabCardCode: string | null;
         TabMedicineCode: string | null;
         serviceCode: string | null;

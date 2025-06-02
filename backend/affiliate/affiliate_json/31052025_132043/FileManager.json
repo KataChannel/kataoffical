@@ -1,0 +1,202 @@
+[
+  {
+    "id": "1920a8c6-0edb-43dc-92b2-8e7f6b2e3b2e",
+    "codeId": "FILE00001",
+    "title": "banner-trangchu-tazagroup.webp",
+    "url": "timona/1748240300665-banner-trangchu-tazagroup.webp",
+    "description": null,
+    "fileType": "image/webp",
+    "fileSize": null,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/webp",
+      "originalname": "banner-trangchu-tazagroup.webp"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-26T06:18:20.720Z",
+    "updatedAt": "2025-05-26T06:18:20.720Z"
+  },
+  {
+    "id": "078b9600-6570-4cef-ba26-6bf64548759d",
+    "codeId": "FILE00002",
+    "title": "desk 1222x586-01.jpg",
+    "url": "timona/1748244064373-desk 1222x586-01.jpg",
+    "description": null,
+    "fileType": "image/jpeg",
+    "fileSize": 954657,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "desk 1222x586-01.jpg"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-26T07:21:04.449Z",
+    "updatedAt": "2025-05-26T07:21:04.449Z"
+  },
+  {
+    "id": "d241f969-b808-4b4a-8c81-fff845b2b580",
+    "codeId": "FILE00007",
+    "title": "Logo Taza Group.png",
+    "url": "timona/1748246154372-Logo Taza Group.png",
+    "description": null,
+    "fileType": "image/png",
+    "fileSize": 350153,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/png",
+      "originalname": "Logo Taza Group.png"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-26T07:55:54.430Z",
+    "updatedAt": "2025-05-26T07:55:54.430Z"
+  },
+  {
+    "id": "3f162d6f-ed23-4bb4-ab4a-3083e3003671",
+    "codeId": "FILE00008",
+    "title": "Logo Taza Group black.png",
+    "url": "timona/1748246154460-Logo Taza Group black.png",
+    "description": null,
+    "fileType": "image/png",
+    "fileSize": 346174,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/png",
+      "originalname": "Logo Taza Group black.png"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-26T07:55:54.478Z",
+    "updatedAt": "2025-05-26T07:55:54.478Z"
+  },
+  {
+    "id": "f274b191-057f-4d14-a907-a59b5ef0e459",
+    "codeId": "FILE00009",
+    "title": "Logo Taza Group.png",
+    "url": "timona/1748246165250-Logo Taza Group.png",
+    "description": null,
+    "fileType": "image/png",
+    "fileSize": 350153,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/png",
+      "originalname": "Logo Taza Group.png"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-26T07:56:05.271Z",
+    "updatedAt": "2025-05-26T07:56:05.271Z"
+  },
+  {
+    "id": "49c3847c-d476-4fb9-8227-fc586c95e1e5",
+    "codeId": "FILE00010",
+    "title": "cay-canh-noi-that-15.webp",
+    "url": "timona/1748320303105-cay-canh-noi-that-15.webp",
+    "description": null,
+    "fileType": "image/webp",
+    "fileSize": 72110,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/webp",
+      "originalname": "cay-canh-noi-that-15.webp"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-27T04:31:43.163Z",
+    "updatedAt": "2025-05-27T04:31:43.163Z"
+  },
+  {
+    "id": "d32e9011-6e2d-45fd-b857-41982310b07c",
+    "codeId": "FILE00011",
+    "title": "hanh-phuc-de-ban-02.jpg",
+    "url": "timona/1748320303191-hanh-phuc-de-ban-02.jpg",
+    "description": null,
+    "fileType": "image/jpeg",
+    "fileSize": 115345,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "hanh-phuc-de-ban-02.jpg"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-27T04:31:43.208Z",
+    "updatedAt": "2025-05-27T04:31:43.208Z"
+  },
+  {
+    "id": "09358a5d-40c1-499c-a538-df4c017eccf0",
+    "codeId": "FILE00012",
+    "title": "cay-de-ban-lam-viec-12.jpg",
+    "url": "timona/1748320303226-cay-de-ban-lam-viec-12.jpg",
+    "description": null,
+    "fileType": "image/jpeg",
+    "fileSize": 51128,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "cay-de-ban-lam-viec-12.jpg"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-27T04:31:43.243Z",
+    "updatedAt": "2025-05-27T04:31:43.243Z"
+  },
+  {
+    "id": "e5fd29b3-dc07-4ada-9107-bbf0e5e14496",
+    "codeId": "FILE00013",
+    "title": "DSC_4024-Edit_800x800.png",
+    "url": "timona/1748320303275-DSC_4024-Edit_800x800.png",
+    "description": null,
+    "fileType": "image/png",
+    "fileSize": 468434,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/png",
+      "originalname": "DSC_4024-Edit_800x800.png"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-27T04:31:43.322Z",
+    "updatedAt": "2025-05-27T04:31:43.322Z"
+  },
+  {
+    "id": "b1876f2d-0779-45bc-b22b-1358902ab28a",
+    "codeId": "FILE00014",
+    "title": "cay-de-ban-lam-viec-theo-phong-thuy.jpg",
+    "url": "timona/1748320303349-cay-de-ban-lam-viec-theo-phong-thuy.jpg",
+    "description": null,
+    "fileType": "image/jpeg",
+    "fileSize": 64478,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "cay-de-ban-lam-viec-theo-phong-thuy.jpg"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-27T04:31:43.364Z",
+    "updatedAt": "2025-05-27T04:31:43.364Z"
+  }
+]

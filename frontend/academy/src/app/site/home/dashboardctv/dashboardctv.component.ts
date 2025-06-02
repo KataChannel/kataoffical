@@ -206,7 +206,8 @@ export class DashboardctvComponent {
     if(this.Doanhthu.dichvus.length > 0) {
         await this._CourseService.getSyncsCourse(this.Doanhthu.dichvus);
         await this._DoanhsoService.getSyncsDoanhso(this.Doanhthu.dichvus);
-        await this._DoanhthuService.getSyncsDoanhthu(this.Doanhthu.doanhthus);   
+        await this._DoanhthuService.getSyncsDoanhthu(this.Doanhthu.doanhthus);    
     }
+    
   }
 }

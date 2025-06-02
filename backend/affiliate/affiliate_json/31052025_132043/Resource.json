@@ -1,0 +1,72 @@
+[
+  {
+    "id": "c972428f-4fca-4204-9b34-fb1b61407115",
+    "codeId": "RS00002",
+    "title": "Banner Tazagroup",
+    "url": "timona/1748240300665-banner-trangchu-tazagroup.webp",
+    "description": null,
+    "fileType": null,
+    "metaData": null,
+    "category": "banner",
+    "group": null,
+    "order": 2,
+    "createdAt": "2025-05-26T07:57:10.873Z",
+    "updatedAt": "2025-05-26T07:57:10.873Z"
+  },
+  {
+    "id": "c4f973a0-e182-4671-9291-615c9754b583",
+    "codeId": "RS00003",
+    "title": "Banner Tazagroup 1",
+    "url": "timona/1748244064373-desk 1222x586-01.jpg",
+    "description": null,
+    "fileType": null,
+    "metaData": null,
+    "category": "banner",
+    "group": null,
+    "order": 3,
+    "createdAt": "2025-05-26T07:58:33.488Z",
+    "updatedAt": "2025-05-26T07:58:33.488Z"
+  },
+  {
+    "id": "7a4e64d1-e36a-4a08-bbad-8cb3ff6ac188",
+    "codeId": "RS00004",
+    "title": "test1",
+    "url": null,
+    "description": null,
+    "fileType": null,
+    "metaData": null,
+    "category": "banner",
+    "group": null,
+    "order": 4,
+    "createdAt": "2025-05-26T07:59:39.972Z",
+    "updatedAt": "2025-05-26T07:59:39.972Z"
+  },
+  {
+    "id": "ea3a1579-0a8b-4baf-a905-60889078d503",
+    "codeId": "RS00001",
+    "title": "Logo Taza Group",
+    "url": "timona/1748246154372-Logo Taza Group.png",
+    "description": "Mô Tả về logo này",
+    "fileType": null,
+    "metaData": null,
+    "category": "banner",
+    "group": null,
+    "order": 1,
+    "createdAt": "2025-05-26T07:56:33.324Z",
+    "updatedAt": "2025-05-26T08:35:57.284Z"
+  },
+  {
+    "id": "4e79c6b7-8bc1-4e6f-85d4-d4a306cf57ac",
+    "codeId": "RS00005",
+    "title": "Demo 1",
+    "url": "timona/1748320303105-cay-canh-noi-that-15.webp",
+    "description": null,
+    "fileType": null,
+    "metaData": null,
+    "category": "socialmedia",
+    "group": null,
+    "order": 5,
+    "createdAt": "2025-05-27T04:35:54.938Z",
+    "updatedAt": "2025-05-27T04:35:54.938Z"
+  }
+]

@@ -9,92 +9,73 @@ datasource postgres {
   url      = env("DATABASE_URL")
 }
 
-enum Gender {
-  MALE
-  FEMALE
-  OTHER
-}
-
-enum CommissionStatus {
-  PENDING
-  APPROVED
-  PAID
-  REJECTED
-}
-
-enum OrderStatus {
-  PENDING
-  COMPLETED
-  CANCELLED
-}
-
 model User {
-  id                 String               @id @default(uuid())
-  codeId             String?              @unique
+  id                 String             @id @default(uuid())
+  codeId             String?            @unique
   name               String?
   avatar             String?
   gender             Gender?
-  email              String?              
-  SDT                String?              
-  phone              String?              
-  zaloId             String?              
-  facebookId         String?              
-  googleId           String?              
+  email              String?
+  SDT                String?
+  phone              String?
+  zaloId             String?
+  facebookId         String?
+  googleId           String?
   password           String?
   provider           String?
-  providerId         String?              
-  isSuperAdmin       Boolean              @default(false)
-  roles              UserRole[]
-  isActive           Boolean              @default(false)
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
-  audits             AuditLog[]
-  Notification       Notification[]
-  LandingPage        LandingPage[]
+  providerId         String?
+  isSuperAdmin       Boolean            @default(false)
+  isActive           Boolean            @default(false)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
   registrationSource String?
-  inviteCode         String?              @unique
-  affiliateCode      String?            
+  inviteCode         String?            @unique
+  affiliateCode      String?
   referrerId         String?
-  referrer           User?                @relation("Referrals", fields: [referrerId], references: [id])
-  referrals          User[]               @relation("Referrals")
-  TrackingEvent      TrackingEvent[]
-  Doanhso            Doanhso[]              // Các đơn hàng của user
+  audits             AuditLog[]
+  Doanhso            Doanhso[]
   HoaHong            HoaHong[]
+  LandingPage        LandingPage[]
+  Notification       Notification[]
   ThanhToanHoaHong   ThanhToanHoaHong[]
+  TrackingEvent      TrackingEvent[]
+  referrer           User?              @relation("Referrals", fields: [referrerId], references: [id])
+  referrals          User[]             @relation("Referrals")
+  roles              UserRole[]
 }
 
 model Role {
   id          String           @id @default(uuid())
   name        String           @unique
-  permissions RolePermission[]
-  users       UserRole[]
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+  permissions RolePermission[]
+  users       UserRole[]
 }
 
 model UserRole {
   id     String @id @default(uuid())
   userId String
   roleId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Permission {
   id          String           @id @default(uuid())
   name        String           @unique
   description String?
-  roles       RolePermission[]
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+  roles       RolePermission[]
 }
 
 model RolePermission {
   id           String     @id @default(uuid())
   roleId       String
   permissionId String
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
 }
 
 model Menu {
@@ -103,12 +84,12 @@ model Menu {
   icon      String?
   slug      String?
   parentId  String?
-  parent    Menu?    @relation("MenuChildren", fields: [parentId], references: [id])
-  children  Menu[]   @relation("MenuChildren")
   order     Int?
   isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  parent    Menu?    @relation("MenuChildren", fields: [parentId], references: [id])
+  children  Menu[]   @relation("MenuChildren")
 }
 
 model ChatAIMessage {
@@ -139,22 +120,22 @@ model ErrorLog {
 model AuditLog {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   action    String?
   entity    String?
   entityId  String?
   oldValue  Json?
   newValue  Json?
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Notification {
   id        String   @id @default(uuid())
   message   String
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model LandingPage {
@@ -172,13 +153,13 @@ model LandingPage {
   seoDescription String?
   seoKeywords    String?
   ownerId        String?
-  owner          User?           @relation(fields: [ownerId], references: [id])
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   codeId         String          @unique
   order          Int?            @default(1)
   isActive       Boolean         @default(true)
   AffiliateLink  AffiliateLink[]
+  owner          User?           @relation(fields: [ownerId], references: [id])
 }
 
 model TrackingEvent {
@@ -190,21 +171,20 @@ model TrackingEvent {
   pageIdentifier  String?
   pageType        String?
   userId          String?
-  user            User?          @relation(fields: [userId], references: [id])
   ipAddress       String?
   userAgent       String?
   affiliateLinkId String?
-  affiliateLink   AffiliateLink? @relation(fields: [affiliateLinkId], references: [id])
   sharePlatform   String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  affiliateLink   AffiliateLink? @relation(fields: [affiliateLinkId], references: [id])
+  user            User?          @relation(fields: [userId], references: [id])
 }
 
 model AffiliateLink {
-  id             String         @id @default(uuid())
-  codeId         String?        @unique
+  id             String          @id @default(uuid())
+  codeId         String?         @unique
   landingPageId  String?
-  landingPage    LandingPage?   @relation(fields: [landingPageId], references: [id])
   campaignName   String?
   description    String?
   utmSource      String?
@@ -213,13 +193,14 @@ model AffiliateLink {
   utmTerm        String?
   utmContent     String?
   url            String?
-  trackingEvents TrackingEvent[]
-  order          Int?           @default(1)
-  isActive       Boolean        @default(true)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  HoaHong        HoaHong[]
+  order          Int?            @default(1)
+  isActive       Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  landingPage    LandingPage?    @relation(fields: [landingPageId], references: [id])
   Doanhso        Doanhso[]
+  HoaHong        HoaHong[]
+  trackingEvents TrackingEvent[]
 }
 
 model Resource {
@@ -254,85 +235,105 @@ model FileManager {
 }
 
 model Dichvu {
-  id          String   @id @default(uuid())
-  codeId      String?  @unique
-  tabCode     String?  // Mã tab (nếu có)
-  TabCardCode String? // Mã tab card (nếu có)
-  TabMedicineCode String? // Mã tab thuốc (nếu có)
-  serviceCode  String?  // Mã dịch vụ (có thể là mã định danh duy nhất)
-  serviceName String? // Tên dịch vụ (có thể là tên dịch vụ bên ngoài)
-  description String?
-  price       Float    // Giá gốc (doanh số)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt         
-  order       Int?     @default(1)
-  Doanhso     Doanhso[] // Các doanh số liên quan đến dịch vụ này
+  id              String    @id @default(uuid())
+  codeId          String?   @unique
+  TabCode         String?
+  TabCardCode     String?
+  TabMedicineCode String?
+  serviceCode     String?
+  serviceName     String?
+  description     String?
+  price           Float
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  order           Int?      @default(1)
+  Doanhso         Doanhso[]
+  Doanhthu        Doanhthu[]
 }
 
 model Doanhso {
-  id              String             @id @default(uuid())
-  codeId          String?            @unique
+  id              String         @id @default(uuid())
+  codeId          String?        @unique
   userId          String
-  user            User               @relation(fields: [userId], references: [id])
   dichvuId        String
-  dichvu          Dichvu             @relation(fields: [dichvuId], references: [id])
-  originalAmount  Float               // Giá gốc (doanh số)
-  discountAmount  Float?              // Khuyến mãi
-  actualAmount    Float               // Doanh thu thực tế
-  status          OrderStatus         @default(PENDING)
-  affiliateCode   String?             // Mã affiliate của người giới thiệu
-  affiliateLinkId String?             // Liên kết affiliate
-  affiliateLink   AffiliateLink?      @relation(fields: [affiliateLinkId], references: [id])
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  order           Int?                @default(1) // Thứ tự doanh số trong chuỗi
-  Doanhthu        Doanhthu[]          // Các đợt doanh thu liên quan
+  originalAmount  Float?
+  discountAmount  Float?
+  actualAmount    Float?
+  status          OrderStatus    @default(PENDING)
+  affiliateCode   String?
+  affiliateLinkId String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  order           Int?           @default(1)
+  affiliateLink   AffiliateLink? @relation(fields: [affiliateLinkId], references: [id])
+  dichvu          Dichvu         @relation(fields: [dichvuId], references: [id])
+  user            User           @relation(fields: [userId], references: [id])
 }
 
 model Doanhthu {
-  id            String      @id @default(uuid())
-  codeId        String?     @unique
-  doanhsoId     String
-  doanhso       Doanhso     @relation(fields: [doanhsoId], references: [id])
-  amount        Float       // Số tiền mỗi đợt
-  commission    Float       // Hoa hồng mỗi đợt
-  status        String      @default("PENDING") // PENDING, COMPLETED
-  createdAt     DateTime    @default(now())
-  updatedAt       DateTime            @updatedAt
-  order         Int?        @default(1) // Thứ tự doanh thu trong chuỗi
-  completedAt   DateTime?
-  HoaHong       HoaHong[]
+  id          String    @id @default(uuid())
+  codeId      String?   @unique
+  codeDT      String?   
+  dichvuId    String
+  dichvu      Dichvu   @relation(fields: [dichvuId], references: [id])
+  amount      Float?
+  commission  Float?
+  status      String    @default("PENDING")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  order       Int?      @default(1)
+  completedAt DateTime?
+  HoaHong     HoaHong[]
 }
 
 model HoaHong {
-  id               String            @id @default(uuid())
-  codeId           String?           @unique
-  userId           String
-  user             User              @relation(fields: [userId], references: [id])
-  doanhthuId       String
-  doanhthu         Doanhthu          @relation(fields: [doanhthuId], references: [id])
-  affiliateLinkId  String?
-  affiliateLink    AffiliateLink?    @relation(fields: [affiliateLinkId], references: [id])
-  tienhoahong      Float             // Tổng hoa hồng
-  description      String?
-  status           CommissionStatus  @default(PENDING)
-  order            Int?              @default(1) // Thứ tự hoa hồng trong chuỗi
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  payments         ThanhToanHoaHong[] // Các lần rút hoa hồng
+  id              String             @id @default(uuid())
+  codeId          String?            @unique
+  userId          String
+  doanhthuId      String
+  affiliateLinkId String?
+  tienhoahong     Float
+  description     String?
+  status          CommissionStatus   @default(PENDING)
+  order           Int?               @default(1)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  affiliateLink   AffiliateLink?     @relation(fields: [affiliateLinkId], references: [id])
+  doanhthu        Doanhthu           @relation(fields: [doanhthuId], references: [id])
+  user            User               @relation(fields: [userId], references: [id])
+  payments        ThanhToanHoaHong[]
 }
 
 model ThanhToanHoaHong {
-  id            String      @id @default(uuid())
-  codeId        String?     @unique
+  id            String   @id @default(uuid())
+  codeId        String?  @unique
   hoaHongId     String
-  hoaHong       HoaHong     @relation(fields: [hoaHongId], references: [id])
   userId        String
-  user          User        @relation(fields: [userId], references: [id])
-  amountPaid    Float       // Số tiền rút
-  paymentMethod String?     // Ví dụ: chuyển khoản, PayPal
-  order         Int?        @default(1)
-  paymentDate   DateTime    @default(now())
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  amountPaid    Float
+  paymentMethod String?
+  order         Int?     @default(1)
+  paymentDate   DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  hoaHong       HoaHong  @relation(fields: [hoaHongId], references: [id])
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum CommissionStatus {
+  PENDING
+  APPROVED
+  PAID
+  REJECTED
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
 }

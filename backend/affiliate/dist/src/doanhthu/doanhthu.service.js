@@ -39,13 +39,13 @@ let DoanhthuService = class DoanhthuService {
             });
             let nextNumber = 1;
             if (latest && latest.codeId) {
-                const prefix = 'DONHANG';
-                const match = latest.codeId.match(new RegExp(prefix + '(\d+)'));
+                const prefix = 'DT';
+                const match = latest.codeId.match(new RegExp(prefix + '(\\d+)'));
                 if (match) {
                     nextNumber = parseInt(match[1]) + 1;
                 }
             }
-            const newPrefix = 'DONHANG';
+            const newPrefix = 'DT';
             return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
@@ -59,7 +59,7 @@ let DoanhthuService = class DoanhthuService {
                 _max: { order: true },
             });
             const newOrder = (maxOrder._max?.order || 0) + 1;
-            const codeId = await this.generateCodeId();
+            const codeId = data.codeId || await this.generateCodeId();
             const created = await this.prisma.doanhthu.create({
                 data: {
                     ...data,
@@ -79,7 +79,6 @@ let DoanhthuService = class DoanhthuService {
         if (!param || !Array.isArray(param) || param.length === 0) {
             throw new common_1.NotFoundException('Invalid parameters for syncsdoanhthu');
         }
-        console.log(param);
         const concurrencyLimit = 50;
         let successCount = 0;
         let failureCount = 0;
@@ -88,15 +87,9 @@ let DoanhthuService = class DoanhthuService {
                 const existing = await this.prisma.doanhthu.findFirst({
                     where: { codeId: item.source_id },
                 });
-                const user = await this.prisma.user.findFirst({
-                    where: { phone: item.phone },
-                });
-                if (!user) {
-                    throw new common_1.NotFoundException(`User not found for phone: ${item.phone}`);
-                }
                 const dichvu = await this.prisma.dichvu.findFirst({
                     where: { OR: [
-                            { tabCode: item.tabCode },
+                            { TabCode: item.TabCode },
                             { TabCardCode: item.TabCardCode },
                             { TabMedicineCode: item.TabMedicineCode }
                         ] },
@@ -104,17 +97,15 @@ let DoanhthuService = class DoanhthuService {
                 if (!dichvu) {
                     throw new common_1.NotFoundException(`Dichvu not found for serviceCode: ${item.serviceCode}`);
                 }
-                console.log(`Processing item with source_id ${item.source_id} for user ${user.id} and dichvu ${dichvu.id}`);
                 if (!existing) {
-                    console.log(`Creating new doanhthu for source_id ${item.source_id}`);
                     const data = {
                         codeId: item.source_id,
-                        userId: user.id || null,
                         dichvuId: dichvu.id || null,
-                        originalAmount: item.priceRoot || 0,
-                        discountAmount: item.discount || 0,
-                        actualAmount: item.priceDiscounted || 0,
+                        codeDT: item.code || null,
+                        amount: item.amount || 0,
+                        commission: item.amount * 0.2 || 0,
                     };
+                    await this.create(data);
                 }
             }
             catch (error) {
