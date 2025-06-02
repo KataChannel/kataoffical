@@ -1,0 +1,1 @@
+import{Wb as o,Xb as i,rc as c,wb as n}from"./chunk-FQPGGMXH.js";import"./chunk-6DNLS54U.js";var s=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=n({type:t,selectors:[["app-security"]],decls:2,vars:0,template:function(e,a){e&1&&(o(0,"p"),c(1,"security works!"),i())},encapsulation:2})};export{s as SecurityComponent};

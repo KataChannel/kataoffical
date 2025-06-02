@@ -54,7 +54,7 @@ export class DoanhsoService {
           codeId: codeId
         },
       });
-      
+
       this._SocketGateway.sendUpdate('doanhso'); 
       return created;
     } catch (error) {
@@ -92,7 +92,6 @@ export class DoanhsoService {
         if (!dichvu) {
           throw new NotFoundException(`Dichvu not found for serviceCode: ${item.serviceCode}`);
         }
-        console.log(`Processing item with source_id ${item.source_id} for user ${user.id} and dichvu ${dichvu.id}`);
         
         if (!existing) {
           console.log(`Creating new doanhso for source_id ${item.source_id}`);

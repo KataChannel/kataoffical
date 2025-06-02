@@ -56,6 +56,7 @@ export class landingPageService {
       newOrder = (maxOrder._max?.order || 0) + 1;
       this._SocketGateway.sendlandingPageUpdate();
       const codeId = await this.generatecodeId();
+      data.contentJson = JSON.parse(data.contentJson);
       return this.prisma.landingPage.create({
         data: {
           ...data,
@@ -116,6 +117,7 @@ export class landingPageService {
 
   async update(id: string, data: any) {
     try {
+      data.contentJson = JSON.parse(data.contentJson);
       if (data.order) {
         const { order, ...rest } = data;
         await this.prisma.landingPage.update({ where: { id }, data: rest });
