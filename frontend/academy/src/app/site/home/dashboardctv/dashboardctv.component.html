@@ -1,10 +1,12 @@
-<div class="w-full flex flex-col lg:space-y-8 space-y-2 mx-auto container p-4 !mb-16">
-    <div class="flex flex-row space-x-2 items-center justify-between">
-        <div class="flex flex-col space-y-2">
-            <div class="font-bold text-lg">Tổng Quan</div>
-            <div>Xin chào, <strong>{{profile()?.name}}</strong> </div>
-        </div>
-    </div>
+<div class="w-full flex flex-col space-y-2 mx-auto container p-4 !mb-16">
+    <router-outlet></router-outlet>
+
+
+
+
+
+<!-- 
+
     <div class="p-4 border rounded-lg bg-white">
         <h2 class="text-lg font-medium text-gray-900 flex items-center gap-2 mb-6">
             <mat-icon color="primary">bar_chart</mat-icon>
@@ -12,7 +14,7 @@
         </h2>
         <div class="cursor-pointer grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:gap-6 gap-2">
             <div class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100">
-                <a [routerLink]="['thongketruycap']" class="flex items-center gap-3">
+                <a [routerLink]="['luottruycap']" class="flex items-center gap-3">
                     <div class="p-2 rounded-full bg-blue-100 text-blue-600">
                         <mat-icon>groups</mat-icon>
                     </div>
@@ -22,7 +24,6 @@
                     </div>
                 </a>
             </div>
-            <!-- Successful Registrations -->
             <div class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100">
                 <a [routerLink]="['thongkedangky']" class="flex items-center gap-3">
                     <div class="p-2 rounded-full bg-green-100 text-green-600">
@@ -34,14 +35,14 @@
                     </div>
                 </a>
             </div>
-            <!-- Course Purchases -->
+
             <div class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100">
                 <a [routerLink]="['thongkekhoahoc']" class="flex items-center gap-3">
                     <div class="p-2 rounded-full bg-purple-100 text-purple-600">
                         <mat-icon>menu_book</mat-icon>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Phát sinh khóa học</p>
+                        <p class="text-sm font-medium text-gray-500">Lượt Đến</p>
                         <p class="text-2xl font-semibold text-gray-900">{{Doanhthu?.dichvus?.length || 0}}</p>
                     </div>
                 </a>
@@ -52,24 +53,12 @@
                         <mat-icon>menu_book</mat-icon>
                     </div>
                     <div>
-                        <p class="text-sm font-medium text-gray-500">Khóa Học Nhận Hoa Hồng</p>
-                        <p class="text-2xl font-semibold text-gray-900">8</p>
+                        <p class="text-sm font-medium text-gray-500">Khóa Học</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{Doanhthu?.dichvus?.length || 0}}</p>
                     </div>
                 </a>
             </div>
 
-            <!-- Processing Commission -->
-            <div class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100">
-                <a [routerLink]="['thongkehoahong']" class="flex items-center gap-3">
-                    <div class="p-2 rounded-full bg-blue-100 text-blue-600">
-                        <mat-icon>hourglass_top</mat-icon>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-500">Tổng Doanh Số</p>
-                        <p class="text-base font-semibold text-gray-900">{{Doanhthu?.doanhso?.total||0 | number: '1.0-0'}}đ</p>
-                    </div>
-                </a>
-            </div>
             <div class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100">
                 <a [routerLink]="['thongkehoahong']" class="flex items-center gap-3">
                     <div class="p-2 rounded-full bg-blue-100 text-blue-600">
@@ -175,4 +164,4 @@
         <div class="cursor-pointer grid grid-cols-1 gap-6">
             Chưa có hoạt động nào gần đây
         </div>
-    </div>
+    </div> -->

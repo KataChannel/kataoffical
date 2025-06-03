@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{Ab as n,ac as o,bc as a,yc as p}from"./chunk-LCAOUERI.mjs";import"./chunk-KB5IWD3E.mjs";import"./chunk-RIAI3ORJ.mjs";var s=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=n({type:t,selectors:[["app-luotden"]],decls:2,vars:0,template:function(e,m){e&1&&(o(0,"p"),p(1,"luotden works!"),a())},encapsulation:2})};export{s as LuotdenComponent};

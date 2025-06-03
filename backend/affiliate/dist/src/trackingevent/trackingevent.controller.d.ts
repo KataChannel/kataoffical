@@ -18,7 +18,25 @@ export declare class TrackingeventController {
         affiliateLinkId: string | null;
         sharePlatform: string | null;
     }>;
-    findBy(param: any): Promise<{
+    findBy(param: any): Promise<({
+        affiliateLink: {
+            id: string;
+            codeId: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            order: number | null;
+            landingPageId: string | null;
+            campaignName: string | null;
+            utmSource: string | null;
+            utmMedium: string | null;
+            utmCampaign: string | null;
+            utmTerm: string | null;
+            utmContent: string | null;
+            url: string | null;
+        } | null;
+    } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -33,7 +51,7 @@ export declare class TrackingeventController {
         userAgent: string | null;
         affiliateLinkId: string | null;
         sharePlatform: string | null;
-    }[] | {
+    })[] | {
         count: number;
     }>;
     findAll(): Promise<{

@@ -21,7 +21,6 @@ import { DoanhthuService } from '../../../admin/doanhthu/doanhthu.service';
 @Component({
   selector: 'app-dashboardctv',
   imports: [
-    RouterLink, 
     MatIconModule,
     NgApexchartsModule,
     FormsModule,
@@ -29,7 +28,8 @@ import { DoanhthuService } from '../../../admin/doanhthu/doanhthu.service';
     MatSelectModule,
     MatButtonModule,
     MatMenuModule,
-    CommonModule
+    CommonModule,
+    RouterOutlet
   ],
   templateUrl: './dashboardctv.component.html',
   styleUrl: './dashboardctv.component.scss'
@@ -208,6 +208,6 @@ export class DashboardctvComponent {
         await this._DoanhsoService.getSyncsDoanhso(this.Doanhthu.dichvus);
         await this._DoanhthuService.getSyncsDoanhthu(this.Doanhthu.doanhthus);    
     }
-    await this._DoanhthuService.getDoanhthuBy(this.Doanhthu.doanhthus);
+    // await this._DoanhthuService.getDoanhthuBy(this.Doanhthu.doanhthus);
   }
 }

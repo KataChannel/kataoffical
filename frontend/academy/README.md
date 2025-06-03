@@ -44,3 +44,11 @@ npx ng g c dashboardctv --skip-tests --standalone
 npx ng g c thongkectv --skip-tests --standalone
 npx ng g c lienketctv --skip-tests --standalone
 npx ng g c tainguyenctv --skip-tests --standalone
+npx ng g c luottruycap --skip-tests --standalone
+npx ng g c maindb --skip-tests --standalone
+npx ng g c luotdangky   --skip-tests --standalone
+npx ng g c luotden       --skip-tests --standalone
+npx ng g c khoahoc      --skip-tests --standalone
+npx ng g c doanhthu     --skip-tests --standalone
+npx ng g c hoahong      --skip-tests --standalone
+

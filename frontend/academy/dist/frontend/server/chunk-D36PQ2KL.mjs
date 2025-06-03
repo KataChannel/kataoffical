@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{Ab as n,ac as o,bc as a,yc as p}from"./chunk-LCAOUERI.mjs";import"./chunk-KB5IWD3E.mjs";import"./chunk-RIAI3ORJ.mjs";var s=class e{static \u0275fac=function(t){return new(t||e)};static \u0275cmp=n({type:e,selectors:[["app-luotdangky"]],decls:2,vars:0,template:function(t,m){t&1&&(o(0,"p"),p(1,"luotdangky works!"),a())},encapsulation:2})};export{s as LuotdangkyComponent};

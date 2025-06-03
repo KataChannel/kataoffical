@@ -50,7 +50,10 @@ let TrackingeventService = class TrackingeventService {
                 const count = await this.prisma.trackingEvent.count({ where: whereParams });
                 return { count };
             }
-            const trackingevents = await this.prisma.trackingEvent.findMany({ where: param });
+            const trackingevents = await this.prisma.trackingEvent.findMany({
+                where: param,
+                include: { affiliateLink: true }
+            });
             return trackingevents;
         }
         catch (error) {

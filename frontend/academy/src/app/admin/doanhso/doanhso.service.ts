@@ -119,8 +119,6 @@ export class DoanhsoService {
         this.handleError(response.status);
       }
       const data = await response.json();
-      console.log('Syncs Doanhso Data:', data);
-
     } catch (error) {
       console.error(error);
     }

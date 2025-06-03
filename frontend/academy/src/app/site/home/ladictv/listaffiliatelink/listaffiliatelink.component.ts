@@ -468,27 +468,27 @@ export class ListAffiliatelinkComponent implements OnInit {
     let shareUrl: string;
     switch (platform.toLowerCase()) {
       case 'facebook':
-        url = url+'sharePlatform=facebook';
+        url = url+'&sharePlatform=facebook';
         shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${this.encode(url)}&quote=${this.encode(title || '')}`;
         break;
       case 'twitter':
-        url = url+'sharePlatform=twitter';
+        url = url+'&sharePlatform=twitter';
         shareUrl = `https://twitter.com/intent/tweet?url=${this.encode(url)}&text=${this.encode(title || '')}`;
         break;
       case 'linkedin':
-        url = url+'sharePlatform=linkedin';
+        url = url+'&sharePlatform=linkedin';
         shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${this.encode(url)}`;
         break;
       case 'pinterest':
-        url = url+'sharePlatform=pinterest';
+        url = url+'&sharePlatform=pinterest';
         shareUrl = `https://pinterest.com/pin/create/button/?url=${this.encode(url)}&media=${this.encode(image || '')}&description=${this.encode(description || '')}`;
         break;
       case 'whatsapp':
-        url = url+'sharePlatform=whatsapp';
+        url = url+'&sharePlatform=whatsapp';
         shareUrl = `https://api.whatsapp.com/send?text=${this.encode(`${title} ${url}`)}`;
         break;
       case 'email':
-        url = url+'sharePlatform=email';
+        url = url+'&sharePlatform=email';
         shareUrl = `mailto:?subject=${this.encode(title || '')}&body=${this.encode(description || '')}%0A${this.encode(url)}`;
         break;  
       default:

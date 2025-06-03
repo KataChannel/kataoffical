@@ -50,6 +50,10 @@
           <input matInput [(ngModel)]="DetailLandingpage().thumbnail" [disabled]="!isEdit()" placeholder="Vui lòng nhập Hình Nhỏ"/>
         </mat-form-field>
       </div>
+         <mat-form-field appearance="outline">
+          <mat-label>Dữ Liệu Json</mat-label>
+          <textarea matInput [(ngModel)]="DetailLandingpage().contentJson" [disabled]="!isEdit()" placeholder="Vui lòng nhập Dữ Liệu Json"></textarea>
+        </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Mô Tả Nhỏ</mat-label>
           <textarea matInput [(ngModel)]="DetailLandingpage().description" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mô Tả Nhỏ"></textarea>

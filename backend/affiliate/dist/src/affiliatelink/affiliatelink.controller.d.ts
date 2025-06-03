@@ -10,7 +10,6 @@ export declare class AffiliatelinkController {
         updatedAt: Date;
         description: string | null;
         order: number | null;
-        url: string | null;
         landingPageId: string | null;
         campaignName: string | null;
         utmSource: string | null;
@@ -18,6 +17,7 @@ export declare class AffiliatelinkController {
         utmCampaign: string | null;
         utmTerm: string | null;
         utmContent: string | null;
+        url: string | null;
     }>;
     findby(param: any): Promise<({
         landingPage: {
@@ -65,7 +65,6 @@ export declare class AffiliatelinkController {
         updatedAt: Date;
         description: string | null;
         order: number | null;
-        url: string | null;
         landingPageId: string | null;
         campaignName: string | null;
         utmSource: string | null;
@@ -73,6 +72,7 @@ export declare class AffiliatelinkController {
         utmCampaign: string | null;
         utmTerm: string | null;
         utmContent: string | null;
+        url: string | null;
     }) | {
         data: {
             id: string;
@@ -82,7 +82,6 @@ export declare class AffiliatelinkController {
             updatedAt: Date;
             description: string | null;
             order: number | null;
-            url: string | null;
             landingPageId: string | null;
             campaignName: string | null;
             utmSource: string | null;
@@ -90,6 +89,7 @@ export declare class AffiliatelinkController {
             utmCampaign: string | null;
             utmTerm: string | null;
             utmContent: string | null;
+            url: string | null;
         }[];
         total: number;
         page: any;
@@ -142,7 +142,6 @@ export declare class AffiliatelinkController {
             updatedAt: Date;
             description: string | null;
             order: number | null;
-            url: string | null;
             landingPageId: string | null;
             campaignName: string | null;
             utmSource: string | null;
@@ -150,6 +149,7 @@ export declare class AffiliatelinkController {
             utmCampaign: string | null;
             utmTerm: string | null;
             utmContent: string | null;
+            url: string | null;
         })[];
         total: number;
         page: number;
@@ -166,7 +166,6 @@ export declare class AffiliatelinkController {
         updatedAt: Date;
         description: string | null;
         order: number | null;
-        url: string | null;
         landingPageId: string | null;
         campaignName: string | null;
         utmSource: string | null;
@@ -174,6 +173,7 @@ export declare class AffiliatelinkController {
         utmCampaign: string | null;
         utmTerm: string | null;
         utmContent: string | null;
+        url: string | null;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
@@ -184,7 +184,6 @@ export declare class AffiliatelinkController {
         updatedAt: Date;
         description: string | null;
         order: number | null;
-        url: string | null;
         landingPageId: string | null;
         campaignName: string | null;
         utmSource: string | null;
@@ -192,6 +191,7 @@ export declare class AffiliatelinkController {
         utmCampaign: string | null;
         utmTerm: string | null;
         utmContent: string | null;
+        url: string | null;
     }>;
     reorder(body: {
         affiliatelinkIds: string[];

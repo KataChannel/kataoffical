@@ -85,21 +85,27 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     let shareUrl: string;
     switch (platform.toLowerCase()) {
       case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${this.encode(url)}`;
+        url = url+'&sharePlatform=facebook';
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${this.encode(url)}&quote=${this.encode(title || '')}`;
         break;
       case 'twitter':
+        url = url+'&sharePlatform=twitter';
         shareUrl = `https://twitter.com/intent/tweet?url=${this.encode(url)}&text=${this.encode(title || '')}`;
         break;
       case 'linkedin':
+        url = url+'&sharePlatform=linkedin';
         shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${this.encode(url)}`;
         break;
       case 'pinterest':
+        url = url+'&sharePlatform=pinterest';
         shareUrl = `https://pinterest.com/pin/create/button/?url=${this.encode(url)}&media=${this.encode(image || '')}&description=${this.encode(description || '')}`;
         break;
       case 'whatsapp':
+        url = url+'&sharePlatform=whatsapp';
         shareUrl = `https://api.whatsapp.com/send?text=${this.encode(`${title} ${url}`)}`;
         break;
       case 'email':
+        url = url+'&sharePlatform=email';
         shareUrl = `mailto:?subject=${this.encode(title || '')}&body=${this.encode(description || '')}%0A${this.encode(url)}`;
         break;  
       default:
@@ -108,10 +114,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     }
     window.open(shareUrl, '_blank', 'width=600,height=400');
   }
-    // https://www.facebook.com/sharer/sharer.php?u={url}
-    // https://twitter.com/intent/tweet?url={url}&text={title}
-    // https://www.linkedin.com/sharing/share-offsite/?url={url}
-    // https://pinterest.com/pin/create/button/?url={url}&media={image}&description={description}
-    // https://api.whatsapp.com/send?text={title}%20{url}
+
 
   } 

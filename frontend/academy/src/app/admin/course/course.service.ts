@@ -250,7 +250,7 @@ export class CourseService {
         this.handleError(response.status);
       }
       const data = await response.json();
-      console.log('Syncs Dichvu Data:', data);
+      // console.log('Syncs Dichvu Data:', data);
 
     } catch (error) {
       console.error(error);

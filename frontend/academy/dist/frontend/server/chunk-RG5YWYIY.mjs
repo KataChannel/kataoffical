@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{Ab as t,ac as n,bc as a,yc as c}from"./chunk-LCAOUERI.mjs";import"./chunk-KB5IWD3E.mjs";import"./chunk-RIAI3ORJ.mjs";var p=class e{static \u0275fac=function(o){return new(o||e)};static \u0275cmp=t({type:e,selectors:[["app-khoahoc"]],decls:2,vars:0,template:function(o,i){o&1&&(n(0,"p"),c(1,"khoahoc works!"),a())},encapsulation:2})};export{p as KhoahocComponent};

@@ -1,0 +1,114 @@
+<div class="landing-page min-h-screen bg-gray-100">
+      <!-- Duyệt qua các node trong content -->
+      <ng-container *ngFor="let node of ladipage().contentJson.content">
+        <!-- Render Cover -->
+        <div *ngIf="node.type === 'cover'" class="cover relative h-[500px] bg-cover bg-center" [style.backgroundImage]="'url(' + node.attrs.url + ')'">
+          <div class="overlay absolute inset-0 bg-black" [style.opacity]="node.attrs.overlayOpacity"></div>
+          <div class="content relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4">
+            <ng-container *ngFor="let child of node.content">
+              <h1 *ngIf="child.type === 'heading'" class="text-4xl font-bold mb-4" [style.textAlign]="child.attrs.textAlign" [style.color]="child.content[0].marks[0].attrs.color">
+                {{ child.content[0].text }}
+              </h1>
+              <p *ngIf="child.type === 'paragraph'" class="text-lg mb-4" [style.textAlign]="child.attrs.textAlign" [style.color]="child.content[0].marks[0].attrs.color">
+                {{ child.content[0].text }}
+              </p>
+              <button *ngIf="child.type === 'button'" class="px-6 py-3 rounded-lg text-white" [style.backgroundColor]="child.attrs.backgroundColor" [style.color]="child.attrs.textColor" (click)="navigateTo(child.attrs.url)">
+                {{ child.attrs.text }}
+              </button>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- Render Group -->
+        <div *ngIf="node.type === 'group'" class="section py-12 px-4" [ngClass]="node.attrs.className">
+          <ng-container *ngFor="let child of node.content">
+            <!-- Heading -->
+            <h2 *ngIf="child.type === 'heading'" class="text-3xl font-bold mb-6" [style.textAlign]="child.attrs.textAlign">
+              {{ child.content[0].text }}
+            </h2>
+
+            <!-- Paragraph -->
+            <p *ngIf="child.type === 'paragraph'" class="text-gray-700 mb-6">
+              <ng-container *ngFor="let textNode of child.content">
+                <span [ngStyle]="getTextStyles(textNode)">
+                  {{ textNode.text }}
+                </span>
+              </ng-container>
+            </p>
+
+            <!-- Video -->
+            <video *ngIf="child.type === 'video'" [src]="sanitizeUrl(child.attrs.src)" [controls]="child.attrs.controls" [autoplay]="child.attrs.autoplay" class="w-full max-h-[400px] mb-6"></video>
+
+            <!-- Columns -->
+            <div *ngIf="child.type === 'columns'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <ng-container *ngFor="let col of child.content">
+                <div class="column p-4">
+                  <ng-container *ngFor="let colChild of col.content">
+                    <p *ngIf="colChild.type === 'paragraph'" class="text-gray-700 mb-4">
+                      <ng-container *ngFor="let textNode of colChild.content">
+                        <span [ngStyle]="getTextStyles(textNode)">
+                          {{ textNode.text }}
+                        </span>
+                      </ng-container>
+                    </p>
+                    <img *ngIf="colChild.type === 'image'" [src]="colChild.attrs.src" [alt]="colChild.attrs.alt" class="w-full h-48 object-cover mb-4">
+                    <button *ngIf="colChild.type === 'button'" class="px-4 py-2 rounded-lg" [style.backgroundColor]="colChild.attrs.backgroundColor" (click)="navigateTo(colChild.attrs.url)">
+                      {{ colChild.attrs.text }}
+                    </button>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </div>
+
+            <!-- Bullet List -->
+            <ul *ngIf="child.type === 'bulletList'" class="list-disc list-inside text-left max-w-lg mx-auto mb-6">
+              <li *ngFor="let item of child.content">
+                <p *ngFor="let para of item.content">
+                  <ng-container *ngFor="let textNode of para.content">
+                    <span [ngStyle]="getTextStyles(textNode)">
+                      {{ textNode.text }}
+                    </span>
+                  </ng-container>
+                </p>
+              </li>
+            </ul>
+
+            <!-- Blockquote -->
+            <blockquote *ngIf="child.type === 'blockquote'" class="border-l-4 border-gray-300 pl-4 italic text-gray-600 mb-6">
+              <ng-container *ngFor="let quoteChild of child.content">
+                <p *ngIf="quoteChild.type === 'paragraph'">
+                  <ng-container *ngFor="let textNode of quoteChild.content">
+                    <span [ngStyle]="getTextStyles(textNode)">
+                      {{ textNode.text }}
+                    </span>
+                  </ng-container>
+                </p>
+              </ng-container>
+            </blockquote>
+
+            <!-- Accordion -->
+            <div *ngIf="child.type === 'accordion'" class="mb-6">
+              <details *ngFor="let item of child.content" class="border rounded-lg p-4 mb-2">
+                <summary class="font-bold">{{ item.attrs.title }}</summary>
+                <p *ngFor="let para of item.content">
+                  <ng-container *ngFor="let textNode of para.content">
+                    <span [ngStyle]="getTextStyles(textNode)">
+                      {{ textNode.text }}
+                    </span>
+                  </ng-container>
+                </p>
+              </details>
+            </div>
+
+            <!-- Social Links -->
+            <div *ngIf="child.type === 'socialLinks'" class="social-links flex justify-center gap-4 mb-6">
+              <ng-container *ngFor="let link of child.content">
+                <a [href]="link.attrs.url" target="_blank" class="text-gray-600 hover:text-blue-500">
+                  <span class="text-2xl">{{ link.attrs.service }}</span>
+                </a>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
+      </ng-container>
+    </div>

@@ -88,9 +88,7 @@ export class ListLandingpageComponent {
   isSearch: boolean = false;
   constructor() {
     effect(() => {
-      this.dataSource.data = this.Listlandingpage();
-      console.log(this.Listlandingpage());
-      
+      this.dataSource.data = this.Listlandingpage();      
       this.totalItems = this.Listlandingpage().length;
       this.calculateTotalPages();
     });
@@ -106,7 +104,6 @@ export class ListLandingpageComponent {
     this._LandingpageService.listenLandingpageUpdates();
     await this._LandingpageService.getAllLandingpage();
     this.displayedColumns = Object.keys(this.ColumnName)
-    console.log(this.displayedColumns);
     this.updateDisplayData();
     this.dataSource = new MatTableDataSource(this.Listlandingpage());
     this.dataSource.paginator = this.paginator;

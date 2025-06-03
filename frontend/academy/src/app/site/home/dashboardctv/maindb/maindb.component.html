@@ -1,0 +1,181 @@
+<div class="w-full flex flex-col lg:space-y-8 space-y-2 mx-auto container p-4">
+    <div class="flex flex-row space-x-2 items-center justify-between">
+        <div class="flex flex-col space-y-2">
+            <div class="font-bold text-lg">Tổng Quan</div>
+            <div>Xin chào, <strong>{{profile()?.name}}</strong> </div>
+        </div>
+    </div>
+    <div class="p-4 border rounded-lg bg-white">
+        <h2 class="text-lg font-medium text-gray-900 flex items-center gap-2 mb-6">
+            <mat-icon color="primary">bar_chart</mat-icon>
+            Thống kê hiệu suất
+        </h2>
+        <div class="cursor-pointer grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 lg:gap-6 gap-2">
+            <div class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100">
+                <a [routerLink]="['luottruycap']" class="flex items-center gap-3">
+                    <div class="p-2 rounded-full bg-blue-100 text-blue-600">
+                        <mat-icon>groups</mat-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Tổng Số Lượt Truy Cập</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{Views()?.count}}</p>
+                    </div>
+                </a>
+            </div>
+            <!-- Successful Registrations -->
+            <div class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100">
+                <a [routerLink]="['luotdangky']" class="flex items-center gap-3">
+                    <div class="p-2 rounded-full bg-green-100 text-green-600">
+                        <mat-icon>check_circle</mat-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Lượt đăng ký thành công</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{profile()?.referrals?.length || 0}}</p>
+                    </div>
+                </a>
+            </div>
+            <!-- Course Purchases -->
+            <div class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100">
+                <a [routerLink]="['luotden']" class="flex items-center gap-3">
+                    <div class="p-2 rounded-full bg-purple-100 text-purple-600">
+                        <mat-icon>menu_book</mat-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Lượt Đến</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{Doanhthu?.dichvus?.length || 0}}</p>
+                    </div>
+                </a>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100">
+                <a [routerLink]="['khoahoc']" class="flex items-center gap-3">
+                    <div class="p-2 rounded-full bg-purple-100 text-purple-600">
+                        <mat-icon>menu_book</mat-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Khóa Học</p>
+                        <p class="text-2xl font-semibold text-gray-900">{{Doanhthu?.dichvus?.length || 0}}</p>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Processing Commission -->
+            <!-- <div class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100">
+                <a [routerLink]="['thongkehoahong']" class="flex items-center gap-3">
+                    <div class="p-2 rounded-full bg-blue-100 text-blue-600">
+                        <mat-icon>hourglass_top</mat-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Tổng Doanh Số</p>
+                        <p class="text-base font-semibold text-gray-900">{{Doanhthu?.doanhso?.total||0 | number: '1.0-0'}}đ</p>
+                    </div>
+                </a>
+            </div> -->
+            <div class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100">
+                <a [routerLink]="['doanhthu']" class="flex items-center gap-3">
+                    <div class="p-2 rounded-full bg-blue-100 text-blue-600">
+                        <mat-icon>hourglass_top</mat-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Tổng Doanh Thu</p>
+                        <p class="text-base font-semibold text-gray-900">{{Doanhthu?.doanhthu?.total||0 | number:
+                            '1.0-0'}}đ</p>
+                    </div>
+                </a>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg  hover:bg-gray-100">
+                <a [routerLink]="['hoahong']" class="flex items-center gap-3">
+                    <div class="p-2 rounded-full bg-yellow-100 text-yellow-600">
+                        <mat-icon>hourglass_empty</mat-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Tổng Hoa Hồng</p>
+                        <p class="text-base font-semibold text-gray-900">{{Doanhthu.Hoahong ||0 | number: '1.0-0'}}đ</p>
+                    </div>
+                </a>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100">
+                <a [routerLink]="['hoahong']" class="flex items-center gap-3">
+                    <div class="p-2 rounded-full bg-yellow-100 text-yellow-600">
+                        <mat-icon>hourglass_empty</mat-icon>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Hoa Hồng Đã Rút</p>
+                        <p class="text-base font-semibold text-gray-900">{{Doanhthu.HoahongDaRut || 0 | number:
+                            '1.0-0'}}đ</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:gap-6 gap-2">
+        <div class="lg:col-span-2 p-4 border rounded-lg bg-white">
+            <h2 class="text-lg font-medium text-gray-900 flex items-center gap-2 mb-6">
+                <mat-icon color="primary">bar_chart</mat-icon>
+                Tổng Quan Hoa Hồng
+            </h2>
+            <div id="chart">
+                <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart"
+                    [dataLabels]="chartOptions.dataLabels" [plotOptions]="chartOptions.plotOptions"
+                    [yaxis]="chartOptions.yaxis" [xaxis]="chartOptions.xaxis" [fill]="chartOptions.fill"
+                    [title]="chartOptions.title"></apx-chart>
+            </div>
+        </div>
+        <div class="w-full p-4 border rounded-lg bg-white">
+            <h2 class="text-lg font-medium text-gray-900 flex items-center gap-2 mb-6">
+                <mat-icon color="primary">bar_chart</mat-icon>
+                Sản phẩm hiệu quả nhất
+            </h2>
+            <div class="text-sm text-muted-foreground">Top sản phẩm có doanh thu cao nhất.</div>
+
+            <div class="w-full mt-8 space-y-4">
+                <div *ngFor="let item of [{
+                    name: 'Khóa Học 1',
+                    category: 'Cơ Bản',
+                    sales: 245,
+                    price: 24500000
+                }, {
+                    name: 'Khóa Học 2',
+                    category: 'Nâng Cao',
+                    sales: 189,
+                    price: 56700000
+                }, {
+                    name: 'Khóa Học 3',
+                    category: 'Nâng Cao',
+                    sales: 156,
+                    price: 15600000
+                }, {
+                    name: 'Khóa Học 4',
+                    category: 'Chuyển Sâu',
+                    sales: 132,
+                    price: 39600000
+                }, {
+                    name: 'Khóa Học 5',
+                    category: 'Nâng Cao',
+                    sales: 124,
+                    price: 12400000
+                }]; let i=index" class="flex items-start justify-between">
+                    <div class="space-y-1">
+                        <p class="text-sm font-medium leading-none">{{item.name}}</p>
+                        <div class="flex items-center gap-2">
+                            <div
+                                class="inline-flex items-center rounded-full border px-2.5 py-0.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground text-xs">
+                                {{item.category}}</div>
+                            <span class="text-xs text-blue-600">{{item.sales}} chuyển đổi</span>
+                        </div>
+                    </div>
+                    <div class="text-sm font-medium">{{item.price | number: '1.0-0'}}đ</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mx-auto container mb-8 p-4 border rounded-lg bg-white">
+        <h2 class="text-lg font-medium text-gray-900 flex items-center gap-2 mb-6">
+            <mat-icon color="primary">bar_chart</mat-icon>
+            Hoạt Động Gần Đây
+        </h2>
+        <div class="cursor-pointer grid grid-cols-1 gap-6">
+            Chưa có hoạt động nào gần đây
+        </div>
+    </div>
+</div>

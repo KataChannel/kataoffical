@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{Ab as n,ac as o,bc as i,yc as c}from"./chunk-LCAOUERI.mjs";import"./chunk-KB5IWD3E.mjs";import"./chunk-RIAI3ORJ.mjs";var p=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=n({type:t,selectors:[["app-lienketctv"]],decls:2,vars:0,template:function(e,a){e&1&&(o(0,"p"),c(1,"lienketctv works!"),i())},encapsulation:2})};export{p as LienketctvComponent};

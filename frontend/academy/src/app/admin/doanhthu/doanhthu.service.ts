@@ -119,7 +119,7 @@ export class DoanhthuService {
         this.handleError(response.status);
       }
       const data = await response.json();
-      console.log('Syncs Doanhthu Data:', data);
+      // console.log('Syncs Doanhthu Data:', data);
 
     } catch (error) {
       console.error(error);

@@ -29,44 +29,32 @@
                     <p class="mt-1 text-sm text-gray-500">{{item.description||'Chưa Có mô tả'}}</p>
                     <p class="mt-1 text-sm text-gray-500">{{item.file}}</p>
                     <div class="mt-4 flex gap-2">
-                        <button mat-flat-button color="primary">
+                        <button (click)="downloadFile(ImageURL +'/'+item.url)" mat-flat-button color="primary">
                             <span>Tải xuống</span>
                             <mat-icon>download</mat-icon>
                         </button>
-                        <button mat-flat-button color="primary">
+                        <button (click)="openCopycodeDialog(item,CopyCodeDialog)" mat-flat-button color="primary">
                             <span>Lấy Mã</span>
                             <mat-icon>content_copy</mat-icon>
                         </button>
                     </div>
                 </div>
-                <!-- <div *ngFor="let item of ListData; let i=index" class="border bg-white rounded-lg overflow-hidden transition-transform hover:scale-[1.02]">
-                <div class="aspect-video bg-gray-100 overflow-hidden">
-                    <img src="{{item.image.src}}" alt="{{item.image.alt}}" class="w-full h-full object-cover">
-                </div>
-                <div class="p-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="font-medium text-gray-900">{{item.title}}</h3><span
-                            class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800">{{item.badge.text}}</span>
-                    </div>
-                    <p class="mt-1 text-sm text-gray-500">{{item.file}}</p>
-                    <div class="mt-4 flex gap-2"><a href="#"
-                            class="flex-1 btn btn-outline flex items-center justify-center text-sm"><svg
-                                xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="lucide lucide-download mr-1">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="7 10 12 15 17 10"></polyline>
-                                <line x1="12" x2="12" y1="15" y2="3"></line>
-                            </svg>Download</a><button
-                            class="flex-1 btn btn-primary flex items-center justify-center text-sm"><svg
-                                xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                stroke-linejoin="round" class="lucide lucide-copy mr-1">
-                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
-                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
-                            </svg>Get Code</button></div>
-                </div>
-            </div> -->
             </div>
         </div>
     </div>
+
+    <ng-template #CopyCodeDialog>
+        <h2 mat-dialog-title>{{DetailCopyCode.title}}</h2>
+        <mat-dialog-content class="mat-typography">
+            <div class="flex w-[40rem]">
+           <span class="p-4 bg-slate-200 rounded-lg"> {{DetailCopyCode.content}}</span>
+           </div>
+        </mat-dialog-content>
+        <mat-dialog-actions align="end">
+            <button mat-flat-button color="primary" mat-dialog-close="true">
+                <span>Copy</span>
+                <mat-icon>content_copy</mat-icon>
+            </button>
+        </mat-dialog-actions>
+
+    </ng-template>

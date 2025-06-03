@@ -100,7 +100,6 @@ let DoanhsoService = class DoanhsoService {
                     throw new common_1.NotFoundException(`Dichvu not found for serviceCode: ${item.serviceCode}`);
                 }
                 if (!existing) {
-                    console.log(`Creating new doanhso for source_id ${item.source_id}`);
                     if (item.priceDiscounted > 0) {
                         const data = {
                             codeId: item.source_id,

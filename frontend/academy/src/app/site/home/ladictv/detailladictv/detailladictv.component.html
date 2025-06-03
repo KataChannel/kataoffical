@@ -1,8 +1,163 @@
-<iframe
-  [src]="TrustUrl(ladipage().contentHtml)"
-  width="100%"
-  height="600" 
-  style="border:none;"
-  loading="lazy" 
-  title="Mô tả nội dung iframe">
-</iframe>
+<div class="landing-page min-h-screen bg-gray-50 font-sans">
+      <ng-container *ngFor="let node of ladipage().contentJson.content">
+        <!-- Render Header -->
+        <header *ngIf="node.type === 'header'" class="bg-white shadow-sm">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+              <div class="flex items-center">
+                <div class="bg-blue-900 text-white p-2 rounded" [ngStyle]="{'background-color': node.attrs.logo.backgroundColor, 'color': node.attrs.logo.color}">
+                  <span class="text-2xl font-bold">{{ node.attrs.logo.text }}</span>
+                </div>
+                <div class="ml-3">
+                  <div class="text-blue-900 font-bold text-lg">{{ node.attrs.title }}</div>
+                  <div class="text-xs text-gray-600">{{ node.attrs.subtitle }}</div>
+                </div>
+              </div>
+              <nav class="hidden lg:flex space-x-8">
+                <a *ngFor="let item of node.attrs.navItems" [href]="item.url" class="text-blue-900 font-medium hover:text-blue-700">{{ item.text }}</a>
+              </nav>
+              <button *ngIf="node.attrs.mobileMenu" class="lg:hidden">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Render Breadcrumb -->
+        <div *ngIf="node.type === 'breadcrumb'" class="bg-white border-b">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <nav class="text-sm">
+              <span *ngFor="let item of node.attrs.items; let last = last" class="text-gray-500" [ngClass]="{'text-blue-900 font-medium': item.active}">
+                {{ item.text }}
+                <span *ngIf="!last" class="mx-2 text-gray-400">›</span>
+              </span>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Render Hero -->
+        <section *ngIf="node.type === 'hero'" class="py-16" [ngStyle]="{'background': node.attrs.backgroundGradient, 'color': node.attrs.textColor}">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6" [innerHTML]="node.attrs.title"></h1>
+            <p class="text-xl md:text-2xl max-w-4xl mx-auto leading-relaxed">{{ node.attrs.description }}</p>
+          </div>
+        </section>
+
+        <!-- Render Course Overview -->
+        <section *ngIf="node.type === 'courseOverview'" class="mb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-blue-900 mb-4">{{ node.attrs.title }}</h2>
+            <div class="w-24 h-1 bg-yellow-400 mx-auto"></div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h3 class="text-2xl font-bold text-blue-900 mb-6">{{ node.attrs.subtitle }}</h3>
+              <p *ngFor="let desc of node.attrs.description" class="text-gray-700 mb-6 leading-relaxed">{{ desc }}</p>
+            </div>
+            <div class="bg-gradient-to-br from-pink-100 to-purple-100 p-8 rounded-2xl text-center">
+              <div class="w-32 h-32 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full mx-auto mb-6 flex items-center justify-center" [innerHTML]="sanitizeUrl(node.attrs.highlight.icon.svg)"></div>
+              <h4 class="text-xl font-bold text-gray-800 mb-2">{{ node.attrs.highlight.title }}</h4>
+              <p class="text-gray-600">{{ node.attrs.highlight.description }}</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Render Target Audience -->
+        <section *ngIf="node.type === 'targetAudience'" class="mb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 class="text-2xl font-bold text-blue-900 mb-8">{{ node.attrs.title }}</h3>
+          <p class="text-gray-700 mb-8 leading-relaxed">{{ node.attrs.description }}</p>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <ng-container *ngFor="let item of node.attrs.items">
+              <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <div class="w-12 h-12" [ngStyle]="{'background-color': 'bg-' + item.icon.backgroundColor}" class="rounded-lg flex items-center justify-center mb-4" [innerHTML]="sanitizeUrl(item.icon.svg)"></div>
+                <p class="text-gray-700">{{ item.text }}</p>
+              </div>
+            </ng-container>
+          </div>
+        </section>
+
+        <!-- Render Course Benefits -->
+        <section *ngIf="node.type === 'courseBenefits'" class="mb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="bg-gradient-to-r from-blue-900 to-blue-800 text-white rounded-2xl p-8 md:p-12">
+            <h3 class="text-3xl font-bold mb-8 text-center">{{ node.attrs.title }}</h3>
+            <div class="grid md:grid-cols-3 gap-8">
+              <ng-container *ngFor="let item of node.attrs.items">
+                <div class="text-center">
+                  <div class="w-16 h-16" [ngStyle]="{'background-color': 'bg-' + item.icon.backgroundColor}" class="rounded-full mx-auto mb-4 flex items-center justify-center" [innerHTML]="sanitizeUrl(item.icon.svg)"></div>
+                  <h4 class="text-xl font-bold mb-2">{{ item.title }}</h4>
+                  <p>{{ item.description }}</p>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </section>
+
+        <!-- Render CTA -->
+        <section *ngIf="node.type === 'cta'" class="text-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-2xl p-8 md:p-12">
+            <h3 class="text-3xl md:text-4xl font-bold mb-4">{{ node.attrs.title }}</h3>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">{{ node.attrs.description }}</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <ng-container *ngFor="let btn of node.attrs.buttons">
+                <a [href]="btn.url" class="px-8 py-4 rounded-lg font-bold text-lg transition duration-300" [ngStyle]="{
+                  'background-color': btn.backgroundColor,
+                  'color': btn.textColor,
+                  'border-color': btn.borderColor
+                }" [class.hover:bg-blue-700]="btn.hoverBackgroundColor === 'blue-700'" [class.hover:bg-blue-800]="btn.hoverBackgroundColor === 'blue-800'" [class.hover:text-white]="btn.hoverTextColor === 'white'" [class.hover:bg-blue-900]="btn.hoverColor === 'blue-900'">
+                  {{ btn.text }}
+                </a>
+              </ng-container>
+            </div>
+          </div>
+        </section>
+
+        <!-- Render Footer -->
+        <footer *ngIf="node.type === 'footer'" class="bg-blue-900 text-white py-12">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+              <div>
+                <div class="flex items-center mb-4">
+                  <div class="bg-white text-blue-900 p-2 rounded" [ngStyle]="{'background-color': node.attrs.logo.backgroundColor, 'color': node.attrs.logo.color}">
+                    <span class="text-xl font-bold">{{ node.attrs.logo.text }}</span>
+                  </div>
+                  <div class="ml-3">
+                    <div class="font-bold text-lg">{{ node.attrs.title }}</div>
+                    <div class="text-xs text-blue-200">{{ node.attrs.subtitle }}</div>
+                  </div>
+                </div>
+                <p class="text-blue-200">{{ node.attrs.description }}</p>
+              </div>
+              <div>
+                <h4 class="font-bold text-lg mb-4">LIÊN HỆ</h4>
+                <div class="space-y-2 text-blue-200">
+                  <p>📍 {{ node.attrs.contact.address }}</p>
+                  <p>📞 {{ node.attrs.contact.phone }}</p>
+                  <p>✉️ {{ node.attrs.contact.email }}</p>
+                </div>
+              </div>
+              <div>
+                <h4 class="font-bold text-lg mb-4">KHÓA HỌC</h4>
+                <div class="space-y-2 text-blue-200">
+                  <p *ngFor="let course of node.attrs.courses">{{ course }}</p>
+                </div>
+              </div>
+              <div>
+                <h4 class="font-bold text-lg mb-4">THEO DÕI CHÚNG TÔI</h4>
+                <div class="flex space-x-4">
+                  <ng-container *ngFor="let link of node.attrs.socialLinks">
+                    <a [href]="link.url" class="w-10 h-10 bg-blue-800 rounded-full flex items-center justify-center hover:bg-blue-700">
+                      <span class="text-sm">{{ link.icon }}</span>
+                    </a>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <div class="border-t border-blue-800 mt-8 pt-8 text-center text-blue-200">
+              <p>{{ node.attrs.copyright }}</p>
+            </div>
+          </div>
+        </footer>
+      </ng-container>
+    </div>

@@ -94,7 +94,6 @@ export class DoanhsoService {
         }
         
         if (!existing) {
-          console.log(`Creating new doanhso for source_id ${item.source_id}`);
           if(item.priceDiscounted>0) {
             const data = {
               codeId: item.source_id, // using source_id as codeId

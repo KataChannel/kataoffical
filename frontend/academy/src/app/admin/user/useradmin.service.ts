@@ -282,8 +282,8 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
       }
       const data = await response.json();
       const permissionsadmin = data.permissions.map((p: any) => p.name);
-      console.log(data);
-      console.log(permissionsadmin);
+      // console.log(data);
+      // console.log(permissionsadmin);
       
       this.profile.set(data)     
       if(permissionsadmin.length>0)

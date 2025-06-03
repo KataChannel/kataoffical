@@ -446,13 +446,13 @@ export const routes: Routes = [
             (c) => c.TainguyenctvComponent
           ),
       },
-      {
-        path: 'leaderboard',
-        loadComponent: () =>
-          import('./site/home/leaderboard/leaderboard.component').then(
-            (c) => c.LeaderboardComponent
-          ),
-      },
+      // {
+      //   path: 'leaderboard',
+      //   loadComponent: () =>
+      //     import('./site/home/leaderboard/leaderboard.component').then(
+      //       (c) => c.LeaderboardComponent
+      //     ),
+      // },
       {
         path: 'taikhoanctv',
         canActivate: [AuthGuard],
@@ -484,7 +484,57 @@ export const routes: Routes = [
           import('./site/home/dashboardctv/dashboardctv.component').then(
             (c) => c.DashboardctvComponent
           ),
-        children: [],
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./site/home/dashboardctv/maindb/maindb.component').then(
+                (c) => c.MaindbComponent
+              ),
+          },
+          {
+            path: 'luottruycap',
+            loadComponent: () =>
+              import(
+                './site/home/dashboardctv/luottruycap/luottruycap.component'
+              ).then((c) => c.LuottruycapComponent),
+          },
+          {
+            path: 'luotdangky',
+            loadComponent: () =>
+              import(
+                './site/home/dashboardctv/luotdangky/luotdangky.component'
+              ).then((c) => c.LuotdangkyComponent),
+          },
+          {
+            path: 'luotden',
+            loadComponent: () =>
+              import(
+                './site/home/dashboardctv/luotden/luotden.component'
+              ).then((c) => c.LuotdenComponent),
+          },
+          {
+            path: 'khoahoc',
+            loadComponent: () =>
+              import(
+                './site/home/dashboardctv/khoahoc/khoahoc.component'
+              ).then((c) => c.KhoahocComponent),
+          },
+          {
+            path: 'doanhthu',
+            loadComponent: () =>
+              import(
+                './site/home/dashboardctv/doanhthu/doanhthu.component'
+              ).then((c) => c.DoanhthuComponent),
+          },
+          {
+            path: 'hoahong',
+            loadComponent: () =>
+              import(
+                './site/home/dashboardctv/hoahong/hoahong.component'
+              ).then((c) => c.HoahongComponent),
+          },
+        ],
       },
       {
         path: 'thongkectv',
