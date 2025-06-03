@@ -54,7 +54,7 @@ export class ListSanphamComponent implements OnInit {
     codeId: 'Code',
     title: 'Tên sản phẩm',
     danhmuc: 'Danh mục',
-    bienthe: 'Biến thể',
+    bacgia: 'Bậc Giá',
     donvitinh: 'Đơn vị tính',
     giagoc: 'Giá Gốc',
     status: 'Trạng thái',

@@ -15,12 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const common_1 = require("@nestjs/common");
 const user_service_1 = require("./user.service");
-const auth_service_1 = require("../auth/auth.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const audit_decorator_1 = require("../auditlog/audit.decorator");
+const client_1 = require("@prisma/client");
 let UserController = class UserController {
-    constructor(userService, authService) {
+    constructor(userService) {
         this.userService = userService;
-        this.authService = authService;
     }
     create(dto) {
         return this.userService.createUser(dto);
@@ -59,6 +59,11 @@ let UserController = class UserController {
 exports.UserController = UserController;
 __decorate([
     (0, common_1.Post)(),
+    (0, audit_decorator_1.Audit)({
+        entity: 'User',
+        action: client_1.AuditAction.CREATE,
+        includeResponse: true,
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -120,6 +125,11 @@ __decorate([
 ], UserController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, audit_decorator_1.Audit)({
+        entity: 'User',
+        action: client_1.AuditAction.UPDATE,
+        includeResponse: true,
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -128,6 +138,10 @@ __decorate([
 ], UserController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, audit_decorator_1.Audit)({
+        entity: 'User',
+        action: client_1.AuditAction.DELETE,
+    }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -135,7 +149,7 @@ __decorate([
 ], UserController.prototype, "remove", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('users'),
-    __metadata("design:paramtypes", [user_service_1.UserService,
-        auth_service_1.AuthService])
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __metadata("design:paramtypes", [user_service_1.UserService])
 ], UserController);
 //# sourceMappingURL=user.controller.js.map

@@ -19,12 +19,12 @@ export declare class SanphamService {
         order: number | null;
         codeId: string;
         status: string;
-        subtitle: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
         inStock: boolean;
         danhmucId: string | null;
+        bacgia: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     findBy(param: any): Promise<{
         id: string;
@@ -35,12 +35,12 @@ export declare class SanphamService {
         order: number | null;
         codeId: string;
         status: string;
-        subtitle: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
         inStock: boolean;
         danhmucId: string | null;
+        bacgia: import(".prisma/client/runtime/library").JsonValue | null;
     } | {
         data: {
             id: string;
@@ -51,12 +51,12 @@ export declare class SanphamService {
             order: number | null;
             codeId: string;
             status: string;
-            subtitle: string | null;
             donvitinh: string | null;
             bienthe: string | null;
             giagoc: number;
             inStock: boolean;
             danhmucId: string | null;
+            bacgia: import(".prisma/client/runtime/library").JsonValue | null;
         }[];
         total: number;
         page: any;
@@ -82,12 +82,12 @@ export declare class SanphamService {
             order: number | null;
             codeId: string;
             status: string;
-            subtitle: string | null;
             donvitinh: string | null;
             bienthe: string | null;
             giagoc: number;
             inStock: boolean;
             danhmucId: string | null;
+            bacgia: import(".prisma/client/runtime/library").JsonValue | null;
         })[];
         total: number;
         page: number;
@@ -102,12 +102,12 @@ export declare class SanphamService {
         order: number | null;
         codeId: string;
         status: string;
-        subtitle: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
         inStock: boolean;
         danhmucId: string | null;
+        bacgia: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -118,12 +118,12 @@ export declare class SanphamService {
         order: number | null;
         codeId: string;
         status: string;
-        subtitle: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
         inStock: boolean;
         danhmucId: string | null;
+        bacgia: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -134,12 +134,12 @@ export declare class SanphamService {
         order: number | null;
         codeId: string;
         status: string;
-        subtitle: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
         inStock: boolean;
         danhmucId: string | null;
+        bacgia: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     reorderSanphams(sanphamIds: string[]): Promise<{
         status: string;

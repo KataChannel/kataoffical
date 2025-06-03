@@ -9,6 +9,38 @@ datasource postgres {
   url      = env("DATABASE_URL")
 }
 
+model AuditLog {
+  id            String          @id @default(uuid())
+  entityName    String          // Tên entity (User, Product, Order...)
+  entityId      String          // ID của entity
+  action        AuditAction     // CREATE, UPDATE, DELETE
+  userId        String?         // User thực hiện action
+  user          User?          @relation(fields: [userId], references: [id])
+  userEmail     String?         // Email user (backup)
+  oldValues     Json?           // Giá trị cũ (trước khi thay đổi)
+  newValues     Json?           // Giá trị mới (sau khi thay đổi)
+  changedFields String[]        // Danh sách field đã thay đổi
+  ipAddress     String?         // IP address
+  userAgent     String?         // User agent
+  sessionId     String?         // Session ID
+  metadata      Json?           // Metadata bổ sung
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  @@index([entityName, entityId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([action])
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE  
+  DELETE
+  LOGIN
+  LOGOUT
+  ACCESS
+}
+
 enum Gender {
   MALE
   FEMALE
@@ -64,7 +96,6 @@ model User {
   isActive      Boolean        @default(false)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  audits        AuditLog[]
   Notification  Notification[]
   Dexuat        Dexuat[]
   LandingPage   LandingPage[]
@@ -72,8 +103,8 @@ model User {
   referrerId    String? // ID của user đã giới thiệu user này
   referrer      User?          @relation("Referrals", fields: [referrerId], references: [id])
   referrals     User[]         @relation("Referrals")
-
-  Setting Setting[]
+  auditLogs     AuditLog[]
+  Setting       Setting[]
 }
 
 model Role {
@@ -156,18 +187,6 @@ model ErrorLog {
   message   String
   details   Json? // Lưu thông tin bổ sung dưới dạng JSON
   source    String // "client" hoặc "server" để phân biệt nguồn lỗi
-  createdAt DateTime @default(now())
-}
-
-model AuditLog {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  action    String?
-  entity    String?
-  entityId  String?
-  oldValue  Json?
-  newValue  Json?
   createdAt DateTime @default(now())
 }
 
@@ -541,10 +560,10 @@ model sanpham {
   id             String           @id @default(uuid())
   codeId         String           @unique
   title          String
-  subtitle       String? // Tiêu đề phụ, có thể dùng để mô tả ngắn gọn về sản phẩm
   donvitinh      String?
   description    String?
   bienthe        String? // Biến thể của sản phẩm, ví dụ: "Màu sắc", "Kích thước"
+  bacgia         Json? // Bảng giá của sản phẩm, ví dụ: "Giá bán lẻ", "Giá sỉ"
   giagoc         Float            @default(0)
   inStock        Boolean          @default(true)
   status         String           @default("draft") // "draft", "published", "archived"

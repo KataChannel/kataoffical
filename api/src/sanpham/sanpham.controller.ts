@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpExcep
 import { SanphamService } from './sanpham.service'; 
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
+import { Audit } from 'src/auditlog/audit.decorator';
+import { AuditAction } from '@prisma/client';
 @ApiTags('sanpham') 
 @Controller('sanpham') 
 export class SanphamController { 
@@ -11,6 +13,7 @@ export class SanphamController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard) 
   @Post()
+  @Audit({ entity: 'Sanpham', action: AuditAction.CREATE, includeResponse: true })
   async create(@Body() data: any) { 
     try {
       return await this.sanphamService.create(data);
@@ -80,6 +83,7 @@ export class SanphamController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
+  @Audit({ entity: 'Sanpham', action: AuditAction.UPDATE, includeResponse: true })
   async update(@Param('id') id: string, @Body() data: any) { 
     try {
       return await this.sanphamService.update(id, data);
@@ -92,6 +96,7 @@ export class SanphamController {
   @ApiParam({ name: 'id', type: String })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @Audit({ entity: 'Sanpham', action: AuditAction.DELETE })
   async remove(@Param('id') id: string) {
     try {
       return await this.sanphamService.remove(id);

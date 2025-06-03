@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -31,6 +31,10 @@ import { BanggiaModule } from './banggia/banggia.module';
 import { NhacungcapModule } from './nhacungcap/nhacungcap.module';
 import { PhieukhoModule } from './phieukho/phieukho.module';
 import { DathangModule } from './dathang/dathang.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { AuditInterceptor } from './auditlog/audit.interceptor';
+import { AuditService } from './auditlog/auditlog.service';
+import { AuditMiddleware } from './auditlog/audit.middleware';
 
 @Module({
   imports: [
@@ -65,11 +69,21 @@ import { DathangModule } from './dathang/dathang.module';
     PhieukhoModule
   ],
   controllers: [AppController],
-  providers: [AppService,PrismaService],  
+  providers: [
+    AppService,
+    PrismaService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditInterceptor,
+    },
+    AuditService,
+  ],
   exports: [PrismaService],
 })
-export class AppModule {
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('*');
+    consumer
+      .apply(AuditMiddleware)
+      .forRoutes('*'); // hoặc chỉ định routes cụ thể
   }
 }

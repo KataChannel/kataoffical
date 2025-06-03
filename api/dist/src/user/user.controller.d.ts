@@ -1,9 +1,7 @@
 import { UserService } from './user.service';
-import { AuthService } from '../auth/auth.service';
 export declare class UserController {
     private readonly userService;
-    private readonly authService;
-    constructor(userService: UserService, authService: AuthService);
+    constructor(userService: UserService);
     create(dto: any): Promise<{
         id: string;
         name: string | null;

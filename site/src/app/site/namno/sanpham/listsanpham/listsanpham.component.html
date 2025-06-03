@@ -106,6 +106,21 @@
               {{ row[column]|number:'1.0-0' }}đ
             </span>
             }
+            @case ('bacgia') {
+            <span class="w-40 line-clamp-4">
+              @if (row[column]?.length > 0) {
+              @for (item of row[column]; track item) {
+              <div class="flex flex-row space-x-2 items-center justify-between">
+                <span>{{ item.type }}</span>
+                <span>{{ item.gia|number:'1.0-0' }}đ</span>
+              </div>
+              }
+              }
+              @else {
+              Chưa có giá
+              }
+            </span>
+            }
             @case ('danhmuc') {
             <span class="max-w-40 line-clamp-4">
               {{ row[column]?.title|| 'Chưa có danh mục' }}

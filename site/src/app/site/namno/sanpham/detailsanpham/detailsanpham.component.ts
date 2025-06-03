@@ -56,9 +56,11 @@ import { DanhmucService } from '../../danhmuc/danhmuc.service';
           this._ListSanphamComponent.drawer.close();
         }
         if(id === 'new'){
-          this.DetailSanpham.set({});
+          this.DetailSanpham.set({bacgia:[]});
           this._ListSanphamComponent.drawer.open();
           this.isEdit.update(value => !value);
+          console.log('Creating new sanpham', this.DetailSanpham());
+
           this._router.navigate(['sanpham', "new"]);
         }
         else{
@@ -66,11 +68,34 @@ import { DanhmucService } from '../../danhmuc/danhmuc.service';
             this._ListSanphamComponent.drawer.open();
             this._router.navigate(['sanpham', id]);
         }
+        // this.DetailSanpham.update((v:any)=>{
+        //   v.bacgia = v.bacgia || [];
+        // });
       });
     }
     async ngOnInit() {    
-      await this._DanhmucService.getAllDanhmuc();   
+      await this._DanhmucService.getAllDanhmuc();  
+      // this.DetailSanpham.update((v:any)=>{
+      //     v.bacgia = v.bacgia || [];
+      //   }); 
     }
+    addBacgia() {
+      this.DetailSanpham.update((v:any)=>{
+        v.bacgia = v.bacgia || [];
+        v.bacgia.push({type: '',min: 0,max:0, gia: 0});
+        return v;
+      });
+    }
+    removeBacgia(index: number) {
+      this.DetailSanpham.update((v:any)=>{
+        v.bacgia = v.bacgia || [];
+        if (index > -1) {
+          v.bacgia.splice(index, 1);
+        }
+        return v;
+      });
+    }
+
     async handleSanphamAction() {
       if (this.sanphamId() === 'new') {
         await this.createSanpham();

@@ -13,12 +13,12 @@ export declare class BanggiaController {
                 order: number | null;
                 codeId: string;
                 status: string;
-                subtitle: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
                 inStock: boolean;
                 danhmucId: string | null;
+                bacgia: import(".prisma/client/runtime/library").JsonValue | null;
             };
         } & {
             id: string;
@@ -72,12 +72,12 @@ export declare class BanggiaController {
                 order: number | null;
                 codeId: string;
                 status: string;
-                subtitle: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
                 inStock: boolean;
                 danhmucId: string | null;
+                bacgia: import(".prisma/client/runtime/library").JsonValue | null;
             };
         } & {
             id: string;
@@ -131,12 +131,12 @@ export declare class BanggiaController {
                     order: number | null;
                     codeId: string;
                     status: string;
-                    subtitle: string | null;
                     donvitinh: string | null;
                     bienthe: string | null;
                     giagoc: number;
                     inStock: boolean;
                     danhmucId: string | null;
+                    bacgia: import(".prisma/client/runtime/library").JsonValue | null;
                 };
             } & {
                 id: string;
@@ -195,12 +195,12 @@ export declare class BanggiaController {
                     order: number | null;
                     codeId: string;
                     status: string;
-                    subtitle: string | null;
                     donvitinh: string | null;
                     bienthe: string | null;
                     giagoc: number;
                     inStock: boolean;
                     danhmucId: string | null;
+                    bacgia: import(".prisma/client/runtime/library").JsonValue | null;
                 };
             } & {
                 id: string;
@@ -261,12 +261,12 @@ export declare class BanggiaController {
                 order: number | null;
                 codeId: string;
                 status: string;
-                subtitle: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
                 inStock: boolean;
                 danhmucId: string | null;
+                bacgia: import(".prisma/client/runtime/library").JsonValue | null;
             };
         } & {
             id: string;
@@ -320,12 +320,12 @@ export declare class BanggiaController {
                 order: number | null;
                 codeId: string;
                 status: string;
-                subtitle: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
                 inStock: boolean;
                 danhmucId: string | null;
+                bacgia: import(".prisma/client/runtime/library").JsonValue | null;
             };
         } & {
             id: string;

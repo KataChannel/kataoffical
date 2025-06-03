@@ -1,12 +1,10 @@
-import { Controller, Get, Query } from '@nestjs/common';
-import { AuditLogService } from './auditlog.service';
-
-@Controller('audit-logs')
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { AuditService } from './auditlog.service';
+@Controller('auditlog')
 export class AuditLogController {
-  constructor(private auditLogService: AuditLogService) {}
-
-  @Get()
-  async getLogs(@Query('entity') entity: string, @Query('entityId') entityId: string) {
-    return this.auditLogService.getLogs(entity, entityId);
+  constructor(private auditService: AuditService) {}
+  @Post('findby')
+  async getAuditLogs(@Body() param: any) {
+    return await this.auditService.getAuditLogs(param);
   }
 }

@@ -71,12 +71,12 @@ export class NamnoComponent {
       name: 'Kho',
       icon: 'inventory',
       slug: 'kho'
-    },
-    {
-      name: 'Vận Chuyển',
-      icon: 'local_shipping',
-      slug: 'vanchuyen'
     }
+    // {
+    //   name: 'Vận Chuyển',
+    //   icon: 'local_shipping',
+    //   slug: 'vanchuyen'
+    // }
   ];
   filterMenu: any[] = [];
   isOpen = true;

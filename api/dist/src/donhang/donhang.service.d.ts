@@ -40,9 +40,9 @@ export declare class DonhangService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        total: number;
         order: number | null;
         codeId: string;
-        total: number;
         status: string;
         khachhangId: string;
     }>;
@@ -75,12 +75,12 @@ export declare class DonhangService {
                 order: number | null;
                 codeId: string;
                 status: string;
-                subtitle: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
                 inStock: boolean;
                 danhmucId: string | null;
+                bacgia: import(".prisma/client/runtime/library").JsonValue | null;
             };
         } & {
             id: string;
@@ -98,9 +98,9 @@ export declare class DonhangService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        total: number;
         order: number | null;
         codeId: string;
-        total: number;
         status: string;
         khachhangId: string;
     }) | {
@@ -128,12 +128,12 @@ export declare class DonhangService {
                     order: number | null;
                     codeId: string;
                     status: string;
-                    subtitle: string | null;
                     donvitinh: string | null;
                     bienthe: string | null;
                     giagoc: number;
                     inStock: boolean;
                     danhmucId: string | null;
+                    bacgia: import(".prisma/client/runtime/library").JsonValue | null;
                 };
             } & {
                 id: string;
@@ -151,9 +151,9 @@ export declare class DonhangService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            total: number;
             order: number | null;
             codeId: string;
-            total: number;
             status: string;
             khachhangId: string;
         })[];
@@ -186,12 +186,12 @@ export declare class DonhangService {
                     order: number | null;
                     codeId: string;
                     status: string;
-                    subtitle: string | null;
                     donvitinh: string | null;
                     bienthe: string | null;
                     giagoc: number;
                     inStock: boolean;
                     danhmucId: string | null;
+                    bacgia: import(".prisma/client/runtime/library").JsonValue | null;
                 };
             } & {
                 id: string;
@@ -209,9 +209,9 @@ export declare class DonhangService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            total: number;
             order: number | null;
             codeId: string;
-            total: number;
             status: string;
             khachhangId: string;
         })[];
@@ -243,12 +243,12 @@ export declare class DonhangService {
                 order: number | null;
                 codeId: string;
                 status: string;
-                subtitle: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
                 inStock: boolean;
                 danhmucId: string | null;
+                bacgia: import(".prisma/client/runtime/library").JsonValue | null;
             };
         } & {
             id: string;
@@ -266,9 +266,9 @@ export declare class DonhangService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        total: number;
         order: number | null;
         codeId: string;
-        total: number;
         status: string;
         khachhangId: string;
     }>;
@@ -302,9 +302,9 @@ export declare class DonhangService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        total: number;
         order: number | null;
         codeId: string;
-        total: number;
         status: string;
         khachhangId: string;
     }>;
@@ -312,9 +312,9 @@ export declare class DonhangService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        total: number;
         order: number | null;
         codeId: string;
-        total: number;
         status: string;
         khachhangId: string;
     }>;

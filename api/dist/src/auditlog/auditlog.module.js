@@ -16,7 +16,7 @@ let AuditLogModule = class AuditLogModule {
 exports.AuditLogModule = AuditLogModule;
 exports.AuditLogModule = AuditLogModule = __decorate([
     (0, common_1.Module)({
-        providers: [auditlog_service_1.AuditLogService, prisma_service_1.PrismaService],
+        providers: [auditlog_service_1.AuditService, prisma_service_1.PrismaService],
         controllers: [auditlog_controller_1.AuditLogController],
     })
 ], AuditLogModule);

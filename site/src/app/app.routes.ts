@@ -21,6 +21,13 @@ export const routes: Routes = [
       ),
     children: [
       {
+          path: 'auditlog',
+          canActivate: [PermissionGuard],
+          data: { permission: 'auditlog.view' },
+          loadChildren: () =>
+            import('./admin/auditlog/auditlog.route').then(m => m.AuditlogRoutingModule),
+      },
+      {
         path: 'setting',
         canActivate: [PermissionGuard],
         data: { permission: 'setting.view' },

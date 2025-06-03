@@ -16,24 +16,23 @@ exports.AuditLogController = void 0;
 const common_1 = require("@nestjs/common");
 const auditlog_service_1 = require("./auditlog.service");
 let AuditLogController = class AuditLogController {
-    constructor(auditLogService) {
-        this.auditLogService = auditLogService;
+    constructor(auditService) {
+        this.auditService = auditService;
     }
-    async getLogs(entity, entityId) {
-        return this.auditLogService.getLogs(entity, entityId);
+    async getAuditLogs(param) {
+        return await this.auditService.getAuditLogs(param);
     }
 };
 exports.AuditLogController = AuditLogController;
 __decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('entity')),
-    __param(1, (0, common_1.Query)('entityId')),
+    (0, common_1.Post)('findby'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], AuditLogController.prototype, "getLogs", null);
+], AuditLogController.prototype, "getAuditLogs", null);
 exports.AuditLogController = AuditLogController = __decorate([
-    (0, common_1.Controller)('audit-logs'),
-    __metadata("design:paramtypes", [auditlog_service_1.AuditLogService])
+    (0, common_1.Controller)('auditlog'),
+    __metadata("design:paramtypes", [auditlog_service_1.AuditService])
 ], AuditLogController);
 //# sourceMappingURL=auditlog.controller.js.map

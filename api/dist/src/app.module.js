@@ -16,7 +16,6 @@ const prisma_module_1 = require("../prisma/prisma.module");
 const prisma_service_1 = require("../prisma/prisma.service");
 const menu_module_1 = require("./menu/menu.module");
 const khachhang_module_1 = require("./khachhang/khachhang.module");
-const auth_middleware_1 = require("./middleware/auth.middleware");
 const role_module_1 = require("./role/role.module");
 const permission_module_1 = require("./permission/permission.module");
 const nhomkhachhang_module_1 = require("./nhomkhachhang/nhomkhachhang.module");
@@ -40,9 +39,15 @@ const banggia_module_1 = require("./banggia/banggia.module");
 const nhacungcap_module_1 = require("./nhacungcap/nhacungcap.module");
 const phieukho_module_1 = require("./phieukho/phieukho.module");
 const dathang_module_1 = require("./dathang/dathang.module");
+const core_1 = require("@nestjs/core");
+const audit_interceptor_1 = require("./auditlog/audit.interceptor");
+const auditlog_service_1 = require("./auditlog/auditlog.service");
+const audit_middleware_1 = require("./auditlog/audit.middleware");
 let AppModule = class AppModule {
     configure(consumer) {
-        consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
+        consumer
+            .apply(audit_middleware_1.AuditMiddleware)
+            .forRoutes('*');
     }
 };
 exports.AppModule = AppModule;
@@ -80,7 +85,15 @@ exports.AppModule = AppModule = __decorate([
             phieukho_module_1.PhieukhoModule
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService, prisma_service_1.PrismaService],
+        providers: [
+            app_service_1.AppService,
+            prisma_service_1.PrismaService,
+            {
+                provide: core_1.APP_INTERCEPTOR,
+                useClass: audit_interceptor_1.AuditInterceptor,
+            },
+            auditlog_service_1.AuditService,
+        ],
         exports: [prisma_service_1.PrismaService],
     })
 ], AppModule);
