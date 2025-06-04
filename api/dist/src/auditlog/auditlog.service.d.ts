@@ -18,19 +18,37 @@ export declare class AuditService {
     private readonly prisma;
     constructor(prisma: PrismaService);
     logActivity(data: AuditLogData): Promise<void>;
-    getAuditLogs(param: any): Promise<{
+    getAuditLogs(param: any): Promise<({
+        user: {
+            email: string | null;
+        } | null;
+    } & {
+        id: string;
+        entityName: string;
+        entityId: string;
+        action: import(".prisma/client").$Enums.AuditAction;
+        userId: string | null;
+        userEmail: string | null;
+        oldValues: import("@prisma/client/runtime/library").JsonValue | null;
+        newValues: import("@prisma/client/runtime/library").JsonValue | null;
+        changedFields: string[];
+        ipAddress: string | null;
+        userAgent: string | null;
+        sessionId: string | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }) | {
         data: ({
             user: {
                 email: string | null;
             } | null;
         } & {
             id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            userId: string | null;
             entityName: string;
             entityId: string;
             action: import(".prisma/client").$Enums.AuditAction;
+            userId: string | null;
             userEmail: string | null;
             oldValues: import("@prisma/client/runtime/library").JsonValue | null;
             newValues: import("@prisma/client/runtime/library").JsonValue | null;
@@ -39,6 +57,8 @@ export declare class AuditService {
             userAgent: string | null;
             sessionId: string | null;
             metadata: import("@prisma/client/runtime/library").JsonValue | null;
+            createdAt: Date;
+            updatedAt: Date;
         })[];
         pagination: {
             page: any;
@@ -46,6 +66,6 @@ export declare class AuditService {
             total: number;
             pages: number;
         };
-    }>;
+    } | null>;
     private getChangedFields;
 }

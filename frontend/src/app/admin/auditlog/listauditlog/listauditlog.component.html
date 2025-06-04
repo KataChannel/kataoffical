@@ -1,5 +1,5 @@
 <mat-drawer-container class="w-full h-full" autosize>
-  <mat-drawer #drawer class="flex flex-col lg:!w-1/2 !w-full h-full" [position]="'end'" mode="over">
+  <mat-drawer #drawer class="flex flex-col !w-full h-full" [position]="'end'" mode="over">
     <router-outlet></router-outlet>
   </mat-drawer>
   <div class="flex flex-col space-y-2 h-screen-16 w-full p-2">
@@ -136,7 +136,7 @@
         }
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
         <tr class="border" mat-row *matRowDef="let row; columns: displayedColumns;"
-          class="hover:bg-slate-50 {{CheckItemInEdit(row)?'!bg-blue-50':''}}" (click)="AddToEdit(row);">
+          class="hover:bg-slate-50 {{CheckItemInEdit(row)?'!bg-blue-50':''}}" (click)="goToDetail(row);">
         </tr>
         <tr class="mat-row border" *matNoDataRow>
           <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>

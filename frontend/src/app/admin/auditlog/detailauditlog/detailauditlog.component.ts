@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { ListAuditlogComponent } from '../listauditlog/listauditlog.component';
 import { AuditlogService } from '../auditlog.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatCardModule} from '@angular/material/card';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   @Component({
     selector: 'app-detailauditlog',
@@ -64,7 +65,9 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     isEdit = signal(false);
     isDelete = signal(false);  
     auditlogId:any = this._AuditlogService.auditlogId
-    async ngOnInit() {       
+    async ngOnInit() { 
+       await this._AuditlogService.getAuditlogBy({id:this.auditlogId(),isOne:true});
+      console.log('DetailAuditlogComponent initialized',this.DetailAuditlog()); 
     }
     async handleAuditlogAction() {
       if (this.auditlogId() === 'new') {

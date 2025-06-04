@@ -41,8 +41,7 @@ let AuditService = class AuditService {
         }
     }
     async getAuditLogs(param) {
-        const { page = 1, pageSize = 50, ...where } = param;
-        const skip = (page - 1) * pageSize;
+        const { page = 1, pageSize = 50, isOne, ...where } = param;
         const whereClause = {};
         if (where.entityName)
             whereClause.entityName = where.entityName;
@@ -59,6 +58,17 @@ let AuditService = class AuditService {
             if (where.endDate)
                 whereClause.createdAt.lte = where.endDate;
         }
+        if (isOne) {
+            const oneLog = await this.prisma.auditLog.findFirst({
+                where: whereClause,
+                include: {
+                    user: { select: { email: true } },
+                },
+                orderBy: { createdAt: 'desc' },
+            });
+            return oneLog;
+        }
+        const skip = (page - 1) * pageSize;
         const [logs, total] = await Promise.all([
             this.prisma.auditLog.findMany({
                 where: whereClause,

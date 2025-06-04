@@ -46,8 +46,7 @@ export class AuditService {
   }
 
   async getAuditLogs(param:any) {
-    const { page = 1, pageSize = 50, ...where } = param;
-    const skip = (page - 1) * pageSize;
+    const { page = 1, pageSize = 50, isOne, ...where } = param;
     const whereClause: any = {};
     if (where.entityName) whereClause.entityName = where.entityName;
     if (where.entityId) whereClause.entityId = where.entityId;
@@ -58,15 +57,28 @@ export class AuditService {
       if (where.startDate) whereClause.createdAt.gte = where.startDate;
       if (where.endDate) whereClause.createdAt.lte = where.endDate;
     }
+
+    if (isOne) {
+      const oneLog = await this.prisma.auditLog.findFirst({
+      where: whereClause,
+      include: {
+        user: { select: { email: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+      });
+      return oneLog;
+    }
+    
+    const skip = (page - 1) * pageSize;
     const [logs, total] = await Promise.all([
       this.prisma.auditLog.findMany({
-        where: whereClause,
-        include: {
-          user: { select: { email: true } },
-        },
-        skip,
-        take: pageSize,
-        orderBy: { createdAt: 'desc' },
+      where: whereClause,
+      include: {
+        user: { select: { email: true } },
+      },
+      skip,
+      take: pageSize,
+      orderBy: { createdAt: 'desc' },
       }),
       this.prisma.auditLog.count({ where: whereClause }),
     ]);
@@ -74,10 +86,10 @@ export class AuditService {
     return {
       data: logs,
       pagination: {
-        page,
-        pageSize,
-        total,
-        pages: Math.ceil(total / pageSize),
+      page,
+      pageSize,
+      total,
+      pages: Math.ceil(total / pageSize),
       },
     };
   }
