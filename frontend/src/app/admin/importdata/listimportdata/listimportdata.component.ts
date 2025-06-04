@@ -814,17 +814,20 @@ convertNCCSPToImport(data: any){
 
     if(data.dathang && this.ListEdit().some((item: any) => item.value === 'dathang'))
     {
-        const ListDH = (data.dathang || []).map((v: any) => ({
-          ngaynhan: moment(excelSerialDateToJSDate(v.ngaynhan)).toDate(),
-          mancc: v.mancc,
-          mabanggia: v.mabanggia,
-          masp: v.masp,
-          sldat: Number(v.sldat),
-          slgiao: Number(v.slgiao),
-          slnhan: Number(v.slnhan),
-          ghichu: v.ghichu,
-        }))
-        console.log(ListDH);
+        const ListDH = (data.dathang || [])
+          .filter((v: any) => v.mancc && v.masp)
+          .map((v: any) => ({
+            ngaynhan: moment(excelSerialDateToJSDate(v.ngaynhan)).toDate(),
+            mancc: v.mancc,
+            mabanggia: v.mabanggia,
+            masp: v.masp,
+            sldat: Number(v.sldat),
+            slgiao: Number(v.slgiao),
+            slnhan: Number(v.slnhan),
+            ghichu: v.ghichu,
+          }));
+          console.log(ListDH);
+          
         const importSnackbar = this._snackBar.open('Đang import Đặt hàng...', '', {
           horizontalPosition: "end",
           verticalPosition: "top",
