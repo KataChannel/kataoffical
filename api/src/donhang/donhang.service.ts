@@ -393,6 +393,82 @@ export class DonhangService {
     };
     return result;
   }
+
+  async ImportDonhangOld(dulieu: any) { 
+    const data = await Promise.all(dulieu.map(async (v: any) => ({
+      tenkh: v.tenkh,
+      ngaygiao: moment().toDate(),
+      makh: await this.prisma.khachhang.findFirst({ where: { tenkh: v.tenkh } }),
+      mabanggia: v.mabanggia,
+      masp: v.ItemCode,
+      sldat: Number(v.Quantity),
+      slgiao: Number(v.Quantity),
+      slnhan: Number(v.Quantity),
+      ghichu: v.ghichu,
+    })));
+
+    console.log(data);
+    
+    // const acc: Record<string, any> = {};
+    // for (const curr of data) {
+    //   if (!acc[curr.makh]) {
+    //     const khachhang = await this.prisma.khachhang.findFirst({ where: { makh: curr.makh } });
+    //     acc[curr.makh] = {
+    //       title: `Import ${moment().format('DD_MM_YYYY')}`,
+    //       ngaygiao: curr.ngaygiao,
+    //       makh: curr.makh,
+    //       khachhangId: khachhang?.id,
+    //       name: khachhang?.name,
+    //       mabanggia: curr.mabanggia,
+    //       sanpham: [],
+    //       khachhang: {
+    //         makh: curr.makh,
+    //       }
+    //     };
+    //   }
+    //   const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: curr.masp } });
+    //   acc[curr.makh].sanpham.push({
+    //     masp: curr.masp,
+    //     id: sanphamRecord?.id,
+    //     sldat: Number(curr.sldat),
+    //     slgiao: Number(curr.slgiao),
+    //     slnhan: Number(curr.slnhan),
+    //     ghichu: curr.ghichu,
+    //   });
+    // }
+    // const convertData: any = Object.values(acc);
+    // let success = 0;
+    // let fail = 0;  
+    // for (const element of convertData) {
+    //   try {
+    //     await this.create(element);
+    //     success += 1;
+    //   } catch (error) {
+    //     console.log('error', error);
+
+    //   await this.prisma.importHistory.create({
+    //      data: {
+    //        codeId: element.madonhang, // using madonhang as the unique code identifier
+    //        title: element.title,      // new field: title
+    //        type: 'donhang',        // new field: type
+    //        caseDetail: {
+    //           errorMessage: error.message,
+    //           errorStack: error.stack,
+    //           additionalInfo: 'Failed during donhang import process',
+    //        },
+    //        order: 1, // update based on your ordering logic if needed
+    //        createdBy: 'system', // replace with the actual account ID if available
+    //      },
+    //    });
+    //     fail += 1;
+    //   }
+    // }
+    // return {
+    //   success,
+    //   fail,
+    // };
+  }
+
   async ImportDonhang(data: any) {    
     const acc: Record<string, any> = {};
     for (const curr of data) {

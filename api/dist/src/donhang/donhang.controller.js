@@ -24,6 +24,9 @@ let DonhangController = class DonhangController {
     create(createDonhangDto) {
         return this.donhangService.create(createDonhangDto);
     }
+    ImportDonhangOld(data) {
+        return this.donhangService.ImportDonhangOld(data);
+    }
     ImportDonhang(data) {
         return this.donhangService.ImportDonhang(data);
     }
@@ -67,6 +70,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DonhangController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('importold'),
+    (0, audit_decorator_1.Audit)({ entity: 'Import Donhang Cu', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], DonhangController.prototype, "ImportDonhangOld", null);
 __decorate([
     (0, common_1.Post)('import'),
     (0, audit_decorator_1.Audit)({ entity: 'Import Donhang', action: client_1.AuditAction.CREATE, includeResponse: true }),

@@ -109,6 +109,7 @@ export class ListDonhangComponent {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   @ViewChild('dialogImportExcel') dialogImportExcel!: TemplateRef<any>;
+  @ViewChild('dialogImportExcelCu') dialogImportExcelCu!: TemplateRef<any>;
   filterValues: { [key: string]: string } = {};
   private _DonhangService: DonhangService = inject(DonhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
@@ -170,49 +171,6 @@ export class ListDonhangComponent {
       this.dataSource.sort = this.sort;
     }
   }
-
-  // onPageSizeChange(size: number,menuHienthi:any) {
-  //   if(size>this.totalItems){
-  //     this.pageSize = this.totalItems;
-  //     this._snackBar.open(`Số lượng tối đa ${this.totalItems}`, '', {
-  //       duration: 1000,
-  //       horizontalPosition: "end",
-  //       verticalPosition: "top",
-  //       panelClass: ['snackbar-success'],
-  //     });
-  //   }
-  //   else {
-  //     this.pageSize = size;
-  //   }
-  //   this.currentPage = 1; // Reset to first page when changing page size
-  //   this.calculateTotalPages();
-  //   this.updateDisplayData();
-  //   menuHienthi.closeMenu();
-  // }
-
-  // calculateTotalPages() {
-  //   this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-  // }
-  // onPreviousPage() {
-  //   if (this.currentPage > 1) {
-  //     this.currentPage--;
-  //     this.updateDisplayData();
-  //   }
-  // }
-
-  // onNextPage() {
-  //   if (this.currentPage < this.totalPages) {
-  //     this.currentPage++;
-  //     this.updateDisplayData();
-  //   }
-  // }
-
-  // updateDisplayData() {
-  //   const startIndex = (this.currentPage - 1) * this.pageSize;
-  //   const endIndex = startIndex + this.pageSize;
-  //   const pageData = this.Listdonhang().slice(startIndex, endIndex);
-  //   this.dataSource.data = pageData;
-  // }
 
   async onSelectionChange(event: MatSelectChange): Promise<void> {
     const timeFrames: { [key: string]: () => void } = {
@@ -495,170 +453,142 @@ export class ListDonhangComponent {
     return this.editDonhang.findIndex((v) => v.id === item.id) !== -1;
   }
   DeleteDonhang(): void {}
-  async LoadDrive() {
-    const DriveInfo = {
-      IdSheet: '15npo25qyH5FmfcEjl1uyqqyFMS_vdFnmxM_kt0KYmZk',
-      SheetName: 'SPImport',
-      ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
-    };
-    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
-    const data = ConvertDriveData(result.values);
-    console.log(data);
-    this.DoImportData(data);
-    // const updatePromises = data.map(async (v: any) => {
-    //   const item = this._KhachhangsService
-    //     .ListKhachhang()
-    //     .find((v1) => v1.MaKH === v.MaKH);
-    //   if (item) {
-    //     const item1 = { ...item, ...v };
-    //     console.log(item1);
 
-    //     await this._KhachhangsService.updateOneKhachhang(item1);
-    //   }
-    // });
-    // Promise.all(updatePromises).then(() => {
-    //   this._snackBar.open('Cập Nhật Thành Công', '', {
-    //     duration: 1000,
-    //     horizontalPosition: 'end',
-    //     verticalPosition: 'top',
-    //     panelClass: ['snackbar-success'],
-    //   });
-    //   //  window.location.reload();
-    // });
-  }
-  DoImportData(data: any) {
-    console.log(data);
-
-    const transformedData = data.map((v: any) => ({
-      title: v.title?.trim() || '',
-      masp: v.masp?.trim() || '',
-      slug: `${convertToSlug(v?.title?.trim() || '')}_${GenId(5, false)}`,
-      giagoc: Number(v.giagoc) || 0,
-      dvt: v.dvt || '',
-      soluong: Number(v.soluong) || 0,
-      soluongkho: Number(v.soluongkho) || 0,
-      ghichu: v.ghichu || '',
-      order: Number(v.order) || 0,
-    }));
-    // Filter out duplicate masp values
-    const uniqueData = transformedData.filter(
-      (value: any, index: any, self: any) =>
-        index === self.findIndex((t: any) => t.masp === value.masp)
-    );
-    const listId2 = uniqueData.map((v: any) => v.masp);
-    const listId1 = this._DonhangService.ListDonhang().map((v: any) => v.masp);
-    const listId3 = listId2.filter((item: any) => !listId1.includes(item));
-    const createuppdateitem = uniqueData.map(async (v: any) => {
-      const item = this._DonhangService
-        .ListDonhang()
-        .find((v1) => v1.masp === v.masp);
-      if (item) {
-        const item1 = { ...item, ...v };
-        await this._DonhangService.updateDonhang(item1);
-      } else {
-        await this._DonhangService.CreateDonhang(v);
-      }
-    });
-    const disableItem = listId3.map(async (v: any) => {
-      const item = this._DonhangService
-        .ListDonhang()
-        .find((v1) => v1.masp === v);
-      item.isActive = false;
-      await this._DonhangService.updateDonhang(item);
-    });
-    Promise.all([...createuppdateitem, ...disableItem]).then(() => {
-      this._snackBar.open('Cập Nhật Thành Công', '', {
-        duration: 1000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
-      // window.location.reload();
-    });
-  }
   ListImportExcel: any[] = [];
-
+  statusDetails: any[] = [];
   async ImporExcel(event: any) {
     const files = Array.from(event.target.files) as File[];
     const importData: any[] = [];
-    for (let i = 0; i < files.length; i++) {
-      console.log(`Processing file ${i + 1}/${files.length}:`, files[i].name);
-      const TenKH = removeVietnameseAccents(files[i].name.replace('.xlsx', ''))
-      let data = await readExcelFileNoWorker(files[i], 'TEM');
+    let processedCount = 0;
+    let skippedCount = 0;
+    let errorCount = 0;
+    
 
-      const editdata = data
-        .filter((item: any) => {
-          const validItemCode =
-            typeof item?.ItemCode === 'string' && item.ItemCode.trim() !== '';
-          const validQuantity =
-            item?.Quantity != null && item.Quantity !== '' && item.Quantity !== 0;
-          return validItemCode && validQuantity;
-        })
-        .map((item: any) => ({
-          TenKH: TenKH,
-          ItemCode: item.ItemCode ?? '',
-          Quantity: item.Quantity ?? '',
-        }));
+    // Process files sequentially
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+
+      // Skip files with "~$" in the filename
+      if (file.name.includes('~$')) {
+        console.log(`Skipping temporary file: ${file.name}`);
+        this._snackBar.open(`Bỏ qua file tạm: ${file.name}`, '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-warning'],
+        });
+        skippedCount++;
+             this.statusDetails.push({
+          fileName: file.name,
+          tenkhongdau: removeVietnameseAccents(file.name),
+          status: 'Skipped',
+          message: 'File tạm thời, không xử lý'
+        });
+        continue;
+      }
+      try {
+        console.log(`Processing file ${i + 1}/${files.length}: ${file.name}`);
+        this._snackBar.open(`Đang xử lý file: ${file.name}`, '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-warning'],
+        });
+        const TenKH = removeVietnameseAccents(file.name.replace('.xlsx', ''));
+        let data = await readExcelFileNoWorker(file, 'TEM');
+        if (!data || !Array.isArray(data)) {
+          data = await readExcelFileNoWorker(file, 'TEMPLATE');
+        }
+        console.log(data);
+
+        const editdata = data
+          .filter((item: any) => {
+            const validItemCode =
+              typeof item?.ItemCode === 'string' && item.ItemCode.trim() !== '';
+            const validQuantity =
+              item?.Quantity != null && item.Quantity !== '' && item.Quantity !== 0;
+            return validItemCode && validQuantity;
+          })
+          .map((item: any) => ({
+            tenfile: file.name.replace('.xlsx', ''),
+            tenkh: TenKH,
+            ItemCode: item.ItemCode ?? '',
+            Quantity: item.Quantity ?? ''
+          }));
+
         importData.push(...editdata);
+        processedCount++;
+        this._snackBar.open(`Xử lý thành công file: ${file.name}`, '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-warning'],
+        });
+        this.statusDetails.push({
+          fileName: file.name,
+          tenkhongdau: removeVietnameseAccents(file.name),
+          status: 'Processed',
+          message: 'Xử lý thành công'
+        });
+      } catch (error: any) {
+        console.error(`Error processing file ${file.name}:`, error);
+        this._snackBar.open(`Lỗi xử lý file ${file.name}: ${error.message}`, '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-error'],
+        });
+        errorCount++;
+             this.statusDetails.push({
+          fileName: file.name,
+          tenkhongdau: removeVietnameseAccents(file.name),
+          status: 'Error',
+          message: error.message
+        });
+        continue;
+      }
+    }
+
+    console.table([...new Map(importData.map(item => [item.tenkh, item])).values()]);
+
+    // After all files have been processed, perform the import
+    try {
+      await this._DonhangService.ImportDonhangCu(importData);
+      this._snackBar.open(
+        `Nhập đơn hàng thành công. Files xử lý: ${processedCount}, Bỏ qua: ${skippedCount}, Lỗi: ${errorCount}`,
+        '',
+        {
+          duration: 5000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success']
+        }
+      );
+      this.statusDetails.push({
+        fileName: 'Overall',
+        status: 'Success',
+        message: `Files processed: ${processedCount}, Skipped: ${skippedCount}, Errors: ${errorCount}`
+      });
+    } catch (importError: any) {
+      console.error('Lỗi khi nhập đơn hàng:', importError);
+      this._snackBar.open(`Lỗi khi nhập đơn hàng: ${importError.message}`, '', {
+        duration: 5000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+      this.statusDetails.push({
+        fileName: 'Overall',
+        status: 'Error',
+        message: importError.message
+      });
     }
     console.log('importData', importData);
+
+    // Open a dialog to display the detailed import status in a table
+    this.dialog.open(this.dialogImportExcelCu, {});
   }
 
-  // async ImporExcel(event: any) {
-
-  //   const files = Array.from(event.target.files) as File[];
-  //   let data = await readExcelFile(files[0], 'Donhang');
-  //   data = data.slice(1);
-  //    // Group data by makh
-  //    const groupedData: { [makh: string]: any[] } = {};
-  //    data.forEach((item: any) => {
-  //      if (!item.makh) return;
-  //      if (!groupedData[item.makh]) {
-  //      groupedData[item.makh] = [];
-  //      }
-  //      groupedData[item.makh].push(item);
-  //    });
-  //    // Convert to array format: [{ makh, children: [...] }]
-  //    const groupedArray = Object.keys(groupedData).map(makh => ({
-  //      makh,
-  //      children: groupedData[makh]
-  //    }));
-  //    console.log('Grouped by makh:', groupedArray);
-
-  //   // Thêm thời gian chờ giữa các lần import (ví dụ: 500ms)
-  //   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-  //   for (let i = 0; i < groupedArray.length; i++) {
-  //     try {
-  //     // Import một file tại một thời điểm và chờ hoàn thành
-  //     await this.ImporDonhang(groupedArray[i]?.children);
-
-  //     this._snackBar.open(`Đã Tạo Đơn ${i + 1}/${groupedArray.length}: ${groupedArray[i].makh}`, '', {
-  //       duration: 2000,
-  //       horizontalPosition: 'end',
-  //       verticalPosition: 'top',
-  //       panelClass: ['snackbar-success'],
-  //     });
-
-  //     // Chờ 500ms trước khi import đơn tiếp theo
-  //     if (i < groupedArray.length - 1) {
-  //       await delay(500);
-  //     }
-  //     } catch (error) {
-  //     console.error(`Lỗi khi Tạo Đơn ${i + 1}:`, error);
-  //     this._snackBar.open(`Lỗi khi Tạo Đơn ${i + 1}`, '', {
-  //       duration: 3000,
-  //       horizontalPosition: 'end',
-  //       verticalPosition: 'top',
-  //       panelClass: ['snackbar-error'],
-  //     });
-  //     }
-  //   }
-
-  //   if (files.length > 0) {
-  //     this.dialogCreateRef?.close();
-  //     this.ngOnInit();
-  //   }
-  // }
 
   async ImporDonhang(items: any[]): Promise<void> {
     // items = items.slice(1); // Remove the first row (header)

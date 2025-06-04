@@ -33,6 +33,7 @@ export declare class DonhangController {
         khachhangId: string;
         printCount: number | null;
     }>;
+    ImportDonhangOld(data: any): Promise<void>;
     ImportDonhang(data: any): Promise<{
         success: number;
         fail: number;
@@ -47,6 +48,8 @@ export declare class DonhangController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                tenfile: string | null;
+                tenkh: string | null;
                 name: string | null;
                 namenn: string | null;
                 makh: string;
@@ -113,6 +116,8 @@ export declare class DonhangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            tenfile: string | null;
+            tenkh: string | null;
             name: string | null;
             namenn: string | null;
             makh: string;
@@ -179,6 +184,8 @@ export declare class DonhangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            tenfile: string | null;
+            tenkh: string | null;
             name: string | null;
             namenn: string | null;
             makh: string;
@@ -243,6 +250,8 @@ export declare class DonhangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            tenfile: string | null;
+            tenkh: string | null;
             name: string | null;
             namenn: string | null;
             makh: string;
@@ -334,6 +343,8 @@ export declare class DonhangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            tenfile: string | null;
+            tenkh: string | null;
             name: string | null;
             namenn: string | null;
             makh: string;

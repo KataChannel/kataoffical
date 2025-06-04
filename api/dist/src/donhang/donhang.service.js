@@ -361,6 +361,20 @@ let DonhangService = class DonhangService {
         };
         return result;
     }
+    async ImportDonhangOld(dulieu) {
+        const data = await Promise.all(dulieu.map(async (v) => ({
+            tenkh: v.tenkh,
+            ngaygiao: moment().toDate(),
+            makh: await this.prisma.khachhang.findFirst({ where: { tenkh: v.tenkh } }),
+            mabanggia: v.mabanggia,
+            masp: v.ItemCode,
+            sldat: Number(v.Quantity),
+            slgiao: Number(v.Quantity),
+            slnhan: Number(v.Quantity),
+            ghichu: v.ghichu,
+        })));
+        console.log(data);
+    }
     async ImportDonhang(data) {
         const acc = {};
         for (const curr of data) {

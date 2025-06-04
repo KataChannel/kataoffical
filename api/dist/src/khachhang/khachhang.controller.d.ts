@@ -10,6 +10,8 @@ export declare class KhachhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        tenfile: string | null;
+        tenkh: string | null;
         name: string | null;
         namenn: string | null;
         makh: string;
@@ -36,6 +38,8 @@ export declare class KhachhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        tenfile: string | null;
+        tenkh: string | null;
         name: string | null;
         namenn: string | null;
         makh: string;
@@ -74,6 +78,8 @@ export declare class KhachhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        tenfile: string | null;
+        tenkh: string | null;
         name: string | null;
         namenn: string | null;
         makh: string;
@@ -112,6 +118,8 @@ export declare class KhachhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        tenfile: string | null;
+        tenkh: string | null;
         name: string | null;
         namenn: string | null;
         makh: string;
@@ -150,6 +158,8 @@ export declare class KhachhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        tenfile: string | null;
+        tenkh: string | null;
         name: string | null;
         namenn: string | null;
         makh: string;
@@ -188,6 +198,8 @@ export declare class KhachhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        tenfile: string | null;
+        tenkh: string | null;
         name: string | null;
         namenn: string | null;
         makh: string;
@@ -211,6 +223,8 @@ export declare class KhachhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        tenfile: string | null;
+        tenkh: string | null;
         name: string | null;
         namenn: string | null;
         makh: string;

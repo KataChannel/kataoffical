@@ -132,9 +132,11 @@ model Banggia {
 }
 model Khachhang {
   id           String   @id @default(uuid())
+  tenfile      String?
+  tenkh        String?
   name         String?
   namenn       String?
-  subtitle      String?
+  subtitle     String?
   makh         String   @unique
   makhold      String?
   diachi       String?

@@ -366,3 +366,42 @@
       <button mat-flat-button color="primary" (click)="create()">Tạo</button>
     </mat-dialog-actions>
   </ng-template>
+  
+<ng-template #dialogImportExcelCu>
+<h2 mat-dialog-title>Import Đơn Hàng</h2>
+<mat-dialog-content class="mat-typography">
+           <div class="w-full">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 shadow-md rounded-lg">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên Không Dấu</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr *ngFor="let detail of statusDetails">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ detail.fileName }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ detail.tenkhongdau }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <span [ngClass]="{
+                                        'text-green-600 font-semibold': detail.status === 'Processed' || detail.status === 'Success',
+                                        'text-yellow-600 font-semibold': detail.status === 'Skipped'
+                                    }">
+                                        {{ detail.status }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ detail.message }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="warn" mat-dialog-close>Đóng</button>
+</mat-dialog-actions>
+
+  </ng-template>

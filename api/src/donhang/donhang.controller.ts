@@ -11,6 +11,11 @@ export class DonhangController {
   create(@Body() createDonhangDto: any) {
     return this.donhangService.create(createDonhangDto);
   }
+  @Post('importold')
+  @Audit({entity: 'Import Donhang Cu', action: AuditAction.CREATE, includeResponse: true})
+  ImportDonhangOld(@Body() data: any) {
+    return this.donhangService.ImportDonhangOld(data);
+  }
   @Post('import')
   @Audit({entity: 'Import Donhang', action: AuditAction.CREATE, includeResponse: true})
   ImportDonhang(@Body() data: any) {
