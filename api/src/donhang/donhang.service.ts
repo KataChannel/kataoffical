@@ -846,6 +846,41 @@ async updatePhieugiao(id: string, data: any) {
 
 
   async remove(id: string) {
-    return this.prisma.donhang.delete({ where: { id } });
+    return this.prisma.$transaction(async (prisma) => {
+      // 1. Lấy đơn hàng bao gồm chi tiết sản phẩm
+      const donhang = await prisma.donhang.findUnique({
+        where: { id },
+        include: { sanpham: true },
+      });
+      if (!donhang) {
+        throw new NotFoundException('Đơn hàng không tồn tại');
+      }
+
+      // 2. Cập nhật TONKHO cho từng sản phẩm theo trạng thái đơn hàng
+      for (const sp of donhang.sanpham) {
+        const sldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+        if (donhang.status === 'dagiao') {
+          const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(2));
+          await prisma.tonKho.update({
+            where: { sanphamId: sp.idSP },
+            data: {
+              // Loại bỏ số lượng đơn hàng đã thêm ban đầu
+              slchogiao: { decrement: sldat },
+              // Cộng lại số lượng đã giao đã trừ khi xuất kho
+              slton: { increment: slgiao },
+            },
+          });
+        } else {
+          await prisma.tonKho.update({
+            where: { sanphamId: sp.idSP },
+            data: {
+              slchogiao: { decrement: sldat },
+            },
+          });
+        }
+      }
+      // 3. Xóa đơn hàng
+      return prisma.donhang.delete({ where: { id } });
+    });
   }
 }

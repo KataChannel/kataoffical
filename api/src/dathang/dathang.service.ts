@@ -696,6 +696,36 @@ export class DathangService {
   }
 
   async remove(id: string) {
-    return this.prisma.dathang.delete({ where: { id } });
+    return this.prisma.$transaction(async (prisma) => {
+      const dathang = await prisma.dathang.findUnique({
+        where: { id },
+        include: { sanpham: true },
+      });
+      if (!dathang) {
+        throw new NotFoundException('Đơn đặt hàng không tồn tại');
+      }
+
+      // Revert TONKHO updates based on the order's status
+      // For each product, undo the creation increment.
+      // If the order was already delivered ('dagiao'),
+      // first reverse the delivery decrement by incrementing slchonhap.
+      for (const sp of dathang.sanpham) {
+        const sldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+        const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(2));
+        if (dathang.status === 'dagiao') {
+          await prisma.tonKho.update({
+            where: { sanphamId: sp.idSP },
+            data: { slchonhap: { increment: slgiao } },
+          });
+        }
+        await prisma.tonKho.update({
+          where: { sanphamId: sp.idSP },
+          data: { slchonhap: { decrement: sldat } },
+        });
+      }
+
+      // Finally, delete the order
+      return prisma.dathang.delete({ where: { id } });
+    });
   }
 }

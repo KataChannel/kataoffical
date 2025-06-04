@@ -625,7 +625,30 @@ let DathangService = class DathangService {
         });
     }
     async remove(id) {
-        return this.prisma.dathang.delete({ where: { id } });
+        return this.prisma.$transaction(async (prisma) => {
+            const dathang = await prisma.dathang.findUnique({
+                where: { id },
+                include: { sanpham: true },
+            });
+            if (!dathang) {
+                throw new common_1.NotFoundException('Đơn đặt hàng không tồn tại');
+            }
+            for (const sp of dathang.sanpham) {
+                const sldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+                const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(2));
+                if (dathang.status === 'dagiao') {
+                    await prisma.tonKho.update({
+                        where: { sanphamId: sp.idSP },
+                        data: { slchonhap: { increment: slgiao } },
+                    });
+                }
+                await prisma.tonKho.update({
+                    where: { sanphamId: sp.idSP },
+                    data: { slchonhap: { decrement: sldat } },
+                });
+            }
+            return prisma.dathang.delete({ where: { id } });
+        });
     }
 };
 exports.DathangService = DathangService;
