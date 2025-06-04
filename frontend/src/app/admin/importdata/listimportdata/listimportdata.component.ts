@@ -688,7 +688,6 @@ convertNCCSPToImport(data: any){
       this.ListEdit().some((item: any) => item.value === 'banggiasanpham')
     ) {
       const listBGSP = this.convertBGSPToImport(data.banggiasanpham);
-      console.log(listBGSP);
       const giabanList = listBGSP.find((item) => item.mabanggia === 'giaban');
       if (!giabanList) {
         // Optionally handle missing 'giaban' list
@@ -844,7 +843,9 @@ convertNCCSPToImport(data: any){
     }
     if(data.donhang && this.ListEdit().some((item: any) => item.value === 'donhang'))
     {
-        const ListDH = (data.donhang || []).map((v: any) => ({
+        const ListDH = (data.donhang || [])
+        .filter((v: any) => v.makh && v.masp)
+        .map((v: any) => ({
           ngaygiao: moment(excelSerialDateToJSDate(v.ngaygiao)).toDate(),
           makh: v.makh,
           mabanggia: v.mabanggia,
@@ -869,8 +870,6 @@ convertNCCSPToImport(data: any){
         });
     }
   }
-
-
   trackByFn(index: number, item: any): any {
     return item.id;
   }
