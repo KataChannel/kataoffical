@@ -59,6 +59,7 @@ __decorate([
 ], KhachhangController.prototype, "searchCustomers", null);
 __decorate([
     (0, common_1.Post)(),
+    (0, audit_decorator_1.Audit)({ entity: 'Create Khachhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -101,6 +102,7 @@ __decorate([
 ], KhachhangController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Update Khachhang', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -109,6 +111,7 @@ __decorate([
 ], KhachhangController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Delete Khachhang', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

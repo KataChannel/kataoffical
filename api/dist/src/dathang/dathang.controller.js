@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DathangController = void 0;
 const common_1 = require("@nestjs/common");
 const dathang_service_1 = require("./dathang.service");
+const client_1 = require("@prisma/client");
+const audit_decorator_1 = require("../auditlog/audit.decorator");
 let DathangController = class DathangController {
     constructor(dathangService) {
         this.dathangService = dathangService;
@@ -50,6 +52,7 @@ let DathangController = class DathangController {
 exports.DathangController = DathangController;
 __decorate([
     (0, common_1.Post)(),
+    (0, audit_decorator_1.Audit)({ entity: 'Create Dathang', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -57,6 +60,7 @@ __decorate([
 ], DathangController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)('import'),
+    (0, audit_decorator_1.Audit)({ entity: 'Import Dathang', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -64,6 +68,7 @@ __decorate([
 ], DathangController.prototype, "import", null);
 __decorate([
     (0, common_1.Post)('bynhucau'),
+    (0, audit_decorator_1.Audit)({ entity: 'Create Dathang by nhu cau', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -91,6 +96,7 @@ __decorate([
 ], DathangController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Update Dathang', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -99,6 +105,7 @@ __decorate([
 ], DathangController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Delete Dathang', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

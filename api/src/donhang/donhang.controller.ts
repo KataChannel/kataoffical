@@ -1,14 +1,18 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common';
 import { DonhangService } from './donhang.service';
+import { AuditAction } from '@prisma/client';
+import { Audit } from 'src/auditlog/audit.decorator';
 
 @Controller('donhang')
 export class DonhangController {
   constructor(private readonly donhangService: DonhangService) {}
   @Post()
+  @Audit({entity: 'Create Donhang', action: AuditAction.CREATE, includeResponse: true})
   create(@Body() createDonhangDto: any) {
     return this.donhangService.create(createDonhangDto);
   }
   @Post('import')
+  @Audit({entity: 'Import Donhang', action: AuditAction.CREATE, includeResponse: true})
   ImportDonhang(@Body() data: any) {
     return this.donhangService.ImportDonhang(data);
   }
@@ -37,15 +41,18 @@ export class DonhangController {
     return this.donhangService.findOne(id);
   }
   @Patch('phieugiao/:id')
+  @Audit({entity: 'Update Phieugiao', action: AuditAction.UPDATE, includeResponse: true})
   updatePhieugiao(@Param('id') id: string, @Body() updateDonhangDto: any) {
     return this.donhangService.updatePhieugiao(id, updateDonhangDto);
   }
   @Patch(':id')
+  @Audit({entity: 'Update Donhang', action: AuditAction.UPDATE, includeResponse: true})
   update(@Param('id') id: string, @Body() updateDonhangDto: any) {
     return this.donhangService.update(id, updateDonhangDto);
   }
 
   @Delete(':id')
+  @Audit({entity: 'Delete Donhang', action: AuditAction.DELETE, includeResponse: true})
   remove(@Param('id') id: string) {
     return this.donhangService.remove(id);
   }

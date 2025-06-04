@@ -40,14 +40,14 @@ export declare class NhomkhachhangController {
         name: string;
         description: string | null;
     })[]>;
-    addMultipleKhachhangToBanggia(data: any): Promise<{
+    addMultipleKhachhangToNhom(data: any): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         description: string | null;
     }>;
-    removeKHfromBG(data: any): Promise<{
+    removeKHfromNhom(data: any): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;

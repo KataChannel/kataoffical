@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoleController = void 0;
 const common_1 = require("@nestjs/common");
 const role_service_1 = require("./role.service");
+const audit_decorator_1 = require("../auditlog/audit.decorator");
+const client_1 = require("@prisma/client");
 let RoleController = class RoleController {
     constructor(rolesService) {
         this.rolesService = rolesService;
@@ -44,6 +46,7 @@ let RoleController = class RoleController {
 exports.RoleController = RoleController;
 __decorate([
     (0, common_1.Post)(),
+    (0, audit_decorator_1.Audit)({ entity: 'Create Role', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -51,6 +54,7 @@ __decorate([
 ], RoleController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)('assign'),
+    (0, audit_decorator_1.Audit)({ entity: 'Assign Permission to Role', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -58,6 +62,7 @@ __decorate([
 ], RoleController.prototype, "assignPermissionToRole", null);
 __decorate([
     (0, common_1.Delete)('remove'),
+    (0, audit_decorator_1.Audit)({ entity: 'Remove Permission from Role', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -78,6 +83,7 @@ __decorate([
 ], RoleController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Update Role', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -86,6 +92,7 @@ __decorate([
 ], RoleController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Delete Role', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

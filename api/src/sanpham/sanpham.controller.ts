@@ -1,15 +1,19 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
 import { SanphamService } from './sanpham.service';
+import { Audit } from 'src/auditlog/audit.decorator';
+import { AuditAction } from '@prisma/client';
 
 @Controller('sanpham')
 export class SanphamController {
   constructor(private readonly sanphamService: SanphamService) {}
 
   @Post()
+  @Audit({entity: 'Create Sanpham', action: AuditAction.CREATE, includeResponse: true})
   create(@Body() createSanphamDto: any) {
     return this.sanphamService.create(createSanphamDto);
   }
   @Post('import')
+  @Audit({entity: 'Import Sanpham', action: AuditAction.CREATE, includeResponse: true})
   import(@Body() data: any) {
     return this.sanphamService.import(data);
   }
@@ -34,11 +38,13 @@ export class SanphamController {
     return this.sanphamService.findOne(id);
   }
   @Patch(':id')
+  @Audit({entity: 'Update Sanpham', action: AuditAction.UPDATE, includeResponse: true})
   update(@Param('id') id: string, @Body() updateSanphamDto: any) {
     return this.sanphamService.update(id, updateSanphamDto);
   }
 
   @Delete(':id')
+  @Audit({entity: 'Delete Sanpham', action: AuditAction.DELETE, includeResponse: true})
   remove(@Param('id') id: string) {
     return this.sanphamService.remove(id);
   }

@@ -3,6 +3,8 @@ import { UserguideService } from './userguide.service';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Audit } from 'src/auditlog/audit.decorator';
+import { AuditAction } from '@prisma/client';
 @ApiTags('userguide')
 @Controller('userguide')
 export class UserguideController {
@@ -13,6 +15,7 @@ export class UserguideController {
   @ApiBody({ type: Object })
   @UseGuards(JwtAuthGuard)
   @Post()
+  @Audit({entity: 'Create Userguide', action: AuditAction.CREATE, includeResponse: true})
   async create(@Body() data: any) {
     try {
       return await this.userguideService.create(data);
@@ -69,6 +72,7 @@ export class UserguideController {
   @ApiBody({ type: Object })
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
+  @Audit({entity: 'Update Userguide', action: AuditAction.UPDATE, includeResponse: true})
   async update(@Param('id') id: string, @Body() data: any) {
     try {
       return await this.userguideService.update(id, data);
@@ -82,6 +86,7 @@ export class UserguideController {
   @ApiParam({ name: 'id', type: String })
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
+  @Audit({entity: 'Delete Userguide', action: AuditAction.DELETE, includeResponse: true})
   async remove(@Param('id') id: string) {
     try {
       return await this.userguideService.remove(id);

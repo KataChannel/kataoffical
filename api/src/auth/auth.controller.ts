@@ -2,6 +2,8 @@ import { Controller, Post, Body, UseGuards, Req, Get, Res } from '@nestjs/common
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { AuditAction } from '@prisma/client';
+import { Audit } from 'src/auditlog/audit.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -44,6 +46,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @Audit({entity: 'Auth Login',action: AuditAction.LOGIN,includeResponse: true})
   login(@Body() body: {SDT:string; email: string; password: string }) {
     console.log(body);
     

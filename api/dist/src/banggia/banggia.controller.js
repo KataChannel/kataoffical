@@ -16,6 +16,8 @@ exports.BanggiaController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const banggia_service_1 = require("./banggia.service");
+const client_1 = require("@prisma/client");
+const audit_decorator_1 = require("../auditlog/audit.decorator");
 let BanggiaController = class BanggiaController {
     constructor(banggiaService) {
         this.banggiaService = banggiaService;
@@ -67,6 +69,7 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({ summary: 'Import banggia data' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Data imported successfully' }),
+    (0, audit_decorator_1.Audit)({ entity: 'Import Banggia', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -77,6 +80,7 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({ summary: 'Import spbg data' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Data imported successfully' }),
+    (0, audit_decorator_1.Audit)({ entity: 'Import SPBG', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -87,6 +91,7 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({ summary: 'Import bgkh data' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Data imported successfully' }),
+    (0, audit_decorator_1.Audit)({ entity: 'Import BGKH', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -97,6 +102,7 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new banggia' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Banggia created successfully' }),
+    (0, audit_decorator_1.Audit)({ entity: 'Create Banggia', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -174,6 +180,7 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({ summary: 'Update a banggia' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Banggia updated successfully' }),
+    (0, audit_decorator_1.Audit)({ entity: 'Update Banggia', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -185,6 +192,7 @@ __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.NO_CONTENT),
     (0, swagger_1.ApiOperation)({ summary: 'Remove a banggia' }),
     (0, swagger_1.ApiResponse)({ status: 204, description: 'Banggia removed successfully' }),
+    (0, audit_decorator_1.Audit)({ entity: 'Remove Banggia', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

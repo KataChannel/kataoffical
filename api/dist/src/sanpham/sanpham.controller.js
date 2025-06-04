@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SanphamController = void 0;
 const common_1 = require("@nestjs/common");
 const sanpham_service_1 = require("./sanpham.service");
+const audit_decorator_1 = require("../auditlog/audit.decorator");
+const client_1 = require("@prisma/client");
 let SanphamController = class SanphamController {
     constructor(sanphamService) {
         this.sanphamService = sanphamService;
@@ -53,6 +55,7 @@ let SanphamController = class SanphamController {
 exports.SanphamController = SanphamController;
 __decorate([
     (0, common_1.Post)(),
+    (0, audit_decorator_1.Audit)({ entity: 'Create Sanpham', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -60,6 +63,7 @@ __decorate([
 ], SanphamController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)('import'),
+    (0, audit_decorator_1.Audit)({ entity: 'Import Sanpham', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -99,6 +103,7 @@ __decorate([
 ], SanphamController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Update Sanpham', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -107,6 +112,7 @@ __decorate([
 ], SanphamController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Delete Sanpham', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

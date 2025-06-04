@@ -2,17 +2,23 @@ import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpExcep
 import { PermissionService } from './permission.service';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; // Giả sử đường dẫn này là cố định
+import { AuditAction } from '@prisma/client';
+import { Audit } from 'src/auditlog/audit.decorator';
 
 @ApiTags('permission')
 @Controller('permission')
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
-
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new permission' })
   @ApiBody({ type: Object })
   @UseGuards(JwtAuthGuard)
   @Post()
+  @Audit({
+    entity: 'Permission',
+    action: AuditAction.CREATE,
+    includeResponse: true,
+  })
   async create(@Body() data: any) {
     try {
       return await this.permissionService.create(data);
@@ -20,7 +26,6 @@ export class PermissionController {
       throw new HttpException(error.message || 'Create failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
   @ApiOperation({ summary: 'Find permissions by parameters' })
   @ApiBody({ type: Object })
   @Post('findby')
@@ -31,8 +36,6 @@ export class PermissionController {
       throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-
   @ApiOperation({ summary: 'Get all permissions with pagination' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items per page (default: 10)' })
@@ -91,6 +94,11 @@ export class PermissionController {
   @ApiBody({ type: Object })
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
+  @Audit({
+    entity: 'Permission',
+    action: AuditAction.UPDATE,
+    includeResponse: true,
+  })
   async update(@Param('id') id: string, @Body() data: any) {
     try {
       return await this.permissionService.update(id, data);
@@ -104,6 +112,11 @@ export class PermissionController {
   @ApiParam({ name: 'id', type: String })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @Audit({
+    entity: 'Permission',
+    action: AuditAction.DELETE,
+    includeResponse: true,
+  })
   async remove(@Param('id') id: string) {
     try {
       return await this.permissionService.remove(id);

@@ -41,11 +41,11 @@ export declare class KhachhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            mabanggia: string | null;
             type: string | null;
+            status: string | null;
+            mabanggia: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
-            status: string | null;
         }[];
     } & {
         id: string;
@@ -102,11 +102,11 @@ export declare class KhachhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            mabanggia: string | null;
             type: string | null;
+            status: string | null;
+            mabanggia: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
-            status: string | null;
         }[];
     } & {
         id: string;
@@ -140,11 +140,11 @@ export declare class KhachhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            mabanggia: string | null;
             type: string | null;
+            status: string | null;
+            mabanggia: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
-            status: string | null;
         }[];
     } & {
         id: string;
@@ -178,11 +178,11 @@ export declare class KhachhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            mabanggia: string | null;
             type: string | null;
+            status: string | null;
+            mabanggia: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
-            status: string | null;
         }[];
     } & {
         id: string;

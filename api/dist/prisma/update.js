@@ -7,36 +7,11 @@ const dulieu_1 = require("./migrations/dulieu");
 const prisma = new client_1.PrismaClient();
 const dulieus = dulieu_1.bangiakhachahng;
 async function main() {
-    const khachangs = await prisma.khachhang.findMany({
-        select: { id: true, makh: true },
+    await prisma.tonKho.updateMany({
+        data: {
+            slchonhap: 0,
+        },
     });
-    const banggias = await prisma.banggia.findMany({
-        select: { id: true, mabanggia: true, title: true },
-    });
-    console.log(dulieus);
-    const newData = dulieus.map((dulieu) => {
-        const makh = dulieu.makh;
-        const mabanggia = dulieu.mabanggia;
-        const khachhangId = khachangs.find((khachang) => khachang.makh === makh)?.id;
-        const banggiaId = banggias.find((banggia) => banggia.mabanggia === mabanggia)?.id;
-        return { khachhangId, banggiaId, makh, mabanggia };
-    });
-    const dataxulys = convertData(newData);
-    for (const dataxuly of dataxulys) {
-        const banggiaId = dataxuly.banggiaId;
-        const khachhangIds = dataxuly.khachhangIds;
-        console.log(banggiaId, khachhangIds);
-        setTimeout(async () => {
-            await prisma.banggia.update({
-                where: { id: banggiaId },
-                data: {
-                    khachhang: {
-                        connect: khachhangIds.map(id => ({ id })),
-                    },
-                },
-            });
-        }, 1000);
-    }
 }
 main()
     .catch((e) => {

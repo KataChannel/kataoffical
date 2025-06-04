@@ -11,6 +11,7 @@ export class KhachhangController {
     return this.khachhangService.timkiemkhachhang(query);
   }
   @Post()
+  @Audit({entity: 'Create Khachhang', action: AuditAction.CREATE, includeResponse: true})
   create(@Body() createKhachhangDto: any) {
     return this.khachhangService.create(createKhachhangDto);
   }
@@ -37,11 +38,13 @@ export class KhachhangController {
     return this.khachhangService.findOne(id);
   }
   @Patch(':id')
+  @Audit({entity: 'Update Khachhang', action: AuditAction.UPDATE, includeResponse: true})
   update(@Param('id') id: string, @Body() updateKhachhangDto: any) {
     return this.khachhangService.update(id, updateKhachhangDto);
   }
 
   @Delete(':id')
+  @Audit({entity: 'Delete Khachhang', action: AuditAction.DELETE, includeResponse: true})
   remove(@Param('id') id: string) {
     return this.khachhangService.remove(id);
   }

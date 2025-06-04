@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NhacungcapController = void 0;
 const common_1 = require("@nestjs/common");
 const nhacungcap_service_1 = require("./nhacungcap.service");
+const audit_decorator_1 = require("../auditlog/audit.decorator");
+const client_1 = require("@prisma/client");
 let NhacungcapController = class NhacungcapController {
     constructor(nhacungcapService) {
         this.nhacungcapService = nhacungcapService;
@@ -134,6 +136,7 @@ let NhacungcapController = class NhacungcapController {
 exports.NhacungcapController = NhacungcapController;
 __decorate([
     (0, common_1.Post)(),
+    (0, audit_decorator_1.Audit)({ entity: 'Create Nhacungcap', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -168,6 +171,7 @@ __decorate([
 ], NhacungcapController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Update Nhacungcap', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -176,6 +180,7 @@ __decorate([
 ], NhacungcapController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Delete Nhacungcap', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

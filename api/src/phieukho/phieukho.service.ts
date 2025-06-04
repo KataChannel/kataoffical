@@ -27,8 +27,6 @@ export class PhieukhoService {
   }
 
   private incrementOrderCode(orderCode: string, type: any): string {
-    console.log('Incrementing order code:', orderCode);
-    
     // Sử dụng prefix theo loại: PKN cho nhap, PKX cho xuat
     const prefix = type === 'nhap' ? 'PKN' : 'PKX';
     // Với cấu trúc mã: prefix (3 ký tự) + 2 chữ (AA -> ZZ) + 5 số (00001 -> 99999)
@@ -133,7 +131,6 @@ export class PhieukhoService {
       let newPhieuKho: any;
       while (attempts < 3) {
         const maphieukho = await this.generateNextOrderCode(data.type);
-        console.log('Generated maphieukho:', maphieukho);
         try {
           newPhieuKho = await prisma.phieuKho.create({
             data: {

@@ -32,7 +32,6 @@ let PhieukhoService = class PhieukhoService {
         return nextCode;
     }
     incrementOrderCode(orderCode, type) {
-        console.log('Incrementing order code:', orderCode);
         const prefix = type === 'nhap' ? 'PKN' : 'PKX';
         const letters = orderCode.slice(3, 5);
         const numbers = parseInt(orderCode.slice(5), 10);
@@ -121,7 +120,6 @@ let PhieukhoService = class PhieukhoService {
             let newPhieuKho;
             while (attempts < 3) {
                 const maphieukho = await this.generateNextOrderCode(data.type);
-                console.log('Generated maphieukho:', maphieukho);
                 try {
                     newPhieuKho = await prisma.phieuKho.create({
                         data: {

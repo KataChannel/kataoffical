@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PhieukhoController = void 0;
 const common_1 = require("@nestjs/common");
 const phieukho_service_1 = require("./phieukho.service");
+const audit_decorator_1 = require("../auditlog/audit.decorator");
+const client_1 = require("@prisma/client");
 let PhieukhoController = class PhieukhoController {
     constructor(phieukhoService) {
         this.phieukhoService = phieukhoService;
@@ -41,6 +43,7 @@ let PhieukhoController = class PhieukhoController {
 exports.PhieukhoController = PhieukhoController;
 __decorate([
     (0, common_1.Post)(),
+    (0, audit_decorator_1.Audit)({ entity: 'Create Phieukho', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -54,6 +57,7 @@ __decorate([
 ], PhieukhoController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Post)('xuatnhapton'),
+    (0, audit_decorator_1.Audit)({ entity: 'Xuat Nhap Ton', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -68,6 +72,7 @@ __decorate([
 ], PhieukhoController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Update Phieukho', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -76,6 +81,7 @@ __decorate([
 ], PhieukhoController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Remove Phieukho', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

@@ -11,6 +11,8 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { BanggiaService } from './banggia.service';
+import { AuditAction } from '@prisma/client';
+import { Audit } from 'src/auditlog/audit.decorator';
 
 @ApiTags('banggia')
 @Controller('banggia')
@@ -21,9 +23,9 @@ export class BanggiaController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Import banggia data' })
   @ApiResponse({ status: 201, description: 'Data imported successfully' })
+  @Audit({entity: 'Import Banggia',action: AuditAction.CREATE,includeResponse: true})
   import(@Body() data: any) {
     console.log('Importing banggia data:', data);
-    
     return this.banggiaService.importBanggia(data);
   }
 
@@ -31,6 +33,7 @@ export class BanggiaController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Import spbg data' })
   @ApiResponse({ status: 201, description: 'Data imported successfully' })
+  @Audit({entity: 'Import SPBG',action: AuditAction.CREATE,includeResponse: true})
   importspbg(@Body() data: any) {
     return this.banggiaService.importSPBG(data);
   }
@@ -38,6 +41,7 @@ export class BanggiaController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Import bgkh data' })
   @ApiResponse({ status: 201, description: 'Data imported successfully' })
+  @Audit({entity: 'Import BGKH',action: AuditAction.CREATE,includeResponse: true})
   importbgkh(@Body() data: any) {
     return this.banggiaService.importBGKH(data);
   }
@@ -46,6 +50,7 @@ export class BanggiaController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create a new banggia' })
   @ApiResponse({ status: 201, description: 'Banggia created successfully' })
+  @Audit({entity: 'Create Banggia',action: AuditAction.CREATE,includeResponse: true})
   create(@Body() createBanggiaDto: any) {
     return this.banggiaService.createBanggia(createBanggiaDto);
   }
@@ -109,6 +114,7 @@ export class BanggiaController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a banggia' })
   @ApiResponse({ status: 200, description: 'Banggia updated successfully' })
+  @Audit({entity: 'Update Banggia',action: AuditAction.UPDATE,includeResponse: true})
   update(@Param('id') id: string, @Body() updateBanggiaDto: any) {
     return this.banggiaService.update(id, updateBanggiaDto);
   }
@@ -117,6 +123,7 @@ export class BanggiaController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Remove a banggia' })
   @ApiResponse({ status: 204, description: 'Banggia removed successfully' })
+  @Audit({entity: 'Remove Banggia',action: AuditAction.DELETE,includeResponse: true})
   remove(@Param('id') id: string) {
     this.banggiaService.remove(id);
   }

@@ -1,19 +1,24 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
 import { DathangService } from './dathang.service';
+import { AuditAction } from '@prisma/client';
+import { Audit } from 'src/auditlog/audit.decorator';
 
 @Controller('dathang')
 export class DathangController {
   constructor(private readonly dathangService: DathangService) {}
 
   @Post()
+  @Audit({entity: 'Create Dathang', action: AuditAction.CREATE, includeResponse: true})
   create(@Body() createDathangDto: any) {
     return this.dathangService.create(createDathangDto);
   }
   @Post('import')
+  @Audit({entity: 'Import Dathang', action: AuditAction.CREATE, includeResponse: true})
   import(@Body() data: any) {
     return this.dathangService.import(data);
   }
   @Post('bynhucau')
+  @Audit({entity: 'Create Dathang by nhu cau', action: AuditAction.CREATE, includeResponse: true})
   createbynhucau(@Body() data: any) {
     return this.dathangService.createbynhucau(data);
   }
@@ -31,11 +36,13 @@ export class DathangController {
     return this.dathangService.findOne(id);
   }
   @Patch(':id')
+  @Audit({entity: 'Update Dathang', action: AuditAction.UPDATE, includeResponse: true})
   update(@Param('id') id: string, @Body() updateDathangDto: any) {
     return this.dathangService.update(id, updateDathangDto);
   }
 
   @Delete(':id')
+  @Audit({entity: 'Delete Dathang', action: AuditAction.DELETE, includeResponse: true})
   remove(@Param('id') id: string) {
     return this.dathangService.remove(id);
   }

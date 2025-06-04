@@ -14,20 +14,7 @@
               <span class="material-symbols-outlined text-gray-500">search</span>
             </div>
           </div>
-          <button class="flex flex-row items-center" color="primary" matTooltip="Thêm mới" (click)="create()"
-            mat-flat-button>
-            <mat-icon>add_circle</mat-icon>
-            <span class="whitespace-nowrap">Tạo Mới</span>
-          </button>
-          <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
-            class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button>
-            <mat-icon>delete</mat-icon>
-            <span class="whitespace-nowrap">Xoá</span>
-          </button>
-          </div>
-
-        <div class="flex flex-row space-x-2 items-center">
-          <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
+                    <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
             <mat-icon>tune</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
@@ -47,7 +34,21 @@
               }
             </div>
           </mat-menu>
-          <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(Listauditlog(),'auditlog')" color="primary"
+          <!-- <button class="flex flex-row items-center" color="primary" matTooltip="Thêm mới" (click)="create()"
+            mat-flat-button>
+            <mat-icon>add_circle</mat-icon>
+            <span class="whitespace-nowrap">Tạo Mới</span>
+          </button>
+          <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
+            class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button>
+            <mat-icon>delete</mat-icon>
+            <span class="whitespace-nowrap">Xoá</span>
+          </button> -->
+          </div>
+
+        <div class="flex flex-row space-x-2 items-center">
+
+          <!-- <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(Listauditlog(),'auditlog')" color="primary"
             mat-icon-button>
             <mat-icon>file_download</mat-icon>
           </button>
@@ -61,7 +62,7 @@
           </button>
          <button mat-icon-button color="primary" matTooltip="Cập Nhật Lại Code" (click)="getUpdatedCodeIds()">
           <mat-icon>cached</mat-icon>
-        </button>
+        </button> -->
         </div>
 
 

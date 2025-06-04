@@ -22,11 +22,11 @@ export declare class BanggiaController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        mabanggia: string | null;
         type: string | null;
+        status: string | null;
+        mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     findAll(): Promise<{
         sanpham: number;
@@ -42,11 +42,11 @@ export declare class BanggiaController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        mabanggia: string | null;
         type: string | null;
+        status: string | null;
+        mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }[]>;
     getbgsp(): Promise<{
         mabanggia: string | null;
@@ -69,11 +69,11 @@ export declare class BanggiaController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        mabanggia: string | null;
         type: string | null;
+        status: string | null;
+        mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     removeKHfromBG(data: any): Promise<{
         id: string;
@@ -83,11 +83,11 @@ export declare class BanggiaController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        mabanggia: string | null;
         type: string | null;
+        status: string | null;
+        mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -141,11 +141,11 @@ export declare class BanggiaController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        mabanggia: string | null;
         type: string | null;
+        status: string | null;
+        mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     update(id: string, updateBanggiaDto: any): Promise<{
         sanpham: {
@@ -164,11 +164,11 @@ export declare class BanggiaController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        mabanggia: string | null;
         type: string | null;
+        status: string | null;
+        mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
-        status: string | null;
     }>;
     remove(id: string): void;
 }

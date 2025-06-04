@@ -1,11 +1,14 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, HttpStatus } from '@nestjs/common';
 import { NhacungcapService } from './nhacungcap.service';
+import { Audit } from 'src/auditlog/audit.decorator';
+import { AuditAction } from '@prisma/client';
 
 @Controller('nhacungcap')
 export class NhacungcapController {
   constructor(private readonly nhacungcapService: NhacungcapService) {}
 
   @Post()
+  @Audit({entity: 'Create Nhacungcap', action: AuditAction.CREATE, includeResponse: true})
   async create(@Body() createNhacungcapDto: any) {
     try {
       const result = await this.nhacungcapService.create(createNhacungcapDto);
@@ -87,6 +90,7 @@ export class NhacungcapController {
   }
 
   @Patch(':id')
+  @Audit({entity: 'Update Nhacungcap', action: AuditAction.UPDATE, includeResponse: true})
   async update(@Param('id') id: string, @Body() updateNhacungcapDto: any) {
     try {
       const result = await this.nhacungcapService.update(id, updateNhacungcapDto);
@@ -105,6 +109,7 @@ export class NhacungcapController {
   }
 
   @Delete(':id')
+  @Audit({entity: 'Delete Nhacungcap', action: AuditAction.DELETE, includeResponse: true})
   async remove(@Param('id') id: string) {
     try {
       const result = await this.nhacungcapService.remove(id);

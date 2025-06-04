@@ -4,45 +4,45 @@ import { bangiakhachahng } from './migrations/dulieu';
 const prisma = new PrismaClient();
 const dulieus = bangiakhachahng
 async function main() {
-  const khachangs = await prisma.khachhang.findMany({
-    select: { id: true,makh: true},
-  });
-  const banggias = await prisma.banggia.findMany({
-    select: { id: true, mabanggia: true,title: true},
-  });
-  // console.log(khachangs);
-  // console.log(banggias);
-  console.log(dulieus);
-  const newData = dulieus.map((dulieu) => {
-    const makh = dulieu.makh;
-    const mabanggia = dulieu.mabanggia;
-    const khachhangId = khachangs.find((khachang) => khachang.makh === makh)?.id;
-    const banggiaId = banggias.find((banggia) => banggia.mabanggia === mabanggia)?.id;
-    return { khachhangId, banggiaId,makh,mabanggia };
-  })
-  //console.log(newData);
-  const dataxulys = convertData(newData)
-  //console.log(convertData(newData));
-//  console.log(dataxulys[1].khachhangIds.map(id => ({ id })),);
+//   const khachangs = await prisma.khachhang.findMany({
+//     select: { id: true,makh: true},
+//   });
+//   const banggias = await prisma.banggia.findMany({
+//     select: { id: true, mabanggia: true,title: true},
+//   });
+//   // console.log(khachangs);
+//   // console.log(banggias);
+//   console.log(dulieus);
+//   const newData = dulieus.map((dulieu) => {
+//     const makh = dulieu.makh;
+//     const mabanggia = dulieu.mabanggia;
+//     const khachhangId = khachangs.find((khachang) => khachang.makh === makh)?.id;
+//     const banggiaId = banggias.find((banggia) => banggia.mabanggia === mabanggia)?.id;
+//     return { khachhangId, banggiaId,makh,mabanggia };
+//   })
+//   //console.log(newData);
+//   const dataxulys = convertData(newData)
+//   //console.log(convertData(newData));
+// //  console.log(dataxulys[1].khachhangIds.map(id => ({ id })),);
   
-  // // Cập nhật từng khách hàng
+//   // // Cập nhật từng khách hàng
 
-  for (const dataxuly of dataxulys) {
-    const banggiaId = dataxuly.banggiaId;
-    const khachhangIds = dataxuly.khachhangIds;
-    console.log(banggiaId, khachhangIds);
+//   for (const dataxuly of dataxulys) {
+//     const banggiaId = dataxuly.banggiaId;
+//     const khachhangIds = dataxuly.khachhangIds;
+//     console.log(banggiaId, khachhangIds);
 
-    setTimeout(async () => {
-      await prisma.banggia.update({
-        where: { id: banggiaId },
-        data: {
-          khachhang: {
-            connect: khachhangIds.map(id => ({ id })),
-          },
-        },
-      });
-    }, 1000); // Adjust the timeout duration as needed
-  }
+//     setTimeout(async () => {
+//       await prisma.banggia.update({
+//         where: { id: banggiaId },
+//         data: {
+//           khachhang: {
+//             connect: khachhangIds.map(id => ({ id })),
+//           },
+//         },
+//       });
+//     }, 1000); // Adjust the timeout duration as needed
+//   }
 
 
   // for (const banggia of dulieu) {
@@ -62,6 +62,14 @@ async function main() {
   //     },
   //   },
   // });
+
+  await prisma.tonKho.updateMany({
+    data: {
+      slchonhap: 0,
+    },
+  });
+
+
 }
 
 main()
