@@ -1,0 +1,54 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AuditMiddleware = void 0;
+const common_1 = require("@nestjs/common");
+const prisma_service_1 = require("../../prisma/prisma.service");
+let AuditMiddleware = class AuditMiddleware {
+    constructor(prisma) {
+        this.prisma = prisma;
+    }
+    async use(req, res, next) {
+        if (req.method === 'PUT' || req.method === 'PATCH') {
+            try {
+                console.log(`Processing ${req.method} request for URL: ${req.originalUrl}`);
+                const entityId = req.params?.id || (Array.isArray(req.params?.path) ? req.params.path[1] : null);
+                if (entityId) {
+                    const oldData = await this.getOldData(req.originalUrl, entityId);
+                    req.auditOldValues = oldData;
+                }
+            }
+            catch (error) {
+                console.error('Failed to fetch old values for audit:', error);
+            }
+        }
+        next();
+    }
+    async getOldData(url, id) {
+        console.log(`Fetching old data for URL: ${url} with ID: ${id}`);
+        if (url.includes('/users/')) {
+            return await this.prisma.user.findUnique({ where: { id } });
+        }
+        if (url.includes('/sanpham/')) {
+            return await this.prisma.sanpham.findUnique({ where: { id } });
+        }
+        if (url.includes('/khachhang/import/')) {
+            return await this.prisma.khachhang.findUnique({ where: { id } });
+        }
+        return null;
+    }
+};
+exports.AuditMiddleware = AuditMiddleware;
+exports.AuditMiddleware = AuditMiddleware = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+], AuditMiddleware);
+//# sourceMappingURL=audit.middleware.js.map

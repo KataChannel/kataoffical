@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpExcep
 import { ImportdataService } from './importdata.service'; 
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
+import { AuditAction } from '@prisma/client';
+import { Audit } from 'src/auditlog/audit.decorator';
 @ApiTags('importdata') 
 @Controller('importdata') 
 export class ImportdataController { 
@@ -11,6 +13,11 @@ export class ImportdataController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard) 
   @Post()
+  @Audit({
+    entity: 'importdata',
+    action: AuditAction.CREATE,
+    includeResponse: true,
+  })
   async create(@Body() data: any) { 
     try {
       return await this.importdataService.create(data);
@@ -80,6 +87,11 @@ export class ImportdataController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
+  @Audit({
+    entity: 'importdata',
+    action: AuditAction.UPDATE,
+    includeResponse: true,
+  })
   async update(@Param('id') id: string, @Body() data: any) { 
     try {
       return await this.importdataService.update(id, data);
@@ -92,6 +104,11 @@ export class ImportdataController {
   @ApiParam({ name: 'id', type: String })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @Audit({
+    entity: 'importdata',
+    action: AuditAction.DELETE,
+    includeResponse: true,
+  })
   async remove(@Param('id') id: string) {
     try {
       return await this.importdataService.remove(id);

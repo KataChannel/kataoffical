@@ -7,7 +7,36 @@ datasource postgres {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
+model AuditLog {
+  id            String          @id @default(uuid())
+  entityName    String          // Tên entity (User, Product, Order...)
+  entityId      String          // ID của entity
+  action        AuditAction     // CREATE, UPDATE, DELETE
+  userId        String?         // User thực hiện action
+  user          User?          @relation(fields: [userId], references: [id])
+  userEmail     String?         // Email user (backup)
+  oldValues     Json?           // Giá trị cũ (trước khi thay đổi)
+  newValues     Json?           // Giá trị mới (sau khi thay đổi)
+  changedFields String[]        // Danh sách field đã thay đổi
+  ipAddress     String?         // IP address
+  userAgent     String?         // User agent
+  sessionId     String?         // Session ID
+  metadata      Json?           // Metadata bổ sung
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  @@index([entityName, entityId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([action])
+}
+enum AuditAction {
+  CREATE
+  UPDATE  
+  DELETE
+  LOGIN
+  LOGOUT
+  ACCESS
+}
 model User {
   id        String   @id @default(uuid())
   email     String?   @unique
@@ -20,6 +49,7 @@ model User {
   isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  AuditLog AuditLog[]
 }
 
 model Role {
@@ -97,8 +127,8 @@ model Banggia {
   isActive  Boolean    @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  sanpham   Banggiasanpham[]
-  khachhang Khachhang[] @relation("Banggiakhachhang")
+  sanpham     Banggiasanpham[]
+  khachhang   Khachhang[] @relation("Banggiakhachhang")
 }
 model Khachhang {
   id           String   @id @default(uuid())

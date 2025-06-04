@@ -23,7 +23,6 @@ const nhacungcap_module_1 = require("./nhacungcap/nhacungcap.module");
 const dathang_module_1 = require("./dathang/dathang.module");
 const kho_module_1 = require("./kho/kho.module");
 const phieukho_module_1 = require("./phieukho/phieukho.module");
-const auth_middleware_1 = require("./middleware/auth.middleware");
 const role_module_1 = require("./role/role.module");
 const permission_module_1 = require("./permission/permission.module");
 const nhomkhachhang_module_1 = require("./nhomkhachhang/nhomkhachhang.module");
@@ -33,9 +32,14 @@ const callback_module_1 = require("./callback/callback.module");
 const dashboard_module_1 = require("./dashboard/dashboard.module");
 const userguide_module_1 = require("./userguide/userguide.module");
 const importdata_module_1 = require("./importdata/importdata.module");
+const core_1 = require("@nestjs/core");
+const audit_interceptor_1 = require("./auditlog/audit.interceptor");
+const auditlog_service_1 = require("./auditlog/auditlog.service");
+const auditlog_module_1 = require("./auditlog/auditlog.module");
+const audit_middleware_1 = require("./auditlog/audit.middleware");
 let AppModule = class AppModule {
     configure(consumer) {
-        consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
+        consumer.apply(audit_middleware_1.AuditMiddleware).forRoutes('*');
     }
 };
 exports.AppModule = AppModule;
@@ -63,9 +67,18 @@ exports.AppModule = AppModule = __decorate([
             dashboard_module_1.DashboardModule,
             userguide_module_1.UserguideModule,
             importdata_module_1.ImportdataModule,
+            auditlog_module_1.AuditLogModule
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService, prisma_service_1.PrismaService],
+        providers: [
+            app_service_1.AppService,
+            prisma_service_1.PrismaService,
+            {
+                provide: core_1.APP_INTERCEPTOR,
+                useClass: audit_interceptor_1.AuditInterceptor,
+            },
+            auditlog_service_1.AuditService,
+        ],
         exports: [prisma_service_1.PrismaService],
     })
 ], AppModule);

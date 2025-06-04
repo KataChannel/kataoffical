@@ -265,8 +265,8 @@ async ExportExcel(title:any) {
           title: v.title?.trim() || '',
           mabanggia: v.mabanggia?.trim() || '',
           type: v.type?.trim() || '',
-          batdau: v.batdau?.trim() || '',
-          ketthuc: v.ketthuc?.trim() || '',
+          batdau: moment(v.batdau).format('DD/MM/YYYY') || '',
+          ketthuc: moment(v.ketthuc).format('DD/MM/YYYY') || '',
           ghichu: v.ghichu?.trim() || '',
           status: v.status?.trim() || ''
         }))
@@ -575,9 +575,9 @@ convertNCCSPToImport(data: any){
     if(data.khachhang && data.khachhang.length > 0 && this.ListEdit().some((item: any) => item.value === 'khachhang'))
     {
       const ListKH = (data.khachhang || []).map((v: any) => ({
-        name: v.name,
+        name: v.name.toString(),
         makh: v.makh,
-        namenn: v.namenn,
+        namenn: v.namenn.toString(),
         diachi: v.diachi,
         quan: v.quan,
         email: v.email,

@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.KhachhangController = void 0;
 const common_1 = require("@nestjs/common");
 const khachhang_service_1 = require("./khachhang.service");
+const audit_decorator_1 = require("../auditlog/audit.decorator");
+const client_1 = require("@prisma/client");
 let KhachhangController = class KhachhangController {
     constructor(khachhangService) {
         this.khachhangService = khachhangService;
@@ -64,6 +66,7 @@ __decorate([
 ], KhachhangController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)('import'),
+    (0, audit_decorator_1.Audit)({ entity: 'Import Khachhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

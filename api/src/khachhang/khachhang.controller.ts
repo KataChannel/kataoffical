@@ -1,5 +1,7 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common';
 import { KhachhangService } from './khachhang.service';
+import { Audit } from 'src/auditlog/audit.decorator';
+import { AuditAction } from '@prisma/client';
 
 @Controller('khachhang')
 export class KhachhangController {
@@ -13,6 +15,7 @@ export class KhachhangController {
     return this.khachhangService.create(createKhachhangDto);
   }
   @Post('import')
+  @Audit({entity: 'Import Khachhang',action: AuditAction.CREATE,includeResponse: true})
   import(@Body() data: any) {
     return this.khachhangService.import(data);
   }

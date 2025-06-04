@@ -28,6 +28,7 @@ import { DonhangService } from '../donhang.service';
 import { MatMenuModule } from '@angular/material/menu';
 import {
   readExcelFile,
+  readExcelFileNoWorker,
   writeExcelFile,
   writeExcelFileWithSheets,
 } from '../../../shared/utils/exceldrive.utils';
@@ -71,7 +72,7 @@ import { SharepaginationComponent } from '../../../shared/common/sharepagination
     MatDatepickerModule,
     MatDialogModule,
     MatTabsModule,
-    SharepaginationComponent
+    SharepaginationComponent,
   ],
 })
 export class ListDonhangComponent {
@@ -116,13 +117,13 @@ export class ListDonhangComponent {
   private _BanggiaService: BanggiaService = inject(BanggiaService);
   private _SanphamService: SanphamService = inject(SanphamService);
   private _router: Router = inject(Router);
-  Listdonhang: any = signal<any>({})
+  Listdonhang: any = signal<any>({});
   dataSource = new MatTableDataSource([]);
   donhangId: any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
-  CountItem: any = 0
-  pageIndex: any = 1
-  Trangthaidon:any = TrangThaiDon
+  CountItem: any = 0;
+  pageIndex: any = 1;
+  Trangthaidon: any = TrangThaiDon;
   SearchParams: any = {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
@@ -147,7 +148,7 @@ export class ListDonhangComponent {
       this.filterValues[column] = '';
     });
     effect(async () => {
-       await this.LoadData();
+      await this.LoadData();
     });
   }
   async onPageChange(event: any): Promise<void> {
@@ -157,10 +158,9 @@ export class ListDonhangComponent {
     await this.LoadData();
   }
   async LoadData() {
-      const data = await this._DonhangService.searchDonhang(this.SearchParams);
-      this.Listdonhang.set(data);
-      if(data.data)
-      {
+    const data = await this._DonhangService.searchDonhang(this.SearchParams);
+    this.Listdonhang.set(data);
+    if (data.data) {
       this.total.set(Number(data.total));
       this.pageSize.set(Number(data.pageSize));
       this.page.set(Number(data.pageNumber));
@@ -168,7 +168,7 @@ export class ListDonhangComponent {
       this.dataSource = new MatTableDataSource(this.Listdonhang().data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      }
+    }
   }
 
   // onPageSizeChange(size: number,menuHienthi:any) {
@@ -190,7 +190,6 @@ export class ListDonhangComponent {
   //   menuHienthi.closeMenu();
   // }
 
-
   // calculateTotalPages() {
   //   this.totalPages = Math.ceil(this.totalItems / this.pageSize);
   // }
@@ -200,14 +199,13 @@ export class ListDonhangComponent {
   //     this.updateDisplayData();
   //   }
   // }
-  
+
   // onNextPage() {
   //   if (this.currentPage < this.totalPages) {
   //     this.currentPage++;
   //     this.updateDisplayData();
   //   }
   // }
-
 
   // updateDisplayData() {
   //   const startIndex = (this.currentPage - 1) * this.pageSize;
@@ -219,7 +217,7 @@ export class ListDonhangComponent {
   async onSelectionChange(event: MatSelectChange): Promise<void> {
     const timeFrames: { [key: string]: () => void } = {
       day: () => {
-        this.SearchParams.Batdau = moment()
+        this.SearchParams.Batdau = moment();
         this.SearchParams.Ketthuc = moment()
           .endOf('day')
           .add(1, 'day')
@@ -246,7 +244,7 @@ export class ListDonhangComponent {
         this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
       },
     };
-     await this.LoadData();
+    await this.LoadData();
     //  this.ngOnInit();
   }
   onDateChange(event: any): void {
@@ -276,7 +274,7 @@ export class ListDonhangComponent {
     }
   }
   async ngOnInit(): Promise<void> {
-     await this.LoadData();
+    await this.LoadData();
     this.initializeColumns();
     this.setupDrawer();
 
@@ -296,7 +294,6 @@ export class ListDonhangComponent {
   //   this.dataSource = new MatTableDataSource(this.Listdonhang().data);
   //   this.dataSource.sort = this.sort;
   // }
-
 
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -354,8 +351,6 @@ export class ListDonhangComponent {
     );
   }
 
-
-
   toggleColumn(item: any): void {
     const column = this.FilterColumns.find((v) => v.key === item.key);
     if (column) {
@@ -364,65 +359,69 @@ export class ListDonhangComponent {
     }
   }
   @memoize()
-  FilterHederColumn(list:any,column:any)
-  {
-    const uniqueList = list.filter((obj: any, index: number, self: any) => 
-      index === self.findIndex((t: any) => t[column] === obj[column])
+  FilterHederColumn(list: any, column: any) {
+    const uniqueList = list.filter(
+      (obj: any, index: number, self: any) =>
+        index === self.findIndex((t: any) => t[column] === obj[column])
     );
-    return uniqueList
+    return uniqueList;
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listdonhang().data.filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();  
+    this.dataSource.filteredData = this.Listdonhang().data.filter(
+      (v: any) =>
+        removeVietnameseAccents(v[column]).includes(
+          event.target.value.toLowerCase()
+        ) || v[column].toLowerCase().includes(event.target.value.toLowerCase())
+    );
+    const query = event.target.value.toLowerCase();
   }
-  ListFilter:any[] =[]
-  ChosenItem(item:any,column:any)
-  {
-    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
-    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
-    if(CheckItem1.length>0)
-    {
-      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
-    }
-    else{
-      this.ListFilter = [...this.ListFilter,...CheckItem];
+  ListFilter: any[] = [];
+  ChosenItem(item: any, column: any) {
+    const CheckItem = this.dataSource.filteredData.filter(
+      (v: any) => v[column] === item[column]
+    );
+    const CheckItem1 = this.ListFilter.filter(
+      (v: any) => v[column] === item[column]
+    );
+    if (CheckItem1.length > 0) {
+      this.ListFilter = this.ListFilter.filter(
+        (v) => v[column] !== item[column]
+      );
+    } else {
+      this.ListFilter = [...this.ListFilter, ...CheckItem];
     }
   }
-  ChosenAll(list:any)
-  {
-    list.forEach((v:any) => {
-      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
-      if(CheckItem)
-        {
-          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
-        }
-        else{
-          this.ListFilter.push(v);
-        }
+  ChosenAll(list: any) {
+    list.forEach((v: any) => {
+      const CheckItem = this.ListFilter.find((v1) => v1.id === v.id)
+        ? true
+        : false;
+      if (CheckItem) {
+        this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
+      } else {
+        this.ListFilter.push(v);
+      }
     });
   }
-  ResetFilter()
-  {
+  ResetFilter() {
     this.ListFilter = this.Listdonhang().data;
     this.dataSource.data = this.Listdonhang().data;
     this.dataSource.sort = this.sort;
   }
-  EmptyFiter()
-  {
+  EmptyFiter() {
     this.ListFilter = [];
   }
-  CheckItem(item:any)
-  {
-    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  CheckItem(item: any) {
+    return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
-  ApplyFilterColum(menu:any)
-  {    
-    this.dataSource.data = this.Listdonhang().data.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+  ApplyFilterColum(menu: any) {
+    this.dataSource.data = this.Listdonhang().data.filter((v: any) =>
+      this.ListFilter.some((v1) => v1.id === v.id)
+    );
     this.dataSource.sort = this.sort;
     menu.closeMenu();
   }
-
 
   create(): void {
     this.drawer.open();
@@ -445,7 +444,7 @@ export class ListDonhangComponent {
 
   dialog = inject(MatDialog);
   dialogCreateRef: any;
-  Phieuchia:any[] = [];
+  Phieuchia: any[] = [];
 
   openCreateDialog(teamplate: TemplateRef<any>) {
     console.log(this.editDonhang);
@@ -467,27 +466,31 @@ export class ListDonhangComponent {
 
   getUniqueProducts(): string[] {
     const products = new Set<string>();
-    this.Phieuchia.forEach(kh => kh.sanpham.forEach((sp:any) => products.add(sp.title)));
+    this.Phieuchia.forEach((kh) =>
+      kh.sanpham.forEach((sp: any) => products.add(sp.title))
+    );
     return Array.from(products);
   }
 
   getProductQuantity(product: string, makh: string): number | string {
-    const customer = this.Phieuchia.find(kh => kh.makh === makh);
-    const item = customer?.sanpham.find((sp:any) => sp.title === product);
+    const customer = this.Phieuchia.find((kh) => kh.makh === makh);
+    const item = customer?.sanpham.find((sp: any) => sp.title === product);
     return item ? item.slgiao : '';
   }
   getDvtForProduct(product: string) {
     const uniqueProducts = Array.from(
-      new Map(this.Phieuchia.flatMap(c => c.sanpham.map((sp:any) => ({ ...sp, makh: c.makh, name: c.name })))
-          .map(p => [p.title, p])
+      new Map(
+        this.Phieuchia.flatMap((c) =>
+          c.sanpham.map((sp: any) => ({ ...sp, makh: c.makh, name: c.name }))
+        ).map((p) => [p.title, p])
       ).values()
-  );
-  console.log(uniqueProducts);
-  
-    const item = uniqueProducts.find((sp:any) => sp.title === product);
+    );
+    console.log(uniqueProducts);
+
+    const item = uniqueProducts.find((sp: any) => sp.title === product);
     return item ? item.dvt : '';
   }
-  
+
   CheckItemInDonhang(item: any): boolean {
     return this.editDonhang.findIndex((v) => v.id === item.id) !== -1;
   }
@@ -553,7 +556,6 @@ export class ListDonhangComponent {
         const item1 = { ...item, ...v };
         await this._DonhangService.updateDonhang(item1);
       } else {
-
         await this._DonhangService.CreateDonhang(v);
       }
     });
@@ -574,61 +576,89 @@ export class ListDonhangComponent {
       // window.location.reload();
     });
   }
-  ListImportExcel: any[] = []
+  ListImportExcel: any[] = [];
+
   async ImporExcel(event: any) {
     const files = Array.from(event.target.files) as File[];
-    let data = await readExcelFile(files[0], 'Donhang');
-    data = data.slice(1);
-     // Group data by makh
-     const groupedData: { [makh: string]: any[] } = {};
-     data.forEach((item: any) => {
-       if (!item.makh) return;
-       if (!groupedData[item.makh]) {
-       groupedData[item.makh] = [];
-       }
-       groupedData[item.makh].push(item);
-     });
-     // Convert to array format: [{ makh, children: [...] }]
-     const groupedArray = Object.keys(groupedData).map(makh => ({
-       makh,
-       children: groupedData[makh]
-     }));
-     console.log('Grouped by makh:', groupedArray);
-    
-    // Thêm thời gian chờ giữa các lần import (ví dụ: 500ms)
-    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-    for (let i = 0; i < groupedArray.length; i++) {
-      try {     
-      // Import một file tại một thời điểm và chờ hoàn thành
-      await this.ImporDonhang(groupedArray[i]?.children);
+    const importData: any[] = [];
+    for (let i = 0; i < files.length; i++) {
+      console.log(`Processing file ${i + 1}/${files.length}:`, files[i].name);
+      const TenKH = removeVietnameseAccents(files[i].name.replace('.xlsx', ''))
+      let data = await readExcelFileNoWorker(files[i], 'TEM');
 
-      this._snackBar.open(`Đã Tạo Đơn ${i + 1}/${groupedArray.length}: ${groupedArray[i].makh}`, '', {
-        duration: 2000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
-
-      // Chờ 500ms trước khi import đơn tiếp theo
-      if (i < groupedArray.length - 1) {
-        await delay(500);
-      }
-      } catch (error) {
-      console.error(`Lỗi khi Tạo Đơn ${i + 1}:`, error);
-      this._snackBar.open(`Lỗi khi Tạo Đơn ${i + 1}`, '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-      });
-      }
+      const editdata = data
+        .filter((item: any) => {
+          const validItemCode =
+            typeof item?.ItemCode === 'string' && item.ItemCode.trim() !== '';
+          const validQuantity =
+            item?.Quantity != null && item.Quantity !== '' && item.Quantity !== 0;
+          return validItemCode && validQuantity;
+        })
+        .map((item: any) => ({
+          TenKH: TenKH,
+          ItemCode: item.ItemCode ?? '',
+          Quantity: item.Quantity ?? '',
+        }));
+        importData.push(...editdata);
     }
-    
-    if (files.length > 0) {
-      this.dialogCreateRef?.close();
-      this.ngOnInit(); // Refresh the data after all imports
-    }
+    console.log('importData', importData);
   }
+
+  // async ImporExcel(event: any) {
+
+  //   const files = Array.from(event.target.files) as File[];
+  //   let data = await readExcelFile(files[0], 'Donhang');
+  //   data = data.slice(1);
+  //    // Group data by makh
+  //    const groupedData: { [makh: string]: any[] } = {};
+  //    data.forEach((item: any) => {
+  //      if (!item.makh) return;
+  //      if (!groupedData[item.makh]) {
+  //      groupedData[item.makh] = [];
+  //      }
+  //      groupedData[item.makh].push(item);
+  //    });
+  //    // Convert to array format: [{ makh, children: [...] }]
+  //    const groupedArray = Object.keys(groupedData).map(makh => ({
+  //      makh,
+  //      children: groupedData[makh]
+  //    }));
+  //    console.log('Grouped by makh:', groupedArray);
+
+  //   // Thêm thời gian chờ giữa các lần import (ví dụ: 500ms)
+  //   const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  //   for (let i = 0; i < groupedArray.length; i++) {
+  //     try {
+  //     // Import một file tại một thời điểm và chờ hoàn thành
+  //     await this.ImporDonhang(groupedArray[i]?.children);
+
+  //     this._snackBar.open(`Đã Tạo Đơn ${i + 1}/${groupedArray.length}: ${groupedArray[i].makh}`, '', {
+  //       duration: 2000,
+  //       horizontalPosition: 'end',
+  //       verticalPosition: 'top',
+  //       panelClass: ['snackbar-success'],
+  //     });
+
+  //     // Chờ 500ms trước khi import đơn tiếp theo
+  //     if (i < groupedArray.length - 1) {
+  //       await delay(500);
+  //     }
+  //     } catch (error) {
+  //     console.error(`Lỗi khi Tạo Đơn ${i + 1}:`, error);
+  //     this._snackBar.open(`Lỗi khi Tạo Đơn ${i + 1}`, '', {
+  //       duration: 3000,
+  //       horizontalPosition: 'end',
+  //       verticalPosition: 'top',
+  //       panelClass: ['snackbar-error'],
+  //     });
+  //     }
+  //   }
+
+  //   if (files.length > 0) {
+  //     this.dialogCreateRef?.close();
+  //     this.ngOnInit();
+  //   }
+  // }
 
   async ImporDonhang(items: any[]): Promise<void> {
     // items = items.slice(1); // Remove the first row (header)
@@ -650,7 +680,9 @@ export class ListDonhangComponent {
       }
 
       // Find customer
-      const khachhang = await this._KhachhangService.getKhachhangBy({ makh: firstItem.makh });
+      const khachhang = await this._KhachhangService.getKhachhangBy({
+        makh: firstItem.makh,
+      });
       if (!khachhang) {
         throw new Error(`Không tìm thấy khách hàng với mã ${firstItem.makh}`);
       }
@@ -662,17 +694,19 @@ export class ListDonhangComponent {
             throw new Error('Mã sản phẩm không được để trống');
           }
 
-          const sp = await this._SanphamService.getSanphamby({ masp: item.masp });
+          const sp = await this._SanphamService.getSanphamby({
+            masp: item.masp,
+          });
           if (!sp) {
             throw new Error(`Không tìm thấy sản phẩm với mã ${item.masp}`);
           }
 
-            return {
+          return {
             ...sp,
             sldat: parseFloat(Number(item.sldat).toFixed(2)) || 0,
             slgiao: parseFloat(Number(item.slgiao).toFixed(2)) || 0,
             slnhan: parseFloat(Number(item.slnhan).toFixed(2)) || 0,
-            };
+          };
         })
       );
 
@@ -690,32 +724,35 @@ export class ListDonhangComponent {
 
       console.log(donhangData);
       await this._DonhangService.CreateDonhang(donhangData);
-      
+
       this._snackBar.open('Nhập đơn hàng thành công', '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-success'],
       });
-      
+
       // Refresh data
       this.ngOnInit();
-      
     } catch (error: any) {
       console.error('Error importing order:', error);
-      this._snackBar.open(`Lỗi: ${error.message || 'Không thể nhập đơn hàng'}`, '', {
-        duration: 5000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
-      });
+      this._snackBar.open(
+        `Lỗi: ${error.message || 'Không thể nhập đơn hàng'}`,
+        '',
+        {
+          duration: 5000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        }
+      );
     }
   }
 
   async ExportExcel(data: any, title: any) {
-   await this._KhachhangService.getAllKhachhang()
-   await this._SanphamService.getAllSanpham()
-   await this._BanggiaService.getAllBanggia()  
+    await this._KhachhangService.getAllKhachhang();
+    await this._SanphamService.getAllSanpham();
+    await this._BanggiaService.getAllBanggia();
     const KH = this._KhachhangService.ListKhachhang().map((v: any) => ({
       makhold: v.makhold,
       name: v.name,
@@ -732,14 +769,13 @@ export class ListDonhangComponent {
       mabanggia: v.mabanggia,
       title: v.title,
     }));
-    writeExcelFileWithSheets({SP, KH, BG}, title);
+    writeExcelFileWithSheets({ SP, KH, BG }, title);
   }
-  printContent()
-  {
+  printContent() {
     const element = document.getElementById('printContent');
     if (!element) return;
 
-    html2canvas(element, { scale: 2 }).then(canvas => {
+    html2canvas(element, { scale: 2 }).then((canvas) => {
       const imageData = canvas.toDataURL('image/png');
 
       // Mở cửa sổ mới và in ảnh
@@ -749,7 +785,7 @@ export class ListDonhangComponent {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Phiếu Chia Hàng ${moment().format("DD/MM/YYYY")}</title>
+            <title>Phiếu Chia Hàng ${moment().format('DD/MM/YYYY')}</title>
           </head>
           <body style="text-align: center;">
             <img src="${imageData}" style="max-width: 100%;"/>
@@ -770,7 +806,6 @@ export class ListDonhangComponent {
     return item.id; // Use a unique identifier
   }
 }
-
 
 function memoize() {
   return function (
