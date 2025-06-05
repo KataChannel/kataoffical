@@ -5,6 +5,10 @@ git push
 
 # server
 ssh root@116.118.49.243 
+ssh-copy-id root@116.118.49.243
+chmod +x autologin.sh
+./autologin.sh
+
 git pull
 docker compose -f 'docker-compose.yml' up -d --build
 docker compose -f 'docker-compose.yml' up -d --build 'ferausach'
