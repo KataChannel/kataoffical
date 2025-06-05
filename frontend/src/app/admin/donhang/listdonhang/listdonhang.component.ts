@@ -491,7 +491,6 @@ export class ListDonhangComponent {
         continue;
       }
       try {
-        console.log(`Processing file ${i + 1}/${files.length}: ${file.name}`);
         this._snackBar.open(`Đang xử lý file: ${file.name}`, '', {
           duration: 1000,
           horizontalPosition: "end",
@@ -503,9 +502,7 @@ export class ListDonhangComponent {
         if (!data || !Array.isArray(data)) {
           data = await readExcelFileNoWorker(file, 'TEMPLATE');
         }
-        console.log(data);
-
-        const editdata = data
+         const editdata = data
           .filter((item: any) => {
             const validItemCode =
               typeof item?.ItemCode === 'string' && item.ItemCode.trim() !== '';
@@ -552,8 +549,6 @@ export class ListDonhangComponent {
         continue;
       }
     }
-
-    console.table([...new Map(this.ListImportData.map(item => [item.tenkh, item])).values()]);    
     this._snackBar.open(
         `Nhập đơn hàng thành công. Files xử lý: ${processedCount}, Bỏ qua: ${skippedCount}, Lỗi: ${errorCount}`,
         '',
@@ -594,7 +589,19 @@ export class ListDonhangComponent {
         return;
       }
 
-      await this._DonhangService.ImportDonhangCu(this.ListImportData);
+     const result = await this._DonhangService.ImportDonhangCu(this.ListImportData);
+      this.dialog.closeAll();
+      this._snackBar.open(
+          `Nhập đơn hàng thành công: Thành công ${result.success}, Thất bại ${result.fail}, Bỏ qua ${result.skip}`,
+          '',
+          {
+            duration: 5000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-success']
+          }
+          );
+
     } catch (importError: any) {
       console.error('Lỗi khi nhập đơn hàng:', importError);
       this._snackBar.open(`Lỗi khi nhập đơn hàng: ${importError.message}`, '', {
@@ -610,17 +617,9 @@ export class ListDonhangComponent {
       });
       return;
     }
-    this._snackBar.open('Nhập đơn hàng thành công', '', {
-      duration: 3000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-success'],
-    });
-
-    // Close the dialog 5 seconds after import success
-    setTimeout(() => {
-      this.dialog.closeAll();
-    }, 5000);
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
   }
 
   async ImporDonhang(items: any[]): Promise<void> {
@@ -768,12 +767,21 @@ export class ListDonhangComponent {
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
-
 SelectKhachhang(item:any,event:any){
   const value = event.value
+  const checkItem = this.ListImportData.find((v: any) => v.khachhangId === value);
+  if (checkItem) {
+    this._snackBar.open('Đã tồn tại khách hàng này', '', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-warning']
+    });
+    return;
+  }
   this.ListImportData.filter((v => v.tenkh === item.tenkhongdau)).forEach((v1:any) => {
     v1.khachhangId = value;
-  });
+  });  
 }
 DoFindKhachhang(event:any){
   const value = event.target.value;
@@ -810,21 +818,32 @@ openDeleteDialog(template: TemplateRef<any>) {
        }
      });
  }
- DeleteListItem(): void {
-   this.EditList.forEach((item: any) => {
-     this._DonhangService.DeleteDonhang(item);
-   });
-   this.EditList = [];
-   this._snackBar.open('Xóa Thành Công', '', {
-     duration: 1000,
-     horizontalPosition: 'end',
-     verticalPosition: 'top',
-     panelClass: ['snackbar-success'],
-   });  
- }
-
+DeleteListItem(): void {
+  // Delete all items first
+  this.EditList.forEach((item: any) => {
+    this._DonhangService.DeleteDonhang(item);
+  });
+  this.EditList = [];
+  // Show success notification
+  this._snackBar.open('Xóa Thành Công', '', {
+    duration: 1000,
+    horizontalPosition: 'end',
+    verticalPosition: 'top',
+    panelClass: ['snackbar-success'],
+  });
+  // Reload page after 3 seconds
+  setTimeout(() => {
+    window.location.reload();
+  }, 500);
 }
-
+  ToggleAll(){
+    if (this.EditList.length === this.Listdonhang().data.length) {
+      this.EditList = [];
+    } else {
+      this.EditList = [...this.Listdonhang().data];
+    }
+  }
+}
 function memoize() {
   return function (
     target: any,

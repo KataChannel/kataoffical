@@ -71,6 +71,7 @@ let PhieukhoService = class PhieukhoService {
                 sanpham: { include: { sanpham: true } },
                 kho: true,
             },
+            orderBy: { createdAt: 'desc' },
         });
         const tranData = phieuKhos.map((phieuKho) => ({
             khoname: phieuKho.kho?.name ?? '',

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, computed, effect, inject, TemplateRef, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -25,6 +25,7 @@ import { BanggiaService } from '../../banggia/banggia.service';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import moment from 'moment';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 @Component({
   selector: 'app-listdathang',
   templateUrl: './listdathang.component.html',
@@ -45,6 +46,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     FormsModule,
     MatTooltipModule,
     MatDatepickerModule,
+    MatDialogModule
   ],
 })
 export class ListDathangComponent {
@@ -337,4 +339,51 @@ export class ListDathangComponent {
       }));
       UploadDathang({SP, NCC, BG}, title);
     }
+EditList: any[] = [];
+AddToEdit(item: any): void {
+  const existingItem = this.EditList.find((v: any) => v.id === item.id);
+  if (existingItem) {
+    this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
+  } else {
+    this.EditList.push(item);
+  }
+}
+CheckItemInEdit(item: any): boolean {
+  return this.EditList.some((v: any) => v.id === item.id);
+}
+dialog = inject(MatDialog);
+dialogCreateRef: any;
+openDeleteDialog(template: TemplateRef<any>) {
+     const dialogDeleteRef = this.dialog.open(template, {
+       hasBackdrop: true,
+       disableClose: true,
+     });
+     dialogDeleteRef.afterClosed().subscribe((result) => {
+       if (result=="true") {
+         this.DeleteListItem();
+       }
+     });
+ }
+DeleteListItem(): void {
+  Promise.all(this.EditList.map((item: any) => this._DathangService.DeleteDathang(item)))
+    .then(() => {
+      this.EditList = [];
+      this._snackBar.open('Xóa Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    });
+}
+  ToggleAll(){
+    if (this.EditList.length === this.Listdathang().data.length) {
+      this.EditList = [];
+    } else {
+      this.EditList = [...this.Listdathang().data];
+    }
+  }
 }

@@ -147,7 +147,9 @@ export class SanphamService {
   }
   async findAll() {
     try {
-      return await this.prisma.sanpham.findMany();
+      return await this.prisma.sanpham.findMany({
+         orderBy: { createdAt: 'desc' },
+      });
     } catch (error) {
       this._ErrorlogsService.logError('Lỗi lấy tất cả sản phẩm', {
         error: error.message,
@@ -196,7 +198,8 @@ export class SanphamService {
     try {
       const sanpham = await this.prisma.sanpham.findUnique({
         where: param,
-      });
+      },
+    );
       return sanpham;
     } catch (error) {
       throw error;
