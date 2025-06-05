@@ -375,6 +375,7 @@
                     <table class="min-w-full divide-y divide-gray-200 shadow-md rounded-lg">
                         <thead class="bg-gray-50">
                             <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Khách hàng</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên Không Dấu</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -383,6 +384,23 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             <tr *ngFor="let detail of statusDetails">
+                                <td *ngIf="detail.fileName !== 'Overall'" class="px-6 py-4 whitespace-nowrap text-gray-900">
+                                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                      <mat-label>Khách Hàng</mat-label>
+                                      <mat-select (selectionChange)="SelectKhachhang(detail,$event)">
+                                        <div class="w-full flex flex-col">
+                                          <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
+                                            <input matInput (input)="DoFindKhachhang($event)" placeholder="Tìm Kiếm" />
+                                          </mat-form-field>
+                                          <div class="overflow-y-auto max-h-44">
+                                            @for (item of FilterKhachhang; track item.id) {
+                                            <mat-option [value]="item.id">{{item.name}}</mat-option>
+                                            }
+                                          </div>
+                                        </div>
+                                      </mat-select>    
+                                    </mat-form-field>
+                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ detail.fileName }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ detail.tenkhongdau }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -402,6 +420,7 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-flat-button color="warn" mat-dialog-close>Đóng</button>
+  <button mat-flat-button color="primary" (click)="DoImportKhachhangCu()">Cập Nhật</button>
 </mat-dialog-actions>
 
   </ng-template>

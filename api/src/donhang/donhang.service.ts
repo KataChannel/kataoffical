@@ -395,20 +395,34 @@ export class DonhangService {
   }
 
   async ImportDonhangOld(dulieu: any) { 
-    const data = await Promise.all(dulieu.map(async (v: any) => ({
-      tenkh: v.tenkh,
-      ngaygiao: moment().toDate(),
-      makh: await this.prisma.khachhang.findFirst({ where: { tenkh: v.tenkh } }),
-      mabanggia: v.mabanggia,
-      masp: v.ItemCode,
-      sldat: Number(v.Quantity),
-      slgiao: Number(v.Quantity),
-      slnhan: Number(v.Quantity),
-      ghichu: v.ghichu,
-    })));
 
+    const data = await Promise.all(
+      dulieu.map(async (v: any) => {
+        const ngaygiao = moment().toDate();
+
+        // Retrieve required records
+        const khachhangRecord = await this.prisma.khachhang.findFirst({ where: { id: v.khachhangId } });
+        const banggiaRecord = await this.prisma.banggia.findFirst({ where: { mabanggia: v.mabanggia } });
+        const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: v.ItemCode } });
+
+        // If any record is not found, skip this entry by returning null
+        if (!khachhangRecord || !banggiaRecord || !sanphamRecord) {
+          return null;
+        }
+
+        return {
+          ngaygiao,
+          makh: khachhangRecord.makh,
+          mabanggia: banggiaRecord.mabanggia,
+          masp: sanphamRecord.masp,
+          sldat: Number(v.Quantity) || 0,
+          slgiao: Number(v.Quantity) || 0,
+          slnhan: Number(v.Quantity) || 0,
+          ghichu: v.ghichu || '',
+        };
+      })
+    );
     console.log(data);
-    
     // const acc: Record<string, any> = {};
     // for (const curr of data) {
     //   if (!acc[curr.makh]) {

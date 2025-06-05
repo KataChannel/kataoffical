@@ -362,17 +362,25 @@ let DonhangService = class DonhangService {
         return result;
     }
     async ImportDonhangOld(dulieu) {
-        const data = await Promise.all(dulieu.map(async (v) => ({
-            tenkh: v.tenkh,
-            ngaygiao: moment().toDate(),
-            makh: await this.prisma.khachhang.findFirst({ where: { tenkh: v.tenkh } }),
-            mabanggia: v.mabanggia,
-            masp: v.ItemCode,
-            sldat: Number(v.Quantity),
-            slgiao: Number(v.Quantity),
-            slnhan: Number(v.Quantity),
-            ghichu: v.ghichu,
-        })));
+        const data = await Promise.all(dulieu.map(async (v) => {
+            const ngaygiao = moment().toDate();
+            const khachhangRecord = await this.prisma.khachhang.findFirst({ where: { id: v.khachhangId } });
+            const banggiaRecord = await this.prisma.banggia.findFirst({ where: { mabanggia: v.mabanggia } });
+            const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: v.ItemCode } });
+            if (!khachhangRecord || !banggiaRecord || !sanphamRecord) {
+                return null;
+            }
+            return {
+                ngaygiao,
+                makh: khachhangRecord.makh,
+                mabanggia: banggiaRecord.mabanggia,
+                masp: sanphamRecord.masp,
+                sldat: Number(v.Quantity) || 0,
+                slgiao: Number(v.Quantity) || 0,
+                slnhan: Number(v.Quantity) || 0,
+                ghichu: v.ghichu || '',
+            };
+        }));
         console.log(data);
     }
     async ImportDonhang(data) {
