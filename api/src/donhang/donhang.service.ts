@@ -568,7 +568,7 @@ export class DonhangService {
       const newDonhang = await prisma.donhang.create({
         data: {
           title: dto.title,
-          type: dto.type,
+          type: dto.type || 'donsi',
           madonhang: madonhang,
           ngaygiao: new Date(dto.ngaygiao),
           khachhangId: dto.khachhangId,
