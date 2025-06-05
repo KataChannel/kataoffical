@@ -395,8 +395,8 @@ export class DonhangService {
   }
 
   async ImportDonhangOld(dulieu: any) {
-    // Map input data to the expected internal format
-    let data = await Promise.all(
+    // Step 1: Map input data to the expected internal format
+    const rawData = await Promise.all(
       dulieu.map(async (v: any) => {
         const ngaygiao = moment().toDate();
 
@@ -407,7 +407,7 @@ export class DonhangService {
           this.prisma.sanpham.findFirst({ where: { masp: v.ItemCode } }),
         ]);
 
-        // Skip this entry if any record is missing
+        // If any required record is missing, skip this entry
         if (!khachhangRecord || !banggiaRecord || !sanphamRecord) {
           return null;
         }
@@ -425,24 +425,31 @@ export class DonhangService {
       })
     );
 
-    // Filter out records that are already imported
-    data = (
-      await Promise.all(
-        data.map(async (d: any) => {
-          if (!d) return null;
-          const exists = await this.prisma.donhang.findFirst({
-            where: { ngaygiao: d.ngaygiao, khachhang: { makh: d.makh } },
-          });
-          if (exists) {
-            console.log(`Skipping import for customer ${d.makh} on ${d.ngaygiao}`);
-            return null;
-          }
-          return d;
-        })
-      )
-    ).filter(Boolean);
+    // Count entries skipped due to missing records
+    const missingRecordSkip = rawData.filter((item) => item === null).length;
 
-    // Group the data by customer (makh)
+    // Step 2: Filter out entries that already exist based on ngaygiao and customer (makh)
+    const validRawData = rawData.filter((item) => item !== null);
+    const data: any[] = [];
+    let existsSkipCount = 0;
+    for (const d of validRawData) {
+      const startOfDay = moment(d.ngaygiao).startOf('day').toDate();
+      const endOfDay = moment(d.ngaygiao).endOf('day').toDate();
+      const exists = await this.prisma.donhang.findFirst({
+        where: {
+          ngaygiao: { gte: startOfDay, lte: endOfDay },
+          khachhang: { makh: d.makh },
+        },
+      });
+      if (exists) {
+        existsSkipCount++;
+      } else {
+        data.push(d);
+      }
+    }
+    const skip = missingRecordSkip + existsSkipCount;
+
+    // Step 3: Group the data by customer (makh)
     const acc: Record<string, any> = {};
     for (const curr of data) {
       if (!acc[curr.makh]) {
@@ -471,7 +478,7 @@ export class DonhangService {
       });
     }
 
-    // Convert the grouped data into an array and attempt the import process
+    // Step 4: Convert grouped data into an array and attempt the import process
     const convertData: any[] = Object.values(acc);
     let success = 0;
     let fail = 0;
@@ -498,7 +505,7 @@ export class DonhangService {
         fail++;
       }
     }
-    return { success, fail };
+    return { success, fail, skip };
   }
 
   async ImportDonhang(data: any) {    

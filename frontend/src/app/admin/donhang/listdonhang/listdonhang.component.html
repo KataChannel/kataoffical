@@ -4,19 +4,23 @@
     </mat-drawer>
     <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
 
-        <div *ngIf="!isSearch" class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
+        <div *ngIf="!isSearch"
+            class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
             <div class="flex flex-row space-x-2 items-center">
-                <button class="flex flex-row items-center btn-primary" matTooltip="Thêm mới" (click)="create()" mat-flat-button>
+                <button class="flex flex-row items-center btn-primary" matTooltip="Thêm mới" (click)="create()"
+                    mat-flat-button>
                     <mat-icon>add_circle</mat-icon>
                     <span class="whitespace-nowrap">Tạo Mới</span>
                 </button>
-                <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+                <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu"
+                    aria-label="Example icon-button with a menu">
                     <mat-icon>tune</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu">
                     <div class="p-4">
                         <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-                            <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput placeholder="Tìm Kiếm" />
+                            <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput
+                                placeholder="Tìm Kiếm" />
                             <mat-icon matPrefix>search</mat-icon>
                         </mat-form-field>
                     </div>
@@ -45,31 +49,36 @@
                 <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{Listdonhang().total}} Đơn Hàng
                 </span>
+                <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
+                    class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button>
+                    <mat-icon>delete</mat-icon>
+                    <span class="whitespace-nowrap">Xoá</span>
+                </button>
             </div>
         </div>
-        
+
         <div *ngIf="isSearch" class="py-2 w-full flex flex-row space-x-2 items-center">
             <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
                 <mat-label>Tìm Kiếm</mat-label>
-                <input matInput (keyup)="applyFilter($event)"  placeholder="Vui lòng Tìm Kiếm" />
+                <input matInput (keyup)="applyFilter($event)" placeholder="Vui lòng Tìm Kiếm" />
             </mat-form-field>
             <button mat-icon-button color="warn" (click)="isSearch=!isSearch"><mat-icon>cancel</mat-icon></button>
         </div>
 
         <div class="w-full grid lg:grid-cols-4 grid-cols-2 gap-2 items-center">
             <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Loại Đơn</mat-label>
-              <mat-select [(ngModel)]="SearchParams.Type" [ngModelOptions]="{standalone: true}"
-                (selectionChange)="onSelectionChange($event)">
-                @for (item of [
-                {id:1,Title:'Đơn Sỉ',value:'donsi'},
-                {id:2,Title:'Đơn Lẻ',value:'donle'},
-                ]; track item) {
-                <mat-option [value]="item.value">{{item.Title}}</mat-option>
-                }
-              </mat-select>
+                <mat-label>Loại Đơn</mat-label>
+                <mat-select [(ngModel)]="SearchParams.Type" [ngModelOptions]="{standalone: true}"
+                    (selectionChange)="onSelectionChange($event)">
+                    @for (item of [
+                    {id:1,Title:'Đơn Sỉ',value:'donsi'},
+                    {id:2,Title:'Đơn Lẻ',value:'donle'},
+                    ]; track item) {
+                    <mat-option [value]="item.value">{{item.Title}}</mat-option>
+                    }
+                </mat-select>
             </mat-form-field>
-  
+
             <!-- <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
               <mat-label>Chọn Thời Gian</mat-label>
               <mat-select [(ngModel)]="Chonthoigian" [ngModelOptions]="{standalone: true}"
@@ -80,20 +89,22 @@
               </mat-select>
             </mat-form-field> -->
             <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Bắt Đầu</mat-label>
-              <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau" [(ngModel)]="SearchParams.Batdau" [ngModelOptions]="{standalone: true}">
-              <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau"></mat-datepicker-toggle>
-              <mat-datepicker #pickerBatdau></mat-datepicker>
+                <mat-label>Bắt Đầu</mat-label>
+                <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau"
+                    [(ngModel)]="SearchParams.Batdau" [ngModelOptions]="{standalone: true}">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau"></mat-datepicker-toggle>
+                <mat-datepicker #pickerBatdau></mat-datepicker>
             </mat-form-field>
-  
-            <mat-form-field  [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Kết Thúc</mat-label>
-              <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerKetthuc" [(ngModel)]="SearchParams.Ketthuc" [ngModelOptions]="{standalone: true}">
-              <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
-              <mat-datepicker #pickerKetthuc></mat-datepicker>
+
+            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+                <mat-label>Kết Thúc</mat-label>
+                <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerKetthuc"
+                    [(ngModel)]="SearchParams.Ketthuc" [ngModelOptions]="{standalone: true}">
+                <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
+                <mat-datepicker #pickerKetthuc></mat-datepicker>
             </mat-form-field>
-          </div>
-          <!-- <div class="flex flex-row space-x-2">
+        </div>
+        <!-- <div class="flex flex-row space-x-2">
             <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button>
             <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Phiếu Chia</button>
           </div> -->
@@ -105,54 +116,62 @@
                         <span class="max-w-40 line-clamp-4 me-4">
                             {{ ColumnName[column] }}
                         </span>
-                             <span class="z-10 material-symbols-outlined text-gray-500" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
-                                 filter_alt
-                             </span>
-                                    <mat-menu  #menu="matMenu">
-                                        <div (click)="$event.stopPropagation()"  class="cursor-pointer flex flex-col space-y-4 p-3">                                        
-                                        <div class="relative w-full">
-                                            <input type="text"
-                                                placeholder="Tìm Kiếm..." (keyup)="doFilterHederColumn($event,column)"
-                                                class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
-                                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                <span class="material-symbols-outlined text-gray-500">search</span>
-                                            </div>
-                                        </div>
-                                        <div class="flex flex-row space-x-2 items-center justify-between">
-                                            <div class="flex flex-row space-x-2 items-center">
-                                                <span class="text-xs text-blue-600 underline" (click)="ChosenAll(FilterHederColumn(dataSource.filteredData,column))">Chọn Tất Cả {{FilterHederColumn(dataSource.filteredData,column).length||0}}</span>
-                                                <span class="text-xs text-blue-600 underline" (click)="EmptyFiter()">Xoá</span>
-                                            </div>
-   
-                                            <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
-                                        </div>
-                                        <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
-                                                <div *ngFor="let item of FilterHederColumn(dataSource.filteredData,column); trackBy:trackByFn" (click)="ChosenItem(item,column)" class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
-                                                   <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>
-                                                   @switch (column) {
-                                                       @case ('createdAt') {
-                                                        <span>{{item[column]|date:'dd/MM/yyyy'}}</span> 
-                                                       }
-                                                       @case ('updatedAt') {
-                                                        <span>{{item[column]|date:'dd/MM/yyyy'}}</span> 
-                                                       }
-                                                       @case ('haohut') {
-                                                        <span>{{item[column]}}%</span> 
-                                                       }
-                                                       @default {
-                                                       <span> {{item[column]||'Trống'}}</span>
-                                                       }
-                                                     }
-                                               
- 
-                                                </div>
-                                        </div>
-                                        <div class="flex flex-row space-x-2 items-end justify-end">
-                                            <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
-                                            <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)" >Áp Dụng</button>
-                                        </div>
-                                        </div>
-                                    </mat-menu>
+                        <span class="z-10 material-symbols-outlined text-gray-500" [matMenuTriggerFor]="menu"
+                            #menuTrigger="matMenuTrigger">
+                            filter_alt
+                        </span>
+                        <mat-menu #menu="matMenu">
+                            <div (click)="$event.stopPropagation()" class="cursor-pointer flex flex-col space-y-4 p-3">
+                                <div class="relative w-full">
+                                    <input type="text" placeholder="Tìm Kiếm..."
+                                        (keyup)="doFilterHederColumn($event,column)"
+                                        class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                        <span class="material-symbols-outlined text-gray-500">search</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-row space-x-2 items-center justify-between">
+                                    <div class="flex flex-row space-x-2 items-center">
+                                        <span class="text-xs text-blue-600 underline"
+                                            (click)="ChosenAll(FilterHederColumn(dataSource.filteredData,column))">Chọn
+                                            Tất Cả
+                                            {{FilterHederColumn(dataSource.filteredData,column).length||0}}</span>
+                                        <span class="text-xs text-blue-600 underline" (click)="EmptyFiter()">Xoá</span>
+                                    </div>
+
+                                    <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
+                                </div>
+                                <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
+                                    <div *ngFor="let item of FilterHederColumn(dataSource.filteredData,column); trackBy:trackByFn"
+                                        (click)="ChosenItem(item,column)"
+                                        class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
+                                        <span *ngIf="CheckItem(item)"
+                                            class="material-symbols-outlined text-blue-600">check</span>
+                                        @switch (column) {
+                                        @case ('createdAt') {
+                                        <span>{{item[column]|date:'dd/MM/yyyy'}}</span>
+                                        }
+                                        @case ('updatedAt') {
+                                        <span>{{item[column]|date:'dd/MM/yyyy'}}</span>
+                                        }
+                                        @case ('haohut') {
+                                        <span>{{item[column]}}%</span>
+                                        }
+                                        @default {
+                                        <span> {{item[column]||'Trống'}}</span>
+                                        }
+                                        }
+
+
+                                    </div>
+                                </div>
+                                <div class="flex flex-row space-x-2 items-end justify-end">
+                                    <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
+                                    <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)">Áp
+                                        Dụng</button>
+                                </div>
+                            </div>
+                        </mat-menu>
                     </th>
                     <td mat-cell *matCellDef="let row; let idx = index">
                         @switch (column) {
@@ -163,7 +182,7 @@
                         </span>
                         }
                         @case ('madonhang') {
-                        <span  class="max-w-40 line-clamp-4 font-bold text-blue-700">
+                        <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
                             {{ row[column] }}
                         </span>
                         }
@@ -188,8 +207,7 @@
                         </span>
                         }
                         @case ('status') {
-                        <span class="max-w-40 line-clamp-4 font-bold"
-                                  [ngClass]="{
+                        <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
                           'text-blue-500': row[column] === 'dadat',
                           'text-yellow-500': row[column] === 'dagiao',
                           'text-green-500': row[column] === 'danhan',
@@ -225,25 +243,21 @@
                 </ng-container>
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="goToDetail(row);" class="{{row.printCount>0?'!bg-gray-100':''}}"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="AddToEdit(row)"
+                    class="hover:bg-slate-100 {{CheckItemInEdit(row)?'!bg-slate-200':''}}"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
             </table>
         </div>
-       
-        <app-sharepagination
-            [pageSize]="pageSize()"
-            [page]="page()"
-            [total]="total()"
-            [pageCount]="pageCount()"
-            (emitChange)="onPageChange($event)"
-            >
+
+        <app-sharepagination [pageSize]="pageSize()" [page]="page()" [total]="total()" [pageCount]="pageCount()"
+            (emitChange)="onPageChange($event)">
         </app-sharepagination>
 
 
 
- <!-- <div class="cursor-pointer border rounded-lg px-3 p-1 flex flex-row space-x-2 items-center justify-between">
+        <!-- <div class="cursor-pointer border rounded-lg px-3 p-1 flex flex-row space-x-2 items-center justify-between">
       <div
         class="w-full flex lg:p-0 p-2 lg:flex-row lg:space-x-2 lg:items-center lg:justify-between flex-col justify-center">
         <span class="w-full text-center">Đang Xem <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> -
@@ -276,7 +290,7 @@
         </div>
       </div>
     </div>  -->
-        
+
         <!-- <mat-paginator [length]="Listdonhang().total" [pageSize]="Listdonhang().pageSize" [pageIndex]="Listdonhang().pageIndex" [pageSizeOptions]="[10]" (page)="onPageChange($event)"></mat-paginator> -->
     </div>
 </mat-drawer-container>
@@ -284,143 +298,169 @@
 
 
 <ng-template #dialogCreateTemplate>
-    <h2 mat-dialog-title>Phiếu Chia Hàng     
+    <h2 mat-dialog-title>Phiếu Chia Hàng
         <button mat-icon-button color="primary" (click)="printContent()">
-        <mat-icon>print</mat-icon>
-      </button></h2>
+            <mat-icon>print</mat-icon>
+        </button>
+    </h2>
     <mat-dialog-content>
-     <div class="lg:min-w-[400px] w-full h-full flex flex-col space-y-8 items-center p-4">
-        <div class="relative overflow-x-auto sm:rounded-lg">
-            <table id="printContent" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="border text-xs text-gray-700 uppercase dark:text-gray-400">
-                    <tr>
-                        <th scope="col" class="border px-6 py-3 bg-gray-50 dark:bg-gray-800">
-                            Mô tả
-                        </th>
-                        <th scope="col" class="border px-6 py-3">
-                            Đơn vị
-                        </th>
-                        <th *ngFor="let kh of Phieuchia" scope="col" class="border px-6 py-3 bg-gray-50 dark:bg-gray-800">
-                            {{ kh.name }}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let product of getUniqueProducts()" class="border border-gray-200 dark:border-gray-700">
-                        <th scope="row" class="border px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800">
-                            {{ product }}
-                        </th>
-                        <td class="border px-6 py-4">
-                            {{ getDvtForProduct(product) }}
-                        </td>
-                        <td class="border px-6 py-4 bg-gray-50 dark:bg-gray-800" *ngFor="let kh of Phieuchia">
-                            {{ getProductQuantity(product, kh.makh)||0 }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>            
-     </div>
+        <div class="lg:min-w-[400px] w-full h-full flex flex-col space-y-8 items-center p-4">
+            <div class="relative overflow-x-auto sm:rounded-lg">
+                <table id="printContent"
+                    class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                    <thead class="border text-xs text-gray-700 uppercase dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="border px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                                Mô tả
+                            </th>
+                            <th scope="col" class="border px-6 py-3">
+                                Đơn vị
+                            </th>
+                            <th *ngFor="let kh of Phieuchia" scope="col"
+                                class="border px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                                {{ kh.name }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let product of getUniqueProducts()"
+                            class="border border-gray-200 dark:border-gray-700">
+                            <th scope="row"
+                                class="border px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800">
+                                {{ product }}
+                            </th>
+                            <td class="border px-6 py-4">
+                                {{ getDvtForProduct(product) }}
+                            </td>
+                            <td class="border px-6 py-4 bg-gray-50 dark:bg-gray-800" *ngFor="let kh of Phieuchia">
+                                {{ getProductQuantity(product, kh.makh)||0 }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </mat-dialog-content>
     <mat-dialog-actions [align]="'end'">
-      <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
-      <button mat-flat-button color="primary" (click)="create()">Tạo</button>
+        <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
+        <button mat-flat-button color="primary" (click)="create()">Tạo</button>
     </mat-dialog-actions>
-  </ng-template>
+</ng-template>
 
 <ng-template #dialogImportExcel>
     <mat-dialog-content class="!max-h-[90vh] h-[90vh]">
-     <div class="h-full flex flex-col items-center lg:p-4">
-        {{ ListImportExcel.length }} Đơn Hàng
-        <mat-tab-group>
-            @for (item of ListImportExcel; track item) {
-              <mat-tab [label]="item.title"> 
-                {{item.data.length}} Sản phẩm
-                <div class="relative overflow-x-auto sm:rounded-lg mt-2">
-                    <table class="text-sm text-left rtl:text-right text-gray-500">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                            <tr>
-                                <th scope="col" class="p-2">Mã Sản Phẩm</th>
-                                <th scope="col" class="p-2">SL Đặt</th>
-                                <th scope="col" class="p-2">SL Giao</th>
-                                <th scope="col" class="p-2">SL Nhận</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let product of item.data" class="bg-white border-b hover:bg-gray-50">
-                                <td class="p-2">{{ product.masp }}</td>
-                                <td class="p-2 text-end">{{ product.sldat }}</td>
-                                <td class="p-2 text-end">{{ product.slgiao }}</td>
-                                <td class="p-2 text-end">{{ product.slnhan }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-              </mat-tab>
-            }
-          </mat-tab-group>
-     </div>
+        <div class="h-full flex flex-col items-center lg:p-4">
+            {{ ListImportExcel.length }} Đơn Hàng
+            <mat-tab-group>
+                @for (item of ListImportExcel; track item) {
+                <mat-tab [label]="item.title">
+                    {{item.data.length}} Sản phẩm
+                    <div class="relative overflow-x-auto sm:rounded-lg mt-2">
+                        <table class="text-sm text-left rtl:text-right text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="p-2">Mã Sản Phẩm</th>
+                                    <th scope="col" class="p-2">SL Đặt</th>
+                                    <th scope="col" class="p-2">SL Giao</th>
+                                    <th scope="col" class="p-2">SL Nhận</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let product of item.data" class="bg-white border-b hover:bg-gray-50">
+                                    <td class="p-2">{{ product.masp }}</td>
+                                    <td class="p-2 text-end">{{ product.sldat }}</td>
+                                    <td class="p-2 text-end">{{ product.slgiao }}</td>
+                                    <td class="p-2 text-end">{{ product.slnhan }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </mat-tab>
+                }
+            </mat-tab-group>
+        </div>
     </mat-dialog-content>
     <mat-dialog-actions [align]="'end'">
-      <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
-      <button mat-flat-button color="primary" (click)="create()">Tạo</button>
+        <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
+        <button mat-flat-button color="primary" (click)="create()">Tạo</button>
     </mat-dialog-actions>
-  </ng-template>
-  
+</ng-template>
+
 <ng-template #dialogImportExcelCu>
-<h2 mat-dialog-title>Import Đơn Hàng</h2>
-<mat-dialog-content class="mat-typography">
-           <div class="w-full">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 shadow-md rounded-lg">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Khách hàng</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Name</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên Không Dấu</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr *ngFor="let detail of statusDetails">
-                                <td *ngIf="detail.fileName !== 'Overall'" class="px-6 py-4 whitespace-nowrap text-gray-900">
-                                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                                      <mat-label>Khách Hàng</mat-label>
-                                      <mat-select (selectionChange)="SelectKhachhang(detail,$event)">
+    <h2 mat-dialog-title>Import Đơn Hàng</h2>
+    <mat-dialog-content class="mat-typography">
+        <div class="w-full">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 shadow-md rounded-lg">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Khách hàng</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                File Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tên Không Dấu</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Message</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr *ngFor="let detail of statusDetails">
+                            <td *ngIf="detail.fileName !== 'Overall'" class="px-6 py-4 whitespace-nowrap text-gray-900">
+                                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                    <mat-label>Khách Hàng</mat-label>
+                                    <mat-select (selectionChange)="SelectKhachhang(detail,$event)">
                                         <div class="w-full flex flex-col">
-                                          <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
-                                            <input matInput (input)="DoFindKhachhang($event)" placeholder="Tìm Kiếm" />
-                                          </mat-form-field>
-                                          <div class="overflow-y-auto max-h-44">
-                                            @for (item of FilterKhachhang; track item.id) {
-                                            <mat-option [value]="item.id">{{item.name}}</mat-option>
-                                            }
-                                          </div>
+                                            <mat-form-field appearance="outline" class="w-full p-2"
+                                                subscriptSizing="dynamic">
+                                                <input matInput (input)="DoFindKhachhang($event)"
+                                                    placeholder="Tìm Kiếm" />
+                                            </mat-form-field>
+                                            <div class="overflow-y-auto max-h-44">
+                                                @for (item of FilterKhachhang; track item.id) {
+                                                <mat-option [value]="item.id">{{item.name}}</mat-option>
+                                                }
+                                            </div>
                                         </div>
-                                      </mat-select>    
-                                    </mat-form-field>
-                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ detail.fileName }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ detail.tenkhongdau }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span [ngClass]="{
+                                    </mat-select>
+                                </mat-form-field>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ detail.fileName }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ detail.tenkhongdau }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <span [ngClass]="{
                                         'text-green-600 font-semibold': detail.status === 'Processed' || detail.status === 'Success',
                                         'text-yellow-600 font-semibold': detail.status === 'Skipped'
                                     }">
-                                        {{ detail.status }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ detail.message }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                    {{ detail.status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ detail.message }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-flat-button color="warn" mat-dialog-close>Đóng</button>
-  <button mat-flat-button color="primary" (click)="DoImportKhachhangCu()">Cập Nhật</button>
-</mat-dialog-actions>
+        </div>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-flat-button color="warn" mat-dialog-close>Đóng</button>
+        <button mat-flat-button color="primary" (click)="DoImportKhachhangCu()">Cập Nhật</button>
+    </mat-dialog-actions>
 
-  </ng-template>
+</ng-template>
+
+
+<ng-template #DeleteDialog>
+  <mat-dialog-content>
+    <div class="flex flex-col space-y-8 items-center justify-center">
+      <div class="font-bold">Xác Nhận</div>
+      <div>Bạn chắc chắn muốn xoá không?</div>
+      <div class="flex flex-row space-x-2 items-center justify-center">
+        <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
+        <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
+      </div>
+    </div>
+  </mat-dialog-content>
+</ng-template>

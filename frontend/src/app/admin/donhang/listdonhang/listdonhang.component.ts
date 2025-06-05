@@ -574,8 +574,7 @@ export class ListDonhangComponent {
   }
   async DoImportKhachhangCu() {
     try {
-
-      const invalidItems = this.ListImportData.filter(item => 
+      const invalidItems = this.ListImportData.filter(item =>
         !item.ItemCode || !item.Quantity || !item.khachhangId
       );
       if (invalidItems.length > 0) {
@@ -586,10 +585,10 @@ export class ListDonhangComponent {
           `Các item sau không đủ dữ liệu : ${invalidFiles.join(', ')}`,
           '',
           {
-        duration: 5000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error']
+            duration: 5000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error']
           }
         );
         return;
@@ -609,8 +608,19 @@ export class ListDonhangComponent {
         status: 'Error',
         message: importError.message
       });
+      return;
     }
-    console.log('importData', this.ListImportData);
+    this._snackBar.open('Nhập đơn hàng thành công', '', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+
+    // Close the dialog 5 seconds after import success
+    setTimeout(() => {
+      this.dialog.closeAll();
+    }, 5000);
   }
 
   async ImporDonhang(items: any[]): Promise<void> {
@@ -777,10 +787,41 @@ DoFindKhachhang(event:any){
     removeVietnameseAccents(v.makhold).includes(value.toLowerCase())
   );
 }
-
-
-
-
+EditList:any=[];
+AddToEdit(item: any): void {
+  const existingItem = this.EditList.find((v: any) => v.id === item.id);
+  if (existingItem) {
+    this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
+  } else {
+    this.EditList.push(item);
+  }
+}
+CheckItemInEdit(item: any): boolean {
+  return this.EditList.some((v: any) => v.id === item.id);
+}
+openDeleteDialog(template: TemplateRef<any>) {
+     const dialogDeleteRef = this.dialog.open(template, {
+       hasBackdrop: true,
+       disableClose: true,
+     });
+     dialogDeleteRef.afterClosed().subscribe((result) => {
+       if (result=="true") {
+         this.DeleteListItem();
+       }
+     });
+ }
+ DeleteListItem(): void {
+   this.EditList.forEach((item: any) => {
+     this._DonhangService.DeleteDonhang(item);
+   });
+   this.EditList = [];
+   this._snackBar.open('Xóa Thành Công', '', {
+     duration: 1000,
+     horizontalPosition: 'end',
+     verticalPosition: 'top',
+     panelClass: ['snackbar-success'],
+   });  
+ }
 
 }
 

@@ -259,9 +259,7 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter/searc
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-success'],
-      });
-  
-  
+      });  
     }
     AddToEdit(item: any): void {
       const existingItem = this.EditList.find((v: any) => v.id === item.id);
