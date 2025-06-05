@@ -33,7 +33,10 @@ export declare class DonhangController {
         khachhangId: string;
         printCount: number | null;
     }>;
-    ImportDonhangOld(data: any): Promise<void>;
+    ImportDonhangOld(data: any): Promise<{
+        success: number;
+        fail: number;
+    }>;
     ImportDonhang(data: any): Promise<{
         success: number;
         fail: number;

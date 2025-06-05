@@ -5,10 +5,32 @@ git push
 
 # server
 ssh root@116.118.49.243 
-ssh-copy-id root@116.118.49.243
+### Tạo Cấu Hình
+ssh-keygen -t rsa -b 4096
+ssh-copy-id root@<địa-chỉ-máy-chủ>
+
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+
+nano ~/.ssh/config
+
+Host myserver
+HostName <địa-chỉ-máy-chủ>
+User root
+IdentityFile ~/.ssh/id_rsa
+
+sudo apt install expect
+
+#!/usr/bin/expect
+spawn ssh root@<địa-chỉ-máy-chủ>
+expect "password:"
+send "mật-khẩu\n"
+interact
+
 chmod +x autologin.sh
 ./autologin.sh
 
+# Github
 git pull
 docker compose -f 'docker-compose.yml' up -d --build
 docker compose -f 'docker-compose.yml' up -d --build 'ferausach'

@@ -343,7 +343,10 @@ export declare class DonhangService {
         khachhangId: string;
         printCount: number | null;
     }>;
-    ImportDonhangOld(dulieu: any): Promise<void>;
+    ImportDonhangOld(dulieu: any): Promise<{
+        success: number;
+        fail: number;
+    }>;
     ImportDonhang(data: any): Promise<{
         success: number;
         fail: number;

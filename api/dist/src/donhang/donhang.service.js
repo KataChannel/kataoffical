@@ -362,11 +362,13 @@ let DonhangService = class DonhangService {
         return result;
     }
     async ImportDonhangOld(dulieu) {
-        const data = await Promise.all(dulieu.map(async (v) => {
+        let data = await Promise.all(dulieu.map(async (v) => {
             const ngaygiao = moment().toDate();
-            const khachhangRecord = await this.prisma.khachhang.findFirst({ where: { id: v.khachhangId } });
-            const banggiaRecord = await this.prisma.banggia.findFirst({ where: { mabanggia: v.mabanggia } });
-            const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: v.ItemCode } });
+            const [khachhangRecord, banggiaRecord, sanphamRecord] = await Promise.all([
+                this.prisma.khachhang.findFirst({ where: { id: v.khachhangId } }),
+                this.prisma.banggia.findFirst({ where: { mabanggia: v.mabanggia } }),
+                this.prisma.sanpham.findFirst({ where: { masp: v.ItemCode } }),
+            ]);
             if (!khachhangRecord || !banggiaRecord || !sanphamRecord) {
                 return null;
             }
@@ -381,7 +383,73 @@ let DonhangService = class DonhangService {
                 ghichu: v.ghichu || '',
             };
         }));
-        console.log(data);
+        data = (await Promise.all(data.map(async (d) => {
+            if (!d)
+                return null;
+            const exists = await this.prisma.donhang.findFirst({
+                where: { ngaygiao: d.ngaygiao, khachhang: { makh: d.makh } },
+            });
+            if (exists) {
+                console.log(`Skipping import for customer ${d.makh} on ${d.ngaygiao}`);
+                return null;
+            }
+            return d;
+        }))).filter(Boolean);
+        const acc = {};
+        for (const curr of data) {
+            if (!acc[curr.makh]) {
+                const khachhang = await this.prisma.khachhang.findFirst({ where: { makh: curr.makh } });
+                acc[curr.makh] = {
+                    title: `Import ${moment().format('DD_MM_YYYY')}`,
+                    ngaygiao: curr.ngaygiao,
+                    makh: curr.makh,
+                    khachhangId: khachhang?.id,
+                    name: khachhang?.name,
+                    mabanggia: curr.mabanggia,
+                    sanpham: [],
+                    khachhang: {
+                        makh: curr.makh,
+                    },
+                };
+            }
+            const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: curr.masp } });
+            acc[curr.makh].sanpham.push({
+                masp: curr.masp,
+                id: sanphamRecord?.id,
+                sldat: Number(curr.sldat),
+                slgiao: Number(curr.slgiao),
+                slnhan: Number(curr.slnhan),
+                ghichu: curr.ghichu,
+            });
+        }
+        const convertData = Object.values(acc);
+        let success = 0;
+        let fail = 0;
+        for (const element of convertData) {
+            try {
+                await this.create(element);
+                success++;
+            }
+            catch (error) {
+                console.error('Error importing order:', error);
+                await this.prisma.importHistory.create({
+                    data: {
+                        codeId: element.madonhang,
+                        title: element.title,
+                        type: 'donhang',
+                        caseDetail: {
+                            errorMessage: error.message,
+                            errorStack: error.stack,
+                            additionalInfo: 'Failed during donhang import process',
+                        },
+                        order: 1,
+                        createdBy: 'system',
+                    },
+                });
+                fail++;
+            }
+        }
+        return { success, fail };
     }
     async ImportDonhang(data) {
         const acc = {};
