@@ -16,92 +16,94 @@ exports.SettingController = void 0;
 const common_1 = require("@nestjs/common");
 const setting_service_1 = require("./setting.service");
 const swagger_1 = require("@nestjs/swagger");
-const passport_1 = require("@nestjs/passport");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const audit_decorator_1 = require("../auditlog/audit.decorator");
+const client_1 = require("@prisma/client");
 let SettingController = class SettingController {
     constructor(settingService) {
         this.settingService = settingService;
     }
     async create(data) {
         try {
-            const result = await this.settingService.create(data);
-            return { statusCode: common_1.HttpStatus.CREATED, data: result };
+            return await this.settingService.create(data);
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Create setting failed', common_1.HttpStatus.BAD_REQUEST);
+            throw new common_1.HttpException(error.message || 'Create failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async findby(param) {
         try {
-            const result = await this.settingService.findBy(param);
-            return { statusCode: common_1.HttpStatus.OK, data: result };
+            return await this.settingService.findBy(param);
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Find settings failed', common_1.HttpStatus.BAD_REQUEST);
+            throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async findAll() {
+    async findAll(page = '1', limit = '10') {
         try {
-            const result = await this.settingService.findAll();
-            return { statusCode: common_1.HttpStatus.OK, data: result };
+            const pageNum = parseInt(page, 10);
+            const limitNum = parseInt(limit, 10);
+            if (isNaN(pageNum) || pageNum < 1) {
+                throw new common_1.HttpException('Page must be a positive integer', common_1.HttpStatus.BAD_REQUEST);
+            }
+            if (isNaN(limitNum) || limitNum < 1) {
+                throw new common_1.HttpException('Limit must be a positive integer', common_1.HttpStatus.BAD_REQUEST);
+            }
+            return await this.settingService.findAll(pageNum, limitNum);
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Get all settings failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException(error.message || 'Failed to fetch settings', error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async getLastUpdatedSetting() {
         try {
-            const result = await this.settingService.getLastUpdatedSetting();
-            return { statusCode: common_1.HttpStatus.OK, data: result };
+            return await this.settingService.getLastUpdatedSetting();
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Get last updated setting failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.HttpException(error.message || 'Get last updated failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async findOne(id) {
         try {
-            const result = await this.settingService.findOne(id);
-            if (!result) {
-                throw new common_1.HttpException('Setting not found', common_1.HttpStatus.NOT_FOUND);
-            }
-            return { statusCode: common_1.HttpStatus.OK, data: result };
+            return await this.settingService.findOne(id);
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Find setting by ID failed', error.status || common_1.HttpStatus.BAD_REQUEST);
+            throw new common_1.HttpException(error.message || 'Find one failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async update(id, data) {
         try {
-            const result = await this.settingService.update(id, data);
-            return { statusCode: common_1.HttpStatus.OK, data: result };
+            return await this.settingService.update(id, data);
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Update setting failed', common_1.HttpStatus.BAD_REQUEST);
+            throw new common_1.HttpException(error.message || 'Update failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async remove(id) {
         try {
-            const result = await this.settingService.remove(id);
-            return { statusCode: common_1.HttpStatus.OK, data: result };
+            return await this.settingService.remove(id);
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Delete setting failed', common_1.HttpStatus.BAD_REQUEST);
+            throw new common_1.HttpException(error.message || 'Delete failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async reorder(body) {
         try {
-            const result = await this.settingService.reorderSettings(body.settingIds);
-            return { statusCode: common_1.HttpStatus.OK, data: result };
+            return await this.settingService.reorderSettings(body.settingIds);
         }
         catch (error) {
-            throw new common_1.HttpException(error.message || 'Reorder settings failed', common_1.HttpStatus.BAD_REQUEST);
+            throw new common_1.HttpException(error.message || 'Reorder failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 };
 exports.SettingController = SettingController;
 __decorate([
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new setting' }),
     (0, swagger_1.ApiBody)({ type: Object }),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
+    (0, audit_decorator_1.Audit)({ entity: 'Setting', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -117,10 +119,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SettingController.prototype, "findby", null);
 __decorate([
-    (0, swagger_1.ApiOperation)({ summary: 'Get all settings' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all settings with pagination' }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Number of items per page (default: 10)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of settings with pagination info' }),
+    (0, swagger_1.ApiResponse)({ status: 500, description: 'Internal server error' }),
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], SettingController.prototype, "findAll", null);
 __decorate([
@@ -140,10 +148,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SettingController.prototype, "findOne", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Update a setting' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: String }),
     (0, swagger_1.ApiBody)({ type: Object }),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Setting', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -154,8 +165,9 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Delete a setting' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: String }),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Setting', action: client_1.AuditAction.DELETE }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -163,7 +175,13 @@ __decorate([
 ], SettingController.prototype, "remove", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Reorder settings' }),
-    (0, swagger_1.ApiBody)({ schema: { properties: { settingIds: { type: 'array', items: { type: 'string' } } } } }),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            properties: {
+                settingIds: { type: 'array', items: { type: 'string' } },
+            },
+        },
+    }),
     (0, common_1.Post)('reorder'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),

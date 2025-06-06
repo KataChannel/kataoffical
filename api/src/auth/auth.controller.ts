@@ -2,6 +2,8 @@ import { Controller, Post, Body, UseGuards, Req, Get, Res, HttpException, HttpSt
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
+import { Audit } from 'src/auditlog/audit.decorator';
+import { AuditAction } from '@prisma/client';
 
 @Controller('auth')
 export class AuthController {
@@ -35,14 +37,8 @@ export class AuthController {
     const token = req.user.token;
     return res.redirect(`${process.env.BASE_URL}/oauth-callback?token=${token}`);
   }
-
-
-
-  // @Post('register')
-  // register(@Body() body: { email: string; password: string; name: string }) {
-  //   return this.authService.register(body.email, body.password);
-  // }
   @Post('register')
+  @Audit({ entity: 'Auth Register', action: AuditAction.CREATE, includeResponse: true })
   async register(@Body() data: any) {
     try {
       const user = await this.authService.register(data, data.affiliateCode);
@@ -52,12 +48,14 @@ export class AuthController {
     }
   }
   @Post('login')
+  @Audit({ entity: 'Auth Login', action: AuditAction.LOGIN, includeResponse: true })
   login(@Body() body: {SDT:string; email: string; password: string }) {
     return this.authService.login(body.SDT, body.email, body.password);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('change-password')
+  @Audit({ entity: 'Auth Change Password', action: AuditAction.UPDATE, includeResponse: true })
   async changePassword(
     @Req() req,
     @Body() body: { newpass: string; oldpass: string },
@@ -68,6 +66,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('random-password')
+  @Audit({ entity: 'Auth Random Password', action: AuditAction.CREATE, includeResponse: true })
   async randomPassword(@Req() req) {
     return this.authService.generateRandomPassword(req.user.id);
   }

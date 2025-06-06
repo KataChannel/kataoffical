@@ -2,44 +2,43 @@
   <button mat-icon-button color="primary" (click)="goBack()">
     <mat-icon>arrow_back</mat-icon>
   </button>
-  <div class="font-bold">{{ DetailSetting()?.title || 'Không có dữ liệu' }}</div>
+  <div class="font-bold">{{ DetailSetting()?.codeId || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
-    <mat-slide-toggle [(ngModel)]="DetailSetting().isActive" [disabled]="!isEdit()">{{DetailSetting().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleSettingAction()">
       <mat-icon>save</mat-icon>
     </button>
     <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
-    <!-- <button mat-icon-button color="warn" (click)="toggleDelete()">
-      <mat-icon>delete</mat-icon>
-    </button> -->
   </div>
 </div>
 
 <div class="relative flex flex-col w-full p-4 overflow-auto">
-    <div class="w-full grid lg:grid-cols-2 gap-4">
-      <mat-form-field appearance="outline">
-        <mat-label>Tiêu Đề
-          {{DetailSetting().title}}
-        </mat-label>
+    <div class="grid grid-cols-1 gap-4">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Tiêu Đề</mat-label>
         <input matInput [(ngModel)]="DetailSetting().title" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
       </mat-form-field>
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Key</mat-label>
-        <input matInput [(ngModel)]="DetailSetting().key" [disabled]="!isEdit()" placeholder="Vui lòng nhập Key (ví dụ: 'maintenanceMode', 'welcomeMessage', 'maxUploadSize')"/>
+        <input matInput [(ngModel)]="DetailSetting().key" [disabled]="!isEdit()" placeholder="Vui lòng nhập Key"/>
       </mat-form-field>
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Value</mat-label>
-        <input matInput [(ngModel)]="DetailSetting().value" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giá trị"/>
+        <textarea matInput [(ngModel)]="DetailSetting().value" [disabled]="!isEdit()" placeholder="Vui lòng nhập Value"></textarea>
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Loại</mat-label>
-        <input matInput [(ngModel)]="DetailSetting().type" [disabled]="!isEdit()" placeholder="Vui lòng nhập Loại (ví dụ: 'string', 'boolean', 'number', 'json')"/>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Type</mat-label>
+        <mat-select [(ngModel)]="DetailSetting().type" [disabled]="!isEdit()">  
+          <mat-option value="string">String</mat-option>
+          <mat-option value="boolean">Boolean</mat-option>
+          <mat-option value="number">Number</mat-option>
+          <mat-option value="json">JSON</mat-option>
+        </mat-select>
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Mô tả</mat-label>
-        <input matInput [(ngModel)]="DetailSetting().description" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mô tả"/>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Mô Tả</mat-label>
+        <textarea matInput [(ngModel)]="DetailSetting().description" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mô Tả"></textarea>
       </mat-form-field>
-     </div>  
+    </div>
 </div>

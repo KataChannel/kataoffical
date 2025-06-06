@@ -17,6 +17,8 @@ const common_1 = require("@nestjs/common");
 const banggia_service_1 = require("./banggia.service");
 const swagger_1 = require("@nestjs/swagger");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const client_1 = require("@prisma/client");
+const audit_decorator_1 = require("../auditlog/audit.decorator");
 let BanggiaController = class BanggiaController {
     constructor(banggiaService) {
         this.banggiaService = banggiaService;
@@ -101,6 +103,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: Object }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
+    (0, audit_decorator_1.Audit)({ entity: 'Create Bang Gia', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -151,6 +154,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: Object }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Update Bang Gia', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -163,6 +167,7 @@ __decorate([
     (0, swagger_1.ApiParam)({ name: 'id', type: String }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Delete Bang Gia', action: client_1.AuditAction.DELETE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

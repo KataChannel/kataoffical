@@ -11,8 +11,8 @@ datasource postgres {
 
 model AuditLog {
   id            String          @id @default(uuid())
-  entityName    String          // Tên entity (User, Product, Order...)
-  entityId      String          // ID của entity
+  entityName    String?          // Tên entity (User, Product, Order...)
+  entityId      String?          // ID của entity
   action        AuditAction     // CREATE, UPDATE, DELETE
   userId        String?         // User thực hiện action
   user          User?          @relation(fields: [userId], references: [id])
@@ -39,6 +39,7 @@ enum AuditAction {
   LOGIN
   LOGOUT
   ACCESS
+  IMPORT
 }
 
 enum Gender {

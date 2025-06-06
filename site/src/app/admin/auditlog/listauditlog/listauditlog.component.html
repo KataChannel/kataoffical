@@ -105,8 +105,8 @@
             }
             @case ('user') {
             <span class="max-w-40 line-clamp-4">
-              {{ row[column].name}}
-              {{ row[column].email}}
+              {{ row[column]?.name}}
+              {{ row[column]?.email}}
             </span>
             }
             @case ('isActive') {

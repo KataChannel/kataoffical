@@ -151,7 +151,7 @@ export class ListAuditlogComponent implements OnInit {
   FilterHederColumn(list: any, column: any) {
     const uniqueList = list.filter((obj: any, index: number, self: any) => 
       index === self.findIndex((t: any) => t[column] === obj[column])
-    );
+    );    
     return uniqueList;
   }
 
@@ -163,26 +163,26 @@ export class ListAuditlogComponent implements OnInit {
   }
 
   ListFilter: any[] = [];
-  ChosenItem(item: any, column: any) {
-    const CheckItem = this.dataSource.filteredData.filter((v: any) => v[column] === item[column]);
-    const CheckItem1 = this.ListFilter.filter((v: any) => v[column] === item[column]);
-    if (CheckItem1.length > 0) {
-      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
-    } else {
-      this.ListFilter = [...this.ListFilter, ...CheckItem];
-    }
-  }
+  // ChosenItem(item: any, column: any) {
+  //   const CheckItem = this.dataSource.filteredData.filter((v: any) => v[column] === item[column]);
+  //   const CheckItem1 = this.ListFilter.filter((v: any) => v[column] === item[column]);
+  //   if (CheckItem1.length > 0) {
+  //     this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
+  //   } else {
+  //     this.ListFilter = [...this.ListFilter, ...CheckItem];
+  //   }
+  // }
 
-  ChosenAll(list: any) {
-    list.forEach((v: any) => {
-      const CheckItem = this.ListFilter.find((v1) => v1.id === v.id) ? true : false;
-      if (CheckItem) {
-        this.ListFilter = this.ListFilter.filter((v1) => v1.id !== v.id);
-      } else {
-        this.ListFilter.push(v);
-      }
-    });
-  }
+  // ChosenAll(list: any) {
+  //   list.forEach((v: any) => {
+  //     const CheckItem = this.ListFilter.find((v1) => v1.id === v.id) ? true : false;
+  //     if (CheckItem) {
+  //       this.ListFilter = this.ListFilter.filter((v1) => v1.id !== v.id);
+  //     } else {
+  //       this.ListFilter.push(v);
+  //     }
+  //   });
+  // }
 
   ResetFilter() {
     this.ListFilter = this.Listauditlog();
@@ -192,9 +192,9 @@ export class ListAuditlogComponent implements OnInit {
     this.ListFilter = [];
   }
 
-  CheckItem(item: any) {
-    return this.ListFilter.find((v) => v.id === item.id) ? true : false;
-  }
+  // CheckItem(item: any) {
+  //   return this.ListFilter.find((v) => v.id === item.id) ? true : false;
+  // }
 
   ApplyFilterColum(menu: any) {
     this.dataSource.data = this.Listauditlog().filter((v: any) => 
@@ -206,6 +206,8 @@ export class ListAuditlogComponent implements OnInit {
   }
 
   onOutFilter(event: any) {
+    console.log('OutFilter', event);
+    
     this.dataSource.data = event;
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;

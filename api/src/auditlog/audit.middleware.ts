@@ -19,7 +19,7 @@ export class AuditMiddleware implements NestMiddleware {
     // console.log('===============================');
     if (req.method === 'PUT' || req.method === 'PATCH') {
       try {
-        console.log(`Processing ${req.method} request for URL: ${req.originalUrl}`);
+        // console.log(`Processing ${req.method} request for URL: ${req.originalUrl}`);
         
         // Extract ID from params.path array or params.id
         const entityId = req.params?.id || (Array.isArray(req.params?.path) ? req.params.path[1] : null);
@@ -37,14 +37,15 @@ export class AuditMiddleware implements NestMiddleware {
     next();
   }
 
-  private async getOldData(url: string, id: string): Promise<any> {
-    console.log(`Fetching old data for URL: ${url} with ID: ${id}`);
-    
+  private async getOldData(url: string, id: string): Promise<any> {    
     if (url.includes('/users/')) {
       return await this.prisma.user.findUnique({ where: { id } });
     }
     if (url.includes('/sanpham/')) {
       return await this.prisma.sanpham.findUnique({ where: { id } });
+    }
+    if (url.includes('/setting/')) {
+      return await this.prisma.setting.findUnique({ where: { id } });
     }
     return null;
   }

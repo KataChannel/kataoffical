@@ -6,6 +6,7 @@ import {
   Inject,
   PLATFORM_ID,
   HostListener,
+  effect,
 } from '@angular/core';
 import * as Auth from 'firebase/auth';
 import { isPlatformBrowser } from '@angular/common';
@@ -14,7 +15,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Config } from './login';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { UserService } from '../../../../admin/user/user.service';
@@ -47,6 +47,7 @@ export class LoginComponent implements OnInit {
   User: any = {};
   logoImage: string='';
   bgLoginImage: string='';
+  websiteconfig:any = this._SettingService.DetailSetting;
   constructor(
     private auth: AngularFireAuth,
     private route: ActivatedRoute,
@@ -56,11 +57,8 @@ export class LoginComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.token = localStorage.getItem('token') || null;
     }
-    this._SettingService.getSettingBy({ key: 'logoImage' }).then((res: any) => {
-      this.logoImage = res[0].value;
-    })
-    this._SettingService.getSettingBy({ key: 'bgloginImage' }).then((res: any) => {
-      this.bgLoginImage = res[0].value;
+    effect(async () => {
+      await this._SettingService.getSettingBy({ key: 'websiteconfig',isOne:true });
     });
   }
   private _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -72,7 +70,10 @@ export class LoginComponent implements OnInit {
   SlidingForm() {
 
   }
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this._SettingService.getSettingBy({ key: 'websiteconfig',isOne:true });
+    console.log(this.websiteconfig());
+    
     this.route.queryParams.subscribe((params) => {
       const token = params['token'];
       if (token) {

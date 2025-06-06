@@ -1,13 +1,29 @@
-import { HttpStatus } from '@nestjs/common';
 import { SettingService } from './setting.service';
 export declare class SettingController {
     private readonly settingService;
     constructor(settingService: SettingService);
-    create(data: any): Promise<{
-        statusCode: HttpStatus;
+    create(data: any): Promise<any>;
+    findby(param: any): Promise<{
+        value: any;
+        type: string | null;
+        id: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        title: string | null;
+        order: number | null;
+        codeId: string | null;
+        createdById: string | null;
+        key: string | null;
+        data?: undefined;
+        total?: undefined;
+        page?: undefined;
+        pageCount?: undefined;
+    } | {
         data: {
+            value: any;
             type: string | null;
-            value: string | null;
             id: string;
             isActive: boolean;
             createdAt: Date;
@@ -18,102 +34,39 @@ export declare class SettingController {
             codeId: string | null;
             createdById: string | null;
             key: string | null;
-        };
-    }>;
-    findby(param: any): Promise<{
-        statusCode: HttpStatus;
+        }[];
+        total: number;
+        page: any;
+        pageCount: number;
+    } | null>;
+    findAll(page?: string, limit?: string): Promise<{
         data: {
-            data: {
-                type: string | null;
-                value: string | null;
-                id: string;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                description: string | null;
-                title: string | null;
-                order: number | null;
-                codeId: string | null;
-                createdById: string | null;
-                key: string | null;
-            }[];
-            total: number;
-            page: any;
-            pageCount: number;
-        };
-    }>;
-    findAll(): Promise<{
-        statusCode: HttpStatus;
-        data: {
-            data: {
-                type: string | null;
-                value: string | null;
-                id: string;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                description: string | null;
-                title: string | null;
-                order: number | null;
-                codeId: string | null;
-                createdById: string | null;
-                key: string | null;
-            }[];
-            total: number;
-            page: number;
-            pageCount: number;
-        };
+            value: any;
+            type: string | null;
+            id: string;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            title: string | null;
+            order: number | null;
+            codeId: string | null;
+            createdById: string | null;
+            key: string | null;
+        }[];
+        total: number;
+        page: number;
+        pageCount: number;
     }>;
     getLastUpdatedSetting(): Promise<{
-        statusCode: HttpStatus;
-        data: {
-            updatedAt: number | Date;
-        };
+        updatedAt: number;
     }>;
-    findOne(id: string): Promise<{
-        statusCode: HttpStatus;
-        data: {
-            type: string | null;
-            value: string | null;
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            description: string | null;
-            title: string | null;
-            order: number | null;
-            codeId: string | null;
-            createdById: string | null;
-            key: string | null;
-        };
-    }>;
-    update(id: string, data: any): Promise<{
-        statusCode: HttpStatus;
-        data: any;
-    }>;
-    remove(id: string): Promise<{
-        statusCode: HttpStatus;
-        data: {
-            type: string | null;
-            value: string | null;
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            description: string | null;
-            title: string | null;
-            order: number | null;
-            codeId: string | null;
-            createdById: string | null;
-            key: string | null;
-        };
-    }>;
+    findOne(id: string): Promise<any>;
+    update(id: string, data: any): Promise<any>;
+    remove(id: string): Promise<any>;
     reorder(body: {
         settingIds: string[];
     }): Promise<{
-        statusCode: HttpStatus;
-        data: {
-            status: string;
-        };
+        status: string;
     }>;
 }

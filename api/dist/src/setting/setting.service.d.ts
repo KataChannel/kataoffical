@@ -6,13 +6,15 @@ export declare class SettingService {
     private _SocketGateway;
     private _ErrorlogService;
     constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogService: ErrorlogService);
+    private parseValue;
     getLastUpdatedSetting(): Promise<{
-        updatedAt: number | Date;
+        updatedAt: number;
     }>;
     generateCodeId(): Promise<string>;
-    create(data: any): Promise<{
+    create(data: any): Promise<any>;
+    findBy(param: any): Promise<{
+        value: any;
         type: string | null;
-        value: string | null;
         id: string;
         isActive: boolean;
         createdAt: Date;
@@ -23,11 +25,14 @@ export declare class SettingService {
         codeId: string | null;
         createdById: string | null;
         key: string | null;
-    }>;
-    findBy(param: any): Promise<{
+        data?: undefined;
+        total?: undefined;
+        page?: undefined;
+        pageCount?: undefined;
+    } | {
         data: {
+            value: any;
             type: string | null;
-            value: string | null;
             id: string;
             isActive: boolean;
             createdAt: Date;
@@ -42,11 +47,11 @@ export declare class SettingService {
         total: number;
         page: any;
         pageCount: number;
-    }>;
-    findAll(page?: number, limit?: number): Promise<{
+    } | null>;
+    findAll(page?: number, pageSize?: number): Promise<{
         data: {
+            value: any;
             type: string | null;
-            value: string | null;
             id: string;
             isActive: boolean;
             createdAt: Date;
@@ -62,35 +67,9 @@ export declare class SettingService {
         page: number;
         pageCount: number;
     }>;
-    findOne(id: string): Promise<{
-        type: string | null;
-        value: string | null;
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        description: string | null;
-        title: string | null;
-        order: number | null;
-        codeId: string | null;
-        createdById: string | null;
-        key: string | null;
-    }>;
+    findOne(id: string): Promise<any>;
     update(id: string, data: any): Promise<any>;
-    remove(id: string): Promise<{
-        type: string | null;
-        value: string | null;
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        description: string | null;
-        title: string | null;
-        order: number | null;
-        codeId: string | null;
-        createdById: string | null;
-        key: string | null;
-    }>;
+    remove(id: string): Promise<any>;
     reorderSettings(settingIds: string[]): Promise<{
         status: string;
     }>;

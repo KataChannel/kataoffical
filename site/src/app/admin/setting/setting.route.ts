@@ -3,6 +3,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { ListSettingComponent } from './listsetting/listsetting.component';
 const routes: Routes = [
   {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./dashboarsetting/dashboarsetting.component').then(
+        (c) => c.DashboarsettingComponent
+      ),
+  },
+  {
     path: '',
     component: ListSettingComponent,
     children: [

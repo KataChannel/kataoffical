@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -27,8 +27,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
       MatSlideToggleModule
     ],
     templateUrl: './detailsetting.component.html',
-    styleUrls: ['./detailsetting.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
+    styleUrl: './detailsetting.component.scss'
   })
   export class DetailSettingComponent {
     _ListSettingComponent:ListSettingComponent = inject(ListSettingComponent)
@@ -36,11 +35,14 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
+    DetailSetting: any = this._SettingService.DetailSetting;
+    isEdit = signal(false);
+    isDelete = signal(false);  
+    settingId:any = this._SettingService.settingId
     constructor(){
-      this._route.paramMap.subscribe(async (params) => {
+      this._route.paramMap.subscribe((params) => {
         const id = params.get('id');
-        const Detail = await this._SettingService.getSettingBy({id:id});
-        this.DetailSetting.set(Detail[0]);  
+        this._SettingService.setSettingId(id);
       });
   
       effect(async () => {
@@ -56,25 +58,37 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
           this._router.navigate(['/admin/setting', "new"]);
         }
         else{
-           const Detail = await this._SettingService.getSettingBy({id:id});
-           this.DetailSetting.set(Detail[0]); 
+            await this._SettingService.getSettingBy({id:id,isOne:true});
+              console.log('DetailSetting:', this.DetailSetting());
+             this.DetailSetting.update((v:any) => {
+              if(v.type==='json'){
+                v.value = JSON.stringify(v.value);
+              }
+              return v;
+            });
             this._ListSettingComponent.drawer.open();
             this._router.navigate(['/admin/setting', id]);
         }
       });
     }
-    DetailSetting: any =  signal<any>({});
-    isEdit = signal(false);
-    isDelete = signal(false);  
-    settingId:any = this._SettingService.settingId
+    async ngOnInit() {
+      await this._SettingService.getSettingBy({id:this.settingId(),isOne:true});
+      this.DetailSetting.update((v:any) => {
+       if(v.type==='json'){
+         v.value = JSON.stringify(v.value);
+       }
+       return v;
+     });   
+    }
     async handleSettingAction() {
       if (this.settingId() === 'new') {
-        await this.createSetting();
+      await this.createSetting();
+      } else {
+      await this.updateSetting();
       }
-      else {
-        await this.updateSetting();
-      }
+      window.location.reload();
     }
+
     private async createSetting() {
       try {
         await this._SettingService.CreateSetting(this.DetailSetting());

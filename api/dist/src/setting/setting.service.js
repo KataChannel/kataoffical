@@ -20,19 +20,40 @@ let SettingService = class SettingService {
         this._SocketGateway = _SocketGateway;
         this._ErrorlogService = _ErrorlogService;
     }
+    parseValue(value, type) {
+        if (value === null)
+            return null;
+        switch (type) {
+            case 'number':
+                const num = Number(value);
+                return isNaN(num) ? null : num;
+            case 'boolean':
+                return value === 'true' || value === '1';
+            case 'json':
+                try {
+                    return JSON.parse(value);
+                }
+                catch (error) {
+                    this._ErrorlogService.logError('parseValue', error);
+                    return null;
+                }
+            case 'string':
+            default:
+                return value;
+        }
+    }
     async getLastUpdatedSetting() {
         try {
             const lastUpdated = await this.prisma.setting.aggregate({
                 _max: { updatedAt: true },
             });
-            return { updatedAt: lastUpdated._max.updatedAt || 0 };
+            return {
+                updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0,
+            };
         }
         catch (error) {
             this._ErrorlogService.logError('getLastUpdatedSetting', error);
-            throw new common_1.InternalServerErrorException({
-                message: 'Không thể lấy thông tin cập nhật cuối cùng',
-                error: error?.message || error,
-            });
+            throw error;
         }
     }
     async generateCodeId() {
@@ -41,20 +62,19 @@ let SettingService = class SettingService {
                 orderBy: { codeId: 'desc' },
             });
             let nextNumber = 1;
-            if (latest) {
-                const match = latest.codeId?.match(/I1(\d+)/);
+            if (latest && latest.codeId) {
+                const prefix = 'ST';
+                const match = latest.codeId.match(new RegExp(prefix + '(\\d+)'));
                 if (match) {
                     nextNumber = parseInt(match[1]) + 1;
                 }
             }
-            return `ST${nextNumber.toString().padStart(5, '0')}`;
+            const newPrefix = 'ST';
+            return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generate codeId', error);
-            throw new common_1.InternalServerErrorException({
-                message: 'Không thể sinh mã codeId',
-                error: error?.message || error,
-            });
+            this._ErrorlogService.logError('generateSettingCodeId', error);
+            throw error;
         }
     }
     async create(data) {
@@ -72,85 +92,95 @@ let SettingService = class SettingService {
                 },
             });
             this._SocketGateway.sendUpdate('setting');
-            return created;
+            return {
+                ...created,
+                value: this.parseValue(created.value, created.type),
+            };
         }
         catch (error) {
             this._ErrorlogService.logError('createSetting', error);
-            throw new common_1.BadRequestException({
-                message: 'Tạo mới setting thất bại',
-                error: error?.message || error,
-            });
+            throw error;
         }
     }
     async findBy(param) {
         try {
-            const { page = 1, limit = 20, ...where } = param;
-            const skip = (page - 1) * limit;
+            const { isOne, page = 1, pageSize = 20, ...where } = param;
+            if (isOne) {
+                const result = await this.prisma.setting.findFirst({
+                    where,
+                    orderBy: { order: 'asc' },
+                });
+                if (!result)
+                    return null;
+                return {
+                    ...result,
+                    value: this.parseValue(result.value, result.type),
+                };
+            }
+            const skip = (page - 1) * pageSize;
             const [data, total] = await Promise.all([
                 this.prisma.setting.findMany({
                     where,
                     skip,
-                    take: limit,
+                    take: pageSize,
                     orderBy: { order: 'asc' },
                 }),
                 this.prisma.setting.count({ where }),
             ]);
             return {
-                data,
+                data: data.map((setting) => ({
+                    ...setting,
+                    value: this.parseValue(setting.value, setting.type),
+                })),
                 total,
                 page,
-                pageCount: Math.ceil(total / limit),
+                pageCount: Math.ceil(total / pageSize),
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findBy', error);
-            throw new common_1.InternalServerErrorException({
-                message: 'Không thể lấy danh sách setting',
-                error: error?.message || error,
-            });
+            this._ErrorlogService.logError('findBySetting', error);
+            throw error;
         }
     }
-    async findAll(page = 1, limit = 20) {
+    async findAll(page = 1, pageSize = 20) {
         try {
-            const skip = (page - 1) * limit;
+            const skip = (page - 1) * pageSize;
             const [data, total] = await Promise.all([
                 this.prisma.setting.findMany({
                     skip,
-                    take: limit,
+                    take: pageSize,
                     orderBy: { order: 'asc' },
                 }),
                 this.prisma.setting.count(),
             ]);
             return {
-                data,
+                data: data.map((setting) => ({
+                    ...setting,
+                    value: this.parseValue(setting.value, setting.type),
+                })),
                 total,
                 page,
-                pageCount: Math.ceil(total / limit),
+                pageCount: Math.ceil(total / pageSize),
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findAll', error);
-            throw new common_1.InternalServerErrorException({
-                message: 'Không thể lấy tất cả setting',
-                error: error?.message || error,
-            });
+            this._ErrorlogService.logError('findAllSetting', error);
+            throw error;
         }
     }
     async findOne(id) {
         try {
-            const setting = await this.prisma.setting.findUnique({ where: { id } });
-            if (!setting)
+            const item = await this.prisma.setting.findUnique({ where: { id } });
+            if (!item)
                 throw new common_1.NotFoundException('Setting not found');
-            return setting;
+            return {
+                ...item,
+                value: this.parseValue(item.value, item.type),
+            };
         }
         catch (error) {
-            this._ErrorlogService.logError('findOne', error);
-            if (error instanceof common_1.NotFoundException)
-                throw error;
-            throw new common_1.InternalServerErrorException({
-                message: 'Không thể lấy setting',
-                error: error?.message || error,
-            });
+            this._ErrorlogService.logError('findOneSetting', error);
+            throw error;
         }
     }
     async update(id, data) {
@@ -165,28 +195,28 @@ let SettingService = class SettingService {
                 updated = await this.prisma.setting.update({ where: { id }, data });
             }
             this._SocketGateway.sendUpdate('setting');
-            return updated;
+            return {
+                ...updated,
+                value: this.parseValue(updated.value, updated.type),
+            };
         }
         catch (error) {
             this._ErrorlogService.logError('updateSetting', error);
-            throw new common_1.BadRequestException({
-                message: 'Cập nhật setting thất bại',
-                error: error?.message || error,
-            });
+            throw error;
         }
     }
     async remove(id) {
         try {
             const deleted = await this.prisma.setting.delete({ where: { id } });
             this._SocketGateway.sendUpdate('setting');
-            return deleted;
+            return {
+                ...deleted,
+                value: this.parseValue(deleted.value, deleted.type),
+            };
         }
         catch (error) {
             this._ErrorlogService.logError('removeSetting', error);
-            throw new common_1.BadRequestException({
-                message: 'Xóa setting thất bại',
-                error: error?.message || error,
-            });
+            throw error;
         }
     }
     async reorderSettings(settingIds) {
@@ -202,10 +232,7 @@ let SettingService = class SettingService {
         }
         catch (error) {
             this._ErrorlogService.logError('reorderSettings', error);
-            throw new common_1.BadRequestException({
-                message: 'Sắp xếp lại setting thất bại',
-                error: error?.message || error,
-            });
+            throw error;
         }
     }
 };

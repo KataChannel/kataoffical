@@ -17,6 +17,8 @@ const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const jwt_auth_guard_1 = require("./jwt-auth.guard");
 const passport_1 = require("@nestjs/passport");
+const audit_decorator_1 = require("../auditlog/audit.decorator");
+const client_1 = require("@prisma/client");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -105,6 +107,7 @@ __decorate([
 ], AuthController.prototype, "zaloCallback", null);
 __decorate([
     (0, common_1.Post)('register'),
+    (0, audit_decorator_1.Audit)({ entity: 'Auth Register', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -112,6 +115,7 @@ __decorate([
 ], AuthController.prototype, "register", null);
 __decorate([
     (0, common_1.Post)('login'),
+    (0, audit_decorator_1.Audit)({ entity: 'Auth Login', action: client_1.AuditAction.LOGIN, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -120,6 +124,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('change-password'),
+    (0, audit_decorator_1.Audit)({ entity: 'Auth Change Password', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -129,6 +134,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('random-password'),
+    (0, audit_decorator_1.Audit)({ entity: 'Auth Random Password', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

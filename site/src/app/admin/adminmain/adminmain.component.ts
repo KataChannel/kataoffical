@@ -1,10 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Config, User } from './adminmain';
-import { FlatTreeControl } from '@angular/cdk/tree';
-import { MatTreeModule, MatTreeFlattener, MatTreeFlatDataSource } from '@angular/material/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import {MatTabsModule} from '@angular/material/tabs';
@@ -22,7 +20,6 @@ import { SettingService } from '../setting/setting.service';
 @Component({
   selector: 'app-adminmain',
   imports: [
-    MatTreeModule,
     MatSidenavModule,
     MatButtonModule,
     MatIconModule,
@@ -46,48 +43,25 @@ export class AdminmainComponent {
   User:any ={}
   version:any= 'v1.0.0'
   logoImage:string = ''
-  private _transformer = (node: any, level: number) => {
-    return {
-      expandable: !!node?.children && node?.children.length > 0,
-      title: node.title,
-      level: level,
-      node:node,
-    };
-  };
-
-  treeControl = new FlatTreeControl<any>(
-    node => node.level,
-    node => node.expandable,
-  );
-
-  treeFlattener = new MatTreeFlattener(
-    this._transformer,
-    node => node.level,
-    node => node.expandable,
-    node => node?.children,
-  );
-
-  dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
   _MenuService:MenuService = inject(MenuService)
-  constructor(
-    private _breakpointObserver:BreakpointObserver,
-    private _UserService:UserService,
-    private _ErrorLogService:ErrorLogService,
-  ) {
-    this._SettingService.getSettingBy({ key: 'logoImage' }).then((res: any) => { 
-      this.logoImage = res[0].value;
-      console.log('Logo image set to:', this.logoImage);
-    })
-  }
-
-  hasChild = (_: number, node: any) => node.expandable;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   @ViewChild('drawer1', { static: true }) drawer1!: MatDrawer;
   _snackBar:MatSnackBar = inject(MatSnackBar)
   _StorageService:StorageService = inject(StorageService)
   _SettingService:SettingService = inject(SettingService)
   ListMenu:any[] = []
+  websiteconfig  = this._SettingService.DetailSetting
+  constructor(
+    private _breakpointObserver:BreakpointObserver,
+    private _UserService:UserService,
+    private _ErrorLogService:ErrorLogService,
+  ) {
+    effect(async () => {
+       await this._SettingService.getSettingBy({ key: 'websiteconfig',isOne:true })
+      });
+  }
   async ngOnInit() {
+    await this._SettingService.getSettingBy({ key: 'websiteconfig',isOne:true })    
     await this._UserService.getProfile().then(async (res: any) => {
       if(res){
         this.User = res;  
@@ -95,11 +69,8 @@ export class AdminmainComponent {
         const params = {permissions:permissions}   
         await this._MenuService.getTreeMenu(params)
         this.ListMenu = this._MenuService.ListMenu()    
-        this.dataSource.data = this._MenuService.ListMenu()
       } 
     });
-   
- 
     this._breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
       if (result.matches) {
         this.drawer.mode = 'over';

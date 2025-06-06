@@ -21,11 +21,13 @@ export const routes: Routes = [
       ),
     children: [
       {
-          path: 'auditlog',
-          canActivate: [PermissionGuard],
-          data: { permission: 'auditlog.view' },
-          loadChildren: () =>
-            import('./admin/auditlog/auditlog.route').then(m => m.AuditlogRoutingModule),
+        path: 'auditlog',
+        canActivate: [PermissionGuard],
+        data: { permission: 'auditlog.view' },
+        loadChildren: () =>
+          import('./admin/auditlog/auditlog.route').then(
+            (m) => m.AuditlogRoutingModule
+          ),
       },
       {
         path: 'setting',
@@ -128,20 +130,20 @@ export const routes: Routes = [
           },
         ],
       },
-     {
-            path: 'xuatnhapton',
-            loadComponent: () =>
-              import(
-                './admin/hoadonchitiet/xuatnhapton/xuatnhapton.component'
-              ).then((c) => c.XuatnhaptonComponent),
-        },
-     {
-            path: 'mathang',
-            loadComponent: () =>
-              import(
-                './admin/hoadonchitiet/mathang/mathang.component'
-              ).then((c) => c.MathangComponent),
-        },
+      {
+        path: 'xuatnhapton',
+        loadComponent: () =>
+          import(
+            './admin/hoadonchitiet/xuatnhapton/xuatnhapton.component'
+          ).then((c) => c.XuatnhaptonComponent),
+      },
+      {
+        path: 'mathang',
+        loadComponent: () =>
+          import('./admin/hoadonchitiet/mathang/mathang.component').then(
+            (c) => c.MathangComponent
+          ),
+      },
       {
         path: 'menu',
         canActivate: [PermissionGuard],
@@ -391,56 +393,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'khachhang',
-        canActivate: [PermissionGuard],
-        data: { permission: 'khachhang.view' },
-        loadComponent: () =>
-          import(
-            './admin/khachhang/listkhachhang/listkhachhang.component'
-          ).then((c) => c.ListKhachhangComponent),
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import(
-                './admin/khachhang/listkhachhang/listkhachhang.component'
-              ).then((c) => c.ListKhachhangComponent),
-          },
-          {
-            path: ':id',
-            loadComponent: () =>
-              import(
-                './admin/khachhang/detailkhachhang/detailkhachhang.component'
-              ).then((c) => c.DetailKhachhangComponent),
-          },
-        ],
-      },
-      {
-        path: 'nhomkhachhang',
-        canActivate: [PermissionGuard],
-        data: { permission: 'nhomkhachhang.view' },
-        loadComponent: () =>
-          import(
-            './admin/nhomkhachhang/listnhomkhachhang/listnhomkhachhang.component'
-          ).then((c) => c.ListNhomkhachhangComponent),
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import(
-                './admin/nhomkhachhang/listnhomkhachhang/listnhomkhachhang.component'
-              ).then((c) => c.ListNhomkhachhangComponent),
-          },
-          {
-            path: ':id',
-            loadComponent: () =>
-              import(
-                './admin/nhomkhachhang/detailnhomkhachhang/detailnhomkhachhang.component'
-              ).then((c) => c.DetailNhomkhachhangComponent),
-          },
-        ],
-      },
-      {
         path: 'user',
         canActivate: [PermissionGuard],
         data: { permission: 'user.view' },
@@ -622,20 +574,19 @@ export const routes: Routes = [
       ),
   },
   {
-        path: 'kata',
-        canActivate: [AuthGuard],
-        // data: { permission: 'site.view' },
-        loadChildren: () =>
-           import('./site/site.route').then(m => m.SiteRoutingModule),
+    path: 'kata',
+    canActivate: [AuthGuard],
+    // data: { permission: 'site.view' },
+    loadChildren: () =>
+      import('./site/site.route').then((m) => m.SiteRoutingModule),
   },
   {
-        path: '',
-        canActivate: [AuthGuard],
-        // data: { permission: 'site.view' },
-        loadChildren: () =>
-           import('./site/namno/namno.route').then(m => m.NamnoRoutingModule),
+    path: '',
+    canActivate: [AuthGuard],
+    // data: { permission: 'site.view' },
+    loadChildren: () =>
+      import('./site/namno/namno.route').then((m) => m.NamnoRoutingModule),
   },
-
 
   // {
   //   path: '',
