@@ -149,6 +149,13 @@
                             {{ row[column]|date:'dd/MM/yyyy'}}
                         </span>
                         }
+                        @case ('action') {
+                        <span class="max-w-40 line-clamp-4">
+                            <button mat-icon-button color="warn" (click)="openDeleteDialog(DeleteDialog,row)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </span>
+                        }
                         @default {
                         <span class="max-w-40 line-clamp-4">
                             {{ row[column] }}

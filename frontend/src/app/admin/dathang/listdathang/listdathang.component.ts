@@ -62,6 +62,7 @@ export class ListDathangComponent {
     'ghichu',
     'createdAt',
     'updatedAt',
+    'action'
   ];
 
   ColumnName: any = {
@@ -74,7 +75,8 @@ export class ListDathangComponent {
     status: 'Trạng Thái',
     ghichu: 'Ghi Chú',
     createdAt:'Ngày Tạo',
-    updatedAt:'Ngày Cập Nhật'
+    updatedAt:'Ngày Cập Nhật',
+    action: 'Hành Động'
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('DathangColFilter') || '[]'
@@ -353,13 +355,17 @@ CheckItemInEdit(item: any): boolean {
 }
 dialog = inject(MatDialog);
 dialogCreateRef: any;
-openDeleteDialog(template: TemplateRef<any>) {
+openDeleteDialog(template: TemplateRef<any>, item?: any) {
      const dialogDeleteRef = this.dialog.open(template, {
        hasBackdrop: true,
        disableClose: true,
      });
-     dialogDeleteRef.afterClosed().subscribe((result) => {
+     dialogDeleteRef.afterClosed().subscribe(async (result) => {
        if (result=="true") {
+        if(item){
+         await this._DathangService.DeleteDathang(item)
+         return;
+        }
          this.DeleteListItem();
        }
      });
@@ -376,7 +382,7 @@ DeleteListItem(): void {
       });
       setTimeout(() => {
         window.location.reload();
-      }, 3000);
+      }, 500);
     });
 }
   ToggleAll(){

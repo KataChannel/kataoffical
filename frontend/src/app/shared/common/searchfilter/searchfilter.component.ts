@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, signal, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
@@ -27,14 +27,13 @@ import { removeVietnameseAccents } from "../../utils/texttransfer.utils";
     MatButtonModule,
     MatSelectModule,
     MatDialogModule,
-    CommonModule,
     MatSlideToggleModule,
     MatDatepickerModule,
     MatSortModule,
     MatPaginatorModule,
     MatTableModule,
-    MatMenuModule,
-  ],
+    MatMenuModule
+],
  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchfilterComponent {
@@ -49,45 +48,87 @@ export class SearchfilterComponent {
   @Input() isDelete = signal(false);
   @Output() OutFilter = new EventEmitter<any>();
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
+  searchText: string = '';
+  initFilter: any[] = [];
+  ngOnInit(): void {
+      this.initFilter = this.filterItem;
+    // console.log('ListItem', this.ListItem);   
+    // console.log('filterItem', this.filterItem);   
+    // console.log('ListFilter', this.ListFilter);   
+    // console.log('fieldsearch', this.fieldsearch);   
+    
+  }
   trackByFn(index: number, item: any): any {
     return item.id;
   }
   ChosenAll()
   {
     this.ListFilter =this.ListItem
+    this.filterItem = this.initFilter
   }
   RemoveAll()
   {
     this.ListFilter = [];
-    this.filterItem = this.ListItem
-  }
-  doFilterItem(event: any,field:any): void {
-      const value = event.target.value;
-      this.filterItem = this.ListItem.filter((v) => 
-      removeVietnameseAccents(v[field]).includes(value.toLowerCase())
-      ||v[field].toLowerCase().includes(value.toLowerCase()));
-  }
-  DoListFilter()
-  {
-    this.filterItem = this.ListFilter
-  }
-  ChosenItem(item:any)
-  {
-    const CheckItem = this.filterItem.filter((v:any)=>v.id===item.id);
-    const CheckItem1 = this.ListFilter.filter((v:any)=>v.id===item.id);
-    if(CheckItem1.length>0)
-    {
-      this.ListFilter = this.ListFilter?.filter((v) => v.id !== item.id);
-    }
-    else{
-      this.ListFilter = [...this.ListFilter,...CheckItem];
-    }
+    this.filterItem = this.initFilter
+    this.searchText = '';
   }
   CheckItem(item:any)
   {
     return this.ListFilter?.find((v)=>v.id===item.id)?true:false;
   }
-  ApplyFilterColum(menu: any) {   
+  doFilterItem(event: any,field:any): void {
+      const value = event.target.value;
+      this.searchText = value;
+      if (!value) {
+        this.filterItem = this.initFilter
+        return;
+      }
+      this.filterItem = this.initFilter.filter((v:any) => 
+      removeVietnameseAccents(v[field]).includes(value.toLowerCase())
+      ||v[field].toLowerCase().includes(value.toLowerCase()));
+
+  }
+  DoListFilter()
+  {
+    const uniqueMap = new Map();
+    this.ListFilter.forEach(item => {
+      const key = item[this.fieldsearch];
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, item);
+      }
+    });
+    this.filterItem = Array.from(uniqueMap.values());
+  }
+  getChosen(){
+    const uniqueMap = new Map();
+    this.ListFilter.forEach(item => {
+      const key = item[this.fieldsearch];
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, item);
+      }
+    });
+    return Array.from(uniqueMap.values()).length;
+  }
+  ChosenItem(item:any)
+  {
+    // console.log('filterItem', this.filterItem);
+    console.log('ListFilter', this.ListFilter);
+    const value = item[this.fieldsearch]
+    // this.ListFilter = this.ListItem?.filter((v:any)=>v[this.fieldsearch]===value);
+    
+    
+    const CheckItem = this.ListItem.filter((v:any)=>v[this.fieldsearch]===value);
+    const CheckItem1 = this.ListFilter.filter((v:any)=>v[this.fieldsearch]===value);
+    if(CheckItem1.length>0)
+    {
+      this.ListFilter = this.ListFilter?.filter((v) => v[this.fieldsearch] !== value);
+    }
+    else{
+      this.ListFilter = [...this.ListFilter,...CheckItem];
+    }   
+  }
+
+  ApplyFilterColum(menu: any) {  
     this.OutFilter.emit(this.ListFilter);
     menu.closeMenu();
   }
