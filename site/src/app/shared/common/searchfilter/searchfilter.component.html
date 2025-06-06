@@ -24,7 +24,7 @@
           <span class="text-xs text-blue-600 underline" (click)="RemoveAll()">Xoá</span>
         </div>
 
-        <span class="text-xs text-blue-600 underline" (click)="DoListFilter()">{{filterItem.length||0}} Đang chọn</span>
+        <span class="text-xs text-blue-600 underline" (click)="DoListFilter()">{{getChosen()}} Đang chọn</span>
       </div>
       <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
         @for (item of filterItem; track trackByFn($index, item)) {

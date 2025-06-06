@@ -69,8 +69,8 @@ export class SearchfilterComponent {
   RemoveAll()
   {
     this.ListFilter = [];
+    this.filterItem = this.initFilter
     this.searchText = '';
-    // this.filterItem = this.ListItem
   }
   CheckItem(item:any)
   {
@@ -90,7 +90,24 @@ export class SearchfilterComponent {
   }
   DoListFilter()
   {
-    this.filterItem = this.ListFilter
+    const uniqueMap = new Map();
+    this.ListFilter.forEach(item => {
+      const key = item[this.fieldsearch];
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, item);
+      }
+    });
+    this.filterItem = Array.from(uniqueMap.values());
+  }
+  getChosen(){
+    const uniqueMap = new Map();
+    this.ListFilter.forEach(item => {
+      const key = item[this.fieldsearch];
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, item);
+      }
+    });
+    return Array.from(uniqueMap.values()).length;
   }
   ChosenItem(item:any)
   {
@@ -108,14 +125,7 @@ export class SearchfilterComponent {
     }
     else{
       this.ListFilter = [...this.ListFilter,...CheckItem];
-    }
-    // console.log('item', item);
-    // console.log('fieldsearch', this.fieldsearch);
-    // // console.log('Checkfield', value);
-    console.log('CheckItem', CheckItem);
-    console.log('CheckItem1', CheckItem1);
-    console.log('ListFilter', this.ListFilter);
-    
+    }   
   }
 
   ApplyFilterColum(menu: any) {  

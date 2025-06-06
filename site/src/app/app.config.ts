@@ -22,7 +22,6 @@ export const MY_DATE_FORMATS = {
 };
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideZonelessChangeDetection(),
     provideNativeDateAdapter(),
     { provide: HTTP_INTERCEPTORS, useClass: HeaderStripperInterceptor, multi: true },
     { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig },
