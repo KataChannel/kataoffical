@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, signal, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
@@ -27,14 +27,13 @@ import { removeVietnameseAccents } from "../../utils/texttransfer.utils";
     MatButtonModule,
     MatSelectModule,
     MatDialogModule,
-    CommonModule,
     MatSlideToggleModule,
     MatDatepickerModule,
     MatSortModule,
     MatPaginatorModule,
     MatTableModule,
-    MatMenuModule,
-  ],
+    MatMenuModule
+],
  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchfilterComponent {

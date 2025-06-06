@@ -1,26 +1,28 @@
 <div class="container w-full h-full mx-auto py-8 justify-center items-center text-center">
-    <h1>Dashboard</h1>
-    <div>Coming Soon</div>
-    <div class="flex flex-col space-y-2 container p-4 rounded-lg border border-gray-200">
-        <div class="chat-box">
-          <div *ngFor="let msg of messages" class="message {{msg.sender?'text-start':'text-end'}}">
-            <span>{{ msg?.text?.reply }}</span>
-          </div>
+  <h1>Dashboard</h1>
+  <div>Coming Soon</div>
+  <div class="flex flex-col space-y-2 container p-4 rounded-lg border border-gray-200">
+    <div class="chat-box">
+      @for (msg of messages; track msg) {
+        <div class="message {{msg.sender?'text-start':'text-end'}}">
+          <span>{{ msg?.text?.reply }}</span>
         </div>
-        <div class="relative w-full flex flex-col space-y-2">
-            <div class="flex flex-row space-x-2">   
-              <div #editablechatAI (keyup.enter)="sendMessage($event)" (paste)="handlePaste($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" #editable contenteditable="true" (input)="onInput($event)" 
-              class="w-full text-start border p-4 editable rounded-lg {{isDragging?'h-40 border-2 border-dashed border-blue-500 bg-slate-100':''}}" data-placeholder="Nhập nội dung ở đây..." autofocus>
-            </div>
-              <button mat-icon-button color="primary" (click)="sendMessage($event)"><mat-icon>send</mat-icon></button>
-            </div>
-            <div class="flex flex-row space-x-2 items-center">
-              <button (click)="fileInput.click()" mat-icon-button color="primary"><mat-icon>image</mat-icon></button>
-              <button (click)="fileDrive.click()" mat-icon-button color="primary"><mat-icon>cloud_upload</mat-icon></button>
-              <input class="hidden" (change)="onFileSelected($event)" type="file" #fileInput>
-              <input class="hidden" (change)="uploadDriver($event)" type="file" #fileDrive> 
-            </div>
-            </div>
+      }
+    </div>
+    <div class="relative w-full flex flex-col space-y-2">
+      <div class="flex flex-row space-x-2">
+        <div #editablechatAI (keyup.enter)="sendMessage($event)" (paste)="handlePaste($event)" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" #editable contenteditable="true" (input)="onInput($event)"
+          class="w-full text-start border p-4 editable rounded-lg {{isDragging?'h-40 border-2 border-dashed border-blue-500 bg-slate-100':''}}" data-placeholder="Nhập nội dung ở đây..." autofocus>
+        </div>
+        <button mat-icon-button color="primary" (click)="sendMessage($event)"><mat-icon>send</mat-icon></button>
       </div>
-      
+      <div class="flex flex-row space-x-2 items-center">
+        <button (click)="fileInput.click()" mat-icon-button color="primary"><mat-icon>image</mat-icon></button>
+        <button (click)="fileDrive.click()" mat-icon-button color="primary"><mat-icon>cloud_upload</mat-icon></button>
+        <input class="hidden" (change)="onFileSelected($event)" type="file" #fileInput>
+        <input class="hidden" (change)="uploadDriver($event)" type="file" #fileDrive>
+      </div>
+    </div>
+  </div>
+
 </div>

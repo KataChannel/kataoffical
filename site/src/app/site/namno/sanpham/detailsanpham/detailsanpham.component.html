@@ -5,17 +5,21 @@
   <div class="font-bold">{{ DetailSanpham()?.codeId || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
     <!-- <mat-slide-toggle [(ngModel)]="DetailSanpham().isActive" [disabled]="!isEdit()">{{DetailSanpham().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle> -->
-    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleSanphamAction()">
-      <mat-icon>save</mat-icon>
-    </button>
-    <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
-      <mat-icon>edit</mat-icon>
-    </button>
+    @if (isEdit()) {
+      <button mat-icon-button color="primary" (click)="handleSanphamAction()">
+        <mat-icon>save</mat-icon>
+      </button>
+    }
+    @if (!isEdit()) {
+      <button mat-icon-button color="primary" (click)="toggleEdit()">
+        <mat-icon>edit</mat-icon>
+      </button>
+    }
   </div>
 </div>
 
 <div class="relative flex flex-col w-full p-4 overflow-auto">
-  <ng-container *ngIf="isDelete()">
+  @if (isDelete()) {
     <div class="flex flex-col space-y-4 items-center justify-center">
       <div class="font-bold text-2xl">Bạn chắc chắn muốn xoá không?</div>
       <div class="flex flex-row space-x-2 items-center justify-center">
@@ -23,9 +27,9 @@
         <button mat-flat-button color="warn" (click)="toggleDelete()">Huỷ Bỏ</button>
       </div>
     </div>
-  </ng-container>
+  }
 
-  <ng-container *ngIf="!isDelete()">
+  @if (!isDelete()) {
     <div class="grid grid-cols-1 gap-4">
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Tiêu Đề</mat-label>
@@ -34,35 +38,39 @@
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Danh Mục</mat-label>
         <mat-select [(ngModel)]="DetailSanpham().danhmucId" [disabled]="!isEdit()">
-          <mat-option *ngFor="let item of ListDanhmuc(); let i=index" [value]="item.id">{{ item.title }}</mat-option>
+          @for (item of ListDanhmuc(); track item; let i = $index) {
+            <mat-option [value]="item.id">{{ item.title }}</mat-option>
+          }
         </mat-select>
-      </mat-form-field> 
+      </mat-form-field>
       <div class="flex flex-row space-x-2 items-center">
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
-            <mat-label>Đơn Vị Tính</mat-label>
-            <input matInput [(ngModel)]="DetailSanpham().donvitinh" [disabled]="!isEdit()" placeholder="Vui lòng nhập Đơn Vị Tính"/>
-          </mat-form-field>
+          <mat-label>Đơn Vị Tính</mat-label>
+          <input matInput [(ngModel)]="DetailSanpham().donvitinh" [disabled]="!isEdit()" placeholder="Vui lòng nhập Đơn Vị Tính"/>
+        </mat-form-field>
         <button (click)="addBacgia()" mat-icon-button color="primary"><mat-icon>add_circle</mat-icon></button>
       </div>
-      <div class="flex flex-row space-x-2 items-center" *ngFor="let item of DetailSanpham().bacgia; let i=index">
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Điều Kiện {{i + 1}}</mat-label>
-          <input matInput [(ngModel)]="item.type" [disabled]="!isEdit()" placeholder="Vui lòng nhập Điều Kiện"/>
-        </mat-form-field>
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Giá {{i + 1}}</mat-label>
-          <input matInput type="number" [(ngModel)]="item.gia" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giá"/>
-        </mat-form-field>
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Từ</mat-label>
-          <input matInput type="number" [(ngModel)]="item.min" [disabled]="!isEdit()" placeholder="Vui lòng nhập Khoảng Giá Từ"/>
-        </mat-form-field>
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Đến</mat-label>
-          <input matInput type="number" [(ngModel)]="item.max" [disabled]="!isEdit()" placeholder="Vui lòng nhập Khoảng Giá Đến"/>
-        </mat-form-field>
-        <button (click)="removeBacgia(i)" mat-icon-button color="warn"><mat-icon>remove_circle</mat-icon></button>
-      </div>
+      @for (item of DetailSanpham().bacgia; track item; let i = $index) {
+        <div class="flex flex-row space-x-2 items-center">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Điều Kiện {{i + 1}}</mat-label>
+            <input matInput [(ngModel)]="item.type" [disabled]="!isEdit()" placeholder="Vui lòng nhập Điều Kiện"/>
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Giá {{i + 1}}</mat-label>
+            <input matInput type="number" [(ngModel)]="item.gia" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giá"/>
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Từ</mat-label>
+            <input matInput type="number" [(ngModel)]="item.min" [disabled]="!isEdit()" placeholder="Vui lòng nhập Khoảng Giá Từ"/>
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Đến</mat-label>
+            <input matInput type="number" [(ngModel)]="item.max" [disabled]="!isEdit()" placeholder="Vui lòng nhập Khoảng Giá Đến"/>
+          </mat-form-field>
+          <button (click)="removeBacgia(i)" mat-icon-button color="warn"><mat-icon>remove_circle</mat-icon></button>
+        </div>
+      }
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Trạng Thái</mat-label>
         <mat-select [(ngModel)]="DetailSanpham().status" [disabled]="!isEdit()">
@@ -70,11 +78,11 @@
           <mat-option value="published">Đã Xuất Bản</mat-option>
           <mat-option value="archived">Đã Lưu Trữ</mat-option>
         </mat-select>
-      </mat-form-field> 
+      </mat-form-field>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Mô Tả</mat-label>
         <textarea matInput [(ngModel)]="DetailSanpham().description" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mô Tả"></textarea>
       </mat-form-field>
     </div>
-  </ng-container>
+  }
 </div>

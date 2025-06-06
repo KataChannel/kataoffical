@@ -1,5 +1,5 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,7 +16,6 @@ import { UserService } from '../../admin/user/user.service';
 @Component({
   selector: 'app-namno',
   imports: [
-    CommonModule,
     MatSidenavModule,
     RouterOutlet,
     MatIconModule,
@@ -26,7 +25,7 @@ import { UserService } from '../../admin/user/user.service';
     MatFormFieldModule,
     MatInputModule,
     MatMenuModule
-  ],
+],
   templateUrl: './namno.component.html',
   styleUrl: './namno.component.scss'
 })

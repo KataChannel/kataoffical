@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ListMenuComponent } from '../listmenu/listmenu.component';
 import { MenuService } from '../menu.service';
 import { convertToSlug, GenId } from '../../../../shared/utils/shared.utils';
@@ -16,16 +16,15 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
   @Component({
     selector: 'app-detailmenu',
     imports: [
-      MatFormFieldModule,
-      MatInputModule,
-      FormsModule,
-      MatIconModule,
-      MatButtonModule,
-      MatSelectModule,
-      MatDialogModule,
-      CommonModule,
-      MatSlideToggleModule
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSlideToggleModule
+],
     templateUrl: './detailmenu.component.html',
     styleUrl: './detailmenu.component.scss'
   })

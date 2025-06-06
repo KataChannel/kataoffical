@@ -2,7 +2,7 @@
 
 import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core'; // Import Signal stuff and inject
 import { GameService } from './game.service'; // Import service
-import { CommonModule, NgIf, NgFor } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms'; // Cho [(ngModel)] nếu cần
 import { GameAreaComponent } from './game-area/game-area.component'; // Import game area component
 
@@ -11,10 +11,9 @@ import { GameAreaComponent } from './game-area/game-area.component'; // Import g
   standalone: true, // Standalone component
   imports: [
     CommonModule,
-    NgIf, NgFor,
     FormsModule,
-    GameAreaComponent // Import component con
-  ],
+    GameAreaComponent
+],
   templateUrl: './townerdefense.component.html',
   styleUrls: ['./townerdefense.component.css']
 })

@@ -1,47 +1,63 @@
 <div class="process-flow-container">
-  <ng-container *ngIf="processData && processData.length > 0">
-    <div *ngFor="let step of processData; let i = index" class="process-step">
-      <div class="step-header">
-         <span class="step-number">{{ i + 1 }}.</span>
-         <span class="step-time">{{ step.time }}:</span>
-         <span class="step-title">{{ step.title }}</span>
-      </div>
-
-      <p *ngIf="step.description" class="step-description">{{ step.description }}</p>
-
-      <div *ngFor="let block of step.contentBlocks" class="content-block">
-        <ng-container [ngSwitch]="block.type">
-          <p *ngSwitchCase="'text'" class="content-text">
-            {{ block.text }}
-          </p>
-
-          <ul *ngSwitchCase="'list'" class="content-list">
-            <li *ngFor="let item of block.listItems">
-              {{ item }}
-            </li>
-          </ul>
-
-          <figure *ngSwitchCase="'image'" class="content-image">
-            <img [src]="block.imageUrl" [alt]="block.imageAlt || 'Hướng dẫn quy trình'" class="responsive-image">
-            <figcaption *ngIf="block.caption">{{ block.caption }}</figcaption>
-          </figure>
-
-          <figure *ngSwitchCase="'video'" class="content-video">
-             <video controls [src]="block.videoUrl" [type]="block.videoType" class="responsive-video">
-               Your browser does not support the video tag.
-            </video>
-            <figcaption *ngIf="block.caption">{{ block.caption }}</figcaption>
-          </figure>
-
-          <div *ngSwitchDefault>
-            <p class="error-message">Loại nội dung không hỗ trợ: {{ block.type }}</p>
+  @if (processData && processData.length > 0) {
+    @for (step of processData; track step; let i = $index) {
+      <div class="process-step">
+        <div class="step-header">
+          <span class="step-number">{{ i + 1 }}.</span>
+          <span class="step-time">{{ step.time }}:</span>
+          <span class="step-title">{{ step.title }}</span>
+        </div>
+        @if (step.description) {
+          <p class="step-description">{{ step.description }}</p>
+        }
+        @for (block of step.contentBlocks; track block) {
+          <div class="content-block">
+            @switch (block.type) {
+              @case ('text') {
+                <p class="content-text">
+                  {{ block.text }}
+                </p>
+              }
+              @case ('list') {
+                <ul class="content-list">
+                  @for (item of block.listItems; track item) {
+                    <li>
+                      {{ item }}
+                    </li>
+                  }
+                </ul>
+              }
+              @case ('image') {
+                <figure class="content-image">
+                  <img [src]="block.imageUrl" [alt]="block.imageAlt || 'Hướng dẫn quy trình'" class="responsive-image">
+                  @if (block.caption) {
+                    <figcaption>{{ block.caption }}</figcaption>
+                  }
+                </figure>
+              }
+              @case ('video') {
+                <figure class="content-video">
+                  <video controls [src]="block.videoUrl" [type]="block.videoType" class="responsive-video">
+                    Your browser does not support the video tag.
+                  </video>
+                  @if (block.caption) {
+                    <figcaption>{{ block.caption }}</figcaption>
+                  }
+                </figure>
+              }
+              @default {
+                <div>
+                  <p class="error-message">Loại nội dung không hỗ trợ: {{ block.type }}</p>
+                </div>
+              }
+            }
           </div>
-        </ng-container>
+        }
       </div>
-    </div>
-  </ng-container>
+    }
+  }
 
-  <ng-container *ngIf="!processData || processData.length === 0">
+  @if (!processData || processData.length === 0) {
     <p>Không có dữ liệu quy trình để hiển thị.</p>
-  </ng-container>
+  }
 </div>

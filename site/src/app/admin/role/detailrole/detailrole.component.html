@@ -5,12 +5,16 @@
   <div class="font-bold">{{ DetailRole?.name || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
     <mat-slide-toggle [(ngModel)]="DetailRole.isActive" [disabled]="!isEdit()">{{DetailRole.isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
-    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleRoleAction()">
-      <mat-icon>save</mat-icon>
-    </button>
-    <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
-      <mat-icon>edit</mat-icon>
-    </button>
+    @if (isEdit()) {
+      <button mat-icon-button color="primary" (click)="handleRoleAction()">
+        <mat-icon>save</mat-icon>
+      </button>
+    }
+    @if (!isEdit()) {
+      <button mat-icon-button color="primary" (click)="toggleEdit()">
+        <mat-icon>edit</mat-icon>
+      </button>
+    }
     <button mat-icon-button color="warn" (click)="toggleDelete()">
       <mat-icon>delete</mat-icon>
     </button>
@@ -19,7 +23,7 @@
 
 <div class="relative flex flex-col w-full p-4 overflow-auto">
   <!-- Xác nhận Xóa -->
-  <ng-container *ngIf="isDelete()">
+  @if (isDelete()) {
     <div class="flex flex-col space-y-4 items-center justify-center">
       <div class="font-bold text-2xl">Bạn chắc chắn muốn xoá không?</div>
       <div class="flex flex-row space-x-2 items-center justify-center">
@@ -27,22 +31,22 @@
         <button mat-flat-button color="warn" (click)="toggleDelete()">Huỷ Bỏ</button>
       </div>
     </div>
-  </ng-container>
+  }
 
   <!-- Chi tiết Role -->
-  <ng-container *ngIf="!isDelete()">
-      <div class="w-full flex flex-col space-y-2">
-        <mat-form-field appearance="outline">
-          <mat-label>Tên Nhóm</mat-label>
-          <input matInput [(ngModel)]="DetailRole.name" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên Nhóm"/>
-        </mat-form-field>
-      </div>
-      <div class="grid grid-cols-3 gap-2">
-        @for (item of filterPermission; track $index) {
-          <mat-slide-toggle [disabled]="!isEdit()"  [checked]="item.hasPermission"  (change)="togglePermission(item)">
-            {{ item.name }} - ({{ item.description||'Chưa Mô Tả' }})
-          </mat-slide-toggle>
-        }
-      </div>
-  </ng-container>
+  @if (!isDelete()) {
+    <div class="w-full flex flex-col space-y-2">
+      <mat-form-field appearance="outline">
+        <mat-label>Tên Nhóm</mat-label>
+        <input matInput [(ngModel)]="DetailRole.name" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên Nhóm"/>
+      </mat-form-field>
+    </div>
+    <div class="grid grid-cols-3 gap-2">
+      @for (item of filterPermission; track $index) {
+        <mat-slide-toggle [disabled]="!isEdit()"  [checked]="item.hasPermission"  (change)="togglePermission(item)">
+          {{ item.name }} - ({{ item.description||'Chưa Mô Tả' }})
+        </mat-slide-toggle>
+      }
+    </div>
+  }
 </div>

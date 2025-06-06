@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BreadscrumbComponent } from '../../shared/common/breadscrumb/breadscrumb.component';
@@ -10,12 +10,11 @@ import { Baiviets } from '../../shared/mockdata/baiviet';
 @Component({
   selector: 'app-baiviet',
   imports: [
-    CommonModule,
     BreadscrumbComponent,
     MatTabsModule,
     MatExpansionModule,
     SwiperComponent
-  ],
+],
   templateUrl: './baiviet.component.html',
   styleUrl: './baiviet.component.scss'
 })

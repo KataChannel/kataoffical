@@ -3,7 +3,9 @@
   <div id="info">
     Tiền: <span id="money">{{ money }}</span> | Giá trồng cây: {{ plantCost }}
   </div>
-  <div *ngIf="loading" class="loading">Đang tải game...</div>
+  @if (loading) {
+    <div class="loading">Đang tải game...</div>
+  }
   <canvas #gameCanvas></canvas>
   <p>Click vào ô đất trống để trồng cây (giá {{ plantCost }} tiền).</p>
   <p>Click vào cây đã lớn (màu xanh đậm) để thu hoạch.</p>

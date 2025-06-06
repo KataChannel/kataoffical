@@ -18,139 +18,141 @@
             mat-flat-button>
             <span class="whitespace-nowrap">Tạo Mới</span>
           </button>
-          <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
-            class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button>
-            <span class="whitespace-nowrap">Xoá</span>
-          </button>
+          @if (EditList.length > 0) {
+            <button (click)="openDeleteDialog(DeleteDialog)"
+              class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button>
+              <span class="whitespace-nowrap">Xoá</span>
+            </button>
+          }
         </div>
       </div>
     </div>
     <div class="w-full h-full overflow-auto">
       <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
         @for (column of displayedColumns; track column) {
-        <ng-container [matColumnDef]="column">
-          @if (column == 'stt') {
-          <th class="!border !bg-slate-100" mat-header-cell *matHeaderCellDef>
-         <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
-            <mat-icon>tune</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <div class="p-4">
-              <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-                <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput
-                  placeholder="Tìm Kiếm" />
-                <mat-icon matPrefix>search</mat-icon>
-              </mat-form-field>
-            </div>
-            <div class="flex flex-col max-h-80 overflow-auto">
-              @for (item of FilterColumns; track item.key) {
-              <button mat-menu-item (click)="toggleColumn(item);$event.stopPropagation()">
-                <mat-icon>{{item.isShow ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
-                <span>{{item.value}}</span>
-              </button>
-              }
-            </div>
-          </mat-menu>
-          </th>
-          }
-          @else {
-          <th class="!border whitespace-nowrap !bg-slate-100" mat-header-cell *matHeaderCellDef mat-sort-header>
-            <span class="max-w-40 line-clamp-4 me-4">
-              {{ ColumnName[column] }}
-            </span>
-            <app-searchfilter [icon]="'filter_alt'" [ListItem]="this.Listsetting()" [fieldsearch]="column"
-              [ListFilter]="ListFilter" [filterItem]="FilterHederColumn(dataSource.filteredData,column)"
+          <ng-container [matColumnDef]="column">
+            @if (column == 'stt') {
+              <th class="!border !bg-slate-100" mat-header-cell *matHeaderCellDef>
+                <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
+                  <mat-icon>tune</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <div class="p-4">
+                    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                      <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput
+                        placeholder="Tìm Kiếm" />
+                      <mat-icon matPrefix>search</mat-icon>
+                    </mat-form-field>
+                  </div>
+                  <div class="flex flex-col max-h-80 overflow-auto">
+                    @for (item of FilterColumns; track item.key) {
+                      <button mat-menu-item (click)="toggleColumn(item);$event.stopPropagation()">
+                        <mat-icon>{{item.isShow ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
+                        <span>{{item.value}}</span>
+                      </button>
+                    }
+                  </div>
+                </mat-menu>
+              </th>
+            }
+            @else {
+            <th class="!border whitespace-nowrap !bg-slate-100" mat-header-cell *matHeaderCellDef mat-sort-header>
+              <span class="max-w-40 line-clamp-4 me-4">
+                {{ ColumnName[column] }}
+              </span>
+              <app-searchfilter [icon]="'filter_alt'" [ListItem]="this.Listsetting()" [fieldsearch]="column"
+                [ListFilter]="ListFilter" [filterItem]="FilterHederColumn(dataSource.filteredData,column)"
               (OutFilter)="onOutFilter($event)"></app-searchfilter>
-          </th>
+            </th>
           }
           <td class="border" mat-cell *matCellDef="let row; let idx = index">
             @switch (column) {
-            @case ('codeId') {
-            <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
-              {{ row[column] }}
-            </span>
-            }
-            @case ('stt') {
-            <span class="flex justify-center text-center">
-              {{ idx + 1 }}
-            </span>
-            }
-            @case ('createdAt') {
-            <span class="max-w-40 line-clamp-4">
-              {{ row[column]|date:'dd/MM/yyyy'}}
-            </span>
-            }
-            @case ('haohut') {
-            <span class="max-w-40 line-clamp-4">
-              {{ row[column]}}%
-            </span>
-            }
-            @case ('isActive') {
-            <span class="max-w-40 line-clamp-4">
-              @if (row[column]) {
-              <mat-icon class="text-green-500">check_circle</mat-icon>
+              @case ('codeId') {
+                <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
+                  {{ row[column] }}
+                </span>
               }
-              @else {
-              <mat-icon class="text-red-500">cancel</mat-icon>
+              @case ('stt') {
+                <span class="flex justify-center text-center">
+                  {{ idx + 1 }}
+                </span>
               }
-            </span>
+              @case ('createdAt') {
+                <span class="max-w-40 line-clamp-4">
+                  {{ row[column]|date:'dd/MM/yyyy'}}
+                </span>
+              }
+              @case ('haohut') {
+                <span class="max-w-40 line-clamp-4">
+                  {{ row[column]}}%
+                </span>
+              }
+              @case ('isActive') {
+                <span class="max-w-40 line-clamp-4">
+                  @if (row[column]) {
+                    <mat-icon class="text-green-500">check_circle</mat-icon>
+                  }
+                  @else {
+                  <mat-icon class="text-red-500">cancel</mat-icon>
+                }
+              </span>
             }
             @case ('updatedAt') {
-            <span class="max-w-40 line-clamp-4">
-              {{ row[column]|date:'dd/MM/yyyy'}}
-            </span>
+              <span class="max-w-40 line-clamp-4">
+                {{ row[column]|date:'dd/MM/yyyy'}}
+              </span>
             }
             @default {
-            <span class="max-w-40 line-clamp-4">
-              {{ row[column] }}
-            </span>
+              <span class="max-w-40 line-clamp-4">
+                {{ row[column] }}
+              </span>
             }
-            }
-          </td>
-        </ng-container>
-        }
-        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-        <tr class="border" mat-row *matRowDef="let row; columns: displayedColumns;"
-          class="hover:bg-slate-50 {{CheckItemInEdit(row)?'!bg-blue-50':''}}" (click)="AddToEdit(row);">
-        </tr>
-        <tr class="mat-row border" *matNoDataRow>
-          <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
-        </tr>
-      </table>
-    </div>
-    <div class="cursor-pointer border rounded-lg px-3 p-1 flex flex-row space-x-2 items-center justify-between">
-      <div
-        class="w-full flex lg:p-0 p-2 lg:flex-row lg:space-x-2 lg:items-center lg:justify-between flex-col justify-center">
-        <span class="w-full text-center">Đang Xem <strong>{{ (page() - 1) * pageSize() + 1 }}</strong> -
-          <strong>{{ page() * pageSize() > total() ? total() : page() * pageSize() }}</strong>
-          trong số {{ total() }} mục, {{ page() }}/{{pageCount()}} Trang</span>
-        <div class="w-full flex flex-row space-x-2 items-center lg:justify-end justify-center">
-          <span class="font-bold text-blue-600" [matMenuTriggerFor]="menu1" #menuHienthi="matMenuTrigger">Hiện
-            Thị : {{pageSize()}} mục</span>
-          <mat-menu #menu1="matMenu">
-            <div class="w-full flex flex-row space-x-2 p-4" (click)="$event.stopPropagation()">
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                <mat-label>Số lượng</mat-label>
-                <input matInput [(ngModel)]="pageSize" [ngModelOptions]="{ standalone: true }"
-                  placeholder="Vui lòng Nhập Số Lượng" />
-              </mat-form-field>
-              <button mat-icon-button color="primary" (click)="onPageSizeChange(pageSize(),menuHienthi)">
-                <mat-icon>published_with_changes</mat-icon>
-              </button>
-            </div>
-          </mat-menu>
-          <div class="pagination-controls">
-            <button mat-icon-button color="primary" [disabled]="page() === 1" (click)="onPreviousPage()">
-              <mat-icon>keyboard_arrow_left</mat-icon>
-            </button>
-            <button mat-icon-button color="primary" [disabled]="page() === pageCount()" (click)="onNextPage()">
-              <mat-icon>keyboard_arrow_right</mat-icon>
-            </button>
-          </div>
-        </div>
+          }
+        </td>
+      </ng-container>
+    }
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr class="border" mat-row *matRowDef="let row; columns: displayedColumns;"
+      class="hover:bg-slate-50 {{CheckItemInEdit(row)?'!bg-blue-50':''}}" (click)="AddToEdit(row);">
+    </tr>
+    <tr class="mat-row border" *matNoDataRow>
+      <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
+    </tr>
+  </table>
+</div>
+<div class="cursor-pointer border rounded-lg px-3 p-1 flex flex-row space-x-2 items-center justify-between">
+  <div
+    class="w-full flex lg:p-0 p-2 lg:flex-row lg:space-x-2 lg:items-center lg:justify-between flex-col justify-center">
+    <span class="w-full text-center">Đang Xem <strong>{{ (page() - 1) * pageSize() + 1 }}</strong> -
+    <strong>{{ page() * pageSize() > total() ? total() : page() * pageSize() }}</strong>
+  trong số {{ total() }} mục, {{ page() }}/{{pageCount()}} Trang</span>
+  <div class="w-full flex flex-row space-x-2 items-center lg:justify-end justify-center">
+    <span class="font-bold text-blue-600" [matMenuTriggerFor]="menu1" #menuHienthi="matMenuTrigger">Hiện
+    Thị : {{pageSize()}} mục</span>
+    <mat-menu #menu1="matMenu">
+      <div class="w-full flex flex-row space-x-2 p-4" (click)="$event.stopPropagation()">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Số lượng</mat-label>
+          <input matInput [(ngModel)]="pageSize" [ngModelOptions]="{ standalone: true }"
+            placeholder="Vui lòng Nhập Số Lượng" />
+        </mat-form-field>
+        <button mat-icon-button color="primary" (click)="onPageSizeChange(pageSize(),menuHienthi)">
+          <mat-icon>published_with_changes</mat-icon>
+        </button>
       </div>
+    </mat-menu>
+    <div class="pagination-controls">
+      <button mat-icon-button color="primary" [disabled]="page() === 1" (click)="onPreviousPage()">
+        <mat-icon>keyboard_arrow_left</mat-icon>
+      </button>
+      <button mat-icon-button color="primary" [disabled]="page() === pageCount()" (click)="onNextPage()">
+        <mat-icon>keyboard_arrow_right</mat-icon>
+      </button>
     </div>
   </div>
+</div>
+</div>
+</div>
 </mat-drawer-container>
 
 <ng-template #DeleteDialog>

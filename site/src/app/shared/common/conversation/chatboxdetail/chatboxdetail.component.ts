@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import moment from 'moment';
 import 'moment/locale/vi';
@@ -6,9 +6,7 @@ moment.locale('vi');
 @Component({
   selector: 'app-chatboxdetail',
   standalone: true,
-  imports: [
-    CommonModule,
-  ],
+  imports: [],
   templateUrl: './chatboxdetail.component.html',
   styleUrl: './chatboxdetail.component.scss'
 })

@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ListLandingpageComponent } from '../listlandingpage/listlandingpage.component';
 import { LandingpageService } from '../landingpage.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -17,17 +17,16 @@ import { EditorComponent } from '../editor/editor.component';
   @Component({
     selector: 'app-detaillandingpage',
     imports: [
-      MatFormFieldModule,
-      MatInputModule,
-      FormsModule,
-      MatIconModule,
-      MatButtonModule,
-      MatSelectModule,
-      MatDialogModule,
-      CommonModule,
-      MatSlideToggleModule,
-      EditorComponent
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSlideToggleModule,
+    EditorComponent
+],
     templateUrl: './detaillandingpage.component.html',
     styleUrl: './detaillandingpage.component.scss'
   })

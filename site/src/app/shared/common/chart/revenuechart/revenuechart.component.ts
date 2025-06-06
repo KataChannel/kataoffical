@@ -10,7 +10,7 @@ import {
   ApexLegend,
   NgApexchartsModule,
 } from 'ng-apexcharts';
-import { CommonModule } from '@angular/common';
+
 import { Component, Input, SimpleChanges, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -36,7 +36,6 @@ export type ChartOptions = Partial<{
 @Component({
   selector: 'app-revenuechart',
   imports: [
-    CommonModule,
     NgApexchartsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -45,7 +44,7 @@ export type ChartOptions = Partial<{
     MatIconModule,
     MatMenuModule,
     MatDatepickerModule
-  ],
+],
   templateUrl: './revenuechart.component.html',
   styleUrls: ['./revenuechart.component.scss'],
 })

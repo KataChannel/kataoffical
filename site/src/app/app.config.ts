@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection, isDevMode } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection, isDevMode, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withRouterConfig } from '@angular/router';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
@@ -22,6 +22,7 @@ export const MY_DATE_FORMATS = {
 };
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideZonelessChangeDetection(),
     provideNativeDateAdapter(),
     { provide: HTTP_INTERCEPTORS, useClass: HeaderStripperInterceptor, multi: true },
     { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig },

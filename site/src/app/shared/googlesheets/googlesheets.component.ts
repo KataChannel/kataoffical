@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -13,13 +13,12 @@ import { StorageService } from '../utils/storage.service';
 @Component({
   selector: 'app-googlesheets',
   imports: [
-    CommonModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
     MatIconModule,
-    MatButtonModule,
-  ],
+    MatButtonModule
+],
   templateUrl: './googlesheets.component.html',
   styleUrl: './googlesheets.component.scss'
 })

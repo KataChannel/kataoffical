@@ -3,7 +3,7 @@ import { Danhmucs } from '../../shared/mockdata/danhmuc';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { BreadscrumbComponent } from '../../shared/common/breadscrumb/breadscrumb.component';
 import { Sanphams } from '../../shared/mockdata/sanpham';
-import { CommonModule } from '@angular/common';
+
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
@@ -14,15 +14,14 @@ import { SwiperComponent } from '../../shared/common/swiper/swiper.component';
 @Component({
   selector: 'app-danhmucgioithieu',
   imports: [
-   BreadscrumbComponent,
-   CommonModule,
-   MatInputModule,
-   MatFormFieldModule,
-   FormsModule,
-   MatIconModule,
-   MatButtonModule,
-   SwiperComponent
-  ],
+    BreadscrumbComponent,
+    MatInputModule,
+    MatFormFieldModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    SwiperComponent
+],
   templateUrl: './danhmucgioithieu.component.html',
   styleUrl: './danhmucgioithieu.component.scss'
 })

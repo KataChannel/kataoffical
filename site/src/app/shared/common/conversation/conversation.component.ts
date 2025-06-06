@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { AfterViewChecked, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -19,15 +19,14 @@ import { UserService } from '../../../admin/user/user.service';
   selector: 'app-conversation',
   standalone: true,
   imports: [
-    MatButtonModule, 
-    MatIconModule, 
-    CommonModule, 
+    MatButtonModule,
+    MatIconModule,
     FormsModule,
     RouterModule,
     MatInputModule,
     MatSidenavModule,
-    ChatboxdetailComponent,
-  ],
+    ChatboxdetailComponent
+],
   templateUrl: './conversation.component.html',
   styleUrl: './conversation.component.scss'
 })

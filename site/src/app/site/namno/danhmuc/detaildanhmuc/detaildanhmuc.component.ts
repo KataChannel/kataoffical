@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ListDanhmucComponent } from '../listdanhmuc/listdanhmuc.component';
 import { DanhmucService } from '../danhmuc.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -17,16 +17,15 @@ import { convertToSlug } from '../../../../shared/utils/shared.utils';
   @Component({
     selector: 'app-detaildanhmuc',
     imports: [
-      MatFormFieldModule,
-      MatInputModule,
-      FormsModule,
-      MatIconModule,
-      MatButtonModule,
-      MatSelectModule,
-      MatDialogModule,
-      CommonModule,
-      MatSlideToggleModule
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSlideToggleModule
+],
     templateUrl: './detaildanhmuc.component.html',
     styleUrl: './detaildanhmuc.component.scss'
   })

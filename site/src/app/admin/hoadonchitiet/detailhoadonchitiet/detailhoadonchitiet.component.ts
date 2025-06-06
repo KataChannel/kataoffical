@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ListHoadonchitietComponent } from '../listhoadonchitiet/listhoadonchitiet.component';
 import { HoadonchitietService } from '../hoadonchitiet.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -16,16 +16,15 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   @Component({
     selector: 'app-detailhoadonchitiet',
     imports: [
-      MatFormFieldModule,
-      MatInputModule,
-      FormsModule,
-      MatIconModule,
-      MatButtonModule,
-      MatSelectModule,
-      MatDialogModule,
-      CommonModule,
-      MatSlideToggleModule
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSlideToggleModule
+],
     templateUrl: './detailhoadonchitiet.component.html',
     styleUrl: './detailhoadonchitiet.component.scss'
   })

@@ -1,5 +1,5 @@
 import { FlatTreeControl, NestedTreeControl } from '@angular/cdk/tree';
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, effect, EventEmitter, inject, Input, OnChanges, Output, Signal, SimpleChanges } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,12 +14,12 @@ import { UpdatedialogComponent } from '../dialog/updatedialog/updatedialog.compo
   standalone: true,
   imports: [
     MatTreeModule,
-    MatButtonModule, 
+    MatButtonModule,
     MatIconModule,
-    CommonModule,
     RouterLink,
     RouterLinkActive,
-    MatMenuModule],
+    MatMenuModule
+],
   templateUrl: './treemenu.component.html',
   styleUrl: './treemenu.component.scss',
   changeDetection:ChangeDetectionStrategy.OnPush

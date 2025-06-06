@@ -4,59 +4,65 @@
   </button>
   <div class="font-bold">{{ DetailMenu()?.title || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
-    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleMenuAction()">
-      <mat-icon>save</mat-icon>
-    </button>
-    <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
-      <mat-icon>edit</mat-icon>
-    </button>
+    @if (isEdit()) {
+      <button mat-icon-button color="primary" (click)="handleMenuAction()">
+        <mat-icon>save</mat-icon>
+      </button>
+    }
+    @if (!isEdit()) {
+      <button mat-icon-button color="primary" (click)="toggleEdit()">
+        <mat-icon>edit</mat-icon>
+      </button>
+    }
   </div>
 </div>
 
 <div class="relative flex flex-col w-full p-4 overflow-auto">
-    <div class="w-full flex flex-col gap-2">
-      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-        <mat-label>Tiêu Đề</mat-label>
-        <input matInput [(ngModel)]="DetailMenu().title" (input)="FillSlug()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
-      </mat-form-field>
-      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-        <mat-label>Slug</mat-label>
-        <input matInput [(ngModel)]="DetailMenu().slug" [disabled]="!isEdit()" placeholder="Vui lòng nhập Slug"/>
-      </mat-form-field>
+  <div class="w-full flex flex-col gap-2">
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Tiêu Đề</mat-label>
+      <input matInput [(ngModel)]="DetailMenu().title" (input)="FillSlug()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Slug</mat-label>
+      <input matInput [(ngModel)]="DetailMenu().slug" [disabled]="!isEdit()" placeholder="Vui lòng nhập Slug"/>
+    </mat-form-field>
 
-      <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-        <mat-label>Loại Menu</mat-label>
-        <mat-select [(ngModel)]="DetailMenu().serviceType" [disabled]="!isEdit()">
-                <mat-option *ngFor="let item of serviceType|keyvalue" [value]="item.key">{{item.value}}</mat-option>
-        </mat-select>
-      </mat-form-field>
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Loại Menu</mat-label>
+      <mat-select [(ngModel)]="DetailMenu().serviceType" [disabled]="!isEdit()">
+        @for (item of serviceType|keyvalue; track item) {
+          <mat-option [value]="item.key">{{item.value}}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
 
-      @defer () {
-        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-          <mat-label>Thư Mục Cha</mat-label>
-          <mat-select [(ngModel)]="DetailMenu().parentId" [disabled]="!isEdit()">
-            <div class="w-full flex flex-col">
-              <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
-                <input matInput (keyup)="DoFilterMenu($event)"  placeholder="Tìm Kiếm" />
-              </mat-form-field>
-              <div class="overflow-y-auto max-h-44">
-                @for (item of ListMenu; track item.id) {
-                  <mat-option [value]="item.id">{{item.title}}</mat-option>
-                 }
-                 @empty {
-                  <span class="p-2 text-center">Không tìm thấy dữ liệu.</span>
-                  }
-        
-              </div>
-            </div>
-          </mat-select>
-        </mat-form-field>
-      }
-      <mat-form-field appearance="outline">
-        <mat-label>Vị Trí</mat-label>
-        <input matInput type="number" [(ngModel)]="DetailMenu().order" [disabled]="!isEdit()" placeholder="Vui lòng nhập Slug"/>
-      </mat-form-field>
-      <mat-slide-toggle [(ngModel)]="DetailMenu().isActive" [disabled]="!isEdit()">{{DetailMenu().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
-        
-    </div>
+    @defer () {
+    <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+      <mat-label>Thư Mục Cha</mat-label>
+      <mat-select [(ngModel)]="DetailMenu().parentId" [disabled]="!isEdit()">
+        <div class="w-full flex flex-col">
+          <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
+            <input matInput (keyup)="DoFilterMenu($event)"  placeholder="Tìm Kiếm" />
+          </mat-form-field>
+          <div class="overflow-y-auto max-h-44">
+            @for (item of ListMenu; track item.id) {
+              <mat-option [value]="item.id">{{item.title}}</mat-option>
+            }
+            @empty {
+            <span class="p-2 text-center">Không tìm thấy dữ liệu.</span>
+          }
+
+        </div>
+      </div>
+    </mat-select>
+  </mat-form-field>
+}
+<mat-form-field appearance="outline">
+  <mat-label>Vị Trí</mat-label>
+  <input matInput type="number" [(ngModel)]="DetailMenu().order" [disabled]="!isEdit()" placeholder="Vui lòng nhập Slug"/>
+</mat-form-field>
+<mat-slide-toggle [(ngModel)]="DetailMenu().isActive" [disabled]="!isEdit()">{{DetailMenu().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+
+</div>
 </div>
