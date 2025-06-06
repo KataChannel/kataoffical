@@ -312,6 +312,19 @@ export class ListDathangComponent {
        // window.location.reload();
       });
   }
+  UpdateDathang(item:any){
+    item.status = 'dagiao';
+    this._DathangService.updateDathang(item).then(() => {
+      this._snackBar.open('Cập Nhật Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      // window.location.reload();
+    });
+  }
+
   async ImporExcel(event: any) {
   const data = await readExcelFile(event)
   this.DoImportData(data);

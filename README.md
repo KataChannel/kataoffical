@@ -5,6 +5,9 @@ git push
 
 # server
 ssh root@116.118.49.243 
+chmod +x autologin.sh
+./autologin.sh
+
 ### Tạo Cấu Hình
 ssh-keygen -t rsa -b 4096
 ssh-copy-id root@<địa-chỉ-máy-chủ>
