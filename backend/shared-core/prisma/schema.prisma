@@ -250,9 +250,11 @@ model Dexuat {
   nguoidexuat   String?
   bophan        String?
   vitri         String?
+  attachments   Json?     @default("[]")// Lưu trữ đường dẫn hoặc thông tin về file đính kèm
+  ghichu        String?
   tamung        Int? @default(0)
-  codeId      String @unique // Mã đề xuất duy nhất
-  order      Int? @default(1)
+  codeId        String @unique // Mã đề xuất duy nhất
+  order        Int? @default(1)
   isActive  Boolean @default(true)
   createdById String
   createdBy  User?  @relation(fields: [createdById], references: [id])

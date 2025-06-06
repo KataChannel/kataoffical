@@ -1,2 +1,0 @@
-import './polyfills.server.mjs';
-import{$b as i,_b as o,vc as c,yb as n}from"./chunk-Q2H67YNW.mjs";import"./chunk-KB5IWD3E.mjs";import"./chunk-RIAI3ORJ.mjs";var s=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=n({type:t,selectors:[["app-security"]],decls:2,vars:0,template:function(e,a){e&1&&(o(0,"p"),c(1,"security works!"),i())},encapsulation:2})};export{s as SecurityComponent};

@@ -29,6 +29,7 @@ export declare class DexuatService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        ghichu: string | null;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -41,6 +42,7 @@ export declare class DexuatService {
         tamung: number | null;
         codeId: string;
         createdById: string;
+        attachments: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     reorderDexuats(dexuatIds: string[]): Promise<void>;
     findAll(): Promise<{
@@ -50,6 +52,7 @@ export declare class DexuatService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        ghichu: string | null;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -62,6 +65,7 @@ export declare class DexuatService {
         tamung: number | null;
         codeId: string;
         createdById: string;
+        attachments: import(".prisma/client/runtime/library").JsonValue | null;
     }[]>;
     findby(param: any): Promise<{
         chitiet: {
@@ -82,6 +86,7 @@ export declare class DexuatService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        ghichu: string | null;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -94,6 +99,7 @@ export declare class DexuatService {
         tamung: number | null;
         codeId: string;
         createdById: string;
+        attachments: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     findOne(id: string): Promise<{
         id: string;
@@ -102,6 +108,7 @@ export declare class DexuatService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        ghichu: string | null;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -114,6 +121,7 @@ export declare class DexuatService {
         tamung: number | null;
         codeId: string;
         createdById: string;
+        attachments: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
     update(id: string, data: any): Promise<({
         chitiet: {
@@ -134,6 +142,7 @@ export declare class DexuatService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        ghichu: string | null;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -146,6 +155,7 @@ export declare class DexuatService {
         tamung: number | null;
         codeId: string;
         createdById: string;
+        attachments: import(".prisma/client/runtime/library").JsonValue | null;
     }) | null>;
     remove(id: string): Promise<{
         id: string;
@@ -154,6 +164,7 @@ export declare class DexuatService {
         updatedAt: Date;
         title: string;
         order: number | null;
+        ghichu: string | null;
         tienbangchu: string | null;
         tongtien: number | null;
         tongchi: number | null;
@@ -166,5 +177,6 @@ export declare class DexuatService {
         tamung: number | null;
         codeId: string;
         createdById: string;
+        attachments: import(".prisma/client/runtime/library").JsonValue | null;
     }>;
 }

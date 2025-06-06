@@ -16,6 +16,9 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ListType } from '../../hotro/listhotro/listhotro';
 import { toVietnameseWords } from '../../../shared/utils/tiente.utils';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { UploadresourceComponent } from '../../../shared/common/uploadresource/uploadresource.component';
+import { environment } from '../../../../environments/environment.development';
   @Component({
     selector: 'app-detaildexuat',
     imports: [
@@ -28,7 +31,9 @@ import { toVietnameseWords } from '../../../shared/utils/tiente.utils';
       MatDialogModule,
       CommonModule,
       MatSlideToggleModule,
-      MatDatepickerModule
+      MatDatepickerModule,
+      MatSidenavModule,
+      UploadresourceComponent
     ],
     templateUrl: './detaildexuat.component.html',
     styleUrl: './detaildexuat.component.scss'
@@ -39,7 +44,10 @@ import { toVietnameseWords } from '../../../shared/utils/tiente.utils';
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
-
+    uploadUrl: string = `https://apiaffiliate.tazagroup.vn/minio/upload`;
+    category: string = 'dexuat';
+    group: string = 'hrm';
+    ImageURL:any = environment.ImageURL;
     constructor(){
       this._route.paramMap.subscribe((params) => {
         const id = params.get('id');
@@ -250,4 +258,26 @@ import { toVietnameseWords } from '../../../shared/utils/tiente.utils';
         return v;
       })
     }
+
+  filesSelectedEvent(event:any) {
+      console.log('Files selected:', event);
+  }
+  uploadSuccessEvent(event:any) {
+    this.DetailDexuat.update((v:any)=>{
+        v.attachments.push(event.imageUrl);
+      return v;
+    })
+    this._DexuatService.updateDexuat(this.DetailDexuat()).then(() => {
+      this._snackBar.open('Tải lên thành công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    });
+  }
+  uploadErrorEvent(event:any) {
+      console.error('Upload failed:', event);
+  }
+
   }

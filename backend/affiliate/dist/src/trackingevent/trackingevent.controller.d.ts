@@ -27,6 +27,7 @@ export declare class TrackingeventController {
             updatedAt: Date;
             description: string | null;
             order: number | null;
+            url: string | null;
             landingPageId: string | null;
             campaignName: string | null;
             utmSource: string | null;
@@ -34,7 +35,6 @@ export declare class TrackingeventController {
             utmCampaign: string | null;
             utmTerm: string | null;
             utmContent: string | null;
-            url: string | null;
         } | null;
     } & {
         id: string;
