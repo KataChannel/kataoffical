@@ -151,7 +151,7 @@
                         }
                         @case ('action') {
                         <span class="max-w-40 line-clamp-4">
-                            <button mat-flat-button color="primary" (click)="UpdateDathang(row)">
+                            <button *ngIf="row.status!=='dagiao'"  mat-flat-button color="primary" (click)="UpdateDathang(row)">
                                 <span>Đã Giao</span>
                             </button>
                             <!-- <button mat-icon-button color="warn" (click)="openDeleteDialog(DeleteDialog,row)">
