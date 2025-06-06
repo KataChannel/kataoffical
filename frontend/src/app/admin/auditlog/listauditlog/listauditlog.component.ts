@@ -377,20 +377,20 @@ export class ListAuditlogComponent implements OnInit {
       size = this.total();
     }
     this._AuditlogService.page.set(1);
-    this._AuditlogService.getAllAuditlog(size, true);
+    this._AuditlogService.getAuditlogBy(this.param);
     menuHienthi.closeMenu();
   }
   onPreviousPage(){
     if (this.page() > 1) {
       this._AuditlogService.page.set(this.page() - 1);
-      this._AuditlogService.getAllAuditlog(this.pageSize(), true);
+      this._AuditlogService.getAuditlogBy(this.param);
     }
   }
 
   onNextPage(){
     if (this.page() < this.pageCount()) {
       this._AuditlogService.page.set(this.page() + 1);
-      this._AuditlogService.getAllAuditlog(this.pageSize(), true);
+      this._AuditlogService.getAuditlogBy(this.param);
     }
   }
 }

@@ -240,6 +240,73 @@ export class DathangService {
   }
 
 
+    async findby(param: any) {
+      const { page = 1, pageSize = 50, isOne, ...where } = param;
+      const whereClause: any = {};
+
+      // Filter by title if provided
+      if (where.subtitle) {
+        whereClause.subtitle = { contains: where.subtitle, mode: 'insensitive' };
+      }
+      // Filter by ngaynhan (order receive date)
+      if (where.Batdau || where.Ketthuc) {
+        whereClause.ngaynhan = {};
+        if (where.Batdau) {
+          whereClause.ngaynhan.gte = moment(where.Batdau)
+        .tz('Asia/Ho_Chi_Minh')
+        .startOf('day')
+        .toDate();
+        }
+        if (where.Ketthuc) {
+          whereClause.ngaynhan.lte = moment(where.Ketthuc)
+        .tz('Asia/Ho_Chi_Minh')
+        .endOf('day')
+        .toDate();
+        }
+      }
+      if (isOne) {
+        const oneResult = await this.prisma.dathang.findFirst({
+          where: whereClause,
+          include: {
+            sanpham: {
+              include: { sanpham: true },
+            },
+            nhacungcap: true,
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+        return oneResult;
+      }
+
+      const skip = (page - 1) * pageSize;
+      const [dathangs, total] = await Promise.all([
+        this.prisma.dathang.findMany({
+          where: whereClause,
+          include: {
+            sanpham: {
+              include: { sanpham: true },
+            },
+            nhacungcap: true,
+          },
+          skip,
+          take: pageSize,
+          orderBy: { createdAt: 'desc' },
+        }),
+        this.prisma.dathang.count({ where: whereClause }),
+      ]);
+
+      return {
+        data: dathangs,
+        page,
+        pageSize,
+        total,
+        pageCount: Math.ceil(total / pageSize),
+      };
+    }
+
+
+
+
   async create(dto: any) {
     const madathang = await this.generateNextOrderCode();
     return this.prisma.$transaction(async (prisma) => {      

@@ -52,14 +52,14 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter123/se
           this._router.navigate(['/admin/khachhang']);
           this._ListkhachhangComponent.drawer.close();
         }
-        if(id === '0'){
+        if(id === 'new'){
           this.DetailKhachhang.set({loaikh:'khachsi'});
           this._ListkhachhangComponent.drawer.open();
           this.isEdit.update(value => !value);
-          this._router.navigate(['/admin/khachhang', "0"]);
+          this._router.navigate(['/admin/khachhang', 'new']);
         }
         else{
-            await this._KhachhangService.searchfield({id:id});
+            await this._KhachhangService.getKhachhangBy({id:id,isOne: true});
             this.ListFilter = this._KhachhangService.DetailKhachhang().banggia;
             this._ListkhachhangComponent.drawer.open();
             this._router.navigate(['/admin/khachhang', id]);
@@ -75,12 +75,13 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter123/se
     async ngOnInit() {       
     }
     async handleKhachhangAction() {
-      if (this.khachhangId() === '0') {
+      if (this.khachhangId() === 'new') {
         await this.createKhachhang();
       }
       else {
         await this.updateKhachhang();
       }
+      window.location.reload();
     }
     private async createKhachhang() {
       try {

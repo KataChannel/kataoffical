@@ -644,6 +644,7 @@ export class ListDonhangComponent {
       // Find customer
       const khachhang = await this._KhachhangService.getKhachhangBy({
         makh: firstItem.makh,
+        isOne: true
       });
       if (!khachhang) {
         throw new Error(`Không tìm thấy khách hàng với mã ${firstItem.makh}`);

@@ -36,6 +36,9 @@ let DathangController = class DathangController {
     findAll() {
         return this.dathangService.findAll();
     }
+    findby(param) {
+        return this.dathangService.findby(param);
+    }
     findOne(id) {
         return this.dathangService.findOne(id);
     }
@@ -87,6 +90,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], DathangController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Post)('findby'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], DathangController.prototype, "findby", null);
 __decorate([
     (0, common_1.Get)('findid/:id'),
     __param(0, (0, common_1.Param)('id')),

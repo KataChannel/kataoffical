@@ -1,114 +1,147 @@
-import {  Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
-import { io } from 'socket.io-client';
 import { openDB } from 'idb';
+import { ErrorLogService } from '../../shared/services/errorlog.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { SharedSocketService } from '../../shared/services/sharedsocket.service';
 @Injectable({
   providedIn: 'root'
 })
 export class KhachhangService {
+  private socket: any;
   constructor(
     private _StorageService: StorageService,
     private router: Router,
-  ) { }
+    private _ErrorLogService: ErrorLogService,
+    private _sharedSocketService: SharedSocketService,
+  ) {
+    this.socket = this._sharedSocketService.getSocket();
+    this.listenKhachhangUpdates();
+  }
+  private _snackBar: MatSnackBar = inject(MatSnackBar);
   ListKhachhang = signal<any[]>([]);
   DetailKhachhang = signal<any>({});
+  page = signal<number>(1);
+  pageCount = signal<number>(1);
+  total = signal<number>(0);
+  pageSize = signal<number>(50); // Mặc định 10 mục mỗi trang
   khachhangId = signal<string | null>(null);
+
+  // Khởi tạo IndexedDB
+  private async initDB() {
+    return await openDB('KhachhangDB', 4, {
+      upgrade(db, oldVersion) {
+        if (oldVersion < 1) {
+          db.createObjectStore('khachhangs', { keyPath: 'id' });
+        }
+        if (oldVersion < 3) {
+          if (db.objectStoreNames.contains('khachhangs')) {
+            db.deleteObjectStore('khachhangs');
+          }
+          if (db.objectStoreNames.contains('pagination')) {
+            db.deleteObjectStore('pagination');
+          }
+          db.createObjectStore('khachhangs', { keyPath: 'id' });
+        }
+        if (oldVersion < 4) {
+          // Không cần xóa store, vì cấu trúc vẫn tương thích
+          // Chỉ cần đảm bảo pagination có thêm pageSize
+        }
+      },
+    });
+  }
+
+  // Lưu dữ liệu và phân trang vào IndexedDB
+  private async saveKhachhangs(data: any[], pagination: { page: number, pageCount: number, total: number, pageSize: number }) {
+    const db = await this.initDB();
+    const tx = db.transaction('khachhangs', 'readwrite');
+    const store = tx.objectStore('khachhangs');
+    await store.clear();
+    await store.put({ id: 'data', khachhangs: data, pagination });
+    await tx.done;
+  }
+
+  // Lấy dữ liệu và phân trang từ cache
+  private async getCachedData() {
+    const db = await this.initDB();
+    const cached = await db.get('khachhangs', 'data');
+    if (cached && cached.khachhangs) {
+      return {
+        khachhangs: cached.khachhangs,
+        pagination: cached.pagination || { page: 1, pageCount: 1, total: cached.khachhangs.length, pageSize: 10 }
+      };
+    }
+    return { khachhangs: [], pagination: { page: 1, pageCount: 1, total: 0, pageSize: 10 } };
+  }
+
   setKhachhangId(id: string | null) {
     this.khachhangId.set(id);
   }
-  private socket = io(`${environment.APIURL}`,{
-    transports: ['websocket', 'polling'], // Thêm polling để fallback
-    reconnectionAttempts: 5, // Giới hạn reconnect nếu fail
-    timeout: 5000, // Timeout 5s
-  });
-  async ImportKhachhang(dulieu: any) {
-    try {
-      const options = {
-          method:'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
-          },
-          body: JSON.stringify(dulieu),
-        };
-        const response = await fetch(`${environment.APIURL}/khachhang/import`, options);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (!response.ok) {
-          this.handleError(response.status);
-        }
-        this.getAllKhachhang()
-        this.khachhangId.set(data.id)
-    } catch (error) {
-        return console.error(error);
+    async ImportKhachhang(dulieu: any) {
+      try {
+        const options = {
+            method:'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+            },
+            body: JSON.stringify(dulieu),
+          };
+          const response = await fetch(`${environment.APIURL}/khachhang/import`, options);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          if (!response.ok) {
+            this.handleError(response.status);
+          }
+          this.getAllKhachhang()
+          this.khachhangId.set(data.id)
+      } catch (error) {
+          return console.error(error);
+      }
     }
-  }
   async CreateKhachhang(dulieu: any) {
     try {
       const options = {
-          method:'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(dulieu),
-        };
-        const response = await fetch(`${environment.APIURL}/khachhang`, options);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (!response.ok) {
-          this.handleError(response.status);
-        }
-        this.getAllKhachhang()
-        this.khachhangId.set(data.id)
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+        body: JSON.stringify(dulieu),
+      };
+      const response = await fetch(`${environment.APIURL}/khachhang`, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      this.getAllKhachhang(this.pageSize());
+      this.khachhangId.set(data.id);
     } catch (error) {
-        return console.error(error);
-    }
-  }
-  async searchfield(dulieu: any) {
-    try {
-      const options = {
-          method:'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(dulieu),
-        };
-        const response = await fetch(`${environment.APIURL}/khachhang/searchfield`, options);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (!response.ok) {
-          this.handleError(response.status);
-        }      
-        this.DetailKhachhang.set(data)
-        this.khachhangId.set(data.id)
-    } catch (error) {
-        return console.error(error);
+      this._ErrorLogService.logError('Failed to CreateKhachhang', error);
+      console.error(error);
     }
   }
 
-  async getAllKhachhang() {
-    const db = await this.initDB();
+  async getAllKhachhang(pageSize: number = this.pageSize(), forceRefresh: boolean = false) {
+    this.pageSize.set(pageSize);
+    const cached = await this.getCachedData();   
+    const updatedAtCache = this._StorageService.getItem('khachhangs_updatedAt') || '0';    
     
-    // 🛑 Kiểm tra cache từ IndexedDB trước
-    const cachedData = await db.getAll('khachhangs');
-    const updatedAtCache = this._StorageService.getItem('khachhangs_updatedAt') || '0';
-    
-    // ✅ Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
-    if (cachedData.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) { // 5 phút cache TTL
-      this.ListKhachhang.set(cachedData);
-      return cachedData;
+    // Nếu không yêu cầu tải mới và cache hợp lệ, trả về cache
+    if (!forceRefresh && cached.khachhangs.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) {
+      this.ListKhachhang.set(cached.khachhangs);
+      this.page.set(cached.pagination.page);
+      this.pageCount.set(cached.pagination.pageCount);
+      this.total.set(cached.pagination.total);
+      this.pageSize.set(cached.pagination.pageSize);
+      return cached.khachhangs;
     }
-  
+
     try {
-      // ✅ Gọi API chỉ để lấy `updatedAt` mới nhất
       const options = {
         method: 'GET',
         headers: {
@@ -116,77 +149,111 @@ export class KhachhangService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-      
-      const lastUpdatedResponse = await fetch(`${environment.APIURL}/last-updated?table=khachhang`, options);
-      if (!lastUpdatedResponse.ok) {
-        this.handleError(lastUpdatedResponse.status);
-        return cachedData;
-      }    
-      const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-      // ✅ Nếu cache vẫn mới, không cần tải lại dữ liệu
-      if (updatedAtServer <= updatedAtCache) {
-        this.ListKhachhang.set(cachedData);
-        return cachedData;
+
+      // Kiểm tra thời gian cập nhật từ server, trừ khi được yêu cầu forceRefresh
+      if (!forceRefresh) {
+        const lastUpdatedResponse = await fetch(`${environment.APIURL}/khachhang/lastupdated`, options);
+        if (!lastUpdatedResponse.ok) {
+          this.handleError(lastUpdatedResponse.status);
+          this.ListKhachhang.set(cached.khachhangs);
+          this.page.set(cached.pagination.page);
+          this.pageCount.set(cached.pagination.pageCount);
+          this.total.set(cached.pagination.total);
+          this.pageSize.set(cached.pagination.pageSize);
+          return cached.khachhangs;
+        }
+
+        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
+
+        // Nếu cache còn mới, trả về cache
+        if (updatedAtServer <= updatedAtCache) {
+          this.ListKhachhang.set(cached.khachhangs);
+          this.page.set(cached.pagination.page);
+          this.pageCount.set(cached.pagination.pageCount);
+          this.total.set(cached.pagination.total);
+          this.pageSize.set(cached.pagination.pageSize);
+          return cached.khachhangs;
+        }
       }
-      console.log(updatedAtServer, updatedAtCache); 
-      // ✅ Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
-      const response = await fetch(`${environment.APIURL}/khachhang`, options);
+
+      // Tải dữ liệu mới từ server
+      const query = new URLSearchParams({
+        page: this.page().toString(),
+        limit: pageSize.toString()
+      });
+      const response = await fetch(`${environment.APIURL}/khachhang?${query}`, options);
       if (!response.ok) {
         this.handleError(response.status);
-        return cachedData;
+        this.ListKhachhang.set(cached.khachhangs);
+        this.page.set(cached.pagination.page);
+        this.pageCount.set(cached.pagination.pageCount);
+        this.total.set(cached.pagination.total);
+        this.pageSize.set(cached.pagination.pageSize);
+        return cached.khachhangs;
+      }
+
+      const data = await response.json();
+      await this.saveKhachhangs(data.data, {
+        page: data.page || 1,
+        pageCount: data.pageCount || 1,
+        total: data.total || data.data.length,
+        pageSize
+      });
+      // Với forceRefresh, cập nhật luôn với thời gian mới từ server, nếu không thì sử dụng thời gian lấy từ lastUpdatedResponse
+      if (!forceRefresh) {
+        const lastUpdatedResponse = await fetch(`${environment.APIURL}/khachhang/lastupdated`, options);
+        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
+        this._StorageService.setItem('khachhangs_updatedAt', updatedAtServer);
+      } else {
+        this._StorageService.setItem('khachhangs_updatedAt', new Date().toISOString());
+      }
+      this.ListKhachhang.set(data.data);
+      this.page.set(data.page || 1);
+      this.pageCount.set(data.pageCount || 1);
+      this.total.set(data.total || data.data.length);
+      this.pageSize.set(pageSize);
+      return data.data;
+    } catch (error) {
+      this._ErrorLogService.logError('Failed to getAllKhachhang', error);
+      console.error(error);
+      this.ListKhachhang.set(cached.khachhangs);
+      this.page.set(cached.pagination.page);
+      this.pageCount.set(cached.pagination.pageCount);
+      this.total.set(cached.pagination.total);
+      this.pageSize.set(cached.pagination.pageSize);
+      return cached.khachhangs;
+    }
+  }
+
+  async getUpdatedCodeIds() {
+    try {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+      };
+      const response = await fetch(`${environment.APIURL}/khachhang/updateCodeIds`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
       }
       const data = await response.json();
-      await this.saveKhachhangs(data);
-      this._StorageService.setItem('khachhangs_updatedAt', updatedAtServer);
-      this.ListKhachhang.set(data);
-      return data;
+      this.getAllKhachhang(this.pageSize());
+      return data.data;
     } catch (error) {
+      this._ErrorLogService.logError('Failed to getUpdatedCodeIds', error);
       console.error(error);
-      return cachedData;
     }
   }
 
-  private handleError(status: number) {
-    let message = 'Lỗi không xác định';
-    switch (status) {
-      case 401:
-        message = 'Vui lòng đăng nhập lại';
-        break;
-      case 403:
-        message = 'Bạn không có quyền truy cập';
-        break;
-      case 500:
-        message = 'Lỗi máy chủ, vui lòng thử lại sau';
-        break;
-    }
-    const result = JSON.stringify({ code: status, title: message });
-    this.router.navigate(['/errorserver'], { queryParams: { data: result } });
-  }
-
-  // 3️⃣ Lắng nghe cập nhật từ WebSocket
   listenKhachhangUpdates() {
+    this.socket.off('khachhang-updated'); // đảm bảo không đăng ký nhiều lần
     this.socket.on('khachhang-updated', async () => {
       console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
+      this._StorageService.removeItem('khachhangs_updatedAt');
       await this.getAllKhachhang();
     });
-  }
-  // Khởi tạo IndexedDB
-  private async initDB() {
-    return await openDB('KhachhangDB', 1, {
-      upgrade(db) {
-        db.createObjectStore('khachhangs', { keyPath: 'id' });
-      },
-    });
-  }
-
-  // Lưu vào IndexedDB
-  private async saveKhachhangs(data: any[]) {
-    const db = await this.initDB();
-    const tx = db.transaction('khachhangs', 'readwrite');
-    const store = tx.objectStore('khachhangs');
-    await store.clear(); // Xóa dữ liệu cũ
-    data.forEach(item => store.put(item));
-    await tx.done;
   }
 
   async getKhachhangBy(param: any) {
@@ -197,75 +264,110 @@ export class KhachhangService {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
-        body: JSON.stringify(param),
+        body: JSON.stringify({ ...param}),
       };
-      const response = await fetch(`${environment.APIURL}/khachhang/findby`, options);      
+      const response = await fetch(`${environment.APIURL}/khachhang/findby`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }
-      const data = await response.json();      
-      return data 
+      const data = await response.json();
+      if (param.isOne === true) {
+        this.DetailKhachhang.set(data);
+        return data;
+      } else {
+        await this.saveKhachhangs(data.data, {
+          page: data.page || 1,
+          pageCount: data.pageCount || 1,
+          total: data.total || data.data.length,
+          pageSize: this.pageSize()
+        });
+        this._StorageService.setItem('khachhangs_updatedAt', new Date().toISOString());
+        this.ListKhachhang.set(data.data);
+        this.page.set(data.page || 1);
+        this.pageCount.set(data.pageCount || 1);
+        this.total.set(data.total || data.data.length);
+        this.pageSize.set(this.pageSize());
+        return data.data;
+      }
     } catch (error) {
-      return console.error(error);
+      this._ErrorLogService.logError('Failed to getKhachhangBy', error);
+      console.error(error);
+      const cached = await this.getCachedData();
+      if (!param.isOne) {
+        this.ListKhachhang.set(cached.khachhangs);
+        this.page.set(cached.pagination.page);
+        this.pageCount.set(cached.pagination.pageCount);
+        this.total.set(cached.pagination.total);
+        this.pageSize.set(cached.pagination.pageSize);
+      }
     }
   }
 
-  async getKhachhangByid(id: any) {
-    try {
-      const options = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
-      const response = await fetch(`${environment.APIURL}/khachhang/findid/${id}`, options);      
-      if (!response.ok) {
-        this.handleError(response.status);
-      }
-      const data = await response.json();      
-      this.DetailKhachhang.set(data)
-    } catch (error) {
-      return console.error(error);
-    }
-  }
   async updateKhachhang(dulieu: any) {
     try {
       const options = {
-          method:'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(dulieu),
-        };
-        const response = await fetch(`${environment.APIURL}/khachhang/${dulieu.id}`, options);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (!response.ok) {
-          this.handleError(response.status);
-        }
-        this.getAllKhachhang()
-        this.searchfield({id:dulieu.id})
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+        body: JSON.stringify(dulieu),
+      };
+      const response = await fetch(`${environment.APIURL}/khachhang/${dulieu.id}`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      const data = await response.json();
+      this.getAllKhachhang(this.pageSize());
+      this.getKhachhangBy({ id: data.id, isOne: true });
     } catch (error) {
-        return console.error(error);
+      this._ErrorLogService.logError('Failed to updateKhachhang', error);
+      console.error(error);
     }
   }
-  async DeleteKhachhang(item:any) {    
+
+  async DeleteKhachhang(item: any) {
     try {
-        const options = {
-            method:'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          };
-          const response = await fetch(`${environment.APIURL}/khachhang/${item.id}`, options);
-          if (!response.ok) {
-            this.handleError(response.status);
-          }
-          this.getAllKhachhang()
-      } catch (error) {
-          return console.error(error);
+      const options = {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+      };
+      const response = await fetch(`${environment.APIURL}/khachhang/${item.id}`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
       }
+      this.getAllKhachhang(this.pageSize());
+    } catch (error) {
+      this._ErrorLogService.logError('Failed to DeleteKhachhang', error);
+      console.error(error);
+    }
+  }
+
+  private handleError(status: number) {
+    let message = 'Lỗi không xác định';
+    switch (status) {
+      case 400:
+        message = 'Thông tin đã tồn tại';
+        break;
+      case 401:
+      case 404:
+        message = 'Vui lòng đăng nhập lại';
+        break;
+      case 403:
+        message = 'Bạn không có quyền truy cập';
+        break;
+      case 500:
+        message = 'Lỗi máy chủ, vui lòng thử lại sau';
+        break;
+    }
+    this._snackBar.open(message, '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-error'],
+    });
   }
 }

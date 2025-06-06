@@ -89,7 +89,7 @@ export class AuditService {
       page,
       pageSize,
       total,
-      pages: Math.ceil(total / pageSize),
+      pageCount: Math.ceil(total / pageSize),
       },
     };
   }

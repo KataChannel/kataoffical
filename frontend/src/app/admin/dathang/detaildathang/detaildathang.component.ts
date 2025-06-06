@@ -179,7 +179,58 @@ export class DetailDathangComponent {
 
   }
 
-  printContent() {}
+  printContent()
+  {
+    const printContent = document.getElementById('printContent');
+    if (printContent) {
+      const newWindow = window.open('', '_blank');
+    const tailwindCSS =  `
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: { extend: {} }
+      };
+    </script>
+  `
+      if (newWindow) {
+        newWindow.document.write(`
+          <html>
+          <head>
+            <title>In Bảng</title>
+             ${tailwindCSS}
+            <style>
+              body { font-size: 12px; font-family: Arial, sans-serif; }
+              table { width: 100%; border-collapse: collapse; }
+              th, td { border: 1px solid #000; padding: 4px; text-align: left; }
+              @media print { 
+              body { margin: 0; } 
+              img {height:80px}
+              }
+            </style>
+          </head>
+          <body>
+            ${printContent.outerHTML}
+            <script>
+              window.onload = function() { window.print(); window.close(); }
+            </script>
+          </body>
+          </html>
+        `);
+        newWindow.document.close();
+          this.DetailDathang.update((v:any)=>{
+            v.printCount= v.printCount+1;
+            return v;
+          })
+          console.log(this.DetailDathang());
+
+          this._DathangService.updateDathang(this.DetailDathang());
+      } else {
+        console.error('Không thể mở cửa sổ in');
+      }
+    } else {
+      console.error('Không tìm thấy phần tử printContent');
+    }
+  }
 
   private async updateDathang() {
     try {

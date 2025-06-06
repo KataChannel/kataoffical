@@ -26,6 +26,7 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import moment from 'moment';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Debounce, memoize } from '../../../shared/utils/decorators';
 @Component({
   selector: 'app-listdathang',
   templateUrl: './listdathang.component.html',
@@ -96,21 +97,30 @@ export class ListDathangComponent {
   private _BanggiaService: BanggiaService = inject(BanggiaService);
   private _router: Router = inject(Router);
   Listdathang:any = this._DathangService.ListDathang;
+  page = this._DathangService.page;
+  pageCount = this._DathangService.pageCount;
+  total = this._DathangService.total;
+  pageSize = this._DathangService.pageSize;
+  dathangId = this._DathangService.dathangId;
   dataSource = new MatTableDataSource([]);
-  dathangId:any = this._DathangService.dathangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
-  SearchParams: any = {
-      Batdau: moment().toDate(),
-      Ketthuc: moment().toDate(),
-      pageSize: 10,
-      pageNumber: 1,
-  };
-  pageSize: number = 10;
+  searchParam:any={
+    Batdau: moment().toDate(),
+    Ketthuc: moment().toDate(),
+    page: this.page(),
+    pageSize: this.pageSize(),
+  }
   totalItems: number = 0;
   constructor() {
-    this.displayedColumns.forEach(column => {
-      this.filterValues[column] = '';
+    effect(() => {
+      this.dataSource.data = this.Listdathang();
+      this.dataSource.sort = this.sort;
+      if (this.paginator) {
+        this.paginator.pageIndex = this.page() - 1;
+        this.paginator.pageSize = this.pageSize();
+        this.paginator.length = this.total();
+      }
     });
   }
   createFilter(): (data: any, filter: string) => boolean {
@@ -126,21 +136,35 @@ export class ListDathangComponent {
       return isMatch;
     };
   }
-  applyFilter() {
-    this.dataSource.filter = JSON.stringify(this.filterValues);
+
+  onPageSizeChange(size: number, menuHienthi: any) {
+    if (size > this.total()) {
+      this._snackBar.open(`Số lượng tối đa ${this.total()}`, '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      size = this.total();
+    }
+    this._DathangService.page.set(1);
+    this._DathangService.getDathangBy(this.searchParam);
+    menuHienthi.closeMenu();
+  }
+  onPreviousPage(){
+    if (this.page() > 1) {
+      this._DathangService.page.set(this.page() - 1);
+      this.searchParam.page = this.page();
+      this._DathangService.getDathangBy(this.searchParam);
+    }
   }
 
-  async onPageChange(event: any): Promise<void> {
-    console.log('Page changed:', event);
-    this.SearchParams.pageSize = event.pageSize;
-    this.SearchParams.pageNumber = event.pageIndex + 1;
-    this.pageSize = event.pageSize;
-    const result = await this._DathangService.getAllDathang();
-    this.CountItem = this.Listdathang().length;
-    this.totalItems = result.length;
-    this.dataSource = new MatTableDataSource(result);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  onNextPage(){
+    if (this.page() < this.pageCount()) {
+      this._DathangService.page.set(this.page() + 1);
+      this.searchParam.page = this.page();
+      this._DathangService.getDathangBy(this.searchParam);
+    }
   }
 
 
@@ -148,43 +172,35 @@ export class ListDathangComponent {
     this.ngOnInit();
   }
   async ngOnInit(): Promise<void> {
-   await this._DathangService.getAllDathang().then((result) => {
-      if(result){
-        this.CountItem = this.Listdathang().length;
-        this.dataSource = new MatTableDataSource(result);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-        this.totalItems = result.length; 
-        this.initializeColumns();
-        this.setupDrawer();
-        this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-        this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-        this.paginator._intl.previousPageLabel = 'Về Trước';
-        this.paginator._intl.firstPageLabel = 'Trang Đầu';
-        this.paginator._intl.lastPageLabel = 'Trang Cuối';
-      }
-    });
+    await this._DathangService.getDathangBy(this.searchParam);
+    this.displayedColumns = Object.keys(this.ColumnName);
+    this.dataSource = new MatTableDataSource(this.Listdathang());
+    this.dataSource.sort = this.sort;
+    this.initializeColumns();
+    this.setupDrawer();
 
   }
   private initializeColumns(): void {
-    this.Columns = Object.keys(this.ColumnName).map((key) => ({
-      key,
-      value: this.ColumnName[key],
-      isShow: true,
-    }));
-    if (this.FilterColumns.length === 0) {
-      this.FilterColumns = this.Columns;
-    } else {
-      localStorage.setItem('DathangColFilter',JSON.stringify(this.FilterColumns)
-      );
+    this.Columns = Object.entries(this.ColumnName).map(([key, value]) => ({ key, value, isShow: true }));
+    this.FilterColumns = this.FilterColumns.length ? this.FilterColumns : this.Columns;
+    localStorage.setItem('KhachhangColFilter', JSON.stringify(this.FilterColumns));
+    this.displayedColumns = this.FilterColumns.filter(col => col.isShow).map(col => col.key);
+    this.ColumnName = this.FilterColumns.reduce((acc, { key, value, isShow }) => 
+      isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
+  }
+  @Debounce(500)
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    if (!filterValue) {
+      this.searchParam = {
+        page: this.page(),
+        pageSize: this.pageSize(),
+      };
+      this._DathangService.getDathangBy(this.searchParam);
+      return;
     }
-    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
-      (item) => item.key
-    );
-    this.ColumnName = this.FilterColumns.reduce((obj, item) => {
-      if (item.isShow) obj[item.key] = item.value;
-      return obj;
-    }, {} as Record<string, string>);
+    this.searchParam.subtitle = filterValue.trim().toLowerCase();
+    this._DathangService.getDathangBy(this.searchParam);
   }
 
   private setupDrawer(): void {
@@ -193,18 +209,33 @@ export class ListDathangComponent {
       .subscribe((result) => {
         if (result.matches) {
           this.drawer.mode = 'over';
-          this.paginator.hidePageSize = true;
         } else {
           this.drawer.mode = 'side';
         }
       });
   }
+
   toggleColumn(item: any): void {
     const column = this.FilterColumns.find((v) => v.key === item.key);
     if (column) {
       column.isShow = !column.isShow;
       this.updateDisplayedColumns();
     }
+  }
+
+  @memoize()
+  FilterHederColumn(list: any, column: any) {
+    const uniqueList = list.filter((obj: any, index: number, self: any) => 
+      index === self.findIndex((t: any) => t[column] === obj[column])
+    );
+    return uniqueList;
+  }
+
+  @Debounce(300)
+  doFilterHederColumn(event: any, column: any): void {
+    this.dataSource.filteredData = this.Listdathang().filter((v: any) => 
+      v[column].toLowerCase().includes(event.target.value.toLowerCase())
+    );
   }
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(

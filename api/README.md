@@ -9,6 +9,7 @@ npx ts-node prisma/update.ts
 npx ts-node prisma/backup.ts
 npx ts-node prisma/restorev2.ts
 npx ts-node update.ts
+npx ts-node updatesubtitle.ts
 
 npx prisma db seed
 npx katacreate --type nestjs --name menu --outputDir menu

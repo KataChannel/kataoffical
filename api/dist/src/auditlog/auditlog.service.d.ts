@@ -64,7 +64,7 @@ export declare class AuditService {
             page: any;
             pageSize: any;
             total: number;
-            pages: number;
+            pageCount: number;
         };
     } | null>;
     private getChangedFields;

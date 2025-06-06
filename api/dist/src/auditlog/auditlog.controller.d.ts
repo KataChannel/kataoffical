@@ -48,7 +48,7 @@ export declare class AuditLogController {
             page: any;
             pageSize: any;
             total: number;
-            pages: number;
+            pageCount: number;
         };
     } | null>;
 }

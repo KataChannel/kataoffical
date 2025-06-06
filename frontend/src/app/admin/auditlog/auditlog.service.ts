@@ -235,6 +235,8 @@ export class AuditlogService {
   }
 
   async getAuditlogBy(param: any) {
+    param.pageSize = Number(this.pageSize())
+    param.page = Number(this.page())
     try {
       const options = {
         method: 'POST',
@@ -253,16 +255,16 @@ export class AuditlogService {
         this.DetailAuditlog.set(data);
       } else {
         await this.saveAuditlogs(data.data, {
-          page: data.page || 1,
-          pageCount: data.pageCount || 1,
-          total: data.total || data.data.length,
+          page: data.pagination.page || 1,
+          pageCount: data.pagination.pageCount || 1,
+          total: data.pagination.total || data.data.length,
           pageSize: this.pageSize()
         });
         this._StorageService.setItem('auditlogs_updatedAt', new Date().toISOString());
         this.ListAuditlog.set(data.data);
-        this.page.set(data.page || 1);
-        this.pageCount.set(data.pageCount || 1);
-        this.total.set(data.total || data.data.length);
+        this.page.set(data.pagination.page || 1);
+        this.pageCount.set(data.pagination.pageCount || 1);
+        this.total.set(data.pagination.total || data.data.length);
         this.pageSize.set(this.pageSize());
       }
     } catch (error) { 

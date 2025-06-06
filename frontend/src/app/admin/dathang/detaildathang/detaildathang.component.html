@@ -2,27 +2,25 @@
   <button mat-icon-button color="primary" (click)="goBack()">
     <mat-icon>arrow_back</mat-icon>
   </button>
-  <div
-       [contentEditable]="true"
-       (blur)="EnterUpdateValue($event,null,DetailDathang(), 'madncc','string')"
-       class="p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
-     >{{DetailDathang().madncc||''}}
-  </div>
+  <div class="font-bold truncate">{{DetailDathang().madncc||'Không có mã đặt hàng'}} </div>
   <div class="flex flex-row space-x-2 items-center">
     <button *ngIf="DetailDathang().status=='dadat'" mat-flat-button color="primary" [disabled]="DetailDathang().status=='dagiao'" (click)="GiaoDonhang()"> Đã Giao</button>
     <button *ngIf="DetailDathang().status=='dagiao'" mat-flat-button color="primary" [disabled]="DetailDathang().status=='danhan'" (click)="Danhanhang()"> Đã Nhận</button>
     <button mat-icon-button color="primary" (click)="PrintDathang()"><mat-icon>image</mat-icon></button>
+    <button mat-icon-button color="primary" (click)="printContent()">
+      <mat-icon>print</mat-icon>
+    </button>
     @if(DetailDathang().status!=='danhan') {
-    <mat-slide-toggle [(ngModel)]="DetailDathang().isActive" [disabled]="!isEdit()">{{DetailDathang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+    <!-- <mat-slide-toggle [(ngModel)]="DetailDathang().isActive" [disabled]="!isEdit()">{{DetailDathang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle> -->
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleDathangAction()">
       <mat-icon>save</mat-icon>
     </button>
     <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
-    <button mat-icon-button color="warn" (click)="toggleDelete()">
+    <!-- <button mat-icon-button color="warn" (click)="toggleDelete()">
       <mat-icon>delete</mat-icon>
-    </button>
+    </button> -->
     }
     @else {
      <button mat-flat-button color="primary" [disabled]="DetailDathang().status=='danhan'"> Đã Nhận</button>

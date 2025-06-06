@@ -139,16 +139,44 @@ let KhachhangService = class KhachhangService {
         });
     }
     async findby(param) {
-        try {
-            const khachhang = await this.prisma.khachhang.findUnique({
-                where: param,
+        const { page = 1, pageSize = 50, isOne, ...where } = param;
+        const whereClause = {};
+        if (where.subtitle) {
+            whereClause.subtitle = { contains: where.subtitle, mode: 'insensitive' };
+        }
+        if (where.startDate || where.endDate) {
+            whereClause.createdAt = {};
+            if (where.startDate)
+                whereClause.createdAt.gte = where.startDate;
+            if (where.endDate)
+                whereClause.createdAt.lte = where.endDate;
+        }
+        if (isOne) {
+            const oneResult = await this.prisma.khachhang.findFirst({
+                where: whereClause,
+                include: { banggia: true },
+                orderBy: { createdAt: 'desc' },
             });
-            return khachhang;
+            return oneResult;
         }
-        catch (error) {
-            console.error('Error finding item:', error);
-            throw error;
-        }
+        const skip = (page - 1) * pageSize;
+        const [khachhangs, total] = await Promise.all([
+            this.prisma.khachhang.findMany({
+                where: whereClause,
+                include: { banggia: true },
+                skip,
+                take: pageSize,
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.khachhang.count({ where: whereClause }),
+        ]);
+        return {
+            data: khachhangs,
+            page,
+            pageSize,
+            total,
+            pageCount: Math.ceil(total / pageSize),
+        };
     }
     async findOne(id) {
         const khachhang = await this.prisma.khachhang.findUnique({

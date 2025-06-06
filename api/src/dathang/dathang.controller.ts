@@ -30,7 +30,10 @@ export class DathangController {
   findAll() {
     return this.dathangService.findAll();
   }
-
+  @Post('findby')
+  findby(@Body() param: any) {
+    return this.dathangService.findby(param);
+  }
   @Get('findid/:id')
   findOne(@Param('id') id: string) {
     return this.dathangService.findOne(id);
