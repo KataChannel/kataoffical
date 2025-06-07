@@ -1,13 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { GameService } from '../../services/game.service';
-import { Character } from '../../models/character';
-import { Tile } from '../../models/tile';
+import { GameService } from './services/game.service';
+import { Character } from './models/character';
+import { Tile } from './models/tile';
+import { CommonModule } from '@angular/common';
 @Component({
-  selector: 'app-map',
-  templateUrl: './map.component.html',
-  styleUrls: ['./map.component.css']
+  selector: 'app-game4',
+  imports: [
+    CommonModule
+  ],
+  templateUrl: './game4.html',
+  styleUrls: ['./game4.scss']
 })
-export class MapComponent implements OnInit {
+export class Game4 implements OnInit {
   map: Tile[][] = [];
   selectedCharacter: Character | null = null;
   currentTurn: 'player' | 'enemy' = 'player';

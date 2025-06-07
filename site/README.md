@@ -39,6 +39,8 @@ npx ng g c xuatnhapton --skip-tests --standalone
 npx ng g c mathang --skip-tests --standalone
 npx ng g c namno --skip-tests --standalone
 
+npx ng g c game4 --skip-tests --standalone
+
 npx ng g c donhang          --skip-tests --standalone
 npx ng g c dathang          --skip-tests --standalone
 npx ng g c baogia           --skip-tests --standalone
