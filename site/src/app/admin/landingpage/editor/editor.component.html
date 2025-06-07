@@ -1,130 +1,30 @@
 <div class="flex flex-col space-y-2">
-<div class="flex flex-row space-x-2 items-center justify-between">
-   <button (click)="drawer1.toggle()" mat-icon-button color="primary"><mat-icon>category</mat-icon></button>
-   <div>Editor Canvas</div>
-   <button (click)="drawer2.toggle()" mat-icon-button color="primary"><mat-icon>settings</mat-icon></button>   
-</div>
-<!-- <div class="w-full flex flex-row space-x-2">
-   <div class="flex flex-col space-y-2 border rounded-lg p-2">
-     <span class="p-2 bg-slate-100 font-bold rounded-lg">Danh Mục</span>
-     <app-navigator-panel [blocks]="getBlocksByParentId(null)"></app-navigator-panel>
-   </div>
-   <div class="flex flex-col space-y-2 border rounded-lg p-2">
-     <div class="editor-canvas" (click)="deselectBlock($event)">
-        <div class="block-list"
-             cdkDropList
-             [id]="mainDropListId"
-             [cdkDropListData]="getBlocksByParentId(null)"
-             [cdkDropListConnectedTo]="allDropListsIds"
-             (cdkDropListDropped)="drop($event)">
- 
-         <div *ngFor="let block of getBlocksByParentId(null); let i = index"
-              class="block-container"
-              [class.selected]="block.id === selectedBlock?.id"
-              (click)="selectBlock(block, $event)"
-              cdkDrag [cdkDragData]="block">
-           <div class="drag-handle" cdkDragHandle> <svg width="24px" fill="currentColor" viewBox="0 0 24 24"><path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg> </div>
-           <ng-container [ngSwitch]="block.type">
-              <app-text-block *ngSwitchCase="'text'" [block]="block"></app-text-block>
-              <app-image-block *ngSwitchCase="'image'" [block]="block"></app-image-block>
-              <app-button-block *ngSwitchCase="'button'" [block]="block"></app-button-block>
-              <app-columns-block *ngSwitchCase="'columns'" [block]="block"></app-columns-block>
-              <app-section-block *ngSwitchCase="'section'" [block]="block"></app-section-block>
-              <app-container-block *ngSwitchCase="'container'" [block]="block"></app-container-block>
-              <div *ngSwitchDefault class="unknown-block"> Unknown block type: {{ block.type }} </div>
-           </ng-container>
-            <div class="block-actions"> <button title="Xóa" (click)="requestDeleteBlock(block.id, $event)">🗑️</button> </div>
-            <div *cdkDragPlaceholder class="block-placeholder"></div>
-         </div>
-           <div *ngIf="getBlocksByParentId(null).length === 0" class="empty-placeholder main-empty"> Thả khối vào đây hoặc thêm khối mới từ Palette. </div>
-        </div>
-     </div>
-      <div class="block-palette">
-         <h4>Thêm Block Mới</h4>
-         <button (click)="addBlock('section')">Thêm Section</button>
-         <button (click)="addBlock('container')">Thêm Container</button>
-         <button (click)="addBlock('columns')">Thêm Columns</button>
-         <button (click)="addBlock('text')">Thêm Text</button>
-         <button (click)="addBlock('image')">Thêm Image</button>
-         <button (click)="addBlock('button')">Thêm Button</button>
-      </div>
-   </div>
- 
-   <div class="flex flex-col space-y-2 border rounded-lg p-2">
-      <span class="p-2 bg-slate-100 font-bold rounded-lg">Cấu Hình</span>
-       <div (click)="$event.stopPropagation()">
-          <div *ngIf="selectedBlock; else noBlockSelected" class="inspector-content">
-             <div class="info-section">
-                <p><strong>ID:</strong> {{ selectedBlock.id }}</p>
-                <p><strong>Type:</strong> {{ selectedBlock.type }}</p>
-                <p><strong>Parent ID:</strong> {{ selectedBlock.parentId || 'ROOT' }}</p>
-                <p><strong>Order:</strong> {{ selectedBlock.order }}</p>
-             </div>
-             <div class="edit-section">
-                 <h4>Data</h4>
-                  <ng-container [ngSwitch]="selectedBlock.type">
-                    <div *ngSwitchCase="'text'"> <label for="textContent">Content:</label> <textarea id="textContent" [(ngModel)]="selectedBlock.data.content" (ngModelChange)="onDataChange()" rows="4"></textarea> </div>
-                    <div *ngSwitchCase="'image'"> <label for="imageSrc">Image URL:</label> <input type="text" id="imageSrc" [(ngModel)]="selectedBlock.data.src" (ngModelChange)="onDataChange()"> <label for="imageAlt">Alt Text:</label> <input type="text" id="imageAlt" [(ngModel)]="selectedBlock.data.alt" (ngModelChange)="onDataChange()"> </div>
-                    <div *ngSwitchCase="'button'"> <label for="buttonText">Button Text:</label> <input type="text" id="buttonText" [(ngModel)]="selectedBlock.data.text" (ngModelChange)="onDataChange()"> <label for="buttonLink">Link URL:</label> <input type="text" id="buttonLink" [(ngModel)]="selectedBlock.data.link" (ngModelChange)="onDataChange()"> <label for="buttonVariant">Variant:</label> <select id="buttonVariant" [(ngModel)]="selectedBlock.data.variant" (ngModelChange)="onDataChange()"> <option value="primary">Primary</option> <option value="secondary">Secondary</option> </select> </div>
-                    <div *ngSwitchCase="'columns'"> <label for="columnGap">Gap:</label> <input type="text" id="columnGap" placeholder="e.g., 10px" [(ngModel)]="selectedBlock.data.gap" (ngModelChange)="onDataChange()"> <div *ngFor="let col of selectedBlock.data.columns; let i = index" class="column-info-in-data"> <p><strong>Column {{i + 1}}:</strong> {{getBlocksByParentId(col.id).length}} block(s)</p> </div> </div>
-                    <div *ngSwitchCase="'section'"> <p><i>(No specific data)</i></p> </div>
-                    <div *ngSwitchCase="'container'"> <p><i>(No specific data)</i></p> </div>
-                    <div *ngSwitchDefault> <p><i>No editable data for this block type.</i></p> <pre>{{ selectedBlock.data | json }}</pre> </div>
-                  </ng-container>
-              </div>
-              <div class="edit-section">
-                 <h4>Styles</h4>
-                  <ng-container *ngIf="selectedBlock.styles">
-                     <label for="styleDisplay">Display:</label> <select id="styleDisplay" [(ngModel)]="selectedBlock.styles['display']" (ngModelChange)="onStyleChange(selectedBlock, 'display')"> <option *ngFor="let option of displayOptions" [value]="option || null">{{ option || 'Default' }}</option> </select>
-                     <div *ngIf="selectedBlock.styles['display'] === 'flex' || selectedBlock.styles['display'] === 'inline-flex'" class="flex-options"> <h5>Flex Container</h5> <label for="styleFlexDirection">Flex Direction:</label> <select id="styleFlexDirection" [(ngModel)]="selectedBlock.styles['flex-direction']" (ngModelChange)="onStyleChange(selectedBlock, 'flex-direction')"> <option *ngFor="let option of flexDirectionOptions" [value]="option || null">{{ option || 'Default' }}</option> </select> <label for="styleJustifyContent">Justify Content:</label> <select id="styleJustifyContent" [(ngModel)]="selectedBlock.styles['justify-content']" (ngModelChange)="onStyleChange(selectedBlock, 'justify-content')"> <option *ngFor="let option of justifyContentOptions" [value]="option || null">{{ option || 'Default' }}</option> </select> <label for="styleAlignItems">Align Items:</label> <select id="styleAlignItems" [(ngModel)]="selectedBlock.styles['align-items']" (ngModelChange)="onStyleChange(selectedBlock, 'align-items')"> <option *ngFor="let option of alignItemsOptions" [value]="option || null">{{ option || 'Default' }}</option> </select> <label for="styleFlexWrap">Wrap:</label> <select id="styleFlexWrap" [(ngModel)]="selectedBlock.styles['flex-wrap']" (ngModelChange)="onStyleChange(selectedBlock, 'flex-wrap')"> <option value="">Default</option> <option value="nowrap">No Wrap</option> <option value="wrap">Wrap</option> <option value="wrap-reverse">Wrap Reverse</option> </select> </div>
-                     <h5>Spacing</h5> <label for="stylePadding">Padding:</label> <input type="text" id="stylePadding" placeholder="e.g., 10px or 5px 10px" [(ngModel)]="selectedBlock.styles['padding']" (ngModelChange)="onStyleChange(selectedBlock, 'padding')"> <label for="styleMargin">Margin:</label> <input type="text" id="styleMargin" placeholder="e.g., 10px or 0 auto" [(ngModel)]="selectedBlock.styles['margin']" (ngModelChange)="onStyleChange(selectedBlock, 'margin')">
-                     <h5>Appearance</h5> <label for="styleBgColor">Background Color:</label> <input type="color" id="styleBgColor" [ngModel]="selectedBlock.styles['background-color'] || '#ffffff'" (ngModelChange)="selectedBlock.styles['background-color'] = $event; onStyleChange(selectedBlock, 'background-color')"> <label for="styleColor">Text Color:</label> <input type="color" id="styleColor" [ngModel]="selectedBlock.styles['color'] || '#000000'" (ngModelChange)="selectedBlock.styles['color'] = $event; onStyleChange(selectedBlock, 'color')"> <label for="styleTextAlign">Text Align:</label> <select id="styleTextAlign" [(ngModel)]="selectedBlock.styles['text-align']" (ngModelChange)="onStyleChange(selectedBlock, 'text-align')"> <option value="">Default</option> <option value="left">Left</option> <option value="center">Center</option> <option value="right">Right</option> <option value="justify">Justify</option> </select> <label for="styleBorder">Border:</label> <input type="text" id="styleBorder" placeholder="e.g., 1px solid #ccc" [(ngModel)]="selectedBlock.styles['border']" (ngModelChange)="onStyleChange(selectedBlock, 'border')">
-                  </ng-container>
-                  <p *ngIf="!selectedBlock.styles"><i>Styles not initialized.</i></p>
-              </div>
-              <div *ngIf="selectedBlock.type === 'columns' && selectedBlock.data?.columns" class="edit-section">
-                  <h4>Column Styles</h4>
-                  <div *ngFor="let col of selectedBlock.data.columns; let i = index" class="column-style-editor"> <h5>Column {{ i + 1 }} (ID: {{ col.id.substring(0,6) }}...)</h5> <ng-container *ngIf="!col.styles">{{ ensureStylesInitialized(selectedBlock) }}</ng-container> <ng-container *ngIf="col.styles"> <label for="colFlex_{{i}}">Flex Grow/Shrink/Basis:</label> <input type="text" id="colFlex_{{i}}" placeholder="e.g., 1 or 0 0 50%" [(ngModel)]="col.styles['flex']" (ngModelChange)="onColumnStyleChange(col, 'flex')"> <label for="colBgColor_{{i}}">Background Color:</label> <input type="color" id="colBgColor_{{i}}" [ngModel]="col.styles['background-color'] || '#ffffff'" (ngModelChange)="col.styles['background-color'] = $event; onColumnStyleChange(col, 'background-color')"> <label for="colPadding_{{i}}">Padding:</label> <input type="text" id="colPadding_{{i}}" placeholder="e.g., 10px" [(ngModel)]="col.styles['padding']" (ngModelChange)="onColumnStyleChange(col, 'padding')"> </ng-container> </div>
-              </div>
-              <div class="edit-section interactions-section">
-                  <h4>Interactions</h4>
-                  <div *ngIf="selectedBlock.interactions && selectedBlock.interactions.length > 0" class="interaction-list"> <div *ngFor="let intr of selectedBlock.interactions" class="interaction-item"> <span> On <strong>{{ intr.trigger }}</strong>, {{ intr.action }} <strong>{{ intr.className }}</strong> </span> <button title="Remove Interaction" class="remove-btn" (click)="removeInteraction(intr.id)">×</button> </div> </div>
-                  <p *ngIf="!selectedBlock.interactions || selectedBlock.interactions.length === 0"><i>No interactions defined.</i></p>
-                  <div class="add-interaction-form"> <h5>Add New Interaction</h5> <label for="intrTrigger">Trigger:</label> <select id="intrTrigger" [(ngModel)]="newInteractionTrigger"> <option value="hover">Hover</option> </select> <label for="intrAction">Action:</label> <select id="intrAction" [(ngModel)]="newInteractionAction"> <option value="addClass">Add Class</option> </select> <label for="intrClassName">Class Name:</label> <input type="text" id="intrClassName" placeholder="e.g., hover-highlight" [(ngModel)]="newInteractionClassName"> <button class="add-btn" (click)="addInteraction()" [disabled]="!newInteractionClassName.trim()"> Add Interaction </button> </div>
-               </div>
-              <details> <summary>View Raw Styles JSON</summary> <pre>{{ selectedBlock.styles | json }}</pre> </details>
-          </div>
-           <ng-template #noBlockSelected> <p>Chưa có khối nào được chọn.</p> </ng-template>
-       </div>
-   </div>
- 
-</div> -->
-  
-
-<mat-drawer-container class="w-full h-full" autosize>
-  <mat-drawer #drawer1 class="flex flex-col !w-64 h-full px-2 !border-0" [position]="'start'" [mode]="'side'" [opened]="true">
-   <div class="flex flex-col space-y-2 border rounded-lg p-2">
-      <span class="p-2 bg-slate-100 font-bold rounded-lg">Danh Mục</span>
-      <app-navigator-panel [blocks]="getBlocksByParentId(null)"></app-navigator-panel>
-    </div>
-  </mat-drawer>
-
-  <div class="w-full flex flex-col space-y-2 border rounded-lg p-2">
-   <div class="editor-canvas" (click)="deselectBlock($event)">
+  <div class="flex flex-row space-x-2 items-center justify-between">
+    <button (click)="drawer1.toggle()" mat-icon-button color="primary"><mat-icon>category</mat-icon></button>
+    <div>Editor Canvas</div>
+    <button (click)="drawer2.toggle()" mat-icon-button color="primary"><mat-icon>settings</mat-icon></button>
+  </div>
+  <!-- <div class="w-full flex flex-row space-x-2">
+  <div class="flex flex-col space-y-2 border rounded-lg p-2">
+    <span class="p-2 bg-slate-100 font-bold rounded-lg">Danh Mục</span>
+    <app-navigator-panel [blocks]="getBlocksByParentId(null)"></app-navigator-panel>
+  </div>
+  <div class="flex flex-col space-y-2 border rounded-lg p-2">
+    <div class="editor-canvas" (click)="deselectBlock($event)">
       <div class="block-list"
-           cdkDropList
-           [id]="mainDropListId"
-           [cdkDropListData]="getBlocksByParentId(null)"
-           [cdkDropListConnectedTo]="allDropListsIds"
-           (cdkDropListDropped)="drop($event)">
+        cdkDropList
+        [id]="mainDropListId"
+        [cdkDropListData]="getBlocksByParentId(null)"
+        [cdkDropListConnectedTo]="allDropListsIds"
+        (cdkDropListDropped)="drop($event)">
 
-       <div *ngFor="let block of getBlocksByParentId(null); let i = index"
-            class="block-container"
-            [class.selected]="block.id === selectedBlock?.id"
-            (click)="selectBlock(block, $event)"
-            cdkDrag [cdkDragData]="block">
-         <div class="drag-handle" cdkDragHandle> <svg width="24px" fill="currentColor" viewBox="0 0 24 24"><path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg> </div>
-         <ng-container [ngSwitch]="block.type">
+        <div *ngFor="let block of getBlocksByParentId(null); let i = index"
+          class="block-container"
+          [class.selected]="block.id === selectedBlock?.id"
+          (click)="selectBlock(block, $event)"
+          cdkDrag [cdkDragData]="block">
+          <div class="drag-handle" cdkDragHandle> <svg width="24px" fill="currentColor" viewBox="0 0 24 24"><path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg> </div>
+          <ng-container [ngSwitch]="block.type">
             <app-text-block *ngSwitchCase="'text'" [block]="block"></app-text-block>
             <app-image-block *ngSwitchCase="'image'" [block]="block"></app-image-block>
             <app-button-block *ngSwitchCase="'button'" [block]="block"></app-button-block>
@@ -132,233 +32,384 @@
             <app-section-block *ngSwitchCase="'section'" [block]="block"></app-section-block>
             <app-container-block *ngSwitchCase="'container'" [block]="block"></app-container-block>
             <div *ngSwitchDefault class="unknown-block"> Unknown block type: {{ block.type }} </div>
-         </ng-container>
+          </ng-container>
           <div class="block-actions"> <button title="Xóa" (click)="requestDeleteBlock(block.id, $event)">🗑️</button> </div>
           <div *cdkDragPlaceholder class="block-placeholder"></div>
-       </div>
-         <div *ngIf="getBlocksByParentId(null).length === 0" class="empty-placeholder main-empty"> Thả khối vào đây hoặc thêm khối mới từ Palette. </div>
+        </div>
+        <div *ngIf="getBlocksByParentId(null).length === 0" class="empty-placeholder main-empty"> Thả khối vào đây hoặc thêm khối mới từ Palette. </div>
       </div>
-   </div>
-    <div class="block-palette">
-       <h4>Thêm Block Mới</h4>
-       <button (click)="addBlock('section')">Thêm Section</button>
-       <button (click)="addBlock('container')">Thêm Container</button>
-       <button (click)="addBlock('columns')">Thêm Columns</button>
-       <button (click)="addBlock('text')">Thêm Text</button>
-       <button (click)="addBlock('image')">Thêm Image</button>
-       <button (click)="addBlock('button')">Thêm Button</button>
     </div>
- </div>
+    <div class="block-palette">
+      <h4>Thêm Block Mới</h4>
+      <button (click)="addBlock('section')">Thêm Section</button>
+      <button (click)="addBlock('container')">Thêm Container</button>
+      <button (click)="addBlock('columns')">Thêm Columns</button>
+      <button (click)="addBlock('text')">Thêm Text</button>
+      <button (click)="addBlock('image')">Thêm Image</button>
+      <button (click)="addBlock('button')">Thêm Button</button>
+    </div>
+  </div>
 
-<mat-drawer #drawer2 class="flex flex-col !w-64 h-full px-2 !border-0" [position]="'end'" [mode]="'side'" [opened]="true">
-   <div class="flex flex-col space-y-2 border rounded-lg p-2">
+  <div class="flex flex-col space-y-2 border rounded-lg p-2">
+    <span class="p-2 bg-slate-100 font-bold rounded-lg">Cấu Hình</span>
+    <div (click)="$event.stopPropagation()">
+      <div *ngIf="selectedBlock; else noBlockSelected" class="inspector-content">
+        <div class="info-section">
+          <p><strong>ID:</strong> {{ selectedBlock.id }}</p>
+          <p><strong>Type:</strong> {{ selectedBlock.type }}</p>
+          <p><strong>Parent ID:</strong> {{ selectedBlock.parentId || 'ROOT' }}</p>
+          <p><strong>Order:</strong> {{ selectedBlock.order }}</p>
+        </div>
+        <div class="edit-section">
+          <h4>Data</h4>
+          <ng-container [ngSwitch]="selectedBlock.type">
+            <div *ngSwitchCase="'text'"> <label for="textContent">Content:</label> <textarea id="textContent" [(ngModel)]="selectedBlock.data.content" (ngModelChange)="onDataChange()" rows="4"></textarea> </div>
+            <div *ngSwitchCase="'image'"> <label for="imageSrc">Image URL:</label> <input type="text" id="imageSrc" [(ngModel)]="selectedBlock.data.src" (ngModelChange)="onDataChange()"> <label for="imageAlt">Alt Text:</label> <input type="text" id="imageAlt" [(ngModel)]="selectedBlock.data.alt" (ngModelChange)="onDataChange()"> </div>
+            <div *ngSwitchCase="'button'"> <label for="buttonText">Button Text:</label> <input type="text" id="buttonText" [(ngModel)]="selectedBlock.data.text" (ngModelChange)="onDataChange()"> <label for="buttonLink">Link URL:</label> <input type="text" id="buttonLink" [(ngModel)]="selectedBlock.data.link" (ngModelChange)="onDataChange()"> <label for="buttonVariant">Variant:</label> <select id="buttonVariant" [(ngModel)]="selectedBlock.data.variant" (ngModelChange)="onDataChange()"> <option value="primary">Primary</option> <option value="secondary">Secondary</option> </select> </div>
+            <div *ngSwitchCase="'columns'"> <label for="columnGap">Gap:</label> <input type="text" id="columnGap" placeholder="e.g., 10px" [(ngModel)]="selectedBlock.data.gap" (ngModelChange)="onDataChange()"> <div *ngFor="let col of selectedBlock.data.columns; let i = index" class="column-info-in-data"> <p><strong>Column {{i + 1}}:</strong> {{getBlocksByParentId(col.id).length}} block(s)</p> </div> </div>
+            <div *ngSwitchCase="'section'"> <p><i>(No specific data)</i></p> </div>
+            <div *ngSwitchCase="'container'"> <p><i>(No specific data)</i></p> </div>
+            <div *ngSwitchDefault> <p><i>No editable data for this block type.</i></p> <pre>{{ selectedBlock.data | json }}</pre> </div>
+          </ng-container>
+        </div>
+        <div class="edit-section">
+          <h4>Styles</h4>
+          <ng-container *ngIf="selectedBlock.styles">
+            <label for="styleDisplay">Display:</label> <select id="styleDisplay" [(ngModel)]="selectedBlock.styles['display']" (ngModelChange)="onStyleChange(selectedBlock, 'display')"> <option *ngFor="let option of displayOptions" [value]="option || null">{{ option || 'Default' }}</option> </select>
+            <div *ngIf="selectedBlock.styles['display'] === 'flex' || selectedBlock.styles['display'] === 'inline-flex'" class="flex-options"> <h5>Flex Container</h5> <label for="styleFlexDirection">Flex Direction:</label> <select id="styleFlexDirection" [(ngModel)]="selectedBlock.styles['flex-direction']" (ngModelChange)="onStyleChange(selectedBlock, 'flex-direction')"> <option *ngFor="let option of flexDirectionOptions" [value]="option || null">{{ option || 'Default' }}</option> </select> <label for="styleJustifyContent">Justify Content:</label> <select id="styleJustifyContent" [(ngModel)]="selectedBlock.styles['justify-content']" (ngModelChange)="onStyleChange(selectedBlock, 'justify-content')"> <option *ngFor="let option of justifyContentOptions" [value]="option || null">{{ option || 'Default' }}</option> </select> <label for="styleAlignItems">Align Items:</label> <select id="styleAlignItems" [(ngModel)]="selectedBlock.styles['align-items']" (ngModelChange)="onStyleChange(selectedBlock, 'align-items')"> <option *ngFor="let option of alignItemsOptions" [value]="option || null">{{ option || 'Default' }}</option> </select> <label for="styleFlexWrap">Wrap:</label> <select id="styleFlexWrap" [(ngModel)]="selectedBlock.styles['flex-wrap']" (ngModelChange)="onStyleChange(selectedBlock, 'flex-wrap')"> <option value="">Default</option> <option value="nowrap">No Wrap</option> <option value="wrap">Wrap</option> <option value="wrap-reverse">Wrap Reverse</option> </select> </div>
+            <h5>Spacing</h5> <label for="stylePadding">Padding:</label> <input type="text" id="stylePadding" placeholder="e.g., 10px or 5px 10px" [(ngModel)]="selectedBlock.styles['padding']" (ngModelChange)="onStyleChange(selectedBlock, 'padding')"> <label for="styleMargin">Margin:</label> <input type="text" id="styleMargin" placeholder="e.g., 10px or 0 auto" [(ngModel)]="selectedBlock.styles['margin']" (ngModelChange)="onStyleChange(selectedBlock, 'margin')">
+            <h5>Appearance</h5> <label for="styleBgColor">Background Color:</label> <input type="color" id="styleBgColor" [ngModel]="selectedBlock.styles['background-color'] || '#ffffff'" (ngModelChange)="selectedBlock.styles['background-color'] = $event; onStyleChange(selectedBlock, 'background-color')"> <label for="styleColor">Text Color:</label> <input type="color" id="styleColor" [ngModel]="selectedBlock.styles['color'] || '#000000'" (ngModelChange)="selectedBlock.styles['color'] = $event; onStyleChange(selectedBlock, 'color')"> <label for="styleTextAlign">Text Align:</label> <select id="styleTextAlign" [(ngModel)]="selectedBlock.styles['text-align']" (ngModelChange)="onStyleChange(selectedBlock, 'text-align')"> <option value="">Default</option> <option value="left">Left</option> <option value="center">Center</option> <option value="right">Right</option> <option value="justify">Justify</option> </select> <label for="styleBorder">Border:</label> <input type="text" id="styleBorder" placeholder="e.g., 1px solid #ccc" [(ngModel)]="selectedBlock.styles['border']" (ngModelChange)="onStyleChange(selectedBlock, 'border')">
+          </ng-container>
+          <p *ngIf="!selectedBlock.styles"><i>Styles not initialized.</i></p>
+        </div>
+        <div *ngIf="selectedBlock.type === 'columns' && selectedBlock.data?.columns" class="edit-section">
+          <h4>Column Styles</h4>
+          <div *ngFor="let col of selectedBlock.data.columns; let i = index" class="column-style-editor"> <h5>Column {{ i + 1 }} (ID: {{ col.id.substring(0,6) }}...)</h5> <ng-container *ngIf="!col.styles">{{ ensureStylesInitialized(selectedBlock) }}</ng-container> <ng-container *ngIf="col.styles"> <label for="colFlex_{{i}}">Flex Grow/Shrink/Basis:</label> <input type="text" id="colFlex_{{i}}" placeholder="e.g., 1 or 0 0 50%" [(ngModel)]="col.styles['flex']" (ngModelChange)="onColumnStyleChange(col, 'flex')"> <label for="colBgColor_{{i}}">Background Color:</label> <input type="color" id="colBgColor_{{i}}" [ngModel]="col.styles['background-color'] || '#ffffff'" (ngModelChange)="col.styles['background-color'] = $event; onColumnStyleChange(col, 'background-color')"> <label for="colPadding_{{i}}">Padding:</label> <input type="text" id="colPadding_{{i}}" placeholder="e.g., 10px" [(ngModel)]="col.styles['padding']" (ngModelChange)="onColumnStyleChange(col, 'padding')"> </ng-container> </div>
+        </div>
+        <div class="edit-section interactions-section">
+          <h4>Interactions</h4>
+          <div *ngIf="selectedBlock.interactions && selectedBlock.interactions.length > 0" class="interaction-list"> <div *ngFor="let intr of selectedBlock.interactions" class="interaction-item"> <span> On <strong>{{ intr.trigger }}</strong>, {{ intr.action }} <strong>{{ intr.className }}</strong> </span> <button title="Remove Interaction" class="remove-btn" (click)="removeInteraction(intr.id)">×</button> </div> </div>
+          <p *ngIf="!selectedBlock.interactions || selectedBlock.interactions.length === 0"><i>No interactions defined.</i></p>
+          <div class="add-interaction-form"> <h5>Add New Interaction</h5> <label for="intrTrigger">Trigger:</label> <select id="intrTrigger" [(ngModel)]="newInteractionTrigger"> <option value="hover">Hover</option> </select> <label for="intrAction">Action:</label> <select id="intrAction" [(ngModel)]="newInteractionAction"> <option value="addClass">Add Class</option> </select> <label for="intrClassName">Class Name:</label> <input type="text" id="intrClassName" placeholder="e.g., hover-highlight" [(ngModel)]="newInteractionClassName"> <button class="add-btn" (click)="addInteraction()" [disabled]="!newInteractionClassName.trim()"> Add Interaction </button> </div>
+        </div>
+        <details> <summary>View Raw Styles JSON</summary> <pre>{{ selectedBlock.styles | json }}</pre> </details>
+      </div>
+      <ng-template #noBlockSelected> <p>Chưa có khối nào được chọn.</p> </ng-template>
+    </div>
+  </div>
+
+</div> -->
+
+
+<mat-drawer-container class="w-full h-full" autosize>
+  <mat-drawer #drawer1 class="flex flex-col !w-64 h-full px-2 !border-0" [position]="'start'" [mode]="'side'" [opened]="true">
+    <div class="flex flex-col space-y-2 border rounded-lg p-2">
+      <span class="p-2 bg-slate-100 font-bold rounded-lg">Danh Mục</span>
+      <app-navigator-panel [blocks]="getBlocksByParentId(null)"></app-navigator-panel>
+    </div>
+  </mat-drawer>
+
+  <div class="w-full flex flex-col space-y-2 border rounded-lg p-2">
+    <div class="editor-canvas" (click)="deselectBlock($event)">
+      <div class="block-list"
+        cdkDropList
+        [id]="mainDropListId"
+        [cdkDropListData]="getBlocksByParentId(null)"
+        [cdkDropListConnectedTo]="allDropListsIds"
+        (cdkDropListDropped)="drop($event)">
+
+        @for (block of getBlocksByParentId(null); track block; let i = $index) {
+          <div
+            class="block-container"
+            [class.selected]="block.id === selectedBlock?.id"
+            (click)="selectBlock(block, $event)"
+            cdkDrag [cdkDragData]="block">
+            <div class="drag-handle" cdkDragHandle> <svg width="24px" fill="currentColor" viewBox="0 0 24 24"><path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"></path><path d="M0 0h24v24H0z" fill="none"></path></svg> </div>
+            @switch (block.type) {
+              @case ('text') {
+                <app-text-block [block]="block"></app-text-block>
+              }
+              @case ('image') {
+                <app-image-block [block]="block"></app-image-block>
+              }
+              @case ('button') {
+                <app-button-block [block]="block"></app-button-block>
+              }
+              @case ('columns') {
+                <app-columns-block [block]="block"></app-columns-block>
+              }
+              @case ('section') {
+                <app-section-block [block]="block"></app-section-block>
+              }
+              @case ('container') {
+                <app-container-block [block]="block"></app-container-block>
+              }
+              @default {
+                <div class="unknown-block"> Unknown block type: {{ block.type }} </div>
+              }
+            }
+            <div class="block-actions"> <button title="Xóa" (click)="requestDeleteBlock(block.id, $event)">🗑️</button> </div>
+            <div *cdkDragPlaceholder class="block-placeholder"></div>
+          </div>
+        }
+        @if (getBlocksByParentId(null).length === 0) {
+          <div class="empty-placeholder main-empty"> Thả khối vào đây hoặc thêm khối mới từ Palette. </div>
+        }
+      </div>
+    </div>
+    <div class="block-palette">
+      <h4>Thêm Block Mới</h4>
+      <button (click)="addBlock('section')">Thêm Section</button>
+      <button (click)="addBlock('container')">Thêm Container</button>
+      <button (click)="addBlock('columns')">Thêm Columns</button>
+      <button (click)="addBlock('text')">Thêm Text</button>
+      <button (click)="addBlock('image')">Thêm Image</button>
+      <button (click)="addBlock('button')">Thêm Button</button>
+    </div>
+  </div>
+
+  <mat-drawer #drawer2 class="flex flex-col !w-64 h-full px-2 !border-0" [position]="'end'" [mode]="'side'" [opened]="true">
+    <div class="flex flex-col space-y-2 border rounded-lg p-2">
       <span class="p-2 bg-slate-100 font-bold rounded-lg">Cấu Hình</span>
       <div (click)="$event.stopPropagation()">
-         <div *ngIf="selectedBlock; else noBlockSelected" class="inspector-content space-y-4">
+        @if (selectedBlock) {
+          <div class="inspector-content space-y-4">
             <mat-card class="info-section !p-3 !rounded-lg !shadow-none !bg-slate-50">
-               <div class="space-y-1">
-                  <div><strong>ID:</strong> {{ selectedBlock.id }}</div>
-                  <div><strong>Type:</strong> {{ selectedBlock.type }}</div>
-                  <div><strong>Parent ID:</strong> {{ selectedBlock.parentId || 'ROOT' }}</div>
-                  <div><strong>Order:</strong> {{ selectedBlock.order }}</div>
-               </div>
+              <div class="space-y-1">
+                <div><strong>ID:</strong> {{ selectedBlock.id }}</div>
+                <div><strong>Type:</strong> {{ selectedBlock.type }}</div>
+                <div><strong>Parent ID:</strong> {{ selectedBlock.parentId || 'ROOT' }}</div>
+                <div><strong>Order:</strong> {{ selectedBlock.order }}</div>
+              </div>
             </mat-card>
-
             <mat-card class="edit-section !p-3 !rounded-lg !shadow-none">
-               <h4 class="font-semibold mb-2">Data</h4>
-               <ng-container [ngSwitch]="selectedBlock.type">
-                  <div *ngSwitchCase="'text'" class="flex flex-col gap-2">
-                     <mat-form-field appearance="outline">
-                        <mat-label>Content</mat-label>
-                        <textarea matInput rows="4" [(ngModel)]="selectedBlock.data.content" (ngModelChange)="onDataChange()"></textarea>
-                     </mat-form-field>
+              <h4 class="font-semibold mb-2">Data</h4>
+              @switch (selectedBlock.type) {
+                @case ('text') {
+                  <div class="flex flex-col gap-2">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Content</mat-label>
+                      <textarea matInput rows="4" [(ngModel)]="selectedBlock.data.content" (ngModelChange)="onDataChange()"></textarea>
+                    </mat-form-field>
                   </div>
-                  <div *ngSwitchCase="'image'" class="flex flex-col gap-2">
-                     <mat-form-field appearance="outline">
-                        <mat-label>Image URL</mat-label>
-                        <input matInput type="text" [(ngModel)]="selectedBlock.data.src" (ngModelChange)="onDataChange()">
-                     </mat-form-field>
-                     <mat-form-field appearance="outline">
-                        <mat-label>Alt Text</mat-label>
-                        <input matInput type="text" [(ngModel)]="selectedBlock.data.alt" (ngModelChange)="onDataChange()">
-                     </mat-form-field>
+                }
+                @case ('image') {
+                  <div class="flex flex-col gap-2">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Image URL</mat-label>
+                      <input matInput type="text" [(ngModel)]="selectedBlock.data.src" (ngModelChange)="onDataChange()">
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Alt Text</mat-label>
+                      <input matInput type="text" [(ngModel)]="selectedBlock.data.alt" (ngModelChange)="onDataChange()">
+                    </mat-form-field>
                   </div>
-                  <div *ngSwitchCase="'button'" class="flex flex-col gap-2">
-                     <mat-form-field appearance="outline">
-                        <mat-label>Button Text</mat-label>
-                        <input matInput type="text" [(ngModel)]="selectedBlock.data.text" (ngModelChange)="onDataChange()">
-                     </mat-form-field>
-                     <mat-form-field appearance="outline">
-                        <mat-label>Link URL</mat-label>
-                        <input matInput type="text" [(ngModel)]="selectedBlock.data.link" (ngModelChange)="onDataChange()">
-                     </mat-form-field>
-                     <mat-form-field appearance="outline">
-                        <mat-label>Variant</mat-label>
-                        <mat-select [(ngModel)]="selectedBlock.data.variant" (ngModelChange)="onDataChange()">
-                           <mat-option value="primary">Primary</mat-option>
-                           <mat-option value="secondary">Secondary</mat-option>
-                        </mat-select>
-                     </mat-form-field>
+                }
+                @case ('button') {
+                  <div class="flex flex-col gap-2">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Button Text</mat-label>
+                      <input matInput type="text" [(ngModel)]="selectedBlock.data.text" (ngModelChange)="onDataChange()">
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Link URL</mat-label>
+                      <input matInput type="text" [(ngModel)]="selectedBlock.data.link" (ngModelChange)="onDataChange()">
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Variant</mat-label>
+                      <mat-select [(ngModel)]="selectedBlock.data.variant" (ngModelChange)="onDataChange()">
+                        <mat-option value="primary">Primary</mat-option>
+                        <mat-option value="secondary">Secondary</mat-option>
+                      </mat-select>
+                    </mat-form-field>
                   </div>
-                  <div *ngSwitchCase="'columns'" class="flex flex-col gap-2">
-                     <mat-form-field appearance="outline">
-                        <mat-label>Gap</mat-label>
-                        <input matInput type="text" placeholder="e.g., 10px" [(ngModel)]="selectedBlock.data.gap" (ngModelChange)="onDataChange()">
-                     </mat-form-field>
-                     <div *ngFor="let col of selectedBlock.data.columns; let i = index" class="text-xs text-gray-600">
+                }
+                @case ('columns') {
+                  <div class="flex flex-col gap-2">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Gap</mat-label>
+                      <input matInput type="text" placeholder="e.g., 10px" [(ngModel)]="selectedBlock.data.gap" (ngModelChange)="onDataChange()">
+                    </mat-form-field>
+                    @for (col of selectedBlock.data.columns; track col; let i = $index) {
+                      <div class="text-xs text-gray-600">
                         <p><strong>Column {{i + 1}}:</strong> {{getBlocksByParentId(col.id).length}} block(s)</p>
-                     </div>
+                      </div>
+                    }
                   </div>
-                  <div *ngSwitchCase="'section'" class="italic text-gray-500">No specific data</div>
-                  <div *ngSwitchCase="'container'" class="italic text-gray-500">No specific data</div>
-                  <div *ngSwitchDefault>
-                     <p class="italic text-gray-500">No editable data for this block type.</p>
-                     <pre class="bg-slate-100 rounded p-2 text-xs">{{ selectedBlock.data | json }}</pre>
+                }
+                @case ('section') {
+                  <div class="italic text-gray-500">No specific data</div>
+                }
+                @case ('container') {
+                  <div class="italic text-gray-500">No specific data</div>
+                }
+                @default {
+                  <div>
+                    <p class="italic text-gray-500">No editable data for this block type.</p>
+                    <pre class="bg-slate-100 rounded p-2 text-xs">{{ selectedBlock.data | json }}</pre>
                   </div>
-               </ng-container>
+                }
+              }
             </mat-card>
-
             <mat-card class="edit-section !p-3 !rounded-lg !shadow-none">
-               <h4 class="font-semibold mb-2">Styles</h4>
-               <ng-container *ngIf="selectedBlock.styles; else noStyles">
-                  <mat-form-field appearance="outline" class="w-full">
-                     <mat-label>Display</mat-label>
-                     <mat-select [(ngModel)]="selectedBlock.styles['display']" (ngModelChange)="onStyleChange(selectedBlock, 'display')">
-                        <mat-option *ngFor="let option of displayOptions" [value]="option || null">{{ option || 'Default' }}</mat-option>
-                     </mat-select>
-                  </mat-form-field>
-                  <div *ngIf="selectedBlock.styles['display'] === 'flex' || selectedBlock.styles['display'] === 'inline-flex'" class="flex flex-col gap-2">
-                     <h5 class="font-medium">Flex Container</h5>
-                     <mat-form-field appearance="outline">
-                        <mat-label>Flex Direction</mat-label>
-                        <mat-select [(ngModel)]="selectedBlock.styles['flex-direction']" (ngModelChange)="onStyleChange(selectedBlock, 'flex-direction')">
-                           <mat-option *ngFor="let option of flexDirectionOptions" [value]="option || null">{{ option || 'Default' }}</mat-option>
-                        </mat-select>
-                     </mat-form-field>
-                     <mat-form-field appearance="outline">
-                        <mat-label>Justify Content</mat-label>
-                        <mat-select [(ngModel)]="selectedBlock.styles['justify-content']" (ngModelChange)="onStyleChange(selectedBlock, 'justify-content')">
-                           <mat-option *ngFor="let option of justifyContentOptions" [value]="option || null">{{ option || 'Default' }}</mat-option>
-                        </mat-select>
-                     </mat-form-field>
-                     <mat-form-field appearance="outline">
-                        <mat-label>Align Items</mat-label>
-                        <mat-select [(ngModel)]="selectedBlock.styles['align-items']" (ngModelChange)="onStyleChange(selectedBlock, 'align-items')">
-                           <mat-option *ngFor="let option of alignItemsOptions" [value]="option || null">{{ option || 'Default' }}</mat-option>
-                        </mat-select>
-                     </mat-form-field>
-                     <mat-form-field appearance="outline">
-                        <mat-label>Wrap</mat-label>
-                        <mat-select [(ngModel)]="selectedBlock.styles['flex-wrap']" (ngModelChange)="onStyleChange(selectedBlock, 'flex-wrap')">
-                           <mat-option value="">Default</mat-option>
-                           <mat-option value="nowrap">No Wrap</mat-option>
-                           <mat-option value="wrap">Wrap</mat-option>
-                           <mat-option value="wrap-reverse">Wrap Reverse</mat-option>
-                        </mat-select>
-                     </mat-form-field>
-                  </div>
-                  <h5 class="font-medium mt-2">Spacing</h5>
-                  <mat-form-field appearance="outline">
-                     <mat-label>Padding</mat-label>
-                     <input matInput type="text" placeholder="e.g., 10px or 5px 10px" [(ngModel)]="selectedBlock.styles['padding']" (ngModelChange)="onStyleChange(selectedBlock, 'padding')">
-                  </mat-form-field>
-                  <mat-form-field appearance="outline">
-                     <mat-label>Margin</mat-label>
-                     <input matInput type="text" placeholder="e.g., 10px or 0 auto" [(ngModel)]="selectedBlock.styles['margin']" (ngModelChange)="onStyleChange(selectedBlock, 'margin')">
-                  </mat-form-field>
-                  <h5 class="font-medium mt-2">Appearance</h5>
-                  <div class="flex flex-row gap-2 items-center">
-                     <label class="text-xs">Background Color:</label>
-                     <input type="color" class="w-6 h-6" [ngModel]="selectedBlock.styles['background-color'] || '#ffffff'" (ngModelChange)="selectedBlock.styles['background-color'] = $event; onStyleChange(selectedBlock, 'background-color')">
-                     <label class="text-xs ml-2">Text Color:</label>
-                     <input type="color" class="w-6 h-6" [ngModel]="selectedBlock.styles['color'] || '#000000'" (ngModelChange)="selectedBlock.styles['color'] = $event; onStyleChange(selectedBlock, 'color')">
-                  </div>
-                  <mat-form-field appearance="outline" class="mt-2">
-                     <mat-label>Text Align</mat-label>
-                     <mat-select [(ngModel)]="selectedBlock.styles['text-align']" (ngModelChange)="onStyleChange(selectedBlock, 'text-align')">
+              <h4 class="font-semibold mb-2">Styles</h4>
+              @if (selectedBlock.styles) {
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Display</mat-label>
+                  <mat-select [(ngModel)]="selectedBlock.styles['display']" (ngModelChange)="onStyleChange(selectedBlock, 'display')">
+                    @for (option of displayOptions; track option) {
+                      <mat-option [value]="option || null">{{ option || 'Default' }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                @if (selectedBlock.styles['display'] === 'flex' || selectedBlock.styles['display'] === 'inline-flex') {
+                  <div class="flex flex-col gap-2">
+                    <h5 class="font-medium">Flex Container</h5>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Flex Direction</mat-label>
+                      <mat-select [(ngModel)]="selectedBlock.styles['flex-direction']" (ngModelChange)="onStyleChange(selectedBlock, 'flex-direction')">
+                        @for (option of flexDirectionOptions; track option) {
+                          <mat-option [value]="option || null">{{ option || 'Default' }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Justify Content</mat-label>
+                      <mat-select [(ngModel)]="selectedBlock.styles['justify-content']" (ngModelChange)="onStyleChange(selectedBlock, 'justify-content')">
+                        @for (option of justifyContentOptions; track option) {
+                          <mat-option [value]="option || null">{{ option || 'Default' }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Align Items</mat-label>
+                      <mat-select [(ngModel)]="selectedBlock.styles['align-items']" (ngModelChange)="onStyleChange(selectedBlock, 'align-items')">
+                        @for (option of alignItemsOptions; track option) {
+                          <mat-option [value]="option || null">{{ option || 'Default' }}</mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                      <mat-label>Wrap</mat-label>
+                      <mat-select [(ngModel)]="selectedBlock.styles['flex-wrap']" (ngModelChange)="onStyleChange(selectedBlock, 'flex-wrap')">
                         <mat-option value="">Default</mat-option>
-                        <mat-option value="left">Left</mat-option>
-                        <mat-option value="center">Center</mat-option>
-                        <mat-option value="right">Right</mat-option>
-                        <mat-option value="justify">Justify</mat-option>
-                     </mat-select>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline">
-                     <mat-label>Border</mat-label>
-                     <input matInput type="text" placeholder="e.g., 1px solid #ccc" [(ngModel)]="selectedBlock.styles['border']" (ngModelChange)="onStyleChange(selectedBlock, 'border')">
-                  </mat-form-field>
-               </ng-container>
-               <ng-template #noStyles>
-                  <p class="italic text-gray-500">Styles not initialized.</p>
-               </ng-template>
+                        <mat-option value="nowrap">No Wrap</mat-option>
+                        <mat-option value="wrap">Wrap</mat-option>
+                        <mat-option value="wrap-reverse">Wrap Reverse</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                }
+                <h5 class="font-medium mt-2">Spacing</h5>
+                <mat-form-field appearance="outline">
+                  <mat-label>Padding</mat-label>
+                  <input matInput type="text" placeholder="e.g., 10px or 5px 10px" [(ngModel)]="selectedBlock.styles['padding']" (ngModelChange)="onStyleChange(selectedBlock, 'padding')">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Margin</mat-label>
+                  <input matInput type="text" placeholder="e.g., 10px or 0 auto" [(ngModel)]="selectedBlock.styles['margin']" (ngModelChange)="onStyleChange(selectedBlock, 'margin')">
+                </mat-form-field>
+                <h5 class="font-medium mt-2">Appearance</h5>
+                <div class="flex flex-row gap-2 items-center">
+                  <label class="text-xs">Background Color:</label>
+                  <input type="color" class="w-6 h-6" [ngModel]="selectedBlock.styles['background-color'] || '#ffffff'" (ngModelChange)="selectedBlock.styles['background-color'] = $event; onStyleChange(selectedBlock, 'background-color')">
+                  <label class="text-xs ml-2">Text Color:</label>
+                  <input type="color" class="w-6 h-6" [ngModel]="selectedBlock.styles['color'] || '#000000'" (ngModelChange)="selectedBlock.styles['color'] = $event; onStyleChange(selectedBlock, 'color')">
+                </div>
+                <mat-form-field appearance="outline" class="mt-2">
+                  <mat-label>Text Align</mat-label>
+                  <mat-select [(ngModel)]="selectedBlock.styles['text-align']" (ngModelChange)="onStyleChange(selectedBlock, 'text-align')">
+                    <mat-option value="">Default</mat-option>
+                    <mat-option value="left">Left</mat-option>
+                    <mat-option value="center">Center</mat-option>
+                    <mat-option value="right">Right</mat-option>
+                    <mat-option value="justify">Justify</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Border</mat-label>
+                  <input matInput type="text" placeholder="e.g., 1px solid #ccc" [(ngModel)]="selectedBlock.styles['border']" (ngModelChange)="onStyleChange(selectedBlock, 'border')">
+                </mat-form-field>
+              } @else {
+                <p class="italic text-gray-500">Styles not initialized.</p>
+              }
             </mat-card>
-
-            <mat-card *ngIf="selectedBlock.type === 'columns' && selectedBlock.data?.columns" class="edit-section !p-3 !rounded-lg !shadow-none">
-               <h4 class="font-semibold mb-2">Column Styles</h4>
-               <div *ngFor="let col of selectedBlock.data.columns; let i = index" class="column-style-editor mb-2">
-                  <h5 class="font-medium text-xs mb-1">Column {{ i + 1 }} (ID: {{ col.id.substring(0,6) }}...)</h5>
-                  <ng-container *ngIf="!col.styles">{{ ensureStylesInitialized(selectedBlock) }}</ng-container>
-                  <ng-container *ngIf="col.styles">
-                     <mat-form-field appearance="outline">
+            @if (selectedBlock.type === 'columns' && selectedBlock.data?.columns) {
+              <mat-card class="edit-section !p-3 !rounded-lg !shadow-none">
+                <h4 class="font-semibold mb-2">Column Styles</h4>
+                @for (col of selectedBlock.data.columns; track col; let i = $index) {
+                  <div class="column-style-editor mb-2">
+                    <h5 class="font-medium text-xs mb-1">Column {{ i + 1 }} (ID: {{ col.id.substring(0,6) }}...)</h5>
+                    @if (!col.styles) {
+                      {{ ensureStylesInitialized(selectedBlock) }}
+                    }
+                    @if (col.styles) {
+                      <mat-form-field appearance="outline">
                         <mat-label>Flex Grow/Shrink/Basis</mat-label>
                         <input matInput type="text" placeholder="e.g., 1 or 0 0 50%" [(ngModel)]="col.styles['flex']" (ngModelChange)="onColumnStyleChange(col, 'flex')">
-                     </mat-form-field>
-                     <div class="flex flex-row gap-2 items-center">
+                      </mat-form-field>
+                      <div class="flex flex-row gap-2 items-center">
                         <label class="text-xs">Background Color:</label>
                         <input type="color" class="w-6 h-6" [ngModel]="col.styles['background-color'] || '#ffffff'" (ngModelChange)="col.styles['background-color'] = $event; onColumnStyleChange(col, 'background-color')">
                         <label class="text-xs ml-2">Padding:</label>
                         <input matInput type="text" class="w-20 border rounded px-1 py-0.5" placeholder="e.g., 10px" [(ngModel)]="col.styles['padding']" (ngModelChange)="onColumnStyleChange(col, 'padding')">
-                     </div>
-                  </ng-container>
-               </div>
-            </mat-card>
-
-            <mat-card class="edit-section interactions-section !p-3 !rounded-lg !shadow-none">
-               <h4 class="font-semibold mb-2">Interactions</h4>
-               <div *ngIf="selectedBlock.interactions && selectedBlock.interactions.length > 0" class="interaction-list space-y-1">
-                  <div *ngFor="let intr of selectedBlock.interactions" class="interaction-item flex items-center justify-between bg-slate-100 rounded px-2 py-1">
-                     <span>On <strong>{{ intr.trigger }}</strong>, {{ intr.action }} <strong>{{ intr.className }}</strong></span>
-                     <button mat-icon-button color="warn" (click)="removeInteraction(intr.id)">
-                        <mat-icon>close</mat-icon>
-                     </button>
+                      </div>
+                    }
                   </div>
-               </div>
-               <p *ngIf="!selectedBlock.interactions || selectedBlock.interactions.length === 0" class="italic text-gray-500">No interactions defined.</p>
-               <div class="add-interaction-form mt-2 flex flex-col gap-2">
-                  <h5 class="font-medium">Add New Interaction</h5>
-                  <mat-form-field appearance="outline">
-                     <mat-label>Trigger</mat-label>
-                     <mat-select [(ngModel)]="newInteractionTrigger">
-                        <mat-option value="hover">Hover</mat-option>
-                     </mat-select>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline">
-                     <mat-label>Action</mat-label>
-                     <mat-select [(ngModel)]="newInteractionAction">
-                        <mat-option value="addClass">Add Class</mat-option>
-                     </mat-select>
-                  </mat-form-field>
-                  <mat-form-field appearance="outline">
-                     <mat-label>Class Name</mat-label>
-                     <input matInput type="text" placeholder="e.g., hover-highlight" [(ngModel)]="newInteractionClassName">
-                  </mat-form-field>
-                  <button mat-raised-button color="primary" class="add-btn" (click)="addInteraction()" [disabled]="!newInteractionClassName.trim()">Add Interaction</button>
-               </div>
+                }
+              </mat-card>
+            }
+            <mat-card class="edit-section interactions-section !p-3 !rounded-lg !shadow-none">
+              <h4 class="font-semibold mb-2">Interactions</h4>
+              @if (selectedBlock.interactions && selectedBlock.interactions.length > 0) {
+                <div class="interaction-list space-y-1">
+                  @for (intr of selectedBlock.interactions; track intr) {
+                    <div class="interaction-item flex items-center justify-between bg-slate-100 rounded px-2 py-1">
+                      <span>On <strong>{{ intr.trigger }}</strong>, {{ intr.action }} <strong>{{ intr.className }}</strong></span>
+                      <button mat-icon-button color="warn" (click)="removeInteraction(intr.id)">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+              @if (!selectedBlock.interactions || selectedBlock.interactions.length === 0) {
+                <p class="italic text-gray-500">No interactions defined.</p>
+              }
+              <div class="add-interaction-form mt-2 flex flex-col gap-2">
+                <h5 class="font-medium">Add New Interaction</h5>
+                <mat-form-field appearance="outline">
+                  <mat-label>Trigger</mat-label>
+                  <mat-select [(ngModel)]="newInteractionTrigger">
+                    <mat-option value="hover">Hover</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Action</mat-label>
+                  <mat-select [(ngModel)]="newInteractionAction">
+                    <mat-option value="addClass">Add Class</mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Class Name</mat-label>
+                  <input matInput type="text" placeholder="e.g., hover-highlight" [(ngModel)]="newInteractionClassName">
+                </mat-form-field>
+                <button mat-raised-button color="primary" class="add-btn" (click)="addInteraction()" [disabled]="!newInteractionClassName.trim()">Add Interaction</button>
+              </div>
             </mat-card>
-
             <mat-expansion-panel class="mt-2">
-               <mat-expansion-panel-header>
-                  <mat-panel-title>View Raw Styles JSON</mat-panel-title>
-               </mat-expansion-panel-header>
-               <pre class="bg-slate-100 rounded p-2 text-xs">{{ selectedBlock.styles | json }}</pre>
+              <mat-expansion-panel-header>
+                <mat-panel-title>View Raw Styles JSON</mat-panel-title>
+              </mat-expansion-panel-header>
+              <pre class="bg-slate-100 rounded p-2 text-xs">{{ selectedBlock.styles | json }}</pre>
             </mat-expansion-panel>
-         </div>
-         <ng-template #noBlockSelected>
-            <p class="italic text-gray-500">Chưa có khối nào được chọn.</p>
-         </ng-template>
+          </div>
+        } @else {
+          <p class="italic text-gray-500">Chưa có khối nào được chọn.</p>
+        }
       </div>
-   </div>
- </mat-drawer>
+    </div>
+  </mat-drawer>
 
 </mat-drawer-container>
 

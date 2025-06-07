@@ -1,1 +1,0 @@
-import{$b as a,Ab as t,_b as o,wc as c}from"./chunk-7U7GNSSJ.js";import"./chunk-EU2KAMEK.js";import"./chunk-47CWAPKR.js";var p=class n{static \u0275fac=function(e){return new(e||n)};static \u0275cmp=t({type:n,selectors:[["app-vanchuyen"]],decls:2,vars:0,template:function(e,s){e&1&&(o(0,"p"),c(1,"vanchuyen works!"),a())},encapsulation:2})};export{p as VanchuyenComponent};

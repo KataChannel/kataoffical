@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterLink } from '@angular/router';
@@ -7,11 +7,11 @@ import { ListMenus } from '../../../shared/mockdata/menu';
 
 @Component({
   selector: 'app-headerteamplate1',
-  imports: [    
-    CommonModule,
+  imports: [
     MatMenuModule,
     RouterLink,
-    ChangeteamplateComponent],
+    ChangeteamplateComponent
+],
   templateUrl: './headerteamplate1.component.html',
   styleUrl: './headerteamplate1.component.scss'
 })

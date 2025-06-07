@@ -13,24 +13,23 @@ import {AfterViewInit, Component, inject, viewChild, ViewChild} from '@angular/c
   import { MatButtonModule } from '@angular/material/button';
   import { DetailQuanlyfileComponent } from './detailquanlyfile/detailquanlyfile.component';
 import { QuanlyfilesService } from './listquanlyfile.service';
-import { CommonModule } from '@angular/common';
+
   @Component({
     selector: 'app-listquanlyfile',
     templateUrl: './listquanlyfile.component.html',
     styleUrl: './listquanlyfile.component.scss',
     imports: [
-      MatFormFieldModule, 
-      MatInputModule, 
-      MatTableModule, 
-      MatSortModule, 
-      MatPaginatorModule,
-      MatMenuModule,
-      MatSidenavModule,
-      RouterOutlet,
-      MatIconModule,
-      MatButtonModule,
-      CommonModule
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatMenuModule,
+    MatSidenavModule,
+    RouterOutlet,
+    MatIconModule,
+    MatButtonModule
+],
   })
   export class ListquanlyfileComponent implements AfterViewInit {
     Detail:any={}

@@ -1,0 +1,1 @@
+import{Sb as n,Tb as p,pc as a,qb as t}from"./chunk-TWMQPIMW.js";import"./chunk-EU2KAMEK.js";import"./chunk-47CWAPKR.js";var i=class o{static \u0275fac=function(e){return new(e||o)};static \u0275cmp=t({type:o,selectors:[["app-kho"]],decls:2,vars:0,template:function(e,m){e&1&&(n(0,"p"),a(1,"kho works!"),p())},encapsulation:2})};export{i as KhoComponent};

@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, signal, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
@@ -27,14 +27,13 @@ import { removeVietnameseAccents } from "../../utils/texttransfer.utils";
     MatButtonModule,
     MatSelectModule,
     MatDialogModule,
-    CommonModule,
     MatSlideToggleModule,
     MatDatepickerModule,
     MatSortModule,
     MatPaginatorModule,
     MatTableModule,
-    MatMenuModule,
-  ],
+    MatMenuModule
+],
  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchfilterComponent {
@@ -70,8 +69,8 @@ export class SearchfilterComponent {
   RemoveAll()
   {
     this.ListFilter = [];
+    this.filterItem = this.initFilter
     this.searchText = '';
-    // this.filterItem = this.ListItem
   }
   CheckItem(item:any)
   {
@@ -91,7 +90,24 @@ export class SearchfilterComponent {
   }
   DoListFilter()
   {
-    this.filterItem = this.ListFilter
+    const uniqueMap = new Map();
+    this.ListFilter.forEach(item => {
+      const key = item[this.fieldsearch];
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, item);
+      }
+    });
+    this.filterItem = Array.from(uniqueMap.values());
+  }
+  getChosen(){
+    const uniqueMap = new Map();
+    this.ListFilter.forEach(item => {
+      const key = item[this.fieldsearch];
+      if (!uniqueMap.has(key)) {
+        uniqueMap.set(key, item);
+      }
+    });
+    return Array.from(uniqueMap.values()).length;
   }
   ChosenItem(item:any)
   {
@@ -109,14 +125,7 @@ export class SearchfilterComponent {
     }
     else{
       this.ListFilter = [...this.ListFilter,...CheckItem];
-    }
-    // console.log('item', item);
-    // console.log('fieldsearch', this.fieldsearch);
-    // // console.log('Checkfield', value);
-    console.log('CheckItem', CheckItem);
-    console.log('CheckItem1', CheckItem1);
-    console.log('ListFilter', this.ListFilter);
-    
+    }   
   }
 
   ApplyFilterColum(menu: any) {  

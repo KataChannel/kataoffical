@@ -3,7 +3,7 @@ import { Danhmucs } from '../../shared/mockdata/danhmuc';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { BreadscrumbComponent } from '../../shared/common/breadscrumb/breadscrumb.component';
 import { Sanphams } from '../../shared/mockdata/sanpham';
-import { CommonModule } from '@angular/common';
+
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
@@ -14,14 +14,13 @@ import { Baiviets } from '../../shared/mockdata/baiviet';
 @Component({
   selector: 'app-danhmucbaiviet',
   imports: [
-   BreadscrumbComponent,
-   CommonModule,
-   MatInputModule,
-   MatFormFieldModule,
-   FormsModule,
-   MatIconModule,
-   MatButtonModule
-  ],
+    BreadscrumbComponent,
+    MatInputModule,
+    MatFormFieldModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule
+],
   templateUrl: './danhmucbaiviet.component.html',
   styleUrl: './danhmucbaiviet.component.scss'
 })

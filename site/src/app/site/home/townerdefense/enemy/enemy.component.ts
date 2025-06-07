@@ -2,7 +2,7 @@
 
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Enemy } from '../interfaces';
-import { CommonModule, NgStyle, NgIf } from '@angular/common';
+import { CommonModule, NgStyle } from '@angular/common';
 
 @Component({
   selector: 'app-enemy',

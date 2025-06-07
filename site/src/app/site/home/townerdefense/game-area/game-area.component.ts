@@ -2,7 +2,7 @@
 
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { Enemy, Tower, BuildSpot, PathPoint, PATH } from '../interfaces'; // Import data structures
-import { CommonModule, NgFor, NgIf, NgStyle } from '@angular/common';
+import { CommonModule, NgStyle } from '@angular/common';
 import { EnemyComponent } from '../enemy/enemy.component';
 import { TowerComponent } from '../tower/tower.component';
 
@@ -11,30 +11,40 @@ import { TowerComponent } from '../tower/tower.component';
   standalone: true,
   imports: [
     CommonModule,
-    NgFor, NgIf, NgStyle,
+    NgStyle,
     EnemyComponent,
     TowerComponent
-  ],
+],
   template: `
     <div class="game-area">
       <div class="path">
-            <div *ngFor="let point of path; let i = index" class="path-point"
-                 [ngStyle]="{'left.px': point.x, 'top.px': point.y}">
-                 </div>
-            </div>
-
-
-      <div *ngFor="let spot of buildSpots" class="build-spot"
-            [ngStyle]="{'left.px': spot.position.x - 25, 'top.px': spot.position.y - 25}" (click)="onBuildSpotClick(spot)">
-            <span *ngIf="spot.occupiedBy === null">+</span> </div>
-
-
-      <app-enemy *ngFor="let enemy of enemies" [enemy]="enemy"></app-enemy>
-
-      <app-tower *ngFor="let tower of towers" [tower]="tower"></app-tower>
-
+        @for (point of path; track point; let i = $index) {
+          <div class="path-point"
+            [ngStyle]="{'left.px': point.x, 'top.px': point.y}">
+          </div>
+        }
       </div>
-  `,
+    
+    
+      @for (spot of buildSpots; track spot) {
+        <div class="build-spot"
+          [ngStyle]="{'left.px': spot.position.x - 25, 'top.px': spot.position.y - 25}" (click)="onBuildSpotClick(spot)">
+          @if (spot.occupiedBy === null) {
+            <span>+</span>
+          } </div>
+        }
+    
+    
+        @for (enemy of enemies; track enemy) {
+          <app-enemy [enemy]="enemy"></app-enemy>
+        }
+    
+        @for (tower of towers; track tower) {
+          <app-tower [tower]="tower"></app-tower>
+        }
+    
+      </div>
+    `,
   styleUrls: ['./game-area.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

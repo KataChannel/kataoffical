@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -9,12 +9,11 @@ import { MatMenuModule } from '@angular/material/menu';
 @Component({
   selector: 'app-changeteamplate',
   imports: [
-    CommonModule,
     MatSelectModule,
     FormsModule,
     MatMenuModule,
     MatButtonModule
-  ],
+],
   templateUrl: './changeteamplate.component.html',
   styleUrl: './changeteamplate.component.scss'
 })

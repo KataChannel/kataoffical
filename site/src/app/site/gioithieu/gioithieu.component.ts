@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BreadscrumbComponent } from '../../shared/common/breadscrumb/breadscrumb.component';
@@ -19,7 +19,6 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-gioithieu',
   imports: [
-    CommonModule,
     BreadscrumbComponent,
     MatTabsModule,
     MatExpansionModule,
@@ -30,7 +29,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatDatepickerModule,
     FormsModule,
     MatButtonModule
-  ],
+],
   providers: [provideNativeDateAdapter()],
   templateUrl: './gioithieu.component.html',
   styleUrl: './gioithieu.component.scss'

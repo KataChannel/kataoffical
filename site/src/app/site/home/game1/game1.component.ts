@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 
 // Class đơn giản cho Ô đất (Plot)
@@ -34,9 +34,7 @@ class Plant {
 
 @Component({
   selector: 'app-game1',
-  imports: [
-    CommonModule
-  ],
+  imports: [],
   templateUrl: './game1.component.html',
   styleUrl: './game1.component.scss'
 })

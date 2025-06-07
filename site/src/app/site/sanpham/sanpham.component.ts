@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BreadscrumbComponent } from '../../shared/common/breadscrumb/breadscrumb.component';
@@ -9,12 +9,11 @@ import { SwiperComponent } from '../../shared/common/swiper/swiper.component';
 @Component({
   selector: 'app-sanpham',
   imports: [
-    CommonModule,
     BreadscrumbComponent,
     MatTabsModule,
     MatExpansionModule,
     SwiperComponent
-  ],
+],
   templateUrl: './sanpham.component.html',
   styleUrl: './sanpham.component.scss'
 })

@@ -1,31 +1,33 @@
 <div class="relative w-full h-full">
   <img src="images/welcome_nam_bg.png" class="p-2 rounded-3xl absolute top-0 right-0 h-full w-full object-cover" alt="Welcome Image" />
   <div class="h-full relative flex flex-col space-y p-2 bg-slate-50/70">
-      <div class="container flex flex-row gap-4 p-4">
-        <img [src]="profile()?.avatar||'images/logo-kata.png'" alt="avatar"
-         class="w-32 h-32 rounded-full border border-blue-100 shadow-lg">     
+    <div class="container flex flex-row gap-4 p-4">
+      <img [src]="profile()?.avatar||'images/logo-kata.png'" alt="avatar"
+        class="w-32 h-32 rounded-full border border-blue-100 shadow-lg">
         <div class="flex flex-col space-y-2">
           <span class="text-3xl font-bold text-gray-800">Chào, {{profile()?.name}}</span>
           <span class="text-sm text-gray-600">{{profile()?.email}}</span>
           <a [href]="'admin/account'" mat-flat-button color="primary" class="flex flex-row gap-2">
-            <span class="material-icons">edit</span> 
-           Chỉnh Sửa
+            <span class="material-icons">edit</span>
+            Chỉnh Sửa
           </a>
         </div>
       </div>
       <div class="border-t p-2 flex items-center justify-between">
-        <div class="flex flex-row items-center flex-wrap gap-2"> 
-          <div *ngFor="let item of ProfileMenus; let i=index">
-            <a mat-flat-button [routerLink]="item.link" routerLinkActive="!bg-blue-500 !text-white" class="flex items-center">
-              <mat-icon>{{item.icon}}</mat-icon> 
-              <span class="whitespace-nowrap">{{item.title}}</span>
-            </a>        
-          </div>
+        <div class="flex flex-row items-center flex-wrap gap-2">
+          @for (item of ProfileMenus; track item; let i = $index) {
+            <div>
+              <a mat-flat-button [routerLink]="item.link" routerLinkActive="!bg-blue-500 !text-white" class="flex items-center">
+                <mat-icon>{{item.icon}}</mat-icon>
+                <span class="whitespace-nowrap">{{item.title}}</span>
+              </a>
+            </div>
+          }
         </div>
-      </div>  
-    <router-outlet></router-outlet>
+      </div>
+      <router-outlet></router-outlet>
+    </div>
   </div>
-</div>
 
 
 

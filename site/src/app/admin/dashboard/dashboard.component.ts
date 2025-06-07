@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { DashboardService } from './dashboard.service';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,12 +9,11 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-dashboard',
   imports: [
-    CommonModule,
     FormsModule,
     MatInputModule,
     MatFormFieldModule,
     MatIconModule
-  ],
+],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })

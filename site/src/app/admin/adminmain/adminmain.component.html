@@ -90,37 +90,39 @@
         <mat-icon>more_vert</mat-icon>
       </button>
     </div>
-    <div *ngIf="isShowBottomBar" class="lg:hidden relative flex flex-row gap-2 p-2  bg-blue-100/50 border-b border-blue-600"> 
-      <div class="w-full flex flex-row space-x-2 justify-center items-center">
-        <button color="primary" mat-icon-button (click)="ClearCache()">
-          <mat-icon>cached</mat-icon>
-        </button>
-        <button color="primary" mat-icon-button (click)="drawer1.toggle()">
-          <mat-icon>dashboard</mat-icon>
-        </button>
-        <button color="primary" mat-icon-button (click)="drawer1.toggle()">
-          <mat-icon>notifications</mat-icon>
-        </button>
-        <button color="primary" mat-icon-button (click)="drawer1.toggle()">
-          <mat-icon>chat</mat-icon>
-        </button>
-        <button color="primary" mat-icon-button [matMenuTriggerFor]="menu1">
-          <mat-icon>account_circle</mat-icon>
-        </button>
-        <mat-menu #menu1="matMenu">
-          <div class="flex flex-row space-x-2 items-center p-4 w-full">
-            <div class="flex flex-col truncate">
-              <div class="font-bold">{{User?.Hoten}}</div>
-              <div class="italic text-xs">{{User?.Vitri}}</div>
-              <div class="italic text-xs">{{User?.email}}</div>
+    @if (isShowBottomBar) {
+      <div class="lg:hidden relative flex flex-row gap-2 p-2  bg-blue-100/50 border-b border-blue-600">
+        <div class="w-full flex flex-row space-x-2 justify-center items-center">
+          <button color="primary" mat-icon-button (click)="ClearCache()">
+            <mat-icon>cached</mat-icon>
+          </button>
+          <button color="primary" mat-icon-button (click)="drawer1.toggle()">
+            <mat-icon>dashboard</mat-icon>
+          </button>
+          <button color="primary" mat-icon-button (click)="drawer1.toggle()">
+            <mat-icon>notifications</mat-icon>
+          </button>
+          <button color="primary" mat-icon-button (click)="drawer1.toggle()">
+            <mat-icon>chat</mat-icon>
+          </button>
+          <button color="primary" mat-icon-button [matMenuTriggerFor]="menu1">
+            <mat-icon>account_circle</mat-icon>
+          </button>
+          <mat-menu #menu1="matMenu">
+            <div class="flex flex-row space-x-2 items-center p-4 w-full">
+              <div class="flex flex-col truncate">
+                <div class="font-bold">{{User?.Hoten}}</div>
+                <div class="italic text-xs">{{User?.Vitri}}</div>
+                <div class="italic text-xs">{{User?.email}}</div>
+              </div>
             </div>
-          </div>
-          <a [href]="'/admin/profile'" mat-menu-item>Thông Tin</a>
-          <button mat-menu-item>Cài Đặt</button>
-          <button mat-menu-item (click)="logout()">Đăng Xuất</button>
-        </mat-menu>
+            <a [href]="'/admin/profile'" mat-menu-item>Thông Tin</a>
+            <button mat-menu-item>Cài Đặt</button>
+            <button mat-menu-item (click)="logout()">Đăng Xuất</button>
+          </mat-menu>
+        </div>
       </div>
-    </div>
+    }
     <router-outlet></router-outlet>
   </div>
 

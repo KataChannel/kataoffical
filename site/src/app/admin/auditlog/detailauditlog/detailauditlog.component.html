@@ -5,17 +5,21 @@
   <div class="font-bold">{{ DetailAuditlog()?.codeId || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
     <mat-slide-toggle [(ngModel)]="DetailAuditlog().isActive" [disabled]="!isEdit()">{{DetailAuditlog().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
-    <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleAuditlogAction()">
-      <mat-icon>save</mat-icon>
-    </button>
-    <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
-      <mat-icon>edit</mat-icon>
-    </button>
+    @if (isEdit()) {
+      <button mat-icon-button color="primary" (click)="handleAuditlogAction()">
+        <mat-icon>save</mat-icon>
+      </button>
+    }
+    @if (!isEdit()) {
+      <button mat-icon-button color="primary" (click)="toggleEdit()">
+        <mat-icon>edit</mat-icon>
+      </button>
+    }
   </div>
 </div>
 
 <div class="relative flex flex-col w-full p-4 overflow-auto">
-  <ng-container *ngIf="isDelete()">
+  @if (isDelete()) {
     <div class="flex flex-col space-y-4 items-center justify-center">
       <div class="font-bold text-2xl">Bạn chắc chắn muốn xoá không?</div>
       <div class="flex flex-row space-x-2 items-center justify-center">
@@ -23,9 +27,9 @@
         <button mat-flat-button color="warn" (click)="toggleDelete()">Huỷ Bỏ</button>
       </div>
     </div>
-  </ng-container>
+  }
 
-  <ng-container *ngIf="!isDelete()">
+  @if (!isDelete()) {
     <div class="grid grid-cols-1 gap-4">
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Tiêu Đề</mat-label>
@@ -36,5 +40,5 @@
         <textarea matInput [(ngModel)]="DetailAuditlog().description" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mô Tả"></textarea>
       </mat-form-field>
     </div>
-  </ng-container>
+  }
 </div>

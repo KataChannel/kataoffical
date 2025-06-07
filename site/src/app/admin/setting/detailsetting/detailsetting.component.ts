@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ListSettingComponent } from '../listsetting/listsetting.component';
 import { SettingService } from '../setting.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -16,16 +16,15 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   @Component({
     selector: 'app-detailsetting',
     imports: [
-      MatFormFieldModule,
-      MatInputModule,
-      FormsModule,
-      MatIconModule,
-      MatButtonModule,
-      MatSelectModule,
-      MatDialogModule,
-      CommonModule,
-      MatSlideToggleModule
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSlideToggleModule
+],
     templateUrl: './detailsetting.component.html',
     styleUrl: './detailsetting.component.scss'
   })

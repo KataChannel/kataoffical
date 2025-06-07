@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Inject, Input, Sanitizer } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogActions, MatDialogModule } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -7,9 +7,8 @@ import { DomSanitizer } from '@angular/platform-browser';
   selector: 'app-chatuser',
   standalone: true,
   imports: [
-    CommonModule,
     MatDialogModule
-  ],
+],
   templateUrl: './chatuser.component.html',
   styleUrl: './chatuser.component.scss',
 })

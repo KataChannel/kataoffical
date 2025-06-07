@@ -10,7 +10,7 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
+
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -40,13 +40,12 @@ import { StorageService } from '../../../shared/utils/storage.service';
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
-    CommonModule,
     FormsModule,
     MatTooltipModule,
     MatDialogModule,
     MatTreeModule,
     MatBadgeModule
-  ],
+],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListQuanlydriveComponent {

@@ -1,1 +1,0 @@
-import{$b as i,Ab as n,_b as o,wc as r}from"./chunk-7U7GNSSJ.js";import"./chunk-EU2KAMEK.js";import"./chunk-47CWAPKR.js";var s=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=n({type:t,selectors:[["app-register"]],decls:2,vars:0,template:function(e,p){e&1&&(o(0,"p"),r(1,"register works!"),i())},encapsulation:2})};export{s as RegisterComponent};

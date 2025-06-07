@@ -2,9 +2,8 @@
   <button mat-icon-button color="primary" (click)="goBack()">
     <mat-icon>arrow_back</mat-icon>
   </button>
-  <div class="font-bold">{{ DetailSanpham()?.title || 'Không có dữ liệu' }}</div>
+  <div class="font-bold">{{ DetailSanpham()?.codeId || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
-    <mat-slide-toggle [(ngModel)]="DetailSanpham().isActive" [disabled]="!isEdit()">{{DetailSanpham().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleSanphamAction()">
       <mat-icon>save</mat-icon>
     </button>
@@ -26,20 +25,12 @@
   </ng-container>
 
   <ng-container *ngIf="!isDelete()">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <mat-form-field appearance="outline">
+    <div class="grid grid-cols-1 gap-4">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Tiêu Đề</mat-label>
         <input matInput [(ngModel)]="DetailSanpham().title" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tiêu Đề"/>
       </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Mã Sản Phẩm</mat-label>
-        <input matInput [(ngModel)]="DetailSanpham().codeId" [disabled]="true" placeholder="Vui lòng nhập Mã Sản Phẩm"/>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>Trạng Thái</mat-label>
-        <input matInput [(ngModel)]="DetailSanpham().status" [disabled]="!isEdit()" placeholder="Vui lòng nhập Trạng Thái"/>
-      </mat-form-field>
-      <mat-form-field class="lg:col-span-2" appearance="outline">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Mô Tả</mat-label>
         <textarea matInput [(ngModel)]="DetailSanpham().description" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mô Tả"></textarea>
       </mat-form-field>

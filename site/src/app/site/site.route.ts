@@ -33,6 +33,13 @@ const routes: Routes = [
           import('./home/townerdefense/townerdefense.component').then(
             (c) => c.TownerdefenseComponent
           ),
+      },
+      {
+        path: 'game4',
+        loadComponent: () =>
+          import('./home/game4/game4').then(
+            (c) => c.Game4
+          ),
       }
       // {
       //   path: ':slug',

@@ -121,8 +121,8 @@ body {
 }
 
 .mat-mdc-snack-bar-container .mat-mdc-snackbar-surface {
-  // color: var(--mdc-snackbar-supporting-text-color, var(--mat-sys-inverse-on-surface));
-  // border-radius: var(--mdc-snackbar-container-shape, var(--mat-sys-corner-extra-small));
+  // color: var(--mat-snackbar-supporting-text-color, var(--mat-sys-inverse-on-surface));
+  // border-radius: var(--mat-snackbar-container-shape, var(--mat-sys-corner-extra-small));
   background-color: transparent !important
 }
 
@@ -191,14 +191,14 @@ body {
 }
 
 .text-md.mat-mdc-icon-button.mat-mdc-button-base {
-  --mdc-icon-button-state-layer-size: 32px;
+  --mat-icon-button-state-layer-size: 32px;
   padding: 4px;
 }
 
 
 .mat-mdc-snack-bar-container .mat-mdc-snackbar-surface {
-  // color: var(--mdc-snackbar-supporting-text-color, var(--mat-sys-inverse-on-surface));
-  // border-radius: var(--mdc-snackbar-container-shape, var(--mat-sys-corner-extra-small));
+  // color: var(--mat-snackbar-supporting-text-color, var(--mat-sys-inverse-on-surface));
+  // border-radius: var(--mat-snackbar-container-shape, var(--mat-sys-corner-extra-small));
   background-color: transparent !important
 }
 

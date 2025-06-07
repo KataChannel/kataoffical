@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ListRoleComponent } from '../listrole/listrole.component';
 import { RoleService } from '../role.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -24,9 +24,8 @@ import { PermissionService } from '../../permission/permission.service';
     MatButtonModule,
     MatSelectModule,
     MatDialogModule,
-    CommonModule,
-    MatSlideToggleModule,
-  ],
+    MatSlideToggleModule
+],
   templateUrl: './detailrole.component.html',
   styleUrl: './detailrole.component.scss',
 })

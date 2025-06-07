@@ -4,10 +4,37 @@ git commit -m "update"
 git push
 
 # server
+chmod +x katalogin.sh
+./katalogin.sh
 ssh root@116.118.85.23
 git pull
+### Tạo Cấu Hình
+ssh-keygen -t rsa -b 4096
+ssh-copy-id root@116.118.85.23
 
-cp /root/secret/.env /root/kataoffical/api/
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+
+nano ~/.ssh/config
+
+Host myserver
+HostName 116.118.85.23
+User root
+IdentityFile ~/.ssh/id_rsa
+
+sudo apt install expect
+
+#!/usr/bin/expect
+spawn ssh root@<địa-chỉ-máy-chủ>
+expect "password:"
+send "mật-khẩu\n"
+interact
+
+chmod +x autologin.sh
+./autologin.sh
+
+
+cp /root/secret/.env /root/katav20/api/
 
 docker compose -f 'docker-compose.yml' up -d --build 
 docker compose -f 'docker-compose.yml' up -d --build 'postgres'
@@ -16,6 +43,7 @@ docker compose -f 'docker-compose.yml' up -d --build 'datalake_storage'
 docker compose -f 'docker-compose.yml' up -d --build 'processing_service'
 docker compose down rausachsandbox1-berausachsanbox1
 Xoá Tất Cả
+docker start $(docker ps -aq) # Stop all containers
 docker stop $(docker ps -aq) # Stop all containers
 docker rm $(docker ps -aq)  # Remove all containers
 docker rmi -f $(docker images -aq) # Remove all images (forcefully if needed)

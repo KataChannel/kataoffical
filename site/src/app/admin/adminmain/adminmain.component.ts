@@ -8,7 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
-import { CommonModule } from '@angular/common';
+
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MenuService } from '../menu/menu/menu.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -28,10 +28,9 @@ import { SettingService } from '../setting/setting.service';
     MatTabsModule,
     MatDividerModule,
     MatListModule,
-    CommonModule,
     RouterLink,
-    TreemenuComponent,
-  ],
+    TreemenuComponent
+],
   templateUrl: './adminmain.component.html',
   styleUrl: './adminmain.component.scss'
 })
