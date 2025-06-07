@@ -1,0 +1,13 @@
+{
+  "name": "@kataoffical/shared-auth",
+  "version": "0.0.2",
+  "peerDependencies": {
+    "@angular/common": "^19.2.0",
+    "@angular/core": "^19.2.0",
+    "rxjs": "^7.5.0" 
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}
