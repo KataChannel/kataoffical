@@ -34,7 +34,7 @@ chmod +x autologin.sh
 ./autologin.sh
 
 
-cp /root/secret/.env /root/kataoffical/api/
+cp /root/secret/.env /root/katav20/api/
 
 docker compose -f 'docker-compose.yml' up -d --build 
 docker compose -f 'docker-compose.yml' up -d --build 'postgres'
