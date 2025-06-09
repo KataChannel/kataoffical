@@ -175,6 +175,9 @@ export class KhachhangService {
     if (where.subtitle) {
       whereClause.subtitle = { contains: where.subtitle, mode: 'insensitive' };
     }
+    if (where.name) {
+      whereClause.name = { contains: where.name, mode: 'insensitive' };
+    }
     if (where.startDate || where.endDate) {
       whereClause.createdAt = {};
       if (where.startDate) whereClause.createdAt.gte = where.startDate;

@@ -460,7 +460,7 @@ export class ListDonhangComponent {
   statusDetails: any[] = [];
   ListImportData: any[] = [];
   async ImporExcel(event: any) {
-    await this._KhachhangService.getAllKhachhang();
+    await this._KhachhangService.getKhachhangBy({page:1, pageSize:50});
     this.FilterKhachhang = this._KhachhangService.ListKhachhang()
     const files = Array.from(event.target.files) as File[];
     let processedCount = 0;
@@ -784,12 +784,15 @@ SelectKhachhang(item:any,event:any){
     v1.khachhangId = value;
   });  
 }
-DoFindKhachhang(event:any){
+@Debounce(500)
+  async DoFindKhachhang(event:any){
   const value = event.target.value;
   if (!value) {
+    await this._KhachhangService.getKhachhangBy({});
     this.FilterKhachhang = this._KhachhangService.ListKhachhang();
     return;
   }
+  await this._KhachhangService.getKhachhangBy({subtitle: value,name:value});
   this.FilterKhachhang = this._KhachhangService.ListKhachhang().filter((v:any) =>
     removeVietnameseAccents(v.makh).includes(value.toLowerCase()) ||
     removeVietnameseAccents(v.name).includes(value.toLowerCase()) ||
