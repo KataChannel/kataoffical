@@ -2,22 +2,16 @@
   <button mat-icon-button color="primary" (click)="goBack()">
     <mat-icon>arrow_back</mat-icon>
   </button>
-  <div
-       [contentEditable]="true"
-       (blur)="updateValue($event,null,DetailDonhang(), 'title','string')"
-       class="p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
-     >
-     {{ DetailDonhang()?.madonhang || 'Không có dữ liệu' }}
-  </div>
+  <div class="p-2 font-bold truncate">{{ DetailDonhang()?.madonhang || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
-    <mat-slide-toggle [(ngModel)]="DetailDonhang().isActive" [disabled]="!isEdit()">{{DetailDonhang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+    <!-- <mat-slide-toggle [(ngModel)]="DetailDonhang().isActive" [disabled]="!isEdit()">{{DetailDonhang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle> -->
     <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>
     </button>
 
-    <button mat-icon-button color="primary" (click)="printContent()">
+    <!-- <button mat-icon-button color="primary" (click)="printContent()">
       <mat-icon>print</mat-icon>
-    </button>
+    </button> -->
     @if(!DetailDonhang().status || DetailDonhang().status === 'dadat') {
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleDonhangAction()">
       <mat-icon>save</mat-icon>
@@ -25,9 +19,9 @@
     <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
-    <button mat-icon-button color="warn" *ngIf="!isEdit()" (click)="toggleDelete()">
+    <!-- <button mat-icon-button color="warn" *ngIf="!isEdit()" (click)="toggleDelete()">
       <mat-icon>delete</mat-icon>
-    </button>
+    </button> -->
   }
   </div>
 </div>
