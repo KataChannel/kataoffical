@@ -1,1 +1,0 @@
-import{Yb as n,Zb as a,uc as c,yb as t}from"./chunk-XM34QK75.js";import"./chunk-EU2KAMEK.js";import"./chunk-47CWAPKR.js";var p=class e{static \u0275fac=function(o){return new(o||e)};static \u0275cmp=t({type:e,selectors:[["app-khoahoc"]],decls:2,vars:0,template:function(o,i){o&1&&(n(0,"p"),c(1,"khoahoc works!"),a())},encapsulation:2})};export{p as KhoahocComponent};

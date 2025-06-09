@@ -57,6 +57,10 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
       this.Filerladi = this.Listladipage().filter(item => item.title.toLowerCase().includes(query));
     }
     getUrl(item:any){
+      console.log(item);
+      if(item.contentHtml){
+        return item.contentHtml;
+      }
       const result = `/ladictv/${item?.slug}?ref=${this.profile()?.inviteCode}`;
       return result;
     }
@@ -81,7 +85,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     });
   }
   share(platform: string, url: string, title?: string, description?: string, image?: string): void {
-    url = window.location.origin + url;
+    url = url+ '?ref=' + this.profile()?.inviteCode;
     let shareUrl: string;
     switch (platform.toLowerCase()) {
       case 'facebook':

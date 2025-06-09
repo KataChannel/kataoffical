@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML to Block JSON Tool</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    textarea { width: 100%; height: 400px; font-family: monospace; }
+    #output { white-space: pre; background: #f9f9f9; padding: 1em; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+
+<h2>🔄 Convert HTML → JSON Block Data</h2>
+
+<input type="file" id="fileInput" accept=".html" />
+<pre id="output">JSON sẽ xuất hiện ở đây...</pre>
+
+<script>
+  function detectBlockType(block) {
+    if (block.className.includes('button-css')) return 'button';
+    if (block.querySelector('img')) return 'image';
+    if (block.querySelector('input')) return 'input';
+    if (block.querySelector('form')) return 'form';
+    return 'div';
+  }
+
+  function parseHtmlToBlocks(html) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const blocks = [...doc.querySelectorAll('[id^="w-"]')];
+
+    return blocks.map(block => {
+      const computed = block.style || {};
+      const rect = block.getBoundingClientRect();
+
+      const blockData = {
+        id: block.id,
+        type: detectBlockType(block),
+        content: block.innerText.trim(),
+        style: {
+          top: computed.top || '',
+          left: computed.left || '',
+          width: computed.width || '',
+          height: computed.height || '',
+          backgroundColor: computed.backgroundColor || '',
+          color: computed.color || '',
+          fontSize: computed.fontSize || '',
+          fontWeight: computed.fontWeight || '',
+          borderRadius: computed.borderRadius || ''
+        }
+      };
+
+      const img = block.querySelector('img');
+      if (img) {
+        blockData.type = 'image';
+        blockData.src = img.getAttribute('src');
+      }
+
+      return blockData;
+    });
+  }
+
+  document.getElementById('fileInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const text = await file.text();
+    const result = parseHtmlToBlocks(text);
+    document.getElementById('output').textContent = JSON.stringify(result, null, 2);
+  });
+</script>
+
+</body>
+</html>

@@ -1,10 +1,17 @@
 import { Component, effect, inject } from '@angular/core';
 import { TrackingService } from '../../../../admin/tracking/tracking.service';
 import { UserService } from '../../../../admin/user/user.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-luottruycap',
-  imports: [],
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    RouterLink
+  ],
   templateUrl: './luottruycap.component.html',
   styleUrl: './luottruycap.component.scss'
 })

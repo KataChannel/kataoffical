@@ -6,6 +6,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { NgApexchartsModule } from 'ng-apexcharts';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-luotden',
   imports: [
@@ -15,18 +19,22 @@ import { NgApexchartsModule } from 'ng-apexcharts';
     MatSelectModule,
     MatCardModule,
     MatTableModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    MatIconModule,
+    MatButtonModule,
+    RouterLink,
+    CommonModule
   ],
   templateUrl: './luotden.component.html',
   styleUrl: './luotden.component.scss'
 })
 export class LuotdenComponent {
   displayedColumns: string[] = ['branchName', 'appointments', 'successRate', 'source'];
-  dataSource = new MatTableDataSource([
+  dataSource = [
     { branchName: 'Chi Nhánh Hà Nội', appointments: 600, successRate: '18%', source: 'Online' },
     { branchName: 'Chi Nhánh TP.HCM', appointments: 450, successRate: '14%', source: 'Phone' },
     { branchName: 'Chi Nhánh Đà Nẵng', appointments: 300, successRate: '12%', source: 'Walk-in' }
-  ]);
+  ];
 
   // Bar Chart Data
   barChartSeries: any[] = [

@@ -1,82 +1,77 @@
-<mat-card class="container mx-auto p-6 bg-gray-100">
+<div class="container mx-auto p-6 bg-gray-100">
   <!-- Header -->
-  <mat-card-header>
-    <mat-card-title class="text-3xl font-bold text-gray-800 mb-6">Bảng Điều Khiển Lượt Đăng Ký Affiliate</mat-card-title>
-  </mat-card-header>
+  <header class="flex flex-row space-x-2 mb-6 items-center">
+    <button [routerLink]="['../']" mat-icon-button color="primary"><mat-icon>arrow_back</mat-icon></button>
+    <div class="flex flex-col">
+      <span class="text-xl font-bold text-gray-800">Bảng Điều Khiển Lượt Đăng Ký Affiliate</span>
+    </div>
+  </header>
+
 
   <!-- Summary Cards -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-    <mat-card class="p-6 rounded-lg shadow-md">
-      <mat-card-title class="text-lg font-semibold text-gray-700">Tổng Lượt Đăng Ký</mat-card-title>
-      <mat-card-content class="text-3xl font-bold text-green-600">1.240</mat-card-content>
-    </mat-card>
-    <mat-card class="p-6 rounded-lg shadow-md">
-      <mat-card-title class="text-lg font-semibold text-gray-700">Tỷ Lệ Chuyển Đổi</mat-card-title>
-      <mat-card-content class="text-3xl font-bold text-blue-600">12,5%</mat-card-content>
-    </mat-card>
-    <mat-card class="p-6 rounded-lg shadow-md">
-      <mat-card-title class="text-lg font-semibold text-gray-700">Chiến Dịch Đang Hoạt Động</mat-card-title>
-      <mat-card-content class="text-3xl font-bold text-purple-600">8</mat-card-content>
-    </mat-card>
+    <div class="p-6 rounded-lg shadow-md bg-white">
+      <div class="text-lg font-semibold text-gray-700">Tổng Lượt Đăng Ký</div>
+      <div class="text-3xl font-bold text-green-600">1.240</div>
+    </div>
+    <div class="p-6 rounded-lg shadow-md bg-white">
+      <div class="text-lg font-semibold text-gray-700">Tỷ Lệ Chuyển Đổi</div>
+      <div class="text-3xl font-bold text-blue-600">12,5%</div>
+    </div>
+    <div class="p-6 rounded-lg shadow-md bg-white">
+      <div class="text-lg font-semibold text-gray-700">Chiến Dịch Đang Hoạt Động</div>
+      <div class="text-3xl font-bold text-purple-600">8</div>
+    </div>
   </div>
 
   <!-- Charts Section -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-    <!-- Bar Chart: Registrations Over Time -->
-    <mat-card class="p-6 rounded-lg shadow-md">
-      <mat-card-title class="text-lg font-semibold text-gray-700 mb-4">Lượt Đăng Ký Theo Thời Gian</mat-card-title>
-      <mat-card-content>
-        <apx-chart
-          [series]="barChartSeries"
-          [chart]="barChartOptions['chart']"
-          [xaxis]="barChartOptions['xaxis']"
-          [yaxis]="barChartOptions['yaxis']"
-          [title]="barChartOptions['title']"
-          [legend]="barChartOptions['legend']"
-          [colors]="barChartOptions['colors']"
-        ></apx-chart>
-      </mat-card-content>
-    </mat-card>
-    <!-- Pie Chart: Registration Sources -->
-    <mat-card class="p-6 rounded-lg shadow-md">
-      <mat-card-title class="text-lg font-semibold text-gray-700 mb-4">Nguồn Đăng Ký</mat-card-title>
-      <mat-card-content>
-        <apx-chart
-          [series]="pieChartSeries"
-          [chart]="pieChartOptions['chart']"
-          [labels]="pieChartOptions['labels']"
-          [title]="pieChartOptions['title']"
-          [legend]="pieChartOptions['legend']"
-          [colors]="pieChartOptions['colors']"
-        ></apx-chart>
-      </mat-card-content>
-    </mat-card>
+    <div class="p-6 rounded-lg shadow-md bg-white">
+      <div class="text-lg font-semibold text-gray-700 mb-4">
+        Lượt Đăng Ký Theo Thời Gian
+      </div>
+      <div>
+        <apx-chart [series]="barChartSeries" [chart]="barChartOptions['chart']" [xaxis]="barChartOptions['xaxis']"
+          [yaxis]="barChartOptions['yaxis']" [title]="barChartOptions['title']" [legend]="barChartOptions['legend']"
+          [colors]="barChartOptions['colors']"></apx-chart>
+      </div>
+    </div>
+    <div class="p-6 rounded-lg shadow-md bg-white">
+      <div class="text-lg font-semibold text-gray-700 mb-4">
+        Nguồn Đăng Ký
+      </div>
+      <div>
+        <apx-chart [series]="pieChartSeries" [chart]="pieChartOptions['chart']" [labels]="pieChartOptions['labels']"
+          [title]="pieChartOptions['title']" [legend]="pieChartOptions['legend']"
+          [colors]="pieChartOptions['colors']"></apx-chart>
+      </div>
+    </div>
   </div>
 
   <!-- Top Campaigns Table -->
-  <mat-card class="p-6 rounded-lg shadow-md">
-    <mat-card-title class="text-lg font-semibold text-gray-700 mb-4">Chiến Dịch Hàng Đầu</mat-card-title>
-    <mat-card-content>
-      <table mat-table [dataSource]="dataSource" class="w-full">
-        <ng-container matColumnDef="campaignName">
-          <th mat-header-cell *matHeaderCellDef class="p-3 bg-gray-200 text-gray-700">Tên Chiến Dịch</th>
-          <td mat-cell *matCellDef="let element" class="p-3">{{ element.campaignName }}</td>
-        </ng-container>
-        <ng-container matColumnDef="registrations">
-          <th mat-header-cell *matHeaderCellDef class="p-3 bg-gray-200 text-gray-700">Lượt Đăng Ký</th>
-          <td mat-cell *matCellDef="let element" class="p-3">{{ element.registrations }}</td>
-        </ng-container>
-        <ng-container matColumnDef="conversionRate">
-          <th mat-header-cell *matHeaderCellDef class="p-3 bg-gray-200 text-gray-700">Tỷ Lệ Chuyển Đổi</th>
-          <td mat-cell *matCellDef="let element" class="p-3">{{ element.conversionRate }}</td>
-        </ng-container>
-        <ng-container matColumnDef="platform">
-          <th mat-header-cell *matHeaderCellDef class="p-3 bg-gray-200 text-gray-700">Nền Tảng</th>
-          <td mat-cell *matCellDef="let element" class="p-3">{{ element.platform }}</td>
-        </ng-container>
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="border-b"></tr>
+  <div class="p-6 rounded-lg shadow-md bg-white">
+    <div class="text-lg font-semibold text-gray-700 mb-4">
+      Chiến Dịch Hàng Đầu
+    </div>
+    <div>
+      <table class="w-full">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="p-3 text-gray-700">Tên Chiến Dịch</th>
+            <th class="p-3 text-gray-700">Lượt Đăng Ký</th>
+            <th class="p-3 text-gray-700">Tỷ Lệ Chuyển Đổi</th>
+            <th class="p-3 text-gray-700">Nền Tảng</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let element of dataSource" class="border-b">
+            <td class="p-3">{{ element.campaignName }}</td>
+            <td class="p-3">{{ element.registrations }}</td>
+            <td class="p-3">{{ element.conversionRate }}</td>
+            <td class="p-3">{{ element.platform }}</td>
+          </tr>
+        </tbody>
       </table>
-    </mat-card-content>
-  </mat-card>
-</mat-card>
+    </div>
+  </div>
+</div>

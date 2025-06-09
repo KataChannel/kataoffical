@@ -1,10 +1,14 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { RouterLink } from '@angular/router';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
 @Component({
@@ -16,7 +20,11 @@ import { NgApexchartsModule } from 'ng-apexcharts';
     MatSelectModule,
     MatCardModule,
     MatTableModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    MatIconModule,
+    MatButtonModule,
+    RouterLink,
+    CommonModule
   ],
   templateUrl: './khoahoc.component.html',
   styleUrls: ['./khoahoc.component.scss']
@@ -25,11 +33,11 @@ export class KhoahocComponent {
 
   // Table data
   displayedColumns: string[] = ['courseName', 'registrations', 'conversionRate', 'source'];
-  dataSource = new MatTableDataSource([
+  dataSource = [
     { courseName: 'Khóa Trang Điểm Chuyên Nghiệp', registrations: 500, conversionRate: '16%', source: 'Facebook' },
     { courseName: 'Khóa Chăm Sóc Da Cao Cấp', registrations: 350, conversionRate: '12%', source: 'Website' },
     { courseName: 'Khóa Nghệ Thuật Làm Móng', registrations: 250, conversionRate: '10%', source: 'Instagram' }
-  ]);
+  ];
 
   // Bar Chart Data
   barChartSeries: any[] = [

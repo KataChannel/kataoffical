@@ -1,1 +1,0 @@
-import{Yb as o,Zb as a,uc as p,yb as n}from"./chunk-XM34QK75.js";import"./chunk-EU2KAMEK.js";import"./chunk-47CWAPKR.js";var s=class e{static \u0275fac=function(t){return new(t||e)};static \u0275cmp=n({type:e,selectors:[["app-doanhthu"]],decls:2,vars:0,template:function(t,m){t&1&&(o(0,"p"),p(1,"doanhthu works!"),a())},encapsulation:2})};export{s as DoanhthuComponent};

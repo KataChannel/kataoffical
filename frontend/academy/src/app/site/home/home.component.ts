@@ -40,7 +40,7 @@ export class HomeComponent {
   token: string | null = this._StorageService.getItem('token');
   ListMenu: any[] = [
     { id: 1, title: 'Tổng Quan', icon: 'home', link: '/dashboardctv' },
-    { id: 2, title: 'Phân Tích', icon: 'info', link: '/thongkectv' },
+    // { id: 2, title: 'Phân Tích', icon: 'info', link: '/thongkectv' },
     { id: 3, title: 'Liên Kết', icon: 'link', link: '/affiliatectv' },
     { id: 4, title: 'Landing Page', icon: 'web', link: '/ladictv' },
     {

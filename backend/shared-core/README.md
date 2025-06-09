@@ -6,7 +6,7 @@ git push
 npx bun add @nestjs/config @nestjs/jwt @nestjs/passport passport passport-jwt bcryptjs
 npx bun add @prisma/client
 npx bun add -d prisma
-npx prisma migrate dev --name hethong3.1
+npx prisma migrate dev --name hethong7.1
 npx prisma migrate dev --name vttech3.9
 npx prisma generate --schema=prisma/schema.prisma
 npx prisma generate --schema=prisma/vttech.prisma

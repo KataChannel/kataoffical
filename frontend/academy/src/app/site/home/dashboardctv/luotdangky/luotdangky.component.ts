@@ -1,10 +1,14 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { RouterLink } from '@angular/router';
 import {NgApexchartsModule} from 'ng-apexcharts';
 @Component({
   selector: 'app-luotdangky',
@@ -15,7 +19,11 @@ import {NgApexchartsModule} from 'ng-apexcharts';
     MatSelectModule,
     MatCardModule,
     MatTableModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    MatIconModule,
+    MatButtonModule,
+    RouterLink,
+    CommonModule
   ],
   templateUrl: './luotdangky.component.html',
   styleUrls: ['./luotdangky.component.scss']
@@ -23,11 +31,11 @@ import {NgApexchartsModule} from 'ng-apexcharts';
 export class LuotdangkyComponent implements OnInit {
   // Table data
   displayedColumns: string[] = ['campaignName', 'registrations', 'conversionRate', 'platform'];
-  dataSource = new MatTableDataSource([
+  dataSource =[
     { campaignName: 'Khuyến Mãi Mùa Hè', registrations: 450, conversionRate: '15%', platform: 'TikTok' },
     { campaignName: 'Quay Lại Trường Học', registrations: 320, conversionRate: '10%', platform: 'Website' },
     { campaignName: 'Khuyến Mãi Lễ Hội', registrations: 280, conversionRate: '12%', platform: 'Facebook' }
-  ]);
+  ];
 
   // Bar Chart Data
   barChartSeries: any[] = [
