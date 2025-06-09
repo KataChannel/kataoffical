@@ -196,7 +196,7 @@ export class KhachhangService {
       await this.saveKhachhangs(data.data, {
         page: data.page || 1,
         pageCount: data.pageCount || 1,
-        total: data.total || data.data.length,
+        total: data.total || data?.data?.length,
         pageSize
       });
       // Với forceRefresh, cập nhật luôn với thời gian mới từ server, nếu không thì sử dụng thời gian lấy từ lastUpdatedResponse
@@ -278,7 +278,7 @@ export class KhachhangService {
         await this.saveKhachhangs(data.data, {
           page: data.page || 1,
           pageCount: data.pageCount || 1,
-          total: data.total || data.data.length,
+          total: data.total || data?.data?.length,
           pageSize: this.pageSize()
         });
         this._StorageService.setItem('khachhangs_updatedAt', new Date().toISOString());
