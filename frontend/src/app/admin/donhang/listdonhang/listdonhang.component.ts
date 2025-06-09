@@ -792,7 +792,7 @@ SelectKhachhang(item:any,event:any){
     this.FilterKhachhang = this._KhachhangService.ListKhachhang();
     return;
   }
-  await this._KhachhangService.getKhachhangBy({subtitle: value,name:value});
+  await this._KhachhangService.getKhachhangBy({subtitle: value});
   this.FilterKhachhang = this._KhachhangService.ListKhachhang().filter((v:any) =>
     removeVietnameseAccents(v.makh).includes(value.toLowerCase()) ||
     removeVietnameseAccents(v.name).includes(value.toLowerCase()) ||
