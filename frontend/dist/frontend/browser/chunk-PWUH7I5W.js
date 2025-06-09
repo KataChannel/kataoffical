@@ -1,1 +1,0 @@
-import{Dc as p,Eb as e,dc as t,ec as c}from"./chunk-6QR2UCJZ.js";import"./chunk-EU2KAMEK.js";import"./chunk-6DYNGEAS.js";var a=class o{static \u0275fac=function(n){return new(n||o)};static \u0275cmp=e({type:o,selectors:[["app-congnoncc"]],decls:2,vars:0,template:function(n,m){n&1&&(t(0,"p"),p(1,"congnoncc works!"),c())},encapsulation:2})};export{a as CongnonccComponent};

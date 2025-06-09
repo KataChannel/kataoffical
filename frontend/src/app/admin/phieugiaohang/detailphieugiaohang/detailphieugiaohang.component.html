@@ -44,7 +44,7 @@
   <div id="printContent" class="min-w-[800px] flex flex-col space-y-6 items-center p-2 border rounded-lg">
     <div class="w-full flex flex-col space-y-4 items-center justify-center"> 
         <div *ngIf="!isEdit()" class="w-full flex flex-row space-x-2 items-center justify-between">
-          <img src="/images/logo-full.png" class="h-20 mx-auto">
+          <img src="/images/logo-full.png" class="h-14 mx-auto">
           <div class="w-2/3 flex flex-col space-y-2">
             <div class="font-bold text-[18px]">CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA</div>
             <div>Hợp tác xã: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An</div>
@@ -52,6 +52,7 @@
             <div>Kho sơ chế: 30 Kha Vạn Cân, P. Hiệp Bình Chánh, TP. Thủ Đức, TP.HCM</div>
             <div>Website: http://rausachtrangia.com - Hotline: 090.245.8081</div>
           </div>
+          <img src="/images/qrcodedonhang.svg" class="h-32 mx-auto p-4">
         </div>
         <div class="font-bold text-[18px] uppercase">BẢNG KÊ GIAO HÀNG NGÀY {{DetailPhieugiaohang().ngaygiao|date:'dd/MM/yyyy'}}</div>
       <div class="font-bold text-[18px] uppercase {{DetailPhieugiaohang()?.khachhangId?'':'text-red-700 italic'}}">{{DetailPhieugiaohang()?.khachhang?.name||"Chưa Chọn Khách Hàng"}}</div>
@@ -109,7 +110,7 @@
       <div class="w-full flex items-start"><strong>Số Điện Thoại : </strong> {{DetailPhieugiaohang()?.khachhang?.sdt}}</div>
       <div class="w-full flex items-start"><strong>Tổng khối lượng  : 
 
-        {{TinhTong(DetailPhieugiaohang().sanpham,'slgiao')|number:'1.0-2'}}
+        Đơn Vị Tính : {{DetailPhieugiaohang().sanpham[0].dvt}} ({{TinhTong(DetailPhieugiaohang().sanpham,'slgiao')|number:'1.0-2'}})
       </strong> </div>
      
       <div *ngIf="isEdit()" class="w-full flex flex-col overflow-y-auto">
@@ -244,10 +245,11 @@
             <th class="border p-2">STT</th>
             <th class="border p-2">Tên sản phẩm</th>
             <th class="border p-2">ĐVT</th>
-            <th class="border p-2 max-w-10">Số Lượng</th>
-            <th class="border p-2 max-w-20">Đơn giá</th>
-            <th class="border p-2 max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
-            <th class="border p-2 max-w-10" *ngIf="DetailPhieugiaohang()?.status=== 'danhan'">Thực Nhận</th>
+            <th class="border p-2 whitespace-nowrap">Số Lượng</th>
+            <th class="border p-2 whitespace-nowrap">Đơn giá</th>
+            <th class="border p-2 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
+            <th class="border p-2 whitespace-nowrap">Thành Tiền</th>
+            <th class="border p-2 whitespace-nowrap">Số Lượng Nhận</th>            
             <th class="border p-2">Ghi chú</th>
           </tr>
         </thead>
@@ -260,7 +262,8 @@
               <td class="border p-2 text-end max-w-10">{{item.slgiao|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-20">{{item.giaban|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{item.ttgiao|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-10" *ngIf="DetailPhieugiaohang()?.status=== 'danhan'">{{item.slnhan|number:'1.0-2'}}</td>
+              <td class="border p-2 text-end max-w-10">{{item.ttgiao|number:'1.0-2'}}</td>
+              <td class="border p-2 text-end max-w-10">{{DetailPhieugiaohang()?.status=== 'danhan'? (item.slnhan|number:'1.0-2':''):''}}</td>
               <td class="border p-2">{{item.ghichu}}</td>
             </tr>
           }
@@ -269,7 +272,8 @@
             <td class="border p-2 text-end font-bold">{{TinhTong(DetailPhieugiaohang().sanpham,'slgiao')|number:'1.0-2'}}</td>
             <td class="border p-2 text-end font-bold"></td>
             <td class="border p-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{TinhTong(DetailPhieugiaohang().sanpham,'ttgiao')|number:'1.0-2'}}</td>
-            <td class="border p-2 text-end" *ngIf="DetailPhieugiaohang()?.status=== 'danhan'">{{TinhTong(DetailPhieugiaohang().sanpham,'slnhan')|number:'1.0-2'}}</td>
+            <td class="border p-2 text-end font-bold">{{TinhTong(DetailPhieugiaohang().sanpham,'ttgiao')|number:'1.0-2'}}</td>
+            <td class="border p-2 text-end font-bold">{{DetailPhieugiaohang()?.status=== 'danhan'? (TinhTong(DetailPhieugiaohang().sanpham,'slnhan')|number:'1.0-2'):''}}</td>
             <td class="border p-2 text-end"></td>
           </tr>
         </tbody>
