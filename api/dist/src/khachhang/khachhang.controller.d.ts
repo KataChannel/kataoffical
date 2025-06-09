@@ -301,4 +301,7 @@ export declare class KhachhangController {
         hiengia: boolean;
         istitle2: boolean;
     }>;
+    getLastUpdated(): Promise<{
+        updatedAt: number;
+    }>;
 }

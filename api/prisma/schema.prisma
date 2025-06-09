@@ -271,6 +271,7 @@ model Nhacungcap {
 model Dathang {
   id          String  @id @default(uuid())
   title       String?
+  subtitle    String?
   type        String?
   madncc      String?     @unique
   ngaynhan    DateTime?

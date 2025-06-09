@@ -14,6 +14,19 @@ export class KhachhangService {
     private _ImportdataService: ImportdataService,
   ) {}
 
+
+
+    async getLastUpdated(): Promise<{ updatedAt: number }> {
+    try {
+      const lastUpdated = await this.prisma.khachhang.aggregate({
+        _max: { updatedAt: true },
+      });
+      return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async timkiemkhachhang(query: string) {
     return this.prisma.$queryRaw`
       SELECT * FROM "Khachhang" 

@@ -21,6 +21,7 @@ export declare class DathangController {
     } & {
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -56,6 +57,7 @@ export declare class DathangController {
     } & {
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -123,6 +125,7 @@ export declare class DathangController {
         } & {
             id: string;
             title: string | null;
+            subtitle: string | null;
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
@@ -157,6 +160,7 @@ export declare class DathangController {
         };
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -223,6 +227,7 @@ export declare class DathangController {
     } & {
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -289,6 +294,7 @@ export declare class DathangController {
         } & {
             id: string;
             title: string | null;
+            subtitle: string | null;
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
@@ -359,6 +365,7 @@ export declare class DathangController {
         };
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -374,6 +381,7 @@ export declare class DathangController {
     update(id: string, updateDathangDto: any): Promise<{
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -389,6 +397,7 @@ export declare class DathangController {
     remove(id: string): Promise<{
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;

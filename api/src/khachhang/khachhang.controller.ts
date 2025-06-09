@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, Query, HttpException, HttpStatus } from '@nestjs/common';
 import { KhachhangService } from './khachhang.service';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
@@ -48,4 +48,12 @@ export class KhachhangController {
   remove(@Param('id') id: string) {
     return this.khachhangService.remove(id);
   }
+  @Get('lastupdated')
+    async getLastUpdated() {
+      try {
+        return await this.khachhangService.getLastUpdated();
+      } catch (error) {
+        throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+   }
 }

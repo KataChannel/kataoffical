@@ -25,6 +25,7 @@ export declare class DathangService {
         };
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -90,6 +91,7 @@ export declare class DathangService {
         };
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -161,6 +163,7 @@ export declare class DathangService {
         } & {
             id: string;
             title: string | null;
+            subtitle: string | null;
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
@@ -232,6 +235,7 @@ export declare class DathangService {
     } & {
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -298,6 +302,7 @@ export declare class DathangService {
         } & {
             id: string;
             title: string | null;
+            subtitle: string | null;
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
@@ -334,6 +339,7 @@ export declare class DathangService {
     } & {
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -365,6 +371,7 @@ export declare class DathangService {
     } & {
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -380,6 +387,7 @@ export declare class DathangService {
     update(id: string, data: any): Promise<{
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -395,6 +403,7 @@ export declare class DathangService {
     remove(id: string): Promise<{
         id: string;
         title: string | null;
+        subtitle: string | null;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;

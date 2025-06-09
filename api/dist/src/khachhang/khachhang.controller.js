@@ -48,6 +48,14 @@ let KhachhangController = class KhachhangController {
     remove(id) {
         return this.khachhangService.remove(id);
     }
+    async getLastUpdated() {
+        try {
+            return await this.khachhangService.getLastUpdated();
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Get last updated failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 };
 exports.KhachhangController = KhachhangController;
 __decorate([
@@ -117,6 +125,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], KhachhangController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Get)('lastupdated'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], KhachhangController.prototype, "getLastUpdated", null);
 exports.KhachhangController = KhachhangController = __decorate([
     (0, common_1.Controller)('khachhang'),
     __metadata("design:paramtypes", [khachhang_service_1.KhachhangService])

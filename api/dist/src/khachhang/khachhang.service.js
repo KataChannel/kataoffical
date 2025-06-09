@@ -19,6 +19,17 @@ let KhachhangService = class KhachhangService {
         this.prisma = prisma;
         this._ImportdataService = _ImportdataService;
     }
+    async getLastUpdated() {
+        try {
+            const lastUpdated = await this.prisma.khachhang.aggregate({
+                _max: { updatedAt: true },
+            });
+            return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
     async timkiemkhachhang(query) {
         return this.prisma.$queryRaw `
       SELECT * FROM "Khachhang" 

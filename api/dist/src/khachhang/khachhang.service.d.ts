@@ -4,6 +4,9 @@ export declare class KhachhangService {
     private readonly prisma;
     private _ImportdataService;
     constructor(prisma: PrismaService, _ImportdataService: ImportdataService);
+    getLastUpdated(): Promise<{
+        updatedAt: number;
+    }>;
     timkiemkhachhang(query: string): Promise<unknown>;
     generateMakh(loaikh: string): Promise<string>;
     create(data: any): Promise<{
