@@ -397,6 +397,8 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Khách hàng</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Ngày Giao</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 File Name</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Tên Không Dấu</th>
@@ -426,6 +428,15 @@
                                         </div>
                                     </mat-select>
                                 </mat-form-field>
+                            </td>
+                            <td *ngIf="detail.fileName !== 'Overall'" class="px-6 py-4 whitespace-nowrap text-gray-900">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                            <mat-label>Ngày Giao </mat-label>
+                            <input (dateChange)="DoChonNgaygiao($event,detail)" matInput [matDatepicker]="picker">
+                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                     </mat-form-field>
+
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ detail.fileName }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ detail.tenkhongdau }}</td>

@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -30,7 +30,7 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter123/se
       SearchfilterComponent
     ],
     templateUrl: './detailkhachhang.component.html',
-    styleUrl: './detailkhachhang.component.scss'
+    styleUrls: ['./detailkhachhang.component.scss']
   })
   export class DetailKhachhangComponent {
     _ListkhachhangComponent:ListKhachhangComponent = inject(ListKhachhangComponent)
@@ -39,13 +39,19 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter123/se
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)
+    DetailKhachhang: any = this._KhachhangService.DetailKhachhang;
+    ListFilter:any = [];
+    filterItem:any = [];
+    isEdit = signal(false);
+    isDelete = signal(false);  
+    khachhangId:any = this._KhachhangService.khachhangId
     constructor(){
       this._route.paramMap.subscribe((params) => {
         const id = params.get('id');
         this._KhachhangService.setKhachhangId(id);
       });  
       effect(async () => {
-        const id = this._KhachhangService.khachhangId();
+        const id = this._KhachhangService.khachhangId();        
         await this._BanggiaService.getAllBanggia();
         this.filterItem = this._BanggiaService.ListBanggia();
         if (!id){
@@ -59,6 +65,7 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter123/se
           this._router.navigate(['/admin/khachhang', 'new']);
         }
         else{
+            console.log('KhachhangId:', id);
             await this._KhachhangService.getKhachhangBy({id:id,isOne: true});
             this.ListFilter = this._KhachhangService.DetailKhachhang().banggia;
             this._ListkhachhangComponent.drawer.open();
@@ -66,13 +73,10 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter123/se
         }
       });
     }
-    DetailKhachhang: any = this._KhachhangService.DetailKhachhang;
-    ListFilter:any = [];
-    filterItem:any = [];
-    isEdit = signal(false);
-    isDelete = signal(false);  
-    khachhangId:any = this._KhachhangService.khachhangId
-    async ngOnInit() {       
+    async ngOnInit() {  
+      //  await this._KhachhangService.getKhachhangBy({id: this._KhachhangService.khachhangId(),isOne: true});  
+        console.log('DetailKhachhang:', this.DetailKhachhang());
+          
     }
     async handleKhachhangAction() {
       if (this.khachhangId() === 'new') {

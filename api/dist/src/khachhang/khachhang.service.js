@@ -150,8 +150,12 @@ let KhachhangService = class KhachhangService {
         });
     }
     async findby(param) {
+        console.log('findby param:', param);
         const { page = 1, pageSize = 50, isOne, ...where } = param;
         const whereClause = {};
+        if (where.id) {
+            whereClause.id = where.id;
+        }
         if (where.subtitle) {
             whereClause.subtitle = { contains: where.subtitle, mode: 'insensitive' };
         }
@@ -173,24 +177,26 @@ let KhachhangService = class KhachhangService {
             });
             return oneResult;
         }
-        const skip = (page - 1) * pageSize;
-        const [khachhangs, total] = await Promise.all([
-            this.prisma.khachhang.findMany({
-                where: whereClause,
-                include: { banggia: true },
-                skip,
-                take: pageSize,
-                orderBy: { createdAt: 'desc' },
-            }),
-            this.prisma.khachhang.count({ where: whereClause }),
-        ]);
-        return {
-            data: khachhangs,
-            page,
-            pageSize,
-            total,
-            pageCount: Math.ceil(total / pageSize),
-        };
+        else {
+            const skip = (page - 1) * pageSize;
+            const [khachhangs, total] = await Promise.all([
+                this.prisma.khachhang.findMany({
+                    where: whereClause,
+                    include: { banggia: true },
+                    skip,
+                    take: pageSize,
+                    orderBy: { createdAt: 'desc' },
+                }),
+                this.prisma.khachhang.count({ where: whereClause }),
+            ]);
+            return {
+                data: khachhangs,
+                page,
+                pageSize,
+                total,
+                pageCount: Math.ceil(total / pageSize),
+            };
+        }
     }
     async findOne(id) {
         const khachhang = await this.prisma.khachhang.findUnique({

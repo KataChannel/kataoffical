@@ -264,15 +264,16 @@ export class KhachhangService {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
-        body: JSON.stringify({ ...param}),
+        body: JSON.stringify(param),
       };
       const response = await fetch(`${environment.APIURL}/khachhang/findby`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }
       const data = await response.json();
+      
       if (param.isOne === true) {
-        this.DetailKhachhang.set(data);
+        this.DetailKhachhang.set(data);        
         return data;
       } else {
         await this.saveKhachhangs(data.data, {

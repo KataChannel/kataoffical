@@ -381,8 +381,10 @@ export class ListKhachhangComponent implements OnInit {
         panelClass: ['snackbar-success'],
       });
       size = this.total();
+      this.searchParam.pageSize = size;
     }
     this._KhachhangService.page.set(1);
+    this.searchParam.page = 1;
     this._KhachhangService.getKhachhangBy(this.searchParam);
     menuHienthi.closeMenu();
   }

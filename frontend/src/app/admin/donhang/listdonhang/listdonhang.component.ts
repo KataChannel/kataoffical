@@ -784,6 +784,23 @@ SelectKhachhang(item:any,event:any){
     v1.khachhangId = value;
   });  
 }
+DoChonNgaygiao(event:any,item:any){
+  const value = event.target.value;  
+  if (!value) {
+    this.SearchParams.ngaygiao = '';
+    return;
+  }
+  this._snackBar.open(`Đã chọn ngày giao: ${value}`, '', {
+    duration: 3000,
+    horizontalPosition: 'end',
+    verticalPosition: 'top',
+    panelClass: ['snackbar-success']
+  });
+  this.ListImportData.filter((v => v.tenkh === item.tenkhongdau)).forEach((v1:any) => {
+    v1.ngaygiao = value;
+  });
+}
+
 @Debounce(500)
   async DoFindKhachhang(event:any){
   const value = event.target.value;

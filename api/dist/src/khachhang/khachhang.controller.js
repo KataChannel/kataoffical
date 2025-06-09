@@ -38,8 +38,9 @@ let KhachhangController = class KhachhangController {
     import(data) {
         return this.khachhangService.import(data);
     }
-    findby(param) {
-        return this.khachhangService.findby(param);
+    async findby(param) {
+        const result = await this.khachhangService.findby(param);
+        return result;
     }
     async searchfield(searchParams) {
         return this.khachhangService.searchfield(searchParams);
@@ -92,7 +93,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], KhachhangController.prototype, "findby", null);
 __decorate([
     (0, common_1.Post)('searchfield'),

@@ -29,8 +29,9 @@ export class KhachhangController {
     return this.khachhangService.import(data);
   }
   @Post('findby')
-  findby(@Body() param: any) {
-    return this.khachhangService.findby(param);
+  async findby(@Body() param: any) {
+    const result = await this.khachhangService.findby(param);
+    return result;
   }
   @Post('searchfield')
   async searchfield(@Body() searchParams: Record<string, any>) {
