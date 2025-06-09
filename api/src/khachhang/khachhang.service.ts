@@ -14,8 +14,6 @@ export class KhachhangService {
     private _ImportdataService: ImportdataService,
   ) {}
 
-
-
     async getLastUpdated(): Promise<{ updatedAt: number }> {
     try {
       const lastUpdated = await this.prisma.khachhang.aggregate({

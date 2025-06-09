@@ -6,6 +6,14 @@ import { AuditAction } from '@prisma/client';
 @Controller('khachhang')
 export class KhachhangController {
   constructor(private readonly khachhangService: KhachhangService) {}
+    @Get('lastupdated')
+    async getLastUpdated() {
+      try {
+        return await this.khachhangService.getLastUpdated();
+      } catch (error) {
+        throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+   }
   @Get('search')
   async searchCustomers(@Query('q') query: string) {
     return this.khachhangService.timkiemkhachhang(query);
@@ -48,12 +56,4 @@ export class KhachhangController {
   remove(@Param('id') id: string) {
     return this.khachhangService.remove(id);
   }
-  @Get('lastupdated')
-    async getLastUpdated() {
-      try {
-        return await this.khachhangService.getLastUpdated();
-      } catch (error) {
-        throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-   }
 }

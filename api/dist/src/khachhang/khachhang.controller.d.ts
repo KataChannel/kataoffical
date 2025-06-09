@@ -2,6 +2,9 @@ import { KhachhangService } from './khachhang.service';
 export declare class KhachhangController {
     private readonly khachhangService;
     constructor(khachhangService: KhachhangService);
+    getLastUpdated(): Promise<{
+        updatedAt: number;
+    }>;
     searchCustomers(query: string): Promise<unknown>;
     create(createKhachhangDto: any): Promise<{
         id: string;
@@ -300,8 +303,5 @@ export declare class KhachhangController {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
-    }>;
-    getLastUpdated(): Promise<{
-        updatedAt: number;
     }>;
 }
