@@ -249,7 +249,6 @@
               <th class="border p-2 whitespace-nowrap">Số Lượng</th>
               <th class="border p-2 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Đơn giá</th>
               <th class="border p-2 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
-              <th class="border p-2 whitespace-nowrap">Thành Tiền</th>
               <th class="border p-2 whitespace-nowrap">Số Lượng Nhận</th>
               <th class="border p-2">Ghi chú</th>
             </tr>
@@ -264,7 +263,6 @@
               <td class="border p-2 text-end max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{item.giaban|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
                 {{item.ttgiao|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-10">{{item.ttgiao|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-10">{{DetailPhieugiaohang()?.status=== 'danhan'?
                 (item.slnhan|number:'1.0-2':''):''}}</td>
               <td class="border p-2">{{item.ghichu}}</td>
@@ -276,8 +274,6 @@
                 {{TinhTong(DetailPhieugiaohang().sanpham,'slgiao')|number:'1.0-2'}}</td>
               <td class="border p-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia"></td>
               <td class="border p-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
-                {{TinhTong(DetailPhieugiaohang().sanpham,'ttgiao')|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end font-bold">
                 {{TinhTong(DetailPhieugiaohang().sanpham,'ttgiao')|number:'1.0-2'}}</td>
               <td class="border p-2 text-end font-bold">{{DetailPhieugiaohang()?.status=== 'danhan'?
                 (TinhTong(DetailPhieugiaohang().sanpham,'slnhan')|number:'1.0-2'):''}}</td>
