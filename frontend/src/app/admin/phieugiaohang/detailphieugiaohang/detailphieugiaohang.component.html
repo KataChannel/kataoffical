@@ -247,7 +247,7 @@
               <th class="border p-2">Tên sản phẩm</th>
               <th class="border p-2">ĐVT</th>
               <th class="border p-2 whitespace-nowrap">Số Lượng</th>
-              <th class="border p-2 whitespace-nowrap">Đơn giá</th>
+              <th class="border p-2 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Đơn giá</th>
               <th class="border p-2 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
               <th class="border p-2 whitespace-nowrap">Thành Tiền</th>
               <th class="border p-2 whitespace-nowrap">Số Lượng Nhận</th>
@@ -261,7 +261,7 @@
               <td class="border p-2">{{DetailPhieugiaohang()?.khachhang?.istitle2?item.title2:item.title}}</td>
               <td class="border p-2 text-center">{{item.dvt}}</td>
               <td class="border p-2 text-end max-w-10">{{item.slgiao|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-20">{{item.giaban|number:'1.0-2'}}</td>
+              <td class="border p-2 text-end max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{item.giaban|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
                 {{item.ttgiao|number:'1.0-2'}}</td>
               <td class="border p-2 text-end max-w-10">{{item.ttgiao|number:'1.0-2'}}</td>
@@ -274,7 +274,7 @@
               <td colspan="3" class="border p-2 text-start">Tổng:</td>
               <td class="border p-2 text-end font-bold">
                 {{TinhTong(DetailPhieugiaohang().sanpham,'slgiao')|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end font-bold"></td>
+              <td class="border p-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia"></td>
               <td class="border p-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
                 {{TinhTong(DetailPhieugiaohang().sanpham,'ttgiao')|number:'1.0-2'}}</td>
               <td class="border p-2 text-end font-bold">
