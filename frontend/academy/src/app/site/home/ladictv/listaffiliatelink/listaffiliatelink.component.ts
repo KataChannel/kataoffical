@@ -443,9 +443,10 @@ export class ListAffiliatelinkComponent implements OnInit {
   //     return result;
   //   }
     getUrl(item:any){
-
+      console.log(item);
+      
       if(item.landingPage?.contentHtml){
-        return item.landingPage?.contentHtml
+        return item.landingPage?.contentHtml;
       }
       const result = `/ladictv/${item?.landingPage?.slug}?ref=${this.profile()?.inviteCode}${item?.codeId?'&codeId='+item?.codeId:''}`;
       return result;
@@ -455,9 +456,9 @@ export class ListAffiliatelinkComponent implements OnInit {
   private encode(str: string): string {
     return encodeURIComponent(str);
   }
-  getCoppyLink(url: string) {
-    const fullUrl = window.location.origin + url;
-    console.log(fullUrl);
+  getCoppyLink(item: any) {
+    const url = this.getUrl(item);
+    const fullUrl = url + '?ref=' + this.profile()?.inviteCode  + `&codeId=${item.codeId}` + '&sharePlatform=website';
     navigator.clipboard.writeText(fullUrl).then(() => {
       this._snackbar.open('Đã Coppy', 'Close', {
         duration: 2000,
@@ -470,8 +471,9 @@ export class ListAffiliatelinkComponent implements OnInit {
       });
     });
   }
-  share(platform: string, url: string, title?: string, description?: string, image?: string): void {    
-    url = url+ '?ref=' + this.profile()?.inviteCode;
+  share(platform: string, item: any, title?: string, description?: string, image?: string): void {
+    let url = this.getUrl(item);
+    url = url + '?ref=' + this.profile()?.inviteCode+ `&codeId=${item.codeId}`;
     let shareUrl: string;
     switch (platform.toLowerCase()) {
       case 'facebook':

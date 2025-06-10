@@ -70,8 +70,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     return encodeURIComponent(str);
   }
   getCoppyLink(url: string) {
-    // const fullUrl = window.location.origin + url;
-    const fullUrl = url+ '?ref=' + this.profile()?.inviteCode +'&sharePlatform=website'+'&referrer=' + this.profile()?.id;
+    const fullUrl = url+ '?ref=' + this.profile()?.inviteCode +'&sharePlatform=website';
     console.log(fullUrl);
     navigator.clipboard.writeText(fullUrl).then(() => {
       this._snackbar.open('Đã Coppy', 'Close', {
@@ -85,9 +84,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
       });
     });
   }
-  share(platform: string, url: string, title?: string, description?: string, image?: string): void {
-    console.log('Sharing to:', platform, 'with URL:', url, 'and title:', title);
-    
+  share(platform: string, url: string, title?: string, description?: string, image?: string): void {    
     url = url+ '?ref=' + this.profile()?.inviteCode;
     let shareUrl: string;
     switch (platform.toLowerCase()) {

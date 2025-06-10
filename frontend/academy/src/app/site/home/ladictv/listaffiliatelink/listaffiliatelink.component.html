@@ -133,37 +133,37 @@
               <button mat-icon-button color="primary" [matMenuTriggerFor]="menu">
                 <mat-icon>share</mat-icon>
               </button>
-              <button (click)="getCoppyLink(getUrl(row))" mat-icon-button color="primary">
+              <button (click)="getCoppyLink(row)" mat-icon-button color="primary">
                 <mat-icon>content_copy</mat-icon>
               </button>
               <mat-menu #menu="matMenu">
                 <button mat-menu-item
-                  (click)="share('facebook', getUrl(row), row?.landingPage?.title, row?.landingPage?.description, row?.landingPage?.thumbnail)">
+                  (click)="share('facebook', row, row?.landingPage?.title, row?.landingPage?.description, row?.landingPage?.thumbnail)">
                   <mat-icon class="!text-blue-500">facebook</mat-icon>
                   <span>Facebook</span>
                 </button>
                 <button mat-menu-item
-                  (click)="share('twitter', getUrl(row), row?.landingPage?.title, row?.landingPage?.description, row?.landingPage?.thumbnail)">
+                  (click)="share('twitter', row, row?.landingPage?.title, row?.landingPage?.description, row?.landingPage?.thumbnail)">
                   <mat-icon class="!text-blue-500">twitter</mat-icon>
                   <span>Twitter</span>
                 </button>
                 <button mat-menu-item color="primary"
-                  (click)="share('linkedin', getUrl(row), row?.landingPage?.title, row?.landingPage?.description, row?.landingPage?.thumbnail)">
+                  (click)="share('linkedin', row, row?.landingPage?.title, row?.landingPage?.description, row?.landingPage?.thumbnail)">
                   <mat-icon class="!text-blue-500">linkedin</mat-icon>
                   <span>LinkedIn</span>
                 </button>
                 <button mat-menu-item color="primary"
-                  (click)="share('pinterest', getUrl(row), row?.landingPage?.title, row?.landingPage?.description, row?.landingPage?.thumbnail)">
+                  (click)="share('pinterest', row, row?.landingPage?.title, row?.landingPage?.description, row?.landingPage?.thumbnail)">
                   <mat-icon class="!text-blue-500">pinterest</mat-icon>
                   <span>Pinterest</span>
                 </button>
                 <button mat-menu-item color="primary"
-                  (click)="share('whatsapp', getUrl(row), row?.landingPage?.title, row?.landingPage?.description, row?.landingPage?.thumbnail)">
+                  (click)="share('whatsapp', row, row?.landingPage?.title, row?.landingPage?.description, row?.landingPage?.thumbnail)">
                   <mat-icon class="!text-blue-500">link</mat-icon>
                   <span>WhatsApp</span>
                 </button>
                 <button mat-menu-item color="primary"
-                  (click)="share('email', getUrl(row), row?.landingPage?.title, row?.landingPage?.description, row?.landingPage?.thumbnail)">
+                  (click)="share('email', row, row?.landingPage?.title, row?.landingPage?.description, row?.landingPage?.thumbnail)">
                   <mat-icon class="!text-blue-500">email</mat-icon>
                   <span>Email</span>
                 </button>
