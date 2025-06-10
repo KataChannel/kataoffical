@@ -471,7 +471,7 @@ export class ListAffiliatelinkComponent implements OnInit {
     });
   }
   share(platform: string, url: string, title?: string, description?: string, image?: string): void {    
-    url = window.location.origin + url;
+    url = url+ '?ref=' + this.profile()?.inviteCode;
     let shareUrl: string;
     switch (platform.toLowerCase()) {
       case 'facebook':

@@ -213,7 +213,7 @@
 
           try {
               // Replace with your actual API endpoint
-              const response = await fetch(`${localapi}/auth/register`, {
+              const response = await fetch(`${serverapi}/auth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -251,9 +251,6 @@
 
         });
 
-
-
-
 // https://affiliate.timona.edu.vn/ladictv/khoa-hoc-phun-xam-tham-my?ref=0977272967&codeId=AL00001&utm_source=123&utm_medium=abc&utm_campaign=456&utm_term=def&utm_content=zxc789&sharePlatform=whatsapp
 
 (function trackPageView() {
@@ -279,7 +276,7 @@
 
   // Convert payload to a query string
   const qs = new URLSearchParams(payload).toString();
-  const trackingUrl = `${localapi}/trackingevent?${qs}`;
+  const trackingUrl = `${serverapi}/trackingevent?${qs}`;
 
   // Send the POST request to record the page view
   fetch(trackingUrl, {
@@ -301,7 +298,6 @@
       console.error('Error tracking page view:', err);
     });
 })();
-
   </script>
   
   </body>
