@@ -57,9 +57,9 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
       this.Filerladi = this.Listladipage().filter(item => item.title.toLowerCase().includes(query));
     }
     getUrl(item:any){
-      console.log(item);
+
       if(item.contentHtml){
-        return item.contentHtml;
+        return item.contentHtml
       }
       const result = `/ladictv/${item?.slug}?ref=${this.profile()?.inviteCode}`;
       return result;
@@ -70,7 +70,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     return encodeURIComponent(str);
   }
   getCoppyLink(url: string) {
-    const fullUrl = window.location.origin + url;
+    // const fullUrl = window.location.origin + url;
+    const fullUrl = url+ '?ref=' + this.profile()?.inviteCode +'&sharePlatform=website'+'&referrer=' + this.profile()?.id;
     console.log(fullUrl);
     navigator.clipboard.writeText(fullUrl).then(() => {
       this._snackbar.open('Đã Coppy', 'Close', {
@@ -85,6 +86,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     });
   }
   share(platform: string, url: string, title?: string, description?: string, image?: string): void {
+    console.log('Sharing to:', platform, 'with URL:', url, 'and title:', title);
+    
     url = url+ '?ref=' + this.profile()?.inviteCode;
     let shareUrl: string;
     switch (platform.toLowerCase()) {

@@ -437,10 +437,17 @@ export class ListAffiliatelinkComponent implements OnInit {
   }
 
 
-  getUrl(item:any){
-        console.log(item);
+  // getUrl(item:any){
+  //     // const result = `/ladictv/${item?.landingPage?.slug}?ref=${this.profile()?.inviteCode}${item?.codeId?'&codeId='+item?.codeId:''}${item?.utmSource?'&utm_source='+item?.utmSource:''}${item?.utmMedium?'&utm_medium='+item?.utmMedium:''}${item?.utmCampaign?'&utm_campaign='+item?.utmCampaign:''}${item?.utmTerm?'&utm_term='+item?.utmTerm:''}${item?.utmContent?'&utm_content='+item?.utmContent:''}`;
+  //     const result = `/ladictv/${item?.landingPage?.slug}?ref=${this.profile()?.inviteCode}${item?.codeId?'&codeId='+item?.codeId:''}`;
+  //     return result;
+  //   }
+    getUrl(item:any){
 
-      const result = `/ladictv/${item?.landingPage?.slug}?ref=${this.profile()?.inviteCode}${item?.codeId?'&codeId='+item?.codeId:''}${item?.utmSource?'&utm_source='+item?.utmSource:''}${item?.utmMedium?'&utm_medium='+item?.utmMedium:''}${item?.utmCampaign?'&utm_campaign='+item?.utmCampaign:''}${item?.utmTerm?'&utm_term='+item?.utmTerm:''}${item?.utmContent?'&utm_content='+item?.utmContent:''}`;
+      if(item.landingPage?.contentHtml){
+        return item.landingPage?.contentHtml
+      }
+      const result = `/ladictv/${item?.landingPage?.slug}?ref=${this.profile()?.inviteCode}${item?.codeId?'&codeId='+item?.codeId:''}`;
       return result;
     }
 
@@ -463,7 +470,7 @@ export class ListAffiliatelinkComponent implements OnInit {
       });
     });
   }
-  share(platform: string, url: string, title?: string, description?: string, image?: string): void {
+  share(platform: string, url: string, title?: string, description?: string, image?: string): void {    
     url = window.location.origin + url;
     let shareUrl: string;
     switch (platform.toLowerCase()) {

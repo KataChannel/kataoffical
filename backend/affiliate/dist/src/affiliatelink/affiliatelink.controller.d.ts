@@ -47,6 +47,7 @@ export declare class AffiliatelinkController {
             updatedAt: Date;
             referrer: string | null;
             userId: string | null;
+            affiliateLinkId: string | null;
             eventType: string | null;
             pageUrl: string | null;
             refCode: string | null;
@@ -54,7 +55,6 @@ export declare class AffiliatelinkController {
             pageType: string | null;
             ipAddress: string | null;
             userAgent: string | null;
-            affiliateLinkId: string | null;
             sharePlatform: string | null;
         }[];
     } & {
@@ -124,6 +124,7 @@ export declare class AffiliatelinkController {
                 updatedAt: Date;
                 referrer: string | null;
                 userId: string | null;
+                affiliateLinkId: string | null;
                 eventType: string | null;
                 pageUrl: string | null;
                 refCode: string | null;
@@ -131,7 +132,6 @@ export declare class AffiliatelinkController {
                 pageType: string | null;
                 ipAddress: string | null;
                 userAgent: string | null;
-                affiliateLinkId: string | null;
                 sharePlatform: string | null;
             }[];
         } & {

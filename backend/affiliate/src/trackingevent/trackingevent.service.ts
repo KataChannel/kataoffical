@@ -17,8 +17,18 @@ export class TrackingeventService {
 
     try {
       if (!data) throw new NotFoundException('Data not found');
+      const { codeId, ...rest } = data;
+      const affiliateLink = await this.prisma.affiliateLink.findFirst({
+        where: { codeId },
+      });
+      if (affiliateLink) {
+        rest.affiliateLinkId = affiliateLink.id;
+      } else {
+        rest.affiliateLinkId = null; // Set to null if no affiliate link found
+      }
+
       const payload = {
-        ...data,
+        ...rest,
         ...(ipAddress && { ipAddress }),
         ...(userAgent && { userAgent }),
       };

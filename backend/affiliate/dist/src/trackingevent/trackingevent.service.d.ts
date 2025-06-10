@@ -10,6 +10,7 @@ export declare class TrackingeventService {
         updatedAt: Date;
         referrer: string | null;
         userId: string | null;
+        affiliateLinkId: string | null;
         eventType: string | null;
         pageUrl: string | null;
         refCode: string | null;
@@ -17,7 +18,6 @@ export declare class TrackingeventService {
         pageType: string | null;
         ipAddress: string | null;
         userAgent: string | null;
-        affiliateLinkId: string | null;
         sharePlatform: string | null;
     }>;
     findAll(): Promise<{
@@ -26,6 +26,7 @@ export declare class TrackingeventService {
         updatedAt: Date;
         referrer: string | null;
         userId: string | null;
+        affiliateLinkId: string | null;
         eventType: string | null;
         pageUrl: string | null;
         refCode: string | null;
@@ -33,7 +34,6 @@ export declare class TrackingeventService {
         pageType: string | null;
         ipAddress: string | null;
         userAgent: string | null;
-        affiliateLinkId: string | null;
         sharePlatform: string | null;
     }[]>;
     findBy(param: any): Promise<({
@@ -60,6 +60,7 @@ export declare class TrackingeventService {
         updatedAt: Date;
         referrer: string | null;
         userId: string | null;
+        affiliateLinkId: string | null;
         eventType: string | null;
         pageUrl: string | null;
         refCode: string | null;
@@ -67,7 +68,6 @@ export declare class TrackingeventService {
         pageType: string | null;
         ipAddress: string | null;
         userAgent: string | null;
-        affiliateLinkId: string | null;
         sharePlatform: string | null;
     })[] | {
         count: number;
@@ -78,6 +78,7 @@ export declare class TrackingeventService {
         updatedAt: Date;
         referrer: string | null;
         userId: string | null;
+        affiliateLinkId: string | null;
         eventType: string | null;
         pageUrl: string | null;
         refCode: string | null;
@@ -85,7 +86,6 @@ export declare class TrackingeventService {
         pageType: string | null;
         ipAddress: string | null;
         userAgent: string | null;
-        affiliateLinkId: string | null;
         sharePlatform: string | null;
     }>;
     update(id: string, data: any): Promise<{
@@ -94,6 +94,7 @@ export declare class TrackingeventService {
         updatedAt: Date;
         referrer: string | null;
         userId: string | null;
+        affiliateLinkId: string | null;
         eventType: string | null;
         pageUrl: string | null;
         refCode: string | null;
@@ -101,7 +102,6 @@ export declare class TrackingeventService {
         pageType: string | null;
         ipAddress: string | null;
         userAgent: string | null;
-        affiliateLinkId: string | null;
         sharePlatform: string | null;
     }>;
     remove(id: string): Promise<{
@@ -110,6 +110,7 @@ export declare class TrackingeventService {
         updatedAt: Date;
         referrer: string | null;
         userId: string | null;
+        affiliateLinkId: string | null;
         eventType: string | null;
         pageUrl: string | null;
         refCode: string | null;
@@ -117,7 +118,6 @@ export declare class TrackingeventService {
         pageType: string | null;
         ipAddress: string | null;
         userAgent: string | null;
-        affiliateLinkId: string | null;
         sharePlatform: string | null;
     }>;
 }

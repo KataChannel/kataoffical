@@ -8,6 +8,7 @@ export declare class TrackingeventController {
         updatedAt: Date;
         referrer: string | null;
         userId: string | null;
+        affiliateLinkId: string | null;
         eventType: string | null;
         pageUrl: string | null;
         refCode: string | null;
@@ -15,7 +16,6 @@ export declare class TrackingeventController {
         pageType: string | null;
         ipAddress: string | null;
         userAgent: string | null;
-        affiliateLinkId: string | null;
         sharePlatform: string | null;
     }>;
     findBy(param: any): Promise<({
@@ -42,6 +42,7 @@ export declare class TrackingeventController {
         updatedAt: Date;
         referrer: string | null;
         userId: string | null;
+        affiliateLinkId: string | null;
         eventType: string | null;
         pageUrl: string | null;
         refCode: string | null;
@@ -49,7 +50,6 @@ export declare class TrackingeventController {
         pageType: string | null;
         ipAddress: string | null;
         userAgent: string | null;
-        affiliateLinkId: string | null;
         sharePlatform: string | null;
     })[] | {
         count: number;
@@ -60,6 +60,7 @@ export declare class TrackingeventController {
         updatedAt: Date;
         referrer: string | null;
         userId: string | null;
+        affiliateLinkId: string | null;
         eventType: string | null;
         pageUrl: string | null;
         refCode: string | null;
@@ -67,7 +68,6 @@ export declare class TrackingeventController {
         pageType: string | null;
         ipAddress: string | null;
         userAgent: string | null;
-        affiliateLinkId: string | null;
         sharePlatform: string | null;
     }[]>;
     findOne(id: string): Promise<{
@@ -76,6 +76,7 @@ export declare class TrackingeventController {
         updatedAt: Date;
         referrer: string | null;
         userId: string | null;
+        affiliateLinkId: string | null;
         eventType: string | null;
         pageUrl: string | null;
         refCode: string | null;
@@ -83,7 +84,6 @@ export declare class TrackingeventController {
         pageType: string | null;
         ipAddress: string | null;
         userAgent: string | null;
-        affiliateLinkId: string | null;
         sharePlatform: string | null;
     }>;
     update(id: string, updateTrackingeventDto: any): Promise<{
@@ -92,6 +92,7 @@ export declare class TrackingeventController {
         updatedAt: Date;
         referrer: string | null;
         userId: string | null;
+        affiliateLinkId: string | null;
         eventType: string | null;
         pageUrl: string | null;
         refCode: string | null;
@@ -99,7 +100,6 @@ export declare class TrackingeventController {
         pageType: string | null;
         ipAddress: string | null;
         userAgent: string | null;
-        affiliateLinkId: string | null;
         sharePlatform: string | null;
     }>;
     remove(id: string): Promise<{
@@ -108,6 +108,7 @@ export declare class TrackingeventController {
         updatedAt: Date;
         referrer: string | null;
         userId: string | null;
+        affiliateLinkId: string | null;
         eventType: string | null;
         pageUrl: string | null;
         refCode: string | null;
@@ -115,7 +116,6 @@ export declare class TrackingeventController {
         pageType: string | null;
         ipAddress: string | null;
         userAgent: string | null;
-        affiliateLinkId: string | null;
         sharePlatform: string | null;
     }>;
 }
