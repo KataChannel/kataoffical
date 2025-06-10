@@ -164,12 +164,73 @@ export class KhachhangService {
     return { message: 'Import completed' };
   }
 
-  async findAll() {
-    return this.prisma.khachhang.findMany({
-      include: { banggia: true },
-    });
+  // async findAll() {
+  //   return this.prisma.khachhang.findMany({
+  //     include: { banggia: true },
+  //   });
+  // }
+  async findAll(query: any) {
+    console.log('findAllKhachHang query:', query);
+    
+    try {
+      const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
+      const numericPage = Number(page || 1); // Default to page 1 if not provided
+      const numericPageSize = Number(pageSize || 50);
+      const skip = (numericPage - 1) * numericPageSize;
+      const take = numericPageSize;
+      const where: any = {};
+      // Xử lý tìm kiếm chung (OR condition)
+      if (search) {
+        where.OR = [
+          { title: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } }
+        ];
+      }
+      // Xử lý lọc theo trường cụ thể
+      if (category) {
+        where.category = { equals: category, mode: 'insensitive' };
+      }
+      if (priceMin || priceMax) {
+        where.price = {};
+        if (priceMin) {
+          where.price.gte = priceMin;
+        }
+        if (priceMax) {
+          where.price.lte = priceMax;
+        }
+      }
+      const orderBy: any = {};
+      if (sortBy && sortOrder) {
+        orderBy[sortBy] = sortOrder;
+      } else {
+        orderBy.createdAt = 'desc'; // Mặc định nếu không có sortBy/sortOrder
+      }
+
+      const [sanphams, total] = await this.prisma.$transaction([
+        this.prisma.khachhang.findMany({
+          where,
+          include: { banggia: true },
+          skip,
+          take,
+          orderBy,
+        }),
+        this.prisma.khachhang.count({ where }),
+      ]);
+      
+      return {
+        data: sanphams,
+        total: Number(total),
+        page: numericPage,
+        pageSize: numericPageSize,
+        totalPages: Math.ceil(Number(total) / numericPageSize),
+      };
+    } catch (error) {
+      console.log('Error in findAllSanpham:', error);
+      throw error;
+    }
   }
-    async findby(param:any) {
+
+  async findby(param:any) {
       console.log('findby param:', param);
       
     const { page = 1, pageSize = 50, isOne, ...where } = param;

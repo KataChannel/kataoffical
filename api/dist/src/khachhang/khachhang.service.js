@@ -144,10 +144,62 @@ let KhachhangService = class KhachhangService {
         }
         return { message: 'Import completed' };
     }
-    async findAll() {
-        return this.prisma.khachhang.findMany({
-            include: { banggia: true },
-        });
+    async findAll(query) {
+        console.log('findAllKhachHang query:', query);
+        try {
+            const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
+            const numericPage = Number(page || 1);
+            const numericPageSize = Number(pageSize || 50);
+            const skip = (numericPage - 1) * numericPageSize;
+            const take = numericPageSize;
+            const where = {};
+            if (search) {
+                where.OR = [
+                    { title: { contains: search, mode: 'insensitive' } },
+                    { description: { contains: search, mode: 'insensitive' } }
+                ];
+            }
+            if (category) {
+                where.category = { equals: category, mode: 'insensitive' };
+            }
+            if (priceMin || priceMax) {
+                where.price = {};
+                if (priceMin) {
+                    where.price.gte = priceMin;
+                }
+                if (priceMax) {
+                    where.price.lte = priceMax;
+                }
+            }
+            const orderBy = {};
+            if (sortBy && sortOrder) {
+                orderBy[sortBy] = sortOrder;
+            }
+            else {
+                orderBy.createdAt = 'desc';
+            }
+            const [sanphams, total] = await this.prisma.$transaction([
+                this.prisma.khachhang.findMany({
+                    where,
+                    include: { banggia: true },
+                    skip,
+                    take,
+                    orderBy,
+                }),
+                this.prisma.khachhang.count({ where }),
+            ]);
+            return {
+                data: sanphams,
+                total: Number(total),
+                page: numericPage,
+                pageSize: numericPageSize,
+                totalPages: Math.ceil(Number(total) / numericPageSize),
+            };
+        }
+        catch (error) {
+            console.log('Error in findAllSanpham:', error);
+            throw error;
+        }
     }
     async findby(param) {
         console.log('findby param:', param);

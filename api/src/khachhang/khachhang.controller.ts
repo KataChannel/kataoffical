@@ -37,11 +37,21 @@ export class KhachhangController {
   async searchfield(@Body() searchParams: Record<string, any>) {
     return this.khachhangService.searchfield(searchParams);
   }
+  // @Get()
+  // findAll() {
+  //   return this.khachhangService.findAll();
+  // }
   @Get()
-  findAll() {
-    return this.khachhangService.findAll();
+  async findAll(@Query() query: any) {
+    try {
+      return await this.khachhangService.findAll(query);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to fetch khachhangs',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } 
   }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.khachhangService.findOne(id);

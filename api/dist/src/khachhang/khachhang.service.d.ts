@@ -37,46 +37,52 @@ export declare class KhachhangService {
     import(data: any[]): Promise<{
         message: string;
     }>;
-    findAll(): Promise<({
-        banggia: {
+    findAll(query: any): Promise<{
+        data: ({
+            banggia: {
+                id: string;
+                title: string | null;
+                ghichu: string | null;
+                order: number | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                type: string | null;
+                status: string | null;
+                mabanggia: string | null;
+                batdau: Date | null;
+                ketthuc: Date | null;
+            }[];
+        } & {
             id: string;
-            title: string | null;
+            subtitle: string | null;
             ghichu: string | null;
-            order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            type: string | null;
-            status: string | null;
-            mabanggia: string | null;
-            batdau: Date | null;
-            ketthuc: Date | null;
-        }[];
-    } & {
-        id: string;
-        subtitle: string | null;
-        ghichu: string | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        tenfile: string | null;
-        tenkh: string | null;
-        name: string | null;
-        namenn: string | null;
-        makh: string;
-        makhold: string | null;
-        diachi: string | null;
-        sdt: string | null;
-        mst: string | null;
-        gionhanhang: string | null;
-        quan: string | null;
-        email: string | null;
-        phone: string | null;
-        address: string | null;
-        loaikh: string | null;
-        hiengia: boolean;
-        istitle2: boolean;
-    })[]>;
+            tenfile: string | null;
+            tenkh: string | null;
+            name: string | null;
+            namenn: string | null;
+            makh: string;
+            makhold: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            mst: string | null;
+            gionhanhang: string | null;
+            quan: string | null;
+            email: string | null;
+            phone: string | null;
+            address: string | null;
+            loaikh: string | null;
+            hiengia: boolean;
+            istitle2: boolean;
+        })[];
+        total: number;
+        page: number;
+        pageSize: number;
+        totalPages: number;
+    }>;
     findby(param: any): Promise<({
         banggia: {
             id: string;

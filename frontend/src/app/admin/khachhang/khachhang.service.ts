@@ -179,7 +179,7 @@ export class KhachhangService {
       // Tải dữ liệu mới từ server
       const query = new URLSearchParams({
         page: this.page().toString(),
-        limit: pageSize.toString()
+        pageSize: pageSize.toString()
       });
       const response = await fetch(`${environment.APIURL}/khachhang?${query}`, options);
       if (!response.ok) {

@@ -116,7 +116,7 @@ export class ListImportdataComponent implements OnInit {
     await this._ImportdataService.getAllImportdata(100, true);
     await this._SanphamService.getAllSanpham();
     this.rawListSP = this._SanphamService.ListSanpham();
-    await this._KhachhangService.getAllKhachhang();
+    await this._KhachhangService.getAllKhachhang(9999,true);
     this.rawListKH = this._KhachhangService.ListKhachhang();
     await this._NhacungcapService.getAllNhacungcap();
     this.rawListNCC = this._NhacungcapService.ListNhacungcap();
@@ -134,7 +134,6 @@ export class ListImportdataComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this._ImportdataService.getAllImportdata(100, true);
-    console.log(this.ListImportdata());
     await this._SanphamService.getAllSanpham();
     this.rawListSP = this._SanphamService.ListSanpham();
     await this._KhachhangService.getAllKhachhang();
@@ -353,7 +352,7 @@ async ExportExcel(title:any) {
           result[i] = banggia.mabanggia;
           i++;
         }        
-      }
+      }      
       return result;
     });
     const dynamicKeys = this.rawListSP.reduce((acc: Record<string, string>, v: any) => {
@@ -476,7 +475,7 @@ convertBGSPToImport(
 }
 
 
-convertBHKHToImport(data: any){ 
+convertBGKHToImport(data: any){ 
   if (!data || data.length === 0) {
     return [];
   }
@@ -716,7 +715,9 @@ convertNCCSPToImport(data: any){
     }
     if(data.banggiakhachhang && data.banggiakhachhang.length > 0 && this.ListEdit().some((item: any) => item.value === 'banggiakhachhang'))
     {
-        const ListBGKH = this.convertBHKHToImport(data.banggiakhachhang).filter((v:any)=>v.banggia.length > 0);        
+        const ListBGKH = this.convertBGKHToImport(data.banggiakhachhang).filter((v:any)=>v.banggia.length > 0);
+        console.log(this.convertBGKHToImport(data.banggiakhachhang));
+
         await this._KhachhangService.ImportKhachhang(ListBGKH);
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,
