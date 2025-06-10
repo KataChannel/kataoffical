@@ -458,7 +458,7 @@ export class ListAffiliatelinkComponent implements OnInit {
   }
   getCoppyLink(item: any) {
     const url = this.getUrl(item);
-    const fullUrl = url + '?ref=' + this.profile()?.inviteCode  + `&codeId=${item.codeId}` + '&sharePlatform=website';
+    const fullUrl = url + '?ref=' + this.profile()?.inviteCode  + `&codeId=${item.codeId}` + '&sharePlatform=website' + '&referrer=' + this.profile()?.phone;
     navigator.clipboard.writeText(fullUrl).then(() => {
       this._snackbar.open('Đã Coppy', 'Close', {
         duration: 2000,
@@ -473,7 +473,7 @@ export class ListAffiliatelinkComponent implements OnInit {
   }
   share(platform: string, item: any, title?: string, description?: string, image?: string): void {
     let url = this.getUrl(item);
-    url = url + '?ref=' + this.profile()?.inviteCode+ `&codeId=${item.codeId}`;
+    url = url + '?ref=' + this.profile()?.inviteCode+ `&codeId=${item.codeId}`+ '&referrer=' + this.profile()?.phone;
     let shareUrl: string;
     switch (platform.toLowerCase()) {
       case 'facebook':
