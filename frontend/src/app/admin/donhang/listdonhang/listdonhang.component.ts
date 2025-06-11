@@ -385,7 +385,7 @@ export class ListDonhangComponent {
 
   create(): void {
     this.drawer.open();
-    this._router.navigate(['admin/donhang', 0]);
+    this._router.navigate(['admin/donhang', 'new']);
   }
   goToDetail(item: any): void {
     this._DonhangService.setDonhangId(item.id);

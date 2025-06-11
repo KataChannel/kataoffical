@@ -81,17 +81,14 @@ export class ListKhachhangComponent implements OnInit {
 
   Listkhachhang = this._KhachhangService.ListKhachhang;
   page = this._KhachhangService.page;
-  pageCount = this._KhachhangService.pageCount;
+  totalPages = this._KhachhangService.totalPages;
   total = this._KhachhangService.total;
   pageSize = this._KhachhangService.pageSize;
   khachhangId = this._KhachhangService.khachhangId;
   dataSource:any = new MatTableDataSource([]);
   EditList: any[] = [];
   isSearch = signal<boolean>(false);
-  searchParam:any={
-    page: this.page(),
-    pageSize: this.pageSize(),
-  }
+  searchParam:any={}
   constructor() {
     effect(() => {
       this.dataSource.data = this.Listkhachhang();
@@ -106,7 +103,7 @@ export class ListKhachhangComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this._KhachhangService.listenKhachhangUpdates();
-    await this._KhachhangService.getKhachhangBy(this.searchParam);
+    await this._KhachhangService.getAllKhachhang(this.searchParam);
     this.displayedColumns = Object.keys(this.ColumnName);
     this.dataSource = new MatTableDataSource(this.Listkhachhang());
     this.dataSource.sort = this.sort;
@@ -126,10 +123,7 @@ export class ListKhachhangComponent implements OnInit {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     if (!filterValue) {
-      this.searchParam = {
-        page: this.page(),
-        pageSize: this.pageSize(),
-      };
+      this.searchParam = {};
       this._KhachhangService.getKhachhangBy(this.searchParam);
       return;
     }
@@ -372,7 +366,7 @@ export class ListKhachhangComponent implements OnInit {
     return item.id;
   }
 
-  onPageSizeChange(size: number, menuHienthi: any) {
+  async onPageSizeChange(size: number, menuHienthi: any) {
     if (size > this.total()) {
       this._snackBar.open(`Số lượng tối đa ${this.total()}`, '', {
         duration: 1000,
@@ -384,23 +378,21 @@ export class ListKhachhangComponent implements OnInit {
       this.searchParam.pageSize = size;
     }
     this._KhachhangService.page.set(1);
-    this.searchParam.page = 1;
-    this._KhachhangService.getKhachhangBy(this.searchParam);
+    this._KhachhangService.pageSize.set(size);
+    await this._KhachhangService.getAllKhachhang(this.searchParam,true);
     menuHienthi.closeMenu();
   }
-  onPreviousPage(){
+  async onPreviousPage(){
     if (this.page() > 1) {
       this._KhachhangService.page.set(this.page() - 1);
-      this.searchParam.page = this.page();
-      this._KhachhangService.getKhachhangBy(this.searchParam);
+      await this._KhachhangService.getAllKhachhang(this.searchParam,true);
     }
   }
 
-  onNextPage(){
-    if (this.page() < this.pageCount()) {
+  async onNextPage(){
+    if (this.page() < this.totalPages()) {
       this._KhachhangService.page.set(this.page() + 1);
-      this.searchParam.page = this.page();
-      this._KhachhangService.getKhachhangBy(this.searchParam);
+      await this._KhachhangService.getAllKhachhang(this.searchParam,true);
     }
   }
 }

@@ -134,7 +134,7 @@
         class="w-full flex lg:p-0 p-2 lg:flex-row lg:space-x-2 lg:items-center lg:justify-between flex-col justify-center">
         <span class="w-full text-center">Đang Xem <strong>{{ (page() - 1) * pageSize() + 1 }}</strong> -
           <strong>{{ page() * pageSize() > total() ? total() : page() * pageSize() }}</strong>
-          trong số {{ total() }} mục, {{ page() }}/{{pageCount()}} Trang</span>
+          trong số {{ total() }} mục, {{ page() }}/{{totalPages()}} Trang</span>
         <div class="w-full flex flex-row space-x-2 items-center lg:justify-end justify-center">
           <span class="font-bold text-blue-600" [matMenuTriggerFor]="menu1" #menuHienthi="matMenuTrigger">Hiện
             Thị : {{pageSize()}} mục</span>
@@ -154,7 +154,7 @@
             <button mat-icon-button color="primary" [disabled]="page() === 1" (click)="onPreviousPage()">
               <mat-icon>keyboard_arrow_left</mat-icon>
             </button>
-            <button mat-icon-button color="primary" [disabled]="page() === pageCount()" (click)="onNextPage()">
+            <button mat-icon-button color="primary" [disabled]="page() === totalPages()" (click)="onNextPage()">
               <mat-icon>keyboard_arrow_right</mat-icon>
             </button>
           </div>

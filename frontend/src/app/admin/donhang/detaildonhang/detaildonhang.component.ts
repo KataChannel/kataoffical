@@ -45,6 +45,7 @@ import { SearchService } from '../../../shared/services/search.service';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { UserService } from '../../user/user.service';
+import { Debounce } from '../../../shared/utils/decorators';
 @Component({
   selector: 'app-detaildonhang',
   imports: [
@@ -98,7 +99,7 @@ export class DetailDonhangComponent {
         this._router.navigate(['/admin/donhang']);
         this._ListdonhangComponent.drawer.close();
       }
-      if (id === '0') {
+      if (id === 'new') {
         this.DetailDonhang.set({
           title: GenId(8, false),
           // madonhang: GenId(8, false),
@@ -106,7 +107,7 @@ export class DetailDonhangComponent {
         });
         this._ListdonhangComponent.drawer.open();
         this.isEdit.update((value) => !value);
-        this._router.navigate(['/admin/donhang', '0']);
+        this._router.navigate(['/admin/donhang', 'new']);
       } else {
         await this._DonhangService.getDonhangByid(id);
         this.ListFilter = this.DetailDonhang().sanpham
@@ -117,7 +118,7 @@ export class DetailDonhangComponent {
         this._ListdonhangComponent.drawer.open();
         this._router.navigate(['/admin/donhang', id]);
       }
-      await this._KhachhangService.getAllKhachhang();
+      await this._KhachhangService.getAllKhachhang({},true);
       this.filterKhachhang = this.ListKhachhang()
     });
   }
@@ -136,7 +137,7 @@ export class DetailDonhangComponent {
      console.log(this.permissions);  
   }
   async handleDonhangAction() {
-    if (this.donhangId() === '0') {
+    if (this.donhangId() === 'new') {
       await this.createDonhang();
     } else {
       await this.updateDonhang();
@@ -241,11 +242,14 @@ export class DetailDonhangComponent {
     });
   }
   searchInput$ = new Subject<string>();
+  @Debounce(500)
   async DoFindKhachhang(event: any) {
     const value = event.target.value.trim().toLowerCase();
-    this.filterKhachhang = this.ListKhachhang().filter((v: any) =>
-     removeVietnameseAccents(v.name).toLowerCase().includes(value)
-    );
+    await this._KhachhangService.getKhachhangBy({subtitle: value})
+    this.filterKhachhang = this.ListKhachhang()
+    // this.filterKhachhang = this.ListKhachhang().filter((v: any) =>
+    //  removeVietnameseAccents(v.name).toLowerCase().includes(value)
+    // );
   }
   DoFindBanggia(event: any) {
     const query = event.target.value.toLowerCase();

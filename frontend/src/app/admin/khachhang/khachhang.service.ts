@@ -24,7 +24,7 @@ export class KhachhangService {
   ListKhachhang = signal<any[]>([]);
   DetailKhachhang = signal<any>({});
   page = signal<number>(1);
-  pageCount = signal<number>(1);
+  totalPages = signal<number>(1);
   total = signal<number>(0);
   pageSize = signal<number>(50); // Mặc định 10 mục mỗi trang
   khachhangId = signal<string | null>(null);
@@ -54,7 +54,7 @@ export class KhachhangService {
   }
 
   // Lưu dữ liệu và phân trang vào IndexedDB
-  private async saveKhachhangs(data: any[], pagination: { page: number, pageCount: number, total: number, pageSize: number }) {
+  private async saveKhachhangs(data: any[], pagination: { page: number, totalPages: number, total: number, pageSize: number }) {
     const db = await this.initDB();
     const tx = db.transaction('khachhangs', 'readwrite');
     const store = tx.objectStore('khachhangs');
@@ -70,10 +70,10 @@ export class KhachhangService {
     if (cached && cached.khachhangs) {
       return {
         khachhangs: cached.khachhangs,
-        pagination: cached.pagination || { page: 1, pageCount: 1, total: cached.khachhangs.length, pageSize: 10 }
+        pagination: cached.pagination || { page: 1, totalPages: 1, total: cached.khachhangs.length, pageSize: 10 }
       };
     }
-    return { khachhangs: [], pagination: { page: 1, pageCount: 1, total: 0, pageSize: 10 } };
+    return { khachhangs: [], pagination: { page: 1, totalPages: 1, total: 0, pageSize: 10 } };
   }
 
   setKhachhangId(id: string | null) {
@@ -126,16 +126,15 @@ export class KhachhangService {
     }
   }
 
-  async getAllKhachhang(pageSize: number = this.pageSize(), forceRefresh: boolean = false) {
-    this.pageSize.set(pageSize);
-    const cached = await this.getCachedData();   
-    const updatedAtCache = this._StorageService.getItem('khachhangs_updatedAt') || '0';    
-    
+  async getAllKhachhang(queryParams: any = {}, forceRefresh: boolean = false) {
+    const cached = await this.getCachedData();
+    const updatedAtCacheDate = this._StorageService.getItem('khachhangs_updatedAt') || '0';
+    const updatedAtCache = new Date(updatedAtCacheDate).getTime();
     // Nếu không yêu cầu tải mới và cache hợp lệ, trả về cache
-    if (!forceRefresh && cached.khachhangs.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) {
+    if (!forceRefresh && cached.khachhangs.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) {
       this.ListKhachhang.set(cached.khachhangs);
       this.page.set(cached.pagination.page);
-      this.pageCount.set(cached.pagination.pageCount);
+      this.totalPages.set(cached.pagination.totalPages);
       this.total.set(cached.pagination.total);
       this.pageSize.set(cached.pagination.pageSize);
       return cached.khachhangs;
@@ -150,81 +149,64 @@ export class KhachhangService {
         },
       };
 
-      // Kiểm tra thời gian cập nhật từ server, trừ khi được yêu cầu forceRefresh
-      if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/khachhang/lastupdated`, options);
-        if (!lastUpdatedResponse.ok) {
-          this.handleError(lastUpdatedResponse.status);
-          this.ListKhachhang.set(cached.khachhangs);
-          this.page.set(cached.pagination.page);
-          this.pageCount.set(cached.pagination.pageCount);
-          this.total.set(cached.pagination.total);
-          this.pageSize.set(cached.pagination.pageSize);
-          return cached.khachhangs;
-        }
-
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-
-        // Nếu cache còn mới, trả về cache
-        if (updatedAtServer <= updatedAtCache) {
-          this.ListKhachhang.set(cached.khachhangs);
-          this.page.set(cached.pagination.page);
-          this.pageCount.set(cached.pagination.pageCount);
-          this.total.set(cached.pagination.total);
-          this.pageSize.set(cached.pagination.pageSize);
-          return cached.khachhangs;
-        }
-      }
-
-      // Tải dữ liệu mới từ server
-      const query = new URLSearchParams({
+      queryParams = {
         page: this.page().toString(),
-        pageSize: pageSize.toString()
+        pageSize: this.pageSize().toString(),
+        ...queryParams, // Thêm các tham số khác nếu cần
+      };
+      // Tạo query string từ queryParams, chỉ thêm các giá trị có nội dung
+      const query = new URLSearchParams();
+      Object.entries(queryParams).forEach(([key, value]) => {
+        if (value) {
+          query.append(key, String(value));
+        }
       });
+
+      // Nếu forceRefresh = true thì bỏ qua cache và tải dữ liệu mới luôn
       const response = await fetch(`${environment.APIURL}/khachhang?${query}`, options);
       if (!response.ok) {
         this.handleError(response.status);
         this.ListKhachhang.set(cached.khachhangs);
         this.page.set(cached.pagination.page);
-        this.pageCount.set(cached.pagination.pageCount);
+        this.totalPages.set(cached.pagination.totalPages);
         this.total.set(cached.pagination.total);
         this.pageSize.set(cached.pagination.pageSize);
         return cached.khachhangs;
       }
-
+      // Lưu dữ liệu mới vào cache
       const data = await response.json();
       await this.saveKhachhangs(data.data, {
         page: data.page || 1,
-        pageCount: data.pageCount || 1,
-        total: data.total || data?.data?.length,
-        pageSize
+        totalPages: data.totalPages || 1,
+        total: data.total || data.data.length,
+        pageSize: this.pageSize()
       });
-      // Với forceRefresh, cập nhật luôn với thời gian mới từ server, nếu không thì sử dụng thời gian lấy từ lastUpdatedResponse
-      if (!forceRefresh) {
+
+      // Cập nhật thời gian cache: với forceRefresh, sử dụng thời gian hiện tại
+      if (forceRefresh) {
+        this._StorageService.setItem('khachhangs_updatedAt', new Date().toISOString());
+      } else {
         const lastUpdatedResponse = await fetch(`${environment.APIURL}/khachhang/lastupdated`, options);
         const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
         this._StorageService.setItem('khachhangs_updatedAt', updatedAtServer);
-      } else {
-        this._StorageService.setItem('khachhangs_updatedAt', new Date().toISOString());
       }
       this.ListKhachhang.set(data.data);
       this.page.set(data.page || 1);
-      this.pageCount.set(data.pageCount || 1);
+      this.totalPages.set(data.totalPages || 1);
       this.total.set(data.total || data.data.length);
-      this.pageSize.set(pageSize);
+      this.pageSize.set(this.pageSize());
       return data.data;
+
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getAllKhachhang', error);
       console.error(error);
       this.ListKhachhang.set(cached.khachhangs);
       this.page.set(cached.pagination.page);
-      this.pageCount.set(cached.pagination.pageCount);
+      this.totalPages.set(cached.pagination.totalPages);
       this.total.set(cached.pagination.total);
       this.pageSize.set(cached.pagination.pageSize);
       return cached.khachhangs;
     }
   }
-
   async getUpdatedCodeIds() {
     try {
       const options = {
@@ -278,14 +260,14 @@ export class KhachhangService {
       } else {
         await this.saveKhachhangs(data.data, {
           page: data.page || 1,
-          pageCount: data.pageCount || 1,
+          totalPages: data.totalPages || 1,
           total: data.total || data?.data?.length,
           pageSize: this.pageSize()
         });
         this._StorageService.setItem('khachhangs_updatedAt', new Date().toISOString());
         this.ListKhachhang.set(data.data);
         this.page.set(data.page || 1);
-        this.pageCount.set(data.pageCount || 1);
+        this.totalPages.set(data.totalPages || 1);
         this.total.set(data.total || data.data.length);
         this.pageSize.set(this.pageSize());
         return data.data;
@@ -297,7 +279,7 @@ export class KhachhangService {
       if (!param.isOne) {
         this.ListKhachhang.set(cached.khachhangs);
         this.page.set(cached.pagination.page);
-        this.pageCount.set(cached.pagination.pageCount);
+        this.totalPages.set(cached.pagination.totalPages);
         this.total.set(cached.pagination.total);
         this.pageSize.set(cached.pagination.pageSize);
       }

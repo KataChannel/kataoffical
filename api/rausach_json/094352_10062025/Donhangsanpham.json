@@ -1,0 +1,47 @@
+[
+  {
+    "id": "fd8456f6-ff5e-479a-83c7-e53308b9b3d1",
+    "idSP": "009961c5-53bd-42e4-a35f-1dc6a5507d14",
+    "sldat": "1",
+    "slgiao": "1",
+    "slnhan": "1",
+    "slhuy": "0",
+    "ttdat": "0",
+    "ttgiao": "0",
+    "ttnhan": "0",
+    "ghichu": "",
+    "donhangId": "363141de-8f50-47ad-81bb-41f0aa1f7ae7",
+    "order": null,
+    "isActive": false
+  },
+  {
+    "id": "ef4443fe-03f6-4893-92f2-720558349ea0",
+    "idSP": "00452d49-fc7d-4ddd-a043-845825bcb8cc",
+    "sldat": "1",
+    "slgiao": "1",
+    "slnhan": "1",
+    "slhuy": "0",
+    "ttdat": "0",
+    "ttgiao": "15000",
+    "ttnhan": "0",
+    "ghichu": "",
+    "donhangId": "363141de-8f50-47ad-81bb-41f0aa1f7ae7",
+    "order": null,
+    "isActive": false
+  },
+  {
+    "id": "0c9f6516-28d0-4290-b359-1c0dfffadd63",
+    "idSP": "015a6430-fef8-4b78-b2a9-00410e3e4f18",
+    "sldat": "1",
+    "slgiao": "1",
+    "slnhan": "1",
+    "slhuy": "0",
+    "ttdat": "0",
+    "ttgiao": "13000",
+    "ttnhan": "0",
+    "ghichu": "",
+    "donhangId": "363141de-8f50-47ad-81bb-41f0aa1f7ae7",
+    "order": null,
+    "isActive": false
+  }
+]
