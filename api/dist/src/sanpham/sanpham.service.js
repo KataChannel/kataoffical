@@ -23,13 +23,16 @@ let SanphamService = class SanphamService {
         this._ErrorlogsService = _ErrorlogsService;
         this._ImportdataService = _ImportdataService;
     }
-    async getLastUpdatedSanpham() {
-        const lastUpdated = await this.prisma.sanpham.aggregate({
-            _max: {
-                updatedAt: true,
-            },
-        });
-        return { updatedAt: lastUpdated._max.updatedAt || 0 };
+    async getLastUpdated() {
+        try {
+            const lastUpdated = await this.prisma.sanpham.aggregate({
+                _max: { updatedAt: true },
+            });
+            return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
+        }
+        catch (error) {
+            throw error;
+        }
     }
     async generateMaSP() {
         const latest = await this.prisma.sanpham.findFirst({
@@ -129,16 +132,59 @@ let SanphamService = class SanphamService {
             });
         }
     }
-    async findAll() {
+    async findAll(query) {
+        console.log('findAllSanpham query:', query);
         try {
-            return await this.prisma.sanpham.findMany({
-                orderBy: { createdAt: 'desc' },
-            });
+            const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
+            const numericPage = Number(page || 1);
+            const numericPageSize = Number(pageSize || 50);
+            const skip = (numericPage - 1) * numericPageSize;
+            const take = numericPageSize;
+            const where = {};
+            if (search) {
+                where.OR = [
+                    { title: { contains: search, mode: 'insensitive' } },
+                    { description: { contains: search, mode: 'insensitive' } }
+                ];
+            }
+            if (category) {
+                where.category = { equals: category, mode: 'insensitive' };
+            }
+            if (priceMin || priceMax) {
+                where.price = {};
+                if (priceMin) {
+                    where.price.gte = priceMin;
+                }
+                if (priceMax) {
+                    where.price.lte = priceMax;
+                }
+            }
+            const orderBy = {};
+            if (sortBy && sortOrder) {
+                orderBy[sortBy] = sortOrder;
+            }
+            else {
+                orderBy.createdAt = 'desc';
+            }
+            const [sanphams, total] = await this.prisma.$transaction([
+                this.prisma.sanpham.findMany({
+                    where,
+                    skip,
+                    take,
+                    orderBy,
+                }),
+                this.prisma.sanpham.count({ where }),
+            ]);
+            return {
+                data: sanphams,
+                total: Number(total),
+                page: numericPage,
+                pageSize: numericPageSize,
+                totalPages: Math.ceil(Number(total) / numericPageSize),
+            };
         }
         catch (error) {
-            this._ErrorlogsService.logError('Lỗi lấy tất cả sản phẩm', {
-                error: error.message,
-            });
+            console.log('Error in findAllSanpham:', error);
             throw error;
         }
     }
@@ -275,7 +321,21 @@ let SanphamService = class SanphamService {
         return updatedSanpham;
     }
     async remove(id) {
-        return this.prisma.sanpham.delete({ where: { id } });
+        return this.prisma.$transaction(async (tx) => {
+            await tx.sanpham.update({
+                where: { id },
+                data: { Nhacungcap: { set: [] } },
+            });
+            await tx.donhangsanpham.deleteMany({
+                where: { sanpham: { id } },
+            });
+            await tx.dathangsanpham.deleteMany({
+                where: { sanpham: { id } },
+            });
+            const deletedSanpham = await tx.sanpham.delete({ where: { id } });
+            this._SocketGateway.sendSanphamUpdate();
+            return deletedSanpham;
+        });
     }
 };
 exports.SanphamService = SanphamService;

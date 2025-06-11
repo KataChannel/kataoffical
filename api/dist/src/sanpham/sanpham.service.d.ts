@@ -8,8 +8,8 @@ export declare class SanphamService {
     private _ErrorlogsService;
     private _ImportdataService;
     constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogsService: ErrorlogsService, _ImportdataService: ImportdataService);
-    getLastUpdatedSanpham(): Promise<{
-        updatedAt: number | Date;
+    getLastUpdated(): Promise<{
+        updatedAt: number;
     }>;
     generateMaSP(): Promise<string>;
     create(data: any): Promise<{
@@ -43,27 +43,33 @@ export declare class SanphamService {
         }[];
     }>;
     reorderSanphams(sanphamIds: string[]): Promise<void>;
-    findAll(): Promise<{
-        id: string;
-        title: string;
-        title2: string | null;
-        slug: string | null;
-        masp: string;
-        subtitle: string | null;
-        giagoc: number;
-        giaban: number;
-        dvt: string | null;
-        hinhanh: string | null;
-        loadpoint: number | null;
-        soluong: import("@prisma/client/runtime/library").Decimal | null;
-        soluongkho: import("@prisma/client/runtime/library").Decimal | null;
-        haohut: number;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-    }[]>;
+    findAll(query: any): Promise<{
+        data: {
+            id: string;
+            title: string;
+            title2: string | null;
+            slug: string | null;
+            masp: string;
+            subtitle: string | null;
+            giagoc: number;
+            giaban: number;
+            dvt: string | null;
+            hinhanh: string | null;
+            loadpoint: number | null;
+            soluong: import("@prisma/client/runtime/library").Decimal | null;
+            soluongkho: import("@prisma/client/runtime/library").Decimal | null;
+            haohut: number;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
+        total: number;
+        page: number;
+        pageSize: number;
+        totalPages: number;
+    }>;
     nhucaudathang(): Promise<{
         slton: number;
         slchogiao: number;

@@ -53,27 +53,33 @@ export declare class SanphamController {
         createdAt: Date;
         updatedAt: Date;
     } | null>;
-    findAll(): Promise<{
-        id: string;
-        title: string;
-        title2: string | null;
-        slug: string | null;
-        masp: string;
-        subtitle: string | null;
-        giagoc: number;
-        giaban: number;
-        dvt: string | null;
-        hinhanh: string | null;
-        loadpoint: number | null;
-        soluong: import("@prisma/client/runtime/library").Decimal | null;
-        soluongkho: import("@prisma/client/runtime/library").Decimal | null;
-        haohut: number;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-    }[]>;
+    findAll(query: any): Promise<{
+        data: {
+            id: string;
+            title: string;
+            title2: string | null;
+            slug: string | null;
+            masp: string;
+            subtitle: string | null;
+            giagoc: number;
+            giaban: number;
+            dvt: string | null;
+            hinhanh: string | null;
+            loadpoint: number | null;
+            soluong: import("@prisma/client/runtime/library").Decimal | null;
+            soluongkho: import("@prisma/client/runtime/library").Decimal | null;
+            haohut: number;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
+        total: number;
+        page: number;
+        pageSize: number;
+        totalPages: number;
+    }>;
     nhucaudathang(): Promise<{
         slton: number;
         slchogiao: number;
@@ -99,8 +105,8 @@ export declare class SanphamController {
         createdAt?: Date | undefined;
         updatedAt?: Date | undefined;
     }[]>;
-    getLastUpdatedSanpham(): Promise<{
-        updatedAt: number | Date;
+    getLastUpdated(): Promise<{
+        updatedAt: number;
     }>;
     findOne(id: string): Promise<{
         Donhangsanpham: {

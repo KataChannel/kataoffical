@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { SanphamService } from './sanpham.service';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
@@ -22,17 +22,28 @@ export class SanphamController {
     return this.sanphamService.findby(param);
   }
   @Get()
-  findAll() {
-    return this.sanphamService.findAll();
-  }
+  async findAll(@Query() query: any) {
+    try {
+      return await this.sanphamService.findAll(query);
+    } catch (error) {
+      throw new HttpException(
+          error.message || 'Failed to fetch khachhangs',
+          error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      } 
+    }
   @Get('nhucaudathang')
   nhucaudathang() {
     return this.sanphamService.nhucaudathang();
   }
-  @Get('last-updated')
-    async getLastUpdatedSanpham() {
-      return this.sanphamService.getLastUpdatedSanpham();
-  }
+    @Get('lastupdated')
+    async getLastUpdated() {
+      try {
+        return await this.sanphamService.getLastUpdated();
+      } catch (error) {
+        throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+   }
   @Get('findid/:id')
   findOne(@Param('id') id: string) {
     return this.sanphamService.findOne(id);

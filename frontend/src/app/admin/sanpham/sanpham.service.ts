@@ -4,6 +4,7 @@ import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
 import { io } from 'socket.io-client';
 import { openDB } from 'idb';
+import { MatSnackBar } from '@angular/material/snack-bar';
 @Injectable({
   providedIn: 'root'
 })
@@ -11,10 +12,17 @@ export class SanphamService {
   constructor(
     private _StorageService: StorageService,
     private router: Router,
+    private _snackBar: MatSnackBar,
   ) { }
   ListSanpham = signal<any[]>([]);
   DetailSanpham = signal<any>({});
   sanphamId = signal<string | null>(null);
+  page = signal<number>(1);
+  totalPages = signal<number>(1);
+  total = signal<number>(0);
+  pageSize = signal<number>(50); // Mặc định 50 mục mỗi trang
+
+
   setSanphamId(id: string | null) {
     this.sanphamId.set(id);
   }
@@ -92,22 +100,21 @@ export class SanphamService {
     }
   }
 
-  async getAllSanpham() {
-    const db = await this.initDB();
-    
-    // 🛑 Kiểm tra cache từ IndexedDB trước
-    const cachedData = await db.getAll('sanphams');
-    const updatedAtCache = this._StorageService.getItem('sanphams_updatedAt') || 0;
-    
-    // ✅ Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
-    if (cachedData.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) { // 5 phút cache TTL
-      this.ListSanpham.set(cachedData);
-      return cachedData;
+  async getAllSanpham(queryParams: any = {}, forceRefresh: boolean = false) {
+    const cached = await this.getCachedData();
+    const updatedAtCacheDate = this._StorageService.getItem('sanphams_updatedAt') || '0';
+    const updatedAtCache = new Date(updatedAtCacheDate).getTime();
+    // Nếu không yêu cầu tải mới và cache hợp lệ, trả về cache
+    if (!forceRefresh && cached.sanphams.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) {
+      this.ListSanpham.set(cached.sanphams);
+      this.page.set(cached.pagination.page);
+      this.totalPages.set(cached.pagination.totalPages);
+      this.total.set(cached.pagination.total);
+      this.pageSize.set(cached.pagination.pageSize);
+      return cached.sanphams;
     }
-    
+
     try {
-      // ✅ Gọi API chỉ để lấy `updatedAt` mới nhất
-      
       const options = {
         method: 'GET',
         headers: {
@@ -115,34 +122,63 @@ export class SanphamService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-      
-      const lastUpdatedResponse = await fetch(`${environment.APIURL}/last-updated?table=sanpham`, options);
-      if (!lastUpdatedResponse.ok) {
-        this.handleError(lastUpdatedResponse.status);        
-        //return cachedData;
-      }    
-      const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();     
-      // ✅ Nếu cache vẫn mới, không cần tải lại dữ liệu
-      if (updatedAtServer <= updatedAtCache) {
-        this.ListSanpham.set(cachedData);
-        return cachedData;
-      }
 
-      console.log(updatedAtServer, updatedAtCache); 
-      // ✅ Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
-      const response = await fetch(`${environment.APIURL}/sanpham`, options);
+      queryParams = {
+        page: this.page().toString(),
+        pageSize: this.pageSize().toString(),
+        ...queryParams, // Thêm các tham số khác nếu cần
+      };
+      // Tạo query string từ queryParams, chỉ thêm các giá trị có nội dung
+      const query = new URLSearchParams();
+      Object.entries(queryParams).forEach(([key, value]) => {
+        if (value) {
+          query.append(key, String(value));
+        }
+      });
+
+      // Nếu forceRefresh = true thì bỏ qua cache và tải dữ liệu mới luôn
+      const response = await fetch(`${environment.APIURL}/sanpham?${query}`, options);
       if (!response.ok) {
         this.handleError(response.status);
-        return cachedData;
+        this.ListSanpham.set(cached.sanphams);
+        this.page.set(cached.pagination.page);
+        this.totalPages.set(cached.pagination.totalPages);
+        this.total.set(cached.pagination.total);
+        this.pageSize.set(cached.pagination.pageSize);
+        return cached.sanphams;
       }
+      // Lưu dữ liệu mới vào cache
       const data = await response.json();
-      await this.saveSanphams(data);
-      this._StorageService.setItem('sanphams_updatedAt', updatedAtServer);
-      this.ListSanpham.set(data);
-      return data;
+      await this.saveSanphams(data.data, {
+        page: data.page || 1,
+        totalPages: data.totalPages || 1,
+        total: data.total || data.data.length,
+        pageSize: this.pageSize()
+      });
+
+      // Cập nhật thời gian cache: với forceRefresh, sử dụng thời gian hiện tại
+      if (forceRefresh) {
+        this._StorageService.setItem('sanphams_updatedAt', new Date().toISOString());
+      } else {
+        const lastUpdatedResponse = await fetch(`${environment.APIURL}/sanpham/lastupdated`, options);
+        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
+        this._StorageService.setItem('sanphams_updatedAt', updatedAtServer);
+      }
+      this.ListSanpham.set(data.data);
+      this.page.set(data.page || 1);
+      this.totalPages.set(data.totalPages || 1);
+      this.total.set(data.total || data.data.length);
+      this.pageSize.set(this.pageSize());
+      return data.data;
+
     } catch (error) {
       console.error(error);
-      return cachedData;
+      this.ListSanpham.set(cached.sanphams);
+      this.page.set(cached.pagination.page);
+      this.totalPages.set(cached.pagination.totalPages);
+      this.total.set(cached.pagination.total);
+      this.pageSize.set(cached.pagination.pageSize);
+      return cached.sanphams;
     }
   }
 
@@ -159,8 +195,12 @@ export class SanphamService {
         message = 'Lỗi máy chủ, vui lòng thử lại sau';
         break;
     }
-    const result = JSON.stringify({ code: status, title: message });
-    this.router.navigate(['/errorserver'], { queryParams: { data: result } });
+    this._snackBar.open('Cập Nhật Thành Công', '', {
+      duration: 3000,
+      horizontalPosition: "end",
+      verticalPosition: "top",
+      panelClass: ['snackbar-warning'],
+    });
   }
 
   // 3️⃣ Lắng nghe cập nhật từ WebSocket
@@ -170,23 +210,50 @@ export class SanphamService {
       await this.getAllSanpham();
     });
   }
-  // Khởi tạo IndexedDB
   private async initDB() {
-    return await openDB('SanphamDB', 1, {
-      upgrade(db) {
-        db.createObjectStore('sanphams', { keyPath: 'id' });
+    return await openDB('SanphamDB', 4, {
+      upgrade(db, oldVersion) {
+        if (oldVersion < 1) {
+          db.createObjectStore('sanphams', { keyPath: 'id' });
+        }
+        if (oldVersion < 3) {
+          if (db.objectStoreNames.contains('sanphams')) {
+            db.deleteObjectStore('sanphams');
+          }
+          if (db.objectStoreNames.contains('pagination')) {
+            db.deleteObjectStore('pagination');
+          }
+          db.createObjectStore('sanphams', { keyPath: 'id' });
+        }
+        if (oldVersion < 4) {
+          // Không cần xóa store, vì cấu trúc vẫn tương thích
+          // Chỉ cần đảm bảo pagination có thêm pageSize
+        }
       },
     });
   }
 
-  // Lưu vào IndexedDB
-  private async saveSanphams(data: any[]) {
+  // Lưu dữ liệu và phân trang vào IndexedDB
+  private async saveSanphams(data: any[], pagination: { page: number, totalPages: number, total: number, pageSize: number }) {
     const db = await this.initDB();
     const tx = db.transaction('sanphams', 'readwrite');
     const store = tx.objectStore('sanphams');
-    await store.clear(); // Xóa dữ liệu cũ
-    data.forEach(item => store.put(item));
+    await store.clear();
+    await store.put({ id: 'data', sanphams: data, pagination });
     await tx.done;
+  }
+
+  // Lấy dữ liệu và phân trang từ cache
+  private async getCachedData() {
+    const db = await this.initDB();
+    const cached = await db.get('sanphams', 'data');
+    if (cached && cached.sanphams) {
+      return {
+        sanphams: cached.sanphams,
+        pagination: cached.pagination || { page: 1, totalPages: 1, total: cached.sanphams.length, pageSize: 10 }
+      };
+    }
+    return { sanphams: [], pagination: { page: 1, totalPages: 1, total: 0, pageSize: 10 } };
   }
 
   async getSanphamByid(id: any) {

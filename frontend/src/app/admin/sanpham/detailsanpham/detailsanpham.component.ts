@@ -9,13 +9,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
-import { ListSanphamComponent } from '../listsanpham/listsanpham.component';
 import { SanphamService } from '../sanpham.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { MatMenuModule } from '@angular/material/menu';
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { ListSanphamComponent } from '../listsanpham/listsanpham.component';
   @Component({
     selector: 'app-detailsanpham',
     imports: [
@@ -61,11 +61,11 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
           this._router.navigate(['/admin/sanpham']);
           this._ListsanphamComponent.drawer.close();
         }
-        if(id === '0'){
+        if(id === 'new'){
           this.DetailSanpham.set({});
           this._ListsanphamComponent.drawer.open();
           this.isEdit.update(value => !value);
-          this._router.navigate(['/admin/sanpham', "0"]);
+          this._router.navigate(['/admin/sanpham', 'new']);
           this.ChosenListNCC = this.DetailSanpham().Nhacungcap||[];
         }
         else{
@@ -83,7 +83,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     async ngOnInit() {       
     }
     async handleSanphamAction() {
-      if (this.sanphamId() === '0') {
+      if (this.sanphamId() === 'new') {
         await this.createSanpham();
       }
       else {

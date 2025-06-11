@@ -17,13 +17,15 @@ export class SanphamService {
   // async create(data: any) {
   //   return this.prisma.sanpham.create({ data });
   // }
-  async getLastUpdatedSanpham() {
-    const lastUpdated = await this.prisma.sanpham.aggregate({
-      _max: {
-        updatedAt: true,
-      },
-    });
-    return { updatedAt: lastUpdated._max.updatedAt || 0 };
+    async getLastUpdated(): Promise<{ updatedAt: number }> {
+    try {
+      const lastUpdated = await this.prisma.sanpham.aggregate({
+        _max: { updatedAt: true },
+      });
+      return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
+    } catch (error) {
+      throw error;
+    }
   }
   async generateMaSP(): Promise<string> {
     // Lấy NCC mới nhất
@@ -145,18 +147,80 @@ export class SanphamService {
       });
     }
   }
-  async findAll() {
+  // async findAll() {
+  //   try {
+  //     return await this.prisma.sanpham.findMany({
+  //        orderBy: { createdAt: 'desc' },
+  //     });
+  //   } catch (error) {
+  //     this._ErrorlogsService.logError('Lỗi lấy tất cả sản phẩm', {
+  //       error: error.message,
+  //     });
+  //     throw error;
+  //   }
+  // }
+   async findAll(query: any) {
+    console.log('findAllSanpham query:', query);
+
     try {
-      return await this.prisma.sanpham.findMany({
-         orderBy: { createdAt: 'desc' },
-      });
+      const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
+      const numericPage = Number(page || 1); // Default to page 1 if not provided
+      const numericPageSize = Number(pageSize || 50);
+      const skip = (numericPage - 1) * numericPageSize;
+      const take = numericPageSize;
+      const where: any = {};
+      // Xử lý tìm kiếm chung (OR condition)
+      if (search) {
+        where.OR = [
+          { title: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } }
+        ];
+      }
+      // Xử lý lọc theo trường cụ thể
+      if (category) {
+        where.category = { equals: category, mode: 'insensitive' };
+      }
+      if (priceMin || priceMax) {
+        where.price = {};
+        if (priceMin) {
+          where.price.gte = priceMin;
+        }
+        if (priceMax) {
+          where.price.lte = priceMax;
+        }
+      }
+      const orderBy: any = {};
+      if (sortBy && sortOrder) {
+        orderBy[sortBy] = sortOrder;
+      } else {
+        orderBy.createdAt = 'desc'; // Mặc định nếu không có sortBy/sortOrder
+      }
+
+      const [sanphams, total] = await this.prisma.$transaction([
+        this.prisma.sanpham.findMany({
+          where,
+          skip,
+          take,
+          orderBy,
+        }),
+        this.prisma.sanpham.count({ where }),
+      ]);
+      
+      return {
+        data: sanphams,
+        total: Number(total),
+        page: numericPage,
+        pageSize: numericPageSize,
+        totalPages: Math.ceil(Number(total) / numericPageSize),
+      };
     } catch (error) {
-      this._ErrorlogsService.logError('Lỗi lấy tất cả sản phẩm', {
-        error: error.message,
-      });
+      console.log('Error in findAllSanpham:', error);
       throw error;
     }
   }
+
+
+
   async nhucaudathang() {
     try {
       const sanphams = await this.prisma.sanpham.findMany();
@@ -294,6 +358,25 @@ export class SanphamService {
   }
 
   async remove(id: string) {
-    return this.prisma.sanpham.delete({ where: { id } });
+    return this.prisma.$transaction(async (tx) => {
+      // Disconnect Nhacungcap relations if applicable
+      await tx.sanpham.update({
+        where: { id },
+        data: { Nhacungcap: { set: [] } },
+      });
+      // Delete related Donhangsanpham records
+      await tx.donhangsanpham.deleteMany({
+        where: { sanpham: { id } },
+      });
+      // Delete related Dathangsanpham records
+      await tx.dathangsanpham.deleteMany({
+        where: { sanpham: { id } },
+      });
+      // Delete the sanpham
+      const deletedSanpham = await tx.sanpham.delete({ where: { id } });
+      // Send update notification
+      this._SocketGateway.sendSanphamUpdate();
+      return deletedSanpham;
+    });
   }
 }

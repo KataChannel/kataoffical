@@ -30,14 +30,24 @@ let SanphamController = class SanphamController {
     findby(param) {
         return this.sanphamService.findby(param);
     }
-    findAll() {
-        return this.sanphamService.findAll();
+    async findAll(query) {
+        try {
+            return await this.sanphamService.findAll(query);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Failed to fetch khachhangs', error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     nhucaudathang() {
         return this.sanphamService.nhucaudathang();
     }
-    async getLastUpdatedSanpham() {
-        return this.sanphamService.getLastUpdatedSanpham();
+    async getLastUpdated() {
+        try {
+            return await this.sanphamService.getLastUpdated();
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Get last updated failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     findOne(id) {
         return this.sanphamService.findOne(id);
@@ -78,9 +88,10 @@ __decorate([
 ], SanphamController.prototype, "findby", null);
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
 ], SanphamController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)('nhucaudathang'),
@@ -89,11 +100,11 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], SanphamController.prototype, "nhucaudathang", null);
 __decorate([
-    (0, common_1.Get)('last-updated'),
+    (0, common_1.Get)('lastupdated'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], SanphamController.prototype, "getLastUpdatedSanpham", null);
+], SanphamController.prototype, "getLastUpdated", null);
 __decorate([
     (0, common_1.Get)('findid/:id'),
     __param(0, (0, common_1.Param)('id')),
