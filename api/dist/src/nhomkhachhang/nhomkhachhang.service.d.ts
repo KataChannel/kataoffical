@@ -34,6 +34,7 @@ export declare class NhomkhachhangService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            banggiaId: string | null;
         }[];
     } & {
         id: string;
@@ -67,6 +68,7 @@ export declare class NhomkhachhangService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            banggiaId: string | null;
         }[];
     } & {
         id: string;

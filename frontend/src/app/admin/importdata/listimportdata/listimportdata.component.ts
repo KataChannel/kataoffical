@@ -344,17 +344,12 @@ async ExportExcel(title:any) {
             const result: any = {
             makh: v.makh || '',
             name: v.name || '',
-           };
-       let i =1
-       for (const banggia of this.rawListBG) {
-        const banggiaExists = v.banggia?.some((bg: any) => bg.mabanggia === banggia.mabanggia);
-        if(banggiaExists){
-          result[i] = banggia.mabanggia;
-          i++;
-        }        
-      }      
+            mabanggia: v.banggia?.mabanggia || '',
+           };   
       return result;
     });
+
+
     const dynamicKeys = this.rawListSP.reduce((acc: Record<string, string>, v: any) => {
       if (v && v.masp) {
       acc[v.masp] = '';
@@ -475,25 +470,25 @@ convertBGSPToImport(
 }
 
 
-convertBGKHToImport(data: any){ 
-  if (!data || data.length === 0) {
-    return [];
-  }
-  // Extract keys representing price boards (excluding makh, name)
-  const boardKeys = Object.keys(data[0]).filter(
-    (key) => !['makh', 'name'].includes(key)
-  );
-  data.forEach((v:any) => {
-    v.banggia = [];
-    for (const key of boardKeys) {
-      if (v[key] !== undefined && v[key] !== null && v[key] !== '') {
-        v.banggia.push(v[key]);
-      }
-      delete v[key];
-    }
-  });
-  return data;
-}
+// convertBGKHToImport(data: any){ 
+//   if (!data || data.length === 0) {
+//     return [];
+//   }
+//   // Extract keys representing price boards (excluding makh, name)
+//   const boardKeys = Object.keys(data[0]).filter(
+//     (key) => !['makh', 'name'].includes(key)
+//   );
+//   data.forEach((v:any) => {
+//     v.banggia = [];
+//     for (const key of boardKeys) {
+//       if (v[key] !== undefined && v[key] !== null && v[key] !== '') {
+//         v.banggia.push(v[key]);
+//       }
+//       delete v[key];
+//     }
+//   });
+//   return data;
+// }
 
 convertNCCSPToImport(data: any){ 
   if (!data || data.length === 0) {
@@ -715,9 +710,7 @@ convertNCCSPToImport(data: any){
     }
     if(data.banggiakhachhang && data.banggiakhachhang.length > 0 && this.ListEdit().some((item: any) => item.value === 'banggiakhachhang'))
     {
-        const ListBGKH = this.convertBGKHToImport(data.banggiakhachhang).filter((v:any)=>v.banggia.length > 0);
-        console.log(this.convertBGKHToImport(data.banggiakhachhang));
-
+        const ListBGKH = data.banggiakhachhang.filter((v:any)=>v.mabanggia!== undefined && v.mabanggia !== null && v.mabanggia !== '');
         await this._KhachhangService.ImportKhachhang(ListBGKH);
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,

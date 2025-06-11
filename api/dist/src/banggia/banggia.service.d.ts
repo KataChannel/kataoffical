@@ -29,8 +29,8 @@ export declare class BanggiaService {
             giaban: number;
             order: number | null;
             isActive: boolean;
-            sanphamId: string;
             banggiaId: string;
+            sanphamId: string;
         }[];
     } & {
         id: string;
@@ -123,6 +123,7 @@ export declare class BanggiaService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            banggiaId: string | null;
         }[];
         id: string;
         title: string | null;
@@ -143,8 +144,8 @@ export declare class BanggiaService {
             giaban: number;
             order: number | null;
             isActive: boolean;
-            sanphamId: string;
             banggiaId: string;
+            sanphamId: string;
         }[];
     } & {
         id: string;

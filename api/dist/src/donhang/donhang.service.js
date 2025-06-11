@@ -99,13 +99,8 @@ let DonhangService = class DonhangService {
         const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
             ...donhang,
             sanpham: sanpham.map((item) => {
-                const matchingBanggia = khachhang.banggia.find((bg) => donhang.ngaygiao &&
-                    bg.batdau &&
-                    bg.ketthuc &&
-                    donhang.ngaygiao >= bg.batdau &&
-                    donhang.ngaygiao <= bg.ketthuc);
-                const priceFromBanggia = matchingBanggia
-                    ? matchingBanggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
+                const priceFromBanggia = khachhang.banggia
+                    ? khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
                     : undefined;
                 return {
                     ...item.sanpham,
@@ -190,13 +185,8 @@ let DonhangService = class DonhangService {
         return {
             ...result,
             sanpham: result.sanpham.map((item) => {
-                const matchingBanggia = result.khachhang.banggia.find((bg) => result.ngaygiao &&
-                    bg.batdau &&
-                    bg.ketthuc &&
-                    result.ngaygiao >= bg.batdau &&
-                    result.ngaygiao <= bg.ketthuc);
-                const priceFromBanggia = matchingBanggia
-                    ? matchingBanggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
+                const priceFromBanggia = result.khachhang.banggia
+                    ? result.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
                     : undefined;
                 return {
                     ...item.sanpham,
@@ -231,13 +221,8 @@ let DonhangService = class DonhangService {
         const result = donhangs.map((donhang) => ({
             ...donhang,
             sanpham: donhang.sanpham.map((item) => {
-                const matchingBanggia = donhang.khachhang.banggia.find((bg) => donhang.ngaygiao &&
-                    bg.batdau &&
-                    bg.ketthuc &&
-                    donhang.ngaygiao >= bg.batdau &&
-                    donhang.ngaygiao <= bg.ketthuc);
-                const priceFromBanggia = matchingBanggia
-                    ? matchingBanggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
+                const priceFromBanggia = donhang.khachhang.banggia
+                    ? donhang.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
                     : undefined;
                 return {
                     ...item.sanpham,
@@ -293,13 +278,8 @@ let DonhangService = class DonhangService {
         return {
             ...donhang,
             sanpham: donhang.sanpham.map((item) => {
-                const matchingBanggia = donhang.khachhang.banggia.find((bg) => donhang.ngaygiao &&
-                    bg.batdau &&
-                    bg.ketthuc &&
-                    donhang.ngaygiao >= bg.batdau &&
-                    donhang.ngaygiao <= bg.ketthuc);
-                const priceFromBanggia = matchingBanggia
-                    ? matchingBanggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
+                const priceFromBanggia = donhang.khachhang.banggia
+                    ? donhang.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
                     : undefined;
                 return {
                     ...item.sanpham,
@@ -336,12 +316,9 @@ let DonhangService = class DonhangService {
         const result = {
             ...donhang,
             sanpham: donhang.sanpham.map((item) => {
-                const matchingBanggia = donhang.khachhang.banggia.find((bg) => donhang.ngaygiao &&
-                    bg.batdau &&
-                    bg.ketthuc &&
-                    donhang.ngaygiao >= bg.batdau &&
-                    donhang.ngaygiao <= bg.ketthuc);
-                const productGiabanFromBanggia = matchingBanggia?.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban;
+                const productGiabanFromBanggia = donhang.khachhang.banggia
+                    ? donhang.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
+                    : undefined;
                 return {
                     ...item.sanpham,
                     idSP: item.idSP,

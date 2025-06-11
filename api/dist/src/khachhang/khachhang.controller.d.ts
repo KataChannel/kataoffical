@@ -30,6 +30,7 @@ export declare class KhachhangController {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
+        banggiaId: string | null;
     }>;
     import(data: any): Promise<{
         message: string;
@@ -48,7 +49,7 @@ export declare class KhachhangController {
             mabanggia: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
-        }[];
+        } | null;
     } & {
         id: string;
         subtitle: string | null;
@@ -73,6 +74,7 @@ export declare class KhachhangController {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
+        banggiaId: string | null;
     }) | {
         data: ({
             banggia: {
@@ -88,7 +90,7 @@ export declare class KhachhangController {
                 mabanggia: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
-            }[];
+            } | null;
         } & {
             id: string;
             subtitle: string | null;
@@ -113,6 +115,7 @@ export declare class KhachhangController {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            banggiaId: string | null;
         })[];
         page: any;
         pageSize: any;
@@ -133,7 +136,7 @@ export declare class KhachhangController {
             mabanggia: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
-        }[];
+        } | null;
     } & {
         id: string;
         subtitle: string | null;
@@ -158,6 +161,7 @@ export declare class KhachhangController {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
+        banggiaId: string | null;
     }>;
     findAll(query: any): Promise<{
         data: ({
@@ -174,7 +178,7 @@ export declare class KhachhangController {
                 mabanggia: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
-            }[];
+            } | null;
         } & {
             id: string;
             subtitle: string | null;
@@ -199,6 +203,7 @@ export declare class KhachhangController {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            banggiaId: string | null;
         })[];
         total: number;
         page: number;
@@ -219,7 +224,7 @@ export declare class KhachhangController {
             mabanggia: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
-        }[];
+        } | null;
     } & {
         id: string;
         subtitle: string | null;
@@ -244,6 +249,7 @@ export declare class KhachhangController {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
+        banggiaId: string | null;
     }>;
     update(id: string, updateKhachhangDto: any): Promise<{
         banggia: {
@@ -259,7 +265,7 @@ export declare class KhachhangController {
             mabanggia: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
-        }[];
+        } | null;
     } & {
         id: string;
         subtitle: string | null;
@@ -284,6 +290,7 @@ export declare class KhachhangController {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
+        banggiaId: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -309,5 +316,6 @@ export declare class KhachhangController {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
+        banggiaId: string | null;
     }>;
 }

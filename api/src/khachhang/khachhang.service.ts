@@ -58,20 +58,11 @@ export class KhachhangService {
     }
 
     // Xử lý kết nối banggia nếu có (thêm banggia thuộc khách hàng)
-    let banggiaData = {};
-    if (
-      data.banggia &&
-      Array.isArray(data.banggia) &&
-      data.banggia.length > 0
-    ) {
-      banggiaData = {
-        banggia: { connect: data.banggia.map((id: string) => ({ id })) },
-      };
-    }
-
+    let banggiaData = data.banggiaId
+      ? { banggia: { connect: { id: data.banggiaId } } }
+      : { banggia: { disconnect: true } };
     // Hợp nhất dữ liệu ban đầu và dữ liệu banggia
     const newData = { ...data, ...banggiaData };
-
     // Nếu mã khách hàng đã có, kiểm tra xem khách hàng đó đã tồn tại chưa
     const existingCustomer = await this.prisma.khachhang.findUnique({
       where: { makh: data.makh },
@@ -95,30 +86,17 @@ export class KhachhangService {
       try {
         // Dữ liệu gửi lên là một mảng khách hàng, mỗi khách hàng có thể chứa danh sách banggia dưới dạng các đối tượng với thuộc tính mabanggia
         const { banggia, ...rest } = customer;
-        let banggiaData = {};
-        if (banggia !== undefined) {
-          if (banggia.length > 0) {
-            // Chuyển danh sách banggia từ mabanggia sang id thông qua lookup
-            const banggiaRecords = await Promise.all(
-              banggia.map(async (bg: any) => {
-                const bgRecord = await this.prisma.banggia.findFirst({
-                  where: { mabanggia: bg },
-                  select: { id: true },
-                });
-                if (!bgRecord) {
-                  throw new NotFoundException(
-                    `Banggia với mabanggia ${bg} không tồn tại`,
-                  );
-                }
-                return { id: bgRecord.id };
-              }),
-            );
-            banggiaData = { banggia: { connect: banggiaRecords } };
-          } else {
-            // Nếu mảng rỗng thì đảm bảo các kết nối hiện có bị hủy
-            banggiaData = { banggia: { set: [] } };
-          }
-        }
+
+        const banggiaRecord = customer.mabanggia
+          ? await this.prisma.banggia.findFirst({
+              where: { mabanggia: customer.mabanggia },
+              select: { id: true },
+            })
+          : null;
+
+        const banggiaData = banggiaRecord?.id
+          ? { banggia: { connect: { id: banggiaRecord.id } } }
+          : { banggia: { disconnect: true } };
 
         const dataToUse = { ...rest, ...banggiaData };
 
@@ -133,9 +111,10 @@ export class KhachhangService {
             select: { id: true },
           });
           if (existingCustomer) {
+            const { mabanggia, ...updateData } = dataToUse;
             processedCustomer = await this.prisma.khachhang.update({
               where: { id: existingCustomer.id },
-              data: dataToUse,
+              data: updateData,
             });
           } else {
             processedCustomer = await this.create(dataToUse);
@@ -289,6 +268,7 @@ export class KhachhangService {
     if (!khachhang) throw new NotFoundException('Khachhang not found');
     return khachhang;
   }
+  
   async searchfield(searchParams: Record<string, any>) {
     const where: any = {};
     // Xây dựng điều kiện tìm kiếm linh hoạt
@@ -314,34 +294,28 @@ export class KhachhangService {
   }
 
   async update(id: string, data: any) {
-    // Lấy thông tin khách hàng cùng các bảng giá liên kết
     const existingCustomer = await this.prisma.khachhang.findUnique({
       where: { id },
-      select: { banggia: { select: { id: true } } }, // Chỉ lấy ID của bảng giá
+      select: { banggia: { select: { id: true } } },
     });
 
     if (!existingCustomer) {
-      throw new Error('Khách hàng không tồn tại');
+      throw new NotFoundException('Khách hàng không tồn tại');
     }
+    
+    if (data.banggiaId) {
+      const banggia = await this.prisma.banggia.findUnique({
+        where: { id: data.banggiaId },
+      });
 
-    // Ngắt kết nối tất cả bảng giá cũ
-    const disconnectBanggia = existingCustomer.banggia.map(({ id }) => ({
-      id,
-    }));
-
-    // Lấy danh sách bảng giá mới từ payload
-    const newBanggiaIds =
-      data.banggia?.map(({ id }: { id: string }) => ({ id })) || [];
-
-    // Cập nhật dữ liệu khách hàng
+      if (!banggia) {
+        throw new NotFoundException(`Không tìm thấy bảng giá với ID: ${data.banggiaId}`);
+      }
+    }
     return this.prisma.khachhang.update({
       where: { id },
       data: {
-        ...data,
-        banggia: {
-          disconnect: disconnectBanggia, // Ngắt toàn bộ bảng giá cũ
-          connect: newBanggiaIds, // Kết nối bảng giá mới từ payload
-        },
+        banggia: data.banggiaId ? { connect: { id: data.banggiaId } } : { disconnect: true },
       },
       include: { banggia: true },
     });

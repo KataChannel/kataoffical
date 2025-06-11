@@ -59,14 +59,9 @@ let KhachhangService = class KhachhangService {
         if (!data.makh) {
             data.makh = await this.generateMakh(data.loaikh);
         }
-        let banggiaData = {};
-        if (data.banggia &&
-            Array.isArray(data.banggia) &&
-            data.banggia.length > 0) {
-            banggiaData = {
-                banggia: { connect: data.banggia.map((id) => ({ id })) },
-            };
-        }
+        let banggiaData = data.banggiaId
+            ? { banggia: { connect: { id: data.banggiaId } } }
+            : { banggia: { disconnect: true } };
         const newData = { ...data, ...banggiaData };
         const existingCustomer = await this.prisma.khachhang.findUnique({
             where: { makh: data.makh },
@@ -87,25 +82,15 @@ let KhachhangService = class KhachhangService {
         for (const customer of data) {
             try {
                 const { banggia, ...rest } = customer;
-                let banggiaData = {};
-                if (banggia !== undefined) {
-                    if (banggia.length > 0) {
-                        const banggiaRecords = await Promise.all(banggia.map(async (bg) => {
-                            const bgRecord = await this.prisma.banggia.findFirst({
-                                where: { mabanggia: bg },
-                                select: { id: true },
-                            });
-                            if (!bgRecord) {
-                                throw new common_1.NotFoundException(`Banggia với mabanggia ${bg} không tồn tại`);
-                            }
-                            return { id: bgRecord.id };
-                        }));
-                        banggiaData = { banggia: { connect: banggiaRecords } };
-                    }
-                    else {
-                        banggiaData = { banggia: { set: [] } };
-                    }
-                }
+                const banggiaRecord = customer.mabanggia
+                    ? await this.prisma.banggia.findFirst({
+                        where: { mabanggia: customer.mabanggia },
+                        select: { id: true },
+                    })
+                    : null;
+                const banggiaData = banggiaRecord?.id
+                    ? { banggia: { connect: { id: banggiaRecord.id } } }
+                    : { banggia: { disconnect: true } };
                 const dataToUse = { ...rest, ...banggiaData };
                 let processedCustomer;
                 if (!customer.makh) {
@@ -117,9 +102,10 @@ let KhachhangService = class KhachhangService {
                         select: { id: true },
                     });
                     if (existingCustomer) {
+                        const { mabanggia, ...updateData } = dataToUse;
                         processedCustomer = await this.prisma.khachhang.update({
                             where: { id: existingCustomer.id },
-                            data: dataToUse,
+                            data: updateData,
                         });
                     }
                     else {
@@ -292,20 +278,20 @@ let KhachhangService = class KhachhangService {
             select: { banggia: { select: { id: true } } },
         });
         if (!existingCustomer) {
-            throw new Error('Khách hàng không tồn tại');
+            throw new common_1.NotFoundException('Khách hàng không tồn tại');
         }
-        const disconnectBanggia = existingCustomer.banggia.map(({ id }) => ({
-            id,
-        }));
-        const newBanggiaIds = data.banggia?.map(({ id }) => ({ id })) || [];
+        if (data.banggiaId) {
+            const banggia = await this.prisma.banggia.findUnique({
+                where: { id: data.banggiaId },
+            });
+            if (!banggia) {
+                throw new common_1.NotFoundException(`Không tìm thấy bảng giá với ID: ${data.banggiaId}`);
+            }
+        }
         return this.prisma.khachhang.update({
             where: { id },
             data: {
-                ...data,
-                banggia: {
-                    disconnect: disconnectBanggia,
-                    connect: newBanggiaIds,
-                },
+                banggia: data.banggiaId ? { connect: { id: data.banggiaId } } : { disconnect: true },
             },
             include: { banggia: true },
         });

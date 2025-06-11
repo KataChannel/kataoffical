@@ -33,6 +33,7 @@ export declare class DonhangService {
                 loaikh: string | null;
                 hiengia: boolean;
                 istitle2: boolean;
+                banggiaId: string | null;
             };
             name: string | null;
             id: string;
@@ -101,6 +102,7 @@ export declare class DonhangService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            banggiaId: string | null;
         };
         id: string;
         title: string | null;
@@ -126,8 +128,8 @@ export declare class DonhangService {
                     giaban: number;
                     order: number | null;
                     isActive: boolean;
-                    sanphamId: string;
                     banggiaId: string;
+                    sanphamId: string;
                 }[];
             } & {
                 id: string;
@@ -142,7 +144,7 @@ export declare class DonhangService {
                 mabanggia: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
-            })[];
+            }) | null;
         } & {
             id: string;
             subtitle: string | null;
@@ -167,6 +169,7 @@ export declare class DonhangService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            banggiaId: string | null;
         };
         id: string;
         title: string | null;
@@ -235,6 +238,7 @@ export declare class DonhangService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            banggiaId: string | null;
         };
         id: string;
         title: string | null;
@@ -287,8 +291,8 @@ export declare class DonhangService {
                     giaban: number;
                     order: number | null;
                     isActive: boolean;
-                    sanphamId: string;
                     banggiaId: string;
+                    sanphamId: string;
                 }[];
             } & {
                 id: string;
@@ -303,7 +307,7 @@ export declare class DonhangService {
                 mabanggia: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
-            })[];
+            }) | null;
         } & {
             id: string;
             subtitle: string | null;
@@ -328,6 +332,7 @@ export declare class DonhangService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            banggiaId: string | null;
         };
         id: string;
         title: string | null;

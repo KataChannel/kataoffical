@@ -27,7 +27,7 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter123/se
       MatDialogModule,
       CommonModule,
       MatSlideToggleModule,
-      SearchfilterComponent
+      // SearchfilterComponent
     ],
     templateUrl: './detailkhachhang.component.html',
     styleUrls: ['./detailkhachhang.component.scss']
@@ -85,7 +85,7 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter123/se
       else {
         await this.updateKhachhang();
       }
-      window.location.reload();
+      // window.location.reload();
     }
     private async createKhachhang() {
       try {

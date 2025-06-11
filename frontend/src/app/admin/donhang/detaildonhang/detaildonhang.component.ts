@@ -446,6 +446,31 @@ export class DetailDonhangComponent {
     );
     console.log(selectedKhachhang);
     if (selectedKhachhang) {
+
+        const isExpired = moment() > moment(selectedKhachhang?.banggia?.batdau) && moment() < moment(selectedKhachhang.banggia.ketthuc) ? true : false;
+        console.log(isExpired);
+        
+        if (!isExpired) {
+        const dialogRef = this._dialog.open(this.BgHethanDialog, {
+          hasBackdrop: true,
+          disableClose: true,
+        })
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result=="true") {
+          this.DetailDonhang.update((v: any) => {
+            v.banggiaId = selectedKhachhang?.banggiaId;
+            return v;
+          });
+        }
+        });
+      }
+      else {
+        this.DetailDonhang.update((v: any) => {
+          v.banggiaId = selectedKhachhang?.banggiaId;
+          return v
+        });
+      }
+
       this.DetailDonhang.update((v: any) => {
         const khachhang = {
           name: selectedKhachhang.name,
@@ -455,31 +480,6 @@ export class DetailDonhangComponent {
         };
         v.khachhangId = selectedKhachhang.id;
         v.khachhang = khachhang;
-        const banggia = selectedKhachhang.banggia.find((v: any) => moment() > moment(v.batdau) && moment() < moment(v.ketthuc))
-      if (!banggia) {
-        // Open dialog to ask if user wants to use the first banggia
-        const dialogRef = this._dialog.open(this.BgHethanDialog, {
-          hasBackdrop: true,
-          disableClose: true,
-        })
-        dialogRef.afterClosed().subscribe((result) => {
-          if (result=="true") {
-          this.DetailDonhang.update((v: any) => {
-            if (result && selectedKhachhang.banggia && selectedKhachhang.banggia.length > 0) {
-              v.banggiaId = selectedKhachhang.banggia[0].id;
-            }
-            // If result is false, don't set banggiaId
-            return v;
-          });
-        }
-        });
-
-
-      } else {
-        v.banggiaId = banggia.id;
-      }
-       
-        // v.banggiaId = banggia?banggia.id:selectedKhachhang.banggia[0].id;
         return v;
       });
     }
