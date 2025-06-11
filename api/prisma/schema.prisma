@@ -153,7 +153,7 @@ model Khachhang {
   hiengia       Boolean        @default(false)
   isActive      Boolean        @default(false)
   istitle2      Boolean        @default(false)
-  banggiaId     String?        @unique
+  banggiaId     String?        
   banggia       Banggia?       @relation("Banggiakhachhang", fields: [banggiaId], references: [id])
   donhang       Donhang[]
   createdAt     DateTime       @default(now())

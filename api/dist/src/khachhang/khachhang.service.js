@@ -81,36 +81,25 @@ let KhachhangService = class KhachhangService {
     async import(data) {
         for (const customer of data) {
             try {
-                const { banggia, ...rest } = customer;
-                const banggiaRecord = customer.mabanggia
-                    ? await this.prisma.banggia.findFirst({
-                        where: { mabanggia: customer.mabanggia },
-                        select: { id: true },
-                    })
-                    : null;
-                const banggiaData = banggiaRecord?.id
-                    ? { banggia: { connect: { id: banggiaRecord.id } } }
-                    : { banggia: { disconnect: true } };
-                const dataToUse = { ...rest, ...banggiaData };
+                const banggia = await this.prisma.banggia.findFirst({
+                    where: { mabanggia: customer.mabanggia },
+                    select: { id: true },
+                });
+                if (!banggia) {
+                    console.warn(`Bảng giá với mã ${customer.mabanggia} không tồn tại, bỏ qua khách hàng này`);
+                    continue;
+                }
+                customer.banggiaId = banggia.id;
+                const existingCustomer = await this.prisma.khachhang.findUnique({
+                    where: { makh: customer.makh },
+                    select: { id: true },
+                });
                 let processedCustomer;
-                if (!customer.makh) {
-                    processedCustomer = await this.create(dataToUse);
+                if (existingCustomer) {
+                    processedCustomer = await this.update(existingCustomer.id, customer);
                 }
                 else {
-                    const existingCustomer = await this.prisma.khachhang.findUnique({
-                        where: { makh: customer.makh },
-                        select: { id: true },
-                    });
-                    if (existingCustomer) {
-                        const { mabanggia, ...updateData } = dataToUse;
-                        processedCustomer = await this.prisma.khachhang.update({
-                            where: { id: existingCustomer.id },
-                            data: updateData,
-                        });
-                    }
-                    else {
-                        processedCustomer = await this.create(dataToUse);
-                    }
+                    processedCustomer = await this.create(customer);
                 }
             }
             catch (error) {
@@ -119,11 +108,11 @@ let KhachhangService = class KhachhangService {
                     caseDetail: {
                         errorMessage: error.message,
                         errorStack: error.stack,
-                        additionalInfo: 'Error during product import process',
+                        additionalInfo: 'Error during customer import process',
                     },
                     order: 1,
                     createdBy: 'system',
-                    title: `Import Khách Hàng ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                    title: `Import Khách Hàng ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
                     type: 'khachhang',
                 });
             }
@@ -273,6 +262,7 @@ let KhachhangService = class KhachhangService {
         return khachhang;
     }
     async update(id, data) {
+        console.log(data);
         const existingCustomer = await this.prisma.khachhang.findUnique({
             where: { id },
             select: { banggia: { select: { id: true } } },

@@ -82,64 +82,52 @@ export class KhachhangService {
   }
 
   async import(data: any[]) {
+
     for (const customer of data) {
       try {
-        // Dữ liệu gửi lên là một mảng khách hàng, mỗi khách hàng có thể chứa danh sách banggia dưới dạng các đối tượng với thuộc tính mabanggia
-        const { banggia, ...rest } = customer;
-
-        const banggiaRecord = customer.mabanggia
-          ? await this.prisma.banggia.findFirst({
-              where: { mabanggia: customer.mabanggia },
-              select: { id: true },
-            })
-          : null;
-
-        const banggiaData = banggiaRecord?.id
-          ? { banggia: { connect: { id: banggiaRecord.id } } }
-          : { banggia: { disconnect: true } };
-
-        const dataToUse = { ...rest, ...banggiaData };
-
-        let processedCustomer;
-        // Nếu mã khách hàng không tồn tại thì tạo mới
-        if (!customer.makh) {
-          processedCustomer = await this.create(dataToUse);
-        } else {
-          // Nếu khách hàng đã tồn tại, cập nhật thông qua hàm update
-          const existingCustomer = await this.prisma.khachhang.findUnique({
-            where: { makh: customer.makh },
-            select: { id: true },
-          });
-          if (existingCustomer) {
-            const { mabanggia, ...updateData } = dataToUse;
-            processedCustomer = await this.prisma.khachhang.update({
-              where: { id: existingCustomer.id },
-              data: updateData,
-            });
-          } else {
-            processedCustomer = await this.create(dataToUse);
-          }
-        }
-      } catch (error) {
-        console.error(
-          `Error processing customer with makh ${customer.makh}:`,
-          error,
-        );
-        // Lưu lịch sử import lỗi với chi tiết
-        await this._ImportdataService.create({
-          caseDetail: {
-            errorMessage: error.message,
-            errorStack: error.stack,
-            additionalInfo: 'Error during product import process',
-          },
-          order: 1, // cập nhật nếu cần theo thứ tự của bạn
-          createdBy: 'system', // thay bằng ID người dùng thực nếu có
-          title: `Import Khách Hàng ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
-          type: 'khachhang',
+      // Kiểm tra banggia theo mabanggia
+       const banggia = await this.prisma.banggia.findFirst({
+          where: { mabanggia: customer.mabanggia },
+          select: { id: true },
         });
-        // Log error and continue with next customer
+      if (!banggia) {
+        console.warn(`Bảng giá với mã ${customer.mabanggia} không tồn tại, bỏ qua khách hàng này`);
+        continue;
+      }
+      customer.banggiaId = banggia.id;
+      // Tìm khách hàng theo makh
+      const existingCustomer = await this.prisma.khachhang.findUnique({
+        where: { makh: customer.makh },
+        select: { id: true },
+      });
+      
+      let processedCustomer;
+      if (existingCustomer) {
+        processedCustomer = await this.update(existingCustomer.id, customer);
+      } else {
+        // Nếu chưa tồn tại, tạo mới khách hàng
+        processedCustomer = await this.create(customer);
+      }
+      } catch (error) {
+      console.error(
+        `Error processing customer with makh ${customer.makh}:`,
+        error,
+      );
+      // Lưu lịch sử import lỗi với chi tiết
+      await this._ImportdataService.create({
+        caseDetail: {
+        errorMessage: error.message,
+        errorStack: error.stack,
+        additionalInfo: 'Error during customer import process',
+        },
+        order: 1,
+        createdBy: 'system',
+        title: `Import Khách Hàng ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+        type: 'khachhang',
+      });
       }
     }
+
     return { message: 'Import completed' };
   }
 
@@ -294,6 +282,7 @@ export class KhachhangService {
   }
 
   async update(id: string, data: any) {
+    console.log(data);
     const existingCustomer = await this.prisma.khachhang.findUnique({
       where: { id },
       select: { banggia: { select: { id: true } } },

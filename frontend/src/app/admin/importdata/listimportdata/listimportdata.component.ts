@@ -710,7 +710,14 @@ convertNCCSPToImport(data: any){
     }
     if(data.banggiakhachhang && data.banggiakhachhang.length > 0 && this.ListEdit().some((item: any) => item.value === 'banggiakhachhang'))
     {
-        const ListBGKH = data.banggiakhachhang.filter((v:any)=>v.mabanggia!== undefined && v.mabanggia !== null && v.mabanggia !== '');
+      console.log('Importing banggiakhachhang data:', data.banggiakhachhang);
+      
+        const ListBGKH = (data.banggiakhachhang || []).map((v: any) => ({
+        makh: v.makh,
+        name: v.name,
+        mabanggia: v.mabanggia,
+      })).filter((v:any)=>v.mabanggia!== undefined && v.mabanggia !== null && v.mabanggia !== '')
+       console.log('Importing ListBGKH data:', ListBGKH);
         await this._KhachhangService.ImportKhachhang(ListBGKH);
         this._snackBar.open('Cập Nhật Thành Công', '', {
           duration: 1000,

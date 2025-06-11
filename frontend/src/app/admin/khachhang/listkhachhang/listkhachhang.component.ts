@@ -54,6 +54,7 @@ export class ListKhachhangComponent implements OnInit {
     stt: '#',
     makh: 'Mã KH',
     name: 'Tên KH',
+    banggia: 'Bảng Giá',
     diachi: 'Địa Chỉ',
     quan: 'Quận',
     email: 'Email',
