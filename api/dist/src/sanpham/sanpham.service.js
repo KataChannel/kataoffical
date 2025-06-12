@@ -135,17 +135,15 @@ let SanphamService = class SanphamService {
     async findAll(query) {
         console.log('findAllSanpham query:', query);
         try {
-            const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
+            const { page, pageSize, sortBy, sortOrder, search, subtitle, priceMin, priceMax, category } = query;
             const numericPage = Number(page || 1);
             const numericPageSize = Number(pageSize || 50);
             const skip = (numericPage - 1) * numericPageSize;
             const take = numericPageSize;
             const where = {};
-            if (search) {
-                where.OR = [
-                    { title: { contains: search, mode: 'insensitive' } },
-                    { description: { contains: search, mode: 'insensitive' } }
-                ];
+            console.log(subtitle);
+            if (subtitle) {
+                where.subtitle = { contains: subtitle, mode: 'insensitive' };
             }
             if (category) {
                 where.category = { equals: category, mode: 'insensitive' };
@@ -331,6 +329,9 @@ let SanphamService = class SanphamService {
             });
             await tx.dathangsanpham.deleteMany({
                 where: { sanpham: { id } },
+            });
+            await tx.banggiasanpham.deleteMany({
+                where: { sanphamId: id },
             });
             const deletedSanpham = await tx.sanpham.delete({ where: { id } });
             this._SocketGateway.sendSanphamUpdate();

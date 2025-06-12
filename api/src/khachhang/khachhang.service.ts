@@ -245,6 +245,7 @@ export class KhachhangService {
     };
     }
   }  
+  
   async findOne(id: string) {
     const khachhang = await this.prisma.khachhang.findUnique({
       where: { id },

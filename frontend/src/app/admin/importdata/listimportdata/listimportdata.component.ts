@@ -545,7 +545,7 @@ convertNCCSPToImport(data: any){
     {
       const ListSP = (data.sanpham || []).map((v: any) => ({
         masp: v.masp,
-        subtitle: v.subtitle.toString(),
+        subtitle: removeVietnameseAccents((v.title || "") + (v.title2 || "")),
         title: v.title,
         title2: v.title2,
         giaban: Number(v.giaban)||Number(v.giagoc)||0,
@@ -583,6 +583,7 @@ convertNCCSPToImport(data: any){
         gionhanhang: v.gionhanhang.toString(),
         loaikh: v.loaikh,
         ghichu: v.ghichu,
+        hiengia: v.hiengia,
         mabanggia: v.mabanggia,
       })).filter((v: any) => v.makh !== undefined && v.makh !== null && v.makh !== '');
 

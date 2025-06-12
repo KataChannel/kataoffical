@@ -163,20 +163,18 @@ export class SanphamService {
     console.log('findAllSanpham query:', query);
 
     try {
-      const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
+      const { page, pageSize, sortBy, sortOrder, search, subtitle, priceMin, priceMax, category } = query;
       const numericPage = Number(page || 1); // Default to page 1 if not provided
       const numericPageSize = Number(pageSize || 50);
       const skip = (numericPage - 1) * numericPageSize;
       const take = numericPageSize;
       const where: any = {};
-      // Xử lý tìm kiếm chung (OR condition)
-      if (search) {
-        where.OR = [
-          { title: { contains: search, mode: 'insensitive' } },
-          { description: { contains: search, mode: 'insensitive' } }
-        ];
-      }
+      console.log(subtitle);
+      
       // Xử lý lọc theo trường cụ thể
+      if (subtitle) {
+        where.subtitle = { contains: subtitle, mode: 'insensitive' };
+      }      
       if (category) {
         where.category = { equals: category, mode: 'insensitive' };
       }
@@ -195,7 +193,6 @@ export class SanphamService {
       } else {
         orderBy.createdAt = 'desc'; // Mặc định nếu không có sortBy/sortOrder
       }
-
       const [sanphams, total] = await this.prisma.$transaction([
         this.prisma.sanpham.findMany({
           where,
@@ -371,6 +368,10 @@ export class SanphamService {
       // Delete related Dathangsanpham records
       await tx.dathangsanpham.deleteMany({
         where: { sanpham: { id } },
+      });
+      // Delete related Banggiasanpham records
+      await tx.banggiasanpham.deleteMany({
+        where: { sanphamId: id },
       });
       // Delete the sanpham
       const deletedSanpham = await tx.sanpham.delete({ where: { id } });

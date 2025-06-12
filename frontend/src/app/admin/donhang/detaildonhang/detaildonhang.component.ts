@@ -120,10 +120,13 @@ export class DetailDonhangComponent {
       }
       await this._KhachhangService.getAllKhachhang({},true);
       this.filterKhachhang = this.ListKhachhang()
+      await this._SanphamService.getAllSanpham({},true);
+      this.filterSanpham = this.ListSanpham()
     });
   }
   DetailDonhang: any = this._DonhangService.DetailDonhang;
   ListKhachhang: any = this._KhachhangService.ListKhachhang;
+  ListSanpham: any = this._SanphamService.ListSanpham;
   isEdit = signal(false);
   isDelete = signal(false);
   filterKhachhang: any = [];
@@ -247,9 +250,6 @@ export class DetailDonhangComponent {
     const value = event.target.value.trim().toLowerCase();
     await this._KhachhangService.getKhachhangBy({subtitle: value})
     this.filterKhachhang = this.ListKhachhang()
-    // this.filterKhachhang = this.ListKhachhang().filter((v: any) =>
-    //  removeVietnameseAccents(v.name).toLowerCase().includes(value)
-    // );
   }
   DoFindBanggia(event: any) {
     const query = event.target.value.toLowerCase();
@@ -528,7 +528,7 @@ export class DetailDonhangComponent {
         v1.ttdat = Number(v1.ttdat)||0;
         v1.ttgiao = Number(v1.ttgiao)||0;
         v1.ttnhan = Number(v1.ttnhan)||0;
-        const item = this._SanphamService.ListSanpham().find((v2) => v2.masp === v1.masp);
+        const item = this.ListSanpham().find((v2:any) => v2.masp === v1.masp);
         console.log(item); 
         if (item) {
           return { ...item, ...v1 };
@@ -577,7 +577,7 @@ export class DetailDonhangComponent {
 
 
   reloadfilter(){
-    this.filterSanpham = this._SanphamService.ListSanpham().filter((v:any) => !this.DetailDonhang().sanpham.some((v2:any) => v2.id === v.id));
+    this.filterSanpham = this.ListSanpham().filter((v:any) => !this.DetailDonhang().sanpham.some((v2:any) => v2.id === v.id));
   }
   // RemoveSanpham(item:any){
   //   this.DetailBanggia.update((v:any)=>{
@@ -589,15 +589,14 @@ export class DetailDonhangComponent {
   //   
   //   this.dataSource().sort = this.sort;
   // }
-  DoFindSanpham(event:any){
-    const value = event.target.value;
-    console.log(value);
-    
-    this.filterSanpham = this._SanphamService.ListSanpham().filter((v) => v.title.toLowerCase().includes(value.toLowerCase()));
+  async DoFindSanpham(event:any){
+    const value = event.target.value.trim().toLowerCase();
+    await this._SanphamService.getAllSanpham({subtitle: value},true)
+    this.filterSanpham = this.ListSanpham()
   }
   SelectSanpham(event:any){
     const value = event.value;
-    const item = this._SanphamService.ListSanpham().find((v) => v.id === value);
+    const item = this.ListSanpham().find((v:any) => v.id === value);
     this.DetailDonhang.update((v:any)=>{
       if(!v.sanpham){
         v.sanpham = [];
@@ -723,15 +722,10 @@ export class DetailDonhangComponent {
   GetGoiy(item:any){
    return parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
   }
-  doFilterSanpham(event: any): void {
-    const searchTerm = event.target.value.toLowerCase();
-    if (!searchTerm) {
-      this.filterSanpham = [...this._SanphamService.ListSanpham()]; // Reset to original list if search is empty
-      return;
-    }
-    this.filterSanpham = this._SanphamService.ListSanpham().filter((item: any) =>
-      item?.title?.toLowerCase().includes(searchTerm)||item?.subtitle?.toLowerCase().includes(searchTerm)
-    );
+  async doFilterSanpham(event: any): Promise<void> {
+    const value = event.target.value.trim().toLowerCase();
+    await this._SanphamService.getAllSanpham({subtitle: value},true)
+    this.filterSanpham = this.ListSanpham()
 
     if (event.key === 'Enter') {      
       if (this.filterSanpham.length > 0) {
@@ -761,7 +755,7 @@ export class DetailDonhangComponent {
   }
   ResetFilter()
   {
-    this.ListFilter = this._SanphamService.ListSanpham();
+    this.ListFilter = this.ListSanpham();
     this.dataSource().data = this.filterSanpham;
   }
   EmptyFiter()
@@ -818,7 +812,7 @@ async ImporExcel(event: any) {
               ghichu: v.ghichu?.trim()||'',
            }));
            this.ListFilter = transformedData.map((item:any) => {
-            const item1 = this._SanphamService.ListSanpham().find((v1) => v1.masp === item.masp);
+            const item1 = this.ListSanpham().find((v1:any) => v1.masp === item.masp);
             if (item1) {
               return { ...item1, ...item };
             }
