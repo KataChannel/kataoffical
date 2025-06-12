@@ -5,7 +5,6 @@ export declare class KhachhangController {
     getLastUpdated(): Promise<{
         updatedAt: number;
     }>;
-    searchCustomers(query: string): Promise<unknown>;
     create(createKhachhangDto: any): Promise<{
         id: string;
         subtitle: string | null;
@@ -34,6 +33,7 @@ export declare class KhachhangController {
     }>;
     import(data: any): Promise<{
         message: string;
+        notifications: string[];
     }>;
     findby(param: any): Promise<({
         banggia: {

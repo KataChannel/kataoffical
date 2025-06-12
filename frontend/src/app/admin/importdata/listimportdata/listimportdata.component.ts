@@ -32,6 +32,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
 import moment from 'moment';
 import { PhieukhoService } from '../../phieukho/phieukho.service';
 import { KhoService } from '../../kho/kho.service';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 
 @Component({
   selector: 'app-listimportdata',
@@ -114,9 +115,9 @@ export class ListImportdataComponent implements OnInit {
   constructor() {
     effect(async () => {
     await this._ImportdataService.getAllImportdata(100, true);
-    await this._SanphamService.getAllSanpham();
+    await this._SanphamService.getAllSanpham({pageSize:9999},true);
     this.rawListSP = this._SanphamService.ListSanpham();
-    await this._KhachhangService.getAllKhachhang(9999,true);
+    await this._KhachhangService.getAllKhachhang({pageSize:9999},true);
     this.rawListKH = this._KhachhangService.ListKhachhang();
     await this._NhacungcapService.getAllNhacungcap();
     this.rawListNCC = this._NhacungcapService.ListNhacungcap();
@@ -138,8 +139,8 @@ export class ListImportdataComponent implements OnInit {
     this.rawListSP = this._SanphamService.ListSanpham();
     await this._KhachhangService.getAllKhachhang();
     this.rawListKH = this._KhachhangService.ListKhachhang();
-    await this._NhacungcapService.getAllNhacungcap()
-    this.rawListNCC = this._NhacungcapService.ListNhacungcap()
+    await this._NhacungcapService.getAllNhacungcap();
+    this.rawListNCC = this._NhacungcapService.ListNhacungcap();
     await this._BanggiaService.getAllBanggia();
     this.rawListBG = this._BanggiaService.ListBanggia();
     await this._DonhangService.getAllDonhang();
@@ -215,6 +216,7 @@ async ExportExcel(title:any) {
           name: v.name?.trim() || '',
           makh: v.makh?.trim() || '',
           namenn: v.namenn?.trim() || '',
+          mabanggia: v.banggia?.mabanggia?.trim() || '',
           diachi: v.diachi?.trim() || '',
           quan: v.quan?.trim() || '',
           email: v.email?.trim() || '',
@@ -571,6 +573,7 @@ convertNCCSPToImport(data: any){
       const ListKH = (data.khachhang || []).map((v: any) => ({
         name: v.name.toString(),
         makh: v.makh,
+        subtitle: removeVietnameseAccents((v.name.toString() || "") + (v.namenn.toString() || "")),
         namenn: v.namenn.toString(),
         diachi: v.diachi,
         quan: v.quan,
@@ -579,7 +582,8 @@ convertNCCSPToImport(data: any){
         mst: v.mst.toString(),
         gionhanhang: v.gionhanhang.toString(),
         loaikh: v.loaikh,
-        ghichu: v.ghichu
+        ghichu: v.ghichu,
+        mabanggia: v.mabanggia,
       })).filter((v: any) => v.makh !== undefined && v.makh !== null && v.makh !== '');
 
       const importSnackbar = this._snackBar.open('Đang import Khách hàng...', '', {
@@ -587,7 +591,7 @@ convertNCCSPToImport(data: any){
         verticalPosition: "top",
         panelClass: ['snackbar-warning']
       });
-        await this._KhachhangService.ImportKhachhang(ListKH);
+      await this._KhachhangService.ImportKhachhang(ListKH);
       importSnackbar.dismiss();
       this._snackBar.open('Import Khách hàng thành công!', '', {
         duration: 1000,

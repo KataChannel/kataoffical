@@ -29,9 +29,6 @@ let KhachhangController = class KhachhangController {
             throw new common_1.HttpException(error.message || 'Get last updated failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async searchCustomers(query) {
-        return this.khachhangService.timkiemkhachhang(query);
-    }
     create(createKhachhangDto) {
         return this.khachhangService.create(createKhachhangDto);
     }
@@ -70,13 +67,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], KhachhangController.prototype, "getLastUpdated", null);
-__decorate([
-    (0, common_1.Get)('search'),
-    __param(0, (0, common_1.Query)('q')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], KhachhangController.prototype, "searchCustomers", null);
 __decorate([
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Create Khachhang', action: client_1.AuditAction.CREATE, includeResponse: true }),

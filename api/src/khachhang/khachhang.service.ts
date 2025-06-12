@@ -25,13 +25,6 @@ export class KhachhangService {
     }
   }
 
-  async timkiemkhachhang(query: string) {
-    return this.prisma.$queryRaw`
-      SELECT * FROM "Khachhang" 
-      WHERE search_vector @@ to_tsquery('simple', ${query})
-    `;
-  }
-
   async generateMakh(loaikh: string): Promise<string> {
     try {
       const prefix = loaikh === 'khachsi' ? 'TG-KS' : 'TG-KL';
@@ -58,11 +51,16 @@ export class KhachhangService {
     }
 
     // Xử lý kết nối banggia nếu có (thêm banggia thuộc khách hàng)
-    let banggiaData = data.banggiaId
-      ? { banggia: { connect: { id: data.banggiaId } } }
-      : { banggia: { disconnect: true } };
+    const banggia = await this.prisma.banggia.findFirst({
+      where: { mabanggia: data.mabanggia ? data.mabanggia : data.banggiaId },
+      select: { id: true },
+    });
+    if (!banggia) {
+      console.warn(`Bảng giá với mã ${data.mabanggia} không tồn tại, bỏ qua thiết lập bảng giá`);
+    } else {
+      data.banggiaId = banggia.id;
+    }
     // Hợp nhất dữ liệu ban đầu và dữ liệu banggia
-    const newData = { ...data, ...banggiaData };
     // Nếu mã khách hàng đã có, kiểm tra xem khách hàng đó đã tồn tại chưa
     const existingCustomer = await this.prisma.khachhang.findUnique({
       where: { makh: data.makh },
@@ -72,63 +70,67 @@ export class KhachhangService {
       // Nếu đã tồn tại, cập nhật thông tin khách hàng bằng hàm update
       return this.prisma.khachhang.update({
         where: { id: existingCustomer.id },
-        data: newData,
+        data,
         include: { banggia: true },
       });
     }
-    return this.prisma.khachhang.create({
-      data: newData,
-    });
+    return this.prisma.khachhang.create({data});
   }
 
   async import(data: any[]) {
-
+    const notifications: string[] = [];
     for (const customer of data) {
       try {
-      // Kiểm tra banggia theo mabanggia
-       const banggia = await this.prisma.banggia.findFirst({
+        // Kiểm tra banggia theo mabanggia
+        const banggia = await this.prisma.banggia.findFirst({
           where: { mabanggia: customer.mabanggia },
           select: { id: true },
         });
-      if (!banggia) {
-        console.warn(`Bảng giá với mã ${customer.mabanggia} không tồn tại, bỏ qua khách hàng này`);
-        continue;
-      }
-      customer.banggiaId = banggia.id;
-      // Tìm khách hàng theo makh
-      const existingCustomer = await this.prisma.khachhang.findUnique({
-        where: { makh: customer.makh },
-        select: { id: true },
-      });
-      
-      let processedCustomer;
-      if (existingCustomer) {
-        processedCustomer = await this.update(existingCustomer.id, customer);
-      } else {
-        // Nếu chưa tồn tại, tạo mới khách hàng
-        processedCustomer = await this.create(customer);
-      }
+        if (!banggia) {
+          console.warn(`Bảng giá với mã ${customer.mabanggia} không tồn tại, bỏ qua khách hàng này`);
+          customer.banggiaId = null; // Không gán banggiaId nếu không tìm thấy bảng giá
+          notifications.push(`Bỏ qua khách hàng với makh ${customer.makh} do không tìm thấy bảng giá`);
+          continue;
+        } else {
+          customer.banggiaId = banggia.id;
+        }
+        console.log(`Xử lý khách hàng với makh ${customer.makh}`);
+
+        // Tìm khách hàng theo makh
+        const existingCustomer = await this.prisma.khachhang.findUnique({
+          where: { makh: customer.makh },
+          select: { id: true },
+        });
+
+        let processedCustomer;
+        if (existingCustomer) {
+          processedCustomer = await this.update(existingCustomer.id, customer);
+          notifications.push(`Cập nhật khách hàng thành công: ${processedCustomer.makh}`);
+        } else {
+          processedCustomer = await this.create(customer);
+          notifications.push(`Tạo mới khách hàng thành công: ${processedCustomer.makh}`);
+        }
       } catch (error) {
-      console.error(
-        `Error processing customer with makh ${customer.makh}:`,
-        error,
-      );
-      // Lưu lịch sử import lỗi với chi tiết
-      await this._ImportdataService.create({
-        caseDetail: {
-        errorMessage: error.message,
-        errorStack: error.stack,
-        additionalInfo: 'Error during customer import process',
-        },
-        order: 1,
-        createdBy: 'system',
-        title: `Import Khách Hàng ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
-        type: 'khachhang',
-      });
+        console.error(
+          `Error processing customer with makh ${customer.makh}:`,
+          error,
+        );
+        // Lưu lịch sử import lỗi với chi tiết
+        await this._ImportdataService.create({
+          caseDetail: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+            additionalInfo: 'Error during customer import process',
+          },
+          order: 1,
+          createdBy: 'system',
+          title: `Import Khách Hàng ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+          type: 'khachhang',
+        });
+        notifications.push(`Lỗi xử lý khách hàng với makh ${customer.makh}: ${error.message}`);
       }
     }
-
-    return { message: 'Import completed' };
+    return { message: 'Import completed', notifications };
   }
 
   // async findAll() {
@@ -136,9 +138,7 @@ export class KhachhangService {
   //     include: { banggia: true },
   //   });
   // }
-  async findAll(query: any) {
-    console.log('findAllKhachHang query:', query);
-    
+  async findAll(query: any) {    
     try {
       const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
       const numericPage = Number(page || 1); // Default to page 1 if not provided
@@ -198,7 +198,6 @@ export class KhachhangService {
   }
 
   async findby(param:any) {
-      console.log('findby param:', param);
       
     const { page = 1, pageSize = 50, isOne, ...where } = param;
     const whereClause: any = {};
@@ -282,7 +281,6 @@ export class KhachhangService {
   }
 
   async update(id: string, data: any) {
-    console.log(data);
     const existingCustomer = await this.prisma.khachhang.findUnique({
       where: { id },
       select: { banggia: { select: { id: true } } },
@@ -301,10 +299,12 @@ export class KhachhangService {
         throw new NotFoundException(`Không tìm thấy bảng giá với ID: ${data.banggiaId}`);
       }
     }
+    const { banggiaId,mabanggia, ...rest } = data;
     return this.prisma.khachhang.update({
       where: { id },
       data: {
-        banggia: data.banggiaId ? { connect: { id: data.banggiaId } } : { disconnect: true },
+        ...rest,
+        banggia: banggiaId ? { connect: { id: banggiaId } } : { disconnect: true },
       },
       include: { banggia: true },
     });

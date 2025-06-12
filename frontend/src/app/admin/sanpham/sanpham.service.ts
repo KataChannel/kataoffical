@@ -31,6 +31,7 @@ export class SanphamService {
     reconnectionAttempts: 5, // Giới hạn reconnect nếu fail
     timeout: 5000, // Timeout 5s
   });
+
   async ImportSanpham(dulieu: any) {
     try {
       const options = {
@@ -53,6 +54,7 @@ export class SanphamService {
         return console.error(error);
     }
   }
+  
   async CreateSanpham(dulieu: any) {
     try {
       const options = {

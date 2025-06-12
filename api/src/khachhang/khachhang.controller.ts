@@ -14,10 +14,6 @@ export class KhachhangController {
         throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
       }
    }
-  @Get('search')
-  async searchCustomers(@Query('q') query: string) {
-    return this.khachhangService.timkiemkhachhang(query);
-  }
   @Post()
   @Audit({entity: 'Create Khachhang', action: AuditAction.CREATE, includeResponse: true})
   create(@Body() createKhachhangDto: any) {

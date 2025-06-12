@@ -7,7 +7,6 @@ export declare class KhachhangService {
     getLastUpdated(): Promise<{
         updatedAt: number;
     }>;
-    timkiemkhachhang(query: string): Promise<unknown>;
     generateMakh(loaikh: string): Promise<string>;
     create(data: any): Promise<{
         id: string;
@@ -37,6 +36,7 @@ export declare class KhachhangService {
     }>;
     import(data: any[]): Promise<{
         message: string;
+        notifications: string[];
     }>;
     findAll(query: any): Promise<{
         data: ({
