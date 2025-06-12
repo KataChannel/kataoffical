@@ -786,7 +786,7 @@ convertNCCSPToImport(data: any){
 
     if (phieuNhapDetails.length > 0) {
       // Tạo phiếu nhập một lần với danh sách chi tiết
-      this._PhieukhoService.CreatePhieukho(
+     await this._PhieukhoService.CreatePhieukho(
         {
         title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
         type:'nhap',
@@ -794,10 +794,16 @@ convertNCCSPToImport(data: any){
         ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
         ngay: moment()
       });
+      this._snackBar.open('Cập nhật tồn kho thành công Thêm phiếu Nhập Kho', '', {
+        duration: 1000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-success'],
+      });
     }
     if (phieuXuatDetails.length > 0) {
       // Tạo phiếu xuất một lần với danh sách chi tiết
-      this._PhieukhoService.CreatePhieukho(
+     await this._PhieukhoService.CreatePhieukho(
         {
         title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
         type:'xuat',
@@ -805,16 +811,23 @@ convertNCCSPToImport(data: any){
         ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
         ngay: moment()
       });
+      this._snackBar.open('Cập nhật tồn kho thành công Thêm phiếu Xuất Kho', '', {
+        duration: 1000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-success'],
+      });
     }
+
     if (phieuNhapDetails.length === 0 && phieuXuatDetails.length === 0) {
-            this._snackBar.open('Kho không thay đổi', '', {
+          this._snackBar.open('Kho không thay đổi', '', {
           duration: 1000,
           horizontalPosition: "end",
           verticalPosition: "top",
           panelClass: ['snackbar-success'],
         });
     }
-     }
+  }
 
 
     if(data.dathang && this.ListEdit().some((item: any) => item.value === 'dathang'))
