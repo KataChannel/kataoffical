@@ -183,7 +183,7 @@ export class ListDathangComponent {
   private initializeColumns(): void {
     this.Columns = Object.entries(this.ColumnName).map(([key, value]) => ({ key, value, isShow: true }));
     this.FilterColumns = this.FilterColumns.length ? this.FilterColumns : this.Columns;
-    localStorage.setItem('KhachhangColFilter', JSON.stringify(this.FilterColumns));
+    localStorage.setItem('DathangColFilter', JSON.stringify(this.FilterColumns));
     this.displayedColumns = this.FilterColumns.filter(col => col.isShow).map(col => col.key);
     this.ColumnName = this.FilterColumns.reduce((acc, { key, value, isShow }) => 
       isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
