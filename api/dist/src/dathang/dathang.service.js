@@ -151,15 +151,23 @@ let DathangService = class DathangService {
                     }
                 };
             }
-            const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: curr.masp } });
-            acc[curr.mancc].sanpham.push({
-                masp: curr.masp,
-                id: sanphamRecord?.id,
-                sldat: Number(curr.sldat),
-                slgiao: Number(curr.slgiao),
-                slnhan: Number(curr.slnhan),
-                ghichu: curr.ghichu,
-            });
+            const existingSanphamIndex = acc[curr.mancc].sanpham.findIndex(item => item.masp === curr.masp);
+            if (existingSanphamIndex !== -1) {
+                acc[curr.mancc].sanpham[existingSanphamIndex].sldat += Number(curr.sldat);
+                acc[curr.mancc].sanpham[existingSanphamIndex].slgiao += Number(curr.slgiao);
+                acc[curr.mancc].sanpham[existingSanphamIndex].slnhan += Number(curr.slnhan);
+            }
+            else {
+                const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: curr.masp } });
+                acc[curr.mancc].sanpham.push({
+                    masp: curr.masp,
+                    id: sanphamRecord?.id,
+                    sldat: Number(curr.sldat),
+                    slgiao: Number(curr.slgiao),
+                    slnhan: Number(curr.slnhan),
+                    ghichu: curr.ghichu,
+                });
+            }
         }
         const convertData = Object.values(acc);
         let success = 0;
