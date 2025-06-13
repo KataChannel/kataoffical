@@ -256,7 +256,7 @@ export class ListDathangComponent {
   }
   create(): void {
     this.drawer.open();
-    this._router.navigate(['admin/dathang', 0]);
+    this._router.navigate(['admin/dathang', 'new']);
   }
   goToDetail(item: any): void {
      this._DathangService.setDathangId(item.id);

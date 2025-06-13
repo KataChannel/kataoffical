@@ -146,7 +146,7 @@ export class DathangService {
       if (!acc[curr.mancc]) {
         const nhacungcap = await this.prisma.nhacungcap.findFirst({ where: { mancc: curr.mancc } });
         acc[curr.mancc] = {
-          title: `Import ${moment().format('DD_MM_YYYY')}`,
+          title: `Import ${moment().format('DDMMYYYY')}`,
           ngaynhan: curr.ngaynhan,
           mancc: curr.mancc,
           name: nhacungcap?.name,
@@ -569,9 +569,11 @@ export class DathangService {
       if (data.status === 'dagiao') {
         // 4.1. Giảm slchonhap
         for (const sp of data.sanpham) {
+          console.log(sp);
+          
           const decValue = parseFloat((Number(sp.slgiao) ?? 0).toFixed(2));
           await prisma.tonKho.update({
-            where: { sanphamId: sp.id },
+            where: { sanphamId: sp.idSP },
             data: {
               slchonhap: { decrement: decValue },
             },
@@ -579,7 +581,7 @@ export class DathangService {
         }
 
         // 4.2. Tạo/upsert phiếu kho xuất
-        const maphieuNew = `PX-${data.madncc}`;
+        const maphieuNew = `PX-${data.madncc}-${moment().format('DDMMYYYY')}`;
         const phieuPayload = {
           ngay: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
           type: 'xuat',
@@ -589,7 +591,7 @@ export class DathangService {
           isActive: data.isActive ?? true,
           sanpham: {
             create: data.sanpham.map((sp: any) => ({
-              sanphamId: sp.id,
+              sanphamId: sp.idSP,
               soluong: parseFloat((Number(sp.slgiao) ?? 0).toFixed(2)),
               ghichu: sp.ghichu,
             })),
@@ -608,7 +610,7 @@ export class DathangService {
             status: 'dagiao',
             sanpham: {
               updateMany: data.sanpham.map((sp: any) => ({
-                where: { idSP: sp.id },
+                where: { idSP: sp.idSP },
                 data: {
                   ghichu: sp.ghichu,
                   slgiao: parseFloat((Number(sp.slgiao) ?? 0).toFixed(2)),
@@ -658,7 +660,7 @@ export class DathangService {
         // Nếu có sản phẩm thiếu, phát sinh phiếu kho nhập hàng trả về
       if (shortageItems.length > 0) {
           // Sử dụng mã đơn hàng hiện có (madncc) để tạo mã phiếu kho nhập
-        const maphieuNhap = `PX-${oldDathang.madncc}-RET`;
+        const maphieuNhap = `PX-${oldDathang.madncc}-RET-${moment().format('DDMMYYYY')}`;
         const phieuKhoData = {
         maphieu: maphieuNhap,
         ngay: new Date(data.ngaynhan), // Ngày nhập có thể sử dụng ngày giao hoặc hiện tại

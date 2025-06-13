@@ -140,7 +140,7 @@ let DathangService = class DathangService {
             if (!acc[curr.mancc]) {
                 const nhacungcap = await this.prisma.nhacungcap.findFirst({ where: { mancc: curr.mancc } });
                 acc[curr.mancc] = {
-                    title: `Import ${moment().format('DD_MM_YYYY')}`,
+                    title: `Import ${moment().format('DDMMYYYY')}`,
                     ngaynhan: curr.ngaynhan,
                     mancc: curr.mancc,
                     name: nhacungcap?.name,
@@ -519,15 +519,16 @@ let DathangService = class DathangService {
             }
             if (data.status === 'dagiao') {
                 for (const sp of data.sanpham) {
+                    console.log(sp);
                     const decValue = parseFloat((Number(sp.slgiao) ?? 0).toFixed(2));
                     await prisma.tonKho.update({
-                        where: { sanphamId: sp.id },
+                        where: { sanphamId: sp.idSP },
                         data: {
                             slchonhap: { decrement: decValue },
                         },
                     });
                 }
-                const maphieuNew = `PX-${data.madncc}`;
+                const maphieuNew = `PX-${data.madncc}-${moment().format('DDMMYYYY')}`;
                 const phieuPayload = {
                     ngay: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
                     type: 'xuat',
@@ -537,7 +538,7 @@ let DathangService = class DathangService {
                     isActive: data.isActive ?? true,
                     sanpham: {
                         create: data.sanpham.map((sp) => ({
-                            sanphamId: sp.id,
+                            sanphamId: sp.idSP,
                             soluong: parseFloat((Number(sp.slgiao) ?? 0).toFixed(2)),
                             ghichu: sp.ghichu,
                         })),
@@ -554,7 +555,7 @@ let DathangService = class DathangService {
                         status: 'dagiao',
                         sanpham: {
                             updateMany: data.sanpham.map((sp) => ({
-                                where: { idSP: sp.id },
+                                where: { idSP: sp.idSP },
                                 data: {
                                     ghichu: sp.ghichu,
                                     slgiao: parseFloat((Number(sp.slgiao) ?? 0).toFixed(2)),
@@ -591,7 +592,7 @@ let DathangService = class DathangService {
                     }
                 }
                 if (shortageItems.length > 0) {
-                    const maphieuNhap = `PX-${oldDathang.madncc}-RET`;
+                    const maphieuNhap = `PX-${oldDathang.madncc}-RET-${moment().format('DDMMYYYY')}`;
                     const phieuKhoData = {
                         maphieu: maphieuNhap,
                         ngay: new Date(data.ngaynhan),

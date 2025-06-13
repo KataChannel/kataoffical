@@ -190,7 +190,7 @@
                             </span>
                             }
                         @case ('sldat') {
-                     <div *ngIf="DetailDathang().status==='dadat'" class="flex flex-row space-x-1 items-center">
+                     <div *ngIf="dathangId()==='new' || DetailDathang().status==='dadat'" class="flex flex-row space-x-1 items-center">
                       <div
                           [contentEditable]="true"
                           (blur)="UpdateBlurValue($event,idx, row, 'sldat','number')"
@@ -202,12 +202,12 @@
 
                          <div class="text-xs text-red-600 font-bold">Gợi ý ({{row.goiy}})</div>
                          </div>
-                         <div *ngIf="DetailDathang().status !== 'dadat'">
+                         <div *ngIf="dathangId()!=='new' && DetailDathang().status !== 'dadat'">
                              {{ row[column]||0|number:'1.0-2' }}
                          </div>
                         }
                         @case ('slgiao') {
-                      <div *ngIf="DetailDathang().status === 'dagiao'"
+                      <div *ngIf="DetailDathang().status === 'dadat'"
                           [contentEditable]="true"
                           (blur)="UpdateBlurValue($event,idx, row, 'slgiao','number')"
                           (keydown.enter)="EnterUpdateValue($event,idx, row, 'slgiao','number')"
@@ -215,12 +215,12 @@
                         >
                         {{ row[column]||0|number:'1.0-2' }}
                          </div>
-                         <div *ngIf="DetailDathang().status !== 'dagiao'">
+                         <div *ngIf="DetailDathang().status !== 'dadat'">
                              {{ row[column]||0|number:'1.0-2' }}
                          </div>
                         }
                         @case ('slnhan') {
-                      <div *ngIf="DetailDathang().status === 'danhan'"
+                      <div *ngIf="DetailDathang().status === 'dagiao'"
                           [contentEditable]="true"
                           (blur)="UpdateBlurValue($event,idx, row, 'slnhan','number')"
                           (keydown.enter)="EnterUpdateValue($event,idx, row, 'slnhan','number')"
@@ -228,7 +228,7 @@
                         >
                         {{ row[column]||0|number:'1.0-2' }}
                          </div>
-                        <div *ngIf="DetailDathang().status !== 'danhan'">
+                        <div *ngIf="DetailDathang().status !== 'dagiao'">
                              {{ row[column]||0|number:'1.0-2' }}
                          </div>
                         }

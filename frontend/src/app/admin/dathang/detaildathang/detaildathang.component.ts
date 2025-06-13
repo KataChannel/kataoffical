@@ -90,7 +90,7 @@ export class DetailDathangComponent {
         this._router.navigate(['/admin/dathang']);
         this._ListdathangComponent.drawer.close();
       }
-      if (id === '0') {
+      if (id === 'new') {
         this.DetailDathang.set({
           title: GenId(8, false),
           madncc: GenId(8, false),
@@ -99,7 +99,7 @@ export class DetailDathangComponent {
         });
         this._ListdathangComponent.drawer.open();
         this.isEdit.update((value) => !value);
-        this._router.navigate(['/admin/dathang', '0']);
+        this._router.navigate(['/admin/dathang', 'new']);
       } else {
         await this._DathangService.getDathangByid(id);
         this.ListFilter = this.DetailDathang().sanpham;
@@ -118,7 +118,7 @@ export class DetailDathangComponent {
   dathangId: any = this._DathangService.dathangId;
   async ngOnInit() {}
   async handleDathangAction() {
-    if (this.dathangId() === '0') {
+    if (this.dathangId() === 'new') {
       await this.createDathang();
     } else {
       await this.updateDathang();
