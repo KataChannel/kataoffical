@@ -36,6 +36,10 @@
         <mat-label>Tên Khách Hàng</mat-label>
         <input matInput [(ngModel)]="DetailKhachhang().name" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên Khách Hàng"/>
       </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Viết Tắt</mat-label>
+        <input matInput [(ngModel)]="DetailKhachhang().subtitle" [disabled]="!isEdit()" placeholder="Vui lòng nhập Viết Tắt"/>
+      </mat-form-field>
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Loại Khách Hàng</mat-label>
       <mat-select [(ngModel)]="DetailKhachhang().loaikh" [disabled]="!isEdit()">

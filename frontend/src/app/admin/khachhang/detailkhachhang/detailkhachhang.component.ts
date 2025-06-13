@@ -15,6 +15,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { BanggiaService } from '../../banggia/banggia.service';
 import { SearchfilterComponent } from '../../../shared/common/searchfilter123/searchfilter.component';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
   @Component({
     selector: 'app-detailkhachhang',
     imports: [
@@ -86,6 +87,12 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter123/se
         await this.updateKhachhang();
       }
       // window.location.reload();
+    }
+    autoSubtitle(){
+      this.DetailKhachhang.update((v:any)=>{
+        v.subtitle = removeVietnameseAccents(v.title);
+        return v;
+      })
     }
     private async createKhachhang() {
       try {

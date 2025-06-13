@@ -468,7 +468,7 @@ let DonhangService = class DonhangService {
                             idSP: sp.id,
                             ghichu: sp.ghichu,
                             sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                            slgiao: parseFloat((sp.sldat ?? 0).toFixed(2)),
                             slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
                             slhuy: parseFloat((sp.slhuy ?? 0).toFixed(2)),
                             ttdat: parseFloat((sp.ttdat ?? 0).toFixed(2)),

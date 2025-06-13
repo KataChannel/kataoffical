@@ -802,8 +802,7 @@ async DoFindKhachhang(event:any,index:any){
     return;
   }
   this.FilterKhachhang[index] = this._KhachhangService.ListKhachhang().filter((v: any) =>
-    v.subtitle.toLowerCase().includes(value.toLowerCase()) ||
-    v.makh.toLowerCase().includes(value.toLowerCase())
+    v.subtitle.includes(removeVietnameseAccents(value))
   );
 }
 
