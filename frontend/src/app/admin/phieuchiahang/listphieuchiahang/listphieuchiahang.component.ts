@@ -116,6 +116,7 @@ export class ListPhieuchiahangComponent {
     Ketthuc: moment().toDate(),
     Type: 'donsi',
     Status:'dadat',
+    pageSize: 100,
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },

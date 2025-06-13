@@ -105,7 +105,8 @@ export class VandonComponent {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
     Type: 'donsi',
-    Status:'dadat'
+    Status:'dadat',
+    pageSize: 100,
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },

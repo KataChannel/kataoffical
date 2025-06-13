@@ -16,6 +16,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { BanggiaService } from '../../banggia/banggia.service';
 import { SearchfilterComponent } from '../../../shared/common/searchfilter123/searchfilter.component';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { Debounce } from '../../../shared/utils/decorators';
   @Component({
     selector: 'app-detailkhachhang',
     imports: [
@@ -88,11 +89,12 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
       }
       // window.location.reload();
     }
+    @Debounce(300)
     autoSubtitle(){
       this.DetailKhachhang.update((v:any)=>{
-        v.subtitle = removeVietnameseAccents(v.title);
+        v.subtitle = removeVietnameseAccents(v.name);
         return v;
-      })
+      })      
     }
     private async createKhachhang() {
       try {

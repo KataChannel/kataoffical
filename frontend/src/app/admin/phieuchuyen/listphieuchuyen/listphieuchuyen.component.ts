@@ -50,12 +50,13 @@ export class ListPhieuchuyenComponent {
   displayedColumns: string[] = [
     'ngaygiao',
     'name',
-    'soluongtt',
+    'soluong',
     'chuyen',
     'diachi',
     'sdt',
     'gionhanhang',
     'tongsomon',
+    'soluongtt',
     'shipper',
     'giodi',
     'giove',
@@ -64,12 +65,13 @@ export class ListPhieuchuyenComponent {
   ColumnName: any = {
     ngaygiao: 'Ngày giao',
     name: 'Tên khách hàng',
-    soluongtt: 'Số lượng TT',
+    soluong: 'Số lượng',
     chuyen: 'Chuyến',
-    diachi: 'Địa chỉ',
     sdt: 'Số điện thoại',
     gionhanhang: 'Giờ nhận hàng',
     tongsomon: 'Tổng số món',
+    soluongtt: 'Số lượng TT',
+    diachi: 'Địa chỉ',
     shipper: 'Shipper',
     giodi: 'Giờ đi',
     giove: 'Giờ về',
@@ -81,7 +83,7 @@ export class ListPhieuchuyenComponent {
   Columns: any[] = [];
   //pagination
   totalItems = 0;
-  pageSize = 10;
+  pageSize = 100;
   currentPage = 1;
   totalPages = 1;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -270,12 +272,13 @@ export class ListPhieuchuyenComponent {
     const dulieu = data.map((v: any) => ({
       ngaygiao: moment(v.ngaygiao).format('DD/MM/YYYY'),
       name: v.name,
-      soluongtt: v.soluongtt,
+      soluong: v.soluongtt,
       chuyen: v.chuyen,
-      diachi: v.diachi,
       sdt: v.sdt,
       gionhanhang: v.gionhanhang,
       tongsomon: v.tongsomon,
+      soluongtt: v.soluongtt,
+      diachi: v.diachi,
       shipper: v.shipper,
       giodi: v.giodi,
       giove: v.giove,

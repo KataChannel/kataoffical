@@ -131,6 +131,11 @@
                             {{ row[column]}}%
                         </span>
                         }
+                        @case ('soluong') {
+                        <span class="max-w-40 line-clamp-4">
+                            {{ row.soluongtt|number:'1.0-0'}}
+                        </span>
+                        }
                         @case ('isActive') {
                         <span class="max-w-40 line-clamp-4">
                             @if (row[column]) {

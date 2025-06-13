@@ -130,7 +130,7 @@ export class ListDonhangComponent {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
     Type: 'donsi',
-    pageSize: 10,
+    pageSize: 100,
     pageNumber: 1,
   };
   ListDate: any[] = [
