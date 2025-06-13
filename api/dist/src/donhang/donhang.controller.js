@@ -37,7 +37,8 @@ let DonhangController = class DonhangController {
         return this.donhangService.phieuchuyen(params);
     }
     async phieugiao(params) {
-        return this.donhangService.phieugiao(params);
+        const result = await this.donhangService.phieugiao(params);
+        return result;
     }
     async searchfield(searchParams) {
         return this.donhangService.searchfield(searchParams);
@@ -48,8 +49,9 @@ let DonhangController = class DonhangController {
     findOne(id) {
         return this.donhangService.findOne(id);
     }
-    updatePhieugiao(id, updateDonhangDto) {
-        return this.donhangService.updatePhieugiao(id, updateDonhangDto);
+    async updatePhieugiao(id, updateDonhangDto) {
+        const result = await this.donhangService.updatePhieugiao(id, updateDonhangDto);
+        return result;
     }
     update(id, updateDonhangDto) {
         return this.donhangService.update(id, updateDonhangDto);
@@ -134,7 +136,7 @@ __decorate([
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], DonhangController.prototype, "updatePhieugiao", null);
 __decorate([
     (0, common_1.Patch)(':id'),

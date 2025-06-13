@@ -111,10 +111,10 @@ export class DetailDonhangComponent {
       } else {
         await this._DonhangService.getDonhangByid(id);
         this.ListFilter = this.DetailDonhang().sanpham
-        this.DetailDonhang.update((v:any)=>{
-          v.banggiaId = v?.khachhang?.banggia.find((v: any) => moment() > moment(v.batdau) && moment() < moment(v.ketthuc))?.id;
-          return v
-        })        
+        // this.DetailDonhang.update((v:any)=>{
+        //   v.banggiaId = v?.khachhang?.banggia.find((v: any) => moment() > moment(v.batdau) && moment() < moment(v.ketthuc))?.id;
+        //   return v
+        // })        
         this._ListdonhangComponent.drawer.open();
         this._router.navigate(['/admin/donhang', id]);
       }
@@ -620,7 +620,7 @@ export class DetailDonhangComponent {
       this.reloadfilter();
       return v;
     })
-    this.dataSource().data = this.DetailDonhang().sanpham;
+    this.ListFilter = this.dataSource().data = this.DetailDonhang().sanpham;
     
 
   }
@@ -768,9 +768,13 @@ export class DetailDonhangComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-    this.ListFilter.forEach((v)=>{
-      v.sldat = v.slgiao = v.slnhan=1;
-    })
+    this.ListFilter.forEach((v) => {
+      const exists = this.dataSource().data.find((d: any) => d.id === v.id);
+      if (!exists.sldat) {
+        v.sldat = v.slgiao = 1;
+      }
+    });
+
     this.dataSource().data = this.ListFilter
     this.DetailDonhang.update((v:any)=>{
       v.sanpham =  this.ListFilter

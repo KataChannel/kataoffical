@@ -402,7 +402,7 @@ export declare class DonhangService {
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
-    } | undefined>;
+    }>;
     updatePhieugiao(id: string, data: any): Promise<{
         sanpham: {
             id: string;

@@ -34,6 +34,7 @@ import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.se
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { DonhangService } from '../../donhang/donhang.service';
+import { SanphamService } from '../../sanpham/sanpham.service';
 @Component({
   selector: 'app-detailphieugiaohang',
   imports: [
@@ -59,6 +60,7 @@ import { DonhangService } from '../../donhang/donhang.service';
 export class DetailPhieugiaohangComponent {
   _ListphieugiaohangComponent: ListPhieugiaohangComponent = inject(ListPhieugiaohangComponent);
   _PhieugiaohangService: DonhangService = inject(DonhangService);
+  _SanphamService: SanphamService = inject(SanphamService);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -66,6 +68,8 @@ export class DetailPhieugiaohangComponent {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
       this._PhieugiaohangService.setDonhangId(id);
+      await this._SanphamService.getAllSanpham();
+      this.filterSanpham = this._SanphamService.ListSanpham();
     });
 
     effect(async () => {
@@ -97,6 +101,7 @@ export class DetailPhieugiaohangComponent {
   filterBanggia: any[] = [];
   filterSanpham: any[] = [];
   phieugiaohangId: any = this._PhieugiaohangService.donhangId;
+  ListSanpham: any = this._SanphamService.ListSanpham;
   Trangthai: any = [
     { value: 'dadat', title: 'Đã Đặt' },
     { value: 'dagiao', title: 'Đã Giao' },
@@ -107,7 +112,14 @@ export class DetailPhieugiaohangComponent {
     return this.Trangthai.find((v:any) => v.value === item)?.title;
 
   }
-  async ngOnInit() {}
+  async ngOnInit() {
+     await this._PhieugiaohangService.Phieugiaohang({id:this.phieugiaohangId()});
+        this.DetailPhieugiaohang().status ==="danhan"? this.isEdit.set(false):this.isEdit.set(true);
+        this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang()?.sanpham.map((v:any)=>{
+          v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
+          return v;
+        })
+  }
   async handlePhieugiaohangAction() {
     if (this.phieugiaohangId() === '0') {
       await this.createPhieugiaohang();
@@ -125,6 +137,8 @@ export class DetailPhieugiaohangComponent {
         v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
         return {id:v.id,ttgiao:v.ttgiao,slgiao:v.slgiao,slnhan:v.slnhan,ghichu:v.ghichu};
       })
+      console.log(this.DetailPhieugiaohang());
+
       await this._PhieugiaohangService.updatePhieugiao(this.DetailPhieugiaohang());
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,
@@ -441,16 +455,21 @@ export class DetailPhieugiaohangComponent {
   }
 
 
-  // RemoveSanpham(item:any){
-  //   this.DetailBanggia.update((v:any)=>{
-  //     v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
-  //     this.reloadfilter();
-  //     return v;
-  //   })
-  //   this.dataSource().data = this.DetailBanggia().sanpham;
-  //   this.dataSource().paginator = this.paginator;
-  //   this.dataSource().sort = this.sort;
-  // }
+  RemoveSanpham(item:any){
+    console.log(item);
+    
+    this.DetailPhieugiaohang.update((v:any)=>{
+      v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
+      this.reloadfilter();
+      return v;
+    })
+    this.dataSource().data = this.DetailPhieugiaohang().sanpham;
+  }
+  reloadfilter(){
+    this.filterSanpham = this.ListSanpham().filter((v:any) => !this.DetailPhieugiaohang().sanpham.some((v2:any) => v2.id === v.id));
+  }
+
+
   CoppyDon()
   {
 

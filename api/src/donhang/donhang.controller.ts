@@ -31,7 +31,8 @@ export class DonhangController {
   }
   @Post('phieugiao')
   async phieugiao(@Body() params: any) {
-    return this.donhangService.phieugiao(params);
+    const result = await this.donhangService.phieugiao(params);
+    return result;
   }
   @Post('searchfield')
   async searchfield(@Body() searchParams: Record<string, any>) {
@@ -47,8 +48,9 @@ export class DonhangController {
   }
   @Patch('phieugiao/:id')
   @Audit({entity: 'Update Phieugiao', action: AuditAction.UPDATE, includeResponse: true})
-  updatePhieugiao(@Param('id') id: string, @Body() updateDonhangDto: any) {
-    return this.donhangService.updatePhieugiao(id, updateDonhangDto);
+  async updatePhieugiao(@Param('id') id: string, @Body() updateDonhangDto: any) {
+    const result = await  this.donhangService.updatePhieugiao(id, updateDonhangDto);
+    return result;
   }
   @Patch(':id')
   @Audit({entity: 'Update Donhang', action: AuditAction.UPDATE, includeResponse: true})

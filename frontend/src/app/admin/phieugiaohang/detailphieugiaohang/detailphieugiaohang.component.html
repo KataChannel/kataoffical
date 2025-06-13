@@ -113,10 +113,9 @@
             <div class="w-full flex items-start"><strong>Ghi Chú : </strong> {{DetailPhieugiaohang()?.ghichu}}</div>
             <div class="w-full flex items-start"><strong>Số Điện Thoại : </strong>
               {{DetailPhieugiaohang()?.khachhang?.sdt}}</div>
-            <div class="w-full flex items-start"><strong>Tổng khối lượng :
-
-                Đơn Vị Tính : {{DetailPhieugiaohang().sanpham[0].dvt}}
-                ({{TinhTong(DetailPhieugiaohang().sanpham,'slgiao')|number:'1.0-2'}})
+            <div class="w-full flex items-start">
+              <strong>Tổng khối lượng - Đơn Vị Tính : {{DetailPhieugiaohang()?.sanpham[0]?.dvt}}
+                ({{TinhTong(DetailPhieugiaohang()?.sanpham,'slgiao')|number:'1.0-2'}})
               </strong> </div>
           </div>
           <img src="/images/qrcodedonhang.svg" class="h-32 ml-auto p-4">
@@ -174,7 +173,7 @@
                   @case ('STT') {
                   <span class="max-w-20 line-clamp-4 flex flex-row items-center">
                     <span>{{ idx + 1 }} </span>
-                    <!-- <button mat-icon-button color="warn" (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button> -->
+                    <button mat-icon-button color="warn" (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
                   </span>
                   }
                   @case ('sldat') {
