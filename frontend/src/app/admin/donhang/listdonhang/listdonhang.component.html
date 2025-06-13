@@ -409,34 +409,40 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr *ngFor="let detail of statusDetails">
-                            <td *ngIf="detail.fileName !== 'Overall'" class="px-6 py-4 whitespace-nowrap text-gray-900">
+                        <tr *ngFor="let detail of statusDetails;let i = index">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-900">
+                                @if(detail.status === 'Processed'){
                                 <mat-form-field appearance="outline" subscriptSizing="dynamic">
                                     <mat-label>Khách Hàng</mat-label>
-                                    <mat-select (selectionChange)="SelectKhachhang(detail,$event)">
+                                    <mat-select  (selectionChange)="SelectKhachhang(detail,$event)">
                                         <div class="w-full flex flex-col">
                                             <mat-form-field appearance="outline" class="w-full p-2"
                                                 subscriptSizing="dynamic">
-                                                <input matInput (input)="DoFindKhachhang($event)"
+                                                <input matInput (input)="DoFindKhachhang($event,i)"
                                                     placeholder="Tìm Kiếm" />
                                             </mat-form-field>
                                             <div class="overflow-y-auto max-h-44">
-                                                @for (item of FilterKhachhang; track item.id) {
+                                                @for (item of FilterKhachhang[i]; track item.id) {
                                                 <mat-option [value]="item.id">{{item.name}}</mat-option>
                                                 }
                                             </div>
                                         </div>
                                     </mat-select>
                                 </mat-form-field>
-                            </td>
-                            <td *ngIf="detail.fileName !== 'Overall'" class="px-6 py-4 whitespace-nowrap text-gray-900">
-                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                            <mat-label>Ngày Giao </mat-label>
-                            <input (dateChange)="DoChonNgaygiao($event,detail)" matInput [matDatepicker]="picker">
-                            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                            <mat-datepicker #picker></mat-datepicker>
-                     </mat-form-field>
+                                }
 
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-900">
+                                @if(detail.status === 'Processed'){
+
+                                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                    <mat-label>Ngày Giao </mat-label>
+                                    <input (dateChange)="DoChonNgaygiao($event,detail)" matInput
+                                        [matDatepicker]="picker">
+                                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker></mat-datepicker>
+                                </mat-form-field>
+                                }
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ detail.fileName }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ detail.tenkhongdau }}</td>
@@ -464,14 +470,14 @@
 
 
 <ng-template #DeleteDialog>
-  <mat-dialog-content>
-    <div class="flex flex-col space-y-8 items-center justify-center">
-      <div class="font-bold">Xác Nhận</div>
-      <div>Bạn chắc chắn muốn xoá không?</div>
-      <div class="flex flex-row space-x-2 items-center justify-center">
-        <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
-        <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
-      </div>
-    </div>
-  </mat-dialog-content>
+    <mat-dialog-content>
+        <div class="flex flex-col space-y-8 items-center justify-center">
+            <div class="font-bold">Xác Nhận</div>
+            <div>Bạn chắc chắn muốn xoá không?</div>
+            <div class="flex flex-row space-x-2 items-center justify-center">
+                <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
+                <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
+            </div>
+        </div>
+    </mat-dialog-content>
 </ng-template>

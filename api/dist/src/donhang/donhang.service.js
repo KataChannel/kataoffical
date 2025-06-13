@@ -340,98 +340,51 @@ let DonhangService = class DonhangService {
     }
     async ImportDonhangOld(dulieu) {
         const rawData = await Promise.all(dulieu.map(async (v) => {
-            const ngaygiao = moment().toDate();
-            const [khachhangRecord, banggiaRecord, sanphamRecord] = await Promise.all([
-                this.prisma.khachhang.findFirst({ where: { id: v.khachhangId } }),
-                this.prisma.banggia.findFirst({ where: { mabanggia: v.mabanggia } }),
-                this.prisma.sanpham.findFirst({ where: { masp: v.ItemCode } }),
-            ]);
-            if (!khachhangRecord || !banggiaRecord || !sanphamRecord) {
-                return null;
-            }
+            const mappedSanpham = await Promise.all(v.sanpham.map(async (item) => {
+                const sp = await this.prisma.sanpham.findFirst({
+                    where: { masp: item.ItemCode },
+                });
+                return {
+                    id: sp?.id,
+                    sldat: parseFloat((item.Quantity ?? 0).toFixed(2)),
+                    slgiao: 0,
+                    slnhan: 0,
+                    slhuy: 0,
+                    ttdat: 0,
+                    ttgiao: 0,
+                    ttnhan: 0,
+                };
+            }));
             return {
-                ngaygiao,
-                makh: khachhangRecord.makh,
-                mabanggia: banggiaRecord.mabanggia,
-                masp: sanphamRecord.masp,
-                sldat: Number(v.Quantity) || 0,
-                slgiao: Number(v.Quantity) || 0,
-                slnhan: Number(v.Quantity) || 0,
-                ghichu: v.ghichu || '',
+                title: `Import ${v.tenkh} - ${moment().format('DD_MM_YYYY')}`,
+                type: 'donsi',
+                ngaygiao: new Date(v.ngaygiao) || new Date(),
+                khachhangId: v.khachhangId,
+                sanpham: mappedSanpham,
             };
         }));
-        const missingRecordSkip = rawData.filter((item) => item === null).length;
-        const validRawData = rawData.filter((item) => item !== null);
-        const data = [];
-        let existsSkipCount = 0;
-        for (const d of validRawData) {
-            const startOfDay = moment(d.ngaygiao).startOf('day').toDate();
-            const endOfDay = moment(d.ngaygiao).endOf('day').toDate();
-            const exists = await this.prisma.donhang.findFirst({
-                where: {
-                    ngaygiao: { gte: startOfDay, lte: endOfDay },
-                    khachhang: { makh: d.makh },
-                },
-            });
-            if (exists) {
-                existsSkipCount++;
-            }
-            else {
-                data.push(d);
-            }
-        }
-        const skip = missingRecordSkip + existsSkipCount;
-        const acc = {};
-        for (const curr of data) {
-            if (!acc[curr.makh]) {
-                const khachhang = await this.prisma.khachhang.findFirst({ where: { makh: curr.makh } });
-                acc[curr.makh] = {
-                    title: `Import ${moment().format('DD_MM_YYYY')}`,
-                    ngaygiao: curr.ngaygiao,
-                    makh: curr.makh,
-                    khachhangId: khachhang?.id,
-                    name: khachhang?.name,
-                    mabanggia: curr.mabanggia,
-                    sanpham: [],
-                    khachhang: {
-                        makh: curr.makh,
-                    },
-                };
-            }
-            const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: curr.masp } });
-            acc[curr.makh].sanpham.push({
-                masp: curr.masp,
-                id: sanphamRecord?.id,
-                sldat: Number(curr.sldat),
-                slgiao: Number(curr.slgiao),
-                slnhan: Number(curr.slnhan),
-                ghichu: curr.ghichu,
-            });
-        }
-        const convertData = Object.values(acc);
         let success = 0;
         let fail = 0;
-        for (const element of convertData) {
+        let skip = 0;
+        for (const order of rawData) {
+            const startOfDay = moment(order.ngaygiao).startOf('day').toDate();
+            const endOfDay = moment(order.ngaygiao).endOf('day').toDate();
+            const existingOrder = await this.prisma.donhang.findFirst({
+                where: {
+                    khachhangId: order.khachhangId,
+                    ngaygiao: { gte: startOfDay, lte: endOfDay },
+                },
+                include: { sanpham: true },
+            });
+            if (existingOrder && existingOrder.sanpham.length === order.sanpham.length) {
+                skip++;
+                continue;
+            }
             try {
-                await this.create(element);
+                await this.create(order);
                 success++;
             }
             catch (error) {
-                console.error('Error importing order:', error);
-                await this.prisma.importHistory.create({
-                    data: {
-                        codeId: element.madonhang,
-                        title: element.title,
-                        type: 'donhang',
-                        caseDetail: {
-                            errorMessage: error.message,
-                            errorStack: error.stack,
-                            additionalInfo: 'Failed during donhang import process',
-                        },
-                        order: 1,
-                        createdBy: 'system',
-                    },
-                });
                 fail++;
             }
         }

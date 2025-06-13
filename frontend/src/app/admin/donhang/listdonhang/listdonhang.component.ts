@@ -145,13 +145,14 @@ export class ListDonhangComponent {
   page = signal<number>(1);
   total = signal<number>(0);
   pageCount = signal<number>(0);
-  FilterKhachhang:any
+  FilterKhachhang:any[] = [];
   constructor() {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
     effect(async () => {
       await this.LoadData();
+
     });
   }
   async onPageChange(event: any): Promise<void> {
@@ -161,6 +162,7 @@ export class ListDonhangComponent {
     await this.LoadData();
   }
   async LoadData() {
+    await this._KhachhangService.getKhachhangBy({page:1, pageSize:9999});
     const data = await this._DonhangService.searchDonhang(this.SearchParams);
     this.Listdonhang.set(data);
     if (data.data) {
@@ -459,9 +461,8 @@ export class ListDonhangComponent {
   ListImportExcel: any[] = [];
   statusDetails: any[] = [];
   ListImportData: any[] = [];
-  async ImporExcel(event: any) {
-    await this._KhachhangService.getKhachhangBy({page:1, pageSize:50});
-    this.FilterKhachhang = this._KhachhangService.ListKhachhang()
+
+  async ImporExcel(event: any) {    
     const files = Array.from(event.target.files) as File[];
     let processedCount = 0;
     let skippedCount = 0;
@@ -511,13 +512,13 @@ export class ListDonhangComponent {
             return validItemCode && validQuantity;
           })
           .map((item: any) => ({
-            tenfile: file.name.replace('.xlsx', ''),
-            tenkh: TenKH,
+            // tenfile: file.name.replace('.xlsx', ''),
+            // tenkh: TenKH,
             ItemCode: item.ItemCode ?? '',
             Quantity: item.Quantity ?? ''
           }));
-
-        this.ListImportData.push(...editdata);
+        const itemEdit = { tenfile: file.name.replace('.xlsx', ''), tenkh: TenKH,sanpham: editdata };        
+        this.ListImportData.push(itemEdit);
         processedCount++;
         this._snackBar.open(`Xử lý thành công file: ${file.name}`, '', {
           duration: 1000,
@@ -549,16 +550,16 @@ export class ListDonhangComponent {
         continue;
       }
     }
-    this._snackBar.open(
-        `Nhập đơn hàng thành công. Files xử lý: ${processedCount}, Bỏ qua: ${skippedCount}, Lỗi: ${errorCount}`,
-        '',
-        {
-          duration: 5000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success']
-        }
-      );
+    // this._snackBar.open(
+    //     `Nhập đơn hàng thành công. Files xử lý: ${processedCount}, Bỏ qua: ${skippedCount}, Lỗi: ${errorCount}`,
+    //     '',
+    //     {
+    //       duration: 5000,
+    //       horizontalPosition: 'end',
+    //       verticalPosition: 'top',
+    //       panelClass: ['snackbar-success']
+    //     }
+    //   );
    this.statusDetails.push({
         fileName: 'Overall',
         status: 'Success',
@@ -566,18 +567,25 @@ export class ListDonhangComponent {
       });
     // After all files have been processed, perform the import
     this.dialog.open(this.dialogImportExcelCu, {});
+    this.statusDetails.forEach((v:any,k:any) => {
+      this.FilterKhachhang[k]= this._KhachhangService.ListKhachhang()
+    })
   }
   async DoImportKhachhangCu() {
     try {
+
+console.log('ListImportData', this.ListImportData);
       const invalidItems = this.ListImportData.filter(item =>
-        !item.ItemCode || !item.Quantity || !item.khachhangId
+        !item.khachhangId || !item.ngaygiao
       );
+      console.log('invalidItems', invalidItems);
+      
       if (invalidItems.length > 0) {
         const invalidFiles = Array.from(
           new Set(invalidItems.map(item => item.tenfile || 'Unknown'))
         );
         this._snackBar.open(
-          `Các item sau không đủ dữ liệu : ${invalidFiles.join(', ')}`,
+          `Các Khách hàng sau không đủ dữ liệu : ${invalidFiles.join(', ')}`,
           '',
           {
             duration: 5000,
@@ -588,11 +596,12 @@ export class ListDonhangComponent {
         );
         return;
       }
-
-     const result = await this._DonhangService.ImportDonhangCu(this.ListImportData);
+      console.log('ListImportData', this.ListImportData);
+      
+      const result = await this._DonhangService.ImportDonhangCu(this.ListImportData);
       this.dialog.closeAll();
       this._snackBar.open(
-          `Nhập đơn hàng thành công: Thành công ${result.success}, Thất bại ${result.fail}, Bỏ qua ${result.skip}`,
+          `Nhập đơn hàng : Thành công ${result.success}, Thất bại ${result.fail}, Bỏ qua ${result.skip}. Reload Lại sau 3s`,
           '',
           {
             duration: 5000,
@@ -619,10 +628,10 @@ export class ListDonhangComponent {
     }
       setTimeout(() => {
         window.location.reload();
-      }, 500);
+      }, 3000);
   }
 
-  async ImporDonhang(items: any[]): Promise<void> {
+  async ImportDonhang(items: any[]): Promise<void> {
     // items = items.slice(1); // Remove the first row (header)
     if (!items || !items.length) {
       this._snackBar.open('Không có dữ liệu để nhập', '', {
@@ -768,54 +777,52 @@ export class ListDonhangComponent {
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
-SelectKhachhang(item:any,event:any){
-  const value = event.value
-  const checkItem = this.ListImportData.find((v: any) => v.khachhangId === value);
-  if (checkItem) {
-    this._snackBar.open('Đã tồn tại khách hàng này', '', {
-      duration: 3000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-warning']
-    });
+  async SelectKhachhang(item:any,event:any){   
+    const value = event.value
+    const checkItem = this.ListImportData.find((v: any) => v.khachhangId === value);
+    if (checkItem) {
+      this._snackBar.open('Đã tồn tại khách hàng này', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning']
+      });
+      return;
+    }
+    this.ListImportData.filter((v => v.tenkh === item.tenkhongdau)).forEach((v1:any) => {
+      v1.khachhangId = value;
+    });  
+    console.log(this.ListImportData);
+}
+@Debounce(500)
+async DoFindKhachhang(event:any,index:any){
+  const value = event.target.value;
+  if (!value) {
+    this.FilterKhachhang[index] = this._KhachhangService.ListKhachhang();
     return;
   }
-  this.ListImportData.filter((v => v.tenkh === item.tenkhongdau)).forEach((v1:any) => {
-    v1.khachhangId = value;
-  });  
+  this.FilterKhachhang[index] = this._KhachhangService.ListKhachhang().filter((v: any) =>
+    v.subtitle.toLowerCase().includes(value.toLowerCase()) ||
+    v.makh.toLowerCase().includes(value.toLowerCase())
+  );
 }
+
 DoChonNgaygiao(event:any,item:any){
-  const value = event.target.value;  
+  const value = event.target.value;
   if (!value) {
     this.SearchParams.ngaygiao = '';
     return;
   }
-  this._snackBar.open(`Đã chọn ngày giao: ${value}`, '', {
-    duration: 3000,
-    horizontalPosition: 'end',
-    verticalPosition: 'top',
-    panelClass: ['snackbar-success']
-  });
+  console.log(this.ListImportData);
+  console.log(item);
+  console.log(value);
+  
   this.ListImportData.filter((v => v.tenkh === item.tenkhongdau)).forEach((v1:any) => {
     v1.ngaygiao = value;
   });
 }
 
-@Debounce(500)
-  async DoFindKhachhang(event:any){
-  const value = event.target.value;
-  if (!value) {
-    await this._KhachhangService.getKhachhangBy({});
-    this.FilterKhachhang = this._KhachhangService.ListKhachhang();
-    return;
-  }
-  await this._KhachhangService.getKhachhangBy({subtitle: value});
-  this.FilterKhachhang = this._KhachhangService.ListKhachhang().filter((v:any) =>
-    removeVietnameseAccents(v.makh).includes(value.toLowerCase()) ||
-    removeVietnameseAccents(v.name).includes(value.toLowerCase()) ||
-    removeVietnameseAccents(v.makhold).includes(value.toLowerCase())
-  );
-}
+
 EditList:any=[];
 AddToEdit(item: any): void {
   const existingItem = this.EditList.find((v: any) => v.id === item.id);
