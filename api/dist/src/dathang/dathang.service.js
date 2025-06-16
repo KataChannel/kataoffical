@@ -129,6 +129,7 @@ let DathangService = class DathangService {
                     ttdat: Number(item.ttdat),
                     ttgiao: Number(item.ttgiao),
                     ttnhan: Number(item.ttnhan),
+                    gianhap: Number(item.gianhap),
                     ghichu: item.ghichu,
                 };
             }),
@@ -552,11 +553,20 @@ let DathangService = class DathangService {
                         })),
                     },
                 };
-                await prisma.phieuKho.upsert({
-                    where: { maphieu: maphieuNew },
-                    create: { maphieu: maphieuNew, ...phieuPayload },
-                    update: phieuPayload,
-                });
+                console.log('Phieu kho payload:', phieuPayload);
+                console.log('maphieuNew:', maphieuNew);
+                try {
+                    const { sanpham, ...phieuPayloadWithoutSanpham } = phieuPayload;
+                    await prisma.phieuKho.upsert({
+                        where: { maphieu: maphieuNew },
+                        create: { maphieu: maphieuNew, ...phieuPayload },
+                        update: { ...phieuPayloadWithoutSanpham },
+                    });
+                }
+                catch (error) {
+                    console.error('Error upserting phieuKho:', error);
+                    throw error;
+                }
                 return prisma.dathang.update({
                     where: { id },
                     data: {
@@ -567,6 +577,12 @@ let DathangService = class DathangService {
                                 data: {
                                     ghichu: sp.ghichu,
                                     slgiao: parseFloat((Number(sp.slgiao) ?? 0).toFixed(2)),
+                                    slnhan: parseFloat((Number(sp.slnhan) ?? 0).toFixed(2)),
+                                    slhuy: parseFloat((Number(sp.slhuy) ?? 0).toFixed(2)),
+                                    ttdat: parseFloat((Number(sp.ttdat) ?? 0).toFixed(2)),
+                                    ttgiao: parseFloat((Number(sp.ttgiao) ?? 0).toFixed(2)),
+                                    ttnhan: parseFloat((Number(sp.ttnhan) ?? 0).toFixed(2)),
+                                    gianhap: parseFloat((Number(sp.gianhap) ?? 0).toFixed(2)),
                                 },
                             })),
                         },

@@ -156,14 +156,15 @@ export class DetailDathangComponent {
       .then((canvas) => {
         canvas.toBlob((blob) => {
           if (blob) {
-            const item = new ClipboardItem({ "image/png": blob });
-            navigator.clipboard.write([item])
+            const item = new ClipboardItem({ 'image/png': blob });
+            navigator.clipboard
+              .write([item])
               .then(() => {
                 console.log('Image copied to clipboard successfully');
                 this._snackBar.open('Đã Chụp Hình Xong', '', {
                   duration: 1000,
-                  horizontalPosition: "end",
-                  verticalPosition: "top",
+                  horizontalPosition: 'end',
+                  verticalPosition: 'top',
                   panelClass: ['snackbar-success'],
                 });
               })
@@ -176,22 +177,20 @@ export class DetailDathangComponent {
         }, 'image/png');
       })
       .catch((error) => console.error('Error generating image:', error));
-
   }
 
-  printContent()
-  {
+  printContent() {
     const printContent = document.getElementById('printContent');
     if (printContent) {
       const newWindow = window.open('', '_blank');
-    const tailwindCSS =  `
+      const tailwindCSS = `
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: { extend: {} }
       };
     </script>
-  `
+  `;
       if (newWindow) {
         newWindow.document.write(`
           <html>
@@ -217,13 +216,13 @@ export class DetailDathangComponent {
           </html>
         `);
         newWindow.document.close();
-          this.DetailDathang.update((v:any)=>{
-            v.printCount= v.printCount+1;
-            return v;
-          })
-          console.log(this.DetailDathang());
+        this.DetailDathang.update((v: any) => {
+          v.printCount = v.printCount + 1;
+          return v;
+        });
+        console.log(this.DetailDathang());
 
-          this._DathangService.updateDathang(this.DetailDathang());
+        this._DathangService.updateDathang(this.DetailDathang());
       } else {
         console.error('Không thể mở cửa sổ in');
       }
@@ -236,7 +235,10 @@ export class DetailDathangComponent {
     try {
       console.log(this.DetailDathang());
       this.DetailDathang.update((v: any) => {
-        v.sanpham = this.dataSource.data;
+        v.sanpham = this.dataSource.data.map((item: any) => {
+          const { TonKho, ...rest } = item;
+          return rest;
+        });
         return v;
       });
       await this._DathangService.updateDathang(this.DetailDathang());
@@ -334,37 +336,6 @@ export class DetailDathangComponent {
       return v;
     });
   }
-
-  // updateValue(
-  //   event: Event,
-  //   index: number | null,
-  //   element: any,
-  //   field: keyof any,
-  //   type: 'number' | 'string'
-  // ) {
-  //   const newValue =
-  //     type === 'number'
-  //       ? Number(
-  //           (event.target as HTMLElement).innerText
-  //             .trim()
-  //             .replace(/[^0-9]/g, '')
-  //         ) || 0
-  //       : (event.target as HTMLElement).innerText.trim();
-
-  //   this.DetailDathang.update((v: any) => {
-  //     if (index !== null) {
-  //       if(field=='sldat'){
-  //         v.sanpham[index][field] = v.sanpham[index]['slgiao'] = newValue;
-  //       }else{
-  //         v.sanpham[index][field] = newValue;
-  //       }
-
-  //     } else {
-  //       v[field] = newValue;
-  //     }
-  //     return v;
-  //   });
-  // }
   EnterUpdateValue(
     event: Event,
     index: number | null,
@@ -397,14 +368,9 @@ export class DetailDathangComponent {
         event.preventDefault();
       }
     }
-    console.log(this.DetailDathang());
 
     this.DetailDathang.update((v: any) => {
       if (index !== null) {
-        console.log(index);
-
-        console.log(v.sanpham[index]);
-
         if (field === 'sldat') {
           v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = newValue;
           // Find the next input to focus on
@@ -469,6 +435,18 @@ export class DetailDathangComponent {
           } else {
             v.sanpham[index]['slgiao'] = newGiao;
           }
+        } else if (field === 'ttnhan') {
+          v.sanpham[index]['gianhap'] =
+            Number(
+              (Number(newValue) / v.sanpham[index]['slnhan']).toFixed(2)
+            ) || 0;
+          v.sanpham[index][field] = Number(newValue);
+        } else if (field === 'slnhan') {
+          v.sanpham[index]['gianhap'] =
+            Number(
+              (v.sanpham[index]['ttnhan'] / Number(newValue)).toFixed(2)
+            ) || 0;
+          v.sanpham[index][field] = Number(newValue);
         } else {
           v.sanpham[index][field] = newValue;
         }
@@ -497,6 +475,18 @@ export class DetailDathangComponent {
           v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = newValue;
         } else if (field === 'ghichu') {
           v.sanpham[index][field] = newValue;
+        } else if (field === 'ttnhan') {
+          v.sanpham[index]['gianhap'] =
+            Number(
+              (Number(newValue) / v.sanpham[index]['slnhan']).toFixed(2)
+            ) || 0;
+          v.sanpham[index][field] = Number(newValue);
+        } else if (field === 'slnhan') {
+          v.sanpham[index]['gianhap'] =
+            Number(
+              (v.sanpham[index]['ttnhan'] / Number(newValue)).toFixed(2)
+            ) || 0;
+          v.sanpham[index][field] = Number(newValue);
         } else if (field === 'slgiao') {
           const newGiao = newValue;
           if (newGiao < v.sanpham[index]['sldat']) {
@@ -562,6 +552,8 @@ export class DetailDathangComponent {
     'sldat',
     'slgiao',
     'slnhan',
+    'gianhap',
+    'ttnhan',
     'ghichu',
   ];
   ColumnName: any = {
@@ -572,6 +564,8 @@ export class DetailDathangComponent {
     sldat: 'SL Đặt',
     slgiao: 'SL Giao',
     slnhan: 'SL Nhận',
+    gianhap: 'Giá Nhập',
+    ttnhan: 'Tổng Tiền',
     ghichu: 'Ghi Chú',
   };
   dataSource = new MatTableDataSource<any>([]);

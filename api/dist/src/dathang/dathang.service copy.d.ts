@@ -107,6 +107,7 @@ export declare class DathangService {
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
+            gianhap: import("@prisma/client/runtime/library").Decimal;
             dathangId: string;
         }[];
     } & {
@@ -139,6 +140,7 @@ export declare class DathangService {
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
+            gianhap: import("@prisma/client/runtime/library").Decimal;
             dathangId: string;
         }[];
     } & {
@@ -171,6 +173,7 @@ export declare class DathangService {
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
+            gianhap: import("@prisma/client/runtime/library").Decimal;
             dathangId: string;
         }[];
     } & {

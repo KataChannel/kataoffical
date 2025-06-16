@@ -301,6 +301,7 @@ model Dathangsanpham {
   ttdat     Decimal @postgres.Decimal(20, 2) @default(0)
   ttgiao    Decimal @postgres.Decimal(20, 2) @default(0)
   ttnhan    Decimal @postgres.Decimal(20, 2) @default(0)
+  gianhap   Decimal @postgres.Decimal(20, 2) @default(0)
   ghichu    String?
   sanpham   Sanpham  @relation(fields: [idSP], references: [id])
   dathang   Dathang  @relation(fields: [dathangId], references: [id],onDelete: Cascade)

@@ -571,6 +571,11 @@ export class ListDonhangComponent {
       this.FilterKhachhang[k]= this._KhachhangService.ListKhachhang()
     })
   }
+removeItemImport(index: number){
+  this.statusDetails.splice(index, 1);
+}
+
+
   async DoImportKhachhangCu() {
     try {
 
