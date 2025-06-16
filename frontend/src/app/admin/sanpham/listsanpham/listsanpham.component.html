@@ -108,7 +108,7 @@
           }
           <td class="border" mat-cell *matCellDef="let row; let idx = index">
             @switch (column) {
-            @case ('codeId') {
+            @case ('masp') {
             <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
               {{ row[column] }}
             </span>

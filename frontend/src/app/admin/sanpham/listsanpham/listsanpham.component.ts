@@ -112,12 +112,16 @@ export class ListSanphamComponent implements OnInit {
       isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
   }
   @Debounce(500)
-  applyFilter(event: Event) {
+    applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+    if (!filterValue) {
+      this.searchParam = {};
+      this._SanphamService.getSanphamBy(this.searchParam);
+      return;
     }
+    this.searchParam.subtitle = filterValue.trim().toLowerCase();
+    this.searchParam.title = filterValue.trim()
+    this._SanphamService.getSanphamBy(this.searchParam);
   }
 
   async getUpdatedCodeIds() {

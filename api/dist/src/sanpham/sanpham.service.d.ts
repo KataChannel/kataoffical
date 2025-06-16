@@ -95,7 +95,16 @@ export declare class SanphamService {
         createdAt?: Date | undefined;
         updatedAt?: Date | undefined;
     }[]>;
-    findby(param: any): Promise<{
+    findby(param: any): Promise<({
+        banggia: {
+            id: string;
+            giaban: number;
+            order: number | null;
+            isActive: boolean;
+            banggiaId: string;
+            sanphamId: string;
+        }[];
+    } & {
         id: string;
         title: string;
         title2: string | null;
@@ -115,6 +124,41 @@ export declare class SanphamService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+    }) | {
+        data: ({
+            banggia: {
+                id: string;
+                giaban: number;
+                order: number | null;
+                isActive: boolean;
+                banggiaId: string;
+                sanphamId: string;
+            }[];
+        } & {
+            id: string;
+            title: string;
+            title2: string | null;
+            slug: string | null;
+            masp: string;
+            subtitle: string | null;
+            giagoc: number;
+            giaban: number;
+            dvt: string | null;
+            hinhanh: string | null;
+            loadpoint: number | null;
+            soluong: import("@prisma/client/runtime/library").Decimal | null;
+            soluongkho: import("@prisma/client/runtime/library").Decimal | null;
+            haohut: number;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        })[];
+        page: any;
+        pageSize: any;
+        total: number;
+        pageCount: number;
     } | null>;
     findOne(id: string): Promise<{
         Donhangsanpham: {

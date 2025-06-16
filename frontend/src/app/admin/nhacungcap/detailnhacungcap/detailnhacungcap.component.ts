@@ -55,12 +55,12 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
           this._router.navigate(['/admin/nhacungcap']);
           this._ListnhacungcapComponent.drawer.close();
         }
-        if(id === '0'){
+        if(id === 'new'){
           this.DetailNhacungcap.set(
             {Sanpham: [], isActive: true });
           this._ListnhacungcapComponent.drawer.open();
           this.isEdit.update(value => !value);
-          this._router.navigate(['/admin/nhacungcap', "0"]);
+          this._router.navigate(['/admin/nhacungcap', "new"]);
         }
         else{
             await this._NhacungcapService.getNhacungcapByid(id);
@@ -80,7 +80,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
       this.ChosenListSanpham = this.DetailNhacungcap()?.Sanpham||[];
     }
     async handleNhacungcapAction() {
-      if (this.nhacungcapId() === '0') {
+      if (this.nhacungcapId() === 'new') {
         await this.createNhacungcap();
       }
       else {

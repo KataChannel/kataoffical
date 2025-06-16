@@ -18,8 +18,9 @@ export class SanphamController {
     return this.sanphamService.import(data);
   }
   @Post('findby')
-  findby(@Body() param: any) {
-    return this.sanphamService.findby(param);
+  async findby(@Body() param: any) {
+    const result = await this.sanphamService.findby(param);
+    return result;
   }
   @Get()
   async findAll(@Query() query: any) {

@@ -277,7 +277,7 @@ export class SanphamService {
     }
   }
 
-  async getSanphamby(param: any) {
+  async getSanphamBy(param: any) {
     try {
       const options = {
         method: 'POST',
@@ -287,14 +287,39 @@ export class SanphamService {
         },
         body: JSON.stringify(param),
       };
-      const response = await fetch(`${environment.APIURL}/sanpham/findby`, options);      
+      const response = await fetch(`${environment.APIURL}/sanpham/findby`, options);
       if (!response.ok) {
         this.handleError(response.status);
       }
-      const data = await response.json();      
-      return data 
+      const data = await response.json();
+      
+      if (param.isOne === true) {
+        this.DetailSanpham.set(data);        
+        return data;
+      } else {
+        await this.saveSanphams(data.data, {
+          page: data.page || 1,
+          totalPages: data.totalPages || 1,
+          total: data.total || data?.data?.length,
+          pageSize: this.pageSize()
+        });
+        this._StorageService.setItem('sanphams_updatedAt', new Date().toISOString());
+        this.ListSanpham.set(data.data);
+        this.page.set(data.page || 1);
+        this.totalPages.set(data.totalPages || 1);
+        this.total.set(data.total || data.data.length);
+        this.pageSize.set(this.pageSize());
+        return data.data;
+      }
     } catch (error) {
-      return console.error(error);
+      const cached = await this.getCachedData();
+      if (!param.isOne) {
+        this.ListSanpham.set(cached.sanphams);
+        this.page.set(cached.pagination.page);
+        this.totalPages.set(cached.pagination.totalPages);
+        this.total.set(cached.pagination.total);
+        this.pageSize.set(cached.pagination.pageSize);
+      }
     }
   }
 

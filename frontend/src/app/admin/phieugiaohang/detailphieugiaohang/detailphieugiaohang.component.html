@@ -7,15 +7,15 @@
     {{ DetailPhieugiaohang()?.madonhang || 'Không có dữ liệu' }}
   </div>
   <div class="flex flex-row space-x-2 items-center">
-    <button *ngIf="DetailPhieugiaohang().status!=='danhan'" mat-flat-button color="primary"
-      [disabled]="DetailPhieugiaohang().status=='dagiao'" (click)="GiaoDonhang()"> Đã Giao</button>
+    <!-- <button *ngIf="DetailPhieugiaohang().status!=='danhan'" mat-flat-button color="primary"
+      [disabled]="DetailPhieugiaohang().status=='dagiao'" (click)="GiaoDonhang()"> Đã Giao</button> -->
     <button mat-flat-button color="primary" [disabled]="DetailPhieugiaohang().status=='danhan'" (click)="Danhanhang()">
       Đã Nhận</button>
 
     <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>
     </button>
-    <button *ngIf="!isEdit()" mat-icon-button color="primary" (click)="printContent()">
+    <button *ngIf="!isEdit()" mat-icon-button color="primary" (click)="printContent();GiaoDonhang()">
       <mat-icon>print</mat-icon>
     </button>
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handlePhieugiaohangAction()">

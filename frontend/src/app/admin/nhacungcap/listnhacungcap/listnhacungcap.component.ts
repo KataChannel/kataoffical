@@ -240,7 +240,7 @@ export class ListNhacungcapComponent {
   }
   create(): void {
     this.drawer.open();
-    this._router.navigate(['admin/nhacungcap', 0]);
+    this._router.navigate(['admin/nhacungcap', 'new']);
   }
   goToDetail(item: any): void {
      this._NhacungcapService.setNhacungcapId(item.id);

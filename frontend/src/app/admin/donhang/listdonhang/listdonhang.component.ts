@@ -666,7 +666,7 @@ console.log('ListImportData', this.ListImportData);
             throw new Error('Mã sản phẩm không được để trống');
           }
 
-          const sp = await this._SanphamService.getSanphamby({
+          const sp = await this._SanphamService.getSanphamBy({
             masp: item.masp,
           });
           if (!sp) {

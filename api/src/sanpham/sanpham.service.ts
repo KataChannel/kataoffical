@@ -255,17 +255,63 @@ export class SanphamService {
   }
 
 
-  async findby(param: any) {
-    try {
-      const sanpham = await this.prisma.sanpham.findUnique({
-        where: param,
-      },
-    );
-      return sanpham;
-    } catch (error) {
-      throw error;
+  async findby(param:any) {
+      
+    const { page = 1, pageSize = 50, isOne, ...where } = param;
+    const whereClause: any = {};
+    if (where.id) {
+      whereClause.id = where.id;
     }
-  }
+    if (where.subtitle || where.name || where.title) {
+      whereClause.OR = [];
+      if (where.subtitle) {
+      whereClause.OR.push({ subtitle: { contains: where.subtitle, mode: 'insensitive' } });
+      }
+      if (where.name) {
+      whereClause.OR.push({ name: { contains: where.name, mode: 'insensitive' } });
+      }
+      if (where.title) {
+      whereClause.OR.push({ title: { contains: where.title, mode: 'insensitive' } });
+      }
+    }
+    if (where.startDate || where.endDate) {
+      whereClause.createdAt = {};
+      if (where.startDate) whereClause.createdAt.gte = where.startDate;
+      if (where.endDate) whereClause.createdAt.lte = where.endDate;
+    }    
+    if (isOne) {
+      const oneResult = await this.prisma.sanpham.findFirst({
+      where: whereClause,
+      include: { banggia: true },
+      orderBy: { createdAt: 'desc' },
+      });
+      return oneResult;
+    }
+    else {
+    const skip = (page - 1) * pageSize;
+    const [sanphams, total] = await Promise.all([
+      this.prisma.sanpham.findMany({
+      where: whereClause,
+      include: { banggia: true },
+      skip,
+      take: pageSize,
+      orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.sanpham.count({ where: whereClause }),
+    ]);
+
+    return {
+      data: sanphams,
+      page,
+      pageSize,
+      total,
+      pageCount: Math.ceil(total / pageSize),
+    };
+    }
+  } 
+
+
+
   async findOne(id: string) {
     const sanpham = await this.prisma.sanpham.findUnique({
       where: { id },

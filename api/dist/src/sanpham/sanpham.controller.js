@@ -27,8 +27,9 @@ let SanphamController = class SanphamController {
     import(data) {
         return this.sanphamService.import(data);
     }
-    findby(param) {
-        return this.sanphamService.findby(param);
+    async findby(param) {
+        const result = await this.sanphamService.findby(param);
+        return result;
     }
     async findAll(query) {
         try {
@@ -84,7 +85,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], SanphamController.prototype, "findby", null);
 __decorate([
     (0, common_1.Get)(),
