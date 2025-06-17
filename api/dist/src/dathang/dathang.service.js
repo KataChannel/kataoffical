@@ -578,7 +578,6 @@ let DathangService = class DathangService {
                                     ghichu: sp.ghichu,
                                     slgiao: parseFloat((Number(sp.slgiao) ?? 0).toFixed(2)),
                                     slnhan: parseFloat((Number(sp.slnhan) ?? 0).toFixed(2)),
-                                    slhuy: parseFloat((Number(sp.slhuy) ?? 0).toFixed(2)),
                                     ttdat: parseFloat((Number(sp.ttdat) ?? 0).toFixed(2)),
                                     ttgiao: parseFloat((Number(sp.ttgiao) ?? 0).toFixed(2)),
                                     ttnhan: parseFloat((Number(sp.ttnhan) ?? 0).toFixed(2)),

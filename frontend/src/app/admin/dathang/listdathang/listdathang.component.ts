@@ -113,7 +113,8 @@ export class ListDathangComponent {
   }
   totalItems: number = 0;
   constructor() {
-    effect(() => {
+    effect(async () => {
+      await this._DathangService.getDathangBy(this.searchParam);
       this.dataSource.data = this.Listdathang();
       this.dataSource.sort = this.sort;
       if (this.paginator) {
