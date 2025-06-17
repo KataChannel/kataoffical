@@ -528,10 +528,11 @@ export class ListDonhangComponent {
         });
         this.statusDetails.push({
           fileName: file.name,
+          ngaygiao: moment().format('YYYY-MM-DD'),
           tenkhongdau: removeVietnameseAccents(file.name.replace('.xlsx', '')),
           status: 'Processed',
           message: 'Xử lý thành công'
-        });
+        });         
       } catch (error: any) {
         console.error(`Error processing file ${file.name}:`, error);
         this._snackBar.open(`Lỗi xử lý file ${file.name}: ${error.message}`, '', {
@@ -570,6 +571,12 @@ export class ListDonhangComponent {
     this.statusDetails.forEach((v:any,k:any) => {
       this.FilterKhachhang[k]= this._KhachhangService.ListKhachhang()
     })
+    // Sort to put 'Processed' status items at the top
+    this.statusDetails.sort((a, b) => {
+      if (a.status === 'Processed' && b.status !== 'Processed') return -1;
+      if (a.status !== 'Processed' && b.status === 'Processed') return 1;
+      return 0;
+    });
   }
 removeItemImport(index: number){
   this.statusDetails.splice(index, 1);
@@ -812,15 +819,24 @@ async DoFindKhachhang(event:any,index:any){
 }
 
 DoChonNgaygiao(event:any,item:any){
+
+
   const value = event.target.value;
   if (!value) {
     this.SearchParams.ngaygiao = '';
     return;
   }
-  console.log(this.ListImportData);
-  console.log(item);
-  console.log(value);
-  
+  if(item==='All'){
+    this.ListImportData.forEach((v:any) => {
+      v.ngaygiao = value;
+    });
+    this.statusDetails.forEach((v:any) => {
+      if(v.status === 'Processed') {
+        v.ngaygiao = value;
+      }
+    });
+    return;
+  }
   this.ListImportData.filter((v => v.tenkh === item.tenkhongdau)).forEach((v1:any) => {
     v1.ngaygiao = value;
   });

@@ -9,7 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
-import { ListNhacungcapComponent } from '../listnhacungcap/listnhacungcap.component';
+import { ListNhacungcapComponent } from '../listnhacungcap/listnhacungcap';
 import { NhacungcapService } from '../nhacungcap.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
@@ -46,7 +46,6 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
         const id = params.get('id');
         this._NhacungcapService.setNhacungcapId(id);
       });
-  
       effect(async () => {
         const id = this._NhacungcapService.nhacungcapId();
         await this._SanphamService.getAllSanpham();
@@ -63,9 +62,11 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
           this._router.navigate(['/admin/nhacungcap', "new"]);
         }
         else{
-            await this._NhacungcapService.getNhacungcapByid(id);
+            await this._NhacungcapService.getNhacungcapBy({id: id,isOne: true});
             this.ChosenListSanpham = this.DetailNhacungcap()?.Sanpham||[];
             this._ListnhacungcapComponent.drawer.open();
+            console.log(id);
+            
             this._router.navigate(['/admin/nhacungcap', id]);
         }
       });
@@ -75,8 +76,8 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     isDelete = signal(false);  
     nhacungcapId:any = this._NhacungcapService.nhacungcapId
     async ngOnInit() {     
-      const id = this.nhacungcapId();
-      await this._NhacungcapService.getNhacungcapByid(id);
+      // const id = this.nhacungcapId();
+      // await this._NhacungcapService.getNhacungcapBy({id: id,isOne: true});
       this.ChosenListSanpham = this.DetailNhacungcap()?.Sanpham||[];
     }
     async handleNhacungcapAction() {

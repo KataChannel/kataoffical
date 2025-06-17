@@ -3,28 +3,21 @@ import { NhacungcapService } from './nhacungcap.service';
 export declare class NhacungcapController {
     private readonly nhacungcapService;
     constructor(nhacungcapService: NhacungcapService);
-    create(createNhacungcapDto: any): Promise<{
-        statusCode: HttpStatus;
-        message: string;
-        data: {
-            id: string;
-            ghichu: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string | null;
-            diachi: string | null;
-            sdt: string | null;
-            email: string | null;
-            mancc: string;
-            manccold: string | null;
-        };
-        error?: undefined;
-    } | {
-        statusCode: HttpStatus;
-        message: string;
-        error: any;
-        data?: undefined;
+    create(data: any): Promise<{
+        id: string;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string | null;
+        diachi: string | null;
+        sdt: string | null;
+        email: string | null;
+        mancc: string;
+        manccold: string | null;
+    }>;
+    getLastUpdatedNhacungcap(): Promise<{
+        updatedAt: number;
     }>;
     import(data: any): Promise<{
         message: string;
@@ -74,32 +67,8 @@ export declare class NhacungcapController {
         error: any;
         data?: undefined;
     }>;
-    findAll(): Promise<{
-        statusCode: HttpStatus;
-        message: string;
-        data: ({
-            Sanpham: {
-                id: string;
-                title: string;
-                title2: string | null;
-                slug: string | null;
-                masp: string;
-                subtitle: string | null;
-                giagoc: number;
-                giaban: number;
-                dvt: string | null;
-                hinhanh: string | null;
-                loadpoint: number | null;
-                soluong: import("@prisma/client/runtime/library").Decimal | null;
-                soluongkho: import("@prisma/client/runtime/library").Decimal | null;
-                haohut: number;
-                ghichu: string | null;
-                order: number | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-            }[];
-        } & {
+    findAll(query: any): Promise<{
+        data: {
             id: string;
             ghichu: string | null;
             isActive: boolean;
@@ -111,13 +80,11 @@ export declare class NhacungcapController {
             email: string | null;
             mancc: string;
             manccold: string | null;
-        })[];
-        error?: undefined;
-    } | {
-        statusCode: HttpStatus;
-        message: string;
-        error: any;
-        data?: undefined;
+        }[];
+        total: number;
+        page: number;
+        pageSize: number;
+        totalPages: number;
     }>;
     findOne(id: string): Promise<{
         statusCode: HttpStatus;
@@ -169,6 +136,36 @@ export declare class NhacungcapController {
         error: any;
         data?: undefined;
     }>;
+    findby(param: any): Promise<{
+        id: string;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string | null;
+        diachi: string | null;
+        sdt: string | null;
+        email: string | null;
+        mancc: string;
+        manccold: string | null;
+    } | {
+        data: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            email: string | null;
+            mancc: string;
+            manccold: string | null;
+        }[];
+        total: number;
+        page: any;
+        pageCount: number;
+    } | null>;
     update(id: string, updateNhacungcapDto: any): Promise<{
         statusCode: HttpStatus;
         message: string;

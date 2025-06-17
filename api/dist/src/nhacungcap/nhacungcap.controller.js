@@ -17,25 +17,25 @@ const common_1 = require("@nestjs/common");
 const nhacungcap_service_1 = require("./nhacungcap.service");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
+const swagger_1 = require("@nestjs/swagger");
 let NhacungcapController = class NhacungcapController {
     constructor(nhacungcapService) {
         this.nhacungcapService = nhacungcapService;
     }
-    async create(createNhacungcapDto) {
+    async create(data) {
         try {
-            const result = await this.nhacungcapService.create(createNhacungcapDto);
-            return {
-                statusCode: common_1.HttpStatus.CREATED,
-                message: 'Nhà cung cấp created successfully',
-                data: result,
-            };
+            return await this.nhacungcapService.create(data);
         }
         catch (error) {
-            return {
-                statusCode: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: 'Failed to create nhà cung cấp',
-                error: error.message || error,
-            };
+            throw new common_1.HttpException(error.message || 'Create failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async getLastUpdatedNhacungcap() {
+        try {
+            return await this.nhacungcapService.getLastUpdatedNhacungcap();
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Get last updated failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     import(data) {
@@ -58,21 +58,12 @@ let NhacungcapController = class NhacungcapController {
             };
         }
     }
-    async findAll() {
+    async findAll(query) {
         try {
-            const result = await this.nhacungcapService.findAll();
-            return {
-                statusCode: common_1.HttpStatus.OK,
-                message: 'Nhà cung cấp(s) fetched successfully',
-                data: result,
-            };
+            return await this.nhacungcapService.findAll(query);
         }
         catch (error) {
-            return {
-                statusCode: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: 'Failed to fetch nhà cung cấp(s)',
-                error: error.message || error,
-            };
+            throw new common_1.HttpException(error.message || 'Failed to fetch nhacungcaps', error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async findOne(id) {
@@ -96,6 +87,14 @@ let NhacungcapController = class NhacungcapController {
                 message: 'Failed to fetch nhà cung cấp',
                 error: error.message || error,
             };
+        }
+    }
+    async findby(param) {
+        try {
+            return await this.nhacungcapService.findBy(param);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async update(id, updateNhacungcapDto) {
@@ -135,13 +134,23 @@ let NhacungcapController = class NhacungcapController {
 };
 exports.NhacungcapController = NhacungcapController;
 __decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new nhacungcap' }),
+    (0, swagger_1.ApiBody)({ type: Object }),
     (0, common_1.Post)(),
-    (0, audit_decorator_1.Audit)({ entity: 'Create Nhacungcap', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, audit_decorator_1.Audit)({ entity: 'Nhacungcap', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], NhacungcapController.prototype, "create", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Get last updated nhacungcap' }),
+    (0, common_1.Get)('lastupdated'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], NhacungcapController.prototype, "getLastUpdatedNhacungcap", null);
 __decorate([
     (0, common_1.Post)('import'),
     __param(0, (0, common_1.Body)()),
@@ -157,9 +166,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], NhacungcapController.prototype, "findByProductIds", null);
 __decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Get all nhacungcaps with pagination' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of nhacungcaps with pagination info' }),
+    (0, swagger_1.ApiResponse)({ status: 500, description: 'Internal server error' }),
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], NhacungcapController.prototype, "findAll", null);
 __decorate([
@@ -169,6 +182,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], NhacungcapController.prototype, "findOne", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Find nhacungcaps by parameters' }),
+    (0, swagger_1.ApiBody)({ type: Object }),
+    (0, common_1.Post)('findby'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], NhacungcapController.prototype, "findby", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Update Nhacungcap', action: client_1.AuditAction.UPDATE, includeResponse: true }),

@@ -286,29 +286,11 @@ export const routes: Routes = [
         ],
       },
       {
-        path: 'nhacungcap',
-        canActivate: [PermissionGuard],
-        data: { permission: 'nhacungcap.view' },
-        loadComponent: () =>
-          import(
-            './admin/nhacungcap/listnhacungcap/listnhacungcap.component'
-          ).then((c) => c.ListNhacungcapComponent),
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import(
-                './admin/nhacungcap/listnhacungcap/listnhacungcap.component'
-              ).then((c) => c.ListNhacungcapComponent),
-          },
-          {
-            path: ':id',
-            loadComponent: () =>
-              import(
-                './admin/nhacungcap/detailnhacungcap/detailnhacungcap.component'
-              ).then((c) => c.DetailNhacungcapComponent),
-          },
-        ],
+            path: 'nhacungcap',
+            canActivate: [PermissionGuard],
+            data: { permission: 'nhacungcap.view' },
+            loadChildren: () =>
+              import('./admin/nhacungcap/nhacungcap.route').then(m => m.NhacungcapRoutingModule),
       },
       {
         path: 'dathang',

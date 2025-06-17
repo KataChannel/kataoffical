@@ -1,28 +1,33 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, HttpStatus, HttpException, Query, UseGuards } from '@nestjs/common';
 import { NhacungcapService } from './nhacungcap.service';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('nhacungcap')
 export class NhacungcapController {
   constructor(private readonly nhacungcapService: NhacungcapService) {}
 
+  @ApiBearerAuth() 
+  @ApiOperation({ summary: 'Create a new nhacungcap' }) 
+  @ApiBody({ type: Object }) 
   @Post()
-  @Audit({entity: 'Create Nhacungcap', action: AuditAction.CREATE, includeResponse: true})
-  async create(@Body() createNhacungcapDto: any) {
+  @Audit({ entity: 'Nhacungcap', action: AuditAction.CREATE, includeResponse: true })
+  async create(@Body() data: any) { 
     try {
-      const result = await this.nhacungcapService.create(createNhacungcapDto);
-      return {
-        statusCode: HttpStatus.CREATED,
-        message: 'Nhà cung cấp created successfully',
-        data: result,
-      };
+      return await this.nhacungcapService.create(data);
     } catch (error) {
-      return {
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Failed to create nhà cung cấp',
-        error: error.message || error,
-      };
+      throw new HttpException(error.message || 'Create failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+  @ApiOperation({ summary: 'Get last updated nhacungcap' })
+  @Get('lastupdated') 
+  async getLastUpdatedNhacungcap() { 
+    try {
+      return await this.nhacungcapService.getLastUpdatedNhacungcap();
+    } catch (error) {
+      throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
   @Post('import')
@@ -47,22 +52,19 @@ export class NhacungcapController {
     }
   }
 
+  @ApiOperation({ summary: 'Get all nhacungcaps with pagination' })
+  @ApiResponse({ status: 200, description: 'List of nhacungcaps with pagination info' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get()
-  async findAll() {
+  async findAll(@Query() query: any) {
     try {
-      const result = await this.nhacungcapService.findAll();
-      return {
-        statusCode: HttpStatus.OK,
-        message: 'Nhà cung cấp(s) fetched successfully',
-        data: result,
-      };
+      return await this.nhacungcapService.findAll(query);
     } catch (error) {
-      return {
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: 'Failed to fetch nhà cung cấp(s)',
-        error: error.message || error,
-      };
-    }
+      throw new HttpException(
+        error.message || 'Failed to fetch nhacungcaps',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } 
   }
 
   @Get('findid/:id')
@@ -88,7 +90,16 @@ export class NhacungcapController {
       };
     }
   }
-
+  @ApiOperation({ summary: 'Find nhacungcaps by parameters' })
+  @ApiBody({ type: Object }) 
+  @Post('findby')
+  async findby(@Body() param: any) {
+    try {
+      return await this.nhacungcapService.findBy(param);
+    } catch (error) {
+      throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
   @Patch(':id')
   @Audit({entity: 'Update Nhacungcap', action: AuditAction.UPDATE, includeResponse: true})
   async update(@Param('id') id: string, @Body() updateNhacungcapDto: any) {
@@ -126,4 +137,5 @@ export class NhacungcapController {
       };
     }
   }
+  
 }

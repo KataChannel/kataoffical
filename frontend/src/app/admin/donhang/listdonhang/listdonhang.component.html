@@ -401,7 +401,15 @@
                                 Khách hàng
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Ngày Giao</th>
+                                Ngày Giao
+                          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                    <mat-label>Ngày Giao All </mat-label>
+                                    <input (dateChange)="DoChonNgaygiao($event,'All')" matInput
+                                        [matDatepicker]="picker">
+                                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker></mat-datepicker>
+                                </mat-form-field>
+                            </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 File Name</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -444,10 +452,9 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-gray-900">
                                 @if(detail.status === 'Processed'){
-
                                 <mat-form-field appearance="outline" subscriptSizing="dynamic">
                                     <mat-label>Ngày Giao </mat-label>
-                                    <input (dateChange)="DoChonNgaygiao($event,detail)" matInput
+                                    <input [ngModel]="statusDetails[i]?.ngaygiao" (dateChange)="DoChonNgaygiao($event,detail)" matInput
                                         [matDatepicker]="picker">
                                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                                     <mat-datepicker #picker></mat-datepicker>
