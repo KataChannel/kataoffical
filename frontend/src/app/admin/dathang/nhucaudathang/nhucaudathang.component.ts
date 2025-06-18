@@ -71,7 +71,7 @@ export class NhucaudathangComponent {
     goiy: 'Gợi Ý',
   };
   FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('SanphamColFilter') || '[]'
+    localStorage.getItem('NhucauColFilter') || '[]'
   );
   Columns: any[] = [];
   //pagination
@@ -139,7 +139,7 @@ export class NhucaudathangComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('SanphamColFilter',JSON.stringify(this.FilterColumns)
+      localStorage.setItem('NhucauColFilter',JSON.stringify(this.FilterColumns)
       );
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -238,7 +238,7 @@ export class NhucaudathangComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('SanphamColFilter',JSON.stringify(this.FilterColumns)
+    localStorage.setItem('NhucauColFilter',JSON.stringify(this.FilterColumns)
     );
   }
   doFilterColumns(event: any): void {

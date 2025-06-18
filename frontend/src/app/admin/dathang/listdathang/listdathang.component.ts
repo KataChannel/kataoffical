@@ -27,6 +27,7 @@ import moment from 'moment';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Debounce, memoize } from '../../../shared/utils/decorators';
+import { ChangeDetectionStrategy } from '@angular/core';
 @Component({
   selector: 'app-listdathang',
   templateUrl: './listdathang.component.html',
@@ -49,6 +50,7 @@ import { Debounce, memoize } from '../../../shared/utils/decorators';
     MatDatepickerModule,
     MatDialogModule
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListDathangComponent {
   Detail: any = {};
@@ -114,7 +116,6 @@ export class ListDathangComponent {
   totalItems: number = 0;
   constructor() {
     effect(async () => {
-      await this._DathangService.getDathangBy(this.searchParam);
       this.dataSource.data = this.Listdathang();
       this.dataSource.sort = this.sort;
       if (this.paginator) {
