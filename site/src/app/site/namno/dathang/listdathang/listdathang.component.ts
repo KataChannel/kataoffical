@@ -23,6 +23,7 @@ import { GoogleSheetService } from '../../../../shared/googlesheets/googlesheets
 import { memoize, Debounce } from '../../../../shared/utils/decorators';
 import { readExcelFile, writeExcelFile } from '../../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData } from '../../../../shared/utils/shared.utils';
+import { PaginationComponent, TableComponent, ToolbarComponent } from '@kataoffical/shared';
 
 @Component({
   selector: 'app-listdathang',
@@ -44,7 +45,9 @@ import { ConvertDriveData } from '../../../../shared/utils/shared.utils';
     FormsModule,
     MatTooltipModule,
     MatDialogModule,
-    SearchfilterComponent
+    TableComponent,
+    ToolbarComponent,
+    PaginationComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -77,7 +80,7 @@ export class ListDathangComponent implements OnInit {
 
   Listdathang = this._DathangService.ListDathang;
   page = this._DathangService.page;
-  pageCount = this._DathangService.pageCount;
+  totalPages = this._DathangService.pageCount;
   total = this._DathangService.total;
   pageSize = this._DathangService.pageSize;
   dathangId = this._DathangService.dathangId;
@@ -212,7 +215,7 @@ export class ListDathangComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
-  private updateDisplayedColumns(): void {
+  updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map((item) => item.key);
     this.ColumnName = this.FilterColumns.reduce((obj, item) => {
       if (item.isShow) obj[item.key] = item.value;
@@ -367,19 +370,24 @@ export class ListDathangComponent implements OnInit {
     return item.id;
   }
 
-  onPageSizeChange(size: number, menuHienthi: any) {
-    if (size > this.total()) {
-      this._snackBar.open(`Số lượng tối đa ${this.total()}`, '', {
-        duration: 1000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
-      size = this.total();
-    }
+  // onPageSizeChange(size: number, menuHienthi: any) {
+  //   if (size > this.total()) {
+  //     this._snackBar.open(`Số lượng tối đa ${this.total()}`, '', {
+  //       duration: 1000,
+  //       horizontalPosition: 'end',
+  //       verticalPosition: 'top',
+  //       panelClass: ['snackbar-success'],
+  //     });
+  //     size = this.total();
+  //   }
+  //   this._DathangService.page.set(1);
+  //   this._DathangService.getAllDathang(size, true);
+  //   menuHienthi.closeMenu();
+  // }
+  onPageSizeChange(size: number): void {
+    this._DathangService.pageSize.set(size);
     this._DathangService.page.set(1);
     this._DathangService.getAllDathang(size, true);
-    menuHienthi.closeMenu();
   }
   onPreviousPage(){
     if (this.page() > 1) {
@@ -389,7 +397,7 @@ export class ListDathangComponent implements OnInit {
   }
 
   onNextPage(){
-    if (this.page() < this.pageCount()) {
+    if (this.page() < this.totalPages()) {
       this._DathangService.page.set(this.page() + 1);
       this._DathangService.getAllDathang(this.pageSize(), true);
     }

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "b5b58314-49ff-4747-89cb-36bd2d90149a",
+    "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+    "khachhangId": "1999d9c8-47b9-4aed-8a74-cf8adb6e53a8",
+    "status": true,
+    "createdAt": "2025-06-01T18:21:07.206Z",
+    "updatedAt": "2025-06-01T18:21:07.206Z"
+  },
+  {
+    "id": "e47f1c89-53cc-414f-b20a-37c62c43693b",
+    "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+    "khachhangId": "c4ccf464-f576-4280-b627-cb7ebcc26063",
+    "status": true,
+    "createdAt": "2025-06-01T18:21:07.206Z",
+    "updatedAt": "2025-06-01T18:21:07.206Z"
+  }
+]

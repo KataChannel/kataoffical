@@ -18,7 +18,8 @@ async function bootstrap() {
             enableImplicitConversion: true,
         },
     }));
-    app.useGlobalInterceptors(new common_1.ClassSerializerInterceptor(app.get(core_1.Reflector)));
+    const reflector = app.get(core_1.Reflector);
+    app.useGlobalInterceptors(new common_1.ClassSerializerInterceptor(reflector));
     app.useGlobalPipes(new common_1.ValidationPipe());
     const config = new swagger_1.DocumentBuilder()
         .setTitle('Kataapp API')

@@ -1,0 +1,9 @@
+<div #editableDiv
+     class="editable-div p-2 min-w-28 text-end bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+     [ngClass]="{'cursor-pointer': !isEditing}"
+     [contentEditable]="isEditing"
+     (dblclick)="startEditing()"
+     (blur)="onBlur()"
+     (keydown)="onKeyDown($event)"
+     [innerText]="displayValue">
+</div>

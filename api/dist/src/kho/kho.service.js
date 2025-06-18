@@ -28,7 +28,6 @@ let KhoService = class KhoService {
             return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdatedKho', error);
             throw error;
         }
     }
@@ -39,13 +38,13 @@ let KhoService = class KhoService {
             });
             let nextNumber = 1;
             if (latest && latest.codeId) {
-                const prefix = 'DONHANG';
-                const match = latest.codeId.match(new RegExp(prefix + '(\d+)'));
+                const prefix = 'SP';
+                const match = latest.codeId.match(new RegExp(prefix + '(\\d+)'));
                 if (match) {
                     nextNumber = parseInt(match[1]) + 1;
                 }
             }
-            const newPrefix = 'DONHANG';
+            const newPrefix = 'SP';
             return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
@@ -64,13 +63,14 @@ let KhoService = class KhoService {
                 data: {
                     ...data,
                     order: newOrder,
-                    codeId: codeId
+                    codeId: codeId,
                 },
             });
             this._SocketGateway.sendUpdate('kho');
             return created;
         }
         catch (error) {
+            console.log('Error creating kho:', error);
             this._ErrorlogService.logError('createKho', error);
             throw error;
         }
@@ -107,26 +107,59 @@ let KhoService = class KhoService {
             throw error;
         }
     }
-    async findAll(page = 1, limit = 20) {
+    async findAll(query) {
+        console.log('findAllKho query:', query);
         try {
-            const skip = (page - 1) * limit;
-            const [data, total] = await Promise.all([
+            const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
+            const numericPage = Number(page);
+            const numericPageSize = Number(pageSize);
+            const skip = (numericPage - 1) * numericPageSize;
+            const take = numericPageSize;
+            const where = {};
+            if (search) {
+                where.OR = [
+                    { title: { contains: search, mode: 'insensitive' } },
+                    { description: { contains: search, mode: 'insensitive' } }
+                ];
+            }
+            if (category) {
+                where.category = { equals: category, mode: 'insensitive' };
+            }
+            if (priceMin || priceMax) {
+                where.price = {};
+                if (priceMin) {
+                    where.price.gte = priceMin;
+                }
+                if (priceMax) {
+                    where.price.lte = priceMax;
+                }
+            }
+            const orderBy = {};
+            if (sortBy && sortOrder) {
+                orderBy[sortBy] = sortOrder;
+            }
+            else {
+                orderBy.createdAt = 'desc';
+            }
+            const [khos, total] = await this.prisma.$transaction([
                 this.prisma.kho.findMany({
+                    where,
                     skip,
-                    take: limit,
-                    orderBy: { order: 'asc' },
+                    take,
+                    orderBy,
                 }),
-                this.prisma.kho.count(),
+                this.prisma.kho.count({ where }),
             ]);
             return {
-                data,
-                total,
-                page,
-                pageCount: Math.ceil(total / limit)
+                data: khos,
+                total: Number(total),
+                page: numericPage,
+                pageSize: numericPageSize,
+                totalPages: Math.ceil(Number(total) / numericPageSize),
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findAllKho', error);
+            console.log('Error in findAllKho:', error);
             throw error;
         }
     }
@@ -138,26 +171,32 @@ let KhoService = class KhoService {
             return item;
         }
         catch (error) {
-            this._ErrorlogService.logError('findOneKho', error);
+            console.log('Error finding kho:', error);
             throw error;
         }
     }
     async update(id, data) {
         try {
-            let updated;
-            if (data.order) {
-                const { order, ...rest } = data;
-                await this.prisma.kho.update({ where: { id }, data: rest });
-                updated = await this.prisma.kho.update({ where: { id }, data: { order } });
-            }
-            else {
-                updated = await this.prisma.kho.update({ where: { id }, data });
-            }
+            const { title, danhmucId, bienthe, donvitinh, price, status, order, ...restData } = data;
+            const updated = await this.prisma.kho.update({
+                where: { id },
+                data: {
+                    title,
+                    bienthe,
+                    donvitinh,
+                    giagoc: price || 0,
+                    status: status || 'draft',
+                    order: order || undefined,
+                    ...restData,
+                    ...(danhmucId && { danhmuc: { connect: { id: danhmucId } } }),
+                    ...(data.danhmucId === null && { danhmuc: { disconnect: true } }),
+                },
+            });
             this._SocketGateway.sendUpdate('kho');
             return updated;
         }
         catch (error) {
-            this._ErrorlogService.logError('updateKho', error);
+            console.log('Error updating kho:', error);
             throw error;
         }
     }
@@ -168,7 +207,7 @@ let KhoService = class KhoService {
             return deleted;
         }
         catch (error) {
-            this._ErrorlogService.logError('removeKho', error);
+            console.log('Error removing kho:', error);
             throw error;
         }
     }
@@ -184,7 +223,7 @@ let KhoService = class KhoService {
             return { status: 'success' };
         }
         catch (error) {
-            this._ErrorlogService.logError('reorderKhos', error);
+            console.log('Error reordering kho:', error);
             throw error;
         }
     }

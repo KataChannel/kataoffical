@@ -1,0 +1,577 @@
+[
+  {
+    "id": "efca65f4-1671-418d-a967-3ca47495fc00",
+    "codeId": "SP00007",
+    "title": "Robusta Honey (Semi Wash)",
+    "description": null,
+    "inStock": true,
+    "order": 10,
+    "createdAt": "2025-06-13T12:01:02.306Z",
+    "updatedAt": "2025-06-13T12:01:02.334Z",
+    "status": "draft",
+    "danhmucId": null,
+    "bienthe": null,
+    "donvitinh": null,
+    "giagoc": 0,
+    "bacgia": [
+      {
+        "gia": 305000,
+        "max": 9,
+        "min": 5,
+        "type": "5-9 kg"
+      },
+      {
+        "gia": 280000,
+        "max": 9999,
+        "min": 10,
+        "type": "Trên 10 kg"
+      },
+      {
+        "gia": 370000,
+        "max": 1,
+        "min": 1,
+        "type": "Bì 1 kg"
+      },
+      {
+        "gia": 190000,
+        "max": 0.5,
+        "min": 0.5,
+        "type": "Bì 500 gr"
+      },
+      {
+        "gia": 99000,
+        "max": 0.25,
+        "min": 0.25,
+        "type": "Bì 250 gr"
+      }
+    ]
+  },
+  {
+    "id": "85ac13e2-9ad0-43e7-b1e5-24f7ad8a53a7",
+    "codeId": "SP00008",
+    "title": "Fine Robusta",
+    "description": null,
+    "inStock": true,
+    "order": 11,
+    "createdAt": "2025-06-13T12:01:02.323Z",
+    "updatedAt": "2025-06-13T12:01:02.341Z",
+    "status": "draft",
+    "danhmucId": null,
+    "bienthe": null,
+    "donvitinh": null,
+    "giagoc": 0,
+    "bacgia": [
+      {
+        "gia": 420000,
+        "max": 9,
+        "min": 5,
+        "type": "5-9 kg"
+      },
+      {
+        "gia": 350000,
+        "max": 9999,
+        "min": 10,
+        "type": "Trên 10 kg"
+      },
+      {
+        "gia": 480000,
+        "max": 1,
+        "min": 1,
+        "type": "Bì 1 kg"
+      },
+      {
+        "gia": 250000,
+        "max": 0.5,
+        "min": 0.5,
+        "type": "Bì 500 gr"
+      },
+      {
+        "gia": 135000,
+        "max": 0.25,
+        "min": 0.25,
+        "type": "Bì 250 gr"
+      }
+    ]
+  },
+  {
+    "id": "cb411c5d-0bce-422e-9aca-3ed5e6b51e18",
+    "codeId": "SP00009",
+    "title": "Arabica Cầu Đất (Arabica Đà Lạt)",
+    "description": null,
+    "inStock": true,
+    "order": 12,
+    "createdAt": "2025-06-13T12:01:02.356Z",
+    "updatedAt": "2025-06-13T12:01:02.356Z",
+    "status": "draft",
+    "danhmucId": null,
+    "bienthe": null,
+    "donvitinh": null,
+    "giagoc": 0,
+    "bacgia": [
+      {
+        "gia": 420000,
+        "max": 9,
+        "min": 5,
+        "type": "5-9 kg"
+      },
+      {
+        "gia": 350000,
+        "max": 9999,
+        "min": 10,
+        "type": "Trên 10 kg"
+      },
+      {
+        "gia": 480000,
+        "max": 1,
+        "min": 1,
+        "type": "Bì 1 kg"
+      },
+      {
+        "gia": 250000,
+        "max": 0.5,
+        "min": 0.5,
+        "type": "Bì 500 gr"
+      },
+      {
+        "gia": 135000,
+        "max": 0.25,
+        "min": 0.25,
+        "type": "Bì 250 gr"
+      }
+    ]
+  },
+  {
+    "id": "2292ff92-5bb4-4fd2-aa4c-84a574773b08",
+    "codeId": "SP00010",
+    "title": "Arabica Măng Đen",
+    "description": null,
+    "inStock": true,
+    "order": 13,
+    "createdAt": "2025-06-13T12:01:02.373Z",
+    "updatedAt": "2025-06-13T12:01:02.373Z",
+    "status": "draft",
+    "danhmucId": null,
+    "bienthe": null,
+    "donvitinh": null,
+    "giagoc": 0,
+    "bacgia": [
+      {
+        "gia": 460000,
+        "max": 9,
+        "min": 5,
+        "type": "5-9 kg"
+      },
+      {
+        "gia": 400000,
+        "max": 9999,
+        "min": 10,
+        "type": "Trên 10 kg"
+      },
+      {
+        "gia": 520000,
+        "max": 1,
+        "min": 1,
+        "type": "Bì 1 kg"
+      },
+      {
+        "gia": 270000,
+        "max": 0.5,
+        "min": 0.5,
+        "type": "Bì 500 gr"
+      },
+      {
+        "gia": 145000,
+        "max": 0.25,
+        "min": 0.25,
+        "type": "Bì 250 gr"
+      }
+    ]
+  },
+  {
+    "id": "44f484b1-317f-4732-9407-b78f9decc461",
+    "codeId": "SP00011",
+    "title": "Arabica Ngọc Linh",
+    "description": null,
+    "inStock": true,
+    "order": 14,
+    "createdAt": "2025-06-13T12:01:02.400Z",
+    "updatedAt": "2025-06-13T12:01:02.400Z",
+    "status": "draft",
+    "danhmucId": null,
+    "bienthe": null,
+    "donvitinh": null,
+    "giagoc": 0,
+    "bacgia": [
+      {
+        "gia": 990000,
+        "max": 9,
+        "min": 5,
+        "type": "5-9 kg"
+      },
+      {
+        "gia": 800000,
+        "max": 9999,
+        "min": 10,
+        "type": "Trên 10 kg"
+      },
+      {
+        "gia": 1100000,
+        "max": 1,
+        "min": 1,
+        "type": "Bì 1 kg"
+      },
+      {
+        "gia": 570000,
+        "max": 0.5,
+        "min": 0.5,
+        "type": "Bì 500 gr"
+      },
+      {
+        "gia": 290000,
+        "max": 0.25,
+        "min": 0.25,
+        "type": "Bì 250 gr"
+      }
+    ]
+  },
+  {
+    "id": "3dc21ae6-9ff6-4ca5-b62d-f5f122f8e53c",
+    "codeId": "SP00012",
+    "title": "House blend 90% Robusta 10% Arabica Đà Lạt",
+    "description": null,
+    "inStock": true,
+    "order": 15,
+    "createdAt": "2025-06-13T12:01:02.417Z",
+    "updatedAt": "2025-06-13T12:01:02.417Z",
+    "status": "draft",
+    "danhmucId": null,
+    "bienthe": null,
+    "donvitinh": null,
+    "giagoc": 0,
+    "bacgia": [
+      {
+        "gia": 320000,
+        "max": 9,
+        "min": 5,
+        "type": "5-9 kg"
+      },
+      {
+        "gia": 280000,
+        "max": 9999,
+        "min": 10,
+        "type": "Trên 10 kg"
+      },
+      {
+        "gia": 380000,
+        "max": 1,
+        "min": 1,
+        "type": "Bì 1 kg"
+      },
+      {
+        "gia": 195000,
+        "max": 0.5,
+        "min": 0.5,
+        "type": "Bì 500 gr"
+      },
+      {
+        "gia": 105000,
+        "max": 0.25,
+        "min": 0.25,
+        "type": "Bì 250 gr"
+      }
+    ]
+  },
+  {
+    "id": "04a95b04-7fc6-4a92-9873-d956a76191e2",
+    "codeId": "SP00013",
+    "title": "House blend 80% Robusta 20% Arabica Đà Lạt",
+    "description": null,
+    "inStock": true,
+    "order": 16,
+    "createdAt": "2025-06-13T12:01:02.437Z",
+    "updatedAt": "2025-06-13T12:01:02.437Z",
+    "status": "draft",
+    "danhmucId": null,
+    "bienthe": null,
+    "donvitinh": null,
+    "giagoc": 0,
+    "bacgia": [
+      {
+        "gia": 330000,
+        "max": 9,
+        "min": 5,
+        "type": "5-9 kg"
+      },
+      {
+        "gia": 290000,
+        "max": 9999,
+        "min": 10,
+        "type": "Trên 10 kg"
+      },
+      {
+        "gia": 390000,
+        "max": 1,
+        "min": 1,
+        "type": "Bì 1 kg"
+      },
+      {
+        "gia": 200000,
+        "max": 0.5,
+        "min": 0.5,
+        "type": "Bì 500 gr"
+      },
+      {
+        "gia": 110000,
+        "max": 0.25,
+        "min": 0.25,
+        "type": "Bì 250 gr"
+      }
+    ]
+  },
+  {
+    "id": "766f4800-1270-4350-a91a-ac1e1e07462f",
+    "codeId": "SP00014",
+    "title": "Ethiopia",
+    "description": null,
+    "inStock": true,
+    "order": 17,
+    "createdAt": "2025-06-13T12:01:02.460Z",
+    "updatedAt": "2025-06-13T12:01:02.460Z",
+    "status": "draft",
+    "danhmucId": null,
+    "bienthe": null,
+    "donvitinh": null,
+    "giagoc": 0,
+    "bacgia": [
+      {
+        "gia": 0,
+        "max": 9,
+        "min": 5,
+        "type": "5-9 kg"
+      },
+      {
+        "gia": 0,
+        "max": 9999,
+        "min": 10,
+        "type": "Trên 10 kg"
+      },
+      {
+        "gia": 1150000,
+        "max": 1,
+        "min": 1,
+        "type": "Bì 1 kg"
+      },
+      {
+        "gia": 590000,
+        "max": 0.5,
+        "min": 0.5,
+        "type": "Bì 500 gr"
+      },
+      {
+        "gia": 305000,
+        "max": 0.25,
+        "min": 0.25,
+        "type": "Bì 250 gr"
+      }
+    ]
+  },
+  {
+    "id": "4c0e347d-e119-43bf-8ac6-208019d3c82a",
+    "codeId": "SP00015",
+    "title": "Kenya",
+    "description": null,
+    "inStock": true,
+    "order": 18,
+    "createdAt": "2025-06-13T12:01:02.481Z",
+    "updatedAt": "2025-06-13T12:01:02.481Z",
+    "status": "draft",
+    "danhmucId": null,
+    "bienthe": null,
+    "donvitinh": null,
+    "giagoc": 0,
+    "bacgia": [
+      {
+        "gia": 0,
+        "max": 9,
+        "min": 5,
+        "type": "5-9 kg"
+      },
+      {
+        "gia": 0,
+        "max": 9999,
+        "min": 10,
+        "type": "Trên 10 kg"
+      },
+      {
+        "gia": 1300000,
+        "max": 1,
+        "min": 1,
+        "type": "Bì 1 kg"
+      },
+      {
+        "gia": 660000,
+        "max": 0.5,
+        "min": 0.5,
+        "type": "Bì 500 gr"
+      },
+      {
+        "gia": 345000,
+        "max": 0.25,
+        "min": 0.25,
+        "type": "Bì 250 gr"
+      }
+    ]
+  },
+  {
+    "id": "c1f02a08-b8b1-4c2c-b413-a1a7d720416f",
+    "codeId": "SP00016",
+    "title": "Columbia",
+    "description": null,
+    "inStock": true,
+    "order": 19,
+    "createdAt": "2025-06-13T12:01:02.501Z",
+    "updatedAt": "2025-06-13T12:01:02.501Z",
+    "status": "draft",
+    "danhmucId": null,
+    "bienthe": null,
+    "donvitinh": null,
+    "giagoc": 0,
+    "bacgia": [
+      {
+        "gia": 0,
+        "max": 9,
+        "min": 5,
+        "type": "5-9 kg"
+      },
+      {
+        "gia": 0,
+        "max": 9999,
+        "min": 10,
+        "type": "Trên 10 kg"
+      },
+      {
+        "gia": 900000,
+        "max": 1,
+        "min": 1,
+        "type": "Bì 1 kg"
+      },
+      {
+        "gia": 460000,
+        "max": 0.5,
+        "min": 0.5,
+        "type": "Bì 500 gr"
+      },
+      {
+        "gia": 245000,
+        "max": 0.25,
+        "min": 0.25,
+        "type": "Bì 250 gr"
+      }
+    ]
+  },
+  {
+    "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+    "codeId": "SP00006",
+    "title": "Arabica Cầu Đất",
+    "description": null,
+    "inStock": true,
+    "order": 9,
+    "createdAt": "2025-06-03T14:17:52.364Z",
+    "updatedAt": "2025-06-13T12:01:02.270Z",
+    "status": "draft",
+    "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+    "bienthe": null,
+    "donvitinh": "Hũ",
+    "giagoc": 0,
+    "bacgia": [
+      {
+        "gia": 180000,
+        "max": 10,
+        "min": 0,
+        "type": "<10 hũ/hộp"
+      },
+      {
+        "gia": 160000,
+        "max": 49,
+        "min": 10,
+        "type": "10-49 hũ/hộp"
+      },
+      {
+        "gia": 140000,
+        "max": 9999,
+        "min": 50,
+        "type": ">50 hũ/hộp"
+      }
+    ]
+  },
+  {
+    "id": "c205da90-c058-4d02-accc-94069d65aa3c",
+    "codeId": "SP00005",
+    "title": "Fine Robusta",
+    "description": null,
+    "inStock": true,
+    "order": 8,
+    "createdAt": "2025-06-02T17:03:42.471Z",
+    "updatedAt": "2025-06-13T12:01:02.281Z",
+    "status": "draft",
+    "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+    "bienthe": "",
+    "donvitinh": "Hũ",
+    "giagoc": 160000,
+    "bacgia": [
+      {
+        "gia": 125000,
+        "max": 9999,
+        "min": 50,
+        "type": ">50 units"
+      },
+      {
+        "gia": 140000,
+        "max": 49,
+        "min": 10,
+        "type": "10-49 units"
+      },
+      {
+        "gia": 160000,
+        "max": 10,
+        "min": 0,
+        "type": "<10 units"
+      }
+    ]
+  },
+  {
+    "id": "60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+    "codeId": "SP00004",
+    "title": "Blend",
+    "description": null,
+    "inStock": true,
+    "order": 7,
+    "createdAt": "2025-06-02T16:02:03.716Z",
+    "updatedAt": "2025-06-13T12:01:02.288Z",
+    "status": "draft",
+    "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+    "bienthe": null,
+    "donvitinh": "Hũ",
+    "giagoc": 140000,
+    "bacgia": [
+      {
+        "gia": 1050000,
+        "max": 9999,
+        "min": 50,
+        "type": ">50 units"
+      },
+      {
+        "gia": 120000,
+        "max": 49,
+        "min": 10,
+        "type": "10-49 units"
+      },
+      {
+        "gia": 140000,
+        "max": 10,
+        "min": 0,
+        "type": "<10 units"
+      }
+    ]
+  }
+]

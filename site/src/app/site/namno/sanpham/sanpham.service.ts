@@ -80,7 +80,29 @@ export class SanphamService {
   setSanphamId(id: string | null) {
     this.sanphamId.set(id);
   }
-
+  async ImportSanpham(dulieu: any) {
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/sanpham/import`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+          this.handleError(response.status);
+        }
+        this.getAllSanpham()
+    } catch (error) {
+        return console.error(error);
+    }
+  }
   async CreateSanpham(dulieu: any) {
     try {
       const options = {

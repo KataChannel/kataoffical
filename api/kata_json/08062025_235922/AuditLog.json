@@ -1,0 +1,2221 @@
+[
+  {
+    "id": "f854e199-63e5-42c3-aad5-0f45015b886f",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+    "createdAt": "2025-06-03T14:48:39.212Z",
+    "changedFields": [],
+    "entityName": "Sanpham",
+    "ipAddress": "::1",
+    "metadata": {},
+    "newValues": {
+      "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+      "order": 9,
+      "title": "Arabica Cầu Đất",
+      "bacgia": [
+        {
+          "gia": 180000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 hũ/hộp"
+        },
+        {
+          "gia": 160000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 hũ/hộp"
+        },
+        {
+          "gia": 140000,
+          "max": 9999,
+          "min": 50,
+          "type": ">50 hũ/hộp"
+        }
+      ],
+      "codeId": "SP00006",
+      "giagoc": 0,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-03T14:17:52.364Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-03T14:17:52.364Z",
+      "description": null
+    },
+    "oldValues": {
+      "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+      "order": 9,
+      "title": "Arabica Cầu Đất",
+      "bacgia": [
+        {
+          "gia": 180000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 hũ/hộp"
+        },
+        {
+          "gia": 160000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 hũ/hộp"
+        },
+        {
+          "gia": 140000,
+          "max": 9999,
+          "min": 50,
+          "type": ">50 hũ/hộp"
+        }
+      ],
+      "codeId": "SP00006",
+      "giagoc": 0,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-03T14:17:52.364Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-03T14:17:52.364Z",
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-03T14:48:39.212Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "deed11b3-302e-42a3-90d4-d842d0a25508",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+    "createdAt": "2025-06-03T14:48:59.125Z",
+    "changedFields": [
+      "bacgia"
+    ],
+    "entityName": "Sanpham",
+    "ipAddress": "::1",
+    "metadata": {},
+    "newValues": {
+      "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+      "order": 9,
+      "title": "Arabica Cầu Đất",
+      "bacgia": [
+        {
+          "gia": 180000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 hũ/hộp"
+        },
+        {
+          "gia": 160000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 hũ/hộp"
+        },
+        {
+          "gia": 140000,
+          "max": 999,
+          "min": 50,
+          "type": ">50 hũ/hộp"
+        }
+      ],
+      "codeId": "SP00006",
+      "giagoc": 0,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-03T14:17:52.364Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-03T14:17:52.364Z",
+      "description": null
+    },
+    "oldValues": {
+      "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+      "order": 9,
+      "title": "Arabica Cầu Đất",
+      "bacgia": [
+        {
+          "gia": 180000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 hũ/hộp"
+        },
+        {
+          "gia": 160000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 hũ/hộp"
+        },
+        {
+          "gia": 140000,
+          "max": 9999,
+          "min": 50,
+          "type": ">50 hũ/hộp"
+        }
+      ],
+      "codeId": "SP00006",
+      "giagoc": 0,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-03T14:17:52.364Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-03T14:17:52.364Z",
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-03T14:48:59.125Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "2841511d-35d5-4e22-a41c-083857ae0435",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+    "createdAt": "2025-06-03T15:50:25.093Z",
+    "changedFields": [],
+    "entityName": "Sanpham",
+    "ipAddress": "::1",
+    "metadata": {},
+    "newValues": {
+      "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+      "order": 9,
+      "title": "Arabica Cầu Đất",
+      "bacgia": [
+        {
+          "gia": 180000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 hũ/hộp"
+        },
+        {
+          "gia": 160000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 hũ/hộp"
+        },
+        {
+          "gia": 140000,
+          "max": 999,
+          "min": 50,
+          "type": ">50 hũ/hộp"
+        }
+      ],
+      "codeId": "SP00006",
+      "giagoc": 0,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-03T14:17:52.364Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-03T14:17:52.364Z",
+      "description": null
+    },
+    "oldValues": {
+      "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+      "order": 9,
+      "title": "Arabica Cầu Đất",
+      "bacgia": [
+        {
+          "gia": 180000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 hũ/hộp"
+        },
+        {
+          "gia": 160000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 hũ/hộp"
+        },
+        {
+          "gia": 140000,
+          "max": 999,
+          "min": 50,
+          "type": ">50 hũ/hộp"
+        }
+      ],
+      "codeId": "SP00006",
+      "giagoc": 0,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-03T14:17:52.364Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-03T14:17:52.364Z",
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-03T15:50:25.093Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "ea028359-5f37-4366-90ee-c9f93690aaeb",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+    "createdAt": "2025-06-03T15:53:07.633Z",
+    "changedFields": [],
+    "entityName": "Sanpham",
+    "ipAddress": "::1",
+    "metadata": {},
+    "newValues": {
+      "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+      "order": 9,
+      "title": "Arabica Cầu Đất",
+      "bacgia": [
+        {
+          "gia": 180000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 hũ/hộp"
+        },
+        {
+          "gia": 160000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 hũ/hộp"
+        },
+        {
+          "gia": 140000,
+          "max": 999,
+          "min": 50,
+          "type": ">50 hũ/hộp"
+        }
+      ],
+      "codeId": "SP00006",
+      "giagoc": 0,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-03T14:17:52.364Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-03T14:17:52.364Z",
+      "description": null
+    },
+    "oldValues": {
+      "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+      "order": 9,
+      "title": "Arabica Cầu Đất",
+      "bacgia": [
+        {
+          "gia": 180000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 hũ/hộp"
+        },
+        {
+          "gia": 160000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 hũ/hộp"
+        },
+        {
+          "gia": 140000,
+          "max": 999,
+          "min": 50,
+          "type": ">50 hũ/hộp"
+        }
+      ],
+      "codeId": "SP00006",
+      "giagoc": 0,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-03T14:17:52.364Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-03T14:17:52.364Z",
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-03T15:53:07.633Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "c56461cc-eb34-4ea1-ba4e-caa63d6e794a",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+    "createdAt": "2025-06-05T14:03:55.572Z",
+    "changedFields": [
+      "key",
+      "value",
+      "updatedAt"
+    ],
+    "entityName": "Setting",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/setting/990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "responseTime": 38
+    },
+    "newValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "[REDACTED]",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": null,
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T14:03:55.546Z",
+      "createdById": null,
+      "description": null
+    },
+    "oldValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "websiteconfig",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": "{\"bgLoginImage\":\"\",\"logoImg\":\"\"}",
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T13:33:32.614Z",
+      "createdById": null,
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-05T14:03:55.572Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "2e8d5254-7152-4245-8408-4828e8d5b21f",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+    "createdAt": "2025-06-03T16:01:21.316Z",
+    "changedFields": [],
+    "entityName": "Sanpham",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/sanpham/fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+      "responseTime": 33
+    },
+    "newValues": {
+      "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+      "order": 9,
+      "title": "Arabica Cầu Đất",
+      "bacgia": [
+        {
+          "gia": 180000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 hũ/hộp"
+        },
+        {
+          "gia": 160000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 hũ/hộp"
+        },
+        {
+          "gia": 140000,
+          "max": 999,
+          "min": 50,
+          "type": ">50 hũ/hộp"
+        }
+      ],
+      "codeId": "SP00006",
+      "giagoc": 0,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-03T14:17:52.364Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-03T14:17:52.364Z",
+      "description": null
+    },
+    "oldValues": {
+      "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+      "order": 9,
+      "title": "Arabica Cầu Đất",
+      "bacgia": [
+        {
+          "gia": 180000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 hũ/hộp"
+        },
+        {
+          "gia": 160000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 hũ/hộp"
+        },
+        {
+          "gia": 140000,
+          "max": 999,
+          "min": 50,
+          "type": ">50 hũ/hộp"
+        }
+      ],
+      "codeId": "SP00006",
+      "giagoc": 0,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-03T14:17:52.364Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-03T14:17:52.364Z",
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-03T16:01:21.316Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "564adeb8-711b-417a-b34a-c2a1a3542d9f",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+    "createdAt": "2025-06-03T16:01:26.032Z",
+    "changedFields": [],
+    "entityName": "Sanpham",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/sanpham/60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+      "responseTime": 29
+    },
+    "newValues": {
+      "id": "60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+      "order": 7,
+      "title": "Blend",
+      "bacgia": [
+        {
+          "gia": 1050000,
+          "max": 9999,
+          "min": 50,
+          "type": ">50 units",
+          "price": 105000
+        },
+        {
+          "gia": 120000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 units",
+          "price": 120000
+        },
+        {
+          "gia": 140000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 units",
+          "price": 140000
+        }
+      ],
+      "codeId": "SP00004",
+      "giagoc": 140000,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-02T16:02:03.716Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-02T17:41:29.976Z",
+      "description": null
+    },
+    "oldValues": {
+      "id": "60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+      "order": 7,
+      "title": "Blend",
+      "bacgia": [
+        {
+          "gia": 1050000,
+          "max": 9999,
+          "min": 50,
+          "type": ">50 units",
+          "price": 105000
+        },
+        {
+          "gia": 120000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 units",
+          "price": 120000
+        },
+        {
+          "gia": 140000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 units",
+          "price": 140000
+        }
+      ],
+      "codeId": "SP00004",
+      "giagoc": 140000,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-02T16:02:03.716Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-02T17:41:29.976Z",
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-03T16:01:26.032Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "acf5a49a-5185-46bc-a6b8-a8346431b8ae",
+    "userId": null,
+    "entityId": null,
+    "createdAt": "2025-06-05T13:20:22.533Z",
+    "changedFields": [],
+    "entityName": "Auth Login",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "POST",
+      "endpoint": "/auth/login",
+      "responseTime": 146
+    },
+    "newValues": {
+      "user": {
+        "id": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+        "SDT": "0977272967",
+        "name": "Phạm Chí Kiệt",
+        "email": "chikiet88@gmail.com",
+        "phone": "0977272967",
+        "roles": [
+          {
+            "id": "ca4c568c-03d7-4b6c-bc9e-3c22c7818932",
+            "name": "Super Admin",
+            "createdAt": "2025-03-27T15:19:35.028Z",
+            "updatedAt": "2025-06-03T15:11:15.686Z"
+          }
+        ],
+        "avatar": null,
+        "gender": "MALE",
+        "zaloId": null,
+        "googleId": null,
+        "isActive": false,
+        "password": "$2b$10$gKTSI9RTilpXhxKOf/1R9OfEpcRn1hZmgqIsZ45iQYCrW3T8D8/wW",
+        "provider": null,
+        "createdAt": "2025-03-12T06:00:36.468Z",
+        "updatedAt": "2025-06-03T16:11:32.591Z",
+        "facebookId": null,
+        "providerId": null,
+        "referrerId": null,
+        "permissions": [
+          {
+            "id": "cb5f970d-dd64-4652-bf4e-26c391bb2ea1",
+            "name": "donhang.delete",
+            "createdAt": "2025-03-07T01:07:24.834Z",
+            "updatedAt": "2025-03-07T01:07:24.834Z",
+            "description": null
+          },
+          {
+            "id": "6712fb26-0aa5-425f-9182-9a82c9c918ab",
+            "name": "nhomuser.view",
+            "createdAt": "2025-03-07T04:12:54.868Z",
+            "updatedAt": "2025-03-07T04:12:54.868Z",
+            "description": null
+          },
+          {
+            "id": "20a631c0-837c-4121-8c84-dd6402e83f6c",
+            "name": "khachhang.view",
+            "createdAt": "2025-03-07T06:29:23.536Z",
+            "updatedAt": "2025-03-07T06:29:23.536Z",
+            "description": null
+          },
+          {
+            "id": "f1b722c5-8f4c-47bb-9c3b-b21275ab2dc9",
+            "name": "quanlyqrcode.view",
+            "createdAt": "2025-03-25T14:26:18.122Z",
+            "updatedAt": "2025-03-25T14:26:18.122Z",
+            "description": null
+          },
+          {
+            "id": "a9ad9f9a-6bf7-4db9-9e0c-cfec07d12b97",
+            "name": "dashboard.view",
+            "createdAt": "2025-03-12T14:43:50.555Z",
+            "updatedAt": "2025-03-12T14:43:50.555Z",
+            "description": null
+          },
+          {
+            "id": "9d41b26c-2cc9-473e-a197-9c400ffe0ce1",
+            "name": "permission.view",
+            "createdAt": "2025-03-07T04:03:41.982Z",
+            "updatedAt": "2025-03-07T04:02:57.678Z",
+            "description": "Xem Permission"
+          },
+          {
+            "id": "549ec602-49b9-488f-999c-2684f23939be",
+            "name": "banggia.view",
+            "createdAt": "2025-03-07T06:26:45.691Z",
+            "updatedAt": "2025-03-07T06:26:45.691Z",
+            "description": null
+          },
+          {
+            "id": "5c7aac74-796d-4c18-a1a3-061b3c011ded",
+            "name": "donhang.edit",
+            "createdAt": "2025-03-07T01:07:00.598Z",
+            "updatedAt": "2025-03-07T01:07:00.598Z",
+            "description": null
+          },
+          {
+            "id": "671306ab-56eb-4883-bdc5-ca06a328b4b9",
+            "name": "task.view",
+            "createdAt": "2025-03-24T09:58:46.844Z",
+            "updatedAt": "2025-03-24T09:58:46.844Z",
+            "description": null
+          },
+          {
+            "id": "dc948517-7cf1-413f-921f-4ecd8413e581",
+            "name": "menu.view",
+            "createdAt": "2025-03-12T14:43:08.373Z",
+            "updatedAt": "2025-03-12T14:43:08.373Z",
+            "description": null
+          },
+          {
+            "id": "8c39977e-2556-464e-8cb6-14bc78338d55",
+            "name": "donhang.view",
+            "createdAt": "2025-03-07T01:03:13.245Z",
+            "updatedAt": "2025-03-07T01:03:13.245Z",
+            "description": null
+          },
+          {
+            "id": "55a32069-092c-45de-83ca-5e9a3c62c6cf",
+            "name": "user.view",
+            "createdAt": "2025-03-07T02:20:20.487Z",
+            "updatedAt": "2025-03-07T02:20:20.487Z",
+            "description": "Xem Module Users"
+          },
+          {
+            "id": "057045f2-49f9-48ef-89f7-4a8dc62c53be",
+            "name": "nhacungcap.view",
+            "createdAt": "2025-03-07T06:30:02.573Z",
+            "updatedAt": "2025-03-07T06:30:02.573Z",
+            "description": null
+          },
+          {
+            "id": "7b4fb065-2f2a-4ddb-8923-ebb4b90a90a8",
+            "name": "sanpham.view",
+            "createdAt": "2025-03-07T06:24:24.837Z",
+            "updatedAt": "2025-03-07T06:24:24.837Z",
+            "description": null
+          },
+          {
+            "id": "d03c1035-c8fd-489c-a05a-5e925f7f645c",
+            "name": "lead.view",
+            "createdAt": "2025-03-19T02:41:29.494Z",
+            "updatedAt": "2025-03-19T02:41:29.494Z",
+            "description": null
+          },
+          {
+            "id": "50e717bb-4c79-4705-b0c4-035369b96f7b",
+            "name": "quanlydrive.view",
+            "createdAt": "2025-03-27T15:19:11.685Z",
+            "updatedAt": "2025-03-27T15:19:11.685Z",
+            "description": null
+          },
+          {
+            "id": "8c871109-c07a-4ac5-96de-12b7ee47a723",
+            "name": "googlesheet.view",
+            "createdAt": "2025-03-28T14:35:04.567Z",
+            "updatedAt": "2025-03-28T14:35:04.567Z",
+            "description": null
+          },
+          {
+            "id": "fe77c1f8-2351-476e-8ff1-396f894693c7",
+            "name": "dexuat.view",
+            "createdAt": "2025-04-01T02:11:55.177Z",
+            "updatedAt": "2025-04-01T02:11:55.177Z",
+            "description": null
+          },
+          {
+            "id": "439d2e04-a312-4a4e-ad37-6a33c2b03cb1",
+            "name": "landingpage.view",
+            "createdAt": "2025-04-03T16:38:59.204Z",
+            "updatedAt": "2025-04-03T16:38:59.204Z",
+            "description": null
+          },
+          {
+            "id": "1d0fc678-4ec0-4a9c-b26e-3c8f1d4dcf4f",
+            "name": "trackingevent.view",
+            "createdAt": "2025-04-05T10:07:03.810Z",
+            "updatedAt": "2025-04-05T10:07:03.810Z",
+            "description": null
+          },
+          {
+            "id": "93a6ab9b-fde6-40ba-80ac-32f74328eb27",
+            "name": "affiliatelink.view",
+            "createdAt": "2025-04-05T14:04:59.789Z",
+            "updatedAt": "2025-04-05T14:04:59.789Z",
+            "description": null
+          },
+          {
+            "id": "d177972b-afd6-4387-964d-3705348fae1f",
+            "name": "drivelocal.view",
+            "createdAt": "2025-04-11T03:02:31.535Z",
+            "updatedAt": "2025-04-11T03:02:31.535Z",
+            "description": null
+          },
+          {
+            "id": "13c7cff2-7414-4f60-b2ca-9a5de3eaa8ac",
+            "name": "profile.view",
+            "createdAt": "2025-04-17T06:25:30.788Z",
+            "updatedAt": "2025-04-17T06:25:30.788Z",
+            "description": null
+          },
+          {
+            "id": "4e3f2317-881b-4bad-83ad-7766cc40ab2a",
+            "name": "setting.view",
+            "createdAt": "2025-05-13T03:44:31.946Z",
+            "updatedAt": "2025-05-13T03:44:31.946Z",
+            "description": null
+          },
+          {
+            "id": "8a988179-67d8-4f4b-9aca-90a220a67886",
+            "name": "baiviet.view",
+            "createdAt": "2025-05-13T15:31:34.514Z",
+            "updatedAt": "2025-05-13T15:31:34.514Z",
+            "description": null
+          },
+          {
+            "id": "059744b3-ef17-4a29-b0c8-5d74300ce366",
+            "name": "resource.view",
+            "createdAt": "2025-05-13T18:13:34.115Z",
+            "updatedAt": "2025-05-13T18:13:34.115Z",
+            "description": null
+          },
+          {
+            "id": "b5f42cea-1cc7-4ddb-9947-66c5d5042991",
+            "name": "hoadon.view",
+            "createdAt": "2025-05-14T13:07:17.874Z",
+            "updatedAt": "2025-05-14T13:07:17.874Z",
+            "description": null
+          },
+          {
+            "id": "e2b37b61-e46f-4518-a08d-93ee74cf9f3a",
+            "name": "hoadonchitiet.view",
+            "createdAt": "2025-05-14T13:07:30.172Z",
+            "updatedAt": "2025-05-14T13:07:30.172Z",
+            "description": null
+          },
+          {
+            "id": "86d66e0c-4f56-44eb-88b3-5626dea9b277",
+            "name": "xuatnhapton.view",
+            "createdAt": "2025-05-17T01:07:10.491Z",
+            "updatedAt": "2025-05-17T01:07:10.491Z",
+            "description": null
+          },
+          {
+            "id": "b23aa7c0-da15-45bd-b923-ea16416193ba",
+            "name": "auditlog.view",
+            "createdAt": "2025-06-03T15:10:49.938Z",
+            "updatedAt": "2025-06-03T15:10:49.938Z",
+            "description": null
+          }
+        ],
+        "isSuperAdmin": false,
+        "affiliateCode": null
+      },
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA3MmNmNzI1LTVhNWItNDdmYy1hZTY3LWVkOGFlNWEyMTliMCIsImlhdCI6MTc0OTEyOTYyMiwiZXhwIjoxNzUxNzIxNjIyfQ.zSWdjO6rd7OUDd6pnN_IlAMXhmfD5RKVjva_CRNQaeg"
+    },
+    "oldValues": null,
+    "sessionId": null,
+    "updatedAt": "2025-06-05T13:20:22.533Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "LOGIN"
+  },
+  {
+    "id": "3eb449e4-76d9-4e78-bef1-e048dc15aa48",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+    "createdAt": "2025-06-05T13:22:26.765Z",
+    "changedFields": [],
+    "entityName": "Setting",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/setting/990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "responseTime": 24
+    },
+    "newValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "[REDACTED]",
+      "type": "string",
+      "order": 1,
+      "title": "Website",
+      "value": null,
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T13:22:26.752Z",
+      "createdById": null,
+      "description": null
+    },
+    "oldValues": null,
+    "sessionId": null,
+    "updatedAt": "2025-06-05T13:22:26.765Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "0b66b29b-945f-4918-8ec9-88d3823c4bd8",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+    "createdAt": "2025-06-05T13:28:09.527Z",
+    "changedFields": [
+      "key",
+      "type",
+      "updatedAt"
+    ],
+    "entityName": "Setting",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/setting/990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "responseTime": 35
+    },
+    "newValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "[REDACTED]",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": null,
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T13:28:09.502Z",
+      "createdById": null,
+      "description": null
+    },
+    "oldValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "websiteconfig",
+      "type": "string",
+      "order": 1,
+      "title": "Website",
+      "value": null,
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T13:22:26.752Z",
+      "createdById": null,
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-05T13:28:09.527Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "88781fb2-2433-43f0-90b5-9708270661aa",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+    "createdAt": "2025-06-05T13:28:55.870Z",
+    "changedFields": [
+      "key",
+      "value",
+      "updatedAt"
+    ],
+    "entityName": "Setting",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/setting/990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "responseTime": 21
+    },
+    "newValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "[REDACTED]",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": "{\"bgLoginImage\":\"\",\"logoImg\":\"\"}",
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T13:28:55.859Z",
+      "createdById": null,
+      "description": null
+    },
+    "oldValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "websiteconfig",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": null,
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T13:28:09.502Z",
+      "createdById": null,
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-05T13:28:55.870Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "ac31008d-d154-4404-adcb-ef41242029f7",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+    "createdAt": "2025-06-05T13:33:32.625Z",
+    "changedFields": [
+      "key",
+      "updatedAt"
+    ],
+    "entityName": "Setting",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/setting/990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "responseTime": 46
+    },
+    "newValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "[REDACTED]",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": "{\"bgLoginImage\":\"\",\"logoImg\":\"\"}",
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T13:33:32.614Z",
+      "createdById": null,
+      "description": null
+    },
+    "oldValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "websiteconfig",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": "{\"bgLoginImage\":\"\",\"logoImg\":\"\"}",
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T13:28:55.859Z",
+      "createdById": null,
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-05T13:33:32.625Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "557cde80-7045-40f4-909b-c313b3a5fde6",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+    "createdAt": "2025-06-05T14:06:01.553Z",
+    "changedFields": [
+      "key",
+      "value",
+      "updatedAt"
+    ],
+    "entityName": "Setting",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/setting/990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "responseTime": 18
+    },
+    "newValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "[REDACTED]",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": {
+        "logoImg": "",
+        "bgLoginImage": ""
+      },
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T14:06:01.544Z",
+      "createdById": null,
+      "description": null
+    },
+    "oldValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "websiteconfig",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": "{bgLoginImage: \"\", logoImg: \"\"}",
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T14:03:55.546Z",
+      "createdById": null,
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-05T14:06:01.553Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "64e37e72-f4b2-48bd-9539-7c714d367a0b",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+    "createdAt": "2025-06-05T14:33:13.839Z",
+    "changedFields": [
+      "key",
+      "value",
+      "updatedAt"
+    ],
+    "entityName": "Setting",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/setting/990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "responseTime": 29
+    },
+    "newValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "[REDACTED]",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": {
+        "logoImg": "",
+        "bgLoginImage": "/image/welcome_nam_chieu_bg.png"
+      },
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T14:33:13.817Z",
+      "createdById": null,
+      "description": null
+    },
+    "oldValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "websiteconfig",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": "{\"bgLoginImage\": \"\", \"logoImg\": \"\"}",
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T14:06:01.544Z",
+      "createdById": null,
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-05T14:33:13.839Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "1f3f9500-08a7-434f-bd2c-2f681af250ac",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+    "createdAt": "2025-06-05T14:34:37.482Z",
+    "changedFields": [
+      "key",
+      "value",
+      "updatedAt"
+    ],
+    "entityName": "Setting",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/setting/990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "responseTime": 15
+    },
+    "newValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "[REDACTED]",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": {
+        "logoImg": "",
+        "bgLoginImage": "/image/welcome_nam_chieu_bg.png"
+      },
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T14:34:37.472Z",
+      "createdById": null,
+      "description": null
+    },
+    "oldValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "websiteconfig",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": "{\"bgLoginImage\":\"/image/welcome_nam_chieu_bg.png\",\"logoImg\":\"\"}",
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T14:33:13.817Z",
+      "createdById": null,
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-05T14:34:37.482Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "db852548-a5bb-4516-a45b-c1e013729e3f",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+    "createdAt": "2025-06-05T14:38:25.468Z",
+    "changedFields": [
+      "key",
+      "value",
+      "updatedAt"
+    ],
+    "entityName": "Setting",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/setting/990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "responseTime": 29
+    },
+    "newValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "[REDACTED]",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": {
+        "logoImg": "",
+        "bgLoginImage": "/images/welcome_nam_chieu_bg.png"
+      },
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T14:38:25.452Z",
+      "createdById": null,
+      "description": null
+    },
+    "oldValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "websiteconfig",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": "{\"bgLoginImage\":\"/image/welcome_nam_chieu_bg.png\",\"logoImg\":\"\"}",
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T14:34:37.472Z",
+      "createdById": null,
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-05T14:38:25.468Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "deabad0e-1cb8-46e5-9baa-bede20d2f195",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+    "createdAt": "2025-06-05T14:42:14.508Z",
+    "changedFields": [
+      "key",
+      "value",
+      "updatedAt"
+    ],
+    "entityName": "Setting",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/setting/990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "responseTime": 23
+    },
+    "newValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "[REDACTED]",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": {
+        "logoImg": "/images/logo-kata.png",
+        "bgLoginImage": "/images/welcome_nam_chieu_bg.png"
+      },
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T14:42:14.495Z",
+      "createdById": null,
+      "description": null
+    },
+    "oldValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "websiteconfig",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": "{\"bgLoginImage\":\"/images/welcome_nam_chieu_bg.png\",\"logoImg\":\"\"}",
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T14:38:25.452Z",
+      "createdById": null,
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-05T14:42:14.508Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "ff1cd2d2-3c22-48b6-aaa8-2f1388414761",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "3f8230e6-075f-4523-8061-5b170894208c",
+    "createdAt": "2025-06-05T15:01:11.567Z",
+    "changedFields": [],
+    "entityName": "Setting",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "POST",
+      "endpoint": "/setting",
+      "responseTime": 29
+    },
+    "newValues": {
+      "id": "3f8230e6-075f-4523-8061-5b170894208c",
+      "key": "[REDACTED]",
+      "type": "json",
+      "order": 2,
+      "title": "Đơn Vị Tính",
+      "value": null,
+      "codeId": "ST00002",
+      "isActive": true,
+      "createdAt": "2025-06-05T15:01:11.555Z",
+      "updatedAt": "2025-06-05T15:01:11.555Z",
+      "createdById": null,
+      "description": null
+    },
+    "oldValues": null,
+    "sessionId": null,
+    "updatedAt": "2025-06-05T15:01:11.567Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "CREATE"
+  },
+  {
+    "id": "2ba98bb6-b7ca-4939-9256-28a3c9a5881f",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+    "createdAt": "2025-06-05T15:01:26.359Z",
+    "changedFields": [
+      "key",
+      "value",
+      "updatedAt"
+    ],
+    "entityName": "Setting",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/setting/990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "responseTime": 17
+    },
+    "newValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "[REDACTED]",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": {
+        "logoImg": "/images/logo-kata.png",
+        "bgLoginImage": "/images/welcome_nam_chieu_bg.png"
+      },
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T15:01:26.348Z",
+      "createdById": null,
+      "description": null
+    },
+    "oldValues": {
+      "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+      "key": "websiteconfig",
+      "type": "json",
+      "order": 1,
+      "title": "Website",
+      "value": "{\"bgLoginImage\":\"/images/welcome_nam_chieu_bg.png\",\"logoImg\":\"/images/logo-kata.png\"}",
+      "codeId": "ST00001",
+      "isActive": true,
+      "createdAt": "2025-06-04T04:31:33.607Z",
+      "updatedAt": "2025-06-05T14:42:14.495Z",
+      "createdById": null,
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-05T15:01:26.359Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "6654475f-9d8a-4c21-b774-44456fe2ee88",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+    "createdAt": "2025-06-08T02:10:39.981Z",
+    "changedFields": [],
+    "entityName": "Sanpham",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/sanpham/60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+      "responseTime": 45
+    },
+    "newValues": {
+      "id": "60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+      "order": 7,
+      "title": "Blend",
+      "bacgia": [
+        {
+          "gia": 1050000,
+          "max": 9999,
+          "min": 50,
+          "type": ">50 units",
+          "price": 105000
+        },
+        {
+          "gia": 120000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 units",
+          "price": 120000
+        },
+        {
+          "gia": 140000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 units",
+          "price": 140000
+        }
+      ],
+      "codeId": "SP00004",
+      "giagoc": 140000,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-02T16:02:03.716Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-02T17:41:29.976Z",
+      "description": null
+    },
+    "oldValues": {
+      "id": "60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+      "order": 7,
+      "title": "Blend",
+      "bacgia": [
+        {
+          "gia": 1050000,
+          "max": 9999,
+          "min": 50,
+          "type": ">50 units",
+          "price": 105000
+        },
+        {
+          "gia": 120000,
+          "max": 49,
+          "min": 10,
+          "type": "10-49 units",
+          "price": 120000
+        },
+        {
+          "gia": 140000,
+          "max": 10,
+          "min": 0,
+          "type": "<10 units",
+          "price": 140000
+        }
+      ],
+      "codeId": "SP00004",
+      "giagoc": 140000,
+      "status": "draft",
+      "bienthe": null,
+      "inStock": true,
+      "createdAt": "2025-06-02T16:02:03.716Z",
+      "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+      "donvitinh": "Hũ",
+      "updatedAt": "2025-06-02T17:41:29.976Z",
+      "description": null
+    },
+    "sessionId": null,
+    "updatedAt": "2025-06-08T02:10:39.981Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "8b75111e-df71-40a9-b0d2-3d57a688acf8",
+    "userId": null,
+    "entityId": null,
+    "createdAt": "2025-06-08T03:41:31.577Z",
+    "changedFields": [],
+    "entityName": "Auth Login",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "POST",
+      "endpoint": "/auth/login",
+      "responseTime": 132
+    },
+    "newValues": {
+      "user": {
+        "id": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+        "SDT": "0977272967",
+        "name": "Phạm Chí Kiệt",
+        "email": "chikiet88@gmail.com",
+        "phone": "0977272967",
+        "roles": [
+          {
+            "id": "ca4c568c-03d7-4b6c-bc9e-3c22c7818932",
+            "name": "Super Admin",
+            "createdAt": "2025-03-27T15:19:35.028Z",
+            "updatedAt": "2025-06-03T15:11:15.686Z"
+          }
+        ],
+        "avatar": null,
+        "gender": "MALE",
+        "zaloId": null,
+        "googleId": null,
+        "isActive": false,
+        "password": "$2b$10$gKTSI9RTilpXhxKOf/1R9OfEpcRn1hZmgqIsZ45iQYCrW3T8D8/wW",
+        "provider": null,
+        "createdAt": "2025-03-12T06:00:36.468Z",
+        "updatedAt": "2025-06-03T16:11:32.591Z",
+        "facebookId": null,
+        "providerId": null,
+        "referrerId": null,
+        "permissions": [
+          {
+            "id": "cb5f970d-dd64-4652-bf4e-26c391bb2ea1",
+            "name": "donhang.delete",
+            "createdAt": "2025-03-07T01:07:24.834Z",
+            "updatedAt": "2025-03-07T01:07:24.834Z",
+            "description": null
+          },
+          {
+            "id": "6712fb26-0aa5-425f-9182-9a82c9c918ab",
+            "name": "nhomuser.view",
+            "createdAt": "2025-03-07T04:12:54.868Z",
+            "updatedAt": "2025-03-07T04:12:54.868Z",
+            "description": null
+          },
+          {
+            "id": "20a631c0-837c-4121-8c84-dd6402e83f6c",
+            "name": "khachhang.view",
+            "createdAt": "2025-03-07T06:29:23.536Z",
+            "updatedAt": "2025-03-07T06:29:23.536Z",
+            "description": null
+          },
+          {
+            "id": "f1b722c5-8f4c-47bb-9c3b-b21275ab2dc9",
+            "name": "quanlyqrcode.view",
+            "createdAt": "2025-03-25T14:26:18.122Z",
+            "updatedAt": "2025-03-25T14:26:18.122Z",
+            "description": null
+          },
+          {
+            "id": "a9ad9f9a-6bf7-4db9-9e0c-cfec07d12b97",
+            "name": "dashboard.view",
+            "createdAt": "2025-03-12T14:43:50.555Z",
+            "updatedAt": "2025-03-12T14:43:50.555Z",
+            "description": null
+          },
+          {
+            "id": "9d41b26c-2cc9-473e-a197-9c400ffe0ce1",
+            "name": "permission.view",
+            "createdAt": "2025-03-07T04:03:41.982Z",
+            "updatedAt": "2025-03-07T04:02:57.678Z",
+            "description": "Xem Permission"
+          },
+          {
+            "id": "549ec602-49b9-488f-999c-2684f23939be",
+            "name": "banggia.view",
+            "createdAt": "2025-03-07T06:26:45.691Z",
+            "updatedAt": "2025-03-07T06:26:45.691Z",
+            "description": null
+          },
+          {
+            "id": "5c7aac74-796d-4c18-a1a3-061b3c011ded",
+            "name": "donhang.edit",
+            "createdAt": "2025-03-07T01:07:00.598Z",
+            "updatedAt": "2025-03-07T01:07:00.598Z",
+            "description": null
+          },
+          {
+            "id": "671306ab-56eb-4883-bdc5-ca06a328b4b9",
+            "name": "task.view",
+            "createdAt": "2025-03-24T09:58:46.844Z",
+            "updatedAt": "2025-03-24T09:58:46.844Z",
+            "description": null
+          },
+          {
+            "id": "dc948517-7cf1-413f-921f-4ecd8413e581",
+            "name": "menu.view",
+            "createdAt": "2025-03-12T14:43:08.373Z",
+            "updatedAt": "2025-03-12T14:43:08.373Z",
+            "description": null
+          },
+          {
+            "id": "8c39977e-2556-464e-8cb6-14bc78338d55",
+            "name": "donhang.view",
+            "createdAt": "2025-03-07T01:03:13.245Z",
+            "updatedAt": "2025-03-07T01:03:13.245Z",
+            "description": null
+          },
+          {
+            "id": "55a32069-092c-45de-83ca-5e9a3c62c6cf",
+            "name": "user.view",
+            "createdAt": "2025-03-07T02:20:20.487Z",
+            "updatedAt": "2025-03-07T02:20:20.487Z",
+            "description": "Xem Module Users"
+          },
+          {
+            "id": "057045f2-49f9-48ef-89f7-4a8dc62c53be",
+            "name": "nhacungcap.view",
+            "createdAt": "2025-03-07T06:30:02.573Z",
+            "updatedAt": "2025-03-07T06:30:02.573Z",
+            "description": null
+          },
+          {
+            "id": "7b4fb065-2f2a-4ddb-8923-ebb4b90a90a8",
+            "name": "sanpham.view",
+            "createdAt": "2025-03-07T06:24:24.837Z",
+            "updatedAt": "2025-03-07T06:24:24.837Z",
+            "description": null
+          },
+          {
+            "id": "d03c1035-c8fd-489c-a05a-5e925f7f645c",
+            "name": "lead.view",
+            "createdAt": "2025-03-19T02:41:29.494Z",
+            "updatedAt": "2025-03-19T02:41:29.494Z",
+            "description": null
+          },
+          {
+            "id": "50e717bb-4c79-4705-b0c4-035369b96f7b",
+            "name": "quanlydrive.view",
+            "createdAt": "2025-03-27T15:19:11.685Z",
+            "updatedAt": "2025-03-27T15:19:11.685Z",
+            "description": null
+          },
+          {
+            "id": "8c871109-c07a-4ac5-96de-12b7ee47a723",
+            "name": "googlesheet.view",
+            "createdAt": "2025-03-28T14:35:04.567Z",
+            "updatedAt": "2025-03-28T14:35:04.567Z",
+            "description": null
+          },
+          {
+            "id": "fe77c1f8-2351-476e-8ff1-396f894693c7",
+            "name": "dexuat.view",
+            "createdAt": "2025-04-01T02:11:55.177Z",
+            "updatedAt": "2025-04-01T02:11:55.177Z",
+            "description": null
+          },
+          {
+            "id": "439d2e04-a312-4a4e-ad37-6a33c2b03cb1",
+            "name": "landingpage.view",
+            "createdAt": "2025-04-03T16:38:59.204Z",
+            "updatedAt": "2025-04-03T16:38:59.204Z",
+            "description": null
+          },
+          {
+            "id": "1d0fc678-4ec0-4a9c-b26e-3c8f1d4dcf4f",
+            "name": "trackingevent.view",
+            "createdAt": "2025-04-05T10:07:03.810Z",
+            "updatedAt": "2025-04-05T10:07:03.810Z",
+            "description": null
+          },
+          {
+            "id": "93a6ab9b-fde6-40ba-80ac-32f74328eb27",
+            "name": "affiliatelink.view",
+            "createdAt": "2025-04-05T14:04:59.789Z",
+            "updatedAt": "2025-04-05T14:04:59.789Z",
+            "description": null
+          },
+          {
+            "id": "d177972b-afd6-4387-964d-3705348fae1f",
+            "name": "drivelocal.view",
+            "createdAt": "2025-04-11T03:02:31.535Z",
+            "updatedAt": "2025-04-11T03:02:31.535Z",
+            "description": null
+          },
+          {
+            "id": "13c7cff2-7414-4f60-b2ca-9a5de3eaa8ac",
+            "name": "profile.view",
+            "createdAt": "2025-04-17T06:25:30.788Z",
+            "updatedAt": "2025-04-17T06:25:30.788Z",
+            "description": null
+          },
+          {
+            "id": "4e3f2317-881b-4bad-83ad-7766cc40ab2a",
+            "name": "setting.view",
+            "createdAt": "2025-05-13T03:44:31.946Z",
+            "updatedAt": "2025-05-13T03:44:31.946Z",
+            "description": null
+          },
+          {
+            "id": "8a988179-67d8-4f4b-9aca-90a220a67886",
+            "name": "baiviet.view",
+            "createdAt": "2025-05-13T15:31:34.514Z",
+            "updatedAt": "2025-05-13T15:31:34.514Z",
+            "description": null
+          },
+          {
+            "id": "059744b3-ef17-4a29-b0c8-5d74300ce366",
+            "name": "resource.view",
+            "createdAt": "2025-05-13T18:13:34.115Z",
+            "updatedAt": "2025-05-13T18:13:34.115Z",
+            "description": null
+          },
+          {
+            "id": "b5f42cea-1cc7-4ddb-9947-66c5d5042991",
+            "name": "hoadon.view",
+            "createdAt": "2025-05-14T13:07:17.874Z",
+            "updatedAt": "2025-05-14T13:07:17.874Z",
+            "description": null
+          },
+          {
+            "id": "e2b37b61-e46f-4518-a08d-93ee74cf9f3a",
+            "name": "hoadonchitiet.view",
+            "createdAt": "2025-05-14T13:07:30.172Z",
+            "updatedAt": "2025-05-14T13:07:30.172Z",
+            "description": null
+          },
+          {
+            "id": "86d66e0c-4f56-44eb-88b3-5626dea9b277",
+            "name": "xuatnhapton.view",
+            "createdAt": "2025-05-17T01:07:10.491Z",
+            "updatedAt": "2025-05-17T01:07:10.491Z",
+            "description": null
+          },
+          {
+            "id": "b23aa7c0-da15-45bd-b923-ea16416193ba",
+            "name": "auditlog.view",
+            "createdAt": "2025-06-03T15:10:49.938Z",
+            "updatedAt": "2025-06-03T15:10:49.938Z",
+            "description": null
+          }
+        ],
+        "isSuperAdmin": false,
+        "affiliateCode": null
+      },
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA3MmNmNzI1LTVhNWItNDdmYy1hZTY3LWVkOGFlNWEyMTliMCIsImlhdCI6MTc0OTM1NDA5MSwiZXhwIjoxNzUxOTQ2MDkxfQ.tR9q13l_XMu-QckzVHcQ5RL0y9jf8VYnnbMUqdkkLag"
+    },
+    "oldValues": null,
+    "sessionId": null,
+    "updatedAt": "2025-06-08T03:41:31.577Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "LOGIN"
+  },
+  {
+    "id": "cea75367-9944-4373-8b0e-db6dc38fd233",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "c80949b0-1943-4052-b182-f25c8e3d7f1f",
+    "createdAt": "2025-06-08T04:00:26.772Z",
+    "changedFields": [],
+    "entityName": "Kho",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "POST",
+      "endpoint": "/kho",
+      "responseTime": 34
+    },
+    "newValues": {
+      "id": "c80949b0-1943-4052-b182-f25c8e3d7f1f",
+      "order": 1,
+      "title": "Kho Thành Phố Hồ Chí Minh",
+      "codeId": "SP00001",
+      "createdAt": "2025-06-08T04:00:26.757Z",
+      "createdBy": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+      "updatedAt": "2025-06-08T04:00:26.757Z",
+      "description": null
+    },
+    "oldValues": null,
+    "sessionId": null,
+    "updatedAt": "2025-06-08T04:00:26.772Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "CREATE"
+  },
+  {
+    "id": "305fd8ae-f893-4bdd-82cc-967c69c7f8b4",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+    "createdAt": "2025-06-08T04:35:26.761Z",
+    "changedFields": [],
+    "entityName": "Update Bang Gia",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/banggia/28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+      "responseTime": 86
+    },
+    "newValues": {
+      "id": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+      "order": 1,
+      "title": "Bảng Giá 1",
+      "batdau": "2025-06-01T16:09:22.351Z",
+      "codeId": "BG00001",
+      "status": "baogia",
+      "ketthuc": null,
+      "sanpham": [
+        {
+          "id": "362c4d7b-9ce5-41b6-900e-4a0700514d5c",
+          "giaban": 0,
+          "sanpham": {
+            "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+            "order": 9,
+            "title": "Arabica Cầu Đất",
+            "bacgia": [
+              {
+                "gia": 180000,
+                "max": 10,
+                "min": 0,
+                "type": "<10 hũ/hộp"
+              },
+              {
+                "gia": 160000,
+                "max": 49,
+                "min": 10,
+                "type": "10-49 hũ/hộp"
+              },
+              {
+                "gia": 140000,
+                "max": 999,
+                "min": 50,
+                "type": ">50 hũ/hộp"
+              }
+            ],
+            "codeId": "SP00006",
+            "giagoc": 0,
+            "status": "draft",
+            "bienthe": null,
+            "inStock": true,
+            "createdAt": "2025-06-03T14:17:52.364Z",
+            "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+            "donvitinh": "Hũ",
+            "updatedAt": "2025-06-03T14:17:52.364Z",
+            "description": null
+          },
+          "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+          "createdAt": "2025-06-08T04:35:26.699Z",
+          "sanphamId": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+          "updatedAt": "2025-06-08T04:35:26.699Z"
+        },
+        {
+          "id": "1a3bbd83-a0ba-4ce2-9a99-9c307c92891e",
+          "giaban": 0,
+          "sanpham": {
+            "id": "c205da90-c058-4d02-accc-94069d65aa3c",
+            "order": 8,
+            "title": "Fine Robusta",
+            "bacgia": [
+              {
+                "gia": 125000,
+                "max": 99999,
+                "min": 50,
+                "type": ">50 units",
+                "price": 105000
+              },
+              {
+                "gia": 140000,
+                "max": 49,
+                "min": 10,
+                "type": "10-49 units",
+                "price": 120000
+              },
+              {
+                "gia": 160000,
+                "max": 10,
+                "min": 0,
+                "type": "<10 units",
+                "price": 140000
+              }
+            ],
+            "codeId": "SP00005",
+            "giagoc": 160000,
+            "status": "draft",
+            "bienthe": "",
+            "inStock": true,
+            "createdAt": "2025-06-02T17:03:42.471Z",
+            "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+            "donvitinh": "Hũ",
+            "updatedAt": "2025-06-02T17:41:37.019Z",
+            "description": null
+          },
+          "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+          "createdAt": "2025-06-08T04:35:26.699Z",
+          "sanphamId": "c205da90-c058-4d02-accc-94069d65aa3c",
+          "updatedAt": "2025-06-08T04:35:26.699Z"
+        },
+        {
+          "id": "3b5952d9-6c79-4661-be0a-63c80e9fdf02",
+          "giaban": 0,
+          "sanpham": {
+            "id": "60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+            "order": 7,
+            "title": "Blend",
+            "bacgia": [
+              {
+                "gia": 1050000,
+                "max": 9999,
+                "min": 50,
+                "type": ">50 units",
+                "price": 105000
+              },
+              {
+                "gia": 120000,
+                "max": 49,
+                "min": 10,
+                "type": "10-49 units",
+                "price": 120000
+              },
+              {
+                "gia": 140000,
+                "max": 10,
+                "min": 0,
+                "type": "<10 units",
+                "price": 140000
+              }
+            ],
+            "codeId": "SP00004",
+            "giagoc": 140000,
+            "status": "draft",
+            "bienthe": null,
+            "inStock": true,
+            "createdAt": "2025-06-02T16:02:03.716Z",
+            "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+            "donvitinh": "Hũ",
+            "updatedAt": "2025-06-02T17:41:29.976Z",
+            "description": null
+          },
+          "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+          "createdAt": "2025-06-08T04:35:26.699Z",
+          "sanphamId": "60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+          "updatedAt": "2025-06-08T04:35:26.699Z"
+        }
+      ],
+      "createdAt": "2025-06-01T16:09:22.353Z",
+      "khachhang": [
+        {
+          "id": "b5b58314-49ff-4747-89cb-36bd2d90149a",
+          "status": true,
+          "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+          "createdAt": "2025-06-01T18:21:07.206Z",
+          "khachhang": {
+            "id": "1999d9c8-47b9-4aed-8a74-cf8adb6e53a8",
+            "email": "khachhang1@gmail.com",
+            "order": 1,
+            "phone": "0987654321",
+            "title": "Khách hàng 1",
+            "codeId": "KH00001",
+            "diachi": "1 nguyễn huệ",
+            "createdAt": "2025-06-01T07:28:40.949Z",
+            "updatedAt": "2025-06-01T07:28:40.949Z",
+            "description": "mô tả 1",
+            "nhomkhachhangId": null
+          },
+          "updatedAt": "2025-06-01T18:21:07.206Z",
+          "khachhangId": "1999d9c8-47b9-4aed-8a74-cf8adb6e53a8"
+        },
+        {
+          "id": "e47f1c89-53cc-414f-b20a-37c62c43693b",
+          "status": true,
+          "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+          "createdAt": "2025-06-01T18:21:07.206Z",
+          "khachhang": {
+            "id": "c4ccf464-f576-4280-b627-cb7ebcc26063",
+            "email": "khachhang2@gmail.com",
+            "order": 2,
+            "phone": "0987654322",
+            "title": "Khách hàng 2",
+            "codeId": "KH00002",
+            "diachi": "2 nguyễn huệ hồ chí minh",
+            "createdAt": "2025-06-01T07:31:38.646Z",
+            "updatedAt": "2025-06-01T07:31:38.646Z",
+            "description": "mô tả 2",
+            "nhomkhachhangId": null
+          },
+          "updatedAt": "2025-06-01T18:21:07.206Z",
+          "khachhangId": "c4ccf464-f576-4280-b627-cb7ebcc26063"
+        }
+      ],
+      "updatedAt": "2025-06-08T04:35:26.699Z"
+    },
+    "oldValues": null,
+    "sessionId": null,
+    "updatedAt": "2025-06-08T04:35:26.761Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  },
+  {
+    "id": "2eb529fe-7a6b-49d9-83b1-ccd5fb242a79",
+    "userId": "072cf725-5a5b-47fc-ae67-ed8ae5a219b0",
+    "entityId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+    "createdAt": "2025-06-08T04:46:03.963Z",
+    "changedFields": [],
+    "entityName": "Update Bang Gia",
+    "ipAddress": "::1",
+    "metadata": {
+      "method": "PATCH",
+      "endpoint": "/banggia/28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+      "responseTime": 118
+    },
+    "newValues": {
+      "id": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+      "order": 1,
+      "title": "Bảng Giá 1",
+      "batdau": "2025-06-01T16:09:22.351Z",
+      "codeId": "BG00001",
+      "status": "baogia",
+      "ketthuc": null,
+      "sanpham": [
+        {
+          "id": "81bc98fd-9d14-40c3-9caa-2e1b2c122f5b",
+          "giaban": 0,
+          "sanpham": {
+            "id": "c205da90-c058-4d02-accc-94069d65aa3c",
+            "order": 8,
+            "title": "Fine Robusta",
+            "bacgia": [
+              {
+                "gia": 125000,
+                "max": 99999,
+                "min": 50,
+                "type": ">50 units",
+                "price": 105000
+              },
+              {
+                "gia": 140000,
+                "max": 49,
+                "min": 10,
+                "type": "10-49 units",
+                "price": 120000
+              },
+              {
+                "gia": 160000,
+                "max": 10,
+                "min": 0,
+                "type": "<10 units",
+                "price": 140000
+              }
+            ],
+            "codeId": "SP00005",
+            "giagoc": 160000,
+            "status": "draft",
+            "bienthe": "",
+            "inStock": true,
+            "createdAt": "2025-06-02T17:03:42.471Z",
+            "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+            "donvitinh": "Hũ",
+            "updatedAt": "2025-06-02T17:41:37.019Z",
+            "description": null
+          },
+          "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+          "createdAt": "2025-06-08T04:46:03.887Z",
+          "sanphamId": "c205da90-c058-4d02-accc-94069d65aa3c",
+          "updatedAt": "2025-06-08T04:46:03.887Z"
+        },
+        {
+          "id": "b7a7ca30-f34a-48d9-a4b9-ad94fa03075f",
+          "giaban": 0,
+          "sanpham": {
+            "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+            "order": 9,
+            "title": "Arabica Cầu Đất",
+            "bacgia": [
+              {
+                "gia": 180000,
+                "max": 10,
+                "min": 0,
+                "type": "<10 hũ/hộp"
+              },
+              {
+                "gia": 160000,
+                "max": 49,
+                "min": 10,
+                "type": "10-49 hũ/hộp"
+              },
+              {
+                "gia": 140000,
+                "max": 999,
+                "min": 50,
+                "type": ">50 hũ/hộp"
+              }
+            ],
+            "codeId": "SP00006",
+            "giagoc": 0,
+            "status": "draft",
+            "bienthe": null,
+            "inStock": true,
+            "createdAt": "2025-06-03T14:17:52.364Z",
+            "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+            "donvitinh": "Hũ",
+            "updatedAt": "2025-06-03T14:17:52.364Z",
+            "description": null
+          },
+          "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+          "createdAt": "2025-06-08T04:46:03.887Z",
+          "sanphamId": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+          "updatedAt": "2025-06-08T04:46:03.887Z"
+        },
+        {
+          "id": "a3c80e91-000a-4765-a31b-e086fa2e7f04",
+          "giaban": 0,
+          "sanpham": {
+            "id": "60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+            "order": 7,
+            "title": "Blend",
+            "bacgia": [
+              {
+                "gia": 1050000,
+                "max": 9999,
+                "min": 50,
+                "type": ">50 units",
+                "price": 105000
+              },
+              {
+                "gia": 120000,
+                "max": 49,
+                "min": 10,
+                "type": "10-49 units",
+                "price": 120000
+              },
+              {
+                "gia": 140000,
+                "max": 10,
+                "min": 0,
+                "type": "<10 units",
+                "price": 140000
+              }
+            ],
+            "codeId": "SP00004",
+            "giagoc": 140000,
+            "status": "draft",
+            "bienthe": null,
+            "inStock": true,
+            "createdAt": "2025-06-02T16:02:03.716Z",
+            "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+            "donvitinh": "Hũ",
+            "updatedAt": "2025-06-02T17:41:29.976Z",
+            "description": null
+          },
+          "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+          "createdAt": "2025-06-08T04:46:03.887Z",
+          "sanphamId": "60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+          "updatedAt": "2025-06-08T04:46:03.887Z"
+        }
+      ],
+      "createdAt": "2025-06-01T16:09:22.353Z",
+      "khachhang": [
+        {
+          "id": "fe407e0c-62a5-453f-85ed-5c33a4fa869f",
+          "status": true,
+          "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+          "createdAt": "2025-06-08T04:46:03.887Z",
+          "khachhang": {
+            "id": "1999d9c8-47b9-4aed-8a74-cf8adb6e53a8",
+            "email": "khachhang1@gmail.com",
+            "order": 1,
+            "phone": "0987654321",
+            "title": "Khách hàng 1",
+            "codeId": "KH00001",
+            "diachi": "1 nguyễn huệ",
+            "createdAt": "2025-06-01T07:28:40.949Z",
+            "updatedAt": "2025-06-01T07:28:40.949Z",
+            "description": "mô tả 1",
+            "nhomkhachhangId": null
+          },
+          "updatedAt": "2025-06-08T04:46:03.887Z",
+          "khachhangId": "1999d9c8-47b9-4aed-8a74-cf8adb6e53a8"
+        },
+        {
+          "id": "8e697b35-af83-4f01-a803-bda610b2cf42",
+          "status": true,
+          "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+          "createdAt": "2025-06-08T04:46:03.887Z",
+          "khachhang": {
+            "id": "c4ccf464-f576-4280-b627-cb7ebcc26063",
+            "email": "khachhang2@gmail.com",
+            "order": 2,
+            "phone": "0987654322",
+            "title": "Khách hàng 2",
+            "codeId": "KH00002",
+            "diachi": "2 nguyễn huệ hồ chí minh",
+            "createdAt": "2025-06-01T07:31:38.646Z",
+            "updatedAt": "2025-06-01T07:31:38.646Z",
+            "description": "mô tả 2",
+            "nhomkhachhangId": null
+          },
+          "updatedAt": "2025-06-08T04:46:03.887Z",
+          "khachhangId": "c4ccf464-f576-4280-b627-cb7ebcc26063"
+        },
+        {
+          "id": "0ea71ca2-bf47-4143-b214-480e84c2b1d5",
+          "status": true,
+          "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+          "createdAt": "2025-06-08T04:46:03.887Z",
+          "khachhang": {
+            "id": "6c36ddfb-a4aa-4aa2-98cd-37f5051c9501",
+            "email": "khachhang3@gmail.com",
+            "order": 3,
+            "phone": "0123456789",
+            "title": "Khách Hàng 3",
+            "codeId": "KH00003",
+            "diachi": null,
+            "createdAt": "2025-06-08T04:13:25.453Z",
+            "updatedAt": "2025-06-08T04:13:25.453Z",
+            "description": null,
+            "nhomkhachhangId": null
+          },
+          "updatedAt": "2025-06-08T04:46:03.887Z",
+          "khachhangId": "6c36ddfb-a4aa-4aa2-98cd-37f5051c9501"
+        }
+      ],
+      "updatedAt": "2025-06-08T04:46:03.887Z"
+    },
+    "oldValues": null,
+    "sessionId": null,
+    "updatedAt": "2025-06-08T04:46:03.963Z",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+    "userEmail": null,
+    "action": "UPDATE"
+  }
+]

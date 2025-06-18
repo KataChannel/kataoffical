@@ -6,6 +6,7 @@ import * as bodyParser from 'body-parser';
 import * as admin from 'firebase-admin';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { CreateByInterceptor } from './auth/auth.interceptor';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({
@@ -16,7 +17,13 @@ async function bootstrap() {
       enableImplicitConversion: true, // Cho phép chuyển đổi ngầm định
     },
   }));
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+
+  const reflector = app.get(Reflector);
+  app.useGlobalInterceptors(
+    new ClassSerializerInterceptor(reflector),
+    // new CreateByInterceptor(),
+  );
+
   app.useGlobalPipes(new ValidationPipe());
   
   const config = new DocumentBuilder()

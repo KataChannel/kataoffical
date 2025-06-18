@@ -1,0 +1,211 @@
+[
+  {
+    "id": "48cd4a56-2f5c-48cb-8f1c-11bbc81dd428",
+    "url": "images/1747206665230-1.jpg",
+    "fileType": "image/jpeg",
+    "metaData": {
+      "group": "default",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "1.jpg"
+    },
+    "category": "default",
+    "group": "default",
+    "createdAt": "2025-05-14T07:11:05.240Z",
+    "codeId": "IMG00001",
+    "description": null,
+    "title": "1.jpg",
+    "updatedAt": "2025-05-14T07:11:05.240Z",
+    "order": 1
+  },
+  {
+    "id": "389aef8e-2cef-4c21-a844-27b3cc7bb41f",
+    "url": "images/1747207504260-1.jpg",
+    "fileType": "image/jpeg",
+    "metaData": {
+      "group": "default",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "1.jpg"
+    },
+    "category": "default",
+    "group": "default",
+    "createdAt": "2025-05-14T07:25:04.317Z",
+    "codeId": "IMG00002",
+    "description": null,
+    "title": "1.jpg",
+    "updatedAt": "2025-05-14T07:25:04.317Z",
+    "order": 1
+  },
+  {
+    "id": "997acf7c-62f8-4e3b-81c6-0e96fa87f5cb",
+    "url": "images/1747207504344-2.jpg",
+    "fileType": "image/jpeg",
+    "metaData": {
+      "group": "default",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "2.jpg"
+    },
+    "category": "default",
+    "group": "default",
+    "createdAt": "2025-05-14T07:25:04.353Z",
+    "codeId": "IMG00003",
+    "description": null,
+    "title": "2.jpg",
+    "updatedAt": "2025-05-14T07:25:04.353Z",
+    "order": 1
+  },
+  {
+    "id": "e19bb895-1ef9-4a38-a5de-12e0a90c8fe8",
+    "url": "images/1747207504376-3.jpg",
+    "fileType": "image/jpeg",
+    "metaData": {
+      "group": "default",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "3.jpg"
+    },
+    "category": "default",
+    "group": "default",
+    "createdAt": "2025-05-14T07:25:04.386Z",
+    "codeId": "IMG00004",
+    "description": null,
+    "title": "3.jpg",
+    "updatedAt": "2025-05-14T07:25:04.386Z",
+    "order": 1
+  },
+  {
+    "id": "8dc5fa98-094c-4d80-bfd0-c4bb1f08ff62",
+    "url": "images/1747207504410-4.jpg",
+    "fileType": "image/jpeg",
+    "metaData": {
+      "group": "default",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "4.jpg"
+    },
+    "category": "default",
+    "group": "default",
+    "createdAt": "2025-05-14T07:25:04.424Z",
+    "codeId": "IMG00005",
+    "description": null,
+    "title": "4.jpg",
+    "updatedAt": "2025-05-14T07:25:04.424Z",
+    "order": 1
+  },
+  {
+    "id": "41c9c1d8-01fb-4c8a-8673-47f1a3e49f27",
+    "url": "images/1747207504445-5.jpg",
+    "fileType": "image/jpeg",
+    "metaData": {
+      "group": "default",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "5.jpg"
+    },
+    "category": "default",
+    "group": "default",
+    "createdAt": "2025-05-14T07:25:04.458Z",
+    "codeId": "IMG00006",
+    "description": null,
+    "title": "5.jpg",
+    "updatedAt": "2025-05-14T07:25:04.458Z",
+    "order": 1
+  },
+  {
+    "id": "21670284-a600-4f48-8f61-b466fc002a03",
+    "url": "images/1747207504510-7.jpg",
+    "fileType": "image/jpeg",
+    "metaData": {
+      "group": "default",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "7.jpg"
+    },
+    "category": "default",
+    "group": "default",
+    "createdAt": "2025-05-14T07:25:04.521Z",
+    "codeId": "IMG00008",
+    "description": null,
+    "title": "7.jpg",
+    "updatedAt": "2025-05-14T07:25:04.521Z",
+    "order": 1
+  },
+  {
+    "id": "b1720a49-609c-4ce4-b2c6-5f413a753e8a",
+    "url": "images/1747207504542-8.jpg",
+    "fileType": "image/jpeg",
+    "metaData": {
+      "group": "default",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "8.jpg"
+    },
+    "category": "default",
+    "group": "default",
+    "createdAt": "2025-05-14T07:25:04.553Z",
+    "codeId": "IMG00009",
+    "description": null,
+    "title": "8.jpg",
+    "updatedAt": "2025-05-14T07:25:04.553Z",
+    "order": 1
+  },
+  {
+    "id": "f623b600-ab12-4a2e-9a02-5d5087184a4a",
+    "url": "images/1747207504572-9.jpg",
+    "fileType": "image/jpeg",
+    "metaData": {
+      "group": "default",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "9.jpg"
+    },
+    "category": "default",
+    "group": "default",
+    "createdAt": "2025-05-14T07:25:04.580Z",
+    "codeId": "IMG00010",
+    "description": null,
+    "title": "9.jpg",
+    "updatedAt": "2025-05-14T07:25:04.580Z",
+    "order": 1
+  },
+  {
+    "id": "50e3939a-3c7f-4f38-9272-6d920ca10c74",
+    "url": "images/1747207504604-10.jpg",
+    "fileType": "image/jpeg",
+    "metaData": {
+      "group": "default",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "10.jpg"
+    },
+    "category": "default",
+    "group": "default",
+    "createdAt": "2025-05-14T07:25:04.612Z",
+    "codeId": "IMG00011",
+    "description": null,
+    "title": "10.jpg",
+    "updatedAt": "2025-05-14T07:25:04.612Z",
+    "order": 1
+  },
+  {
+    "id": "1ea7ee5d-0330-489f-83c8-2857766f6657",
+    "url": "images/1747207504478-6.jpg",
+    "fileType": "image/jpeg",
+    "metaData": {
+      "group": "default",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "6.jpg"
+    },
+    "category": "default1",
+    "group": "default1",
+    "createdAt": "2025-05-14T07:25:04.489Z",
+    "codeId": "IMG00007",
+    "description": null,
+    "title": "Hình Số 6",
+    "updatedAt": "2025-05-14T08:16:54.627Z",
+    "order": 1
+  }
+]

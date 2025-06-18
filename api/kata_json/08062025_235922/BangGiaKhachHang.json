@@ -1,0 +1,26 @@
+[
+  {
+    "id": "fe407e0c-62a5-453f-85ed-5c33a4fa869f",
+    "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+    "khachhangId": "1999d9c8-47b9-4aed-8a74-cf8adb6e53a8",
+    "status": true,
+    "createdAt": "2025-06-08T04:46:03.887Z",
+    "updatedAt": "2025-06-08T04:46:03.887Z"
+  },
+  {
+    "id": "8e697b35-af83-4f01-a803-bda610b2cf42",
+    "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+    "khachhangId": "c4ccf464-f576-4280-b627-cb7ebcc26063",
+    "status": true,
+    "createdAt": "2025-06-08T04:46:03.887Z",
+    "updatedAt": "2025-06-08T04:46:03.887Z"
+  },
+  {
+    "id": "0ea71ca2-bf47-4143-b214-480e84c2b1d5",
+    "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+    "khachhangId": "6c36ddfb-a4aa-4aa2-98cd-37f5051c9501",
+    "status": true,
+    "createdAt": "2025-06-08T04:46:03.887Z",
+    "updatedAt": "2025-06-08T04:46:03.887Z"
+  }
+]

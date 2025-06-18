@@ -1,0 +1,26 @@
+[
+  {
+    "id": "a8a8c544-5f1f-4582-b715-5a7a59200109",
+    "codeId": "NCC00001",
+    "title": "Nhà Cung Cấp 1",
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-06-02T13:59:44.478Z",
+    "updatedAt": "2025-06-02T14:11:05.332Z",
+    "diachi": "100 quang trung",
+    "email": "ncc1@gmail.com",
+    "phone": "0987654321"
+  },
+  {
+    "id": "c2a24827-cf00-4edb-8550-e27323beac06",
+    "codeId": "NCC00002",
+    "title": "Nhà Cung Cấp 2",
+    "description": null,
+    "order": 2,
+    "createdAt": "2025-06-02T14:11:47.706Z",
+    "updatedAt": "2025-06-02T14:11:47.706Z",
+    "diachi": "101 quang trung",
+    "email": "ncc2@gmail.com",
+    "phone": "0987654322"
+  }
+]

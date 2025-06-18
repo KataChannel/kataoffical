@@ -27,4 +27,55 @@ npm login
 npm publish --access public
 
 
-abc
+
+
+
+
+
+
+<kata-table
+  [dataSource]="dataSource"
+  [displayedColumns]="['stt', 'codeId', 'khachhang', 'tags', 'categories', 'roles', 'createdAt', 'isActive']"
+  [ColumnName]="{
+    stt: 'STT',
+    codeId: 'Code',
+    khachhang: 'Customer',
+    tags: 'Tags',
+    categories: 'Categories',
+    roles: 'Roles',
+    createdAt: 'Created At',
+    isActive: 'Status'
+  }"
+  [FilterColumns]="filterColumns"
+  [Columns]="columns"
+  [ListFilter]="listFilter"
+  [EditList]="editList"
+  [columnsToShowLength]="['tags']" <!-- Show length for 'tags' -->
+  [columnsToShowNestedObject]="{ khachhang: 'title' }" <!-- Show 'title' for 'khachhang' -->
+  [columnsToLoopArrayObject]="[{ column: 'roles', key: 'title' }]" <!-- Loop 'title' for 'roles' -->
+  (toggleColumnEvent)="onToggleColumn($event)"
+  (filterColumnsEvent)="onFilterColumns($event)"
+  (updateDisplayedColumnsEvent)="onUpdateDisplayedColumns()"
+  (outFilterEvent)="onOutFilter($event)"
+  (addToEditEvent)="onAddToEdit($event)"
+  (goToDetailEvent)="onGoToDetail($event)">
+</kata-table>
+
+
+
+{
+  id: 1,
+  codeId: 'ABC123',
+  khachhang: { title: 'abc', sex: 'male' },
+  tags: [{ name: 'urgent' }, { name: 'important' }],
+  categories: [
+    { name: 'Tech', sub: ['AI', 'ML'] },
+    { name: 'Business', sub: ['Sales'] }
+  ],
+  roles: [
+    { title: 'Admin', id: 1 },
+    { title: 'User', id: 2 }
+  ],
+  createdAt: '2025-06-15',
+  isActive: true
+}

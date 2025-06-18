@@ -80,7 +80,28 @@ export class BanggiaService {
   setBanggiaId(id: string | null) {
     this.banggiaId.set(id);
   }
-
+  async ImportBanggia(dulieu: any) {
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/banggia/import`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+          this.handleError(response.status);
+        }
+        this.getAllBanggia()
+    } catch (error) {
+        return console.error(error);
+    }
+  }
   async CreateBanggia(dulieu: any) {
     try {
       const options = {

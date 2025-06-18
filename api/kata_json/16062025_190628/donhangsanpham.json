@@ -1,0 +1,26 @@
+[
+  {
+    "id": "c40d5d1d-d2b2-49b1-8eeb-86aca036c986",
+    "donhangId": "ee6a8aa7-cdd7-4284-95c6-0e29e998a4b0",
+    "sanphamId": "c1f02a08-b8b1-4c2c-b413-a1a7d720416f",
+    "sldat": 20,
+    "slgiao": 20,
+    "slnhan": 0,
+    "slhuy": 0,
+    "createdAt": "2025-06-14T06:18:23.696Z",
+    "updatedAt": "2025-06-14T06:18:23.696Z",
+    "giaban": 0
+  },
+  {
+    "id": "7081a1a9-a84c-4db4-a9c1-db7a1f195f42",
+    "donhangId": "ee6a8aa7-cdd7-4284-95c6-0e29e998a4b0",
+    "sanphamId": "4c0e347d-e119-43bf-8ac6-208019d3c82a",
+    "sldat": 20,
+    "slgiao": 20,
+    "slnhan": 0,
+    "slhuy": 0,
+    "createdAt": "2025-06-14T06:18:23.696Z",
+    "updatedAt": "2025-06-14T06:18:23.696Z",
+    "giaban": 0
+  }
+]

@@ -106,6 +106,8 @@ model User {
   referrals     User[]         @relation("Referrals")
   auditLogs     AuditLog[]
   Setting       Setting[]
+  kho           kho[]
+  nhacungcap    nhacungcap[]
 }
 
 model Role {
@@ -699,6 +701,8 @@ model kho {
   title       String
   description String?
   order       Int?     @default(1)
+  createdBy       String? // ID của người tạo nhà cung cấp này
+  createdByUser   User?   @relation(fields: [createdBy], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -713,6 +717,8 @@ model nhacungcap {
   diachi          String?
   dathangs        dathang[]          @relation("NhacungcapDathang")
   order           Int?               @default(1)
+  createdBy       String? // ID của người tạo nhà cung cấp này
+  createdByUser   User?   @relation(fields: [createdBy], references: [id])
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
 }

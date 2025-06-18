@@ -26,6 +26,7 @@ export declare class DathangController {
             order: number | null;
             codeId: string;
             diachi: string | null;
+            createdBy: string | null;
         };
     } & {
         id: string;
@@ -78,6 +79,7 @@ export declare class DathangController {
             order: number | null;
             codeId: string;
             diachi: string | null;
+            createdBy: string | null;
         };
     } & {
         id: string;
@@ -130,6 +132,7 @@ export declare class DathangController {
                 order: number | null;
                 codeId: string;
                 diachi: string | null;
+                createdBy: string | null;
             };
         } & {
             id: string;
@@ -187,6 +190,7 @@ export declare class DathangController {
                 order: number | null;
                 codeId: string;
                 diachi: string | null;
+                createdBy: string | null;
             };
         } & {
             id: string;
@@ -246,6 +250,7 @@ export declare class DathangController {
             order: number | null;
             codeId: string;
             diachi: string | null;
+            createdBy: string | null;
         };
     } & {
         id: string;
@@ -281,6 +286,7 @@ export declare class DathangController {
             order: number | null;
             codeId: string;
             diachi: string | null;
+            createdBy: string | null;
         };
     } & {
         id: string;

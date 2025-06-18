@@ -41,7 +41,7 @@ export declare class PhieukhoService {
         page: any;
         pageCount: number;
     } | null>;
-    findAll(page?: number, limit?: number): Promise<{
+    findAll(query: any): Promise<{
         data: {
             id: string;
             createdAt: Date;
@@ -53,7 +53,8 @@ export declare class PhieukhoService {
         }[];
         total: number;
         page: number;
-        pageCount: number;
+        pageSize: number;
+        totalPages: number;
     }>;
     findOne(id: string): Promise<{
         id: string;
@@ -64,7 +65,15 @@ export declare class PhieukhoService {
         order: number | null;
         codeId: string;
     }>;
-    update(id: string, data: any): Promise<any>;
+    update(id: string, data: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        title: string;
+        order: number | null;
+        codeId: string;
+    }>;
     remove(id: string): Promise<{
         id: string;
         createdAt: Date;

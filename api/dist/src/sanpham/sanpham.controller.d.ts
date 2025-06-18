@@ -2,6 +2,15 @@ import { SanphamService } from './sanpham.service';
 export declare class SanphamController {
     private readonly sanphamService;
     constructor(sanphamService: SanphamService);
+    import(data: any): Promise<{
+        message: string;
+        results: {
+            codeId: any;
+            status: string;
+            action?: string;
+            error?: string;
+        }[];
+    }>;
     create(data: any): Promise<{
         id: string;
         createdAt: Date;
@@ -54,18 +63,23 @@ export declare class SanphamController {
         page: any;
         pageCount: number;
     } | null>;
-    findAll(page?: string, limit?: string): Promise<{
-        data: ({
-            danhmuc: {
-                id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                description: string | null;
-                title: string;
-                order: number | null;
-                codeId: string;
-            } | null;
-        } & {
+    findAll(query: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        title: string;
+        order: number | null;
+        codeId: string;
+        status: string;
+        donvitinh: string | null;
+        bienthe: string | null;
+        giagoc: number;
+        inStock: boolean;
+        danhmucId: string | null;
+        bacgia: import(".prisma/client/runtime/library").JsonValue | null;
+    } | {
+        data: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -80,11 +94,12 @@ export declare class SanphamController {
             inStock: boolean;
             danhmucId: string | null;
             bacgia: import(".prisma/client/runtime/library").JsonValue | null;
-        })[];
+        }[];
         total: number;
         page: number;
-        pageCount: number;
-    }>;
+        pageSize: number;
+        totalPages: number;
+    } | null>;
     getLastUpdatedSanpham(): Promise<{
         updatedAt: number;
     }>;

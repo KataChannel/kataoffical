@@ -43,6 +43,7 @@ const core_1 = require("@nestjs/core");
 const audit_interceptor_1 = require("./auditlog/audit.interceptor");
 const auditlog_service_1 = require("./auditlog/auditlog.service");
 const audit_middleware_1 = require("./auditlog/audit.middleware");
+const kho_module_1 = require("./kho/kho.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
@@ -82,7 +83,8 @@ exports.AppModule = AppModule = __decorate([
             banggia_module_1.BanggiaModule,
             nhacungcap_module_1.NhacungcapModule,
             dathang_module_1.DathangModule,
-            phieukho_module_1.PhieukhoModule
+            phieukho_module_1.PhieukhoModule,
+            kho_module_1.KhoModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [

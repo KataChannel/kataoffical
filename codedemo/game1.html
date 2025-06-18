@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Sử Hình Thành Lãnh Thổ Việt Nam</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .province-cell {
+            width: 80px;
+            height: 60px;
+            border: 2px solid #374151;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 2px;
+            font-size: 8px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1;
+            color: #1f2937;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .province-name {
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-bottom: 2px;
+        }
+        
+        .province-counter {
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .period-indicators {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1px;
+            margin-top: 2px;
+            justify-content: center;
+        }
+        
+        .period-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+        
+        .period-dot.active {
+            opacity: 1;
+            animation: dotPulse 1s ease-in-out;
+        }
+        
+        @keyframes dotPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+        
+        .map-container {
+            display: grid;
+            grid-template-columns: repeat(12, 80px);
+            gap: 3px;
+            justify-content: center;
+            margin: 20px auto;
+            max-width: 1000px;
+        }
+        
+        .period-1 { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .period-2 { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .period-3 { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .period-4 { background: linear-gradient(135deg, #10b981, #059669); }
+        .period-5 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .period-6 { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        
+        .period-active {
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { 
+                opacity: 0.9; 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1.05);
+            }
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 10px;
+        }
+        
+        .color-box {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            border: 2px solid #333;
+            border-radius: 4px;
+        }
+        
+        .province-cell.inactive {
+            background: #f3f4f6;
+            color: #9ca3af;
+            border-color: #d1d5db;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto p-6">
+        <h1 class="text-4xl font-bold text-center mb-6 text-blue-800">
+            Lịch Sử Hình Thành Lãnh Thổ Việt Nam
+        </h1>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 id="current-period" class="text-2xl font-semibold text-center mb-4 text-green-700">
+                Thời kỳ Hùng Vương - Văn Lang - Âu Lạc (2879 TCN - 207 TCN)
+            </h2>
+            
+            <div class="text-center mb-4">
+                <span class="text-lg font-medium">Thời gian còn lại: </span>
+                <span id="countdown" class="text-xl font-bold text-red-600">10s</span>
+            </div>
+            
+            <div id="map-container" class="map-container">
+                <!-- Bản đồ sẽ được tạo bằng JavaScript -->
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="text-lg font-semibold mb-3">Chú thích thời kỳ:</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    <div class="legend-item">
+                        <div class="color-box period-1"></div>
+                        <span class="text-sm">Thời kỳ 1: Hùng Vương</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box period-2"></div>
+                        <span class="text-sm">Thời kỳ 2: Bắc thuộc 1</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box period-3"></div>
+                        <span class="text-sm">Thời kỳ 3: Hai Bà Trưng</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box period-4"></div>
+                        <span class="text-sm">Thời kỳ 4: Lý-Trần</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box period-5"></div>
+                        <span class="text-sm">Thời kỳ 5: Lê-Mạc</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-box period-6"></div>
+                        <span class="text-sm">Thời kỳ 6: Nguyễn-Hiện đại</span>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-600">
+                    <p><strong>Số trong vòng tròn:</strong> Số lần tỉnh xuất hiện trong các thời kỳ lịch sử</p>
+                    <p><strong>Các chấm màu:</strong> Hiển thị tỉnh thuộc thời kỳ nào (chấm sáng = đã qua, chấm mờ = chưa tới)</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h3 class="text-xl font-semibold mb-4">Tiến trình lịch sử:</h3>
+            <div id="progress-bar" class="w-full bg-gray-200 rounded-full h-4 mb-4">
+                <div id="progress" class="bg-blue-600 h-4 rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+            <div id="province-list" class="text-sm">
+                <p class="font-medium">Các tỉnh trong thời kỳ hiện tại:</p>
+                <div id="current-provinces" class="mt-2 text-gray-700"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dữ liệu các thời kỳ lịch sử và tỉnh thành
+        const historicalPeriods = [
+            {
+                name: "Thời kỳ Hùng Vương - Văn Lang - Âu Lạc",
+                period: "2879 TCN - 207 TCN",
+                provinces: [
+                    "Hà Nội", "Hải Phòng", "Quảng Ninh", "Lạng Sơn", "Cao Bằng",
+                    "Hà Giang", "Lào Cai", "Yên Bái", "Thái Nguyên", "Tuyên Quang",
+                    "Phú Thọ", "Vĩnh Phúc", "Bắc Ninh", "Hải Dương", "Hưng Yên",
+                    "Nam Định", "Thái Bình", "Ninh Bình", "Hà Nam", "Hoà Bình"
+                ],
+                color: "period-1",
+                periodNumber: 1
+            },
+            {
+                name: "Thời kỳ Bắc thuộc lần 1",
+                period: "207 TCN - 40 SCN",
+                provinces: [
+                    "Hà Nội", "Hải Phòng", "Quảng Ninh", "Lạng Sơn", "Cao Bằng",
+                    "Hà Giang", "Lào Cai", "Yên Bái", "Thái Nguyên", "Tuyên Quang",
+                    "Phú Thọ", "Vĩnh Phúc", "Bắc Ninh", "Hải Dương", "Hưng Yên",
+                    "Nam Định", "Thái Bình", "Ninh Bình", "Hà Nam", "Hoà Bình",
+                    "Thanh Hóa", "Nghệ An"
+                ],
+                color: "period-2",
+                periodNumber: 2
+            },
+            {
+                name: "Thời kỳ Hai Bà Trưng - Bắc thuộc lần 2",
+                period: "40 - 544",
+                provinces: [
+                    "Hà Nội", "Hải Phòng", "Quảng Ninh", "Lạng Sơn", "Cao Bằng",
+                    "Hà Giang", "Lào Cai", "Yên Bái", "Thái Nguyên", "Tuyên Quang",
+                    "Phú Thọ", "Vĩnh Phúc", "Bắc Ninh", "Hải Dương", "Hưng Yên",
+                    "Nam Định", "Thái Bình", "Ninh Bình", "Hà Nam", "Hoà Bình",
+                    "Thanh Hóa", "Nghệ An", "Hà Tĩnh"
+                ],
+                color: "period-3",
+                periodNumber: 3
+            },
+            {
+                name: "Thời kỳ Tiền Lý - Lý - Trần",
+                period: "544 - 1400",
+                provinces: [
+                    "Hà Nội", "Hải Phòng", "Quảng Ninh", "Lạng Sơn", "Cao Bằng",
+                    "Hà Giang", "Lào Cai", "Yên Bái", "Thái Nguyên", "Tuyên Quang",
+                    "Phú Thọ", "Vĩnh Phúc", "Bắc Ninh", "Hải Dương", "Hưng Yên",
+                    "Nam Định", "Thái Bình", "Ninh Bình", "Hà Nam", "Hoà Bình",
+                    "Thanh Hóa", "Nghệ An", "Hà Tĩnh", "Quảng Bình", "Quảng Trị",
+                    "Thừa Thiên Huế", "Đà Nẵng", "Quảng Nam", "Quảng Ngãi"
+                ],
+                color: "period-4",
+                periodNumber: 4
+            },
+            {
+                name: "Thời kỳ Hồ - Lê sơ - Mạc - Lê Trung Hưng",
+                period: "1400 - 1802",
+                provinces: [
+                    "Hà Nội", "Hải Phòng", "Quảng Ninh", "Lạng Sơn", "Cao Bằng",
+                    "Hà Giang", "Lào Cai", "Yên Bái", "Thái Nguyên", "Tuyên Quang",
+                    "Phú Thọ", "Vĩnh Phúc", "Bắc Ninh", "Hải Dương", "Hưng Yên",
+                    "Nam Định", "Thái Bình", "Ninh Bình", "Hà Nam", "Hoà Bình",
+                    "Thanh Hóa", "Nghệ An", "Hà Tĩnh", "Quảng Bình", "Quảng Trị",
+                    "Thừa Thiên Huế", "Đà Nẵng", "Quảng Nam", "Quảng Ngãi",
+                    "Bình Định", "Phú Yên", "Khánh Hòa", "Ninh Thuận", "Bình Thuận",
+                    "Đồng Nai", "Bình Dương", "TP HCM", "Long An", "Tiền Giang",
+                    "Bến Tre", "Trà Vinh", "Vĩnh Long", "Đồng Tháp", "An Giang"
+                ],
+                color: "period-5",
+                periodNumber: 5
+            },
+            {
+                name: "Thời kỳ Nguyễn - Hiện đại",
+                period: "1802 - nay",
+                provinces: [
+                    "Hà Nội", "Hải Phòng", "Quảng Ninh", "Lạng Sơn", "Cao Bằng",
+                    "Hà Giang", "Lào Cai", "Yên Bái", "Thái Nguyên", "Tuyên Quang",
+                    "Phú Thọ", "Vĩnh Phúc", "Bắc Ninh", "Hải Dương", "Hưng Yên",
+                    "Nam Định", "Thái Bình", "Ninh Bình", "Hà Nam", "Hoà Bình",
+                    "Sơn La", "Điện Biên", "Lai Châu", "Bắc Kạn", "Bắc Giang",
+                    "Thanh Hóa", "Nghệ An", "Hà Tĩnh", "Quảng Bình", "Quảng Trị",
+                    "Thừa Thiên Huế", "Đà Nẵng", "Quảng Nam", "Quảng Ngãi",
+                    "Bình Định", "Phú Yên", "Khánh Hòa", "Ninh Thuận", "Bình Thuận",
+                    "Kon Tum", "Gia Lai", "Đắk Lắk", "Đắk Nông", "Lâm Đồng",
+                    "Bình Phước", "Tây Ninh", "Bình Dương", "Đồng Nai", "Bà Rịa-VT",
+                    "TP HCM", "Long An", "Tiền Giang", "Bến Tre", "Trà Vinh",
+                    "Vĩnh Long", "Đồng Tháp", "An Giang", "Kiên Giang", "Cần Thơ",
+                    "Hậu Giang", "Sóc Trăng", "Bạc Liêu", "Cà Mau"
+                ],
+                color: "period-6",
+                periodNumber: 6
+            }
+        ];
+
+        let currentPeriodIndex = 0;
+        let countdown = 10;
+        let countdownInterval;
+        let provinceAppearanceCount = {};
+
+        // Tính số lần xuất hiện của mỗi tỉnh và thời kỳ nào chúng xuất hiện
+        function calculateProvinceAppearances() {
+            provinceAppearanceCount = {};
+            provincePeriods = {};
+            
+            historicalPeriods.forEach((period, periodIndex) => {
+                period.provinces.forEach(province => {
+                    if (!provinceAppearanceCount[province]) {
+                        provinceAppearanceCount[province] = 0;
+                        provincePeriods[province] = [];
+                    }
+                    provinceAppearanceCount[province]++;
+                    provincePeriods[province].push(periodIndex);
+                });
+            });
+        }
+
+        // Tạo bản đồ với tất cả các tỉnh
+        function createMap() {
+            const mapContainer = document.getElementById('map-container');
+            mapContainer.innerHTML = '';
+            
+            // Lấy tất cả các tỉnh duy nhất
+            const allProvinces = [...new Set(historicalPeriods.flatMap(period => period.provinces))];
+            
+            allProvinces.forEach((province, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'province-cell inactive';
+                cell.id = `cell-${index}`;
+                
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'province-name';
+                nameDiv.textContent = province;
+                
+                const counterDiv = document.createElement('div');
+                counterDiv.className = 'province-counter';
+                counterDiv.textContent = provinceAppearanceCount[province] || 0;
+                
+                // Tạo các chấm màu cho từng thời kỳ
+                const indicatorsDiv = document.createElement('div');
+                indicatorsDiv.className = 'period-indicators';
+                
+                // Tạo 6 chấm màu cho 6 thời kỳ
+                for (let i = 0; i < 6; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = `period-dot period-${i + 1}`;
+                    dot.setAttribute('data-period', i);
+                    
+                    // Kiểm tra xem tỉnh có thuộc thời kỳ này không
+                    if (provincePeriods[province] && provincePeriods[province].includes(i)) {
+                        dot.style.display = 'block';
+                    } else {
+                        dot.style.display = 'none';
+                    }
+                    
+                    indicatorsDiv.appendChild(dot);
+                }
+                
+                cell.appendChild(nameDiv);
+                cell.appendChild(counterDiv);
+                cell.appendChild(indicatorsDiv);
+                cell.setAttribute('data-province', province);
+                
+                mapContainer.appendChild(cell);
+            });
+        }
+
+        // Cập nhật bản đồ cho thời kỳ hiện tại
+        function updateMap() {
+            const currentPeriod = historicalPeriods[currentPeriodIndex];
+            
+            // Reset tất cả các ô về trạng thái inactive
+            document.querySelectorAll('.province-cell').forEach(cell => {
+                cell.className = 'province-cell inactive';
+                
+                // Cập nhật trạng thái các chấm màu
+                const dots = cell.querySelectorAll('.period-dot');
+                dots.forEach((dot, dotIndex) => {
+                    const isVisible = dot.style.display !== 'none';
+                    if (isVisible) {
+                        if (dotIndex <= currentPeriodIndex) {
+                            dot.classList.add('active');
+                        } else {
+                            dot.classList.remove('active');
+                        }
+                    }
+                });
+            });
+            
+            // Tô màu các tỉnh thuộc thời kỳ hiện tại
+            currentPeriod.provinces.forEach(province => {
+                const cell = document.querySelector(`[data-province="${province}"]`);
+                if (cell) {
+                    cell.className = `province-cell ${currentPeriod.color} period-active`;
+                    
+                    // Làm nổi bật chấm màu của thời kỳ hiện tại
+                    const currentDot = cell.querySelector(`[data-period="${currentPeriodIndex}"]`);
+                    if (currentDot && currentDot.style.display !== 'none') {
+                        currentDot.classList.add('active');
+                        // Thêm hiệu ứng đặc biệt cho chấm hiện tại
+                        setTimeout(() => {
+                            currentDot.style.animation = 'dotPulse 0.5s ease-in-out';
+                        }, 100);
+                    }
+                }
+            });
+            
+            // Cập nhật thông tin thời kỳ
+            document.getElementById('current-period').innerHTML = 
+                `<span class="text-2xl mr-2">${currentPeriod.periodNumber}</span>${currentPeriod.name} (${currentPeriod.period})`;
+                
+            // Cập nhật danh sách tỉnh
+            const provinceList = currentPeriod.provinces.map(province => 
+                `<span class="inline-block bg-gray-200 rounded px-2 py-1 text-xs mr-1 mb-1">${province}</span>`
+            ).join('');
+            document.getElementById('current-provinces').innerHTML = provinceList;
+                
+            // Cập nhật thanh tiến trình
+            const progress = ((currentPeriodIndex + 1) / historicalPeriods.length) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+        }
+
+        // Đếm ngược và chuyển thời kỳ
+        function startCountdown() {
+            countdownInterval = setInterval(() => {
+                countdown--;
+                document.getElementById('countdown').textContent = `${countdown}s`;
+                
+                if (countdown <= 0) {
+                    currentPeriodIndex = (currentPeriodIndex + 1) % historicalPeriods.length;
+                    updateMap();
+                    countdown = 10;
+                }
+            }, 1000);
+        }
+
+        // Khởi tạo
+        function init() {
+            calculateProvinceAppearances();
+            createMap();
+            updateMap();
+            startCountdown();
+        }
+
+        // Chạy khi trang web được tải
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -26,6 +26,11 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
     ListUser = signal<any[]>([]);
     DetailUser = signal<any>({});
     userId = signal<string | null>(null);
+    page = signal<number>(1);
+    totalPages = signal<number>(1);
+    total = signal<number>(0);
+    pageSize = signal<number>(50); // Mặc định 50 mục mỗi trang
+
     setUserId(id: string | null) {
       this.userId.set(id);
     }
@@ -58,7 +63,52 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
       }
     }
 
+  // Khởi tạo IndexedDB
+  private async initDB() {
+    return await openDB('UserDB', 4, {
+      upgrade(db, oldVersion) {
+        if (oldVersion < 1) {
+          db.createObjectStore('users', { keyPath: 'id' });
+        }
+        if (oldVersion < 3) {
+          if (db.objectStoreNames.contains('users')) {
+            db.deleteObjectStore('users');
+          }
+          if (db.objectStoreNames.contains('pagination')) {
+            db.deleteObjectStore('pagination');
+          }
+          db.createObjectStore('users', { keyPath: 'id' });
+        }
+        if (oldVersion < 4) {
+          // Không cần xóa store, vì cấu trúc vẫn tương thích
+          // Chỉ cần đảm bảo pagination có thêm pageSize
+        }
+      },
+    });
+  }
 
+  // Lưu dữ liệu và phân trang vào IndexedDB
+  private async saveUsers(data: any[], pagination: { page: number, totalPages: number, total: number, pageSize: number }) {
+    const db = await this.initDB();
+    const tx = db.transaction('users', 'readwrite');
+    const store = tx.objectStore('users');
+    await store.clear();
+    await store.put({ id: 'data', users: data, pagination });
+    await tx.done;
+  }
+
+  // Lấy dữ liệu và phân trang từ cache
+  private async getCachedData() {
+    const db = await this.initDB();
+    const cached = await db.get('users', 'data');
+    if (cached && cached.users) {
+      return {
+        users: cached.users,
+        pagination: cached.pagination || { page: 1, totalPages: 1, total: cached.users.length, pageSize: 10 }
+      };
+    }
+    return { users: [], pagination: { page: 1, totalPages: 1, total: 0, pageSize: 10 } };
+  }
 
 
 
@@ -89,53 +139,89 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
       }
     }
   
-    async getAllUser() {
-      const db = await this.initDB();
-      const cachedData = await db.getAll('users');
-      const updatedAtCache = this._StorageService.getItem('users_updatedAt') || '0';
-      // Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
-      if (cachedData.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) { // 5 phút cache TTL
-        this.ListUser.set(cachedData);
-        return cachedData;
-      }
-      try {
-        const options = {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
-          },
-        };
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/users/last-updated`, options);
-        if (!lastUpdatedResponse.ok) {
-          this.handleError(lastUpdatedResponse.status);
-          return cachedData;
-        }    
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-        //Nếu cache vẫn mới, không cần tải lại dữ liệu
-        if (updatedAtServer <= updatedAtCache) {
-          this.ListUser.set(cachedData);
-          return cachedData;
-        }
-        console.log(updatedAtServer, updatedAtCache); 
-        //Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
-        const response = await fetch(`${environment.APIURL}/users`, options);
-        if (!response.ok) {
-          this.handleError(response.status);
-          return cachedData;
-        }
-        const data = await response.json();
-        await this.saveUsers(data);
-        this._StorageService.setItem('users_updatedAt', updatedAtServer);
-        this.ListUser.set(data);
-        return data;
-      } catch (error) {
-        this._ErrorLogService.logError('Failed to create getAllUser', error);
-        console.error(error);
-        return cachedData;
-      }
+  async getAllUser(queryParams: any = {}, forceRefresh: boolean = false) {
+
+    const cached = await this.getCachedData();
+    const updatedAtCacheDate = this._StorageService.getItem('users_updatedAt') || '0';
+    const updatedAtCache = new Date(updatedAtCacheDate).getTime();
+    // Nếu không yêu cầu tải mới và cache hợp lệ, trả về cache
+    if (!forceRefresh && cached.users.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) {
+      this.ListUser.set(cached.users);
+      this.page.set(cached.pagination.page);
+      this.totalPages.set(cached.pagination.totalPages);
+      this.total.set(cached.pagination.total);
+      this.pageSize.set(cached.pagination.pageSize);
+      return cached.users;
     }
-  
+
+    try {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+      };
+
+      queryParams = {
+        page: this.page().toString(),
+        pageSize: this.pageSize().toString(),
+        ...queryParams, // Thêm các tham số khác nếu cần
+      };
+      // Tạo query string từ queryParams, chỉ thêm các giá trị có nội dung
+      const query = new URLSearchParams();
+      Object.entries(queryParams).forEach(([key, value]) => {
+        if (value) {
+          query.append(key, String(value));
+        }
+      });
+
+      // Nếu forceRefresh = true thì bỏ qua cache và tải dữ liệu mới luôn
+      const response = await fetch(`${environment.APIURL}/users?${query}`, options);
+      
+      if (!response.ok) {
+        this.handleError(response.status);
+        this.ListUser.set(cached.users);
+        this.page.set(cached.pagination.page);
+        this.totalPages.set(cached.pagination.totalPages);
+        this.total.set(cached.pagination.total);
+        this.pageSize.set(cached.pagination.pageSize);
+        return cached.users;
+      }
+      // Lưu dữ liệu mới vào cache
+      const data = await response.json();
+      await this.saveUsers(data.data, {
+        page: data.page || 1,
+        totalPages: data.totalPages || 1,
+        total: data.total || data.data.length,
+        pageSize: this.pageSize()
+      });
+
+      // Cập nhật thời gian cache: với forceRefresh, sử dụng thời gian hiện tại
+      if (forceRefresh) {
+        this._StorageService.setItem('users_updatedAt', new Date().toISOString());
+      } else {
+        const lastUpdatedResponse = await fetch(`${environment.APIURL}/users/lastupdated`, options);
+        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
+        this._StorageService.setItem('users_updatedAt', updatedAtServer);
+      }
+      this.ListUser.set(data.data);
+      this.page.set(data.page || 1);
+      this.totalPages.set(data.totalPages || 1);
+      this.total.set(data.total || data.data.length);
+      this.pageSize.set(this.pageSize());
+      return data.data;
+
+    } catch (error) {
+      console.error(error);
+      this.ListUser.set(cached.users);
+      this.page.set(cached.pagination.page);
+      this.totalPages.set(cached.pagination.totalPages);
+      this.total.set(cached.pagination.total);
+      this.pageSize.set(cached.pagination.pageSize);
+      return cached.users;
+    }
+  }
   
     //Lắng nghe cập nhật từ WebSocket
     listenUserUpdates() {
@@ -145,24 +231,7 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
         await this.getAllUser();
       });
     }
-    //Khởi tạo IndexedDB
-    private async initDB() {
-      return await openDB('UserDB', 1, {
-        upgrade(db) {
-          db.createObjectStore('users', { keyPath: 'id' });
-        },
-      });
-    }
-    // Lưu vào IndexedDB
-    private async saveUsers(data: any[]) {
-      const db = await this.initDB();
-      const tx = db.transaction('users', 'readwrite');
-      const store = tx.objectStore('users');
-      await store.clear(); // Xóa dữ liệu cũ
-      data.forEach(item => store.put(item));
-      await tx.done;
-    }
-  
+ 
     async getUserBy(param: any) {
       try {
         const options = {
@@ -543,5 +612,24 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
     this.router.navigate(['/']);
     return true
   }
-
+  async getUpdatedCodeIds() {
+    try {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+      };
+      const response = await fetch(`${environment.APIURL}/user/updateCodeIds`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      const data = await response.json();
+      this.getAllUser(this.pageSize());
+      return data.data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
   }

@@ -2,6 +2,10 @@
 git add .
 git commit -m "update"
 git push
+ssh root@116.118.85.23
+cp /root/secret/.env /root/kataoffical/api/
+git pull
+docker compose -f 'docker-compose.yml' up -d --build 
 
 # server
 chmod +x katalogin.sh
@@ -34,7 +38,8 @@ chmod +x autologin.sh
 ./autologin.sh
 
 
-cp /root/secret/.env /root/katav20/api/
+cp /root/secret/.env /root/kataoffical/api/
+cp /var/lib/docker/volumes/kataoffical_postgres/_env /root/secret/
 
 docker compose -f 'docker-compose.yml' up -d --build 
 docker compose -f 'docker-compose.yml' up -d --build 'postgres'
@@ -169,3 +174,9 @@ cập nhật code like senior có trycatch và HttpStatus
 cập nhật code like senior có trycatch và trả về lỗi
 
 Đóng vai là lập trình viên chuyên nghiệp 60 năm kinh nghiệm : dự án của tôi sử dụng angular, nestjs, postgres, docker, prisma, socket io, redis
+
+
+# Auto Update 
+npm install -g npm-check-updates
+ncu -u next
+npm install

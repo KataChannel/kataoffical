@@ -18,6 +18,7 @@ const user_service_1 = require("./user.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
 const client_1 = require("@prisma/client");
+const swagger_1 = require("@nestjs/swagger");
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -28,11 +29,21 @@ let UserController = class UserController {
     findby(param) {
         return this.userService.findby(param);
     }
-    findAll() {
-        return this.userService.findAll();
+    async findAll(query) {
+        try {
+            return await this.userService.findAll(query);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Failed to fetch users', error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-    async getLastUpdated() {
-        return this.userService.getLastUpdated();
+    async getLastUpdatedUser() {
+        try {
+            return await this.userService.getLastUpdatedUser();
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Get last updated failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     leaderboard() {
         return this.userService.leaderboard();
@@ -77,17 +88,22 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "findby", null);
 __decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Get all users with pagination' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of users with pagination info' }),
+    (0, swagger_1.ApiResponse)({ status: 500, description: 'Internal server error' }),
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
 ], UserController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)('last-updated'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get last updated user' }),
+    (0, common_1.Get)('lastupdated'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], UserController.prototype, "getLastUpdated", null);
+], UserController.prototype, "getLastUpdatedUser", null);
 __decorate([
     (0, common_1.Get)('leaderboard'),
     __metadata("design:type", Function),

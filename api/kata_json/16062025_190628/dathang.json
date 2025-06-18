@@ -1,0 +1,22 @@
+[
+  {
+    "id": "e81d1acd-226a-4861-abad-afe24b8ebb8d",
+    "codeId": "DATH00001",
+    "order": 1,
+    "createdAt": "2025-06-02T14:35:12.959Z",
+    "updatedAt": "2025-06-02T14:35:12.959Z",
+    "nhacungcapId": "a8a8c544-5f1f-4582-b715-5a7a59200109",
+    "status": "pending",
+    "total": 0
+  },
+  {
+    "id": "ae00c323-4888-406a-9329-f06969bf1b79",
+    "codeId": "DATH00002",
+    "order": 2,
+    "createdAt": "2025-06-15T06:56:07.667Z",
+    "updatedAt": "2025-06-15T06:56:07.667Z",
+    "nhacungcapId": "c2a24827-cf00-4edb-8550-e27323beac06",
+    "status": "pending",
+    "total": 0
+  }
+]

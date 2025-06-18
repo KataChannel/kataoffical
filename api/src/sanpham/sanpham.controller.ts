@@ -8,6 +8,17 @@ import { AuditAction } from '@prisma/client';
 @Controller('sanpham') 
 export class SanphamController { 
   constructor(private readonly sanphamService: SanphamService) {} 
+
+  @ApiBearerAuth() 
+  @ApiOperation({ summary: 'Import Sanpham' }) 
+  @ApiBody({ type: Object }) 
+  @UseGuards(JwtAuthGuard) 
+  @Post('import')
+  @Audit({entity: 'Import Sanpham', action: AuditAction.CREATE, includeResponse: true})
+  import(@Body() data: any) {
+    return this.sanphamService.import(data);
+  }
+
   @ApiBearerAuth() 
   @ApiOperation({ summary: 'Create a new sanpham' }) 
   @ApiBody({ type: Object }) 
@@ -31,33 +42,22 @@ export class SanphamController {
       throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+  
   @ApiOperation({ summary: 'Get all sanphams with pagination' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items per page (default: 10)' })
   @ApiResponse({ status: 200, description: 'List of sanphams with pagination info' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get()
-  async findAll(
-    @Query('page') page: string = '1', 
-    @Query('limit') limit: string = '10', 
-  ) {
+  async findAll(@Query() query: any) {
     try {
-      const pageNum = parseInt(page, 10);
-      const limitNum = parseInt(limit, 10);
-      if (isNaN(pageNum) || pageNum < 1) {
-        throw new HttpException('Page must be a positive integer', HttpStatus.BAD_REQUEST);
-      }
-      if (isNaN(limitNum) || limitNum < 1) {
-        throw new HttpException('Limit must be a positive integer', HttpStatus.BAD_REQUEST);
-      }
-      return await this.sanphamService.findAll(pageNum, limitNum);
+      return await this.sanphamService.findAll(query);
     } catch (error) {
       throw new HttpException(
         error.message || 'Failed to fetch sanphams',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    }
+    } 
   }
+  
   @ApiOperation({ summary: 'Get last updated sanpham' })
   @Get('lastupdated') 
   async getLastUpdatedSanpham() { 

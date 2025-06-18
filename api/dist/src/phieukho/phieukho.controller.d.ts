@@ -33,7 +33,7 @@ export declare class PhieukhoController {
         page: any;
         pageCount: number;
     } | null>;
-    findAll(page?: string, limit?: string): Promise<{
+    findAll(query: any): Promise<{
         data: {
             id: string;
             createdAt: Date;
@@ -45,7 +45,8 @@ export declare class PhieukhoController {
         }[];
         total: number;
         page: number;
-        pageCount: number;
+        pageSize: number;
+        totalPages: number;
     }>;
     getLastUpdatedPhieukho(): Promise<{
         updatedAt: number;
@@ -59,7 +60,15 @@ export declare class PhieukhoController {
         order: number | null;
         codeId: string;
     }>;
-    update(id: string, data: any): Promise<any>;
+    update(id: string, data: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        title: string;
+        order: number | null;
+        codeId: string;
+    }>;
     remove(id: string): Promise<{
         id: string;
         createdAt: Date;

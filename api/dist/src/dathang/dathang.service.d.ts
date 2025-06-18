@@ -34,6 +34,7 @@ export declare class DathangService {
             order: number | null;
             codeId: string;
             diachi: string | null;
+            createdBy: string | null;
         };
     } & {
         id: string;
@@ -91,6 +92,7 @@ export declare class DathangService {
             order: number | null;
             codeId: string;
             diachi: string | null;
+            createdBy: string | null;
         };
     } & {
         id: string;
@@ -143,6 +145,7 @@ export declare class DathangService {
                 order: number | null;
                 codeId: string;
                 diachi: string | null;
+                createdBy: string | null;
             };
         } & {
             id: string;
@@ -200,6 +203,7 @@ export declare class DathangService {
                 order: number | null;
                 codeId: string;
                 diachi: string | null;
+                createdBy: string | null;
             };
         } & {
             id: string;
@@ -256,6 +260,7 @@ export declare class DathangService {
             order: number | null;
             codeId: string;
             diachi: string | null;
+            createdBy: string | null;
         };
     } & {
         id: string;
@@ -291,6 +296,7 @@ export declare class DathangService {
             order: number | null;
             codeId: string;
             diachi: string | null;
+            createdBy: string | null;
         };
     } & {
         id: string;

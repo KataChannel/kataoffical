@@ -1,0 +1,113 @@
+[
+  {
+    "id": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+    "codeId": "SP00006",
+    "title": "Arabica Cầu Đất",
+    "description": null,
+    "inStock": true,
+    "order": 9,
+    "createdAt": "2025-06-03T14:17:52.364Z",
+    "updatedAt": "2025-06-03T14:17:52.364Z",
+    "status": "draft",
+    "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+    "bienthe": null,
+    "donvitinh": "Hũ",
+    "giagoc": 0,
+    "bacgia": [
+      {
+        "gia": 180000,
+        "max": 10,
+        "min": 0,
+        "type": "<10 hũ/hộp"
+      },
+      {
+        "gia": 160000,
+        "max": 49,
+        "min": 10,
+        "type": "10-49 hũ/hộp"
+      },
+      {
+        "gia": 140000,
+        "max": 999,
+        "min": 50,
+        "type": ">50 hũ/hộp"
+      }
+    ]
+  },
+  {
+    "id": "60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+    "codeId": "SP00004",
+    "title": "Blend",
+    "description": null,
+    "inStock": true,
+    "order": 7,
+    "createdAt": "2025-06-02T16:02:03.716Z",
+    "updatedAt": "2025-06-02T17:41:29.976Z",
+    "status": "draft",
+    "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+    "bienthe": null,
+    "donvitinh": "Hũ",
+    "giagoc": 140000,
+    "bacgia": [
+      {
+        "gia": 1050000,
+        "max": 9999,
+        "min": 50,
+        "type": ">50 units",
+        "price": 105000
+      },
+      {
+        "gia": 120000,
+        "max": 49,
+        "min": 10,
+        "type": "10-49 units",
+        "price": 120000
+      },
+      {
+        "gia": 140000,
+        "max": 10,
+        "min": 0,
+        "type": "<10 units",
+        "price": 140000
+      }
+    ]
+  },
+  {
+    "id": "c205da90-c058-4d02-accc-94069d65aa3c",
+    "codeId": "SP00005",
+    "title": "Fine Robusta",
+    "description": null,
+    "inStock": true,
+    "order": 8,
+    "createdAt": "2025-06-02T17:03:42.471Z",
+    "updatedAt": "2025-06-02T17:41:37.019Z",
+    "status": "draft",
+    "danhmucId": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+    "bienthe": "",
+    "donvitinh": "Hũ",
+    "giagoc": 160000,
+    "bacgia": [
+      {
+        "gia": 125000,
+        "max": 99999,
+        "min": 50,
+        "type": ">50 units",
+        "price": 105000
+      },
+      {
+        "gia": 140000,
+        "max": 49,
+        "min": 10,
+        "type": "10-49 units",
+        "price": 120000
+      },
+      {
+        "gia": 160000,
+        "max": 10,
+        "min": 0,
+        "type": "<10 units",
+        "price": 140000
+      }
+    ]
+  }
+]

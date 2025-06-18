@@ -1,0 +1,90 @@
+[
+  {
+    "id": "75a58c41-043a-4fc2-8f7e-bf838fef8b44",
+    "dexuatId": "1d5c0ca6-4a92-4f73-8d14-4942825c6f70",
+    "title": "def",
+    "thanhtien": 50000,
+    "ghichu": "",
+    "order": 1,
+    "isActive": true,
+    "createdAt": "2025-04-01T09:21:37.811Z",
+    "updatedAt": "2025-04-01T09:21:37.811Z"
+  },
+  {
+    "id": "faae0f7e-045b-4955-9baa-29759ba491a4",
+    "dexuatId": "1d5c0ca6-4a92-4f73-8d14-4942825c6f70",
+    "title": "abc",
+    "thanhtien": 20000,
+    "ghichu": "def",
+    "order": 1,
+    "isActive": true,
+    "createdAt": "2025-04-01T08:17:00.465Z",
+    "updatedAt": "2025-04-01T08:17:39.789Z"
+  },
+  {
+    "id": "4236de2c-cb91-45e2-9410-d4f5f05152a9",
+    "dexuatId": "cadf163e-d5e7-48b1-8d5d-b5c5b055c686",
+    "title": "def",
+    "thanhtien": 50000,
+    "ghichu": "",
+    "order": 1,
+    "isActive": true,
+    "createdAt": "2025-04-01T09:21:37.811Z",
+    "updatedAt": "2025-04-01T09:21:37.811Z"
+  },
+  {
+    "id": "521a3010-43c4-47bb-9641-ced5662a1b0d",
+    "dexuatId": "cadf163e-d5e7-48b1-8d5d-b5c5b055c686",
+    "title": "abc",
+    "thanhtien": 20000,
+    "ghichu": "def",
+    "order": 1,
+    "isActive": true,
+    "createdAt": "2025-04-01T08:17:00.465Z",
+    "updatedAt": "2025-04-01T08:17:39.789Z"
+  },
+  {
+    "id": "3f2ce3f5-67eb-4027-8c86-865711f0d8c3",
+    "dexuatId": "8f879a0b-cbc3-49bb-996d-0752e4fd09b6",
+    "title": "abc",
+    "thanhtien": 20000,
+    "ghichu": "def",
+    "order": 1,
+    "isActive": true,
+    "createdAt": "2025-04-01T08:17:00.465Z",
+    "updatedAt": "2025-04-01T08:17:39.789Z"
+  },
+  {
+    "id": "eff5f36e-b25e-4d37-b058-6bbad6032e2b",
+    "dexuatId": "8f879a0b-cbc3-49bb-996d-0752e4fd09b6",
+    "title": "def",
+    "thanhtien": 50000,
+    "ghichu": "",
+    "order": 1,
+    "isActive": true,
+    "createdAt": "2025-04-01T09:21:37.811Z",
+    "updatedAt": "2025-04-01T09:21:37.811Z"
+  },
+  {
+    "id": "3c7e916b-2922-4ba2-9c3b-7b1d86ee831f",
+    "dexuatId": "7ea0fede-2da4-4d06-934c-901c0c275c9c",
+    "title": "Phần mềm tổng đài ảo: gói 64 máy nhánh theo hợp đồng số 25/2021/HĐDV/TACA từ ngày 01/04/2025 đến ngày 30/04/2025",
+    "thanhtien": 7040000,
+    "ghichu": "",
+    "order": 1,
+    "isActive": true,
+    "createdAt": "2025-04-01T09:21:37.811Z",
+    "updatedAt": "2025-04-01T09:21:37.811Z"
+  },
+  {
+    "id": "c28fa55a-62c0-40d1-b621-5286527b613e",
+    "dexuatId": "6cedb857-8847-4953-9419-64a5e30d0de4",
+    "title": "THANH TOÁN CƯỚC DỊCH VỤ 19002664 Tháng 3/2025",
+    "thanhtien": 770000,
+    "ghichu": "",
+    "order": 1,
+    "isActive": true,
+    "createdAt": "2025-04-01T09:21:37.811Z",
+    "updatedAt": "2025-04-01T09:21:37.811Z"
+  }
+]

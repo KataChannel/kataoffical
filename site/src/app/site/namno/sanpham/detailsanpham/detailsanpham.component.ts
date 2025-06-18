@@ -8,7 +8,6 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-
 import { ListSanphamComponent } from '../listsanpham/listsanpham.component';
 import { SanphamService } from '../sanpham.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';

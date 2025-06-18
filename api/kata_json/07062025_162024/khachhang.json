@@ -1,0 +1,28 @@
+[
+  {
+    "id": "1999d9c8-47b9-4aed-8a74-cf8adb6e53a8",
+    "codeId": "KH00001",
+    "title": "Khách hàng 1",
+    "description": "mô tả 1",
+    "email": "khachhang1@gmail.com",
+    "phone": "0987654321",
+    "createdAt": "2025-06-01T07:28:40.949Z",
+    "updatedAt": "2025-06-01T07:28:40.949Z",
+    "nhomkhachhangId": null,
+    "order": 1,
+    "diachi": "1 nguyễn huệ"
+  },
+  {
+    "id": "c4ccf464-f576-4280-b627-cb7ebcc26063",
+    "codeId": "KH00002",
+    "title": "Khách hàng 2",
+    "description": "mô tả 2",
+    "email": "khachhang2@gmail.com",
+    "phone": "0987654322",
+    "createdAt": "2025-06-01T07:31:38.646Z",
+    "updatedAt": "2025-06-01T07:31:38.646Z",
+    "nhomkhachhangId": null,
+    "order": 2,
+    "diachi": "2 nguyễn huệ hồ chí minh"
+  }
+]

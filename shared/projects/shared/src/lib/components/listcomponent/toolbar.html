@@ -1,0 +1,23 @@
+<div class="p-2 cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center bg-white rounded-lg">
+  <div class="w-full flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+    <div class="flex flex-row space-x-2 items-center">
+      <div class="relative w-full">
+        <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
+          class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <span class="material-symbols-outlined text-gray-500">search</span>
+        </div>
+      </div>
+      <button class="flex flex-row items-center" color="primary" matTooltip="Thêm mới" (click)="createEvent.emit()"
+        mat-flat-button>
+        <mat-icon>add_circle</mat-icon>
+        <span class="whitespace-nowrap">Tạo Mới</span>
+      </button>
+      <button *ngIf="EditList.length > 0" (click)="openDeleteDialogEvent.emit()" class="flex flex-row items-center"
+        color="warn" matTooltip="Xoá" mat-flat-button>
+        <mat-icon>delete</mat-icon>
+        <span class="whitespace-nowrap">Xoá</span>
+      </button>
+    </div>
+  </div>
+</div>

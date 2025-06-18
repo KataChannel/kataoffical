@@ -1,0 +1,31 @@
+import { EventEmitter } from "@angular/core";
+import { MatMenuTrigger } from "@angular/material/menu";
+import * as i0 from "@angular/core";
+export declare class SearchfilterComponent {
+    ListItem: any[];
+    filterItem: any[];
+    ListFilter: any[];
+    CountItems: any;
+    icon: any;
+    title: any;
+    fieldsearch: any;
+    isEdit: import("@angular/core").WritableSignal<boolean>;
+    isDelete: import("@angular/core").WritableSignal<boolean>;
+    isSingle: boolean;
+    OutFilter: EventEmitter<any>;
+    menuTrigger: MatMenuTrigger;
+    searchText: string;
+    initFilter: any[];
+    ngOnInit(): void;
+    trackByFn(index: number, item: any): any;
+    ChosenAll(): void;
+    RemoveAll(): void;
+    CheckItem(item: any): boolean;
+    doFilterItem(event: any, field: any): void;
+    DoListFilter(): void;
+    getChosen(): number;
+    ChosenItem(item: any): void;
+    ApplyFilterColum(menu: any): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<SearchfilterComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SearchfilterComponent, "kata-searchfilter", never, { "ListItem": { "alias": "ListItem"; "required": false; }; "filterItem": { "alias": "filterItem"; "required": false; }; "ListFilter": { "alias": "ListFilter"; "required": false; }; "CountItems": { "alias": "CountItems"; "required": false; }; "icon": { "alias": "icon"; "required": false; }; "title": { "alias": "title"; "required": false; }; "fieldsearch": { "alias": "fieldsearch"; "required": false; }; "isEdit": { "alias": "isEdit"; "required": false; }; "isDelete": { "alias": "isDelete"; "required": false; }; "isSingle": { "alias": "isSingle"; "required": false; }; }, { "OutFilter": "OutFilter"; }, never, never, true, never>;
+}

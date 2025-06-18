@@ -1,0 +1,10 @@
+src/
+dist/
+*.config.js
+*.config.ts
+tsconfig.json
+.git/
+.github/
+node_modules/
+*.log
+.DS_Store

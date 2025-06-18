@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ListPhieukhoComponent } from './listphieukho/listphieukho.component';
+import { ListPhieukhoComponent } from './listphieukho/listphieukho';
 const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () =>
-      import('./dashboarphieukho/dashboarphieukho.component').then(
+      import('./dashboarphieukho/dashboarphieukho').then(
         (c) => c.DashboarphieukhoComponent
       ),
   },
@@ -16,7 +16,7 @@ const routes: Routes = [
       {
         path: ':id',
         loadComponent: () =>
-          import('./detailphieukho/detailphieukho.component').then(
+          import('./detailphieukho/detailphieukho').then(
             (c) => c.DetailPhieukhoComponent
           ),
       },

@@ -80,7 +80,28 @@ export class NhacungcapService {
   setNhacungcapId(id: string | null) {
     this.nhacungcapId.set(id);
   }
-
+  async ImportNhacungcap(dulieu: any) {
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/nhacungcap/import`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+          this.handleError(response.status);
+        }
+        this.getAllNhacungcap()
+    } catch (error) {
+        return console.error(error);
+    }
+  }
   async CreateNhacungcap(dulieu: any) {
     try {
       const options = {

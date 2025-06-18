@@ -21,17 +21,14 @@ let UserService = class UserService {
         this._SocketGateway = _SocketGateway;
         this._ErrorlogService = _ErrorlogService;
     }
-    async getLastUpdated() {
+    async getLastUpdatedUser() {
         try {
             const lastUpdated = await this.prisma.user.aggregate({
-                _max: {
-                    updatedAt: true,
-                },
+                _max: { updatedAt: true },
             });
-            return { updatedAt: lastUpdated._max.updatedAt || 0 };
+            return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdated', error);
             throw error;
         }
     }
@@ -68,28 +65,61 @@ let UserService = class UserService {
             permissions: Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission)))),
         }));
     }
-    async findAll() {
-        const users = await this.prisma.user.findMany({
-            include: {
-                roles: {
-                    include: {
-                        role: {
-                            include: {
-                                permissions: { include: { permission: true } },
-                            },
-                        },
-                    },
-                },
-            },
-        });
-        return users.map(({ password, roles, ...userWithoutPassword }) => ({
-            ...userWithoutPassword,
-            roles: roles.map(({ role }) => {
-                const { permissions, ...roleWithoutPermissions } = role;
-                return roleWithoutPermissions;
-            }),
-            permissions: Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission)))),
-        }));
+    async findAll(query) {
+        try {
+            const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
+            const numericPage = Number(page);
+            const numericPageSize = Number(pageSize);
+            const skip = (numericPage - 1) * numericPageSize;
+            const take = numericPageSize;
+            const where = {};
+            if (search) {
+                where.OR = [
+                    { title: { contains: search, mode: 'insensitive' } },
+                    { description: { contains: search, mode: 'insensitive' } }
+                ];
+            }
+            if (category) {
+                where.category = { equals: category, mode: 'insensitive' };
+            }
+            if (priceMin || priceMax) {
+                where.price = {};
+                if (priceMin) {
+                    where.price.gte = priceMin;
+                }
+                if (priceMax) {
+                    where.price.lte = priceMax;
+                }
+            }
+            const orderBy = {};
+            if (sortBy && sortOrder) {
+                orderBy[sortBy] = sortOrder;
+            }
+            else {
+                orderBy.createdAt = 'desc';
+            }
+            const [users, total] = await this.prisma.$transaction([
+                this.prisma.user.findMany({
+                    where,
+                    skip,
+                    take,
+                    orderBy,
+                }),
+                this.prisma.user.count({ where }),
+            ]);
+            console.log(users);
+            return {
+                data: users,
+                total: Number(total),
+                page: numericPage,
+                pageSize: numericPageSize,
+                totalPages: Math.ceil(Number(total) / numericPageSize),
+            };
+        }
+        catch (error) {
+            console.log('Error in findAllUser:', error);
+            throw error;
+        }
     }
     async findby(param) {
         try {

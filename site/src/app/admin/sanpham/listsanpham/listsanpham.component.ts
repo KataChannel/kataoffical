@@ -48,13 +48,11 @@ export class ListSanphamComponent implements OnInit {
   ColumnName: any = {
     stt: '#',
     codeId: 'Code',
-    name: 'Tiêu Đề',
-    group: 'Nhóm',
+    title: 'Tiêu Đề',
     description: 'Mô Tả',
     status: 'Trạng Thái',
     order: 'Thứ Tự',
     createdAt: 'Ngày Tạo',
-    updatedAt: 'Ngày Cập Nhật'
   };
   FilterColumns: any[] = JSON.parse(localStorage.getItem('SanphamColFilter') || '[]');
   Columns: any[] = [];
@@ -71,14 +69,14 @@ export class ListSanphamComponent implements OnInit {
 
   Listsanpham = this._SanphamService.ListSanpham;
   page = this._SanphamService.page;
-  pageCount = this._SanphamService.pageCount;
+  totalPages = this._SanphamService.totalPages;
   total = this._SanphamService.total;
   pageSize = this._SanphamService.pageSize;
   sanphamId = this._SanphamService.sanphamId;
   dataSource:any = new MatTableDataSource([]);
   EditList: any[] = [];
   isSearch = signal<boolean>(false);
-
+  searchParam:any={};
   constructor() {
     effect(() => {
       this.dataSource.data = this.Listsanpham();
@@ -93,7 +91,7 @@ export class ListSanphamComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this._SanphamService.listenSanphamUpdates();
-    await this._SanphamService.getAllSanpham(this.pageSize(),true);
+    await this._SanphamService.getAllSanpham(this.searchParam,true);
     this.displayedColumns = Object.keys(this.ColumnName);
     this.dataSource = new MatTableDataSource(this.Listsanpham());
     this.dataSource.sort = this.sort;
@@ -110,12 +108,14 @@ export class ListSanphamComponent implements OnInit {
       isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
   }
   @Debounce(500)
-  applyFilter(event: Event) {
+  async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+    if(!filterValue) {
+      await this._SanphamService.SearchBy(this.searchParam);
+      return;
     }
+    this.searchParam.title = filterValue;
+    await this._SanphamService.SearchBy(this.searchParam);
   }
 
   async getUpdatedCodeIds() {
@@ -129,7 +129,7 @@ export class ListSanphamComponent implements OnInit {
         if (result.matches) {
           this.drawer.mode = 'over';
         } else {
-          this.drawer.mode = 'side';
+          this.drawer.mode = 'over';
         }
       });
   }
@@ -234,20 +234,20 @@ export class ListSanphamComponent implements OnInit {
       size = this.total();
     }
     this._SanphamService.page.set(1);
-    this._SanphamService.getAllSanpham(size, true);
+    this._SanphamService.getAllSanpham(this.searchParam, true);
     menuHienthi.closeMenu();
   }
   onPreviousPage(){
     if (this.page() > 1) {
       this._SanphamService.page.set(this.page() - 1);
-      this._SanphamService.getAllSanpham(this.pageSize(), true);
+      this._SanphamService.getAllSanpham(this.searchParam, true);
     }
   }
 
   onNextPage(){
-    if (this.page() < this.pageCount()) {
+    if (this.page() < this.totalPages()) {
       this._SanphamService.page.set(this.page() + 1);
-      this._SanphamService.getAllSanpham(this.pageSize(), true);
+      this._SanphamService.getAllSanpham(this.searchParam, true);
     }
   }
 }

@@ -6,8 +6,8 @@ export declare class UserService {
     private _SocketGateway;
     private _ErrorlogService;
     constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogService: ErrorlogService);
-    getLastUpdated(): Promise<{
-        updatedAt: number | Date;
+    getLastUpdatedUser(): Promise<{
+        updatedAt: number;
     }>;
     createUser(dto: any): Promise<{
         id: string;
@@ -63,39 +63,33 @@ export declare class UserService {
         affiliateCode: string | null;
         referrerId: string | null;
     }[]>;
-    findAll(): Promise<{
-        roles: {
+    findAll(query: any): Promise<{
+        data: {
             id: string;
-            name: string;
+            name: string | null;
+            avatar: string | null;
+            gender: import(".prisma/client").$Enums.Gender | null;
+            email: string | null;
+            SDT: string | null;
+            phone: string | null;
+            zaloId: string | null;
+            facebookId: string | null;
+            googleId: string | null;
+            password: string | null;
+            provider: string | null;
+            providerId: string | null;
+            isSuperAdmin: boolean;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            affiliateCode: string | null;
+            referrerId: string | null;
         }[];
-        permissions: {
-            id: string;
-            name: string;
-            createdAt: Date;
-            updatedAt: Date;
-            description: string | null;
-        }[];
-        id: string;
-        name: string | null;
-        avatar: string | null;
-        gender: import(".prisma/client").$Enums.Gender | null;
-        email: string | null;
-        SDT: string | null;
-        phone: string | null;
-        zaloId: string | null;
-        facebookId: string | null;
-        googleId: string | null;
-        provider: string | null;
-        providerId: string | null;
-        isSuperAdmin: boolean;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        affiliateCode: string | null;
-        referrerId: string | null;
-    }[]>;
+        total: number;
+        page: number;
+        pageSize: number;
+        totalPages: number;
+    }>;
     findby(param: any): Promise<{
         roles: {
             id: string;

@@ -17,6 +17,8 @@ const common_1 = require("@nestjs/common");
 const phieukho_service_1 = require("./phieukho.service");
 const swagger_1 = require("@nestjs/swagger");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const audit_decorator_1 = require("../auditlog/audit.decorator");
+const client_1 = require("@prisma/client");
 let PhieukhoController = class PhieukhoController {
     constructor(phieukhoService) {
         this.phieukhoService = phieukhoService;
@@ -37,17 +39,9 @@ let PhieukhoController = class PhieukhoController {
             throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async findAll(page = '1', limit = '10') {
+    async findAll(query) {
         try {
-            const pageNum = parseInt(page, 10);
-            const limitNum = parseInt(limit, 10);
-            if (isNaN(pageNum) || pageNum < 1) {
-                throw new common_1.HttpException('Page must be a positive integer', common_1.HttpStatus.BAD_REQUEST);
-            }
-            if (isNaN(limitNum) || limitNum < 1) {
-                throw new common_1.HttpException('Limit must be a positive integer', common_1.HttpStatus.BAD_REQUEST);
-            }
-            return await this.phieukhoService.findAll(pageNum, limitNum);
+            return await this.phieukhoService.findAll(query);
         }
         catch (error) {
             throw new common_1.HttpException(error.message || 'Failed to fetch phieukhos', error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -101,6 +95,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: Object }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
+    (0, audit_decorator_1.Audit)({ entity: 'Phieukho', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -117,15 +112,12 @@ __decorate([
 ], PhieukhoController.prototype, "findby", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get all phieukhos with pagination' }),
-    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' }),
-    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Number of items per page (default: 10)' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'List of phieukhos with pagination info' }),
     (0, swagger_1.ApiResponse)({ status: 500, description: 'Internal server error' }),
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('page')),
-    __param(1, (0, common_1.Query)('limit')),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PhieukhoController.prototype, "findAll", null);
 __decorate([
@@ -151,6 +143,7 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: Object }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Phieukho', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -163,6 +156,7 @@ __decorate([
     (0, swagger_1.ApiParam)({ name: 'id', type: String }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
+    (0, audit_decorator_1.Audit)({ entity: 'Phieukho', action: client_1.AuditAction.DELETE }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

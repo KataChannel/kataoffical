@@ -26,11 +26,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./danhmuc/danhmuc.route').then((m) => m.DanhmucRoutingModule),
       },
-  {
+      {
         path: 'dathang',
         loadChildren: () =>
-           import('./dathang/dathang.route').then(m => m.DathangRoutingModule),
-  },
+          import('./dathang/dathang.route').then((m) => m.DathangRoutingModule),
+      },
       {
         path: 'banggia',
         loadChildren: () =>
@@ -38,8 +38,15 @@ const routes: Routes = [
       },
       {
         path: 'kho',
-        loadComponent: () =>
-          import('./kho/kho.component').then((c) => c.KhoComponent),
+        loadChildren: () =>
+          import('./kho/kho.route').then((m) => m.KhoRoutingModule),
+      },
+      {
+        path: 'phieukho',
+        loadChildren: () =>
+          import('./phieukho/phieukho.route').then(
+            (m) => m.PhieukhoRoutingModule
+          ),
       },
       {
         path: 'vanchuyen',
@@ -62,11 +69,20 @@ const routes: Routes = [
             (m) => m.NhacungcapRoutingModule
           ),
       },
-        {
+      {
         path: 'phieukho',
         loadChildren: () =>
-           import('./phieukho/phieukho.route').then(m => m.PhieukhoRoutingModule),
-  },
+          import('./phieukho/phieukho.route').then(
+            (m) => m.PhieukhoRoutingModule
+          ),
+      },
+      {
+        path: 'importdata',
+        loadChildren: () =>
+          import('./importdata/importdata.route').then(
+            (m) => m.ImportdataRoutingModule
+          ),
+      },
     ],
   },
 ];

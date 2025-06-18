@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ListDanhmucComponent } from './listdanhmuc/listdanhmuc.component';
+import { ListDanhmucComponent } from './listdanhmuc/listdanhmuc';
 const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () =>
-      import('./dashboardanhmuc/dashboardanhmuc.component').then(
+      import('./dashboardanhmuc/dashboardanhmuc').then(
         (c) => c.DashboardanhmucComponent
       ),
   },
@@ -16,7 +16,7 @@ const routes: Routes = [
       {
         path: ':id',
         loadComponent: () =>
-          import('./detaildanhmuc/detaildanhmuc.component').then(
+          import('./detaildanhmuc/detaildanhmuc').then(
             (c) => c.DetailDanhmucComponent
           ),
       },

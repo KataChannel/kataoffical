@@ -1,0 +1,30 @@
+[
+  {
+    "id": "3f8230e6-075f-4523-8061-5b170894208c",
+    "title": "Đơn Vị Tính",
+    "codeId": "ST00002",
+    "key": "donvitinh",
+    "value": "{key:1,value:\"Kg\"}",
+    "type": "json",
+    "description": null,
+    "order": 2,
+    "isActive": true,
+    "createdById": null,
+    "createdAt": "2025-06-05T15:01:11.555Z",
+    "updatedAt": "2025-06-05T15:01:11.555Z"
+  },
+  {
+    "id": "990aaae8-d4be-4f8c-a7e5-da8ef9960b23",
+    "title": "Website",
+    "codeId": "ST00001",
+    "key": "websiteconfig",
+    "value": "{\"bgLoginImage\":\"/images/welcome_nam_chieu_bg.png\",\"logoImg\":\"/images/logo-kata.png\"}",
+    "type": "json",
+    "description": null,
+    "order": 1,
+    "isActive": true,
+    "createdById": null,
+    "createdAt": "2025-06-04T04:31:33.607Z",
+    "updatedAt": "2025-06-05T15:01:26.348Z"
+  }
+]

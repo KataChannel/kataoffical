@@ -56,41 +56,35 @@ export declare class UserController {
         affiliateCode: string | null;
         referrerId: string | null;
     }>;
-    findAll(): Promise<{
-        roles: {
+    findAll(query: any): Promise<{
+        data: {
             id: string;
-            name: string;
+            name: string | null;
+            avatar: string | null;
+            gender: import(".prisma/client").$Enums.Gender | null;
+            email: string | null;
+            SDT: string | null;
+            phone: string | null;
+            zaloId: string | null;
+            facebookId: string | null;
+            googleId: string | null;
+            password: string | null;
+            provider: string | null;
+            providerId: string | null;
+            isSuperAdmin: boolean;
+            isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            affiliateCode: string | null;
+            referrerId: string | null;
         }[];
-        permissions: {
-            id: string;
-            name: string;
-            createdAt: Date;
-            updatedAt: Date;
-            description: string | null;
-        }[];
-        id: string;
-        name: string | null;
-        avatar: string | null;
-        gender: import(".prisma/client").$Enums.Gender | null;
-        email: string | null;
-        SDT: string | null;
-        phone: string | null;
-        zaloId: string | null;
-        facebookId: string | null;
-        googleId: string | null;
-        provider: string | null;
-        providerId: string | null;
-        isSuperAdmin: boolean;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        affiliateCode: string | null;
-        referrerId: string | null;
-    }[]>;
-    getLastUpdated(): Promise<{
-        updatedAt: number | Date;
+        total: number;
+        page: number;
+        pageSize: number;
+        totalPages: number;
+    }>;
+    getLastUpdatedUser(): Promise<{
+        updatedAt: number;
     }>;
     leaderboard(): Promise<{
         name: string | null;

@@ -1,0 +1,312 @@
+[
+  {
+    "id": "ef680a5f-f495-4089-bbc4-486705106dcf",
+    "checksum": "5ac6dbd04ccb3dd3a97c86746d087d8be45b7e1e22f8178e483e017d7b611a9e",
+    "finished_at": "2025-05-16T13:33:12.816Z",
+    "migration_name": "20250513041510_kata1_2",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-16T13:33:12.498Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "521da9c4-0cf2-43ab-812c-bbe2ac39bf7c",
+    "checksum": "e125a2c9c8c1243bebdb94211aedfa0fe41fa037facd2e80e6fdd1ff238c6e3d",
+    "finished_at": "2025-06-01T05:53:26.621Z",
+    "migration_name": "20250601055325_kata5_2",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-01T05:53:26.604Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "971d5b8b-cd64-4e81-b925-3651e2b9d461",
+    "checksum": "be29bd8cc64be003d40a7aee975e1b75e9ec513b55a0e3ea973f4eaaecad4fae",
+    "finished_at": "2025-05-16T13:33:12.844Z",
+    "migration_name": "20250513073508_kata1_3",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-16T13:33:12.824Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "6e5527d5-adf2-4352-aa68-2438c138d33e",
+    "checksum": "e963d774b66650572e94b46a62fbfe8bf4dec860302235795783eabda4f019fd",
+    "finished_at": "2025-05-16T13:33:12.895Z",
+    "migration_name": "20250513075229_kata1_4",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-16T13:33:12.851Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "984f5c37-06d8-4a0a-99d7-4b5e9f1b204b",
+    "checksum": "b505207a9057dc5fdb31dbafe4b09bdd99c4e5dbd6cfa7b97eb56d47fffbfd24",
+    "finished_at": "2025-06-01T16:01:13.734Z",
+    "migration_name": "20250601160112_kata6_1",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-01T16:01:13.718Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "ca32ccf7-a265-4c60-9013-e365da2ebea5",
+    "checksum": "82f7995b65b49296a95e8c178a1fb86a74cbbd9822cb67f934b878369db83dc6",
+    "finished_at": "2025-05-16T13:33:12.935Z",
+    "migration_name": "20250513080030_kata1_5",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-16T13:33:12.902Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "5b513029-076f-4435-9152-8e517bf39f69",
+    "checksum": "a0f64867d23c01048e39c69eece88393d9bb2aab5113d39d134e8180d1705bba",
+    "finished_at": "2025-06-01T05:55:24.178Z",
+    "migration_name": "20250601055523_kata5_3",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-01T05:55:24.160Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "48b221c7-6d2e-40dd-9a02-cadecdd2011d",
+    "checksum": "07d682d72a721a5c5a377dd5826bc2c49a24076ebeecf528b5674de08b0d4b99",
+    "finished_at": "2025-05-16T13:33:12.966Z",
+    "migration_name": "20250514025516_kata1_7",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-16T13:33:12.942Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "43a5e53a-84ae-4463-b562-d352867d1aca",
+    "checksum": "1700d9b246a8ba247f16708065f136d356ce19d8e0a61bfbc5b0d689e58180aa",
+    "finished_at": "2025-05-16T13:33:12.993Z",
+    "migration_name": "20250514035528_kata1_9",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-16T13:33:12.973Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "ed8528de-90a9-4aae-8a86-75f3e01f26b8",
+    "checksum": "18ed6f545b09f6bcc3c50091db388454546940f0ee835c9cba9c3227f02ad385",
+    "finished_at": "2025-05-16T13:33:13.022Z",
+    "migration_name": "20250515151114_kata3_1",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-16T13:33:13.002Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "cdf18b84-301f-4ab0-905e-de4e25885a93",
+    "checksum": "6f7d986e71345be1b20ee54cc8abe0ec8202f4a482c833a25c492b627898d4d3",
+    "finished_at": "2025-06-01T06:55:10.750Z",
+    "migration_name": "20250601065509_kata5_4",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-01T06:55:10.685Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "1a8543c5-4acb-4d6f-9729-b1f17f836eda",
+    "checksum": "3d90b04c9ba121c9eae36c10a736dded23b93901c5c4943c83c5f1fa04cee049",
+    "finished_at": "2025-05-16T13:33:13.050Z",
+    "migration_name": "20250516061617_kata3_2",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-16T13:33:13.029Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "a64ab526-511c-412e-9cd5-24f212a7b434",
+    "checksum": "b739b4a1b4b165b7aaced46493b79e8e1f34a9aeb963d061f7ad894e6584c719",
+    "finished_at": "2025-05-17T04:52:56.541Z",
+    "migration_name": "20250517045255_kata3_7",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-17T04:52:56.525Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "206b5599-16e3-4533-baf6-9046e430f8c2",
+    "checksum": "ebd20fc356d2a19afd842a308c6aa73e197c3b5077565826520dc91919953c62",
+    "finished_at": "2025-05-17T06:11:57.972Z",
+    "migration_name": "20250517061157_kata3_8",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-17T06:11:57.745Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "3d4edcca-eabd-427c-86c8-3c2da490c8f2",
+    "checksum": "7e63f862370cf321d8d25e646a0a8b0f6b5989e969a750a8123f7cea58bba099",
+    "finished_at": "2025-06-01T07:14:41.737Z",
+    "migration_name": "20250601071440_kata5_5",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-01T07:14:41.720Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "9b1b8ce2-d6f2-419c-83aa-34297e975a89",
+    "checksum": "ad17db5efbf2c44b363ae0c464ebb5502a017590dd29fa8b51553a88cd06c348",
+    "finished_at": "2025-05-17T06:59:12.824Z",
+    "migration_name": "20250517065912_kata3_9",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-17T06:59:12.796Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "ee4e49ab-c265-4a31-8753-76bf97c8178f",
+    "checksum": "8d63ece2183d8d94716a32b1687d7f3bf62b76ef26ddab46178c074b8697517c",
+    "finished_at": "2025-05-18T05:47:36.292Z",
+    "migration_name": "20250518054735_kata4_1",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-18T05:47:36.276Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "165f9be4-edb7-4927-bee9-3ab934508d81",
+    "checksum": "d1eae4b8e4fce3f367a6c9e0535d964c8cd2b99553df3945aee80c224126e2ed",
+    "finished_at": "2025-06-01T16:23:23.795Z",
+    "migration_name": "20250601162322_kata6_2",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-01T16:23:23.777Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "e702c90a-44d5-46cb-aeb1-515e3d8e6871",
+    "checksum": "5e398e6ade5a8ac03c67cb466c70deeabf6f98fdd3f00f4ac61b78620c5765d1",
+    "finished_at": "2025-05-19T06:54:29.114Z",
+    "migration_name": "20250519065428_kata4_2",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-05-19T06:54:29.097Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "b74e0b82-4717-463f-a8b6-11275ff24890",
+    "checksum": "81aabf100f5d6f8eca66b1b5a20164a17b7f5cbbfaf08b8cb0b48c01a81b33b2",
+    "finished_at": "2025-06-01T07:20:58.744Z",
+    "migration_name": "20250601072057_kata5_6",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-01T07:20:58.668Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "82b120f3-24b5-4ff1-9d78-55c9832198db",
+    "checksum": "00aa1b244640e0f6065d3ec1575b6b853c1d789ee729e3c7c1a5b7804b1e22ac",
+    "finished_at": "2025-06-01T02:57:01.905Z",
+    "migration_name": "20250601025701_kata5_1",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-01T02:57:01.871Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "3b878b0a-93e9-4bf7-a839-2bf449b7be8d",
+    "checksum": "a2590c0857ea230188f447579b96213229433db9fc37630c3727e08fbd07c049",
+    "finished_at": "2025-06-01T07:25:33.923Z",
+    "migration_name": "20250601072532_kata5_7",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-01T07:25:33.902Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "d1da68e4-0104-4692-8666-48e768921842",
+    "checksum": "a64c2f317bdd0d2d9442563f4c49ad7371defb3f1bf4e5b926e28b96aa42f47b",
+    "finished_at": "2025-06-03T16:04:04.717Z",
+    "migration_name": "20250603160403_kata6_7",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-03T16:04:04.697Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "ac2426d1-55ea-4a85-a1a7-7f8a40661a83",
+    "checksum": "d832add77572548606f398923447a3a5db487f6c97e78a8dad89eaa50aab6f34",
+    "finished_at": "2025-06-01T08:39:54.761Z",
+    "migration_name": "20250601083953_kata5_8",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-01T08:39:54.742Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "2b9c17ca-b604-435a-981c-2cfe17b24493",
+    "checksum": "37198a6adeb0e2f41ec81222ff5316648526603dd1a593212a894169aa1cd5ba",
+    "finished_at": "2025-06-01T16:42:56.983Z",
+    "migration_name": "20250601164255_kata6_4",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-01T16:42:56.943Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "2481c019-9cb9-4c66-8f61-9f3c35a9863a",
+    "checksum": "7cefceda3315f3ccd82cee702f2ec0b97f0579f4d745b381b0676842950968e5",
+    "finished_at": "2025-06-01T08:58:13.987Z",
+    "migration_name": "20250601085813_kata5_9",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-01T08:58:13.966Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "23364166-1668-4b7a-b4d9-ae0089450ec2",
+    "checksum": "d6b5db84d0327b84f47d0090ecdb54808ddb6d9fbc30ad5baed97a186764ee01",
+    "finished_at": "2025-06-01T14:59:58.699Z",
+    "migration_name": "20250601145957_kata6",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-01T14:59:58.681Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "274c6504-1e16-439c-b34a-95ad6dfac873",
+    "checksum": "461c9fb59c6d4610580bbf5b554ca000cd3ba63039b5ebf205fea3d708823196",
+    "finished_at": "2025-06-02T14:06:06.687Z",
+    "migration_name": "20250602140605_kata6_5",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-02T14:06:06.648Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "5c213007-c082-475b-bdac-68e769a10feb",
+    "checksum": "ef7fa6e28dea93cd6ff17f3dc18c24b7a8a4e456841c2b082746efb158625cb1",
+    "finished_at": "2025-06-02T17:20:52.281Z",
+    "migration_name": "20250602172051_kata6_6",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-02T17:20:52.264Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "3e222e50-0bba-45a9-8c39-2c2b04253779",
+    "checksum": "4bf288c1aab851844accb4432c2beaa1f8be97b94f8396449f659e86bc1a9a73",
+    "finished_at": "2025-06-05T13:16:37.824Z",
+    "migration_name": "20250605131636_kata7_1",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-05T13:16:37.806Z",
+    "applied_steps_count": 1
+  },
+  {
+    "id": "cad7d4a0-661b-49e0-8b74-9ad162facf63",
+    "checksum": "c6703bb1277e7a453f2592da3bccbf622181d1af53d0daa7e65836e337f792d5",
+    "finished_at": "2025-06-03T13:33:35.768Z",
+    "migration_name": "20250603133334_kata6_8",
+    "logs": null,
+    "rolled_back_at": null,
+    "started_at": "2025-06-03T13:33:35.731Z",
+    "applied_steps_count": 1
+  }
+]

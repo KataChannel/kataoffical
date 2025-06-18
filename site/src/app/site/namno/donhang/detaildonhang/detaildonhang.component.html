@@ -4,7 +4,6 @@
   </button>
   <div class="font-bold">{{ DetailDonhang()?.title || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
-    <mat-slide-toggle [(ngModel)]="DetailDonhang().isActive" [disabled]="!isEdit()">{{DetailDonhang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
     @if (isEdit()) {
       <button mat-icon-button color="primary" (click)="handleDonhangAction()">
         <mat-icon>save</mat-icon>
@@ -32,7 +31,7 @@
   @if (!isDelete()) {
     <div class="grid grid-cols-1 gap-4">
       <div class="flex flex-row space-x-2 items-center">
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <!-- <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Khách Hàng</mat-label>
           <mat-select [(ngModel)]="DetailDonhang().khachhangId" [ngModelOptions]="{ standalone: true }">
             <div class="w-full flex flex-col p-4 space-y-2">
@@ -50,11 +49,24 @@
               </div>
             </div>
           </mat-select>
-        </mat-form-field>
-        <app-searchfilter [ListItem]="ListSanpham()" [CountItems]="DetailDonhang()?.donhangsanpham?.length"
-          [fieldsearch]="'title'" [title]="'Sản Phẩm'" [ListFilter]="[]" [filterItem]="ListSanpham()" [isEdit]="isEdit"
+        </mat-form-field> -->
+
+        <kata-searchfilter [ListItem]="FilterKhachhang" 
+          [fieldsearch]="'title'" [title]="DetailDonhang()?.khachhang?.title" 
+          [ListFilter]="[DetailDonhang()?.khachhang]" [filterItem]="FilterKhachhang" [isEdit]="isEdit"
+          [CountItems]="''"
+          [isSingle]="true"
+          (OutFilter)="onKhachhangOutFilter($event)">
+        </kata-searchfilter>
+
+        <kata-searchfilter [ListItem]="ListSanpham()" [CountItems]="DetailDonhang()?.donhangsanpham?.length"
+          [fieldsearch]="'title'" [title]="'Sản Phẩm'" [ListFilter]="ListFilter" [filterItem]="ListSanpham()" [isEdit]="isEdit"
           (OutFilter)="onOutFilter($event)">
-        </app-searchfilter>
+        </kata-searchfilter>
+
+
+
+
       </div>
       <div class="w-full overflow-auto">
         <table class="!border cursor-pointer" mat-table [dataSource]="DetailDonhang()?.donhangsanpham">
@@ -70,17 +82,26 @@
                   @case ('stt') {
                     <span class="max-w-20 line-clamp-4 flex flex-row items-center">
                       <span>{{ idx + 1 }} </span>
-                      <button mat-icon-button color="warn" (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
+                      <button mat-icon-button [disabled]="!isEdit()" color="warn" (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
                     </span>
                   }
                   @case ('sanpham') {
                     <div class="">{{ row[column].title }}</div>
                   }
                   @case ('sldat') {
-                    <div [contentEditable]="true" (blur)="updateBlurValue($event,idx, row, 'sldat','number')"
-                      class="sldat-input p-2 min-w-28 text-end bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
-                      {{ row[column]||0|number:'1.0-2' }}
-                    </div>
+
+              <kata-diveditable
+                [value]="row['sldat']"
+                [type]="'number'"
+                [index]="idx"
+                [field]="'sldat'"
+                [row]="row"
+                [format]="'1.0-2'"
+                [validationRules]="validateSldat"
+                (valueUpdated)="onValueUpdated($event)"
+                (moveToNext)="moveToNextInput()">
+              </kata-diveditable>
+
                   }
                   @case ('slgiao') {
                     <div class="text-end">{{ row[column]||0|number:'1.0-2' }}</div>

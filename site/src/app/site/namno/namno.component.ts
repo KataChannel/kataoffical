@@ -1,5 +1,4 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-
 import { Component, inject, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -70,12 +69,17 @@ export class NamnoComponent {
       name: 'Kho',
       icon: 'inventory',
       slug: 'kho'
+    },
+    {
+      name: 'Phiếu Kho',
+      icon: 'local_shipping',
+      slug: 'phieukho'
+    },
+    {
+      name: 'Import',
+      icon: 'file_upload',
+      slug: 'importdata'
     }
-    // {
-    //   name: 'Vận Chuyển',
-    //   icon: 'local_shipping',
-    //   slug: 'vanchuyen'
-    // }
   ];
   filterMenu: any[] = [];
   isOpen = true;

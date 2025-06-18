@@ -1,0 +1,93 @@
+<div class="w-full h-full overflow-auto">
+  <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
+    @for (column of displayedColumns; track column) {
+      <ng-container [matColumnDef]="column">
+        @if (column == 'stt') {
+          <th class="flex !border !bg-slate-100 justify-center" mat-header-cell *matHeaderCellDef>
+            <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
+              <mat-icon>tune</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <div class="flex flex-row space-x-2 items-center p-4">
+                <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                  <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput placeholder="Tìm Kiếm" />
+                  <mat-icon matPrefix>search</mat-icon>
+                </mat-form-field>
+                <button (click)="updateDisplayedColumns()" mat-icon-button color="primary">
+                  <mat-icon>check_circle</mat-icon>
+                </button>
+              </div>
+              <div class="flex flex-col max-h-80 overflow-auto">
+                @for (item of FilterColumns; track item.key) {
+                  @if(item.key == 'stt') {
+                    <button [disabled]="true" mat-menu-item (click)="toggleColumn(item);$event.stopPropagation()">
+                      <mat-icon>{{item.isShow ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
+                      <span>{{item.value}}</span>
+                    </button>
+                  } @else {
+                    <button mat-menu-item (click)="toggleColumn(item);$event.stopPropagation()">
+                      <mat-icon>{{item.isShow ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
+                      <span>{{item.value}}</span>
+                    </button>
+                  }
+                }
+              </div>
+            </mat-menu>
+          </th>
+        } @else {
+          <th class="!border whitespace-nowrap !bg-slate-100" mat-header-cell *matHeaderCellDef mat-sort-header>
+            <span class="max-w-40 line-clamp-4 me-4">
+              {{ ColumnName[column] }}
+            </span>
+            <app-searchfilter [icon]="'filter_alt'" [ListItem]="dataSource.data" [fieldsearch]="column"
+              [ListFilter]="ListFilter" [filterItem]="FilterHederColumn(dataSource.filteredData,column)"
+              (OutFilter)="onOutFilter($event)"></app-searchfilter>
+          </th>
+        }
+        <td class="border" mat-cell *matCellDef="let row; let idx = index">
+          @switch (column) {
+            @case ('codeId') {
+              <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
+                {{ row[column] }}
+              </span>
+            }
+            @case ('stt') {
+              <span (click)="addToEdit(row);" class="flex justify-center items-center font-bold text-blue-600">
+                @if(checkSelect(row)){
+                  <mat-icon>check</mat-icon>
+                } @else {
+                  <span>{{ idx + 1 }}</span>
+                }
+              </span>
+            }
+            @case ('createdAt') {
+              <span class="max-w-40 line-clamp-4">
+                {{ row[column]|date:'dd/MM/yyyy'}}
+              </span>
+            }
+            @case ('isActive') {
+              <span class="max-w-40 line-clamp-4">
+                @if (row[column]) {
+                  <mat-icon class="text-green-500">check_circle</mat-icon>
+                } @else {
+                  <mat-icon class="text-red-500">cancel</mat-icon>
+                }
+              </span>
+            }
+            @default {
+              <span class="max-w-40 line-clamp-4">
+                {{ row[column] }}
+              </span>
+            }
+          }
+        </td>
+      </ng-container>
+    }
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr class="border" mat-row *matRowDef="let row; columns: displayedColumns;"
+      class="hover:bg-slate-50 {{checkItemInEdit(row)?'!bg-blue-50':''}}"></tr>
+    <tr class="mat-row border" *matNoDataRow>
+      <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
+    </tr>
+  </table>
+</div>

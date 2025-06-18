@@ -18,6 +18,7 @@ export declare class KhoService {
         title: string;
         order: number | null;
         codeId: string;
+        createdBy: string | null;
     }>;
     findBy(param: any): Promise<{
         id: string;
@@ -27,6 +28,7 @@ export declare class KhoService {
         title: string;
         order: number | null;
         codeId: string;
+        createdBy: string | null;
     } | {
         data: {
             id: string;
@@ -36,12 +38,13 @@ export declare class KhoService {
             title: string;
             order: number | null;
             codeId: string;
+            createdBy: string | null;
         }[];
         total: number;
         page: any;
         pageCount: number;
     } | null>;
-    findAll(page?: number, limit?: number): Promise<{
+    findAll(query: any): Promise<{
         data: {
             id: string;
             createdAt: Date;
@@ -50,10 +53,12 @@ export declare class KhoService {
             title: string;
             order: number | null;
             codeId: string;
+            createdBy: string | null;
         }[];
         total: number;
         page: number;
-        pageCount: number;
+        pageSize: number;
+        totalPages: number;
     }>;
     findOne(id: string): Promise<{
         id: string;
@@ -63,8 +68,18 @@ export declare class KhoService {
         title: string;
         order: number | null;
         codeId: string;
+        createdBy: string | null;
     }>;
-    update(id: string, data: any): Promise<any>;
+    update(id: string, data: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        title: string;
+        order: number | null;
+        codeId: string;
+        createdBy: string | null;
+    }>;
     remove(id: string): Promise<{
         id: string;
         createdAt: Date;
@@ -73,6 +88,7 @@ export declare class KhoService {
         title: string;
         order: number | null;
         codeId: string;
+        createdBy: string | null;
     }>;
     reorderKhos(khoIds: string[]): Promise<{
         status: string;

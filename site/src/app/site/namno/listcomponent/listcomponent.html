@@ -1,0 +1,50 @@
+<mat-drawer-container class="w-full h-full" autosize>
+  <mat-drawer #drawer class="flex flex-col lg:!w-2/3 !w-full h-full" [position]="'end'" mode="over">
+    <router-outlet></router-outlet>
+  </mat-drawer>
+  <div class="flex flex-col space-y-2 h-screen-16 w-full p-2">
+    <kata-toolbar
+      [EditList]="EditList"
+      (applyFilterEvent)="applyFilter($event)"
+      (createEvent)="create()"
+      (openDeleteDialogEvent)="openDeleteDialog(DeleteDialog)">
+    </kata-toolbar>
+    <kata-table
+      [dataSource]="dataSource"
+      [displayedColumns]="displayedColumns"
+      [ColumnName]="ColumnName"
+      [FilterColumns]="FilterColumns"
+      [Columns]="Columns"
+      [ListFilter]="ListFilter"
+      [EditList]="EditList"
+      (toggleColumnEvent)="toggleColumn($event)"
+      (filterColumnsEvent)="doFilterColumns($event)"
+      (updateDisplayedColumnsEvent)="updateDisplayedColumns()"
+      (outFilterEvent)="onOutFilter($event)"
+      (addToEditEvent)="AddToEdit($event)"
+      (goToDetailEvent)="goToDetail($event)">
+    </kata-table>
+    <kata-pagination
+      [page]="componentService.page()"
+      [totalPages]="componentService.totalPages()"
+      [total]="componentService.total()"
+      [pageSize]="componentService.pageSize()"
+      (pageSizeChange)="onPageSizeChange($event)"
+      (previousPage)="onPreviousPage()"
+      (nextPage)="onNextPage()">
+    </kata-pagination>
+  </div>
+</mat-drawer-container>
+
+<ng-template #DeleteDialog>
+  <mat-dialog-content>
+    <div class="flex flex-col space-y-8 items-center justify-center">
+      <div class="font-bold">Xác Nhận</div>
+      <div>Bạn chắc chắn muốn xoá không?</div>
+      <div class="flex flex-row space-x-2 items-center justify-center">
+        <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
+        <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
+      </div>
+    </div>
+  </mat-dialog-content>
+</ng-template>

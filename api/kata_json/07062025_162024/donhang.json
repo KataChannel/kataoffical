@@ -1,0 +1,42 @@
+[
+  {
+    "id": "239f5d75-2308-48f2-8875-4fc52db6061b",
+    "codeId": "DON00001",
+    "khachhangId": "1999d9c8-47b9-4aed-8a74-cf8adb6e53a8",
+    "total": 0,
+    "status": "pending",
+    "createdAt": "2025-06-01T09:56:14.591Z",
+    "updatedAt": "2025-06-01T09:56:14.591Z",
+    "order": 1
+  },
+  {
+    "id": "26ecaf2b-d30b-4b3c-a81d-f5f9623dd797",
+    "codeId": "DON00002",
+    "khachhangId": "c4ccf464-f576-4280-b627-cb7ebcc26063",
+    "total": 0,
+    "status": "pending",
+    "createdAt": "2025-06-01T14:13:20.592Z",
+    "updatedAt": "2025-06-01T14:13:20.592Z",
+    "order": 2
+  },
+  {
+    "id": "50d3e349-762b-4d16-a689-53a252ba3b7f",
+    "codeId": "DON00003",
+    "khachhangId": "1999d9c8-47b9-4aed-8a74-cf8adb6e53a8",
+    "total": 0,
+    "status": "pending",
+    "createdAt": "2025-06-02T09:58:26.809Z",
+    "updatedAt": "2025-06-02T09:58:26.809Z",
+    "order": 3
+  },
+  {
+    "id": "1528b73d-b7c2-4d69-a940-f6d51a739c6a",
+    "codeId": "DON00004",
+    "khachhangId": "1999d9c8-47b9-4aed-8a74-cf8adb6e53a8",
+    "total": 0,
+    "status": "pending",
+    "createdAt": "2025-06-02T16:17:12.186Z",
+    "updatedAt": "2025-06-02T16:17:12.186Z",
+    "order": 4
+  }
+]

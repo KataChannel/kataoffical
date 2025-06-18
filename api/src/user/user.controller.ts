@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Audit } from 'src/auditlog/audit.decorator';
 import { AuditAction } from '@prisma/client';
 import { AuditService } from 'src/auditlog/auditlog.service';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UserController {
@@ -24,14 +25,29 @@ export class UserController {
   findby(@Body() param: any) {
     return this.userService.findby(param);
   }
+  @ApiOperation({ summary: 'Get all users with pagination' })
+  @ApiResponse({ status: 200, description: 'List of users with pagination info' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  async findAll(@Query() query: any) {
+    try {
+      return await this.userService.findAll(query);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to fetch users',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } 
   }
-  @Get('last-updated')
-  async getLastUpdated() {
-    return this.userService.getLastUpdated();
-}
+  @ApiOperation({ summary: 'Get last updated user' })
+  @Get('lastupdated') 
+  async getLastUpdatedUser() { 
+    try {
+      return await this.userService.getLastUpdatedUser();
+    } catch (error) {
+      throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
   @Get('leaderboard')
   leaderboard() {
     return this.userService.leaderboard();

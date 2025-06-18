@@ -1,0 +1,26 @@
+[
+  {
+    "id": "81bc98fd-9d14-40c3-9caa-2e1b2c122f5b",
+    "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+    "sanphamId": "c205da90-c058-4d02-accc-94069d65aa3c",
+    "giaban": 0,
+    "createdAt": "2025-06-08T04:46:03.887Z",
+    "updatedAt": "2025-06-08T04:46:03.887Z"
+  },
+  {
+    "id": "b7a7ca30-f34a-48d9-a4b9-ad94fa03075f",
+    "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+    "sanphamId": "fee11c5d-0325-46ef-987a-2170a4eb5d5b",
+    "giaban": 0,
+    "createdAt": "2025-06-08T04:46:03.887Z",
+    "updatedAt": "2025-06-08T04:46:03.887Z"
+  },
+  {
+    "id": "a3c80e91-000a-4765-a31b-e086fa2e7f04",
+    "banggiaId": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+    "sanphamId": "60e2fa2f-eaef-4e5c-9286-2227fe1f3da2",
+    "giaban": 0,
+    "createdAt": "2025-06-08T04:46:03.887Z",
+    "updatedAt": "2025-06-08T04:46:03.887Z"
+  }
+]

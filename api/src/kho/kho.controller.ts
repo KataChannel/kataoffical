@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpExcep
 import { KhoService } from './kho.service'; 
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
+import { Audit } from 'src/auditlog/audit.decorator';
+import { AuditAction } from '@prisma/client';
 @ApiTags('kho') 
 @Controller('kho') 
 export class KhoController { 
@@ -11,6 +13,7 @@ export class KhoController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard) 
   @Post()
+  @Audit({ entity: 'Kho', action: AuditAction.CREATE, includeResponse: true })
   async create(@Body() data: any) { 
     try {
       return await this.khoService.create(data);
@@ -29,31 +32,18 @@ export class KhoController {
     }
   }
   @ApiOperation({ summary: 'Get all khos with pagination' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items per page (default: 10)' })
   @ApiResponse({ status: 200, description: 'List of khos with pagination info' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get()
-  async findAll(
-    @Query('page') page: string = '1', 
-    @Query('limit') limit: string = '10', 
-  ) {
+  async findAll(@Query() query: any) {
     try {
-      const pageNum = parseInt(page, 10);
-      const limitNum = parseInt(limit, 10);
-      if (isNaN(pageNum) || pageNum < 1) {
-        throw new HttpException('Page must be a positive integer', HttpStatus.BAD_REQUEST);
-      }
-      if (isNaN(limitNum) || limitNum < 1) {
-        throw new HttpException('Limit must be a positive integer', HttpStatus.BAD_REQUEST);
-      }
-      return await this.khoService.findAll(pageNum, limitNum);
+      return await this.khoService.findAll(query);
     } catch (error) {
       throw new HttpException(
         error.message || 'Failed to fetch khos',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    }
+    } 
   }
   @ApiOperation({ summary: 'Get last updated kho' })
   @Get('lastupdated') 
@@ -80,6 +70,7 @@ export class KhoController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
+  @Audit({ entity: 'Kho', action: AuditAction.UPDATE, includeResponse: true })
   async update(@Param('id') id: string, @Body() data: any) { 
     try {
       return await this.khoService.update(id, data);
@@ -92,6 +83,7 @@ export class KhoController {
   @ApiParam({ name: 'id', type: String })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @Audit({ entity: 'Kho', action: AuditAction.DELETE })
   async remove(@Param('id') id: string) {
     try {
       return await this.khoService.remove(id);

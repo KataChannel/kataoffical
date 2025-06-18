@@ -80,7 +80,28 @@ export class KhachhangService {
   setKhachhangId(id: string | null) {
     this.khachhangId.set(id);
   }
-
+  async ImportKhachhang(dulieu: any) {
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/khachhang/import`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+          this.handleError(response.status);
+        }
+        this.getAllKhachhang()
+    } catch (error) {
+        return console.error(error);
+    }
+  }
   async CreateKhachhang(dulieu: any) {
     try {
       const options = {

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "ecc90a6b-d092-472a-b16f-5940c092ccca",
+    "codeId": "DM00001",
+    "title": "Cà phê sấy thăng hoa",
+    "description": null,
+    "order": 1,
+    "createdAt": "2025-06-01T03:35:53.403Z",
+    "updatedAt": "2025-06-01T03:35:53.403Z"
+  },
+  {
+    "id": "790ae13c-fd12-4d86-a727-bb858883f566",
+    "codeId": "DM00002",
+    "title": "Cà phê hạt rang/xay",
+    "description": null,
+    "order": 2,
+    "createdAt": "2025-06-01T03:36:15.408Z",
+    "updatedAt": "2025-06-01T03:36:15.408Z"
+  }
+]

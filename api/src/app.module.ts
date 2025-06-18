@@ -7,7 +7,6 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { PrismaService } from '../prisma/prisma.service';
 import { MenuModule } from './menu/menu.module';
 import { KhachhangModule } from './khachhang/khachhang.module';
-import { AuthMiddleware } from './middleware/auth.middleware';
 import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
 import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
@@ -35,6 +34,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AuditInterceptor } from './auditlog/audit.interceptor';
 import { AuditService } from './auditlog/auditlog.service';
 import { AuditMiddleware } from './auditlog/audit.middleware';
+import { KhoModule } from './kho/kho.module';
 
 @Module({
   imports: [
@@ -66,7 +66,8 @@ import { AuditMiddleware } from './auditlog/audit.middleware';
     BanggiaModule,
     NhacungcapModule, 
     DathangModule,
-    PhieukhoModule
+    PhieukhoModule,
+    KhoModule
   ],
   controllers: [AppController],
   providers: [

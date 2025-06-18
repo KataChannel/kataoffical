@@ -1,9 +1,7 @@
 import { inject, Injectable, signal, Signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
 import { openDB } from 'idb';
 import { environment } from '../../../../environments/environment.development';
-import { ErrorLogService } from '../../../shared/services/errorlog.service';
 import { SharedSocketService } from '../../../shared/services/sharedsocket.service';
 import { StorageService } from '../../../shared/utils/storage.service';
 @Injectable({
@@ -13,8 +11,6 @@ export class DanhmucService {
   private socket: any;
   constructor(
     private _StorageService: StorageService,
-    private router: Router,
-    private _ErrorLogService: ErrorLogService,
     private _sharedSocketService: SharedSocketService,
   ) {
     this.socket = this._sharedSocketService.getSocket();
@@ -93,24 +89,24 @@ export class DanhmucService {
       };
       const response = await fetch(`${environment.APIURL}/danhmuc`, options);
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        this.handleError(response.status);
+        return;
       }
       const data = await response.json();
       this.getAllDanhmuc(this.pageSize());
       this.danhmucId.set(data.id);
     } catch (error) {
-      this._ErrorLogService.logError('Failed to CreateDanhmuc', error);
       console.error(error);
     }
   }
 
-  async getAllDanhmuc(pageSize: number = this.pageSize(), forceRefresh: boolean = false) {
+  async getAllDanhmuc(pageSize: number = this.pageSize(), forceRefresh: boolean = false, queryParams: any = {}) {
     this.pageSize.set(pageSize);
     const cached = await this.getCachedData();   
-    const updatedAtCache = this._StorageService.getItem('danhmucs_updatedAt') || '0';    
-    
+    const updatedAtCacheDate = this._StorageService.getItem('danhmucs_updatedAt') || '0';    
+    const updatedAtCache = new Date(updatedAtCacheDate).getTime();
     // Nếu không yêu cầu tải mới và cache hợp lệ, trả về cache
-    if (!forceRefresh && cached.danhmucs.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) {
+    if (!forceRefresh && cached.danhmucs.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) {
       this.ListDanhmuc.set(cached.danhmucs);
       this.page.set(cached.pagination.page);
       this.pageCount.set(cached.pagination.pageCount);
@@ -129,7 +125,7 @@ export class DanhmucService {
       };
 
       // Kiểm tra thời gian cập nhật từ server, trừ khi được yêu cầu forceRefresh
-      if (!forceRefresh) {
+      if (forceRefresh) {
         const lastUpdatedResponse = await fetch(`${environment.APIURL}/danhmuc/lastupdated`, options);
         if (!lastUpdatedResponse.ok) {
           this.handleError(lastUpdatedResponse.status);
@@ -144,6 +140,7 @@ export class DanhmucService {
         const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
 
         // Nếu cache còn mới, trả về cache
+        
         if (updatedAtServer <= updatedAtCache) {
           this.ListDanhmuc.set(cached.danhmucs);
           this.page.set(cached.pagination.page);
@@ -154,11 +151,22 @@ export class DanhmucService {
         }
       }
 
-      // Tải dữ liệu mới từ server
-      const query = new URLSearchParams({
+      // Tải dữ liệu mới từ server với queryParams đã được cập nhật
+      queryParams = {
         page: this.page().toString(),
-        limit: pageSize.toString()
+        pageSize: pageSize.toString(),
+        ...queryParams, // Thêm các tham số khác nếu cần
+      };
+      // Tạo query string từ queryParams, chỉ thêm các giá trị có nội dung
+      const query = new URLSearchParams();
+      Object.entries(queryParams).forEach(([key, value]) => {
+        if (value) {
+          query.append(key, String(value));
+        }
       });
+
+
+
       const response = await fetch(`${environment.APIURL}/danhmuc?${query}`, options);
       if (!response.ok) {
         this.handleError(response.status);
@@ -169,7 +177,7 @@ export class DanhmucService {
         this.pageSize.set(cached.pagination.pageSize);
         return cached.danhmucs;
       }
-
+      // Lưu dữ liệu mới vào cache
       const data = await response.json();
       await this.saveDanhmucs(data.data, {
         page: data.page || 1,
@@ -192,7 +200,6 @@ export class DanhmucService {
       this.pageSize.set(pageSize);
       return data.data;
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getAllDanhmuc', error);
       console.error(error);
       this.ListDanhmuc.set(cached.danhmucs);
       this.page.set(cached.pagination.page);
@@ -220,7 +227,6 @@ export class DanhmucService {
       this.getAllDanhmuc(this.pageSize());
       return data.data;
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getUpdatedCodeIds', error);
       console.error(error);
     }
   }
@@ -267,7 +273,6 @@ export class DanhmucService {
         this.pageSize.set(pageSize);
       }
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getDanhmucBy', error);
       console.error(error);
       const cached = await this.getCachedData();
       if (!param.isOne) {
@@ -298,7 +303,6 @@ export class DanhmucService {
       this.getAllDanhmuc(this.pageSize());
       this.getDanhmucBy({ id: data.id, isOne: true }, this.pageSize());
     } catch (error) {
-      this._ErrorLogService.logError('Failed to updateDanhmuc', error);
       console.error(error);
     }
   }
@@ -318,33 +322,45 @@ export class DanhmucService {
       }
       this.getAllDanhmuc(this.pageSize());
     } catch (error) {
-      this._ErrorLogService.logError('Failed to DeleteDanhmuc', error);
       console.error(error);
     }
   }
 
-  private handleError(status: number) {
+  private handleError(status: number): void {
     let message = 'Lỗi không xác định';
+    let panelClass = 'snackbar-error';
     switch (status) {
       case 400:
-        message = 'Thông tin đã tồn tại';
+        message = 'Thông tin đã tồn tại hoặc không hợp lệ';
         break;
       case 401:
-      case 404:
-        message = 'Vui lòng đăng nhập lại';
+        message = 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại';
         break;
       case 403:
-        message = 'Bạn không có quyền truy cập';
+        message = 'Bạn không có quyền thực hiện thao tác này';
+        break;
+      case 404:
+        message = 'Không tìm thấy dữ liệu yêu cầu';
+        break;
+      case 422:
+        message = 'Dữ liệu không hợp lệ';
         break;
       case 500:
         message = 'Lỗi máy chủ, vui lòng thử lại sau';
         break;
+      case 503:
+        message = 'Dịch vụ tạm thời không khả dụng';
+        break;
+      default:
+        message = `Lỗi HTTP ${status}`;
     }
-    this._snackBar.open(message, '', {
-      duration: 1000,
+
+    this._snackBar.open(message, 'Đóng', {
+      duration: 4000,
       horizontalPosition: 'end',
       verticalPosition: 'top',
-      panelClass: ['snackbar-error'],
+      panelClass: [panelClass],
     });
   }
 }
+        

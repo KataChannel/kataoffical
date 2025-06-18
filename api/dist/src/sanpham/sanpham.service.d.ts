@@ -10,6 +10,15 @@ export declare class SanphamService {
         updatedAt: number;
     }>;
     generateCodeId(): Promise<string>;
+    import(data: any[]): Promise<{
+        message: string;
+        results: {
+            codeId: any;
+            status: string;
+            action?: string;
+            error?: string;
+        }[];
+    }>;
     create(data: any): Promise<{
         id: string;
         createdAt: Date;
@@ -62,18 +71,23 @@ export declare class SanphamService {
         page: any;
         pageCount: number;
     } | null>;
-    findAll(page?: number, limit?: number): Promise<{
-        data: ({
-            danhmuc: {
-                id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                description: string | null;
-                title: string;
-                order: number | null;
-                codeId: string;
-            } | null;
-        } & {
+    findAll(query: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        title: string;
+        order: number | null;
+        codeId: string;
+        status: string;
+        donvitinh: string | null;
+        bienthe: string | null;
+        giagoc: number;
+        inStock: boolean;
+        danhmucId: string | null;
+        bacgia: import(".prisma/client/runtime/library").JsonValue | null;
+    } | {
+        data: {
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -88,11 +102,12 @@ export declare class SanphamService {
             inStock: boolean;
             danhmucId: string | null;
             bacgia: import(".prisma/client/runtime/library").JsonValue | null;
-        })[];
+        }[];
         total: number;
         page: number;
-        pageCount: number;
-    }>;
+        pageSize: number;
+        totalPages: number;
+    } | null>;
     findOne(id: string): Promise<{
         id: string;
         createdAt: Date;

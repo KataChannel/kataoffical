@@ -1,0 +1,24 @@
+[
+  {
+    "id": "0a701b3d-c8dd-4ee6-a905-cbdd6d969ab0",
+    "codeId": "BG00002",
+    "order": 2,
+    "createdAt": "2025-06-01T16:22:28.713Z",
+    "updatedAt": "2025-06-01T16:26:58.799Z",
+    "batdau": "2025-06-01T16:22:28.712Z",
+    "ketthuc": null,
+    "status": "baogia",
+    "title": "Bảng Giá 2"
+  },
+  {
+    "id": "28a9d00c-0420-4668-bbe1-4e542e36f9fa",
+    "codeId": "BG00001",
+    "order": 1,
+    "createdAt": "2025-06-01T16:09:22.353Z",
+    "updatedAt": "2025-06-08T04:46:03.887Z",
+    "batdau": "2025-06-01T16:09:22.351Z",
+    "ketthuc": null,
+    "status": "baogia",
+    "title": "Bảng Giá 1"
+  }
+]

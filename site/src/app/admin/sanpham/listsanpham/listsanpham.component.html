@@ -1,5 +1,5 @@
 <mat-drawer-container class="w-full h-full" autosize>
-  <mat-drawer #drawer class="flex flex-col lg:!w-1/2 !w-full h-full" [position]="'end'" mode="over">
+  <mat-drawer #drawer class="flex flex-col lg:!w-2/3 !w-full h-full" [position]="'end'" mode="over">
     <router-outlet></router-outlet>
   </mat-drawer>
   <div class="flex flex-col space-y-2 h-screen-16 w-full p-2">
@@ -31,7 +31,7 @@
           / {{ total() }} mục
         </div>
         <div class="flex items-center justify-center">
-         <span>{{ page() }}/{{pageCount()}} </span> 
+         <span>{{ page() }}/{{totalPages()}} </span> 
          <span>Trang</span>
         </div>
         <div class="flex flex-row space-x-2 justify-center items-center">
@@ -52,7 +52,7 @@
             <button mat-icon-button color="primary" [disabled]="page() === 1" (click)="onPreviousPage()">
               <mat-icon>keyboard_arrow_left</mat-icon>
             </button>
-            <button mat-icon-button color="primary" [disabled]="page() === pageCount()" (click)="onNextPage()">
+            <button mat-icon-button color="primary" [disabled]="page() === totalPages()" (click)="onNextPage()">
               <mat-icon>keyboard_arrow_right</mat-icon>
             </button>
           </div>

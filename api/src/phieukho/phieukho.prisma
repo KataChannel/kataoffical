@@ -1,0 +1,9 @@
+model phieukho {
+  id          String   @id @default(uuid())
+  codeId      String   @unique
+  title       String
+  description String?
+  order       Int?     @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

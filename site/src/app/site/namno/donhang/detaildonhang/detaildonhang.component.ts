@@ -16,11 +16,11 @@ import { convertToSlug } from '../../../../shared/utils/shared.utils';
 import { KhachhangService } from '../../khachhang/khachhang.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { MatMenuModule } from '@angular/material/menu';
-import { SearchfilterComponent } from '../../../../shared/common/searchfilter/searchfilter.component';
-import { KtableComponent } from '../../../../shared/common/ktable/ktable.component';
+// import { SearchfilterComponent } from '../../../../shared/common/searchfilter/searchfilter.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
+import { DivEditableComponent, SearchfilterComponent} from '@kataoffical/shared';
 @Component({
   selector: 'app-detaildonhang',
   imports: [
@@ -38,6 +38,7 @@ import { MatSortModule } from '@angular/material/sort';
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
+    DivEditableComponent
   ],
   templateUrl: './detaildonhang.component.html',
   styleUrl: './detaildonhang.component.scss',
@@ -57,6 +58,7 @@ export class DetailDonhangComponent {
   ListKhachhang = this._KhachhangService.ListKhachhang;
   ListSanpham = this._SanphamService.ListSanpham;
   FilterKhachhang: any = [];
+  ListFilter: any = [];
   constructor() {
     this._route.paramMap.subscribe((params) => {
       const id = params.get('id');
@@ -65,7 +67,7 @@ export class DetailDonhangComponent {
     effect(async () => {
       const id = this._DonhangService.donhangId();
       await this._KhachhangService.getAllKhachhang();
-      await this._SanphamService.getAllSanpham();
+      await this._SanphamService.getAllSanpham(); 
       if (!id) {
         this._router.navigate(['/donhang']);
         this._ListDonhangComponent.drawer.close();
@@ -77,6 +79,7 @@ export class DetailDonhangComponent {
         this._router.navigate(['/donhang', 'new']);
       } else {
         await this._DonhangService.getDonhangBy({ id: id, isOne: true });
+        this.ListFilter = this.DetailDonhang().donhangsanpham.map((item: any) => item.sanpham);
         this._ListDonhangComponent.drawer.open();
         this._router.navigate(['/donhang', id]);
       }
@@ -92,6 +95,7 @@ export class DetailDonhangComponent {
     slhuy: 'Số lượng hủy',
     giaban: 'Giá bán',
   };
+
   updateBlurValue(
     event: Event,
     index: number | null,
@@ -132,14 +136,76 @@ export class DetailDonhangComponent {
     });
   }
 
-  RemoveSanpham(item:any){
-    // this.DetailDonhang.update((v:any)=>{
-    //   v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
-    //   this.reloadfilter();
-    //   return v;
-    // })
-    // this.dataSource().data = this.DetailDonhang().sanpham;
 
+  // DetailDonhang: any = {
+  //   update: (callback: (v: any) => any) => {
+  //     // Mock update function, replace with your actual store logic
+  //     const v = { sanpham: [{ sldat: 0, slgiao: 0 }, { sldat: 0, slgiao: 0 }] };
+  //     return callback(v);
+  //   }
+  // };
+
+  validateSldat = (value: number) => {
+    console.log('validateSldat called with value:', value);
+    
+    if (value <=0 ) {
+      this._snackBar.open('Số lượng đặt không thể âm', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+      return { valid: false, error: 'Negative value' };
+    }
+    return { valid: true };
+  };
+
+  onValueUpdated(event: { value: any; index: number | null; field: keyof any; row: any }) {
+    console.log('onValueUpdated event:', event);
+    this.DetailDonhang.update((v: any) => {
+      console.log(v);
+      
+      if (event.index !== null) {
+        if (event.field === 'sldat') {
+          v.donhangsanpham[event.index]['sldat'] = event.value;
+          v.donhangsanpham[event.index]['slgiao'] = event.value;
+        } else {
+          v.donhangsanpham[event.index][event.field] = event.value;
+        }
+      } else {
+        v[event.field] = event.value;
+      }
+      return v;
+    });
+    console.log('Value updated:', this.DetailDonhang());
+
+  }
+
+  moveToNextInput() {
+    const editableDivs = document.querySelectorAll('app-diveditable');
+    const currentDiv = document.activeElement?.closest('app-diveditable');
+    const currentIndex = Array.from(editableDivs).indexOf(currentDiv as Element);
+    if (currentIndex < editableDivs.length - 1) {
+      const nextDiv = editableDivs[currentIndex + 1] as HTMLElement;
+      nextDiv.querySelector('div')?.dispatchEvent(new Event('dblclick'));
+    } else {
+      // this._snackBar.open('Đây là input cuối cùng', '', {
+      //   duration: 1000,
+      //   horizontalPosition: 'end',
+      //   verticalPosition: 'top',
+      //   panelClass: ['snackbar-warning'],
+      // });
+    }
+  }
+
+
+
+
+  RemoveSanpham(item:any){
+    this.DetailDonhang.update((v:any)=>{
+      v.donhangsanpham = v.donhangsanpham.filter((v1:any) => v1.id !== item.id);
+      return v;
+    })
   }
   
   async ngOnInit() {
@@ -148,13 +214,18 @@ export class DetailDonhangComponent {
     this.FilterKhachhang = this.ListKhachhang();
     this.displayedColumns = Object.keys(this.ColumnName);
   }
-
-  onOutFilter(event: any) {
-    console.log('OutFilter event:', event);
+  onKhachhangOutFilter(event: any) {    
     this.DetailDonhang.update((v: any) => {
       const updatedDonhang = { ...v };
-      console.log(event);
-      
+      updatedDonhang.khachhangId = event[0].id;
+      updatedDonhang.khachhang = event[0];
+      console.log('Updated Donhang with Khachhang:', updatedDonhang);
+      return updatedDonhang;
+    });
+  }
+  onOutFilter(event: any) {
+    this.DetailDonhang.update((v: any) => {
+      const updatedDonhang = { ...v };
       updatedDonhang.donhangsanpham = event.map((item: any) => {
         return {
           sanphamId: item.id,

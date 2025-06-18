@@ -3,3 +3,7 @@
 # Compiled output
 #/dist
 /secret
+kata
+*.pub
+katalogin.sh
+kataserver

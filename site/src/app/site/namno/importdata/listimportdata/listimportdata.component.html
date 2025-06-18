@@ -1,0 +1,49 @@
+<div class="grid grid-cols-1 gap-4">
+  <div class="flex flex-col space-y-2 p-8">
+    <div class="flex flex-row space-x-2 items-center">
+      <button (click)="ExportExcel(TitleExport)" mat-icon-button color="primary">
+        <mat-icon>download</mat-icon>
+      </button>
+      <button mat-icon-button color="primary" (click)="uploadfile.click()">
+        <mat-icon>upload</mat-icon>
+      </button>
+      <button mat-icon-button color="primary" (click)="toggleAll()">
+        <mat-icon>done_all</mat-icon>
+      </button>
+      <input class="hidden" (change)="ImportExcel($event)" type="file" #uploadfile>
+    </div>
+    <div class="grid lg:grid-cols-2 gap-4">
+      <span *ngFor="let item of ListImportType(); trackBy: trackByFn" (click)="toggleItem(item)"
+        class="{{CheckItem(item) ? 'bg-blue-100' : ''}} cursor-pointer flex flex-row space-x-2 items-center p-4 rounded-lg border">
+        <mat-icon *ngIf="CheckItem(item)">check</mat-icon>
+        <span>{{item.title}}</span>
+      </span>
+    </div>
+  </div>
+  <div class="w-full flex flex-col space-y-2 p-8">
+
+    <div class="relative w-full">
+      <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
+        class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+      <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+        <span class="material-symbols-outlined text-gray-500">search</span>
+      </div>
+    </div>
+
+
+    <!-- <ng-container *ngIf="ListImportdata().length > 0; else noData">
+      <div class="w-full flex flex-row space-x-2 items-center border p-4 rounded-lg"
+        *ngFor="let item of ListImportdata(); let i = index">
+        <span class="rounded-lg p-2 bg-blue-100">{{ item.type }}</span>
+        <span>{{ item.title }}</span>
+        <span class="text-sm text-gray-600">{{ item.description }}</span>
+      </div>
+    </ng-container>
+    <ng-template #noData>
+      <div class="w-full flex flex-row items-center justify-center border p-4 rounded-lg bg-gray-100">
+        <span class="text-gray-600">Không có dữ liệu</span>
+      </div>
+    </ng-template> -->
+
+  </div>
+</div>
