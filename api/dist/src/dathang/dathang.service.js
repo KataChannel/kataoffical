@@ -800,6 +800,29 @@ let DathangService = class DathangService {
             return prisma.dathang.delete({ where: { id } });
         });
     }
+    async findByProductId(idSP) {
+        const dathangs = await this.prisma.dathang.findMany({
+            where: {
+                sanpham: {
+                    some: { idSP },
+                },
+            },
+            include: {
+                sanpham: {
+                    where: { idSP },
+                    include: {
+                        sanpham: true,
+                    },
+                },
+                nhacungcap: true,
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        return dathangs.map((dathang) => ({
+            ...dathang,
+            sanpham: dathang.sanpham.find((item) => item.idSP === idSP)
+        }));
+    }
 };
 exports.DathangService = DathangService;
 exports.DathangService = DathangService = __decorate([

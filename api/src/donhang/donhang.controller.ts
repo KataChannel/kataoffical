@@ -42,6 +42,10 @@ export class DonhangController {
   findAll() {
     return this.donhangService.findAll();
   }
+  @Get('findbysanpham/:id')
+  findByProductId(@Param('id') id: string) {
+    return this.donhangService.findByProductId(id);
+  }
   @Get('findid/:id')
   findOne(@Param('id') id: string) {
     return this.donhangService.findOne(id);

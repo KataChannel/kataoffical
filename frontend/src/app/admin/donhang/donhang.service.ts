@@ -158,6 +158,27 @@ export class DonhangService {
       return console.error(error);
     }
   }
+  async findbysanpham(id: any) {
+    try {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      };
+      const response = await fetch(`${environment.APIURL}/donhang/findbysanpham/${id}`, options);
+      if (!response.ok) {
+     
+      }
+      const data = await response.json();      
+      return data
+    } catch (error) {
+      return console.error(error);
+    }
+  }
+
+
+
   async getAllDonhang() {
     try {
       const options = {

@@ -42,6 +42,9 @@ let DathangController = class DathangController {
     findOne(id) {
         return this.dathangService.findOne(id);
     }
+    findByProductId(id) {
+        return this.dathangService.findByProductId(id);
+    }
     update(id, updateDathangDto) {
         return this.dathangService.update(id, updateDathangDto);
     }
@@ -104,6 +107,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], DathangController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Get)('findbysanpham/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], DathangController.prototype, "findByProductId", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Update Dathang', action: client_1.AuditAction.UPDATE, includeResponse: true }),

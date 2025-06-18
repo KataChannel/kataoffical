@@ -1078,4 +1078,29 @@ export class DonhangService {
       return prisma.donhang.delete({ where: { id } });
     });
   }
+
+  async findByProductId(idSP: string) {
+  const donhangs = await this.prisma.donhang.findMany({
+    where: {
+      sanpham: {
+        some: { idSP },
+      },
+    },
+    include: {
+      sanpham: {
+        where: { idSP },
+        include: {
+          sanpham: true,
+        },
+      },
+      khachhang: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return donhangs.map((donhang) => ({
+    ...donhang,
+    sanpham: donhang.sanpham.find((item: any) => item.idSP === idSP)
+  }));
+}
 }

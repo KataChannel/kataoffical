@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, computed, effect, inject, TemplateRef, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -23,6 +23,11 @@ import { KhoService } from '../kho/kho.service';
 import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
 import { SanphamService } from '../sanpham/sanpham.service';
 import { readExcelFile, readExcelFileNoWorker, writeExcelFileWithSheets, writeExcelMultiple } from '../../shared/utils/exceldrive.utils';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { memoize, Debounce } from '../../shared/utils/decorators';
+import { DathangService } from '../dathang/dathang.service';
+import { DonhangService } from '../donhang/donhang.service';
+import { TrangThaiDon } from '../../shared/utils/trangthai';
 @Component({
   selector: 'app-xuatnhapton',
   templateUrl: './xuatnhapton.component.html',
@@ -42,7 +47,8 @@ import { readExcelFile, readExcelFileNoWorker, writeExcelFileWithSheets, writeEx
     CommonModule,
     FormsModule,
     MatTooltipModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatDialogModule
   ],
   // providers:[provideNativeDateAdapter()]
 })
@@ -80,6 +86,8 @@ export class XuatnhaptonComponent {
   filterValues: { [key: string]: string } = {};
   private _PhieukhoService: PhieukhoService = inject(PhieukhoService);
   private _SanphamService: SanphamService = inject(SanphamService);
+  private _DathangService: DathangService = inject(DathangService);
+  private _DonhangService: DonhangService = inject(DonhangService);
   private _KhoService: KhoService = inject(KhoService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _router: Router = inject(Router);
@@ -392,49 +400,42 @@ export class XuatnhaptonComponent {
     }
   }
 
-}
+  private _dialog: MatDialog = inject(MatDialog);
+  Trangthaidon:any = TrangThaiDon
+  ListDathang:any[] = [];
+  ListDonhang:any[] = [];
+  async XemDathang(row: any, template: TemplateRef<any>) {
+   this.ListDathang =  await this._DathangService.findbysanpham(row.sanphamId);
+   console.log(this.ListDathang);
 
-
-
-function memoize() {
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
-    const originalMethod = descriptor.value;
-    const cache = new Map();
-
-    descriptor.value = function (...args: any[]) {
-      const key = JSON.stringify(args);
-      if (cache.has(key)) {
-        return cache.get(key);
+    const dialogDeleteRef = this._dialog.open(template, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+    dialogDeleteRef.afterClosed().subscribe((result) => {
+      if (result === "true") {
+      
       }
-      const result = originalMethod.apply(this, args);
-      cache.set(key, result);
-      return result;
-    };
+    });
+  }
 
-    return descriptor;
-  };
-}
+  async XemDonhang(row: any, template: TemplateRef<any>) {
+    this.ListDonhang =  await this._DonhangService.findbysanpham(row.sanphamId);
+    console.log(this.ListDonhang);
+    const dialogDeleteRef = this._dialog.open(template, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+    dialogDeleteRef.afterClosed().subscribe((result) => {
+      if (result === "true") {
+      
+      }
+    });
+  }
+  TinhTong(items: any, fieldTong: any) {
+    return (
+      items?.reduce((sum: any, item: any) => sum + (Number(item?.sanpham[fieldTong]) || 0), 0) || 0
+    );
+  }
 
-function Debounce(delay: number = 300) {
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
-    const originalMethod = descriptor.value;
-    let timeoutId: any;
-
-    descriptor.value = function (...args: any[]) {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        originalMethod.apply(this, args);
-      }, delay);
-    };
-
-    return descriptor;
-  };
 }

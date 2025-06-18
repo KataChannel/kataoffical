@@ -2,6 +2,10 @@
 git add .
 git commit -m "update"
 git push
+ssh root@116.118.49.243 
+cd rausach
+git pull
+docker compose -f 'docker-compose.yml' up -d --build
 
 # server
 ssh root@116.118.49.243 

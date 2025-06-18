@@ -290,6 +290,84 @@ export declare class DonhangController {
         khachhangId: string;
         printCount: number | null;
     }[]>;
+    findByProductId(id: string): Promise<{
+        sanpham: ({
+            sanpham: {
+                id: string;
+                title: string;
+                title2: string | null;
+                slug: string | null;
+                masp: string;
+                subtitle: string | null;
+                giagoc: number;
+                giaban: number;
+                dvt: string | null;
+                hinhanh: string | null;
+                loadpoint: number | null;
+                soluong: import("@prisma/client/runtime/library").Decimal | null;
+                soluongkho: import("@prisma/client/runtime/library").Decimal | null;
+                haohut: number;
+                ghichu: string | null;
+                order: number | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+            };
+        } & {
+            id: string;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean | null;
+            idSP: string;
+            sldat: import("@prisma/client/runtime/library").Decimal;
+            slgiao: import("@prisma/client/runtime/library").Decimal;
+            slnhan: import("@prisma/client/runtime/library").Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
+            ttdat: import("@prisma/client/runtime/library").Decimal;
+            ttgiao: import("@prisma/client/runtime/library").Decimal;
+            ttnhan: import("@prisma/client/runtime/library").Decimal;
+            donhangId: string;
+        }) | undefined;
+        khachhang: {
+            id: string;
+            subtitle: string | null;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            tenfile: string | null;
+            tenkh: string | null;
+            name: string | null;
+            namenn: string | null;
+            makh: string;
+            makhold: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            mst: string | null;
+            gionhanhang: string | null;
+            quan: string | null;
+            email: string | null;
+            phone: string | null;
+            address: string | null;
+            loaikh: string | null;
+            hiengia: boolean;
+            istitle2: boolean;
+            banggiaId: string | null;
+        };
+        id: string;
+        title: string | null;
+        ghichu: string | null;
+        order: number | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        madonhang: string;
+        ngaygiao: Date | null;
+        khachhangId: string;
+        printCount: number | null;
+    }[]>;
     findOne(id: string): Promise<{
         sanpham: {
             idSP: string;

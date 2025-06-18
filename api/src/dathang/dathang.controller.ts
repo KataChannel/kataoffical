@@ -38,6 +38,10 @@ export class DathangController {
   findOne(@Param('id') id: string) {
     return this.dathangService.findOne(id);
   }
+  @Get('findbysanpham/:id')
+  findByProductId(@Param('id') id: string) {
+    return this.dathangService.findByProductId(id);
+  }
   @Patch(':id')
   @Audit({entity: 'Update Dathang', action: AuditAction.UPDATE, includeResponse: true})
   update(@Param('id') id: string, @Body() updateDathangDto: any) {
