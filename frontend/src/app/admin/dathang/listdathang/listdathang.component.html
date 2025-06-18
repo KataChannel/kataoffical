@@ -18,11 +18,16 @@
             <mat-icon>add_circle</mat-icon>
             <span class="whitespace-nowrap">Tạo Mới</span>
           </button>
+          @if(EditList.length > 0){
           <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
             class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button>
             <mat-icon>delete</mat-icon>
             <span class="whitespace-nowrap">Xoá</span>
           </button>
+          <button mat-flat-button *ngIf="EditList.length > 0" (click)="DoDanhan()" color="primary" matTooltip="Đã Nhận">
+            <span class="whitespace-nowrap">Đã Nhận</span>
+          </button>
+          }
           </div>
 
         <div class="flex flex-row space-x-2 items-center">
@@ -53,7 +58,7 @@
         <div class="flex flex-row space-x-2 items-center">
             <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
                 <mat-label>Bắt Đầu</mat-label>
-                <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau"
+                <input matInput [matDatepicker]="pickerBatdau"
                     [(ngModel)]="searchParam.Batdau" [ngModelOptions]="{standalone: true}">
                 <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau"></mat-datepicker-toggle>
                 <mat-datepicker #pickerBatdau></mat-datepicker>
@@ -61,11 +66,15 @@
 
             <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
                 <mat-label>Kết Thúc</mat-label>
-                <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerKetthuc"
+                <input matInput [matDatepicker]="pickerKetthuc"
                     [(ngModel)]="searchParam.Ketthuc" [ngModelOptions]="{standalone: true}">
                 <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
                 <mat-datepicker #pickerKetthuc></mat-datepicker>
             </mat-form-field>
+            
+            <button mat-icon-button color="primary" (click)="onDateChange()">
+                <mat-icon>search</mat-icon>
+            </button>
         </div>
         <div class="w-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
@@ -137,9 +146,9 @@
                         }
                         @case ('action') {
                         <span class="max-w-40 line-clamp-4">
-                            <button *ngIf="row.status==='dadat'"  mat-flat-button color="primary" (click)="UpdateDathang(row)">
+                            <!-- <button *ngIf="row.status==='dadat'"  mat-flat-button color="primary" (click)="UpdateDathang(row)">
                                 <span>Đã Giao</span>
-                            </button>
+                            </button> -->
                             <!-- <button mat-icon-button color="warn" (click)="openDeleteDialog(DeleteDialog,row)">
                                 <mat-icon>delete</mat-icon>
                             </button> -->

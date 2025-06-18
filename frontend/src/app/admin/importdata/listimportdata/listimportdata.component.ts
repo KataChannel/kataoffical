@@ -840,8 +840,8 @@ convertNCCSPToImport(data: any){
             mabanggia: v.mabanggia,
             masp: v.masp,
             sldat: Number(v.sldat),
-            slgiao: Number(v.slgiao),
-            slnhan: Number(v.slnhan),
+            slgiao: Number(v.sldat),
+            slnhan: Number(v.sldat),
             ghichu: v.ghichu,
           }));
           console.log(ListDH);

@@ -65,7 +65,7 @@ export class ListDathangComponent {
     'ghichu',
     'createdAt',
     'updatedAt',
-    'action'
+    // 'action'
   ];
 
   ColumnName: any = {
@@ -79,7 +79,7 @@ export class ListDathangComponent {
     ghichu: 'Ghi Chú',
     createdAt:'Ngày Tạo',
     updatedAt:'Ngày Cập Nhật',
-    action: 'Hành Động'
+    // action: 'Hành Động'
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('DathangColFilter') || '[]'
@@ -123,6 +123,8 @@ export class ListDathangComponent {
         this.paginator.pageSize = this.pageSize();
         this.paginator.length = this.total();
       }
+      console.log('Search Param:', this.searchParam);
+      
     });
   }
   createFilter(): (data: any, filter: string) => boolean {
@@ -170,10 +172,12 @@ export class ListDathangComponent {
   }
 
 
-  onDateChange(event: any): void {
+  onDateChange(): void {
     this.ngOnInit();
   }
   async ngOnInit(): Promise<void> {
+    console.log(this.searchParam);
+
     await this._DathangService.getDathangBy(this.searchParam);
     this.displayedColumns = Object.keys(this.ColumnName);
     this.dataSource = new MatTableDataSource(this.Listdathang());
@@ -398,6 +402,22 @@ AddToEdit(item: any): void {
 }
 CheckItemInEdit(item: any): boolean {
   return this.EditList.some((v: any) => v.id === item.id);
+}
+DoDanhan(){
+    Promise.all(this.EditList.map((item: any) => 
+      {
+        item.status = 'danhan';
+        return this._DathangService.updateDathang(item);
+      }))
+    .then(() => {
+      this.EditList = [];
+      this._snackBar.open('Cập Nhật Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    });
 }
 dialog = inject(MatDialog);
 dialogCreateRef: any;

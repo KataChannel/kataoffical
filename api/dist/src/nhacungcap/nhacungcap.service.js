@@ -199,6 +199,19 @@ let NhacungcapService = class NhacungcapService {
     async findBy(param) {
         try {
             const { isOne, page = 1, limit = 20, ...where } = param;
+            const whereClause = {};
+            if (where.id || where.subtitle || where.name) {
+                whereClause.OR = [];
+                if (where.id) {
+                    whereClause.OR.push({ id: where.id });
+                }
+                if (where.subtitle) {
+                    whereClause.OR.push({ subtitle: { contains: where.subtitle, mode: 'insensitive' } });
+                }
+                if (where.name) {
+                    whereClause.OR.push({ name: { contains: where.name, mode: 'insensitive' } });
+                }
+            }
             if (isOne) {
                 const result = await this.prisma.nhacungcap.findFirst({
                     where,

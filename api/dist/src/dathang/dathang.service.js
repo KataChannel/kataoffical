@@ -703,6 +703,74 @@ let DathangService = class DathangService {
                     },
                 });
             }
+            if (oldDathang.status === 'danhan' && data.status === 'dadat') {
+                for (const sp of oldDathang.sanpham) {
+                    const slnhan = parseFloat((sp.slnhan ?? 0).toFixed(2));
+                    if (slnhan > 0) {
+                        await prisma.tonKho.update({
+                            where: { sanphamId: sp.idSP },
+                            data: {
+                                slton: { decrement: slnhan },
+                            },
+                        });
+                    }
+                }
+                const maphieuReturn = `PX-${oldDathang.madncc}-RET-${moment(oldDathang.ngaynhan).format('DDMMYYYY')}`;
+                const phieuKhoReturn = await prisma.phieuKho.findUnique({
+                    where: { maphieu: maphieuReturn },
+                });
+                if (phieuKhoReturn) {
+                    await prisma.phieuKhoSanpham.deleteMany({
+                        where: { phieuKhoId: phieuKhoReturn.id },
+                    });
+                    await prisma.phieuKho.delete({
+                        where: { maphieu: maphieuReturn },
+                    });
+                }
+                for (const sp of data.sanpham) {
+                    const newSldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+                    const oldItem = oldDathang.sanpham.find((o) => o.idSP === sp.id);
+                    const oldSlgiao = oldItem ? parseFloat((oldItem.slgiao ?? 0).toFixed(2)) : 0;
+                    const difference = newSldat - oldSlgiao;
+                    if (difference !== 0) {
+                        await prisma.tonKho.update({
+                            where: { sanphamId: sp.id },
+                            data: {
+                                slchonhap: difference > 0
+                                    ? { increment: difference }
+                                    : { decrement: -difference },
+                            },
+                        });
+                    }
+                }
+                const updatedDathang = await prisma.dathang.update({
+                    where: { id },
+                    data: {
+                        title: data.title,
+                        type: data.type,
+                        ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+                        nhacungcapId: data.nhacungcapId,
+                        isActive: data.isActive,
+                        order: data.order,
+                        ghichu: data.ghichu,
+                        status: 'dadat',
+                        ...(data.sanpham && data.sanpham.length
+                            ? {
+                                sanpham: {
+                                    updateMany: data.sanpham.map((sp) => ({
+                                        where: { idSP: sp.id },
+                                        data: {
+                                            ghichu: sp.ghichu,
+                                            sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                                        },
+                                    })),
+                                },
+                            }
+                            : {}),
+                    },
+                });
+                return updatedDathang;
+            }
             throw new Error('Trạng thái không hợp lệ');
         });
     }

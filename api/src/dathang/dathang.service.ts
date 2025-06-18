@@ -786,6 +786,86 @@ export class DathangService {
         });
       }
 
+     // 7. Rollback từ 'danhan' về 'dadat'
+    if (oldDathang.status === 'danhan' && data.status === 'dadat') {
+      // 7.1. Hoàn lại slton (số lượng đã nhập vào kho)
+      for (const sp of oldDathang.sanpham) {
+        const slnhan = parseFloat((sp.slnhan ?? 0).toFixed(2));
+        if (slnhan > 0) {
+          await prisma.tonKho.update({
+            where: { sanphamId: sp.idSP },
+            data: {
+              slton: { decrement: slnhan },
+            },
+          });
+        }
+      }
+
+      // 7.2. Xóa phiếu kho nhập hàng trả về (nếu có)
+      const maphieuReturn = `PX-${oldDathang.madncc}-RET-${moment(oldDathang.ngaynhan).format('DDMMYYYY')}`;
+      const phieuKhoReturn = await prisma.phieuKho.findUnique({
+        where: { maphieu: maphieuReturn },
+      });
+      if (phieuKhoReturn) {
+        await prisma.phieuKhoSanpham.deleteMany({
+          where: { phieuKhoId: phieuKhoReturn.id },
+        });
+        await prisma.phieuKho.delete({
+          where: { maphieu: maphieuReturn },
+        });
+      }
+
+      // 7.3. Khôi phục lại slchonhap
+      for (const sp of data.sanpham) {
+        const newSldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+        const oldItem = oldDathang.sanpham.find((o: any) => o.idSP === sp.id);
+        const oldSlgiao = oldItem ? parseFloat((oldItem.slgiao ?? 0).toFixed(2)) : 0;
+        const difference = newSldat - oldSlgiao;
+        if (difference !== 0) {
+          await prisma.tonKho.update({
+            where: { sanphamId: sp.id },
+            data: {
+              slchonhap: difference > 0 
+                ? { increment: difference } 
+                : { decrement: -difference },
+            },
+          });
+        }
+      }
+
+      // 7.4. Cập nhật đơn đặt hàng về trạng thái 'dadat'
+      const updatedDathang = await prisma.dathang.update({
+        where: { id },
+        data: {
+          title: data.title,
+          type: data.type,
+          ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+          nhacungcapId: data.nhacungcapId,
+          isActive: data.isActive,
+          order: data.order,
+          ghichu: data.ghichu,
+          status: 'dadat',
+          ...(data.sanpham && data.sanpham.length
+            ? {
+                sanpham: {
+                  updateMany: data.sanpham.map((sp: any) => ({
+                    where: { idSP: sp.id },
+                    data: {
+                      ghichu: sp.ghichu,
+                      sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                    },
+                  })),
+                },
+              }
+            : {}),
+        },
+      });
+
+      return updatedDathang;
+    }
+      // Nếu không khớp với bất kỳ trạng thái nào trên, throw lỗi
+
+
       throw new Error('Trạng thái không hợp lệ');
     });
   }

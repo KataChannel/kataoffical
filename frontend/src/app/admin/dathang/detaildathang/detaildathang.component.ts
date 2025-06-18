@@ -37,6 +37,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import html2canvas from 'html2canvas';
+import { Debounce } from '../../../shared/utils/decorators';
 @Component({
   selector: 'app-detaildathang',
   imports: [
@@ -289,14 +290,17 @@ export class DetailDathangComponent {
     //   return v;
     // });
   }
-  DoFindNhacungcap(event: any) {
-    const query = event.target.value.toLowerCase();
-    this.filterNhacungcap = this.ListNhacungcap().filter(
-      (v: any) =>
-        (v.isActive && v.name.toLowerCase().includes(query)) ||
-        v.namenn.toLowerCase().includes(query) ||
-        v.sdt.toLowerCase().includes(query)
-    );
+  @Debounce(500)
+  async DoFindNhacungcap(event: any) {
+    const value = event.target.value.trim().toLowerCase();
+    if( !value) {
+      await this._NhacungcapService.getNhacungcapBy({})
+      this.filterNhacungcap = this.ListNhacungcap()
+      return;
+    }
+    await this._NhacungcapService.getNhacungcapBy({name:value})
+    this.filterNhacungcap = this.ListNhacungcap()
+
   }
   DoFindBanggia(event: any) {
     const query = event.target.value.toLowerCase();
@@ -338,7 +342,7 @@ export class DetailDathangComponent {
   }
   EnterUpdateValue(
     event: Event,
-    index: number | null,
+    order: number | null,
     element: any,
     field: keyof any,
     type: 'number' | 'string'
@@ -368,11 +372,11 @@ export class DetailDathangComponent {
         event.preventDefault();
       }
     }
-
+    const index = this.dataSource.data.findIndex((item: any) => item.order === order);
     this.DetailDathang.update((v: any) => {
       if (index !== null) {
         if (field === 'sldat') {
-          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = newValue;
+          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
           // Find the next input to focus on
           const inputs = document.querySelectorAll(
             '.sldat-input'
@@ -435,19 +439,19 @@ export class DetailDathangComponent {
           } else {
             v.sanpham[index]['slgiao'] = newGiao;
           }
-        } else if (field === 'ttnhan') {
-          v.sanpham[index]['gianhap'] =
+        }  else if (field === 'gianhap') {
+          v.sanpham[index]['ttnhan'] =
             Number(
-              (Number(newValue) / v.sanpham[index]['slnhan']).toFixed(2)
+              (Number(newValue) * v.sanpham[index]['slnhan']).toFixed(2)
             ) || 0;
           v.sanpham[index][field] = Number(newValue);
         } else if (field === 'slnhan') {
-          v.sanpham[index]['gianhap'] =
+          v.sanpham[index]['ttnhan'] =
             Number(
-              (v.sanpham[index]['ttnhan'] / Number(newValue)).toFixed(2)
+              (v.sanpham[index]['gianhap'] * Number(newValue)).toFixed(2)
             ) || 0;
           v.sanpham[index][field] = Number(newValue);
-        } else {
+        }  else {
           v.sanpham[index][field] = newValue;
         }
       } else {
@@ -459,32 +463,35 @@ export class DetailDathangComponent {
 
   UpdateBlurValue(
     event: Event,
-    index: number | null,
+    order: number | null,
     element: any,
     field: keyof any,
     type: 'number' | 'string'
   ) {
+    console.log('UpdateBlurValue', event, order, element, field, type);
+    
     const newValue =
       type === 'number'
         ? Number((event.target as HTMLElement).innerText.trim()) || 0
         : (event.target as HTMLElement).innerText.trim();
 
+    const index = this.dataSource.data.findIndex((item: any) => item.order === order);   
     this.DetailDathang.update((v: any) => {
       if (index !== null) {
         if (field === 'sldat') {
-          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = newValue;
+          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao']=v.sanpham[index]['slnhan'] = newValue;
         } else if (field === 'ghichu') {
           v.sanpham[index][field] = newValue;
-        } else if (field === 'ttnhan') {
-          v.sanpham[index]['gianhap'] =
+        } else if (field === 'gianhap') {
+          v.sanpham[index]['ttnhan'] =
             Number(
-              (Number(newValue) / v.sanpham[index]['slnhan']).toFixed(2)
+              (Number(newValue) * v.sanpham[index]['slnhan']).toFixed(2)
             ) || 0;
           v.sanpham[index][field] = Number(newValue);
         } else if (field === 'slnhan') {
-          v.sanpham[index]['gianhap'] =
+          v.sanpham[index]['ttnhan'] =
             Number(
-              (v.sanpham[index]['ttnhan'] / Number(newValue)).toFixed(2)
+              (v.sanpham[index]['gianhap'] * Number(newValue)).toFixed(2)
             ) || 0;
           v.sanpham[index][field] = Number(newValue);
         } else if (field === 'slgiao') {
@@ -550,7 +557,7 @@ export class DetailDathangComponent {
     'masp',
     'dvt',
     'sldat',
-    'slgiao',
+    // 'slgiao',
     'slnhan',
     'gianhap',
     'ttnhan',
@@ -562,7 +569,7 @@ export class DetailDathangComponent {
     masp: 'Mã SP',
     dvt: 'Đơn Vị Tính',
     sldat: 'SL Đặt',
-    slgiao: 'SL Giao',
+    // slgiao: 'SL Giao',
     slnhan: 'SL Nhận',
     gianhap: 'Giá Nhập',
     ttnhan: 'Tổng Tiền',
@@ -774,6 +781,23 @@ export class DetailDathangComponent {
       .updateDathang(this.DetailDathang())
       .then((res: any) => {
         this._snackBar.open('Đã Nhận Hàng Thành Công', '', {
+          duration: 1000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+        this.isEdit.update((value) => !value);
+      });
+  }
+  Dathang() {
+    this.DetailDathang.update((v: any) => {
+      v.status = 'dadat';
+      return v;
+    });
+    this._DathangService
+      .updateDathang(this.DetailDathang())
+      .then((res: any) => {
+        this._snackBar.open('Về Đặt Hàng Thành Công', '', {
           duration: 1000,
           horizontalPosition: 'end',
           verticalPosition: 'top',

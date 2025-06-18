@@ -4,8 +4,9 @@
   </button>
   <div class="font-bold truncate">{{DetailDathang().madncc||'Không có mã đặt hàng'}} </div>
   <div class="flex flex-row space-x-2 items-center">
-    <button *ngIf="DetailDathang().status=='dadat'" mat-flat-button color="primary" [disabled]="DetailDathang().status=='dagiao'" (click)="GiaoDonhang()"> Đã Giao</button>
-    <button *ngIf="DetailDathang().status=='dagiao'" mat-flat-button color="primary" [disabled]="DetailDathang().status=='danhan'" (click)="Danhanhang()"> Đã Nhận</button>
+    <!-- <button *ngIf="DetailDathang().status=='dadat'" mat-flat-button color="primary" [disabled]="DetailDathang().status=='dagiao'" (click)="GiaoDonhang()"> Đã Giao</button> -->
+    <button *ngIf="DetailDathang().status=='danhan'" mat-flat-button color="primary" (click)="Dathang()"> Về  Đặt</button>
+    <button *ngIf="DetailDathang().status=='dadat'" mat-flat-button color="primary" [disabled]="DetailDathang().status=='danhan'" (click)="Danhanhang()"> Đã Nhận</button>
     <button mat-icon-button color="primary" (click)="PrintDathang()"><mat-icon>image</mat-icon></button>
     <button mat-icon-button color="primary" (click)="printContent()">
       <mat-icon>print</mat-icon>
@@ -163,9 +164,9 @@
                            </div>
                            </div>
                </mat-menu>
-                <button [disabled]="!isEdit()" matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
+                <!-- <button [disabled]="!isEdit()" matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
                   <mat-icon>cloud_download</mat-icon>
-              </button>
+              </button> -->
                    <button [disabled]="!isEdit()" matTooltip="Làm Trống Giỏ Hàng" (click)="EmptyCart()" color="warn" mat-icon-button>
                      <mat-icon>delete</mat-icon>
                  </button>
@@ -193,8 +194,8 @@
                    <div *ngIf="dathangId()==='new' || DetailDathang().status==='dadat'" class="flex flex-row space-x-1 items-center">
                     <div
                       [contentEditable]="true"
-                      (blur)="UpdateBlurValue($event,idx, row, 'sldat','number')"
-                      (keydown.enter)="EnterUpdateValue($event,idx, row, 'sldat','number')"
+                      (blur)="UpdateBlurValue($event,row.order, row, 'sldat','number')"
+                      (keydown.enter)="EnterUpdateValue($event,row.order, row, 'sldat','number')"
                       class="sldat-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                     >
                     {{ row[column]||0|number:'1.0-2' }}
@@ -209,8 +210,8 @@
                     @case ('slgiao') {
                     <div *ngIf="DetailDathang().status === 'dadat'"
                       [contentEditable]="true"
-                      (blur)="UpdateBlurValue($event,idx, row, 'slgiao','number')"
-                      (keydown.enter)="EnterUpdateValue($event,idx, row, 'slgiao','number')"
+                      (blur)="UpdateBlurValue($event,row.order, row, 'slgiao','number')"
+                      (keydown.enter)="EnterUpdateValue($event,row.order, row, 'slgiao','number')"
                       class="slgiao-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                     >
                     {{ row[column]||0 }}
@@ -220,39 +221,49 @@
                      </div>
                     }
                     @case ('slnhan') {
-                    <div *ngIf="DetailDathang().status === 'dagiao'"
+                    <div *ngIf="DetailDathang().status === 'dadat'"
                       [contentEditable]="true"
-                      (blur)="UpdateBlurValue($event,idx, row, 'slnhan','number')"
-                      (keydown.enter)="EnterUpdateValue($event,idx, row, 'slnhan','number')"
+                      (blur)="UpdateBlurValue($event,row.order, row, 'slnhan','number')"
+                      (keydown.enter)="EnterUpdateValue($event,row.order, row, 'slnhan','number')"
                       class="slnhan-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                     >
                     {{ row[column]||0 }}
                      </div>
-                    <div *ngIf="DetailDathang().status !== 'dagiao'">
+                    <div *ngIf="DetailDathang().status !== 'dadat'">
                        {{ row[column]||0|number:'1.0-2' }}
                      </div>
                     }
                     @case ('gianhap') {
-                    <div>{{ row[column]||0|number:'1.0-2' }}</div>
-                    }
-                    @case ('ttnhan') {
-                    <div *ngIf="DetailDathang().status === 'dagiao'"
+                    <div *ngIf="DetailDathang().status === 'dadat'"
                       [contentEditable]="true"
-                      (blur)="UpdateBlurValue($event,idx, row, 'ttnhan','number')"
-                      (keydown.enter)="EnterUpdateValue($event,idx, row, 'ttnhan','number')"
-                      class="ttnhan-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                      (blur)="UpdateBlurValue($event,row.order, row, 'gianhap','number')"
+                      (keydown.enter)="EnterUpdateValue($event,row.order, row, 'gianhap','number')"
+                      class="gianhap-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                     >
                     {{ row[column]||0 }}
                      </div>
-                    <div *ngIf="DetailDathang().status !== 'dagiao'">
+                    <div *ngIf="DetailDathang().status !== 'dadat'">
+                       {{ row[column]||0|number:'1.0-2' }}
+                     </div>
+                    }
+                    @case ('ttnhan') {
+                    <!-- <div *ngIf="DetailDathang().status === 'datdat'"
+                      [contentEditable]="true"
+                      (blur)="UpdateBlurValue($event,row.order, row, 'ttnhan','number')"
+                      (keydown.enter)="EnterUpdateValue($event,row.order, row, 'ttnhan','number')"
+                      class="ttnhan-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                    >
+                    {{ row[column]||0 }}
+                     </div> -->
+                    <div>
                        {{ row[column]||0|number:'1.0-2' }}
                      </div>
                     }
                     @case ('ghichu') {
                     <div
                       [contentEditable]="true"
-                      (blur)="UpdateBlurValue($event,idx, row, 'ghichu','string')"
-                      (keydown.enter)="EnterUpdateValue($event,idx, row, 'ghichu','string')"
+                      (blur)="UpdateBlurValue($event,row.order, row, 'ghichu','string')"
+                      (keydown.enter)="EnterUpdateValue($event,row.order, row, 'ghichu','string')"
                       class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                     >
                     {{ row[column]||'' }}
