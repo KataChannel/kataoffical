@@ -492,7 +492,7 @@ export class DetailPhieugiaohangComponent {
         newWindow.document.write(`
           <html>
           <head>
-            <title>In Bảng</title>
+            <title></title>
              ${tailwindCSS}
             <style>
               body { font-size: 12px; font-family: Arial, sans-serif; }
