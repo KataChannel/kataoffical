@@ -90,13 +90,13 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     }
     private async createNhacungcap() {
       try {
-        await this._NhacungcapService.CreateNhacungcap(this.DetailNhacungcap());
-        this._snackBar.open('Tạo Mới Thành Công', '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
+     await this._NhacungcapService.CreateNhacungcap(this.DetailNhacungcap());
+        // this._snackBar.open('Tạo Mới Thành Công', '', {
+        //   duration: 1000,
+        //   horizontalPosition: 'end',
+        //   verticalPosition: 'top',
+        //   panelClass: ['snackbar-success'],
+        // });
         this.isEdit.update(value => !value);
       } catch (error) {
         console.error('Lỗi khi tạo nhacungcap:', error);
@@ -158,9 +158,11 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     ListSanpham:any=[]
     FilterSanpham:any =[]
     ChosenListSanpham:any =[]
-        doSearch(event: any) {
-          this.FilterSanpham = this.ListSanpham.filter((v: any) => removeVietnameseAccents(v.title).includes(event.target.value.toLowerCase())||v.title.toLowerCase().includes(event.target.value.toLowerCase())); 
-        }
+     async doSearch(event: any) {
+      const query = event.target.value.toLowerCase();
+      await this._SanphamService.getSanphamBy({subtitle: query,title: query,pageSize: 1000});
+      this.FilterSanpham = this._SanphamService.ListSanpham();
+     }
         ChosenAll() {
           this.FilterSanpham.forEach((item: any) => {
           const isItemChosen = this.ChosenListSanpham.some((chosenItem:any) => chosenItem.id === item.id);
@@ -174,8 +176,9 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
         EmptyFiter() {
          this.ChosenListSanpham = [];
         }
-        ResetFilter(){
-         this.ChosenListSanpham = this.ListSanpham;
+        async ResetFilter(){
+         await this._SanphamService.getSanphamBy({subtitle: '',title: '',pageSize: 1000});
+         this.ChosenListSanpham = this._SanphamService.ListSanpham();
         }
         ChosenItem(item: any) {
           const isItemInFilterList = this.ChosenListSanpham.some((v: any) => v.id === item.id);

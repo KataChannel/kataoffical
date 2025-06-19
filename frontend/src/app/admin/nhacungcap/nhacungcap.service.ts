@@ -349,6 +349,8 @@ export class NhacungcapService {
   }
 
   private handleError(status: number): void {
+    console.log(`Error: ${status}`);
+    
     let message = 'Lỗi không xác định';
     let panelClass = 'snackbar-error';
     switch (status) {
