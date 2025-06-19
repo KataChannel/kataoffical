@@ -13,6 +13,10 @@ export class DonhangService {
   ) { }
   ListDonhang = signal<any[]>([]);
   DetailDonhang = signal<any>({});
+  page = signal<number>(1);
+  pageCount = signal<number>(1);
+  total = signal<number>(0);
+  pageSize = signal<number>(50);
   donhangId = signal<string | null>(null);
   setDonhangId(id: string | null) {
     this.donhangId.set(id);
@@ -110,6 +114,10 @@ export class DonhangService {
       }
       const data = await response.json();           
       this.ListDonhang.set(data.data)
+      this.page.set(data.pageNumber);
+      this.pageCount.set(data.totalPages);
+      this.total.set(data.total);
+      this.pageSize.set(data.pageSize);
       return data
     } catch (error) {
       return console.error(error);

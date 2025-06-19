@@ -17,6 +17,11 @@ export class SanphamController {
   import(@Body() data: any) {
     return this.sanphamService.import(data);
   }
+  @Post('banggiamacdinh')
+  @Audit({entity: 'Bang Gia Mac Dinh', action: AuditAction.CREATE, includeResponse: true})
+  banggiamacdinh(@Body() data: any) {
+    return this.sanphamService.banggiamacdinh(data);
+  }
   @Post('findby')
   async findby(@Body() param: any) {
     const result = await this.sanphamService.findby(param);

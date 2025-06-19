@@ -63,11 +63,19 @@ async function main() {
   //   },
   // });
 
-  await prisma.tonKho.updateMany({
-    data: {
-      slchonhap: 0,
-    },
+  const donhangsanphams = await prisma.donhangsanpham.findMany({
+    select: { id: true, sldat: true }
   });
+
+  for (const item of donhangsanphams) {
+    await prisma.donhangsanpham.update({
+      where: { id: item.id },
+      data: {
+        slgiao: item.sldat,
+        slnhan: item.sldat,
+      },
+    });
+  }
 
 
 }

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, computed, effect, inject, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, computed, effect, inject, signal, ViewChild } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -89,13 +89,17 @@ export class ListPhieugiaohangComponent {
   _snackBar: MatSnackBar = inject(MatSnackBar);
   isSearch: boolean = false;
   CountItem: any = 0;
+  page = signal<number>(1);
+  pageCount = signal<number>(1);
+  total = signal<number>(0);
+  pageSize = signal<number>(50);
   Trangthaidon:any = TrangThaiDon 
   SearchParams: any = {
       Batdau: moment().toDate(),
       Ketthuc: moment().toDate(),
       Type: 'donsi',
       Status:['dadat','dagiao'],
-      pageSize:100
+      pageSize:9999
     };
     ListDate: any[] = [
       { id: 1, Title: '1 Ngày', value: 'day' },
@@ -137,9 +141,11 @@ export class ListPhieugiaohangComponent {
     this.paginator._intl.firstPageLabel = 'Trang Đầu';
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
-  applyFilter(event: Event) {
+  async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
+    this.SearchParams.query = filterValue
+    await this._DonhangService.searchDonhang(this.SearchParams);
+    this.dataSource.data = this.Listphieugiaohang();
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }

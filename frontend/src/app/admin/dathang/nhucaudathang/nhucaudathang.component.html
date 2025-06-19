@@ -138,6 +138,26 @@
                             {{ row[column]}}
                         </span>
                         }
+                        @case ('goiy') {
+                        <span class="max-w- line-clamp-4 text-end">
+                            {{ row[column]|number:'1.0-2'}}
+                        </span>
+                        }
+                        @case ('slton') {
+                        <span class="max-w- line-clamp-4 text-end">
+                            {{ row[column]|number:'1.0-2'}}
+                        </span>
+                        }
+                        @case ('slchogiao') {
+                        <span class="max-w- line-clamp-4 text-end">
+                            {{ row[column]|number:'1.0-2'}}
+                        </span>
+                        }
+                        @case ('slchonhap') {
+                        <span class="max-w- line-clamp-4 text-end">
+                            {{ row[column]|number:'1.0-2'}}
+                        </span>
+                        }
                         @case ('isActive') {
                         <span class="max-w- line-clamp-4">
                             @if (row[column]) {

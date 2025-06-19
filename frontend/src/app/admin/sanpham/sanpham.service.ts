@@ -32,6 +32,29 @@ export class SanphamService {
     timeout: 5000, // Timeout 5s
   });
 
+  async Banggiamacdinh(dulieu: any) {
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/sanpham/banggiamacdinh`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+          this.handleError(response.status);
+        }
+        this.getAllSanpham();
+        return data;
+    } catch (error) {
+        return console.error(error);
+    }
+  }
   async ImportSanpham(dulieu: any) {
     try {
       const options = {

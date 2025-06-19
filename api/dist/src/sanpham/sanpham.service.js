@@ -28,7 +28,11 @@ let SanphamService = class SanphamService {
             const lastUpdated = await this.prisma.sanpham.aggregate({
                 _max: { updatedAt: true },
             });
-            return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
+            return {
+                updatedAt: lastUpdated._max.updatedAt
+                    ? new Date(lastUpdated._max.updatedAt).getTime()
+                    : 0,
+            };
         }
         catch (error) {
             throw error;
@@ -94,7 +98,11 @@ let SanphamService = class SanphamService {
                         action = 'created';
                     }
                 }
-                importResults.push({ masp: sanpham.masp || 'generated', status: 'success', action });
+                importResults.push({
+                    masp: sanpham.masp || 'generated',
+                    status: 'success',
+                    action,
+                });
             }
             catch (error) {
                 const importData = {
@@ -109,7 +117,11 @@ let SanphamService = class SanphamService {
                     type: 'sanpham',
                 };
                 this._ImportdataService.create(importData);
-                importResults.push({ masp: sanpham.masp || 'unknown', status: 'failed', error: error.message });
+                importResults.push({
+                    masp: sanpham.masp || 'unknown',
+                    status: 'failed',
+                    error: error.message,
+                });
             }
         }
         const importData = {
@@ -124,6 +136,38 @@ let SanphamService = class SanphamService {
         this._ImportdataService.create(importData);
         return { message: 'Import completed', results: importResults };
     }
+    async banggiamacdinh(item) {
+        try {
+            const banggia = await this.prisma.banggia.findUnique({
+                where: { id: item.banggiaid },
+                include: { sanpham: true },
+            });
+            if (!banggia) {
+                return {
+                    message: 'Bảng giá không tồn tại',
+                    status: 'error',
+                };
+            }
+            const updateOperations = banggia.sanpham.map((sp) => this.prisma.sanpham.update({
+                where: { id: sp.sanphamId },
+                data: { giaban: sp.giaban },
+            }));
+            await this.prisma.$transaction(updateOperations);
+            this._SocketGateway.sendSanphamUpdate();
+            return {
+                message: `Đã cập nhật giá bán cho ${banggia.sanpham.length} sản phẩm từ bảng giá mặc định`,
+                status: 'success',
+                updatedCount: banggia.sanpham.length,
+            };
+        }
+        catch (error) {
+            this._ErrorlogsService.logError('Lỗi cập nhật bảng giá mặc định', {
+                error: error.message,
+                banggiaid: item.banggiaid,
+            });
+            throw error;
+        }
+    }
     async reorderSanphams(sanphamIds) {
         for (let i = 0; i < sanphamIds.length; i++) {
             await this.prisma.sanpham.update({
@@ -135,7 +179,7 @@ let SanphamService = class SanphamService {
     async findAll(query) {
         console.log('findAllSanpham query:', query);
         try {
-            const { page, pageSize, sortBy, sortOrder, search, subtitle, priceMin, priceMax, category } = query;
+            const { page, pageSize, sortBy, sortOrder, search, subtitle, priceMin, priceMax, category, } = query;
             const numericPage = Number(page || 1);
             const numericPageSize = Number(pageSize || 50);
             const skip = (numericPage - 1) * numericPageSize;
@@ -193,8 +237,10 @@ let SanphamService = class SanphamService {
             const result = tonkhos.filter((tonkho) => {
                 const sanpham = sanphams.find((sp) => sp.id === tonkho.sanphamId);
                 if (sanpham) {
-                    const goiy = (Number(tonkho.slton) - Number(tonkho.slchogiao) + Number(tonkho.slchonhap))
-                        * (1 + Number(sanpham.haohut) / 100);
+                    const goiy = (Number(tonkho.slton) -
+                        Number(tonkho.slchogiao) +
+                        Number(tonkho.slchonhap)) *
+                        (1 + Number(sanpham.haohut) / 100);
                     goiy < 0;
                     tonkho.goiy = goiy;
                     return goiy < 0;
@@ -229,13 +275,19 @@ let SanphamService = class SanphamService {
         if (where.subtitle || where.name || where.title) {
             whereClause.OR = [];
             if (where.subtitle) {
-                whereClause.OR.push({ subtitle: { contains: where.subtitle, mode: 'insensitive' } });
+                whereClause.OR.push({
+                    subtitle: { contains: where.subtitle, mode: 'insensitive' },
+                });
             }
             if (where.name) {
-                whereClause.OR.push({ name: { contains: where.name, mode: 'insensitive' } });
+                whereClause.OR.push({
+                    name: { contains: where.name, mode: 'insensitive' },
+                });
             }
             if (where.title) {
-                whereClause.OR.push({ title: { contains: where.title, mode: 'insensitive' } });
+                whereClause.OR.push({
+                    title: { contains: where.title, mode: 'insensitive' },
+                });
             }
         }
         if (where.startDate || where.endDate) {

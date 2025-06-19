@@ -17,12 +17,16 @@ export class SanphamService {
   // async create(data: any) {
   //   return this.prisma.sanpham.create({ data });
   // }
-    async getLastUpdated(): Promise<{ updatedAt: number }> {
+  async getLastUpdated(): Promise<{ updatedAt: number }> {
     try {
       const lastUpdated = await this.prisma.sanpham.aggregate({
         _max: { updatedAt: true },
       });
-      return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
+      return {
+        updatedAt: lastUpdated._max.updatedAt
+          ? new Date(lastUpdated._max.updatedAt).getTime()
+          : 0,
+      };
     } catch (error) {
       throw error;
     }
@@ -77,7 +81,12 @@ export class SanphamService {
   }
 
   async import(data: any[]) {
-    const importResults: { masp: any; status: string; action?: string; error?: string }[] = [];
+    const importResults: {
+      masp: any;
+      status: string;
+      action?: string;
+      error?: string;
+    }[] = [];
     // Dữ liệu gửi lên là list sản phẩm
     for (const sanpham of data) {
       try {
@@ -105,22 +114,30 @@ export class SanphamService {
             action = 'created';
           }
         }
-        importResults.push({ masp: sanpham.masp || 'generated', status: 'success', action });
+        importResults.push({
+          masp: sanpham.masp || 'generated',
+          status: 'success',
+          action,
+        });
       } catch (error) {
         // Lưu lại lịch sử lỗi import cho sản phẩm đang xử lý
-        const importData =  {
-            caseDetail: {
-              errorMessage: error.message,
-              errorStack: error.stack,
-              additionalInfo: 'Error during product import process',
-            },
-            order: 1, // cập nhật nếu cần theo thứ tự của bạn
-            createdBy: 'system', // thay bằng ID người dùng thực nếu có
-            title: `Import Sản Phẩm ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
-            type: 'sanpham',
-          };
-        this._ImportdataService.create(importData );
-        importResults.push({ masp: sanpham.masp || 'unknown', status: 'failed', error: error.message });
+        const importData = {
+          caseDetail: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+            additionalInfo: 'Error during product import process',
+          },
+          order: 1, // cập nhật nếu cần theo thứ tự của bạn
+          createdBy: 'system', // thay bằng ID người dùng thực nếu có
+          title: `Import Sản Phẩm ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+          type: 'sanpham',
+        };
+        this._ImportdataService.create(importData);
+        importResults.push({
+          masp: sanpham.masp || 'unknown',
+          status: 'failed',
+          error: error.message,
+        });
       }
     }
     // Lưu lại lịch sử tổng hợp quá trình import
@@ -137,6 +154,48 @@ export class SanphamService {
     return { message: 'Import completed', results: importResults };
   }
 
+  async banggiamacdinh(item: { banggiaid: string }): Promise<{
+    message: string;
+    status: 'success' | 'error';
+    updatedCount?: number;
+  }> {
+    try {
+      const banggia = await this.prisma.banggia.findUnique({
+        where: { id: item.banggiaid },
+        include: { sanpham: true },
+      });
+
+      if (!banggia) {
+        return {
+          message: 'Bảng giá không tồn tại',
+          status: 'error',
+        };
+      }
+
+      const updateOperations = banggia.sanpham.map((sp) =>
+        this.prisma.sanpham.update({
+          where: { id: sp.sanphamId },
+          data: { giaban: sp.giaban },
+        })
+      );
+
+      await this.prisma.$transaction(updateOperations);
+
+      this._SocketGateway.sendSanphamUpdate();
+
+      return {
+        message: `Đã cập nhật giá bán cho ${banggia.sanpham.length} sản phẩm từ bảng giá mặc định`,
+        status: 'success',
+        updatedCount: banggia.sanpham.length,
+      };
+    } catch (error) {
+      this._ErrorlogsService.logError('Lỗi cập nhật bảng giá mặc định', {
+        error: error.message,
+        banggiaid: item.banggiaid,
+      });
+      throw error;
+    }
+  }
 
   async reorderSanphams(sanphamIds: string[]) {
     // Update the order of each sanpham based on its position in the array
@@ -159,22 +218,32 @@ export class SanphamService {
   //     throw error;
   //   }
   // }
-   async findAll(query: any) {
+  async findAll(query: any) {
     console.log('findAllSanpham query:', query);
 
     try {
-      const { page, pageSize, sortBy, sortOrder, search, subtitle, priceMin, priceMax, category } = query;
+      const {
+        page,
+        pageSize,
+        sortBy,
+        sortOrder,
+        search,
+        subtitle,
+        priceMin,
+        priceMax,
+        category,
+      } = query;
       const numericPage = Number(page || 1); // Default to page 1 if not provided
       const numericPageSize = Number(pageSize || 50);
       const skip = (numericPage - 1) * numericPageSize;
       const take = numericPageSize;
       const where: any = {};
       console.log(subtitle);
-      
+
       // Xử lý lọc theo trường cụ thể
       if (subtitle) {
         where.subtitle = { contains: subtitle, mode: 'insensitive' };
-      }      
+      }
       if (category) {
         where.category = { equals: category, mode: 'insensitive' };
       }
@@ -202,7 +271,7 @@ export class SanphamService {
         }),
         this.prisma.sanpham.count({ where }),
       ]);
-      
+
       return {
         data: sanphams,
         total: Number(total),
@@ -216,8 +285,6 @@ export class SanphamService {
     }
   }
 
-
-
   async nhucaudathang() {
     try {
       const sanphams = await this.prisma.sanpham.findMany();
@@ -226,8 +293,10 @@ export class SanphamService {
         const sanpham = sanphams.find((sp: any) => sp.id === tonkho.sanphamId);
         if (sanpham) {
           const goiy =
-            (Number(tonkho.slton) - Number(tonkho.slchogiao) + Number(tonkho.slchonhap))
-            * (1 + Number(sanpham.haohut) / 100);
+            (Number(tonkho.slton) -
+              Number(tonkho.slchogiao) +
+              Number(tonkho.slchonhap)) *
+            (1 + Number(sanpham.haohut) / 100);
           goiy < 0;
           tonkho.goiy = goiy;
           return goiy < 0;
@@ -254,9 +323,7 @@ export class SanphamService {
     }
   }
 
-
-  async findby(param:any) {
-      
+  async findby(param: any) {
     const { page = 1, pageSize = 50, isOne, ...where } = param;
     const whereClause: any = {};
     if (where.id) {
@@ -265,52 +332,55 @@ export class SanphamService {
     if (where.subtitle || where.name || where.title) {
       whereClause.OR = [];
       if (where.subtitle) {
-      whereClause.OR.push({ subtitle: { contains: where.subtitle, mode: 'insensitive' } });
+        whereClause.OR.push({
+          subtitle: { contains: where.subtitle, mode: 'insensitive' },
+        });
       }
       if (where.name) {
-      whereClause.OR.push({ name: { contains: where.name, mode: 'insensitive' } });
+        whereClause.OR.push({
+          name: { contains: where.name, mode: 'insensitive' },
+        });
       }
       if (where.title) {
-      whereClause.OR.push({ title: { contains: where.title, mode: 'insensitive' } });
+        whereClause.OR.push({
+          title: { contains: where.title, mode: 'insensitive' },
+        });
       }
     }
     if (where.startDate || where.endDate) {
       whereClause.createdAt = {};
       if (where.startDate) whereClause.createdAt.gte = where.startDate;
       if (where.endDate) whereClause.createdAt.lte = where.endDate;
-    }    
+    }
     if (isOne) {
       const oneResult = await this.prisma.sanpham.findFirst({
-      where: whereClause,
-      include: { banggia: true },
-      orderBy: { createdAt: 'desc' },
+        where: whereClause,
+        include: { banggia: true },
+        orderBy: { createdAt: 'desc' },
       });
       return oneResult;
+    } else {
+      const skip = (page - 1) * pageSize;
+      const [sanphams, total] = await Promise.all([
+        this.prisma.sanpham.findMany({
+          where: whereClause,
+          include: { banggia: true },
+          skip,
+          take: pageSize,
+          orderBy: { createdAt: 'desc' },
+        }),
+        this.prisma.sanpham.count({ where: whereClause }),
+      ]);
+
+      return {
+        data: sanphams,
+        page,
+        pageSize,
+        total,
+        pageCount: Math.ceil(total / pageSize),
+      };
     }
-    else {
-    const skip = (page - 1) * pageSize;
-    const [sanphams, total] = await Promise.all([
-      this.prisma.sanpham.findMany({
-      where: whereClause,
-      include: { banggia: true },
-      skip,
-      take: pageSize,
-      orderBy: { createdAt: 'desc' },
-      }),
-      this.prisma.sanpham.count({ where: whereClause }),
-    ]);
-
-    return {
-      data: sanphams,
-      page,
-      pageSize,
-      total,
-      pageCount: Math.ceil(total / pageSize),
-    };
-    }
-  } 
-
-
+  }
 
   async findOne(id: string) {
     const sanpham = await this.prisma.sanpham.findUnique({
@@ -391,7 +461,7 @@ export class SanphamService {
       data: {
         ...rest,
         Nhacungcap: {
-          set: Nhacungcap.map((nc:any) => ({ id: nc.id })), // Gán lại danh sách nhà cung cấp
+          set: Nhacungcap.map((nc: any) => ({ id: nc.id })), // Gán lại danh sách nhà cung cấp
         },
       },
     });

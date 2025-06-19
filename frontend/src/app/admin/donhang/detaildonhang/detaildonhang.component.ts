@@ -310,7 +310,7 @@ export class DetailDonhangComponent {
     this.DetailDonhang.update((v: any) => {
       if (index !== null) {
         if (field === 'sldat') {
-          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = newValue;
+          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
           // Find the next input to focus on
           const inputs = document.querySelectorAll('.sldat-input')as NodeListOf<HTMLInputElement>;
               if (index < this.dataSource().filteredData.length - 1) {
@@ -398,9 +398,12 @@ export class DetailDonhangComponent {
     this.DetailDonhang.update((v: any) => {
       if (index !== null) {
         if (field === 'sldat') {
-          v.sanpham[index]['sldat'] = newValue;
-          v.sanpham[index]['slgiao'] = newValue;
-          // v.sanpham[index]['slnhan'] = newValue;
+          v.sanpham[index] = {
+            ...v.sanpham[index],
+            sldat: newValue,
+            slgiao: newValue,
+            slnhan: newValue
+          };
         } else if (field === 'slgiao') {
           if (newValue < v.sanpham[index]['sldat']) {
             v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];

@@ -64,7 +64,7 @@ let DonhangService = class DonhangService {
         }
     }
     async search(params) {
-        const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1 } = params;
+        const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, query } = params;
         const where = {
             ngaygiao: {
                 gte: Batdau
@@ -79,6 +79,12 @@ let DonhangService = class DonhangService {
                 ? { in: params.Status }
                 : params.Status,
         };
+        if (query) {
+            where.OR = [
+                { madonhang: { contains: query, mode: 'insensitive' } },
+                { khachhang: { name: { contains: query, mode: 'insensitive' } } }
+            ];
+        }
         const [total, donhangs] = await Promise.all([
             this.prisma.donhang.count({ where }),
             this.prisma.donhang.findMany({
@@ -100,15 +106,13 @@ let DonhangService = class DonhangService {
             ...donhang,
             sanpham: sanpham.map((item) => {
                 const priceFromBanggia = khachhang.banggia
-                    ? khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)
-                        ?.giaban
-                    : undefined;
+                    ? khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
+                    : 0;
+                const giaban = priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
                 return {
                     ...item.sanpham,
                     idSP: item.idSP,
-                    giaban: priceFromBanggia !== undefined
-                        ? priceFromBanggia
-                        : item.sanpham.giaban,
+                    giaban: giaban,
                     sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
                     slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
                     slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
@@ -190,13 +194,12 @@ let DonhangService = class DonhangService {
             sanpham: result.sanpham.map((item) => {
                 const priceFromBanggia = result.khachhang.banggia
                     ? result.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
-                    : undefined;
+                    : 0;
+                const giaban = priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
                 return {
                     ...item.sanpham,
                     idSP: item.idSP,
-                    giaban: priceFromBanggia !== undefined
-                        ? priceFromBanggia
-                        : item.sanpham.giaban,
+                    giaban: giaban,
                     sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
                     slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
                     slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
@@ -226,13 +229,12 @@ let DonhangService = class DonhangService {
             sanpham: donhang.sanpham.map((item) => {
                 const priceFromBanggia = donhang.khachhang.banggia
                     ? donhang.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
-                    : undefined;
+                    : 0;
+                const giaban = priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
                 return {
                     ...item.sanpham,
                     idSP: item.idSP,
-                    giaban: priceFromBanggia !== undefined
-                        ? priceFromBanggia
-                        : item.sanpham.giaban,
+                    giaban: giaban,
                     sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
                     slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
                     slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
@@ -285,13 +287,12 @@ let DonhangService = class DonhangService {
             sanpham: donhang.sanpham.map((item) => {
                 const priceFromBanggia = donhang.khachhang.banggia
                     ? donhang.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
-                    : undefined;
+                    : 0;
+                const giaban = priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
                 return {
                     ...item.sanpham,
                     idSP: item.idSP,
-                    giaban: priceFromBanggia !== undefined
-                        ? priceFromBanggia
-                        : item.sanpham.giaban,
+                    giaban: giaban,
                     sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
                     slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
                     slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
@@ -321,15 +322,14 @@ let DonhangService = class DonhangService {
         const result = {
             ...donhang,
             sanpham: donhang.sanpham.map((item) => {
-                const productGiabanFromBanggia = donhang.khachhang.banggia
+                const priceFromBanggia = donhang.khachhang.banggia
                     ? donhang.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
-                    : undefined;
+                    : 0;
+                const giaban = priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
                 return {
                     ...item.sanpham,
                     idSP: item.idSP,
-                    giaban: productGiabanFromBanggia !== undefined
-                        ? productGiabanFromBanggia
-                        : item.sanpham.giaban,
+                    giaban: giaban,
                     sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
                     slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
                     slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
@@ -345,29 +345,51 @@ let DonhangService = class DonhangService {
     }
     async ImportDonhangOld(dulieu) {
         const rawData = await Promise.all(dulieu.map(async (v) => {
-            const mappedSanpham = await Promise.all(v.sanpham.map(async (item) => {
-                const sp = await this.prisma.sanpham.findFirst({
-                    where: { masp: item.ItemCode },
-                });
+            try {
+                const mappedSanpham = await Promise.all(v.sanpham.map(async (item) => {
+                    try {
+                        const sp = await this.prisma.sanpham.findFirst({
+                            where: { masp: item.ItemCode },
+                        });
+                        if (!sp) {
+                            console.warn(`Sản phẩm với mã ${item.ItemCode} không tồn tại, bỏ qua`);
+                            return null;
+                        }
+                        return {
+                            id: sp.id,
+                            sldat: parseFloat((item.Quantity ?? 0).toFixed(2)),
+                            slgiao: parseFloat((item.Quantity ?? 0).toFixed(2)),
+                            slnhan: parseFloat((item.Quantity ?? 0).toFixed(2)),
+                            slhuy: 0,
+                            ttdat: 0,
+                            ttgiao: 0,
+                            ttnhan: 0,
+                        };
+                    }
+                    catch (error) {
+                        console.warn(`Lỗi xử lý sản phẩm ${item.ItemCode}, bỏ qua:`, error, item);
+                        return null;
+                    }
+                }));
+                const validSanpham = mappedSanpham.filter(item => item !== null);
+                if (validSanpham.length === 0) {
+                    console.warn(`Đơn hàng ${v.tenkh} không có sản phẩm hợp lệ, bỏ qua`);
+                    return null;
+                }
                 return {
-                    id: sp?.id,
-                    sldat: parseFloat((item.Quantity ?? 0).toFixed(2)),
-                    slgiao: 0,
-                    slnhan: 0,
-                    slhuy: 0,
-                    ttdat: 0,
-                    ttgiao: 0,
-                    ttnhan: 0,
+                    title: `Import ${v.tenkh} - ${moment().format('DD_MM_YYYY')}`,
+                    type: 'donsi',
+                    ngaygiao: new Date(v.ngaygiao) || new Date(),
+                    khachhangId: v.khachhangId,
+                    sanpham: validSanpham,
                 };
-            }));
-            return {
-                title: `Import ${v.tenkh} - ${moment().format('DD_MM_YYYY')}`,
-                type: 'donsi',
-                ngaygiao: new Date(v.ngaygiao) || new Date(),
-                khachhangId: v.khachhangId,
-                sanpham: mappedSanpham,
-            };
+            }
+            catch (error) {
+                console.warn(`Lỗi xử lý đơn hàng ${v.tenkh}, bỏ qua:`, error);
+                return null;
+            }
         }));
+        const validRawData = rawData.filter(item => item !== null);
         let success = 0;
         let fail = 0;
         let skip = 0;

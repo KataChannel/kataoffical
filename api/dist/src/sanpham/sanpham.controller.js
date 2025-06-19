@@ -27,6 +27,9 @@ let SanphamController = class SanphamController {
     import(data) {
         return this.sanphamService.import(data);
     }
+    banggiamacdinh(data) {
+        return this.sanphamService.banggiamacdinh(data);
+    }
     async findby(param) {
         const result = await this.sanphamService.findby(param);
         return result;
@@ -80,6 +83,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], SanphamController.prototype, "import", null);
+__decorate([
+    (0, common_1.Post)('banggiamacdinh'),
+    (0, audit_decorator_1.Audit)({ entity: 'Bang Gia Mac Dinh', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], SanphamController.prototype, "banggiamacdinh", null);
 __decorate([
     (0, common_1.Post)('findby'),
     __param(0, (0, common_1.Body)()),

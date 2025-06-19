@@ -25,6 +25,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
 import { DonhangService } from '../../donhang/donhang.service';
 import { DathangService } from '../../dathang/dathang.service';
+import { _isNumberValue } from '@angular/cdk/coercion';
 @Component({
   selector: 'app-listbanggia',
   templateUrl: './listbanggia.component.html',
@@ -50,6 +51,7 @@ import { DathangService } from '../../dathang/dathang.service';
 export class ListBanggiaComponent {
   Detail: any = {};
   displayedColumns: string[] = [
+    'mabanggia',
     'title',
     'type',
     'sanpham',
@@ -62,6 +64,7 @@ export class ListBanggiaComponent {
     'createdAt',
   ];
   ColumnName: any = {
+    mabanggia: 'Mã Bảng Giá',
     title: 'Tiêu Đề',
     type: 'Loại',
     sanpham: 'Sản Phẩm',
@@ -124,6 +127,23 @@ export class ListBanggiaComponent {
   }
   async refresh() {
    await this._BanggiaService.getAllBanggia();
+  }
+  async Banggiamacdinh(item: any) {
+   const result = await this._SanphamService.Banggiamacdinh({banggiaid:item.id}); 
+
+  if (result && result.status === 'success') {
+    this._snackBar.open(result.message, 'Đóng', {
+      horizontalPosition: "end",
+      verticalPosition: "top",
+      panelClass: ['snackbar-success'],
+    });
+  } else {
+    this._snackBar.open('Có lỗi xảy ra khi cập nhật giá bán', 'Đóng', {
+      horizontalPosition: "end",
+      verticalPosition: "top",
+      panelClass: ['snackbar-error'],
+    });
+  }
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({

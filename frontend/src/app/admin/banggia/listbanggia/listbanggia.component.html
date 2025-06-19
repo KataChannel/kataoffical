@@ -117,6 +117,17 @@
                             {{ idx + 1 }}
                         </span>
                         }
+                        @case ('mabanggia') {
+                        <span class="flex max-w-40 line-clamp-4 items-center">
+                         <button class="!z-10" (click)="Banggiamacdinh(row)" mat-icon-button color="primary"><mat-icon>bookmark</mat-icon></button>
+                           <span>{{ row[column] }}</span>
+                        </span>
+                        }
+                        @case ('title') {
+                        <span class="flex max-w-40 line-clamp-4 font-bold text-blue-700">
+                           <span (click)="goToDetail(row)">{{ row[column] }}</span>
+                        </span>
+                        }
                         @case ('sanpham') {
                         <span class="max-w-40 line-clamp-4">
                            {{ row[column] }}
@@ -138,8 +149,8 @@
                         </span>
                         }
                         @case ('createdAt') {
-                        <span class="max-w-40 line-clamp-4">
-                            {{ row[column]|date:'dd/MM/yyyy'}}
+                        <span class="max-w-40 line-clamp-4 text-xs">
+                            {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
                         </span>
                         }
                         @case ('isActive') {
@@ -153,8 +164,8 @@
                         </span>
                         }
                         @case ('updatedAt') {
-                        <span class="max-w-40 line-clamp-4">
-                            {{ row[column]|date:'dd/MM/yyyy'}}
+                        <span class="max-w-40 line-clamp-4 text-xs">
+                            {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
                         </span>
                         }
                         @default {
@@ -167,7 +178,7 @@
                 </ng-container>
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{banggiaId()==row.id?'!bg-slate-200':''}}" (click)="goToDetail(row);"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{banggiaId()==row.id?'!bg-slate-200':''}}"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>

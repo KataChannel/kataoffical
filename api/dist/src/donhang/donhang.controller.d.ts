@@ -157,7 +157,7 @@ export declare class DonhangController {
     searchfield(searchParams: Record<string, any>): Promise<{
         sanpham: {
             idSP: string;
-            giaban: number;
+            giaban: number | undefined;
             sldat: number;
             slgiao: number;
             slnhan: number;
@@ -371,7 +371,7 @@ export declare class DonhangController {
     findOne(id: string): Promise<{
         sanpham: {
             idSP: string;
-            giaban: number;
+            giaban: number | undefined;
             sldat: number;
             slgiao: number;
             slnhan: number;

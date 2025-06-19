@@ -142,8 +142,8 @@
                         </span>
                         }
                         @case ('ngaygiao') {
-                        <span class="max-w-40 line-clamp-4">
-                            {{ row[column]|date:'dd/MM/yyyy'}}
+                        <span class="max-w-40 line-clamp-4 text-xs">
+                            {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
                         </span>
                         }
                         @case ('isActive') {
@@ -157,8 +157,8 @@
                         </span>
                         }
                         @case ('updatedAt') {
-                        <span class="max-w-40 line-clamp-4">
-                            {{ row[column]|date:'dd/MM/yyyy'}}
+                        <span class="max-w-40 line-clamp-4 text-xs">
+                            {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
                         </span>
                         }
                         @default {

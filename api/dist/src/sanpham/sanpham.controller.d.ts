@@ -32,6 +32,11 @@ export declare class SanphamController {
             error?: string;
         }[];
     }>;
+    banggiamacdinh(data: any): Promise<{
+        message: string;
+        status: "success" | "error";
+        updatedCount?: number;
+    }>;
     findby(param: any): Promise<({
         banggia: {
             id: string;

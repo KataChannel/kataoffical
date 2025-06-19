@@ -42,6 +42,13 @@ export declare class SanphamService {
             error?: string;
         }[];
     }>;
+    banggiamacdinh(item: {
+        banggiaid: string;
+    }): Promise<{
+        message: string;
+        status: 'success' | 'error';
+        updatedCount?: number;
+    }>;
     reorderSanphams(sanphamIds: string[]): Promise<void>;
     findAll(query: any): Promise<{
         data: {

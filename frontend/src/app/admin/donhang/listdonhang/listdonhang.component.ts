@@ -514,7 +514,7 @@ export class ListDonhangComponent {
             // tenfile: file.name.replace('.xlsx', ''),
             // tenkh: TenKH,
             ItemCode: item.ItemCode ?? '',
-            Quantity: item.Quantity ?? '',
+            Quantity: Number(item.Quantity) ?? 0,
           }));
         const itemEdit = {
           tenfile: file.name.replace('.xlsx', ''),
@@ -697,8 +697,8 @@ export class ListDonhangComponent {
           return {
             ...sp,
             sldat: parseFloat(Number(item.sldat).toFixed(2)) || 0,
-            slgiao: parseFloat(Number(item.slgiao).toFixed(2)) || 0,
-            slnhan: parseFloat(Number(item.slnhan).toFixed(2)) || 0,
+            slgiao: parseFloat(Number(item.sldat).toFixed(2)) || 0,
+            slnhan: parseFloat(Number(item.sldat).toFixed(2)) || 0,
           };
         })
       );
