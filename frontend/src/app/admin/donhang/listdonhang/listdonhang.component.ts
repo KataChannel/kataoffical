@@ -73,7 +73,6 @@ import { SharepaginationComponent } from '../../../shared/common/sharepagination
     MatDialogModule,
     MatTabsModule,
     SharepaginationComponent,
-  
   ],
 })
 export class ListDonhangComponent {
@@ -145,14 +144,13 @@ export class ListDonhangComponent {
   page = signal<number>(1);
   total = signal<number>(0);
   pageCount = signal<number>(0);
-  FilterKhachhang:any[] = [];
+  FilterKhachhang: any[] = [];
   constructor() {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
     effect(async () => {
       await this.LoadData();
-
     });
   }
   async onPageChange(event: any): Promise<void> {
@@ -162,7 +160,7 @@ export class ListDonhangComponent {
     await this.LoadData();
   }
   async LoadData() {
-    await this._KhachhangService.getKhachhangBy({page:1, pageSize:9999});
+    await this._KhachhangService.getKhachhangBy({ page: 1, pageSize: 9999 });
     const data = await this._DonhangService.searchDonhang(this.SearchParams);
     this.Listdonhang.set(data);
     if (data.data) {
@@ -462,12 +460,11 @@ export class ListDonhangComponent {
   statusDetails: any[] = [];
   ListImportData: any[] = [];
 
-  async ImporExcel(event: any) {    
+  async ImporExcel(event: any) {
     const files = Array.from(event.target.files) as File[];
     let processedCount = 0;
     let skippedCount = 0;
     let errorCount = 0;
-    
 
     // Process files sequentially
     for (let i = 0; i < files.length; i++) {
@@ -478,8 +475,8 @@ export class ListDonhangComponent {
         console.log(`Skipping temporary file: ${file.name}`);
         this._snackBar.open(`Bỏ qua file tạm: ${file.name}`, '', {
           duration: 1000,
-          horizontalPosition: "end",
-          verticalPosition: "top",
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
         });
         skippedCount++;
@@ -487,15 +484,15 @@ export class ListDonhangComponent {
           fileName: file.name,
           tenkhongdau: removeVietnameseAccents(file.name.replace('.xlsx', '')),
           status: 'Skipped',
-          message: 'File tạm thời, không xử lý'
+          message: 'File tạm thời, không xử lý',
         });
         continue;
       }
       try {
         this._snackBar.open(`Đang xử lý file: ${file.name}`, '', {
           duration: 1000,
-          horizontalPosition: "end",
-          verticalPosition: "top",
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
         });
         const TenKH = removeVietnameseAccents(file.name.replace('.xlsx', ''));
@@ -503,27 +500,34 @@ export class ListDonhangComponent {
         if (!data || !Array.isArray(data)) {
           data = await readExcelFileNoWorker(file, 'TEMPLATE');
         }
-         const editdata = data
+        const editdata = data
           .filter((item: any) => {
             const validItemCode =
               typeof item?.ItemCode === 'string' && item.ItemCode.trim() !== '';
             const validQuantity =
-              item?.Quantity != null && item.Quantity !== '' && item.Quantity !== 0;
+              item?.Quantity != null &&
+              item.Quantity !== '' &&
+              item.Quantity !== 0;
             return validItemCode && validQuantity;
           })
           .map((item: any) => ({
             // tenfile: file.name.replace('.xlsx', ''),
             // tenkh: TenKH,
             ItemCode: item.ItemCode ?? '',
-            Quantity: item.Quantity ?? ''
+            Quantity: item.Quantity ?? '',
           }));
-        const itemEdit = { tenfile: file.name.replace('.xlsx', ''), tenkh: TenKH,sanpham: editdata };        
+        const itemEdit = {
+          tenfile: file.name.replace('.xlsx', ''),
+          tenkh: TenKH,
+          sanpham: editdata,
+          ngaygiao: moment().format('YYYY-MM-DD'),
+        };
         this.ListImportData.push(itemEdit);
         processedCount++;
         this._snackBar.open(`Xử lý thành công file: ${file.name}`, '', {
           duration: 1000,
-          horizontalPosition: "end",
-          verticalPosition: "top",
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
         });
         this.statusDetails.push({
@@ -531,25 +535,30 @@ export class ListDonhangComponent {
           ngaygiao: moment().format('YYYY-MM-DD'),
           tenkhongdau: removeVietnameseAccents(file.name.replace('.xlsx', '')),
           status: 'Processed',
-          message: 'Xử lý thành công'
-        });         
+          message: 'Xử lý thành công',
+        });
       } catch (error: any) {
         console.error(`Error processing file ${file.name}:`, error);
-        this._snackBar.open(`Lỗi xử lý file ${file.name}: ${error.message}`, '', {
-          duration: 1000,
-          horizontalPosition: "end",
-          verticalPosition: "top",
-          panelClass: ['snackbar-error'],
-        });
+        this._snackBar.open(
+          `Lỗi xử lý file ${file.name}: ${error.message}`,
+          '',
+          {
+            duration: 1000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          }
+        );
         errorCount++;
-      this.statusDetails.push({
+        this.statusDetails.push({
           fileName: file.name,
           tenkhongdau: removeVietnameseAccents(file.name.replace('.xlsx', '')),
           status: 'Error',
-          message: error.message
+          message: error.message,
         });
         continue;
       }
+      console.log(this.ListImportData);
     }
     // this._snackBar.open(
     //     `Nhập đơn hàng thành công. Files xử lý: ${processedCount}, Bỏ qua: ${skippedCount}, Lỗi: ${errorCount}`,
@@ -561,16 +570,16 @@ export class ListDonhangComponent {
     //       panelClass: ['snackbar-success']
     //     }
     //   );
-   this.statusDetails.push({
-        fileName: 'Overall',
-        status: 'Success',
-        message: `Files processed: ${processedCount}, Skipped: ${skippedCount}, Errors: ${errorCount}`
-      });
+    this.statusDetails.push({
+      fileName: 'Overall',
+      status: 'Success',
+      message: `Files processed: ${processedCount}, Skipped: ${skippedCount}, Errors: ${errorCount}`,
+    });
     // After all files have been processed, perform the import
     this.dialog.open(this.dialogImportExcelCu, {});
-    this.statusDetails.forEach((v:any,k:any) => {
-      this.FilterKhachhang[k]= this._KhachhangService.ListKhachhang()
-    })
+    this.statusDetails.forEach((v: any, k: any) => {
+      this.FilterKhachhang[k] = this._KhachhangService.ListKhachhang();
+    });
     // Sort to put 'Processed' status items at the top
     this.statusDetails.sort((a, b) => {
       if (a.status === 'Processed' && b.status !== 'Processed') return -1;
@@ -578,23 +587,21 @@ export class ListDonhangComponent {
       return 0;
     });
   }
-removeItemImport(index: number){
-  this.statusDetails.splice(index, 1);
-}
-
+  removeItemImport(index: number) {
+    this.statusDetails.splice(index, 1);
+  }
 
   async DoImportKhachhangCu() {
     try {
-
-console.log('ListImportData', this.ListImportData);
-      const invalidItems = this.ListImportData.filter(item =>
-        !item.khachhangId || !item.ngaygiao
+      console.log('ListImportData', this.ListImportData);
+      const invalidItems = this.ListImportData.filter(
+        (item) => !item.khachhangId || !item.ngaygiao
       );
       console.log('invalidItems', invalidItems);
-      
+
       if (invalidItems.length > 0) {
         const invalidFiles = Array.from(
-          new Set(invalidItems.map(item => item.tenfile || 'Unknown'))
+          new Set(invalidItems.map((item) => item.tenfile || 'Unknown'))
         );
         this._snackBar.open(
           `Các Khách hàng sau không đủ dữ liệu : ${invalidFiles.join(', ')}`,
@@ -603,44 +610,45 @@ console.log('ListImportData', this.ListImportData);
             duration: 5000,
             horizontalPosition: 'end',
             verticalPosition: 'top',
-            panelClass: ['snackbar-error']
+            panelClass: ['snackbar-error'],
           }
         );
         return;
       }
       console.log('ListImportData', this.ListImportData);
-      
-      const result = await this._DonhangService.ImportDonhangCu(this.ListImportData);
+
+      const result = await this._DonhangService.ImportDonhangCu(
+        this.ListImportData
+      );
       this.dialog.closeAll();
       this._snackBar.open(
-          `Nhập đơn hàng : Thành công ${result.success}, Thất bại ${result.fail}, Bỏ qua ${result.skip}. Reload Lại sau 3s`,
-          '',
-          {
-            duration: 5000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['snackbar-success']
-          }
-          );
-
+        `Nhập đơn hàng : Thành công ${result.success}, Thất bại ${result.fail}, Bỏ qua ${result.skip}. Reload Lại sau 3s`,
+        '',
+        {
+          duration: 5000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        }
+      );
     } catch (importError: any) {
       console.error('Lỗi khi nhập đơn hàng:', importError);
       this._snackBar.open(`Lỗi khi nhập đơn hàng: ${importError.message}`, '', {
         duration: 5000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['snackbar-error']
+        panelClass: ['snackbar-error'],
       });
       this.statusDetails.push({
         fileName: 'Overall',
         status: 'Error',
-        message: importError.message
+        message: importError.message,
       });
       return;
     }
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
+    setTimeout(() => {
+      window.location.reload();
+    }, 3000);
   }
 
   async ImportDonhang(items: any[]): Promise<void> {
@@ -665,7 +673,7 @@ console.log('ListImportData', this.ListImportData);
       // Find customer
       const khachhang = await this._KhachhangService.getKhachhangBy({
         makh: firstItem.makh,
-        isOne: true
+        isOne: true,
       });
       if (!khachhang) {
         throw new Error(`Không tìm thấy khách hàng với mã ${firstItem.makh}`);
@@ -789,102 +797,148 @@ console.log('ListImportData', this.ListImportData);
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
-  async SelectKhachhang(item:any,event:any){   
-    const value = event.value
-    const checkItem = this.ListImportData.find((v: any) => v.khachhangId === value);
+  
+  @Debounce(300)
+  async SelectKhachhang(item: any, event: any) {
+    const value = event.value;
+    const checkItem = this.ListImportData.find(
+      (v: any) => v.khachhangId === value
+    );
     if (checkItem) {
-      this._snackBar.open('Đã tồn tại khách hàng này', '', {
+      // Reset giá trị của select về null/undefined
+      event.source.value = null;
+      event.source._value = null;
+      
+      // Xóa khachhangId của item hiện tại
+      this.ListImportData.filter((v) => v.tenkh === item.tenkhongdau).forEach(
+        (v1: any) => {
+          delete v1.khachhangId;
+        }
+      );      
+      this._snackBar.open('Khách hàng đã tồn tại', '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['snackbar-warning']
+        panelClass: ['snackbar-error'],
       });
       return;
     }
-    this.ListImportData.filter((v => v.tenkh === item.tenkhongdau)).forEach((v1:any) => {
-      v1.khachhangId = value;
-    });  
-    console.log(this.ListImportData);
-}
-@Debounce(500)
-async DoFindKhachhang(event:any,index:any){
-  const value = event.target.value;
-  if (!value) {
-    this.FilterKhachhang[index] = this._KhachhangService.ListKhachhang();
-    return;
+    this.ListImportData.filter((v) => v.tenkh === item.tenkhongdau).forEach(
+      (v1: any) => {
+        v1.khachhangId = value;
+      }
+    );
   }
-  this.FilterKhachhang[index] = this._KhachhangService.ListKhachhang().filter((v: any) =>
-    v.subtitle.includes(removeVietnameseAccents(value))
-  );
-}
 
-DoChonNgaygiao(event:any,item:any){
-
-
-  const value = event.target.value;
-  if (!value) {
-    this.SearchParams.ngaygiao = '';
-    return;
+  @Debounce(500)
+  async DoFindKhachhang(event: any, index: any) {
+    const value = event.target.value;
+    if (!value) {
+      this.FilterKhachhang[index] = this._KhachhangService.ListKhachhang();
+      return;
+    }
+    this.FilterKhachhang[index] = this._KhachhangService
+      .ListKhachhang()
+      .filter((v: any) => v.subtitle.includes(removeVietnameseAccents(value)));
   }
-  if(item==='All'){
-    this.ListImportData.forEach((v:any) => {
-      v.ngaygiao = value;
-    });
-    this.statusDetails.forEach((v:any) => {
-      if(v.status === 'Processed') {
+
+  DoChonNgaygiao(event: any, item: any) {
+    const value = event.target.value;
+    if (!value) {
+      this.SearchParams.ngaygiao = '';
+      return;
+    }
+    if (item === 'All') {
+      this.ListImportData.forEach((v: any) => {
         v.ngaygiao = value;
+      });
+      this.statusDetails.forEach((v: any) => {
+        if (v.status === 'Processed') {
+          v.ngaygiao = value;
+        }
+      });
+      return;
+    }
+    this.ListImportData.filter((v) => v.tenkh === item.tenkhongdau).forEach(
+      (v1: any) => {
+        v1.ngaygiao = value;
+      }
+    );
+  }
+
+  EditList: any = [];
+  AddToEdit(item: any): void {
+    const existingItem = this.EditList.find((v: any) => v.id === item.id);
+    if (existingItem) {
+      this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
+    } else {
+      this.EditList.push(item);
+    }
+  }
+  CheckItemInEdit(item: any): boolean {
+    return this.EditList.some((v: any) => v.id === item.id);
+  }
+  openDeleteDialog(template: TemplateRef<any>) {
+    const dialogDeleteRef = this.dialog.open(template, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+    dialogDeleteRef.afterClosed().subscribe((result) => {
+      if (result == 'true') {
+        this.DeleteListItem();
       }
     });
-    return;
   }
-  this.ListImportData.filter((v => v.tenkh === item.tenkhongdau)).forEach((v1:any) => {
-    v1.ngaygiao = value;
-  });
-}
+  async DeleteListItem(): Promise<void> {
+    if (!this.EditList?.length) {
+      this._snackBar.open('Không có mục nào được chọn để xóa', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
 
-
-EditList:any=[];
-AddToEdit(item: any): void {
-  const existingItem = this.EditList.find((v: any) => v.id === item.id);
-  if (existingItem) {
-    this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
-  } else {
-    this.EditList.push(item);
+    try {
+      const deletionPromises = this.EditList.map((item: any) =>
+        this._DonhangService.DeleteDonhang(item)
+      );
+      
+      const results = await Promise.allSettled(deletionPromises);
+      
+      const successful = results.filter(result => result.status === 'fulfilled').length;
+      const failed = results.filter(result => result.status === 'rejected').length;
+      
+      if (failed === 0) {
+        this._snackBar.open(`Xóa thành công ${successful} đơn hàng`, '', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+      } else {
+        this._snackBar.open(`Xóa thành công ${successful}, thất bại ${failed} đơn hàng`, '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning'],
+        });
+      }
+    } catch (error: any) {
+      console.error('Batch deletion error:', error);
+      this._snackBar.open('Có lỗi xảy ra khi xóa đơn hàng', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.EditList = [];
+      await this.LoadData();
+    }
   }
-}
-CheckItemInEdit(item: any): boolean {
-  return this.EditList.some((v: any) => v.id === item.id);
-}
-openDeleteDialog(template: TemplateRef<any>) {
-     const dialogDeleteRef = this.dialog.open(template, {
-       hasBackdrop: true,
-       disableClose: true,
-     });
-     dialogDeleteRef.afterClosed().subscribe((result) => {
-       if (result=="true") {
-         this.DeleteListItem();
-       }
-     });
- }
-DeleteListItem(): void {
-  // Delete all items first
-  this.EditList.forEach((item: any) => {
-    this._DonhangService.DeleteDonhang(item);
-  });
-  this.EditList = [];
-  // Show success notification
-  this._snackBar.open('Xóa Thành Công', '', {
-    duration: 1000,
-    horizontalPosition: 'end',
-    verticalPosition: 'top',
-    panelClass: ['snackbar-success'],
-  });
-  // Reload page after 3 seconds
-  setTimeout(() => {
-    window.location.reload();
-  }, 500);
-}
-  ToggleAll(){
+  ToggleAll() {
     if (this.EditList.length === this.Listdonhang().data.length) {
       this.EditList = [];
     } else {
