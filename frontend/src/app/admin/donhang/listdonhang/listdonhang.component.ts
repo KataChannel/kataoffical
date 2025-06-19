@@ -587,8 +587,9 @@ export class ListDonhangComponent {
       return 0;
     });
   }
-  removeItemImport(index: number) {
-    this.statusDetails.splice(index, 1);
+  removeItemImport(item: any) {
+    this.statusDetails = this.statusDetails.filter((v) => v.tenkhongdau !== item.tenkhongdau);
+    this.ListImportData = this.ListImportData.filter((v) => v.tenkh !== item.tenkhongdau);
   }
 
   async DoImportKhachhangCu() {
