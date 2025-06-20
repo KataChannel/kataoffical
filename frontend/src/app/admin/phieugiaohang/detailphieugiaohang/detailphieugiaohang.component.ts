@@ -353,7 +353,7 @@ export class DetailPhieugiaohangComponent {
         v.status = 'dagiao';
         return v;
       });
-      await this._PhieugiaohangService.updateDonhang(this.DetailPhieugiaohang());
+      await this._PhieugiaohangService.DagiaoDonhang(this.DetailPhieugiaohang());
       this._snackBar.open('Giao đơn hàng thành công', '', {
         duration: 1000,
         horizontalPosition: 'end',

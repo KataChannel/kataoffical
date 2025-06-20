@@ -148,6 +148,16 @@ let SanphamService = class SanphamService {
                     status: 'error',
                 };
             }
+            await this.prisma.$transaction([
+                this.prisma.banggia.updateMany({
+                    data: { isDefault: false },
+                    where: { NOT: { id: item.banggiaid } },
+                }),
+                this.prisma.banggia.update({
+                    where: { id: item.banggiaid },
+                    data: { isDefault: true },
+                }),
+            ]);
             const updateOperations = banggia.sanpham.map((sp) => this.prisma.sanpham.update({
                 where: { id: sp.sanphamId },
                 data: { giaban: sp.giaban },

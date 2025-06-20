@@ -44,6 +44,8 @@ export class DonhangController {
   }
   @Get('findbysanpham/:id')
   findByProductId(@Param('id') id: string) {
+    console.log(id);
+    
     return this.donhangService.findByProductId(id);
   }
   @Get('findid/:id')
@@ -71,4 +73,23 @@ export class DonhangController {
   reorder(@Body() body: { donhangIds: string[] }) {
     return this.donhangService.reorderDonHangs(body.donhangIds);
   }
+  @Post(':id/dagiao')
+  @Audit({entity: 'Create Donhang', action: AuditAction.CREATE, includeResponse: true})
+  async dagiao(@Param('id') id: string,@Body() data: any) {
+    const result =  await this.donhangService.dagiao(id,data);
+    console.log('result', result);
+    return result;
+  }
+  @Post(':id/danhan')
+  @Audit({entity: 'Create Donhang', action: AuditAction.CREATE, includeResponse: true})
+  async danhan(@Param('id') id: string,@Body() data: any) {
+    const result =  await this.donhangService.danhan(id,data);
+    console.log('result', result);
+    return result;
+  }
+  // @Post(':id/danhan')
+  // @Audit({entity: 'Create Donhang', action: AuditAction.CREATE, includeResponse: true})
+  // danhan(@Body() data: any) {
+  //   return this.donhangService.danhan(data);
+  // }
 }

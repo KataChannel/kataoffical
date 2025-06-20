@@ -95,6 +95,29 @@ export class DonhangService {
     }
   }
 
+  async DagiaoDonhang(dulieu: any) {
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(dulieu),
+        };
+        const response = await fetch(`${environment.APIURL}/donhang/${dulieu.id}/dagiao`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (!response.ok) {
+
+        }
+        console.log(data);   
+    } catch (error) {
+        return console.error(error);
+    }
+  }
+
   async searchDonhang(SearchParams: any) {
     const payload = {...SearchParams}
     payload.Batdau = moment(payload.Batdau).utc()

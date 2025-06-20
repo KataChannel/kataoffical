@@ -144,6 +144,7 @@ export declare class DonhangService {
                 mabanggia: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
+                isDefault: boolean;
             }) | null;
         } & {
             id: string;
@@ -307,6 +308,7 @@ export declare class DonhangService {
                 mabanggia: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
+                isDefault: boolean;
             }) | null;
         } & {
             id: string;

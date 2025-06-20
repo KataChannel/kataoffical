@@ -22,6 +22,7 @@ export declare class BanggiaService {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }>;
     createBanggia(data: any): Promise<{
         sanpham: {
@@ -45,6 +46,7 @@ export declare class BanggiaService {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }>;
     reorderBanggias(banggiaIds: string[]): Promise<null>;
     getbgsp(): Promise<{
@@ -76,6 +78,7 @@ export declare class BanggiaService {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }[]>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -137,6 +140,7 @@ export declare class BanggiaService {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }>;
     update(id: string, data: any): Promise<{
         sanpham: {
@@ -160,6 +164,7 @@ export declare class BanggiaService {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -174,6 +179,7 @@ export declare class BanggiaService {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }>;
     addKHtoBG(banggiaId: string, khachhangIds: any[]): Promise<{
         id: string;
@@ -188,6 +194,7 @@ export declare class BanggiaService {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }>;
     removeKHfromBG(banggiaId: string, khachhangIds: any[]): Promise<{
         id: string;
@@ -202,5 +209,6 @@ export declare class BanggiaService {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }>;
 }

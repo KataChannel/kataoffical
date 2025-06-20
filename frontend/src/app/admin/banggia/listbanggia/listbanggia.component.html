@@ -118,8 +118,8 @@
                         </span>
                         }
                         @case ('mabanggia') {
-                        <span class="flex max-w-40 line-clamp-4 items-center">
-                         <button class="!z-10" (click)="Banggiamacdinh(row)" mat-icon-button color="primary"><mat-icon>bookmark</mat-icon></button>
+                        <span class="flex gap-2 max-w-40 line-clamp-4 items-center">
+                         <mat-icon class="!z-10 {{row.isDefault?'!text-blue-600':'text-gray-600'}}" (click)="Banggiamacdinh(row)" >bookmark</mat-icon>
                            <span>{{ row[column] }}</span>
                         </span>
                         }

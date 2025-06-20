@@ -27,6 +27,7 @@ export declare class BanggiaController {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }>;
     findAll(): Promise<{
         sanpham: number;
@@ -47,6 +48,7 @@ export declare class BanggiaController {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }[]>;
     getbgsp(): Promise<{
         mabanggia: string | null;
@@ -74,6 +76,7 @@ export declare class BanggiaController {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }>;
     removeKHfromBG(data: any): Promise<{
         id: string;
@@ -88,6 +91,7 @@ export declare class BanggiaController {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -149,6 +153,7 @@ export declare class BanggiaController {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }>;
     update(id: string, updateBanggiaDto: any): Promise<{
         sanpham: {
@@ -172,6 +177,7 @@ export declare class BanggiaController {
         mabanggia: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        isDefault: boolean;
     }>;
     remove(id: string): void;
 }

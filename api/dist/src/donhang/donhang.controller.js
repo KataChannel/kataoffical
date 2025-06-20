@@ -47,6 +47,7 @@ let DonhangController = class DonhangController {
         return this.donhangService.findAll();
     }
     findByProductId(id) {
+        console.log(id);
         return this.donhangService.findByProductId(id);
     }
     findOne(id) {
@@ -64,6 +65,16 @@ let DonhangController = class DonhangController {
     }
     reorder(body) {
         return this.donhangService.reorderDonHangs(body.donhangIds);
+    }
+    async dagiao(id, data) {
+        const result = await this.donhangService.dagiao(id, data);
+        console.log('result', result);
+        return result;
+    }
+    async danhan(id, data) {
+        const result = await this.donhangService.danhan(id, data);
+        console.log('result', result);
+        return result;
     }
 };
 exports.DonhangController = DonhangController;
@@ -172,6 +183,24 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DonhangController.prototype, "reorder", null);
+__decorate([
+    (0, common_1.Post)(':id/dagiao'),
+    (0, audit_decorator_1.Audit)({ entity: 'Create Donhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], DonhangController.prototype, "dagiao", null);
+__decorate([
+    (0, common_1.Post)(':id/danhan'),
+    (0, audit_decorator_1.Audit)({ entity: 'Create Donhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], DonhangController.prototype, "danhan", null);
 exports.DonhangController = DonhangController = __decorate([
     (0, common_1.Controller)('donhang'),
     __metadata("design:paramtypes", [donhang_service_1.DonhangService])

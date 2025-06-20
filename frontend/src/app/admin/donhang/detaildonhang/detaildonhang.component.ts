@@ -80,6 +80,7 @@ export class DetailDonhangComponent {
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   @ViewChild('BgHethanDialog') BgHethanDialog!: TemplateRef<any>;
+  ListFilter:any[] =[]
   constructor() {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
@@ -107,6 +108,7 @@ export class DetailDonhangComponent {
         });
         this._ListdonhangComponent.drawer.open();
         this.isEdit.update((value) => !value);
+        this.ListFilter = []
         this._router.navigate(['/admin/donhang', 'new']);
       } else {
         await this._DonhangService.getDonhangByid(id);
@@ -737,7 +739,6 @@ export class DetailDonhangComponent {
       }
     }
   }
-  ListFilter:any[] =[]
   ChosenItem(item:any)
   {
     const CheckItem = this.filterSanpham.find((v:any)=>v.id===item.id);
@@ -771,10 +772,14 @@ export class DetailDonhangComponent {
   }
   ApplyFilterColum(menu:any)
   {    
+    console.log(this.ListFilter);
+
+    
     this.ListFilter.forEach((v) => {
       const exists = this.dataSource().data.find((d: any) => d.id === v.id);
-      if (!exists.sldat) {
-        v.sldat = v.slgiao = 1;
+          console.log(exists);
+      if (!exists) {
+        v.sldat = v.slgiao =v.slnhan = 1;
       }
     });
 

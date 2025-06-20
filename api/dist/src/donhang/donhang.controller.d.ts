@@ -249,6 +249,7 @@ export declare class DonhangController {
                 mabanggia: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
+                isDefault: boolean;
             }) | null;
         } & {
             id: string;
@@ -421,6 +422,7 @@ export declare class DonhangController {
                 mabanggia: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
+                isDefault: boolean;
             }) | null;
         } & {
             id: string;
@@ -507,7 +509,7 @@ export declare class DonhangController {
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
-    }>;
+    } | undefined>;
     remove(id: string): Promise<{
         id: string;
         title: string | null;
@@ -526,4 +528,42 @@ export declare class DonhangController {
     reorder(body: {
         donhangIds: string[];
     }): Promise<void>;
+    dagiao(id: string, data: any): Promise<{
+        message: string;
+        code: string;
+        result: null;
+    } | {
+        message: string;
+        code: string;
+        result: {
+            id: string;
+            title: string | null;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            type: string | null;
+            status: import(".prisma/client").$Enums.StatusDonhang;
+            madonhang: string;
+            ngaygiao: Date | null;
+            khachhangId: string;
+            printCount: number | null;
+        };
+    }>;
+    danhan(id: string, data: any): Promise<{
+        id: string;
+        title: string | null;
+        ghichu: string | null;
+        order: number | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        madonhang: string;
+        ngaygiao: Date | null;
+        khachhangId: string;
+        printCount: number | null;
+    } | undefined>;
 }
