@@ -243,8 +243,20 @@ let DathangService = class DathangService {
         const { page = 1, pageSize = 50, isOne, ...where } = param;
         const whereClause = {};
         if (where.subtitle) {
-            whereClause.subtitle = { contains: where.subtitle, mode: 'insensitive' };
+            whereClause.OR = [];
+            if (where.subtitle) {
+                whereClause.OR.push({ subtitle: { contains: where.subtitle, mode: 'insensitive' } });
+                whereClause.OR.push({ madncc: { contains: where.subtitle, mode: 'insensitive' } });
+                whereClause.OR.push({ title: { contains: where.subtitle, mode: 'insensitive' } });
+                whereClause.OR.push({
+                    nhacungcap: { name: { contains: where.subtitle, mode: 'insensitive' } }
+                });
+                whereClause.OR.push({
+                    nhacungcap: { sdt: { contains: where.subtitle, mode: 'insensitive' } }
+                });
+            }
         }
+        console.log('whereClause:', whereClause);
         if (where.Batdau || where.Ketthuc) {
             whereClause.ngaynhan = {};
             if (where.Batdau) {

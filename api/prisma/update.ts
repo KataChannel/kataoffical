@@ -63,20 +63,27 @@ async function main() {
   //   },
   // });
 
-  const donhangsanphams = await prisma.donhangsanpham.findMany({
-    select: { id: true, sldat: true }
+  // const donhangsanphams = await prisma.donhangsanpham.findMany({
+  //   select: { id: true, sldat: true }
+  // });
+
+  // for (const item of donhangsanphams) {
+  //   await prisma.donhangsanpham.update({
+  //     where: { id: item.id },
+  //     data: {
+  //       slgiao: item.sldat,
+  //       slnhan: item.sldat,
+  //     },
+  //   });
+  // }
+  // Reset tonkho: set slton, slchonhap, slchogiao về 0 cho tất cả bản ghi
+  await prisma.tonKho.updateMany({
+    data: {
+      slton: 0,
+      slchonhap: 0,
+      slchogiao: 0,
+    },
   });
-
-  for (const item of donhangsanphams) {
-    await prisma.donhangsanpham.update({
-      where: { id: item.id },
-      data: {
-        slgiao: item.sldat,
-        slnhan: item.sldat,
-      },
-    });
-  }
-
 
 }
 
