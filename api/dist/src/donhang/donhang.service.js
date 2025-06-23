@@ -655,6 +655,7 @@ let DonhangService = class DonhangService {
                         });
                     }
                 }
+                console.log('Updating order with status dadat', data);
                 return prisma.donhang.update({
                     where: { id },
                     data: {
@@ -673,6 +674,7 @@ let DonhangService = class DonhangService {
                                         data: data.sanpham.map((sp) => ({
                                             idSP: sp.id,
                                             ghichu: sp.ghichu,
+                                            sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
                                             slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
                                             slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
                                             ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
