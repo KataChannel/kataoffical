@@ -155,14 +155,6 @@ export class DetailDonhangComponent {
         type: 'donsi',
         status: 'dadat',
       }));
-      
-      this.DetailDonhang.update((v: any) => ({
-        ...v,
-        sanpham: v.sanpham?.map((sp: any) => ({
-          ...sp,
-          ttgiao: Number(sp.slgiao) * Number(sp.giaban) || 0,
-        }))||[],
-      }));
       await this._DonhangService.CreateDonhang(this.DetailDonhang()).then((data)=>{
         console.log(data);  
       })
@@ -183,16 +175,9 @@ export class DetailDonhangComponent {
       this.DetailDonhang.update((v: any) => ({
         ...v,
         type: 'donsi',
-        status: status ?? 'dadat',
+        status: status || v.status,
       }));
-      
-      this.DetailDonhang.update((v: any) => ({
-        ...v,
-        sanpham: v.sanpham.map((sp: any) => ({
-          ...sp,
-          ttgiao: Number(sp.slgiao) * Number(sp.giaban) || 0,
-        })),
-      }));
+
       await this._DonhangService.updateDonhang(this.DetailDonhang()).then((data)=>{
         console.log(data);  
       })
