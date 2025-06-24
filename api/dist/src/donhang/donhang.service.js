@@ -74,7 +74,6 @@ let DonhangService = class DonhangService {
                     ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
                     : undefined,
             },
-            type: Type,
             status: Array.isArray(params.Status)
                 ? { in: params.Status }
                 : params.Status,
@@ -145,7 +144,6 @@ let DonhangService = class DonhangService {
                         ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
                         : undefined,
                 },
-                type: Type,
             },
             include: {
                 sanpham: {
@@ -193,7 +191,6 @@ let DonhangService = class DonhangService {
                         ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
                         : undefined,
                 },
-                type: Type,
                 status: Array.isArray(params.Status)
                     ? { in: params.Status }
                     : params.Status,

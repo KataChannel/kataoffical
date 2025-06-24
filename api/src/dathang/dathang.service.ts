@@ -218,7 +218,7 @@ export class DathangService {
           ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
           : undefined,
       },
-      type: Type,
+      // type: Type,
       status: Array.isArray(params.Status)
         ? { in: params.Status }
         : params.Status,
