@@ -144,6 +144,65 @@ export class DonhangService {
     };
   }
 
+  /**
+   * Tổng hợp số lượng sản phẩm chờ giao trong các đơn hàng theo điều kiện lọc.
+   * Trả về danh sách sản phẩm với tổng số lượng đặt (sldat) theo từng mã sản phẩm.
+   */
+  async getchogiao(params: any) {
+    const { Batdau, Ketthuc, Type } = params;
+
+    // Lấy danh sách đơn hàng theo điều kiện lọc
+    const donhangs = await this.prisma.donhang.findMany({
+      where: {
+        ngaygiao: {
+          gte: Batdau
+            ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+            : undefined,
+          lte: Ketthuc
+            ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
+            : undefined,
+        },
+        type: Type,
+        // Có thể bổ sung điều kiện status nếu cần
+      },
+      include: {
+        sanpham: {
+          include: { sanpham: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // Gộp số lượng đặt theo từng sản phẩm
+    const productMap = new Map<string, { title: string; masp: string; sldat: number }>();
+
+    for (const dh of donhangs) {
+      for (const sp of dh.sanpham) {
+        if (!sp?.sanpham) continue;
+        const key = sp.idSP;
+        if (productMap.has(key)) {
+          productMap.get(key)!.sldat += Number(sp.sldat) || 0;
+        } else {
+          productMap.set(key, {
+            title: sp.sanpham.title,
+            masp: sp.sanpham.masp,
+            sldat: Number(sp.sldat) || 0,
+          });
+        }
+      }
+    }
+
+    // Trả về danh sách tổng hợp
+    return Array.from(productMap, ([idSP, value]) => ({
+      idSP,
+      title: value.title,
+      masp: value.masp,
+      slchogiaott: parseFloat(value.sldat.toFixed(2)),
+    }));
+  }
+  
+
+
   async phieuchuyen(params: any) {
     const { Batdau, Ketthuc, Type } = params;
     console.log('Batdau', moment(Batdau).startOf('day').toDate());
@@ -187,6 +246,9 @@ export class DonhangService {
       ),
     }));
   }
+
+
+
   async phieugiao(params: any) {
     const result = await this.prisma.donhang.findUnique({
       where: params,

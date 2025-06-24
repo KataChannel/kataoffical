@@ -183,6 +183,12 @@ export declare class DathangService {
         pageSize: any;
         totalPages: number;
     }>;
+    getchonhap(params: any): Promise<{
+        idSP: string;
+        title: string;
+        masp: string;
+        slchonhaptt: number;
+    }[]>;
     findby(param: any): Promise<({
         sanpham: ({
             sanpham: {

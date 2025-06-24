@@ -126,6 +126,33 @@ export class DathangService {
         return console.error(error);
     }
   }
+
+  async getSLChonhap(SearchParams: any) {
+    const payload = {...SearchParams}
+    payload.Batdau = moment(payload.Batdau).utc()
+    payload.Ketthuc = moment(payload.Ketthuc).utc()
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer '+this._StorageService.getItem('token')
+        },
+        body: JSON.stringify(payload),
+      };
+      const response = await fetch(`${environment.APIURL}/dathang/getchonhap`, options);
+      if (!response.ok) {
+
+      }
+      const data = await response.json();
+      return data
+    } catch (error) {
+      return console.error(error);
+    }
+  }
+
+
+
   async searchDathang(SearchParams: any) {
     const payload = {...SearchParams}
     payload.Batdau = moment(payload.Batdau).utc()

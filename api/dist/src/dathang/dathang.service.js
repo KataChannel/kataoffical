@@ -239,6 +239,52 @@ let DathangService = class DathangService {
             totalPages: Math.ceil(total / pageSize),
         };
     }
+    async getchonhap(params) {
+        const { Batdau, Ketthuc, Type } = params;
+        const dathangs = await this.prisma.dathang.findMany({
+            where: {
+                ngaynhan: {
+                    gte: Batdau
+                        ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+                        : undefined,
+                    lte: Ketthuc
+                        ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
+                        : undefined,
+                },
+            },
+            include: {
+                sanpham: {
+                    include: { sanpham: true },
+                },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        console.log(dathangs);
+        const productMap = new Map();
+        for (const dh of dathangs) {
+            for (const sp of dh.sanpham) {
+                if (!sp?.sanpham)
+                    continue;
+                const key = sp.idSP;
+                if (productMap.has(key)) {
+                    productMap.get(key).sldat += Number(sp.sldat) || 0;
+                }
+                else {
+                    productMap.set(key, {
+                        title: sp.sanpham.title,
+                        masp: sp.sanpham.masp,
+                        sldat: Number(sp.sldat) || 0,
+                    });
+                }
+            }
+        }
+        return Array.from(productMap, ([idSP, value]) => ({
+            idSP,
+            title: value.title,
+            masp: value.masp,
+            slchonhaptt: parseFloat(value.sldat.toFixed(2)),
+        }));
+    }
     async findby(param) {
         const { page = 1, pageSize = 50, isOne, ...where } = param;
         const whereClause = {};

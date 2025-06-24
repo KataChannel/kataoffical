@@ -72,6 +72,12 @@ export declare class DathangController {
         ngaynhan: Date | null;
         nhacungcapId: string;
     }>;
+    getchonhap(params: any): Promise<{
+        idSP: string;
+        title: string;
+        masp: string;
+        slchonhaptt: number;
+    }[]>;
     search(params: any): Promise<{
         data: ({
             sanpham: ({

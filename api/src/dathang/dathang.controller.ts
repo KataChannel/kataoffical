@@ -22,6 +22,10 @@ export class DathangController {
   createbynhucau(@Body() data: any) {
     return this.dathangService.createbynhucau(data);
   }
+  @Post('getchonhap')
+  async getchonhap(@Body() params: any) {
+    return this.dathangService.getchonhap(params);
+  }
   @Post('search')
     async search(@Body() params: any) {
     return this.dathangService.search(params);

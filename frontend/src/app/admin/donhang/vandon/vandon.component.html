@@ -86,7 +86,7 @@
                     <span class="max-w-40 line-clamp-4 me-4">
                         {{ ColumnName[column] }}
                     </span>
-                         <span class="z-10 material-symbols-outlined text-gray-500" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
+                 <span class="z-10 material-symbols-outlined text-gray-500" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">
                              filter_alt
                          </span>
                                 <mat-menu  #menu="matMenu">
@@ -181,8 +181,8 @@
               <tr class="mat-row" *matNoDataRow>
                   <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
               </tr>
-          </table>
-          <mat-paginator [pageSizeOptions]="[100,dataSource().data.length]" [pageSize]="100"></mat-paginator>
+          </table> 
       </div>
+       <mat-paginator [pageSizeOptions]="[200,dataSource().data.length]" [pageSize]="200"></mat-paginator>
   </div>
 </mat-drawer-container>

@@ -250,6 +250,66 @@ export class DathangService {
     };
   }
 
+  /**
+   * Tổng hợp số lượng sản phẩm chờ giao trong các đơn hàng theo điều kiện lọc.
+   * Trả về danh sách sản phẩm với tổng số lượng đặt (sldat) theo từng mã sản phẩm.
+   */
+  async getchonhap(params: any) {
+    const { Batdau, Ketthuc, Type } = params;
+
+    // Lấy danh sách đơn hàng theo điều kiện lọc
+    const dathangs = await this.prisma.dathang.findMany({
+      where: {
+        ngaynhan: {
+          gte: Batdau
+            ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+            : undefined,
+          lte: Ketthuc
+            ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
+            : undefined,
+        },
+        // type: Type,
+        // Có thể bổ sung điều kiện status nếu cần
+      },
+      include: {
+        sanpham: {
+          include: { sanpham: true },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    console.log(dathangs);
+    
+    // Gộp số lượng đặt theo từng sản phẩm
+    const productMap = new Map<string, { title: string; masp: string; sldat: number }>();
+
+    for (const dh of dathangs) {
+      for (const sp of dh.sanpham) {
+        if (!sp?.sanpham) continue;
+        const key = sp.idSP;
+        if (productMap.has(key)) {
+          productMap.get(key)!.sldat += Number(sp.sldat) || 0;
+        } else {
+          productMap.set(key, {
+            title: sp.sanpham.title,
+            masp: sp.sanpham.masp,
+            sldat: Number(sp.sldat) || 0,
+          });
+        }
+      }
+    }
+
+    // Trả về danh sách tổng hợp
+    return Array.from(productMap, ([idSP, value]) => ({
+      idSP,
+      title: value.title,
+      masp: value.masp,
+      slchonhaptt: parseFloat(value.sldat.toFixed(2)),
+    }));
+  }
+
+
+
 
     async findby(param: any) {
       const { page = 1, pageSize = 50, isOne, ...where } = param;

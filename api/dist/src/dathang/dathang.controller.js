@@ -30,6 +30,9 @@ let DathangController = class DathangController {
     createbynhucau(data) {
         return this.dathangService.createbynhucau(data);
     }
+    async getchonhap(params) {
+        return this.dathangService.getchonhap(params);
+    }
     async search(params) {
         return this.dathangService.search(params);
     }
@@ -80,6 +83,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DathangController.prototype, "createbynhucau", null);
+__decorate([
+    (0, common_1.Post)('getchonhap'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DathangController.prototype, "getchonhap", null);
 __decorate([
     (0, common_1.Post)('search'),
     __param(0, (0, common_1.Body)()),

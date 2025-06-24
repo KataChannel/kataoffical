@@ -133,6 +133,52 @@ let DonhangService = class DonhangService {
             totalPages: Math.ceil(total / pageSize),
         };
     }
+    async getchogiao(params) {
+        const { Batdau, Ketthuc, Type } = params;
+        const donhangs = await this.prisma.donhang.findMany({
+            where: {
+                ngaygiao: {
+                    gte: Batdau
+                        ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+                        : undefined,
+                    lte: Ketthuc
+                        ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
+                        : undefined,
+                },
+                type: Type,
+            },
+            include: {
+                sanpham: {
+                    include: { sanpham: true },
+                },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        const productMap = new Map();
+        for (const dh of donhangs) {
+            for (const sp of dh.sanpham) {
+                if (!sp?.sanpham)
+                    continue;
+                const key = sp.idSP;
+                if (productMap.has(key)) {
+                    productMap.get(key).sldat += Number(sp.sldat) || 0;
+                }
+                else {
+                    productMap.set(key, {
+                        title: sp.sanpham.title,
+                        masp: sp.sanpham.masp,
+                        sldat: Number(sp.sldat) || 0,
+                    });
+                }
+            }
+        }
+        return Array.from(productMap, ([idSP, value]) => ({
+            idSP,
+            title: value.title,
+            masp: value.masp,
+            slchogiaott: parseFloat(value.sldat.toFixed(2)),
+        }));
+    }
     async phieuchuyen(params) {
         const { Batdau, Ketthuc, Type } = params;
         console.log('Batdau', moment(Batdau).startOf('day').toDate());

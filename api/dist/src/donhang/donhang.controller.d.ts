@@ -112,6 +112,12 @@ export declare class DonhangController {
         khachhangId: string;
         printCount: number | null;
     }[]>;
+    getchogiao(params: any): Promise<{
+        idSP: string;
+        title: string;
+        masp: string;
+        slchogiaott: number;
+    }[]>;
     phieugiao(params: any): Promise<{
         sanpham: any[];
         khachhang: {

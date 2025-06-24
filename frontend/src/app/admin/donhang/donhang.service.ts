@@ -118,6 +118,34 @@ export class DonhangService {
     }
   }
 
+  async getSLChogiao(SearchParams: any) {
+    const payload = {...SearchParams}
+    payload.Batdau = moment(payload.Batdau).utc()
+    payload.Ketthuc = moment(payload.Ketthuc).utc()
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer '+this._StorageService.getItem('token')
+        },
+        body: JSON.stringify(payload),
+      };
+      const response = await fetch(`${environment.APIURL}/donhang/getchogiao`, options);
+      if (!response.ok) {
+
+      }
+      const data = await response.json();           
+      this.ListDonhang.set(data.data)
+      this.page.set(data.pageNumber);
+      this.pageCount.set(data.totalPages);
+      this.total.set(data.total);
+      this.pageSize.set(data.pageSize);
+      return data
+    } catch (error) {
+      return console.error(error);
+    }
+  }
   async searchDonhang(SearchParams: any) {
     const payload = {...SearchParams}
     payload.Batdau = moment(payload.Batdau).utc()

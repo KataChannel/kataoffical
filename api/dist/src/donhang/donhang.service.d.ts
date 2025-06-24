@@ -55,6 +55,12 @@ export declare class DonhangService {
         pageSize: any;
         totalPages: number;
     }>;
+    getchogiao(params: any): Promise<{
+        idSP: string;
+        title: string;
+        masp: string;
+        slchogiaott: number;
+    }[]>;
     phieuchuyen(params: any): Promise<{
         name: string | null;
         diachi: string | null;

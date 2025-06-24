@@ -16,7 +16,6 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
 import { PhieukhoService } from '../phieukho/phieukho.service';
 import { KhoService } from '../kho/kho.service';
@@ -98,8 +97,7 @@ export class XuatnhaptonComponent {
   SearchParams: any = {
     Batdau: moment().format('YYYY-MM-DD'),
     Ketthuc: moment().add(1,'day').format('YYYY-MM-DD'),
-    Type: 'donsi',
-    khoId: 0,
+    Type: 'donsi'
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -114,32 +112,6 @@ export class XuatnhaptonComponent {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
     });
-  }
-  onSelectionChange(event: MatSelectChange): void {
-    const timeFrames: { [key: string]: () => void } = {
-      day: () => {
-        this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment().endOf('day').add(1,'day').format('YYYY-MM-DD');
-      },
-      week: () => {
-        this.SearchParams.Batdau = moment().startOf('week').format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
-      },
-      month: () => {
-        this.SearchParams.Batdau = moment().startOf('month').format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment().endOf('month').format('YYYY-MM-DD');
-      },
-      year: () => {
-        this.SearchParams.Batdau = moment().startOf('year').format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
-      },
-    };
-
-    timeFrames[event.value]?.();
-    // this.loadData();
-  }
-  onDateChange(event: any): void {
-    this.ngOnInit()
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -161,6 +133,31 @@ export class XuatnhaptonComponent {
       this.dataSource?.paginator?.firstPage();
     }
   }
+
+  async LoadDondathang()
+  {
+    const ListSLChogiao = await this._DonhangService.getSLChogiao(this.SearchParams);
+    const ListSLChonhap = await this._DathangService.getSLChonhap(this.SearchParams);
+    this.dataSource.data.forEach((v: any) => {
+      const SLChogiao = ListSLChogiao.find((v1: any) => v1.idSP === v.sanphamId);
+      if (SLChogiao) {
+        v.slchogiaott = SLChogiao.slchogiaott;
+      } else {
+        v.slchogiaott = 0;
+      }
+      const SLChonhap = ListSLChonhap.find((v1: any) => v1.idSP === v.sanphamId);
+      if (SLChonhap) {
+        v.slchonhaptt = SLChonhap.slchonhaptt;
+      } else {
+        v.slchonhaptt = 0;
+      }
+    });
+    this.dataSource.data = this.dataSource.data.filter((v: any) => v.slchogiaott > 0 || v.slchonhaptt > 0);
+    this.dataSource.sort = this.sort;
+  }
+  
+
+
   async ngOnInit(): Promise<void> {    
     await this._SanphamService.getAllSanpham() 
     this._KhoService.getTonKho('1', '1000').then((res) => {
