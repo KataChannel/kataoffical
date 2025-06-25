@@ -375,6 +375,22 @@ export class DonhangService {
             //   this.router.navigate(['/errorserver'], { queryParams: {data:result}});
             // }
           }
+      } catch (error) {
+          return console.error(error);
+      }
+  }
+
+  async DeleteBulkDonhang(item:any) {    
+    try {
+        const options = {
+            method:'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          };
+          const response = await fetch(`${environment.APIURL}/donhang/${item.id}`, options);
+          if (!response.ok) {
+          }
           this.getAllDonhang()
       } catch (error) {
           return console.error(error);

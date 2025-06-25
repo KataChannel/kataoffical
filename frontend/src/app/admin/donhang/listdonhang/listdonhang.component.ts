@@ -902,8 +902,8 @@ export class ListDonhangComponent {
     }
 
     try {
-      const deletionPromises = this.EditList.map((item: any) =>
-        this._DonhangService.DeleteDonhang(item)
+      const deletionPromises = this.EditList.map(async (item: any) =>
+        await this._DonhangService.DeleteDonhang(item)
       );
       
       const results = await Promise.allSettled(deletionPromises);
