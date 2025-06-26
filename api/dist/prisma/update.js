@@ -7,13 +7,18 @@ const dulieu_1 = require("./migrations/dulieu");
 const prisma = new client_1.PrismaClient();
 const dulieus = dulieu_1.bangiakhachahng;
 async function main() {
-    await prisma.tonKho.updateMany({
-        data: {
-            slton: 0,
-            slchonhap: 0,
-            slchogiao: 0,
-        },
+    const tonKhos = await prisma.tonKho.findMany({
+        select: { id: true, slton: true, slchonhap: true, slchogiao: true },
     });
+    for (const tonKho of tonKhos) {
+        await prisma.tonKho.update({
+            where: { id: tonKho.id },
+            data: {
+                slton: tonKho.slton.plus(tonKho.slchonhap),
+                slchonhap: 0,
+            },
+        });
+    }
 }
 main()
     .catch((e) => {

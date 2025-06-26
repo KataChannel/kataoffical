@@ -373,11 +373,11 @@ model PhieuKho {
 
 model PhieuKhoSanpham {
   id          String @id @default(uuid())
-  phieuKhoId  String
   sanphamId   String
   soluong     Decimal @postgres.Decimal(20, 2) @default(0)
   ghichu      String?
   sanpham     Sanpham @relation(fields: [sanphamId], references: [id])
+  phieuKhoId  String
   phieuKho    PhieuKho @relation(fields: [phieuKhoId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

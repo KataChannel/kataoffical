@@ -379,7 +379,7 @@ export class ListcongnokhachhangComponent {
   BackStatus()
   {
     this.editDonhang.forEach((v:any) => {
-        v.status = 'dagiao';
+        v.status = 'dadat';
         this._DonhangService.updateDonhang(v);
     });
   }

@@ -158,7 +158,7 @@
                         <span class="max-w-40 line-clamp-4 text-red-700 font-bold">
                            <span class="flex items-center justify-between">                      
                             @if(row[column]>0){
-                            <span (click)="XemDonhang(row,DonhangDialog)"> - {{ row[column]|number:'1.0-2'}} </span>
+                            <span (click)="XemDonhang(row,DonhangDialog)">{{ row[column]|number:'1.0-2'}} </span>
                             }
                             @else {
                             {{ row[column]|number:'1.0-2'}}

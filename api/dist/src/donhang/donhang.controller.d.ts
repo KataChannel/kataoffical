@@ -515,26 +515,12 @@ export declare class DonhangController {
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
-    } | undefined>;
+    }>;
     removeBulk(ids: any[]): Promise<{
         success: number;
         fail: number;
     }>;
-    remove(id: string): Promise<{
-        id: string;
-        title: string | null;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        type: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
-        madonhang: string;
-        ngaygiao: Date | null;
-        khachhangId: string;
-        printCount: number | null;
-    }>;
+    remove(id: string): Promise<void>;
     reorder(body: {
         donhangIds: string[];
     }): Promise<void>;

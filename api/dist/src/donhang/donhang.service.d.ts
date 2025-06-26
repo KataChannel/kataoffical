@@ -410,7 +410,7 @@ export declare class DonhangService {
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
-    } | undefined>;
+    }>;
     danhan(id: string, data: any): Promise<{
         id: string;
         title: string | null;
@@ -480,21 +480,7 @@ export declare class DonhangService {
         khachhangId: string;
         printCount: number | null;
     }>;
-    remove(id: string): Promise<{
-        id: string;
-        title: string | null;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        type: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
-        madonhang: string;
-        ngaygiao: Date | null;
-        khachhangId: string;
-        printCount: number | null;
-    }>;
+    remove(id: string): Promise<void>;
     removeBulk(ids: string[]): Promise<{
         success: number;
         fail: number;
