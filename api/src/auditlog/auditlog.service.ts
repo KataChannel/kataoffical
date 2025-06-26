@@ -22,6 +22,8 @@ export class AuditService {
   constructor(private readonly prisma: PrismaService) {}
   async logActivity(data: AuditLogData): Promise<void> {
     try {
+      console.log(data);
+      
       const changedFields = this.getChangedFields(data.oldValues, data.newValues);
       await this.prisma.auditLog.create({
         data: {
@@ -47,7 +49,10 @@ export class AuditService {
 
   async getAuditLogs(param:any) {
     const { page = 1, pageSize = 50, isOne, ...where } = param;
+    console.log(isOne);
+    
     const whereClause: any = {};
+    if (where.id) whereClause.id = where.id;
     if (where.entityName) whereClause.entityName = where.entityName;
     if (where.entityId) whereClause.entityId = where.entityId;
     if (where.userId) whereClause.userId = where.userId;
@@ -57,7 +62,8 @@ export class AuditService {
       if (where.startDate) whereClause.createdAt.gte = where.startDate;
       if (where.endDate) whereClause.createdAt.lte = where.endDate;
     }
-
+    console.log(whereClause);
+    
     if (isOne) {
       const oneLog = await this.prisma.auditLog.findFirst({
       where: whereClause,

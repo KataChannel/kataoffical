@@ -516,6 +516,10 @@ export declare class DonhangController {
         khachhangId: string;
         printCount: number | null;
     } | undefined>;
+    removeBulk(ids: any[]): Promise<{
+        success: number;
+        fail: number;
+    }>;
     remove(id: string): Promise<{
         id: string;
         title: string | null;

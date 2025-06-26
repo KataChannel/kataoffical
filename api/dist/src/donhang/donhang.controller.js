@@ -63,6 +63,9 @@ let DonhangController = class DonhangController {
     update(id, updateDonhangDto) {
         return this.donhangService.update(id, updateDonhangDto);
     }
+    async removeBulk(ids) {
+        return await this.donhangService.removeBulk(ids);
+    }
     remove(id) {
         return this.donhangService.remove(id);
     }
@@ -178,6 +181,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], DonhangController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)('bulk'),
+    (0, audit_decorator_1.Audit)({ entity: 'Delete Donhang', action: client_1.AuditAction.DELETE, includeResponse: true }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], DonhangController.prototype, "removeBulk", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Delete Donhang', action: client_1.AuditAction.DELETE, includeResponse: true }),

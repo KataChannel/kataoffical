@@ -361,37 +361,28 @@ export class DonhangService {
           };
           const response = await fetch(`${environment.APIURL}/donhang/${item.id}`, options);
           if (!response.ok) {
-            // if (response.status === 401) {
-            //   const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-            //   this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // } else if (response.status === 403) {
-            //   const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-            //   this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // } else if (response.status === 500) {
-            //   const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-            //   this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // } else {
-            //   const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-            //   this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // }
           }
       } catch (error) {
           return console.error(error);
       }
   }
 
-  async DeleteBulkDonhang(item:any) {    
+  async DeleteBulkDonhang(items:any[]) {    
     try {
         const options = {
             method:'DELETE',
             headers: {
               'Content-Type': 'application/json',
             },
+            body: JSON.stringify(items),
           };
-          const response = await fetch(`${environment.APIURL}/donhang/${item.id}`, options);
+          const response = await fetch(`${environment.APIURL}/donhang/bulk`, options);
           if (!response.ok) {
           }
-          this.getAllDonhang()
+           this.getAllDonhang()
+          const data = await response.json();
+          return data
+  
       } catch (error) {
           return console.error(error);
       }

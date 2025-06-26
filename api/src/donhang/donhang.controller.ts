@@ -68,6 +68,11 @@ export class DonhangController {
     return this.donhangService.update(id, updateDonhangDto);
   }
 
+  @Delete('bulk')
+  @Audit({entity: 'Delete Donhang', action: AuditAction.DELETE, includeResponse: true})
+  async removeBulk(@Body() ids: any[]) {
+      return await this.donhangService.removeBulk(ids);
+  }
   @Delete(':id')
   @Audit({entity: 'Delete Donhang', action: AuditAction.DELETE, includeResponse: true})
   remove(@Param('id') id: string) {

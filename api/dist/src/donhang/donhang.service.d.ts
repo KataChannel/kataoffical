@@ -495,6 +495,10 @@ export declare class DonhangService {
         khachhangId: string;
         printCount: number | null;
     }>;
+    removeBulk(ids: string[]): Promise<{
+        success: number;
+        fail: number;
+    }>;
     findByProductId(idSP: string): Promise<{
         sanpham: ({
             sanpham: {

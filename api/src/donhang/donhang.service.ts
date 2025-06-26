@@ -1571,6 +1571,58 @@ async dagiao(id: string, data: any) {
     });
   }
 
+
+async removeBulk(ids: string[]) {
+  return this.prisma.$transaction(async (prisma) => {
+    let success = 0;
+    let fail = 0;
+    for (const id of ids) {
+      try {
+        // 1. Lấy đơn hàng bao gồm chi tiết sản phẩm
+        const donhang = await prisma.donhang.findUnique({
+          where: { id },
+          include: { sanpham: true },
+        });
+        if (!donhang) {
+          fail++;
+          continue;
+        }
+
+        // 2. Cập nhật TONKHO cho từng sản phẩm theo trạng thái đơn hàng
+        for (const sp of donhang.sanpham) {
+          const sldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+          if (donhang.status === 'dagiao') {
+            const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(2));
+            await prisma.tonKho.update({
+              where: { sanphamId: sp.idSP },
+              data: {
+                slchogiao: { decrement: sldat },
+                slton: { increment: slgiao },
+              },
+            });
+          } else {
+            await prisma.tonKho.update({
+              where: { sanphamId: sp.idSP },
+              data: {
+                slchogiao: { decrement: sldat },
+              },
+            });
+          }
+        }
+        // 3. Xóa đơn hàng
+        await prisma.donhang.delete({ where: { id } });
+        success++;
+      } catch (error) {
+        fail++;
+      }
+    }
+    return { success, fail };
+  });
+}
+
+
+
+
   async findByProductId(idSP: string) {
     console.log(idSP);
     

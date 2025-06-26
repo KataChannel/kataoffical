@@ -18,6 +18,7 @@ let AuditService = class AuditService {
     }
     async logActivity(data) {
         try {
+            console.log(data);
             const changedFields = this.getChangedFields(data.oldValues, data.newValues);
             await this.prisma.auditLog.create({
                 data: {
@@ -42,7 +43,10 @@ let AuditService = class AuditService {
     }
     async getAuditLogs(param) {
         const { page = 1, pageSize = 50, isOne, ...where } = param;
+        console.log(isOne);
         const whereClause = {};
+        if (where.id)
+            whereClause.id = where.id;
         if (where.entityName)
             whereClause.entityName = where.entityName;
         if (where.entityId)
@@ -58,6 +62,7 @@ let AuditService = class AuditService {
             if (where.endDate)
                 whereClause.createdAt.lte = where.endDate;
         }
+        console.log(whereClause);
         if (isOne) {
             const oneLog = await this.prisma.auditLog.findFirst({
                 where: whereClause,

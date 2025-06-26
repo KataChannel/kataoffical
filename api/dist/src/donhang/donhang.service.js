@@ -1287,6 +1287,51 @@ let DonhangService = class DonhangService {
             return prisma.donhang.delete({ where: { id } });
         });
     }
+    async removeBulk(ids) {
+        return this.prisma.$transaction(async (prisma) => {
+            let success = 0;
+            let fail = 0;
+            for (const id of ids) {
+                try {
+                    const donhang = await prisma.donhang.findUnique({
+                        where: { id },
+                        include: { sanpham: true },
+                    });
+                    if (!donhang) {
+                        fail++;
+                        continue;
+                    }
+                    for (const sp of donhang.sanpham) {
+                        const sldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+                        if (donhang.status === 'dagiao') {
+                            const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(2));
+                            await prisma.tonKho.update({
+                                where: { sanphamId: sp.idSP },
+                                data: {
+                                    slchogiao: { decrement: sldat },
+                                    slton: { increment: slgiao },
+                                },
+                            });
+                        }
+                        else {
+                            await prisma.tonKho.update({
+                                where: { sanphamId: sp.idSP },
+                                data: {
+                                    slchogiao: { decrement: sldat },
+                                },
+                            });
+                        }
+                    }
+                    await prisma.donhang.delete({ where: { id } });
+                    success++;
+                }
+                catch (error) {
+                    fail++;
+                }
+            }
+            return { success, fail };
+        });
+    }
     async findByProductId(idSP) {
         console.log(idSP);
         const donhangs = await this.prisma.donhang.findMany({

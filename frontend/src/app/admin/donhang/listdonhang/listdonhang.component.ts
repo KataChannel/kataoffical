@@ -902,42 +902,65 @@ export class ListDonhangComponent {
     }
 
     try {
-      const deletionPromises = this.EditList.map(async (item: any) =>
-        await this._DonhangService.DeleteDonhang(item)
-      );
-      
-      const results = await Promise.allSettled(deletionPromises);
-      
-      const successful = results.filter(result => result.status === 'fulfilled').length;
-      const failed = results.filter(result => result.status === 'rejected').length;
-      
-      if (failed === 0) {
-        this._snackBar.open(`Xóa thành công ${successful} đơn hàng`, '', {
-          duration: 2000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-      } else {
-        this._snackBar.open(`Xóa thành công ${successful}, thất bại ${failed} đơn hàng`, '', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-warning'],
-        });
-      }
+     const result:any = await this._DonhangService.DeleteBulkDonhang(this.EditList.map((v: any) => v.id));
+      this._snackBar.open(`Xóa thành công ${result.success} đơn hàng ${result.fail} lỗi`, '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+      });
     } catch (error: any) {
-      console.error('Batch deletion error:', error);
+      console.error('Lỗi khi xóa đơn hàng:', error);
       this._snackBar.open('Có lỗi xảy ra khi xóa đơn hàng', '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error'],
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-error'],
       });
     } finally {
       this.EditList = [];
       await this.LoadData();
     }
+
+
+
+    // try {
+    //   const deletionPromises = this.EditList.map(async (item: any) =>
+    //     await this._DonhangService.DeleteDonhang(item)
+    //   );
+      
+    //   const results = await Promise.allSettled(deletionPromises);
+      
+    //   const successful = results.filter(result => result.status === 'fulfilled').length;
+    //   const failed = results.filter(result => result.status === 'rejected').length;
+      
+    //   if (failed === 0) {
+    //     this._snackBar.open(`Xóa thành công ${successful} đơn hàng`, '', {
+    //       duration: 2000,
+    //       horizontalPosition: 'end',
+    //       verticalPosition: 'top',
+    //       panelClass: ['snackbar-success'],
+    //     });
+    //   } else {
+    //     this._snackBar.open(`Xóa thành công ${successful}, thất bại ${failed} đơn hàng`, '', {
+    //       duration: 3000,
+    //       horizontalPosition: 'end',
+    //       verticalPosition: 'top',
+    //       panelClass: ['snackbar-warning'],
+    //     });
+    //   }
+    // } catch (error: any) {
+    //   console.error('Batch deletion error:', error);
+    //   this._snackBar.open('Có lỗi xảy ra khi xóa đơn hàng', '', {
+    //     duration: 3000,
+    //     horizontalPosition: 'end',
+    //     verticalPosition: 'top',
+    //     panelClass: ['snackbar-error'],
+    //   });
+    // } finally {
+    //   this.EditList = [];
+    //   await this.LoadData();
+    // }
   }
   ToggleAll() {
     if (this.EditList.length === this.Listdonhang().data.length) {

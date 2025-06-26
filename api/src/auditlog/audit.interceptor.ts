@@ -28,6 +28,7 @@ export class AuditInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap(async (result) => {
         try {
+          
           await this.auditService.logActivity({
             entityName: auditConfig.entity || 'Unknown',
             entityId: this.extractEntityId(request, result, auditConfig) || '',
