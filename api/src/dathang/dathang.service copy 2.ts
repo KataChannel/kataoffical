@@ -576,14 +576,14 @@ export class DathangService {
         // 2.4. Cập nhật slchonhap theo chênh lệch sldat
         for (const sp of data.sanpham) {
           const newSldat = parseFloat((sp.sldat ?? 0).toFixed(2));
-          const oldItem = oldDathang.sanpham.find((o: any) => o.idSP === (sp.idSP ?? sp.id));
+          const oldItem = oldDathang.sanpham.find((o: any) => o.idSP === sp.id);
           const oldSlgiao = oldItem
             ? parseFloat((oldItem.slgiao ?? 0).toFixed(2))
             : 0;
           const difference = newSldat - oldSlgiao;
           if (difference !== 0) {
             await prisma.tonKho.update({
-              where: { sanphamId: sp.idSP ?? sp.id },
+              where: { sanphamId: sp.id },
               data: {
                 slchonhap:
                   difference > 0
@@ -601,14 +601,14 @@ export class DathangService {
       if (oldDathang.status === 'dadat' && data.status === 'dadat') {
         // 3.1. Cập nhật slchonhap theo chênh lệch sldat
         for (const sp of data.sanpham) {
-          const oldItem = oldDathang.sanpham.find((o: any) => o.idSP === (sp.idSP ?? sp.id));
+          const oldItem = oldDathang.sanpham.find((o: any) => o.idSP === sp.id);
           if (oldItem) {
             const newSldat = parseFloat((sp.sldat ?? 0).toFixed(2));
             const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(2));
             const difference = newSldat - oldSldat;
             if (difference !== 0) {
               await prisma.tonKho.update({
-                where: { sanphamId: sp.idSP ?? sp.id },
+                where: { sanphamId: sp.id },
                 data: {
                   slchonhap: { increment: difference },
                 },
@@ -721,7 +721,7 @@ export class DathangService {
       }
 
       // 5. Chuyển sang 'danhan' (nhập kho, xử lý hao hụt)
-      if (data.status === 'danhan' && oldDathang.status==='dagiao' ) {
+      if (data.status === 'danhan') {
         // Mảng lưu thông tin các sản phẩm có số lượng thiếu
         const shortageItems: {
           sanphamId: string;
@@ -892,8 +892,8 @@ export class DathangService {
       for (const sp of data.sanpham) {
         const newSldat = parseFloat((sp.sldat ?? 0).toFixed(2));
         const oldItem = oldDathang.sanpham.find((o: any) => o.idSP === sp.id);
-        const oldslnhan = oldItem ? parseFloat((oldItem.slnhan ?? 0).toFixed(2)) : 0;
-        const difference = newSldat - oldslnhan;    
+        const oldSlgiao = oldItem ? parseFloat((oldItem.slgiao ?? 0).toFixed(2)) : 0;
+        const difference = newSldat - oldSlgiao;
         if (difference !== 0) {
           await prisma.tonKho.update({
             where: { sanphamId: sp.id },
@@ -941,10 +941,10 @@ export class DathangService {
     // 8. Từ 'dadat' chuyển sang 'danhan' (bỏ qua 'dagiao' nhưng vẫn xử lý tồn kho và phiếu kho)
     if (oldDathang.status === 'dadat' && data.status === 'danhan') {
       // 8.1. Giảm slchonhap (tồn kho chờ nhập) theo số lượng nhận thực tế
-     for (const sp of data.sanpham) {
+      for (const sp of data.sanpham) {
       const slnhan = parseFloat((Number(sp.slnhan) ?? 0).toFixed(2));
       await prisma.tonKho.update({
-        where: { sanphamId: sp.idSP ?? sp.id },
+        where: { sanphamId: sp.id },
         data: {
         slchonhap: { decrement: slnhan },
         slton: { increment: slnhan }, // Nhập kho thực tế
@@ -1008,7 +1008,7 @@ export class DathangService {
             : `Thiếu ${(sldat - slnhan).toFixed(2)}`
             : item.ghichu || '';
           return {
-          where: { idSP: item.idSP ?? item.id },
+          where: { idSP: item.id },
           data: {
             ghichu: shortageNote,
             slnhan: slnhan,
@@ -1020,7 +1020,6 @@ export class DathangService {
       },
       });
     }
-
 
       throw new Error('Trạng thái không hợp lệ');
     });

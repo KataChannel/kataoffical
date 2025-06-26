@@ -518,14 +518,14 @@ let DathangService = class DathangService {
                 });
                 for (const sp of data.sanpham) {
                     const newSldat = parseFloat((sp.sldat ?? 0).toFixed(2));
-                    const oldItem = oldDathang.sanpham.find((o) => o.idSP === (sp.idSP ?? sp.id));
+                    const oldItem = oldDathang.sanpham.find((o) => o.idSP === sp.id);
                     const oldSlgiao = oldItem
                         ? parseFloat((oldItem.slgiao ?? 0).toFixed(2))
                         : 0;
                     const difference = newSldat - oldSlgiao;
                     if (difference !== 0) {
                         await prisma.tonKho.update({
-                            where: { sanphamId: sp.idSP ?? sp.id },
+                            where: { sanphamId: sp.id },
                             data: {
                                 slchonhap: difference > 0
                                     ? { increment: difference }
@@ -538,14 +538,14 @@ let DathangService = class DathangService {
             }
             if (oldDathang.status === 'dadat' && data.status === 'dadat') {
                 for (const sp of data.sanpham) {
-                    const oldItem = oldDathang.sanpham.find((o) => o.idSP === (sp.idSP ?? sp.id));
+                    const oldItem = oldDathang.sanpham.find((o) => o.idSP === sp.id);
                     if (oldItem) {
                         const newSldat = parseFloat((sp.sldat ?? 0).toFixed(2));
                         const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(2));
                         const difference = newSldat - oldSldat;
                         if (difference !== 0) {
                             await prisma.tonKho.update({
-                                where: { sanphamId: sp.idSP ?? sp.id },
+                                where: { sanphamId: sp.id },
                                 data: {
                                     slchonhap: { increment: difference },
                                 },
@@ -645,7 +645,7 @@ let DathangService = class DathangService {
                     },
                 });
             }
-            if (data.status === 'danhan' && oldDathang.status === 'dagiao') {
+            if (data.status === 'danhan') {
                 const shortageItems = [];
                 for (const item of data.sanpham) {
                     const receivedQty = parseFloat((Number(item.slnhan) ?? 0).toFixed(2));
@@ -787,8 +787,8 @@ let DathangService = class DathangService {
                 for (const sp of data.sanpham) {
                     const newSldat = parseFloat((sp.sldat ?? 0).toFixed(2));
                     const oldItem = oldDathang.sanpham.find((o) => o.idSP === sp.id);
-                    const oldslnhan = oldItem ? parseFloat((oldItem.slnhan ?? 0).toFixed(2)) : 0;
-                    const difference = newSldat - oldslnhan;
+                    const oldSlgiao = oldItem ? parseFloat((oldItem.slgiao ?? 0).toFixed(2)) : 0;
+                    const difference = newSldat - oldSlgiao;
                     if (difference !== 0) {
                         await prisma.tonKho.update({
                             where: { sanphamId: sp.id },
@@ -832,7 +832,7 @@ let DathangService = class DathangService {
                 for (const sp of data.sanpham) {
                     const slnhan = parseFloat((Number(sp.slnhan) ?? 0).toFixed(2));
                     await prisma.tonKho.update({
-                        where: { sanphamId: sp.idSP ?? sp.id },
+                        where: { sanphamId: sp.id },
                         data: {
                             slchonhap: { decrement: slnhan },
                             slton: { increment: slnhan },
@@ -887,7 +887,7 @@ let DathangService = class DathangService {
                                         : `Thiếu ${(sldat - slnhan).toFixed(2)}`
                                     : item.ghichu || '';
                                 return {
-                                    where: { idSP: item.idSP ?? item.id },
+                                    where: { idSP: item.id },
                                     data: {
                                         ghichu: shortageNote,
                                         slnhan: slnhan,
@@ -958,4 +958,4 @@ exports.DathangService = DathangService = __decorate([
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         importdata_service_1.ImportdataService])
 ], DathangService);
-//# sourceMappingURL=dathang.service.js.map
+//# sourceMappingURL=dathang.service%20copy%202.js.map

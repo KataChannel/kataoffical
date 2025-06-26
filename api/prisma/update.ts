@@ -77,13 +77,23 @@ async function main() {
   //   });
   // }
   // Reset tonkho: set slton, slchonhap, slchogiao về 0 cho tất cả bản ghi
-  await prisma.tonKho.updateMany({
-    data: {
-      slton: 0,
-      slchonhap: 0,
-      slchogiao: 0,
-    },
+  // Lấy tất cả các bản ghi tonKho
+  const tonKhos = await prisma.tonKho.findMany({
+    select: { id: true, slton: true, slchonhap: true, slchogiao: true },
   });
+
+  // Cập nhật từng bản ghi: cộng dồn slchonhap vào slton, đặt slchonhap về 0
+  for (const tonKho of tonKhos) {
+    await prisma.tonKho.update({
+      where: { id: tonKho.id },
+      data: {
+        slton: tonKho.slton.plus(tonKho.slchonhap),
+        slchonhap: 0,
+        // Nếu muốn reset slchogiao về 0 thì thêm dòng dưới:
+        // slchogiao: 0,
+      },
+    });
+  }
 
 }
 
