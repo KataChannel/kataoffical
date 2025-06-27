@@ -113,10 +113,8 @@ export class DetailDonhangComponent {
       } else {
         await this._DonhangService.getDonhangByid(id);
         this.ListFilter = this.DetailDonhang().sanpham
-        // this.DetailDonhang.update((v:any)=>{
-        //   v.banggiaId = v?.khachhang?.banggia.find((v: any) => moment() > moment(v.batdau) && moment() < moment(v.ketthuc))?.id;
-        //   return v
-        // })        
+        this.dataSource().data = this.DetailDonhang().sanpham;
+        this.dataSource().data.sort((a, b) => a.order - b.order);      
         this._ListdonhangComponent.drawer.open();
         this._router.navigate(['/admin/donhang', id]);
       }
@@ -139,7 +137,6 @@ export class DetailDonhangComponent {
   async ngOnInit() {
      await this._UserService.getProfile();
      this.permissions = this._UserService.profile().permissions.map((v:any)=>v.name);
-     console.log(this.permissions);  
   }
   async handleDonhangAction() {
     if (this.donhangId() === 'new') {
@@ -296,8 +293,9 @@ export class DetailDonhangComponent {
         } 
     this.DetailDonhang.update((v: any) => {
       if (index !== null) {
+        const itemIndex = v.sanpham.findIndex((v1: any) => v1.id === element.id);
         if (field === 'sldat') {
-          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
+          v.sanpham[itemIndex]['sldat'] = v.sanpham[itemIndex]['slgiao'] = v.sanpham[itemIndex]['slnhan'] = newValue;
           // Find the next input to focus on
           const inputs = document.querySelectorAll('.sldat-input')as NodeListOf<HTMLInputElement>;
               if (index < this.dataSource().filteredData.length - 1) {
@@ -322,7 +320,7 @@ export class DetailDonhangComponent {
 
         } 
         else if (field === 'ghichu') {
-          v.sanpham[index][field] = newValue;
+          v.sanpham[itemIndex][field] = newValue;
           // Find the next input to focus on
           const inputs = document.querySelectorAll('.ghichu-input')as NodeListOf<HTMLInputElement>;
               if (index < this.dataSource().filteredData.length - 1) {
@@ -348,9 +346,9 @@ export class DetailDonhangComponent {
         
         else if (field === 'slgiao') {
           const newGiao = newValue
-          if (newGiao < v.sanpham[index]['sldat']) {
+          if (newGiao < v.sanpham[itemIndex]['sldat']) {
             // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
-            v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
+            v.sanpham[itemIndex]['slgiao'] = v.sanpham[itemIndex]['sldat'];
             this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
               duration: 1000,
               horizontalPosition: "end",
@@ -358,10 +356,10 @@ export class DetailDonhangComponent {
               panelClass: ['snackbar-error'],
             });
           } else {
-            v.sanpham[index]['slgiao'] =  newGiao;
+            v.sanpham[itemIndex]['slgiao'] =  newGiao;
           }
         } else {
-          v.sanpham[index][field] = newValue;
+          v.sanpham[itemIndex][field] = newValue;
         }
       } else {
         v[field] = newValue;
@@ -384,16 +382,17 @@ export class DetailDonhangComponent {
 
     this.DetailDonhang.update((v: any) => {
       if (index !== null) {
+        const itemIndex = v.sanpham.findIndex((v1: any) => v1.id === element.id);
         if (field === 'sldat') {
-          v.sanpham[index] = {
-            ...v.sanpham[index],
+          v.sanpham[itemIndex] = {
+            ...v.sanpham[itemIndex],
             sldat: newValue,
             slgiao: newValue,
             slnhan: newValue
           };
         } else if (field === 'slgiao') {
-          if (newValue < v.sanpham[index]['sldat']) {
-            v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
+          if (newValue < v.sanpham[itemIndex]['sldat']) {
+            v.sanpham[itemIndex]['slgiao'] = v.sanpham[itemIndex]['sldat'];
             this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
               duration: 1000,
               horizontalPosition: 'end',
@@ -401,12 +400,14 @@ export class DetailDonhangComponent {
               panelClass: ['snackbar-error'],
             });
           } else {
-            v.sanpham[index]['slgiao'] = newValue;
+            v.sanpham[itemIndex]['slgiao'] = newValue;
             // v.sanpham[index]['slnhan'] = newValue;
           }
         } else {
-          v.sanpham[index][field] = newValue;
+          v.sanpham[itemIndex][field] = newValue;
         }
+        console.log('v.sanpham[itemIndex]',v.sanpham[itemIndex]);
+        
       } else {
         v[field] = newValue;
       }
@@ -584,26 +585,27 @@ export class DetailDonhangComponent {
     await this._SanphamService.getAllSanpham({subtitle: value},true)
     this.filterSanpham = this.ListSanpham()
   }
-  SelectSanpham(event:any){
-    const value = event.value;
-    const item = this.ListSanpham().find((v:any) => v.id === value);
-    this.DetailDonhang.update((v:any)=>{
-      if(!v.sanpham){
-        v.sanpham = [];
-        item.sldat = item.slgiao = item.slnhan = 1;
-        v.sanpham.push(item);
-      }
-      else{
-          item.sldat = item.slgiao = item.slnhan = 1;
-          v.sanpham.push(item);
-      }
-      this.reloadfilter();
-      return v;
-    })
-    this.dataSource().data = this.DetailDonhang().sanpham;
+
+  // SelectSanpham(event:any){
+  //   const value = event.value;
+  //   const item = this.ListSanpham().find((v:any) => v.id === value);
+  //   this.DetailDonhang.update((v:any)=>{
+  //     if(!v.sanpham){
+  //       v.sanpham = [];
+  //       item.sldat = item.slgiao = item.slnhan = 1;
+  //       v.sanpham.push(item);
+  //     }
+  //     else{
+  //         item.sldat = item.slgiao = item.slnhan = 1;
+  //         v.sanpham.push(item);
+  //     }
+  //     this.reloadfilter();
+  //     return v;
+  //   })
+  //   this.dataSource().data = this.DetailDonhang().sanpham;
     
     
-  }
+  // }
   RemoveSanpham(item:any){
     this.DetailDonhang.update((v:any)=>{
       v.sanpham = v.sanpham.filter((v1:any) => v1.id !== item.id);
@@ -734,9 +736,8 @@ export class DetailDonhangComponent {
     }
     else{
       CheckItem.order = this.ListFilter.length+1
-      console.log(CheckItem);
       this.ListFilter.push(CheckItem)
-    }
+    }    
   }
   ChosenAll(list:any)
   {
@@ -757,22 +758,18 @@ export class DetailDonhangComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-    console.log(this.ListFilter);
 
-    
     this.ListFilter.forEach((v) => {
       const exists = this.dataSource().data.find((d: any) => d.id === v.id);
-          console.log(exists);
-      if (!exists) {
-        v.sldat = v.slgiao =v.slnhan = 1;
-      }
+       v.sldat = exists.sldat || 1;
+       v.slgiao = exists.slgiao || 1;
+       v.slnhan = exists.slnhan || 1;
     });
-
-    this.dataSource().data = this.ListFilter
     this.DetailDonhang.update((v:any)=>{
       v.sanpham =  this.ListFilter
       return v
     })  
+    this.dataSource().data = this.ListFilter;
     this.dataSource().data.sort((a, b) => a.order - b.order);
     menu.closeMenu();
   }
