@@ -199,9 +199,9 @@ export declare class HoadonchitietController {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        status: string;
         order: number | null;
         codeId: string | null;
-        status: string;
         title2: string | null;
         dvtinh: string | null;
         ten: string | null;

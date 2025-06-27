@@ -1,13 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service'; 
-import { ErrorlogService } from 'src/errorlog/errorlog.service'; 
 import { SocketGateway } from 'src/socket.gateway'; 
 @Injectable()
 export class DanhmucService { 
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway, 
-    private _ErrorlogService: ErrorlogService,
   ) {}
   async getLastUpdatedDanhmuc(): Promise<{ updatedAt: number }> { 
     try {
@@ -16,7 +14,6 @@ export class DanhmucService {
       });
       return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdatedDanhmuc', error);
       throw error;
     }
   }
@@ -36,7 +33,6 @@ export class DanhmucService {
       const newPrefix = 'DM';
       return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
-      this._ErrorlogService.logError('generateDanhmucCodeId', error);
       throw error;
     }
   }
@@ -57,7 +53,6 @@ export class DanhmucService {
       this._SocketGateway.sendUpdate('danhmuc'); 
       return created;
     } catch (error) {
-      this._ErrorlogService.logError('createDanhmuc', error);
       throw error;
     }
   }
@@ -88,7 +83,6 @@ export class DanhmucService {
         pageCount: Math.ceil(total / limit)
       };
     } catch (error) {
-      this._ErrorlogService.logError('findByDanhmuc', error);
       throw error;
     }
   }
@@ -110,7 +104,6 @@ export class DanhmucService {
         pageCount: Math.ceil(total / limit)
       };
     } catch (error) {
-      this._ErrorlogService.logError('findAllDanhmuc', error);
       throw error;
     }
   }
@@ -120,7 +113,6 @@ export class DanhmucService {
       if (!item) throw new NotFoundException('Danhmuc not found'); 
       return item;
     } catch (error) {
-      this._ErrorlogService.logError('findOneDanhmuc', error);
       throw error;
     }
   }
@@ -137,7 +129,6 @@ export class DanhmucService {
       this._SocketGateway.sendUpdate('danhmuc');
       return updated;
     } catch (error) {
-      this._ErrorlogService.logError('updateDanhmuc', error);
       throw error;
     }
   }
@@ -147,7 +138,6 @@ export class DanhmucService {
       this._SocketGateway.sendUpdate('danhmuc');
       return deleted;
     } catch (error) {
-      this._ErrorlogService.logError('removeDanhmuc', error);
       throw error;
     }
   }
@@ -162,7 +152,6 @@ export class DanhmucService {
       this._SocketGateway.sendUpdate('danhmuc'); 
       return { status: 'success' };
     } catch (error) {
-      this._ErrorlogService.logError('reorderDanhmucs', error);
       throw error;
     }
   }

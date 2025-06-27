@@ -11,14 +11,13 @@ const common_1 = require("@nestjs/common");
 const menu_service_1 = require("./menu.service");
 const menu_controller_1 = require("./menu.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
-const errorlog_module_1 = require("../errorlog/errorlog.module");
 const socket_gateway_1 = require("../socket.gateway");
 let MenuModule = class MenuModule {
 };
 exports.MenuModule = MenuModule;
 exports.MenuModule = MenuModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule],
+        imports: [prisma_module_1.PrismaModule],
         controllers: [menu_controller_1.MenuController],
         providers: [menu_service_1.MenuService, socket_gateway_1.SocketGateway],
         exports: [menu_service_1.MenuService]

@@ -1,13 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service'; 
-import { ErrorlogService } from 'src/errorlog/errorlog.service'; 
 import { SocketGateway } from 'src/socket.gateway'; 
 @Injectable()
 export class KhachhangService { 
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway, 
-    private _ErrorlogService: ErrorlogService,
   ) {}
   async getLastUpdatedKhachhang(): Promise<{ updatedAt: number }> { 
     try {
@@ -16,7 +14,6 @@ export class KhachhangService {
       });
       return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdatedKhachhang', error);
       throw error;
     }
   }
@@ -36,7 +33,6 @@ export class KhachhangService {
       const newPrefix = 'KH'; 
       return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
-      this._ErrorlogService.logError('generateKhachhangCodeId', error);
       throw error;
     }
   }
@@ -57,7 +53,6 @@ export class KhachhangService {
       this._SocketGateway.sendUpdate('khachhang'); 
       return created;
     } catch (error) {
-      this._ErrorlogService.logError('createKhachhang', error);
       throw error;
     }
   }
@@ -88,7 +83,6 @@ export class KhachhangService {
         pageCount: Math.ceil(total / limit)
       };
     } catch (error) {
-      this._ErrorlogService.logError('findByKhachhang', error);
       throw error;
     }
   }
@@ -110,7 +104,6 @@ export class KhachhangService {
         pageCount: Math.ceil(total / limit)
       };
     } catch (error) {
-      this._ErrorlogService.logError('findAllKhachhang', error);
       throw error;
     }
   }
@@ -120,7 +113,6 @@ export class KhachhangService {
       if (!item) throw new NotFoundException('Khachhang not found'); 
       return item;
     } catch (error) {
-      this._ErrorlogService.logError('findOneKhachhang', error);
       throw error;
     }
   }
@@ -137,7 +129,6 @@ export class KhachhangService {
       this._SocketGateway.sendUpdate('khachhang');
       return updated;
     } catch (error) {
-      this._ErrorlogService.logError('updateKhachhang', error);
       throw error;
     }
   }
@@ -147,7 +138,6 @@ export class KhachhangService {
       this._SocketGateway.sendUpdate('khachhang');
       return deleted;
     } catch (error) {
-      this._ErrorlogService.logError('removeKhachhang', error);
       throw error;
     }
   }
@@ -162,7 +152,6 @@ export class KhachhangService {
       this._SocketGateway.sendUpdate('khachhang'); 
       return { status: 'success' };
     } catch (error) {
-      this._ErrorlogService.logError('reorderKhachhangs', error);
       throw error;
     }
   }

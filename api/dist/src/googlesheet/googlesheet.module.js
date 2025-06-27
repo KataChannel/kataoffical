@@ -12,13 +12,12 @@ const googlesheet_service_1 = require("./googlesheet.service");
 const googlesheet_controller_1 = require("./googlesheet.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const socket_gateway_1 = require("../socket.gateway");
-const errorlog_module_1 = require("../errorlog/errorlog.module");
 let GooglesheetModule = class GooglesheetModule {
 };
 exports.GooglesheetModule = GooglesheetModule;
 exports.GooglesheetModule = GooglesheetModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule],
+        imports: [prisma_module_1.PrismaModule],
         controllers: [googlesheet_controller_1.GooglesheetController],
         providers: [googlesheet_service_1.GooglesheetService, socket_gateway_1.SocketGateway],
         exports: [googlesheet_service_1.GooglesheetService]

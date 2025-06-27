@@ -12,13 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BanggiaService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 let BanggiaService = class BanggiaService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     async getLastUpdatedBanggia() {
         try {
@@ -28,7 +26,6 @@ let BanggiaService = class BanggiaService {
             return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdatedBanggia', error);
             throw error;
         }
     }
@@ -48,7 +45,6 @@ let BanggiaService = class BanggiaService {
             return `BG${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generatebanggiaCodeId', error);
             throw error;
         }
     }
@@ -154,7 +150,6 @@ let BanggiaService = class BanggiaService {
             return created;
         }
         catch (error) {
-            this._ErrorlogService.logError('createbanggia', error);
             throw error;
         }
     }
@@ -196,7 +191,6 @@ let BanggiaService = class BanggiaService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findBybanggia', error);
             throw error;
         }
     }
@@ -223,7 +217,6 @@ let BanggiaService = class BanggiaService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findAllbanggia', error);
             throw error;
         }
     }
@@ -241,7 +234,6 @@ let BanggiaService = class BanggiaService {
             return item;
         }
         catch (error) {
-            this._ErrorlogService.logError('findOnebanggia', error);
             throw error;
         }
     }
@@ -273,7 +265,6 @@ let BanggiaService = class BanggiaService {
             return updated;
         }
         catch (error) {
-            this._ErrorlogService.logError('approvebanggia', error);
             throw error;
         }
     }
@@ -342,7 +333,6 @@ let BanggiaService = class BanggiaService {
             return updated;
         }
         catch (error) {
-            this._ErrorlogService.logError('updatebanggia', error);
             throw error;
         }
     }
@@ -357,7 +347,6 @@ let BanggiaService = class BanggiaService {
             return deleted;
         }
         catch (error) {
-            this._ErrorlogService.logError('removebanggia', error);
             throw error;
         }
     }
@@ -373,7 +362,6 @@ let BanggiaService = class BanggiaService {
             return { status: 'success' };
         }
         catch (error) {
-            this._ErrorlogService.logError('reorderBanggias', error);
             throw error;
         }
     }
@@ -382,7 +370,6 @@ exports.BanggiaService = BanggiaService;
 exports.BanggiaService = BanggiaService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], BanggiaService);
 //# sourceMappingURL=banggia.service.js.map

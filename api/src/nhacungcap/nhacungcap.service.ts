@@ -1,13 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service'; 
-import { ErrorlogService } from 'src/errorlog/errorlog.service'; 
 import { SocketGateway } from 'src/socket.gateway'; 
 @Injectable()
 export class NhacungcapService { 
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway, 
-    private _ErrorlogService: ErrorlogService,
   ) {}
   async getLastUpdatedNhacungcap(): Promise<{ updatedAt: number }> { 
     try {
@@ -16,7 +14,6 @@ export class NhacungcapService {
       });
       return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdatedNhacungcap', error);
       throw error;
     }
   }
@@ -36,7 +33,6 @@ export class NhacungcapService {
       const newPrefix = 'NCC'; 
       return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
-      this._ErrorlogService.logError('generateNhacungcapCodeId', error);
       throw error;
     }
   }
@@ -57,7 +53,6 @@ export class NhacungcapService {
       this._SocketGateway.sendUpdate('nhacungcap'); 
       return created;
     } catch (error) {
-      this._ErrorlogService.logError('createNhacungcap', error);
       throw error;
     }
   }
@@ -88,7 +83,6 @@ export class NhacungcapService {
         pageCount: Math.ceil(total / limit)
       };
     } catch (error) {
-      this._ErrorlogService.logError('findByNhacungcap', error);
       throw error;
     }
   }
@@ -110,7 +104,6 @@ export class NhacungcapService {
         pageCount: Math.ceil(total / limit)
       };
     } catch (error) {
-      this._ErrorlogService.logError('findAllNhacungcap', error);
       throw error;
     }
   }
@@ -120,7 +113,6 @@ export class NhacungcapService {
       if (!item) throw new NotFoundException('Nhacungcap not found'); 
       return item;
     } catch (error) {
-      this._ErrorlogService.logError('findOneNhacungcap', error);
       throw error;
     }
   }
@@ -137,7 +129,6 @@ export class NhacungcapService {
       this._SocketGateway.sendUpdate('nhacungcap');
       return updated;
     } catch (error) {
-      this._ErrorlogService.logError('updateNhacungcap', error);
       throw error;
     }
   }
@@ -147,7 +138,6 @@ export class NhacungcapService {
       this._SocketGateway.sendUpdate('nhacungcap');
       return deleted;
     } catch (error) {
-      this._ErrorlogService.logError('removeNhacungcap', error);
       throw error;
     }
   }
@@ -162,7 +152,6 @@ export class NhacungcapService {
       this._SocketGateway.sendUpdate('nhacungcap'); 
       return { status: 'success' };
     } catch (error) {
-      this._ErrorlogService.logError('reorderNhacungcaps', error);
       throw error;
     }
   }

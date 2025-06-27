@@ -1,11 +1,9 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 export declare class DathangService {
     private readonly prisma;
     private _SocketGateway;
-    private _ErrorlogService;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogService: ErrorlogService);
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
     getLastUpdatedDathang(): Promise<{
         updatedAt: number;
     }>;
@@ -41,9 +39,9 @@ export declare class DathangService {
         createdAt: Date;
         updatedAt: Date;
         total: number;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         nhacungcapId: string;
     }>;
     findBy(param: {
@@ -59,9 +57,10 @@ export declare class DathangService {
                 updatedAt: Date;
                 description: string | null;
                 title: string;
+                status: string;
                 order: number | null;
                 codeId: string;
-                status: string;
+                createdById: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
@@ -99,9 +98,9 @@ export declare class DathangService {
         createdAt: Date;
         updatedAt: Date;
         total: number;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         nhacungcapId: string;
     }) | {
         data: ({
@@ -112,9 +111,10 @@ export declare class DathangService {
                     updatedAt: Date;
                     description: string | null;
                     title: string;
+                    status: string;
                     order: number | null;
                     codeId: string;
-                    status: string;
+                    createdById: string | null;
                     donvitinh: string | null;
                     bienthe: string | null;
                     giagoc: number;
@@ -152,9 +152,9 @@ export declare class DathangService {
             createdAt: Date;
             updatedAt: Date;
             total: number;
+            status: string;
             order: number | null;
             codeId: string;
-            status: string;
             nhacungcapId: string;
         })[];
         total: number;
@@ -170,9 +170,10 @@ export declare class DathangService {
                     updatedAt: Date;
                     description: string | null;
                     title: string;
+                    status: string;
                     order: number | null;
                     codeId: string;
-                    status: string;
+                    createdById: string | null;
                     donvitinh: string | null;
                     bienthe: string | null;
                     giagoc: number;
@@ -210,9 +211,9 @@ export declare class DathangService {
             createdAt: Date;
             updatedAt: Date;
             total: number;
+            status: string;
             order: number | null;
             codeId: string;
-            status: string;
             nhacungcapId: string;
         })[];
         total: number;
@@ -227,9 +228,10 @@ export declare class DathangService {
                 updatedAt: Date;
                 description: string | null;
                 title: string;
+                status: string;
                 order: number | null;
                 codeId: string;
-                status: string;
+                createdById: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
@@ -267,9 +269,9 @@ export declare class DathangService {
         createdAt: Date;
         updatedAt: Date;
         total: number;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         nhacungcapId: string;
     }>;
     update(id: string, payload: any): Promise<{
@@ -303,9 +305,9 @@ export declare class DathangService {
         createdAt: Date;
         updatedAt: Date;
         total: number;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         nhacungcapId: string;
     }>;
     remove(id: string): Promise<{
@@ -313,9 +315,9 @@ export declare class DathangService {
         createdAt: Date;
         updatedAt: Date;
         total: number;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         nhacungcapId: string;
     }>;
     reorderDathangs(dathangIds: string[]): Promise<{

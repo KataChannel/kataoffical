@@ -12,13 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NhacungcapService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 let NhacungcapService = class NhacungcapService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     async getLastUpdatedNhacungcap() {
         try {
@@ -28,7 +26,6 @@ let NhacungcapService = class NhacungcapService {
             return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdatedNhacungcap', error);
             throw error;
         }
     }
@@ -49,7 +46,6 @@ let NhacungcapService = class NhacungcapService {
             return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generateNhacungcapCodeId', error);
             throw error;
         }
     }
@@ -71,7 +67,6 @@ let NhacungcapService = class NhacungcapService {
             return created;
         }
         catch (error) {
-            this._ErrorlogService.logError('createNhacungcap', error);
             throw error;
         }
     }
@@ -103,7 +98,6 @@ let NhacungcapService = class NhacungcapService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findByNhacungcap', error);
             throw error;
         }
     }
@@ -126,7 +120,6 @@ let NhacungcapService = class NhacungcapService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findAllNhacungcap', error);
             throw error;
         }
     }
@@ -138,7 +131,6 @@ let NhacungcapService = class NhacungcapService {
             return item;
         }
         catch (error) {
-            this._ErrorlogService.logError('findOneNhacungcap', error);
             throw error;
         }
     }
@@ -157,7 +149,6 @@ let NhacungcapService = class NhacungcapService {
             return updated;
         }
         catch (error) {
-            this._ErrorlogService.logError('updateNhacungcap', error);
             throw error;
         }
     }
@@ -168,7 +159,6 @@ let NhacungcapService = class NhacungcapService {
             return deleted;
         }
         catch (error) {
-            this._ErrorlogService.logError('removeNhacungcap', error);
             throw error;
         }
     }
@@ -184,7 +174,6 @@ let NhacungcapService = class NhacungcapService {
             return { status: 'success' };
         }
         catch (error) {
-            this._ErrorlogService.logError('reorderNhacungcaps', error);
             throw error;
         }
     }
@@ -193,7 +182,6 @@ exports.NhacungcapService = NhacungcapService;
 exports.NhacungcapService = NhacungcapService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], NhacungcapService);
 //# sourceMappingURL=nhacungcap.service.js.map

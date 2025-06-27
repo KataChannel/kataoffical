@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from '../socket.gateway';
 
 @Injectable()
@@ -8,10 +7,8 @@ export class UserguideService {
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
-    private _ErrorlogService: ErrorlogService,
   ) {}
   private handleError(method: string, error: any): never {
-    this._ErrorlogService.logError(method, error);
     throw error;
   }
   async getLastUpdatedUserguide(): Promise<{ updatedAt: number }> {

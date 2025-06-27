@@ -12,15 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HoadonchitietService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 const moment = require("moment");
 const ExcelJS = require("exceljs");
 let HoadonchitietService = class HoadonchitietService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     async getLastUpdatedhoadonChitiet() {
         try {
@@ -34,7 +32,6 @@ let HoadonchitietService = class HoadonchitietService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdatedhoadonChitiet', error);
             if (error instanceof common_1.HttpException)
                 throw error;
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -57,7 +54,6 @@ let HoadonchitietService = class HoadonchitietService {
             return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generatehoadonChitietCodeId', error);
             if (error instanceof common_1.HttpException)
                 throw error;
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -89,7 +85,6 @@ let HoadonchitietService = class HoadonchitietService {
             return created;
         }
         catch (error) {
-            this._ErrorlogService.logError('createhoadonChitiet', error);
             if (error instanceof common_1.HttpException)
                 throw error;
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -161,7 +156,6 @@ let HoadonchitietService = class HoadonchitietService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findByhoadonChitiet', error);
             if (error instanceof common_1.HttpException)
                 throw error;
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -213,7 +207,6 @@ let HoadonchitietService = class HoadonchitietService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findAllhoadonChitiet', error);
             if (error instanceof common_1.HttpException)
                 throw error;
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -373,7 +366,6 @@ let HoadonchitietService = class HoadonchitietService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('xuatnhapton', error);
             if (error instanceof common_1.HttpException)
                 throw error;
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -436,7 +428,6 @@ let HoadonchitietService = class HoadonchitietService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('mathang', error);
             if (error instanceof common_1.HttpException)
                 throw error;
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -452,7 +443,6 @@ let HoadonchitietService = class HoadonchitietService {
             return item;
         }
         catch (error) {
-            this._ErrorlogService.logError('findOnehoadonChitiet', error);
             if (error instanceof common_1.HttpException)
                 throw error;
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -472,7 +462,6 @@ let HoadonchitietService = class HoadonchitietService {
             return updated;
         }
         catch (error) {
-            this._ErrorlogService.logError('updateMathang', error);
             if (error instanceof common_1.HttpException)
                 throw error;
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -499,7 +488,6 @@ let HoadonchitietService = class HoadonchitietService {
             return updated;
         }
         catch (error) {
-            this._ErrorlogService.logError('updatehoadonChitiet', error);
             if (error instanceof common_1.HttpException)
                 throw error;
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -512,7 +500,6 @@ let HoadonchitietService = class HoadonchitietService {
             return deleted;
         }
         catch (error) {
-            this._ErrorlogService.logError('removehoadonChitiet', error);
             if (error instanceof common_1.HttpException)
                 throw error;
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -530,7 +517,6 @@ let HoadonchitietService = class HoadonchitietService {
             return { status: 'success' };
         }
         catch (error) {
-            this._ErrorlogService.logError('reorderhoadonChitiets', error);
             if (error instanceof common_1.HttpException)
                 throw error;
             throw new common_1.HttpException(error.message, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -541,7 +527,6 @@ exports.HoadonchitietService = HoadonchitietService;
 exports.HoadonchitietService = HoadonchitietService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], HoadonchitietService);
 //# sourceMappingURL=hoadonchitiet.service.js.map

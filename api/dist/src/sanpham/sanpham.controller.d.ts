@@ -2,24 +2,17 @@ import { SanphamService } from './sanpham.service';
 export declare class SanphamController {
     private readonly sanphamService;
     constructor(sanphamService: SanphamService);
-    import(data: any): Promise<{
-        message: string;
-        results: {
-            codeId: any;
-            status: string;
-            action?: string;
-            error?: string;
-        }[];
-    }>;
-    create(data: any): Promise<{
+    import(data: any, user: any): Promise<any>;
+    create(data: any, user: any): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
+        createdById: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
@@ -33,9 +26,10 @@ export declare class SanphamController {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
+        createdById: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
@@ -49,9 +43,10 @@ export declare class SanphamController {
             updatedAt: Date;
             description: string | null;
             title: string;
+            status: string;
             order: number | null;
             codeId: string;
-            status: string;
+            createdById: string | null;
             donvitinh: string | null;
             bienthe: string | null;
             giagoc: number;
@@ -69,9 +64,10 @@ export declare class SanphamController {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
+        createdById: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
@@ -85,9 +81,10 @@ export declare class SanphamController {
             updatedAt: Date;
             description: string | null;
             title: string;
+            status: string;
             order: number | null;
             codeId: string;
-            status: string;
+            createdById: string | null;
             donvitinh: string | null;
             bienthe: string | null;
             giagoc: number;
@@ -109,9 +106,10 @@ export declare class SanphamController {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
+        createdById: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
@@ -125,9 +123,10 @@ export declare class SanphamController {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
+        createdById: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
@@ -141,9 +140,10 @@ export declare class SanphamController {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
+        createdById: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;

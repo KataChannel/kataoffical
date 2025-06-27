@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { DonhangService } from './donhang.service'; 
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
+import { JwtAuthGuard } from 'src/shared/auth/jwt-auth.guard'; 
 @ApiTags('donhang') 
 @Controller('donhang') 
 export class DonhangController { 

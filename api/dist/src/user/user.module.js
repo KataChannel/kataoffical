@@ -12,15 +12,14 @@ const user_service_1 = require("./user.service");
 const user_controller_1 = require("./user.controller");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const socket_gateway_1 = require("../socket.gateway");
-const auth_module_1 = require("../auth/auth.module");
-const errorlog_module_1 = require("../errorlog/errorlog.module");
-const auditlog_service_1 = require("../auditlog/auditlog.service");
+const auth_module_1 = require("../shared/auth/auth.module");
+const auditlog_service_1 = require("../shared/auditlog/auditlog.service");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
 exports.UserModule = UserModule = __decorate([
     (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule, errorlog_module_1.ErrorlogModule],
+        imports: [auth_module_1.AuthModule],
         controllers: [user_controller_1.UserController],
         providers: [user_service_1.UserService, prisma_service_1.PrismaService, socket_gateway_1.SocketGateway, auditlog_service_1.AuditService],
         exports: [user_service_1.UserService],

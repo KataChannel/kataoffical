@@ -33,9 +33,9 @@ export declare class DathangController {
         createdAt: Date;
         updatedAt: Date;
         total: number;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         nhacungcapId: string;
     }>;
     findby(param: any): Promise<({
@@ -46,9 +46,10 @@ export declare class DathangController {
                 updatedAt: Date;
                 description: string | null;
                 title: string;
+                status: string;
                 order: number | null;
                 codeId: string;
-                status: string;
+                createdById: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
@@ -86,9 +87,9 @@ export declare class DathangController {
         createdAt: Date;
         updatedAt: Date;
         total: number;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         nhacungcapId: string;
     }) | {
         data: ({
@@ -99,9 +100,10 @@ export declare class DathangController {
                     updatedAt: Date;
                     description: string | null;
                     title: string;
+                    status: string;
                     order: number | null;
                     codeId: string;
-                    status: string;
+                    createdById: string | null;
                     donvitinh: string | null;
                     bienthe: string | null;
                     giagoc: number;
@@ -139,9 +141,9 @@ export declare class DathangController {
             createdAt: Date;
             updatedAt: Date;
             total: number;
+            status: string;
             order: number | null;
             codeId: string;
-            status: string;
             nhacungcapId: string;
         })[];
         total: number;
@@ -157,9 +159,10 @@ export declare class DathangController {
                     updatedAt: Date;
                     description: string | null;
                     title: string;
+                    status: string;
                     order: number | null;
                     codeId: string;
-                    status: string;
+                    createdById: string | null;
                     donvitinh: string | null;
                     bienthe: string | null;
                     giagoc: number;
@@ -197,9 +200,9 @@ export declare class DathangController {
             createdAt: Date;
             updatedAt: Date;
             total: number;
+            status: string;
             order: number | null;
             codeId: string;
-            status: string;
             nhacungcapId: string;
         })[];
         total: number;
@@ -217,9 +220,10 @@ export declare class DathangController {
                 updatedAt: Date;
                 description: string | null;
                 title: string;
+                status: string;
                 order: number | null;
                 codeId: string;
-                status: string;
+                createdById: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
@@ -257,9 +261,9 @@ export declare class DathangController {
         createdAt: Date;
         updatedAt: Date;
         total: number;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         nhacungcapId: string;
     }>;
     update(id: string, data: any): Promise<{
@@ -293,9 +297,9 @@ export declare class DathangController {
         createdAt: Date;
         updatedAt: Date;
         total: number;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         nhacungcapId: string;
     }>;
     remove(id: string): Promise<{
@@ -303,9 +307,9 @@ export declare class DathangController {
         createdAt: Date;
         updatedAt: Date;
         total: number;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         nhacungcapId: string;
     }>;
     reorder(body: {

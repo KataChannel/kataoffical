@@ -23,6 +23,8 @@ import { GoogleSheetService } from '../../../../shared/googlesheets/googlesheets
 import { memoize, Debounce } from '../../../../shared/utils/decorators';
 import { readExcelFile, writeExcelFile } from '../../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData } from '../../../../shared/utils/shared.utils';
+import { TableComponent } from '@kataoffical/shared';
+import { KataTableComponent } from '../../../../shared/common/katatable/katatable.component';
 @Component({
   selector: 'app-listsanpham',
   templateUrl: './listsanpham.component.html',
@@ -35,7 +37,7 @@ import { ConvertDriveData } from '../../../../shared/utils/shared.utils';
     MatPaginatorModule,
     MatMenuModule,
     MatSidenavModule,
-    RouterOutlet,
+    // RouterOutlet,
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
@@ -43,7 +45,7 @@ import { ConvertDriveData } from '../../../../shared/utils/shared.utils';
     FormsModule,
     MatTooltipModule,
     MatDialogModule,
-    SearchfilterComponent
+    KataTableComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -98,8 +100,7 @@ export class ListSanphamComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this._SanphamService.listenSanphamUpdates();
-    await this._SanphamService.getAllSanpham(this.pageSize(),true);
+    await this._SanphamService.getAllSanpham();
     this.displayedColumns = Object.keys(this.ColumnName);
     this.dataSource = new MatTableDataSource(this.Listsanpham());
     this.dataSource.sort = this.sort;
@@ -378,20 +379,20 @@ export class ListSanphamComponent implements OnInit {
       size = this.total();
     }
     this._SanphamService.page.set(1);
-    this._SanphamService.getAllSanpham(size, true);
+    this._SanphamService.getAllSanpham();
     menuHienthi.closeMenu();
   }
   onPreviousPage(){
     if (this.page() > 1) {
       this._SanphamService.page.set(this.page() - 1);
-      this._SanphamService.getAllSanpham(this.pageSize(), true);
+      this._SanphamService.getAllSanpham();
     }
   }
 
   onNextPage(){
     if (this.page() < this.pageCount()) {
       this._SanphamService.page.set(this.page() + 1);
-      this._SanphamService.getAllSanpham(this.pageSize(), true);
+      this._SanphamService.getAllSanpham();
     }
   }
 }

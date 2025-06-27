@@ -1,13 +1,11 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { MinioService } from 'src/minio/minio.service';
 import { SocketGateway } from 'src/socket.gateway';
 export declare class ResourceService {
     private readonly prisma;
     private _SocketGateway;
-    private _ErrorlogService;
     private _MinioService;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogService: ErrorlogService, _MinioService: MinioService);
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _MinioService: MinioService);
     getLastUpdatedResource(): Promise<{
         updatedAt: number;
     }>;

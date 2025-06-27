@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { google } from 'googleapis';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 @Injectable()
 export class GooglesheetService {
@@ -9,7 +8,6 @@ export class GooglesheetService {
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
-    private _ErrorlogService: ErrorlogService,
   ) {
       const serviceAccount = 'credentials.json';
     // const serviceAccount = 'dist/credentials.json';

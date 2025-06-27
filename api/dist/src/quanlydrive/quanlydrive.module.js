@@ -12,13 +12,12 @@ const quanlydrive_service_1 = require("./quanlydrive.service");
 const quanlydrive_controller_1 = require("./quanlydrive.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const socket_gateway_1 = require("../socket.gateway");
-const errorlog_module_1 = require("../errorlog/errorlog.module");
 let QuanlydriveModule = class QuanlydriveModule {
 };
 exports.QuanlydriveModule = QuanlydriveModule;
 exports.QuanlydriveModule = QuanlydriveModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule],
+        imports: [prisma_module_1.PrismaModule],
         controllers: [quanlydrive_controller_1.QuanlydriveController],
         providers: [quanlydrive_service_1.QuanlydriveService, socket_gateway_1.SocketGateway],
         exports: [quanlydrive_service_1.QuanlydriveService]

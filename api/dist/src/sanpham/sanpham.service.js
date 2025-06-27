@@ -13,20 +13,24 @@ exports.SanphamService = void 0;
 const common_1 = require("@nestjs/common");
 const moment_1 = require("moment");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
+const cache_service_1 = require("../shared/redis/cache.service");
 const socket_gateway_1 = require("../socket.gateway");
 let SanphamService = class SanphamService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway, _cacheService) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
+        this._cacheService = _cacheService;
+        this.cachePrefix = 'sanpham';
+        this.cacheTTL = 300;
     }
     async getLastUpdatedSanpham() {
         try {
             const lastUpdated = await this.prisma.sanpham.aggregate({
                 _max: { updatedAt: true },
             });
-            return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
+            return {
+                updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0,
+            };
         }
         catch (error) {
             throw error;
@@ -49,17 +53,16 @@ let SanphamService = class SanphamService {
             return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generateSanphamCodeId', error);
             throw error;
         }
     }
-    async import(data) {
+    async import(data, user) {
         const importResults = [];
         for (const sanpham of data) {
             try {
                 let action = '';
                 if (!sanpham.codeId) {
-                    await this.create(sanpham);
+                    await this.create(sanpham, user);
                     action = 'created';
                 }
                 else {
@@ -75,11 +78,15 @@ let SanphamService = class SanphamService {
                         action = 'updated';
                     }
                     else {
-                        await this.create(sanpham);
+                        await this.create(sanpham, user);
                         action = 'created';
                     }
                 }
-                importResults.push({ codeId: sanpham.codeId || 'generated', status: 'success', action });
+                importResults.push({
+                    codeId: sanpham.codeId || 'generated',
+                    status: 'success',
+                    action,
+                });
             }
             catch (error) {
                 const importData = {
@@ -93,12 +100,16 @@ let SanphamService = class SanphamService {
                     title: `Import Sản Phẩm ${(0, moment_1.default)().format('HH:mm:ss DD/MM/YYYY')} `,
                     type: 'sanpham',
                 };
-                importResults.push({ codeId: sanpham.codeId || 'unknown', status: 'failed', error: error.message });
+                importResults.push({
+                    codeId: sanpham.codeId || 'unknown',
+                    status: 'failed',
+                    error: error.message,
+                });
             }
         }
         return { message: 'Import completed', results: importResults };
     }
-    async create(data) {
+    async create(data, user) {
         try {
             const maxOrder = await this.prisma.sanpham.aggregate({
                 _max: { order: true },
@@ -117,6 +128,7 @@ let SanphamService = class SanphamService {
                     order: newOrder,
                     codeId: codeId,
                     ...(danhmucId && { danhmuc: { connect: { id: danhmucId } } }),
+                    createdById: user.id
                 },
             });
             this._SocketGateway.sendUpdate('sanpham');
@@ -124,7 +136,6 @@ let SanphamService = class SanphamService {
         }
         catch (error) {
             console.log('Error creating sanpham:', error);
-            this._ErrorlogService.logError('createSanpham', error);
             throw error;
         }
     }
@@ -133,9 +144,10 @@ let SanphamService = class SanphamService {
             const { isOne, page = 1, limit = 20, ...where } = param;
             const whereFilter = Object.entries(where).reduce((acc, [field, value]) => {
                 if (value !== undefined && value !== null) {
-                    acc[field] = typeof value === 'string'
-                        ? { contains: value, mode: 'insensitive' }
-                        : value;
+                    acc[field] =
+                        typeof value === 'string'
+                            ? { contains: value, mode: 'insensitive' }
+                            : value;
                 }
                 return acc;
             }, {});
@@ -160,70 +172,71 @@ let SanphamService = class SanphamService {
                 data,
                 total,
                 page,
-                pageCount: Math.ceil(total / limit)
+                pageCount: Math.ceil(total / limit),
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findBySanpham', error);
             throw error;
         }
     }
     async findAll(query) {
         try {
-            const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category, isOne } = query;
-            const numericPage = Number(page || 1);
-            const numericPageSize = Number(pageSize || 50);
-            const skip = (numericPage - 1) * numericPageSize;
-            const take = numericPageSize;
-            const where = {};
-            if (search) {
-                where.OR = [
-                    { title: { contains: search, mode: 'insensitive' } },
-                    { description: { contains: search, mode: 'insensitive' } }
-                ];
-            }
-            if (category) {
-                where.category = { equals: category, mode: 'insensitive' };
-            }
-            if (priceMin || priceMax) {
-                where.price = {};
-                if (priceMin) {
-                    where.price.gte = priceMin;
+            return this._cacheService.getOrSet(this.cachePrefix, { action: 'findAll', ...query }, async () => {
+                const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category, isOne, } = query;
+                const numericPage = Number(page || 1);
+                const numericPageSize = Number(pageSize || 50);
+                const skip = (numericPage - 1) * numericPageSize;
+                const take = numericPageSize;
+                const where = {};
+                if (search) {
+                    where.OR = [
+                        { title: { contains: search, mode: 'insensitive' } },
+                        { description: { contains: search, mode: 'insensitive' } },
+                    ];
                 }
-                if (priceMax) {
-                    where.price.lte = priceMax;
+                if (category) {
+                    where.category = { equals: category, mode: 'insensitive' };
                 }
-            }
-            const orderBy = {};
-            if (sortBy && sortOrder) {
-                orderBy[sortBy] = sortOrder;
-            }
-            else {
-                orderBy.createdAt = 'desc';
-            }
-            if (isOne) {
-                const result = await this.prisma.sanpham.findFirst({
-                    where,
-                    orderBy: { order: 'asc' },
-                });
-                return result;
-            }
-            const [sanphams, total] = await this.prisma.$transaction([
-                this.prisma.sanpham.findMany({
-                    where,
-                    skip,
-                    take,
-                    orderBy,
-                }),
-                this.prisma.sanpham.count({ where }),
-            ]);
-            return {
-                data: sanphams,
-                total: Number(total),
-                page: numericPage,
-                pageSize: numericPageSize,
-                totalPages: Math.ceil(Number(total) / numericPageSize),
-            };
+                if (priceMin || priceMax) {
+                    where.price = {};
+                    if (priceMin) {
+                        where.price.gte = priceMin;
+                    }
+                    if (priceMax) {
+                        where.price.lte = priceMax;
+                    }
+                }
+                const orderBy = {};
+                if (sortBy && sortOrder) {
+                    orderBy[sortBy] = sortOrder;
+                }
+                else {
+                    orderBy.createdAt = 'desc';
+                }
+                if (isOne) {
+                    const result = await this.prisma.sanpham.findFirst({
+                        where,
+                        orderBy: { order: 'asc' },
+                    });
+                    return result;
+                }
+                const [sanphams, total] = await this.prisma.$transaction([
+                    this.prisma.sanpham.findMany({
+                        where,
+                        skip,
+                        take,
+                        orderBy,
+                    }),
+                    this.prisma.sanpham.count({ where }),
+                ]);
+                return {
+                    data: sanphams,
+                    total: Number(total),
+                    page: numericPage,
+                    pageSize: numericPageSize,
+                    totalPages: Math.ceil(Number(total) / numericPageSize),
+                };
+            }, { ttl: this.cacheTTL });
         }
         catch (error) {
             console.log('Error in findAllSanpham:', error);
@@ -244,7 +257,7 @@ let SanphamService = class SanphamService {
     }
     async update(id, data) {
         try {
-            const { title, danhmucId, bienthe, donvitinh, price, status, order, ...restData } = data;
+            const { title, danhmucId, bienthe, donvitinh, price, status, order, createdById, ...restData } = data;
             const updated = await this.prisma.sanpham.update({
                 where: { id },
                 data: {
@@ -283,7 +296,7 @@ let SanphamService = class SanphamService {
             for (let i = 0; i < sanphamIds.length; i++) {
                 await this.prisma.sanpham.update({
                     where: { id: sanphamIds[i] },
-                    data: { order: i + 1 }
+                    data: { order: i + 1 },
                 });
             }
             this._SocketGateway.sendUpdate('sanpham');
@@ -300,6 +313,6 @@ exports.SanphamService = SanphamService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        cache_service_1.CacheService])
 ], SanphamService);
 //# sourceMappingURL=sanpham.service.js.map

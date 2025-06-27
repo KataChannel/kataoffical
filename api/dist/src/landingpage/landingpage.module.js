@@ -12,13 +12,12 @@ const landingpage_service_1 = require("./landingpage.service");
 const landingpage_controller_1 = require("./landingpage.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const socket_gateway_1 = require("../socket.gateway");
-const errorlog_module_1 = require("../errorlog/errorlog.module");
 let LandingPageModule = class LandingPageModule {
 };
 exports.LandingPageModule = LandingPageModule;
 exports.LandingPageModule = LandingPageModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule],
+        imports: [prisma_module_1.PrismaModule],
         controllers: [landingpage_controller_1.LandingpageController],
         providers: [landingpage_service_1.landingPageService, socket_gateway_1.SocketGateway],
         exports: [landingpage_service_1.landingPageService]

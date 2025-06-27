@@ -11,6 +11,9 @@ out/
 build/
 dist/
 
+# Storybook
+storybook-static/
+
 # Runtime data
 pids
 *.pid
@@ -90,3 +93,4 @@ storybook-static
 # Temporary folders
 tmp/
 temp/
+*storybook.log

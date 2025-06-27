@@ -10,7 +10,7 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
-const auth_module_1 = require("./auth/auth.module");
+const auth_module_1 = require("./shared/auth/auth.module");
 const user_module_1 = require("./user/user.module");
 const prisma_module_1 = require("../prisma/prisma.module");
 const prisma_service_1 = require("../prisma/prisma.service");
@@ -20,9 +20,8 @@ const role_module_1 = require("./role/role.module");
 const permission_module_1 = require("./permission/permission.module");
 const nhomkhachhang_module_1 = require("./nhomkhachhang/nhomkhachhang.module");
 const chatbot_module_1 = require("./chatbot/chatbot.module");
-const auditlog_module_1 = require("./auditlog/auditlog.module");
+const auditlog_module_1 = require("./shared/auditlog/auditlog.module");
 const mail_module_1 = require("./mail/mail.module");
-const quanlyqrcode_module_1 = require("./quanlyqrcode/quanlyqrcode.module");
 const quanlydrive_module_1 = require("./quanlydrive/quanlydrive.module");
 const googlesheet_module_1 = require("./googlesheet/googlesheet.module");
 const dexuat_module_1 = require("./dexuat/dexuat.module");
@@ -40,15 +39,14 @@ const nhacungcap_module_1 = require("./nhacungcap/nhacungcap.module");
 const phieukho_module_1 = require("./phieukho/phieukho.module");
 const dathang_module_1 = require("./dathang/dathang.module");
 const core_1 = require("@nestjs/core");
-const audit_interceptor_1 = require("./auditlog/audit.interceptor");
-const auditlog_service_1 = require("./auditlog/auditlog.service");
-const audit_middleware_1 = require("./auditlog/audit.middleware");
+const audit_interceptor_1 = require("./shared/interceptor/audit.interceptor");
+const auditlog_service_1 = require("./shared/auditlog/auditlog.service");
+const audit_middleware_1 = require("./shared/middleware/audit.middleware");
 const kho_module_1 = require("./kho/kho.module");
+const cache_module_1 = require("./shared/redis/cache.module");
 let AppModule = class AppModule {
     configure(consumer) {
-        consumer
-            .apply(audit_middleware_1.AuditMiddleware)
-            .forRoutes('*');
+        consumer.apply(audit_middleware_1.AuditMiddleware).forRoutes('*');
     }
 };
 exports.AppModule = AppModule;
@@ -65,7 +63,6 @@ exports.AppModule = AppModule = __decorate([
             permission_module_1.PermissionModule,
             chatbot_module_1.ChatbotModule,
             auditlog_module_1.AuditLogModule,
-            quanlyqrcode_module_1.QuanlyqrcodeModule,
             mail_module_1.MailModule,
             quanlydrive_module_1.QuanlydriveModule,
             googlesheet_module_1.GooglesheetModule,
@@ -78,23 +75,23 @@ exports.AppModule = AppModule = __decorate([
             sanpham_module_1.SanphamModule,
             resource_module_1.ResourceModule,
             danhmuc_module_1.DanhmucModule,
-            khachhang_module_1.KhachhangModule,
             donhang_module_2.DonhangModule,
             banggia_module_1.BanggiaModule,
             nhacungcap_module_1.NhacungcapModule,
             dathang_module_1.DathangModule,
             phieukho_module_1.PhieukhoModule,
-            kho_module_1.KhoModule
+            kho_module_1.KhoModule,
+            cache_module_1.CacheModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [
             app_service_1.AppService,
             prisma_service_1.PrismaService,
+            auditlog_service_1.AuditService,
             {
                 provide: core_1.APP_INTERCEPTOR,
                 useClass: audit_interceptor_1.AuditInterceptor,
             },
-            auditlog_service_1.AuditService,
         ],
         exports: [prisma_service_1.PrismaService],
     })

@@ -12,13 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DanhmucService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 let DanhmucService = class DanhmucService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     async getLastUpdatedDanhmuc() {
         try {
@@ -28,7 +26,6 @@ let DanhmucService = class DanhmucService {
             return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdatedDanhmuc', error);
             throw error;
         }
     }
@@ -49,7 +46,6 @@ let DanhmucService = class DanhmucService {
             return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generateDanhmucCodeId', error);
             throw error;
         }
     }
@@ -71,7 +67,6 @@ let DanhmucService = class DanhmucService {
             return created;
         }
         catch (error) {
-            this._ErrorlogService.logError('createDanhmuc', error);
             throw error;
         }
     }
@@ -103,7 +98,6 @@ let DanhmucService = class DanhmucService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findByDanhmuc', error);
             throw error;
         }
     }
@@ -126,7 +120,6 @@ let DanhmucService = class DanhmucService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findAllDanhmuc', error);
             throw error;
         }
     }
@@ -138,7 +131,6 @@ let DanhmucService = class DanhmucService {
             return item;
         }
         catch (error) {
-            this._ErrorlogService.logError('findOneDanhmuc', error);
             throw error;
         }
     }
@@ -157,7 +149,6 @@ let DanhmucService = class DanhmucService {
             return updated;
         }
         catch (error) {
-            this._ErrorlogService.logError('updateDanhmuc', error);
             throw error;
         }
     }
@@ -168,7 +159,6 @@ let DanhmucService = class DanhmucService {
             return deleted;
         }
         catch (error) {
-            this._ErrorlogService.logError('removeDanhmuc', error);
             throw error;
         }
     }
@@ -184,7 +174,6 @@ let DanhmucService = class DanhmucService {
             return { status: 'success' };
         }
         catch (error) {
-            this._ErrorlogService.logError('reorderDanhmucs', error);
             throw error;
         }
     }
@@ -193,7 +182,6 @@ exports.DanhmucService = DanhmucService;
 exports.DanhmucService = DanhmucService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], DanhmucService);
 //# sourceMappingURL=danhmuc.service.js.map

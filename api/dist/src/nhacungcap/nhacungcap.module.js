@@ -12,14 +12,13 @@ const nhacungcap_service_1 = require("./nhacungcap.service");
 const nhacungcap_controller_1 = require("./nhacungcap.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const socket_gateway_1 = require("../socket.gateway");
-const errorlog_module_1 = require("../errorlog/errorlog.module");
-const auth_module_1 = require("../auth/auth.module");
+const auth_module_1 = require("../shared/auth/auth.module");
 let NhacungcapModule = class NhacungcapModule {
 };
 exports.NhacungcapModule = NhacungcapModule;
 exports.NhacungcapModule = NhacungcapModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule, auth_module_1.AuthModule],
+        imports: [prisma_module_1.PrismaModule, auth_module_1.AuthModule],
         controllers: [nhacungcap_controller_1.NhacungcapController],
         providers: [nhacungcap_service_1.NhacungcapService, socket_gateway_1.SocketGateway],
         exports: [nhacungcap_service_1.NhacungcapService]

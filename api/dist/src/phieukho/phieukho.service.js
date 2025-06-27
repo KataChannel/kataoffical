@@ -12,13 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PhieukhoService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 let PhieukhoService = class PhieukhoService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     async getLastUpdatedPhieukho() {
         try {
@@ -48,7 +46,6 @@ let PhieukhoService = class PhieukhoService {
             return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generatePhieukhoCodeId', error);
             throw error;
         }
     }
@@ -78,7 +75,6 @@ let PhieukhoService = class PhieukhoService {
         }
         catch (error) {
             console.log('Error creating phieukho:', error);
-            this._ErrorlogService.logError('createPhieukho', error);
             throw error;
         }
     }
@@ -110,7 +106,6 @@ let PhieukhoService = class PhieukhoService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findByPhieukho', error);
             throw error;
         }
     }
@@ -239,7 +234,6 @@ exports.PhieukhoService = PhieukhoService;
 exports.PhieukhoService = PhieukhoService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], PhieukhoService);
 //# sourceMappingURL=phieukho.service.js.map

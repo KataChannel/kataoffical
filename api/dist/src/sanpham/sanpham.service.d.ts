@@ -1,16 +1,18 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
+import { CacheService } from 'src/shared/redis/cache.service';
 import { SocketGateway } from 'src/socket.gateway';
 export declare class SanphamService {
     private readonly prisma;
     private _SocketGateway;
-    private _ErrorlogService;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogService: ErrorlogService);
+    private _cacheService;
+    private readonly cachePrefix;
+    private readonly cacheTTL;
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _cacheService: CacheService);
     getLastUpdatedSanpham(): Promise<{
         updatedAt: number;
     }>;
     generateCodeId(): Promise<string>;
-    import(data: any[]): Promise<{
+    import(data: any[], user: any): Promise<{
         message: string;
         results: {
             codeId: any;
@@ -19,15 +21,16 @@ export declare class SanphamService {
             error?: string;
         }[];
     }>;
-    create(data: any): Promise<{
+    create(data: any, user: any): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
+        createdById: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
@@ -41,9 +44,10 @@ export declare class SanphamService {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
+        createdById: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
@@ -57,9 +61,10 @@ export declare class SanphamService {
             updatedAt: Date;
             description: string | null;
             title: string;
+            status: string;
             order: number | null;
             codeId: string;
-            status: string;
+            createdById: string | null;
             donvitinh: string | null;
             bienthe: string | null;
             giagoc: number;
@@ -77,9 +82,10 @@ export declare class SanphamService {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
+        createdById: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
@@ -93,9 +99,10 @@ export declare class SanphamService {
             updatedAt: Date;
             description: string | null;
             title: string;
+            status: string;
             order: number | null;
             codeId: string;
-            status: string;
+            createdById: string | null;
             donvitinh: string | null;
             bienthe: string | null;
             giagoc: number;
@@ -114,9 +121,10 @@ export declare class SanphamService {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
+        createdById: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
@@ -130,9 +138,10 @@ export declare class SanphamService {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
+        createdById: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;
@@ -146,9 +155,10 @@ export declare class SanphamService {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
+        createdById: string | null;
         donvitinh: string | null;
         bienthe: string | null;
         giagoc: number;

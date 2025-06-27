@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { DashboardConfig } from '../types/common';
+import { DashboardConfig, SidebarItem } from '../types/common';
 
 export const useDashboard = (initialConfig: DashboardConfig) => {
   const [config, setConfig] = useState<DashboardConfig>(initialConfig);
@@ -9,21 +9,33 @@ export const useDashboard = (initialConfig: DashboardConfig) => {
     setConfig(prev => ({ ...prev, ...newConfig }));
   }, []);
 
-  const updateSidebarItems = useCallback((items: any[]) => {
+  const updateSidebarItems = useCallback((items: SidebarItem[]) => {
     setConfig(prev => ({
       ...prev,
       sidebar: {
-        ...prev.sidebar!,
+        ...prev.sidebar,
         items
+      }
+    }));
+  }, []);
+
+  const toggleSidebar = useCallback(() => {
+    setConfig(prev => ({
+      ...prev,
+      sidebar: {
+        ...prev.sidebar,
+        items: prev.sidebar?.items || [],
+        collapsible: !prev.sidebar?.collapsible
       }
     }));
   }, []);
 
   return {
     config,
-    loading,
     updateConfig,
     updateSidebarItems,
+    toggleSidebar,
+    loading,
     setLoading
   };
 };

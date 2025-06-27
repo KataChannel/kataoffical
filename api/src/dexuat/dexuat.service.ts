@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 
 
@@ -9,7 +8,6 @@ export class DexuatService {
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
-    private _ErrorlogService: ErrorlogService,
   ) {}
 
   async getLastUpdatedDexuat() {
@@ -21,7 +19,6 @@ export class DexuatService {
       });
       return { updatedAt: lastUpdated._max.updatedAt || 0 };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdatedDexuat',error);
       throw error;
     }
   }
@@ -40,7 +37,6 @@ export class DexuatService {
       }
       return `DX${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
-      this._ErrorlogService.logError('generatecodeId',error);
       throw error;
     }
   }
@@ -69,7 +65,6 @@ export class DexuatService {
         }
       });
     } catch (error) {
-      this._ErrorlogService.logError('createDexuat', error);
       throw error;
     }
   }
@@ -84,7 +79,6 @@ export class DexuatService {
         });
       }
     } catch (error) {
-      this._ErrorlogService.logError('reorderDexuats',error);
       throw error;
     }
   }
@@ -93,7 +87,6 @@ export class DexuatService {
     try {
       return this.prisma.dexuat.findMany();
     } catch (error) {
-      this._ErrorlogService.logError('findAll',error);
       throw error;
     }
   }
@@ -109,7 +102,6 @@ export class DexuatService {
       if (!dexuat) throw new NotFoundException('Dexuat not found');
       return dexuat;
     } catch (error) {
-      this._ErrorlogService.logError('findby',error);
       throw error;
     }
   }
@@ -120,7 +112,6 @@ export class DexuatService {
       if (!dexuat) throw new NotFoundException('Dexuat not found');
       return dexuat;
     } catch (error) {
-      this._ErrorlogService.logError('findOne',error);
       throw error;
     }
   }
@@ -188,7 +179,6 @@ export class DexuatService {
         include: { chitiet: true }
       });
     } catch (error) {
-      this._ErrorlogService.logError('update', error);
       throw error;
     }
   }
@@ -198,7 +188,6 @@ export class DexuatService {
       this._SocketGateway.sendUpdate('dexuat');
       return this.prisma.dexuat.delete({ where: { id } });
     } catch (error) {
-      this._ErrorlogService.logError('removeDexuat',error);
       throw error;
     }
   }

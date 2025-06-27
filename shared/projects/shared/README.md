@@ -1,63 +1,164 @@
 # Shared
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.0.
+Thư viện `shared` cung cấp các thành phần, pipe, directive và service dùng chung cho các dự án Angular.
 
-## Code scaffolding
+## Cài đặt
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Thêm thư viện vào dự án Angular của bạn:
 
 ```bash
-ng generate --help
+npm install path/to/dist/shared
 ```
 
-## Building
+Hoặc nếu đã publish lên npm:
 
-To build the library, run:
+```bash
+npm install @your-org/shared
+```
+
+## Sử dụng thư viện
+
+### 1. Import SharedModule
+
+Trong module bạn muốn sử dụng các thành phần chung, import `SharedModule`:
+
+```typescript
+import { SharedModule } from '@your-org/shared';
+
+@NgModule({
+   imports: [
+      SharedModule
+   ]
+})
+export class FeatureModule { }
+```
+
+### 2. Sử dụng Component, Pipe, Directive
+
+Ví dụ: Thư viện có các component như `ButtonComponent`, `TableComponent`, một pipe `CapitalizePipe` và một directive `HighlightDirective`.
+
+**Sử dụng trong template:**
+
+```html
+<!-- Dùng component button -->
+<lib-button label="Click me"></lib-button>
+
+<!-- Dùng component table -->
+<lib-table [columns]="columns" [data]="data"></lib-table>
+
+<!-- Dùng pipe -->
+<p>{{ 'hello world' | capitalize }}</p>
+
+<!-- Dùng directive -->
+<p appHighlight>Đoạn văn bản được highlight</p>
+```
+
+#### Hướng dẫn sử dụng TableComponent
+
+**1. Chuẩn bị dữ liệu và cấu hình cột trong component:**
+
+```typescript
+// app.component.ts
+columns = [
+  { field: 'name', header: 'Tên' },
+  { field: 'age', header: 'Tuổi' },
+  { field: 'email', header: 'Email' }
+];
+
+data = [
+  { name: 'Nguyễn Văn A', age: 28, email: 'a@example.com' },
+  { name: 'Trần Thị B', age: 32, email: 'b@example.com' }
+];
+```
+
+**2. Sử dụng trong template:**
+
+```html
+<lib-table [columns]="columns" [data]="data"></lib-table>
+```
+
+**3. Kết quả:**  
+Bảng sẽ hiển thị danh sách với các cột "Tên", "Tuổi", "Email" và dữ liệu tương ứng.
+
+### 3. Sử dụng Service
+
+Inject service vào constructor:
+
+```typescript
+import { SharedService } from '@your-org/shared';
+
+constructor(private sharedService: SharedService) {}
+
+ngOnInit() {
+   this.sharedService.doSomething();
+}
+```
+
+## Demo chi tiết
+
+Giả sử bạn muốn sử dụng một button chung, table và pipe capitalize:
+
+**app.module.ts**
+
+```typescript
+import { SharedModule } from '@your-org/shared';
+
+@NgModule({
+   imports: [SharedModule],
+   bootstrap: [AppComponent]
+})
+export class AppModule {}
+```
+
+**app.component.ts**
+
+```typescript
+columns = [
+  { field: 'name', header: 'Tên' },
+  { field: 'age', header: 'Tuổi' }
+];
+
+data = [
+  { name: 'Nguyễn Văn A', age: 28 },
+  { name: 'Trần Thị B', age: 32 }
+];
+```
+
+**app.component.html**
+
+```html
+<lib-button label="Đăng nhập"></lib-button>
+<p>{{ 'xin chào angular' | capitalize }}</p>
+<lib-table [columns]="columns" [data]="data"></lib-table>
+```
+
+Kết quả:
+
+- Hiển thị một nút "Đăng nhập" với style chung.
+- Đoạn văn bản sẽ được chuyển thành "Xin chào angular".
+- Hiển thị bảng danh sách với các cột "Tên" và "Tuổi".
+
+## Xây dựng thư viện
 
 ```bash
 ng build shared
 ```
 
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
-
-### Publishing the Library
-
-Once the project is built, you can publish your library by following these steps:
-
-1. Navigate to the `dist` directory:
-   ```bash
-   cd dist/shared
-   ```
-
-2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Publish lên npm
 
 ```bash
-ng test
+cd dist/shared
+npm publish
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+## Chạy unit test
 
 ```bash
-ng e2e
+ng test shared
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Tài liệu tham khảo
 
-## Additional Resources
+- [Angular CLI](https://angular.dev/tools/cli)
+- [Hướng dẫn tạo thư viện Angular](https://angular.dev/guide/creating-libraries)
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

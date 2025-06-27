@@ -1,13 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service'; 
-import { ErrorlogService } from 'src/errorlog/errorlog.service'; 
 import { SocketGateway } from 'src/socket.gateway'; 
 @Injectable()
 export class PhieukhoService { 
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway, 
-    private _ErrorlogService: ErrorlogService,
   ) {}
   async getLastUpdatedPhieukho(): Promise<{ updatedAt: number }> { 
     try {
@@ -35,7 +33,6 @@ export class PhieukhoService {
       const newPrefix = 'SP'; 
       return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
-      this._ErrorlogService.logError('generatePhieukhoCodeId', error);
       throw error;
     }
   }
@@ -64,7 +61,6 @@ async create(data: any) {
     return created;
   } catch (error) {
     console.log('Error creating phieukho:', error);
-    this._ErrorlogService.logError('createPhieukho', error);
     throw error;
   }
 }
@@ -95,7 +91,6 @@ async create(data: any) {
         pageCount: Math.ceil(total / limit)
       };
     } catch (error) {
-      this._ErrorlogService.logError('findByPhieukho', error);
       throw error;
     }
   }

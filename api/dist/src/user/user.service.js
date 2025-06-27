@@ -12,14 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const bcrypt = require("bcryptjs");
 const socket_gateway_1 = require("../socket.gateway");
 let UserService = class UserService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     async getLastUpdatedUser() {
         try {
@@ -152,7 +150,6 @@ let UserService = class UserService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findby', error);
             throw error;
         }
     }
@@ -236,7 +233,6 @@ let UserService = class UserService {
             return userWithoutPassword;
         }
         catch (error) {
-            this._ErrorlogService.logError('update', error);
             if (error.code === 'P2025') {
                 throw new common_1.NotFoundException(`User with ID ${id} not found`);
             }
@@ -289,7 +285,6 @@ exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

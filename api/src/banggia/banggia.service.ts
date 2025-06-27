@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
@@ -8,7 +7,6 @@ export class BanggiaService {
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
-    private _ErrorlogService: ErrorlogService,
   ) {}
 
   async getLastUpdatedBanggia(): Promise<{ updatedAt: number }> {
@@ -18,7 +16,6 @@ export class BanggiaService {
       });
       return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdatedBanggia', error);
       throw error;
     }
   }
@@ -38,7 +35,6 @@ export class BanggiaService {
       }
       return `BG${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
-      this._ErrorlogService.logError('generatebanggiaCodeId', error);
       throw error;
     }
   }
@@ -165,7 +161,6 @@ export class BanggiaService {
       this._SocketGateway.sendUpdate('banggia');
       return created;
     } catch (error) {
-      this._ErrorlogService.logError('createbanggia', error);
       throw error;
     }
   }
@@ -206,7 +201,6 @@ export class BanggiaService {
         pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
-      this._ErrorlogService.logError('findBybanggia', error);
       throw error;
     }
   }
@@ -233,7 +227,6 @@ export class BanggiaService {
         pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
-      this._ErrorlogService.logError('findAllbanggia', error);
       throw error;
     }
   }
@@ -250,7 +243,6 @@ export class BanggiaService {
       if (!item) throw new NotFoundException('Bảng giá không tồn tại');
       return item;
     } catch (error) {
-      this._ErrorlogService.logError('findOnebanggia', error);
       throw error;
     }
   }
@@ -286,7 +278,6 @@ export class BanggiaService {
       this._SocketGateway.sendUpdate('banggia');
       return updated;
     } catch (error) {
-      this._ErrorlogService.logError('approvebanggia', error);
       throw error;
     }
   }
@@ -372,7 +363,6 @@ export class BanggiaService {
       this._SocketGateway.sendUpdate('banggia');
       return updated;
     } catch (error) {
-      this._ErrorlogService.logError('updatebanggia', error);
       throw error;
     }
   }
@@ -387,7 +377,6 @@ export class BanggiaService {
       this._SocketGateway.sendUpdate('banggia');
       return deleted;
     } catch (error) {
-      this._ErrorlogService.logError('removebanggia', error);
       throw error;
     }
   }
@@ -403,7 +392,6 @@ export class BanggiaService {
       this._SocketGateway.sendUpdate('banggia');
       return { status: 'success' };
     } catch (error) {
-      this._ErrorlogService.logError('reorderBanggias', error);
       throw error;
     }
   }

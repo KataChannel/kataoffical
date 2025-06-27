@@ -1,13 +1,11 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 export declare class QuanlydriveService {
     private readonly _SocketGateway;
     private readonly prisma;
-    private _ErrorlogService;
     private drive;
     private uploaddriveId;
-    constructor(_SocketGateway: SocketGateway, prisma: PrismaService, _ErrorlogService: ErrorlogService);
+    constructor(_SocketGateway: SocketGateway, prisma: PrismaService);
     uploadFile(file: Express.Multer.File): Promise<string>;
     queryFolders(driveId: string): Promise<any[]>;
     UpdateAllFolderDrive(driveId: any): Promise<void>;

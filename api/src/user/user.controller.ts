@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Audit } from 'src/auditlog/audit.decorator';
+import { JwtAuthGuard } from 'src/shared/auth/jwt-auth.guard';
+import { Audit } from 'src/shared/decorators/audit.decorator';
 import { AuditAction } from '@prisma/client';
-import { AuditService } from 'src/auditlog/auditlog.service';
+import { AuditService } from 'src/shared/auditlog/auditlog.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 @Controller('users')
 @UseGuards(JwtAuthGuard)
@@ -13,11 +13,6 @@ export class UserController {
   ) {}
 
   @Post()
-  @Audit({
-    entity: 'User',
-    action: AuditAction.CREATE,
-    includeResponse: true,
-  })
   create(@Body() dto: any) {
     return this.userService.createUser(dto);
   }
@@ -72,19 +67,10 @@ export class UserController {
     return this.userService.findOne(id);
   }
   @Patch(':id')
-  @Audit({
-    entity: 'User',
-    action: AuditAction.UPDATE,
-    includeResponse: true,
-  })
   update(@Param('id') id: string, @Body() data: any) {
     return this.userService.update(id, data);
   }
   @Delete(':id')
-  @Audit({
-    entity: 'User',
-    action: AuditAction.DELETE,
-  })
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }  

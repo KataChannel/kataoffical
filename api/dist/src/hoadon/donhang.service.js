@@ -12,13 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HoadonService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 let HoadonService = class HoadonService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     async getLastUpdatedHoadon() {
         try {
@@ -32,7 +30,6 @@ let HoadonService = class HoadonService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdatedHoadon', error);
             throw error;
         }
     }
@@ -53,7 +50,6 @@ let HoadonService = class HoadonService {
             return created;
         }
         catch (error) {
-            this._ErrorlogService.logError('createHoadon', error);
             throw error;
         }
     }
@@ -83,7 +79,6 @@ let HoadonService = class HoadonService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findByHoadon', error);
             throw error;
         }
     }
@@ -126,7 +121,6 @@ let HoadonService = class HoadonService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findAllHoadon', error);
             throw error;
         }
     }
@@ -138,7 +132,6 @@ let HoadonService = class HoadonService {
             return item;
         }
         catch (error) {
-            this._ErrorlogService.logError('findOneHoadon', error);
             throw error;
         }
     }
@@ -149,7 +142,6 @@ let HoadonService = class HoadonService {
             return updated;
         }
         catch (error) {
-            this._ErrorlogService.logError('updateHoadon', error);
             throw error;
         }
     }
@@ -160,7 +152,6 @@ let HoadonService = class HoadonService {
             return deleted;
         }
         catch (error) {
-            this._ErrorlogService.logError('removeHoadon', error);
             throw error;
         }
     }
@@ -169,7 +160,6 @@ exports.HoadonService = HoadonService;
 exports.HoadonService = HoadonService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], HoadonService);
 //# sourceMappingURL=donhang.service.js.map

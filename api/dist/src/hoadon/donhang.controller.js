@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HoadonController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../shared/auth/jwt-auth.guard");
 const donhang_service_1 = require("./donhang.service");
 let HoadonController = class HoadonController {
     constructor(hoadonService) {

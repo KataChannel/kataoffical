@@ -6,12 +6,20 @@
     "start": "next start"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@heroicons/react": "^2.2.0",
+    "@kataoffical/nextjs": "^1.0.5",
+    "@mui/icons-material": "^7.1.1",
+    "@mui/material": "^7.1.1",
+    "@mui/x-data-grid": "^8.5.2",
     "@prisma/client": "^6.10.0",
     "@tailwindcss/forms": "^0.5.10",
     "autoprefixer": "10.4.20",
+    "axios": "^1.10.0",
     "bcrypt": "^5.1.1",
     "clsx": "^2.1.1",
+    "lucide-react": "^0.517.0",
     "next": "latest",
     "next-auth": "5.0.0-beta.25",
     "postcss": "8.5.1",
@@ -25,6 +33,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/lodash": "^4.17.18",
     "@types/node": "22.10.7",
     "@types/react": "19.0.7",
     "@types/react-dom": "19.0.3",

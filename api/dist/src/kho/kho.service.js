@@ -12,13 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.KhoService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 let KhoService = class KhoService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     async getLastUpdatedKho() {
         try {
@@ -48,7 +46,6 @@ let KhoService = class KhoService {
             return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generateKhoCodeId', error);
             throw error;
         }
     }
@@ -71,7 +68,6 @@ let KhoService = class KhoService {
         }
         catch (error) {
             console.log('Error creating kho:', error);
-            this._ErrorlogService.logError('createKho', error);
             throw error;
         }
     }
@@ -103,7 +99,6 @@ let KhoService = class KhoService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findByKho', error);
             throw error;
         }
     }
@@ -232,7 +227,6 @@ exports.KhoService = KhoService;
 exports.KhoService = KhoService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], KhoService);
 //# sourceMappingURL=kho.service.js.map

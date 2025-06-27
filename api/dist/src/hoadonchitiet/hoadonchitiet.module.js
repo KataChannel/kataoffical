@@ -9,8 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HoadonchitietModule = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_module_1 = require("../../prisma/prisma.module");
-const errorlog_module_1 = require("../errorlog/errorlog.module");
-const auth_module_1 = require("../auth/auth.module");
+const auth_module_1 = require("../shared/auth/auth.module");
 const socket_gateway_1 = require("../socket.gateway");
 const hoadonchitiet_controller_1 = require("./hoadonchitiet.controller");
 const hoadonchitiet_service_1 = require("./hoadonchitiet.service");
@@ -19,7 +18,7 @@ let HoadonchitietModule = class HoadonchitietModule {
 exports.HoadonchitietModule = HoadonchitietModule;
 exports.HoadonchitietModule = HoadonchitietModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule, auth_module_1.AuthModule],
+        imports: [prisma_module_1.PrismaModule, auth_module_1.AuthModule],
         controllers: [hoadonchitiet_controller_1.HoadonchitietController],
         providers: [hoadonchitiet_service_1.HoadonchitietService, socket_gateway_1.SocketGateway],
         exports: [hoadonchitiet_service_1.HoadonchitietService]

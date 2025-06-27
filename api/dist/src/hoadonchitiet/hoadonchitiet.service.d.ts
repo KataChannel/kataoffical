@@ -1,11 +1,9 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 export declare class HoadonchitietService {
     private readonly prisma;
     private _SocketGateway;
-    private _ErrorlogService;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogService: ErrorlogService);
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
     getLastUpdatedhoadonChitiet(): Promise<{
         updatedAt: number;
     }>;
@@ -204,9 +202,9 @@ export declare class HoadonchitietService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        status: string;
         order: number | null;
         codeId: string | null;
-        status: string;
         title2: string | null;
         dvtinh: string | null;
         ten: string | null;

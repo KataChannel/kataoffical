@@ -1,0 +1,16 @@
+{
+  "projects": {
+    "nestshared": {
+      "type": "library",
+      "root": "libs/nestshared",
+      "entryFile": "index",
+      "sourceRoot": "libs/nestshared/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/nestshared/tsconfig.lib.json"
+      }
+    }
+  },
+  "compilerOptions": {
+    "webpack": true
+  }
+}

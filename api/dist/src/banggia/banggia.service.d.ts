@@ -1,11 +1,9 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 export declare class BanggiaService {
     private readonly prisma;
     private _SocketGateway;
-    private _ErrorlogService;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogService: ErrorlogService);
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
     getLastUpdatedBanggia(): Promise<{
         updatedAt: number;
     }>;
@@ -19,9 +17,10 @@ export declare class BanggiaService {
                 updatedAt: Date;
                 description: string | null;
                 title: string;
+                status: string;
                 order: number | null;
                 codeId: string;
-                status: string;
+                createdById: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
@@ -64,9 +63,9 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         batdau: Date | null;
         ketthuc: Date | null;
     }>;
@@ -83,9 +82,10 @@ export declare class BanggiaService {
                 updatedAt: Date;
                 description: string | null;
                 title: string;
+                status: string;
                 order: number | null;
                 codeId: string;
-                status: string;
+                createdById: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
@@ -128,9 +128,9 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         batdau: Date | null;
         ketthuc: Date | null;
     }) | {
@@ -142,9 +142,10 @@ export declare class BanggiaService {
                     updatedAt: Date;
                     description: string | null;
                     title: string;
+                    status: string;
                     order: number | null;
                     codeId: string;
-                    status: string;
+                    createdById: string | null;
                     donvitinh: string | null;
                     bienthe: string | null;
                     giagoc: number;
@@ -187,9 +188,9 @@ export declare class BanggiaService {
             createdAt: Date;
             updatedAt: Date;
             title: string | null;
+            status: string;
             order: number | null;
             codeId: string;
-            status: string;
             batdau: Date | null;
             ketthuc: Date | null;
         })[];
@@ -206,9 +207,10 @@ export declare class BanggiaService {
                     updatedAt: Date;
                     description: string | null;
                     title: string;
+                    status: string;
                     order: number | null;
                     codeId: string;
-                    status: string;
+                    createdById: string | null;
                     donvitinh: string | null;
                     bienthe: string | null;
                     giagoc: number;
@@ -251,9 +253,9 @@ export declare class BanggiaService {
             createdAt: Date;
             updatedAt: Date;
             title: string | null;
+            status: string;
             order: number | null;
             codeId: string;
-            status: string;
             batdau: Date | null;
             ketthuc: Date | null;
         })[];
@@ -269,9 +271,10 @@ export declare class BanggiaService {
                 updatedAt: Date;
                 description: string | null;
                 title: string;
+                status: string;
                 order: number | null;
                 codeId: string;
-                status: string;
+                createdById: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
@@ -314,9 +317,9 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         batdau: Date | null;
         ketthuc: Date | null;
     }>;
@@ -328,9 +331,10 @@ export declare class BanggiaService {
                 updatedAt: Date;
                 description: string | null;
                 title: string;
+                status: string;
                 order: number | null;
                 codeId: string;
-                status: string;
+                createdById: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
@@ -373,9 +377,9 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         batdau: Date | null;
         ketthuc: Date | null;
     }>;
@@ -387,9 +391,10 @@ export declare class BanggiaService {
                 updatedAt: Date;
                 description: string | null;
                 title: string;
+                status: string;
                 order: number | null;
                 codeId: string;
-                status: string;
+                createdById: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
@@ -432,9 +437,9 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         batdau: Date | null;
         ketthuc: Date | null;
     }>;
@@ -443,9 +448,9 @@ export declare class BanggiaService {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         batdau: Date | null;
         ketthuc: Date | null;
     }>;

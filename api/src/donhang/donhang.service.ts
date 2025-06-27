@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
@@ -8,7 +7,6 @@ export class DonhangService {
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
-    private _ErrorlogService: ErrorlogService,
   ) {}
 
   async getLastUpdatedDonhang(): Promise<{ updatedAt: number }> {
@@ -18,7 +16,6 @@ export class DonhangService {
       });
       return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdatedDonhang', error);
       throw error;
     }
   }
@@ -38,7 +35,6 @@ export class DonhangService {
       }
       return `DON${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
-      this._ErrorlogService.logError('generateDonhangCodeId', error);
       throw error;
     }
   }
@@ -97,7 +93,6 @@ export class DonhangService {
       this._SocketGateway.sendUpdate('donhang');
       return created;
     } catch (error) {
-      this._ErrorlogService.logError('createDonhang', error);
       throw error;
     }
   }
@@ -138,7 +133,6 @@ export class DonhangService {
         pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
-      this._ErrorlogService.logError('findByDonhang', error);
       throw error;
     }
   }
@@ -165,7 +159,6 @@ export class DonhangService {
         pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
-      this._ErrorlogService.logError('findAllDonhang', error);
       throw error;
     }
   }
@@ -182,7 +175,6 @@ export class DonhangService {
       if (!item) throw new NotFoundException('Đơn hàng không tồn tại');
       return item;
     } catch (error) {
-      this._ErrorlogService.logError('findOneDonhang', error);
       throw error;
     }
   }
@@ -249,7 +241,6 @@ export class DonhangService {
       this._SocketGateway.sendUpdate('donhang');
       return updated;
     } catch (error) {
-      this._ErrorlogService.logError('updateDonhang', error);
       throw error;
     }
   }
@@ -264,7 +255,6 @@ export class DonhangService {
       this._SocketGateway.sendUpdate('donhang');
       return deleted;
     } catch (error) {
-      this._ErrorlogService.logError('removeDonhang', error);
       throw error;
     }
   }
@@ -280,7 +270,6 @@ export class DonhangService {
       this._SocketGateway.sendUpdate('donhang');
       return { status: 'success' };
     } catch (error) {
-      this._ErrorlogService.logError('reorderDonhangs', error);
       throw error;
     }
   }

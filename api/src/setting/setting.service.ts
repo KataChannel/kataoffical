@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
@@ -8,7 +7,6 @@ export class SettingService {
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
-    private _ErrorlogService: ErrorlogService,
   ) {}
 
   // Hàm parse giá trị dựa trên type
@@ -25,7 +23,6 @@ export class SettingService {
         try {
           return JSON.parse(value);
         } catch (error) {
-          this._ErrorlogService.logError('parseValue', error);
           return null;
         }
       case 'string':
@@ -44,7 +41,6 @@ export class SettingService {
         updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0,
       };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdatedSetting', error);
       throw error;
     }
   }
@@ -66,7 +62,6 @@ export class SettingService {
       const newPrefix = 'ST';
       return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
-      this._ErrorlogService.logError('generateSettingCodeId', error);
       throw error;
     }
   }
@@ -95,7 +90,6 @@ export class SettingService {
         value: this.parseValue(created.value, created.type),
       };
     } catch (error) {
-      this._ErrorlogService.logError('createSetting', error);
       throw error;
     }
   }
@@ -137,7 +131,6 @@ export class SettingService {
         pageCount: Math.ceil(total / pageSize),
       };
     } catch (error) {
-      this._ErrorlogService.logError('findBySetting', error);
       throw error;
     }
   }
@@ -165,7 +158,6 @@ export class SettingService {
         pageCount: Math.ceil(total / pageSize),
       };
     } catch (error) {
-      this._ErrorlogService.logError('findAllSetting', error);
       throw error;
     }
   }
@@ -180,7 +172,6 @@ export class SettingService {
         value: this.parseValue(item.value, item.type),
       };
     } catch (error) {
-      this._ErrorlogService.logError('findOneSetting', error);
       throw error;
     }
   }
@@ -204,7 +195,6 @@ export class SettingService {
         value: this.parseValue(updated.value, updated.type),
       };
     } catch (error) {
-      this._ErrorlogService.logError('updateSetting', error);
       throw error;
     }
   }
@@ -219,7 +209,6 @@ export class SettingService {
         value: this.parseValue(deleted.value, deleted.type),
       };
     } catch (error) {
-      this._ErrorlogService.logError('removeSetting', error);
       throw error;
     }
   }
@@ -236,7 +225,6 @@ export class SettingService {
       this._SocketGateway.sendUpdate('setting');
       return { status: 'success' };
     } catch (error) {
-      this._ErrorlogService.logError('reorderSettings', error);
       throw error;
     }
   }

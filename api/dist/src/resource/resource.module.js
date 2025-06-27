@@ -11,16 +11,15 @@ const common_1 = require("@nestjs/common");
 const resource_service_1 = require("./resource.service");
 const resource_controller_1 = require("./resource.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
-const errorlog_module_1 = require("../errorlog/errorlog.module");
 const minio_module_1 = require("../minio/minio.module");
-const auth_module_1 = require("../auth/auth.module");
+const auth_module_1 = require("../shared/auth/auth.module");
 const socket_gateway_1 = require("../socket.gateway");
 let ResourceModule = class ResourceModule {
 };
 exports.ResourceModule = ResourceModule;
 exports.ResourceModule = ResourceModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule, minio_module_1.MinioModule, auth_module_1.AuthModule],
+        imports: [prisma_module_1.PrismaModule, minio_module_1.MinioModule, auth_module_1.AuthModule],
         controllers: [resource_controller_1.ResourceController],
         providers: [resource_service_1.ResourceService, socket_gateway_1.SocketGateway],
         exports: [resource_service_1.ResourceService]

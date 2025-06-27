@@ -1,40 +1,32 @@
 {
   "name": "@kataoffical/nextjs",
-  "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "Reusable dashboard components for NextJS",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "rollup -c",
+    "build:watch": "rollup -c -w",
     "dev": "rollup -c -w",
-    "test": "jest",
-    "lint": "eslint src --ext .ts,.tsx",
-    "prepublishOnly": "npm run build"
-  },
-  "peerDependencies": {
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0",
-    "next": ">=12.0.0"
-  },
-  "devDependencies": {
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
-    "@rollup/plugin-commonjs": "^24.0.0",
-    "@rollup/plugin-node-resolve": "^15.0.0",
-    "@rollup/plugin-typescript": "^11.0.0",
-    "rollup": "^3.0.0",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-postcss": "^4.0.2",
-    "typescript": "^4.9.0",
-    "tailwindcss": "^3.0.0",
-    "autoprefixer": "^10.0.0",
-    "postcss": "^8.0.0"
+    "test": "echo 'No tests yet'",
+    "lint": "echo 'No linting configured'",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "pre-check": "node scripts/pre-publish-check.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish",
+    "publish:dry": "npm publish --dry-run",
+    "build-and-publish": "chmod +x scripts/build-and-publish.sh && ./scripts/build-and-publish.sh"
   },
   "keywords": [
     "dashboard",
@@ -42,11 +34,44 @@
     "tailwindcss",
     "react",
     "components",
+    "ui",
+    "admin",
     "kataoffical"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/KataChannel/kataoffical.git"
+  "author": "KataOffical <support@kataoffical.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "next": ">=12.0.0",
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0",
+    "tailwindcss": ">=3.0.0"
   },
-  "license": "MIT"
+  "devDependencies": {
+    "@chromatic-com/storybook": "^4.0.0",
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@storybook/addon-docs": "^9.0.12",
+    "@storybook/addon-essentials": "^8.6.1",
+    "@storybook/addon-links": "^9.0.12",
+    "@storybook/addon-webpack5-compiler-babel": "^3.0.6",
+    "@storybook/nextjs": "^9.0.12",
+    "@storybook/react": "^9.0.12",
+    "@storybook/react-vite": "^9.0.12",
+    "@storybook/testing-library": "^0.2.2",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "autoprefixer": "^10.0.0",
+    "postcss": "^8.0.0",
+    "rimraf": "^5.0.0",
+    "rollup": "^4.0.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "storybook": "^9.0.12",
+    "tailwindcss": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

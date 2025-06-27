@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { permission } from 'process';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import * as bcrypt from 'bcryptjs';
 import { SocketGateway } from 'src/socket.gateway';
 
@@ -10,7 +9,6 @@ export class UserService {
   constructor(
     private prisma: PrismaService,
     private _SocketGateway: SocketGateway,
-    private _ErrorlogService: ErrorlogService, // Assuming you have an ErrorLogService for logging errors
   ) {}
 
   async getLastUpdatedUser(): Promise<{ updatedAt: number }> { 
@@ -161,7 +159,6 @@ export class UserService {
         permissions,
       };
     } catch (error) {
-      this._ErrorlogService.logError('findby',error);
       throw error;
     }
   }
@@ -268,7 +265,6 @@ export class UserService {
       const { password, ...userWithoutPassword } = updatedUser;
       return userWithoutPassword;
     } catch (error) {
-      this._ErrorlogService.logError('update', error);
       
       // Improve error handling with more specific errors
       if (error.code === 'P2025') {

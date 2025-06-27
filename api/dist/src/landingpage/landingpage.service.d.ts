@@ -1,11 +1,9 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 export declare class landingPageService {
     private readonly prisma;
     private _SocketGateway;
-    private _ErrorlogService;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogService: ErrorlogService);
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
     getLastUpdatedlandingPage(): Promise<{
         updatedAt: number | Date;
     }>;
@@ -17,11 +15,11 @@ export declare class landingPageService {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         slug: string;
         order: number | null;
         codeId: string;
         thumbnail: string | null;
-        status: string;
         contentHtml: string | null;
         customCss: string | null;
         customJs: string | null;
@@ -39,11 +37,11 @@ export declare class landingPageService {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         slug: string;
         order: number | null;
         codeId: string;
         thumbnail: string | null;
-        status: string;
         contentHtml: string | null;
         customCss: string | null;
         customJs: string | null;
@@ -60,11 +58,11 @@ export declare class landingPageService {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         slug: string;
         order: number | null;
         codeId: string;
         thumbnail: string | null;
-        status: string;
         contentHtml: string | null;
         customCss: string | null;
         customJs: string | null;
@@ -81,11 +79,11 @@ export declare class landingPageService {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         slug: string;
         order: number | null;
         codeId: string;
         thumbnail: string | null;
-        status: string;
         contentHtml: string | null;
         customCss: string | null;
         customJs: string | null;
@@ -102,11 +100,11 @@ export declare class landingPageService {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         slug: string;
         order: number | null;
         codeId: string;
         thumbnail: string | null;
-        status: string;
         contentHtml: string | null;
         customCss: string | null;
         customJs: string | null;
@@ -123,11 +121,11 @@ export declare class landingPageService {
         updatedAt: Date;
         description: string | null;
         title: string;
+        status: string;
         slug: string;
         order: number | null;
         codeId: string;
         thumbnail: string | null;
-        status: string;
         contentHtml: string | null;
         customCss: string | null;
         customJs: string | null;

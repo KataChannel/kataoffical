@@ -1,9 +1,7 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { SettingService } from './setting.service'; 
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
-import { Audit } from 'src/auditlog/audit.decorator';
-import { AuditAction } from '@prisma/client';
+import { JwtAuthGuard } from 'src/shared/auth/jwt-auth.guard'; 
 @ApiTags('setting') 
 @Controller('setting') 
 export class SettingController { 
@@ -13,7 +11,6 @@ export class SettingController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard) 
   @Post()
-  @Audit({ entity: 'Setting', action: AuditAction.CREATE, includeResponse: true })
   async create(@Body() data: any) { 
     try {
       return await this.settingService.create(data);
@@ -83,7 +80,6 @@ export class SettingController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  @Audit({ entity: 'Setting', action: AuditAction.UPDATE, includeResponse: true })
   async update(@Param('id') id: string, @Body() data: any) { 
     try {
       return await this.settingService.update(id, data);
@@ -96,7 +92,6 @@ export class SettingController {
   @ApiParam({ name: 'id', type: String })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  @Audit({ entity: 'Setting', action: AuditAction.DELETE })
   async remove(@Param('id') id: string) {
     try {
       return await this.settingService.remove(id);

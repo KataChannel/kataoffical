@@ -3,9 +3,8 @@ import { DexuatService } from './dexuat.service';
 import { DexuatController } from './dexuat.controller';
 import { PrismaModule } from 'prisma/prisma.module';
 import { SocketGateway } from 'src/socket.gateway';
-import { ErrorlogModule } from 'src/errorlog/errorlog.module';
   @Module({
-    imports: [PrismaModule,ErrorlogModule],
+    imports: [PrismaModule],
     controllers: [DexuatController],
     providers: [DexuatService,SocketGateway],
     exports:[DexuatService]

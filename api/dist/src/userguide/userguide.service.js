@@ -12,16 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserguideService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 let UserguideService = class UserguideService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     handleError(method, error) {
-        this._ErrorlogService.logError(method, error);
         throw error;
     }
     async getLastUpdatedUserguide() {
@@ -179,7 +176,6 @@ exports.UserguideService = UserguideService;
 exports.UserguideService = UserguideService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], UserguideService);
 //# sourceMappingURL=userguide.service.js.map

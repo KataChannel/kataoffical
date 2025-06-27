@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './shared/auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { PrismaService } from '../prisma/prisma.service';
@@ -11,9 +11,8 @@ import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
 import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
-import { AuditLogModule } from './auditlog/auditlog.module';
+import { AuditLogModule } from './shared/auditlog/auditlog.module';
 import { MailModule } from './mail/mail.module';
-import { QuanlyqrcodeModule } from './quanlyqrcode/quanlyqrcode.module';
 import { QuanlydriveModule } from './quanlydrive/quanlydrive.module';
 import { GooglesheetModule } from './googlesheet/googlesheet.module';
 import { DexuatModule } from './dexuat/dexuat.module';
@@ -31,14 +30,15 @@ import { NhacungcapModule } from './nhacungcap/nhacungcap.module';
 import { PhieukhoModule } from './phieukho/phieukho.module';
 import { DathangModule } from './dathang/dathang.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { AuditInterceptor } from './auditlog/audit.interceptor';
-import { AuditService } from './auditlog/auditlog.service';
-import { AuditMiddleware } from './auditlog/audit.middleware';
+import { AuditInterceptor } from './shared/interceptor/audit.interceptor';
+import { AuditService } from './shared/auditlog/auditlog.service';
+import { AuditMiddleware } from './shared/middleware/audit.middleware';
 import { KhoModule } from './kho/kho.module';
+import { CacheModule } from './shared/redis/cache.module';
 
 @Module({
   imports: [
-    AuthModule, 
+    AuthModule,
     UserModule,
     PrismaModule,
     MenuModule,
@@ -48,7 +48,6 @@ import { KhoModule } from './kho/kho.module';
     PermissionModule,
     ChatbotModule,
     AuditLogModule,
-    QuanlyqrcodeModule,
     MailModule,
     QuanlydriveModule,
     GooglesheetModule,
@@ -61,30 +60,28 @@ import { KhoModule } from './kho/kho.module';
     SanphamModule,
     ResourceModule,
     DanhmucModule,
-    KhachhangModule,
     DonhangModule,
     BanggiaModule,
-    NhacungcapModule, 
+    NhacungcapModule,
     DathangModule,
     PhieukhoModule,
-    KhoModule
+    KhoModule,
+    CacheModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     PrismaService,
+    AuditService,
     {
       provide: APP_INTERCEPTOR,
       useClass: AuditInterceptor,
     },
-    AuditService,
   ],
   exports: [PrismaService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuditMiddleware)
-      .forRoutes('*'); // hoặc chỉ định routes cụ thể
+    consumer.apply(AuditMiddleware).forRoutes('*');
   }
 }

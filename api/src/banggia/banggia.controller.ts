@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { BanggiaService } from './banggia.service'; 
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
+import { JwtAuthGuard } from 'src/shared/auth/jwt-auth.guard'; 
 import { AuditAction } from '@prisma/client';
-import { Audit } from 'src/auditlog/audit.decorator';
+import { Audit } from 'src/shared/decorators/audit.decorator';
 @ApiTags('banggia') 
 @Controller('banggia') 
 export class BanggiaController { 
@@ -13,7 +13,6 @@ export class BanggiaController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard) 
   @Post()
-  @Audit({ entity: 'Create Bang Gia', action: AuditAction.CREATE, includeResponse: true })
   async create(@Body() data: any) { 
     try {
       return await this.banggiaService.create(data);
@@ -83,7 +82,6 @@ export class BanggiaController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  @Audit({ entity: 'Update Bang Gia', action: AuditAction.UPDATE, includeResponse: true })
   async update(@Param('id') id: string, @Body() data: any) { 
     try {
       return await this.banggiaService.update(id, data);
@@ -96,7 +94,6 @@ export class BanggiaController {
   @ApiParam({ name: 'id', type: String })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  @Audit({ entity: 'Delete Bang Gia', action: AuditAction.DELETE, includeResponse: true })
   async remove(@Param('id') id: string) {
     try {
       return await this.banggiaService.remove(id);

@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { PhieukhoService } from './phieukho.service'; 
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
-import { Audit } from 'src/auditlog/audit.decorator';
+import { JwtAuthGuard } from 'src/shared/auth/jwt-auth.guard'; 
+import { Audit } from 'src/shared/decorators/audit.decorator';
 import { AuditAction } from '@prisma/client';
 @ApiTags('phieukho') 
 @Controller('phieukho') 
@@ -13,7 +13,6 @@ export class PhieukhoController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard) 
   @Post()
-  @Audit({ entity: 'Phieukho', action: AuditAction.CREATE, includeResponse: true })
   async create(@Body() data: any) { 
     try {
       return await this.phieukhoService.create(data);
@@ -70,7 +69,6 @@ export class PhieukhoController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  @Audit({ entity: 'Phieukho', action: AuditAction.UPDATE, includeResponse: true })
   async update(@Param('id') id: string, @Body() data: any) { 
     try {
       return await this.phieukhoService.update(id, data);
@@ -83,7 +81,6 @@ export class PhieukhoController {
   @ApiParam({ name: 'id', type: String })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  @Audit({ entity: 'Phieukho', action: AuditAction.DELETE })
   async remove(@Param('id') id: string) {
     try {
       return await this.phieukhoService.remove(id);

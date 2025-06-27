@@ -1,11 +1,9 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from '../socket.gateway';
 export declare class UserguideService {
     private readonly prisma;
     private _SocketGateway;
-    private _ErrorlogService;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogService: ErrorlogService);
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway);
     private handleError;
     getLastUpdatedUserguide(): Promise<{
         updatedAt: number;

@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 
 
@@ -9,7 +8,6 @@ export class landingPageService {
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
-    private _ErrorlogService: ErrorlogService,
   ) {}
 
   async getLastUpdatedlandingPage() {
@@ -21,7 +19,6 @@ export class landingPageService {
       });
       return { updatedAt: lastUpdated._max.updatedAt || 0 };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdatedlandingPage',error);
       throw error;
     }
   }
@@ -42,7 +39,6 @@ export class landingPageService {
 
       return `LDP${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
-      this._ErrorlogService.logError('generatecodeId',error);
       throw error;
     }
   }
@@ -64,7 +60,6 @@ export class landingPageService {
         },
       });
     } catch (error) {
-      this._ErrorlogService.logError('createlandingPage',error);
       throw error;
     }
   }
@@ -78,7 +73,6 @@ export class landingPageService {
         });
       }
     } catch (error) {
-      this._ErrorlogService.logError('reorderlandingPages',error);
       throw error;
     }
   }
@@ -87,7 +81,6 @@ export class landingPageService {
     try {
       return this.prisma.landingPage.findMany();
     } catch (error) {
-      this._ErrorlogService.logError('findAll',error);
       throw error;
     }
   }
@@ -98,7 +91,6 @@ export class landingPageService {
       if (!landingPage) throw new NotFoundException('landingPage not found');
       return landingPage;
     } catch (error) {
-      this._ErrorlogService.logError('findby',error);
       throw error;
     }
   }
@@ -109,7 +101,6 @@ export class landingPageService {
       if (!landingPage) throw new NotFoundException('landingPage not found');
       return landingPage;
     } catch (error) {
-      this._ErrorlogService.logError('findOne',error);
       throw error;
     }
   }
@@ -124,7 +115,6 @@ export class landingPageService {
       this._SocketGateway.sendUpdate('landingPage');
       return this.prisma.landingPage.update({ where: { id }, data });
     } catch (error) {
-      this._ErrorlogService.logError('updatelandingPage',error);
       throw error;
     }
   }
@@ -134,7 +124,6 @@ export class landingPageService {
       this._SocketGateway.sendUpdate('landingPage');
       return this.prisma.landingPage.delete({ where: { id } });
     } catch (error) {
-      this._ErrorlogService.logError('removelandingPage',error);
       throw error;
     }
   }

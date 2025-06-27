@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
@@ -8,7 +7,6 @@ export class DathangService {
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
-    private _ErrorlogService: ErrorlogService,
   ) {}
 
   async getLastUpdatedDathang(): Promise<{ updatedAt: number }> {
@@ -18,7 +16,6 @@ export class DathangService {
       });
       return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdatedDathang', error);
       throw error;
     }
   }
@@ -38,7 +35,6 @@ export class DathangService {
       }
       return `DATH${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
-      this._ErrorlogService.logError('generateDathangCodeId', error);
       throw error;
     }
   }
@@ -97,7 +93,6 @@ export class DathangService {
       this._SocketGateway.sendUpdate('dathang');
       return created;
     } catch (error) {
-      this._ErrorlogService.logError('createDathang', error);
       throw error;
     }
   }
@@ -138,7 +133,6 @@ export class DathangService {
         pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
-      this._ErrorlogService.logError('findByDathang', error);
       throw error;
     }
   }
@@ -165,7 +159,6 @@ export class DathangService {
         pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
-      this._ErrorlogService.logError('findAllDathang', error);
       throw error;
     }
   }
@@ -182,7 +175,6 @@ export class DathangService {
       if (!item) throw new NotFoundException('Đơn hàng không tồn tại');
       return item;
     } catch (error) {
-      this._ErrorlogService.logError('findOneDathang', error);
       throw error;
     }
   }
@@ -249,7 +241,6 @@ export class DathangService {
       this._SocketGateway.sendUpdate('dathang');
       return updated;
     } catch (error) {
-      this._ErrorlogService.logError('updateDathang', error);
       throw error;
     }
   }
@@ -264,7 +255,6 @@ export class DathangService {
       this._SocketGateway.sendUpdate('dathang');
       return deleted;
     } catch (error) {
-      this._ErrorlogService.logError('removeDathang', error);
       throw error;
     }
   }
@@ -280,7 +270,6 @@ export class DathangService {
       this._SocketGateway.sendUpdate('dathang');
       return { status: 'success' };
     } catch (error) {
-      this._ErrorlogService.logError('reorderDathangs', error);
       throw error;
     }
   }

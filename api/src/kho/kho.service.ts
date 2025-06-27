@@ -1,13 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service'; 
-import { ErrorlogService } from 'src/errorlog/errorlog.service'; 
 import { SocketGateway } from 'src/socket.gateway'; 
 @Injectable()
 export class KhoService { 
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway, 
-    private _ErrorlogService: ErrorlogService,
   ) {}
   async getLastUpdatedKho(): Promise<{ updatedAt: number }> { 
     try {
@@ -35,7 +33,6 @@ export class KhoService {
       const newPrefix = 'SP'; 
       return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
-      this._ErrorlogService.logError('generateKhoCodeId', error);
       throw error;
     }
   }
@@ -57,7 +54,6 @@ async create(data: any) {
     return created;
   } catch (error) {
     console.log('Error creating kho:', error);
-    this._ErrorlogService.logError('createKho', error);
     throw error;
   }
 }
@@ -88,7 +84,6 @@ async create(data: any) {
         pageCount: Math.ceil(total / limit)
       };
     } catch (error) {
-      this._ErrorlogService.logError('findByKho', error);
       throw error;
     }
   }

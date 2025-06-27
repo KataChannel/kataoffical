@@ -29,7 +29,7 @@ export class SocketGateway implements OnModuleInit {
     
     // Tăng biến đếm và log số lần emit
     this.emitCount++;
-    console.log(`Emit count: ${this.emitCount}`);
+    // console.log(`Emit count: ${this.emitCount}`);
     this.server.emit(`${event}-updated`, data);
   }
 }

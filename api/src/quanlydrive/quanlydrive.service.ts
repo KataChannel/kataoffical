@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { google } from 'googleapis';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { nest_children } from 'src/shared/utils/shared.utils';
 import { SocketGateway } from 'src/socket.gateway';
 import { Readable } from 'stream';
@@ -12,7 +11,6 @@ export class QuanlydriveService {
   constructor(
     private readonly _SocketGateway: SocketGateway,
     private readonly prisma: PrismaService,
-    private _ErrorlogService: ErrorlogService,
   ) {
     const serviceAccount = 'credentials.json';
     // const serviceAccount = 'dist/credentials.json';
@@ -157,7 +155,6 @@ export class QuanlydriveService {
         message: `User ${permissionId} removed`,
       };
     } catch (error) {
-      this._ErrorlogService.logError('removeUser', error.message);
       console.log(error.status);
       return { statusCode: error.status, message: error.message };
     }
@@ -172,7 +169,6 @@ export class QuanlydriveService {
       });
       return { updatedAt: lastUpdated._max.updatedAt || 0 };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdateddriveItem', error);
       throw error;
     }
   }
@@ -182,7 +178,6 @@ export class QuanlydriveService {
     try {
       return this.prisma.driveItem.create({ data });
     } catch (error) {
-      this._ErrorlogService.logError('createdriveItem', error);
       throw error;
     }
   }
@@ -319,7 +314,6 @@ export class QuanlydriveService {
         },
       };
     } catch (error) {
-      this._ErrorlogService.logError('search', error);
       throw error;
     }
   }
@@ -355,7 +349,6 @@ export class QuanlydriveService {
       console.log(tree);
       return tree;
     } catch (error) {
-      this._ErrorlogService.logError('findAll', error);
       throw error;
     }
   }
@@ -373,7 +366,6 @@ export class QuanlydriveService {
       const count = await this.prisma.driveItem.count();
       return count;
     } catch (error) {
-      this._ErrorlogService.logError('count', error);
       throw error;
     }
   }
@@ -385,7 +377,6 @@ export class QuanlydriveService {
       });
       return driveItem;
     } catch (error) {
-      this._ErrorlogService.logError('findby', error);
       throw error;
     }
   }
@@ -398,7 +389,6 @@ export class QuanlydriveService {
       if (!driveItem) throw new NotFoundException('driveItem not found');
       return driveItem;
     } catch (error) {
-      this._ErrorlogService.logError('findOne', error);
       throw error;
     }
   }
@@ -407,7 +397,6 @@ export class QuanlydriveService {
     try {
       return this.prisma.driveItem.update({ where: { id }, data });
     } catch (error) {
-      this._ErrorlogService.logError('updatedriveItem', error);
       throw error;
     }
   }
@@ -418,7 +407,6 @@ export class QuanlydriveService {
     try {
       return this.prisma.permissionDrive.delete({ where: { id } });
     } catch (error) {
-      this._ErrorlogService.logError('removedriveItem', error);
       throw error;
     }
   }

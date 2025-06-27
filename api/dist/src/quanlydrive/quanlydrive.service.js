@@ -13,14 +13,12 @@ exports.QuanlydriveService = void 0;
 const common_1 = require("@nestjs/common");
 const googleapis_1 = require("googleapis");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 const stream_1 = require("stream");
 let QuanlydriveService = class QuanlydriveService {
-    constructor(_SocketGateway, prisma, _ErrorlogService) {
+    constructor(_SocketGateway, prisma) {
         this._SocketGateway = _SocketGateway;
         this.prisma = prisma;
-        this._ErrorlogService = _ErrorlogService;
         this.uploaddriveId = process.env.SHARED_UPLOAD_DRIVE_ID;
         const serviceAccount = 'credentials.json';
         const auth = new googleapis_1.google.auth.GoogleAuth({
@@ -144,7 +142,6 @@ let QuanlydriveService = class QuanlydriveService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('removeUser', error.message);
             console.log(error.status);
             return { statusCode: error.status, message: error.message };
         }
@@ -159,7 +156,6 @@ let QuanlydriveService = class QuanlydriveService {
             return { updatedAt: lastUpdated._max.updatedAt || 0 };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdateddriveItem', error);
             throw error;
         }
     }
@@ -168,7 +164,6 @@ let QuanlydriveService = class QuanlydriveService {
             return this.prisma.driveItem.create({ data });
         }
         catch (error) {
-            this._ErrorlogService.logError('createdriveItem', error);
             throw error;
         }
     }
@@ -263,7 +258,6 @@ let QuanlydriveService = class QuanlydriveService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('search', error);
             throw error;
         }
     }
@@ -293,7 +287,6 @@ let QuanlydriveService = class QuanlydriveService {
             return tree;
         }
         catch (error) {
-            this._ErrorlogService.logError('findAll', error);
             throw error;
         }
     }
@@ -311,7 +304,6 @@ let QuanlydriveService = class QuanlydriveService {
             return count;
         }
         catch (error) {
-            this._ErrorlogService.logError('count', error);
             throw error;
         }
     }
@@ -323,7 +315,6 @@ let QuanlydriveService = class QuanlydriveService {
             return driveItem;
         }
         catch (error) {
-            this._ErrorlogService.logError('findby', error);
             throw error;
         }
     }
@@ -337,7 +328,6 @@ let QuanlydriveService = class QuanlydriveService {
             return driveItem;
         }
         catch (error) {
-            this._ErrorlogService.logError('findOne', error);
             throw error;
         }
     }
@@ -346,7 +336,6 @@ let QuanlydriveService = class QuanlydriveService {
             return this.prisma.driveItem.update({ where: { id }, data });
         }
         catch (error) {
-            this._ErrorlogService.logError('updatedriveItem', error);
             throw error;
         }
     }
@@ -356,7 +345,6 @@ let QuanlydriveService = class QuanlydriveService {
             return this.prisma.permissionDrive.delete({ where: { id } });
         }
         catch (error) {
-            this._ErrorlogService.logError('removedriveItem', error);
             throw error;
         }
     }
@@ -365,7 +353,6 @@ exports.QuanlydriveService = QuanlydriveService;
 exports.QuanlydriveService = QuanlydriveService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [socket_gateway_1.SocketGateway,
-        prisma_service_1.PrismaService,
-        errorlog_service_1.ErrorlogService])
+        prisma_service_1.PrismaService])
 ], QuanlydriveService);
 //# sourceMappingURL=quanlydrive.service.js.map

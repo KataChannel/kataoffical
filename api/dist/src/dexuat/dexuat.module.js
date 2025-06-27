@@ -12,13 +12,12 @@ const dexuat_service_1 = require("./dexuat.service");
 const dexuat_controller_1 = require("./dexuat.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const socket_gateway_1 = require("../socket.gateway");
-const errorlog_module_1 = require("../errorlog/errorlog.module");
 let DexuatModule = class DexuatModule {
 };
 exports.DexuatModule = DexuatModule;
 exports.DexuatModule = DexuatModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule],
+        imports: [prisma_module_1.PrismaModule],
         controllers: [dexuat_controller_1.DexuatController],
         providers: [dexuat_service_1.DexuatService, socket_gateway_1.SocketGateway],
         exports: [dexuat_service_1.DexuatService]

@@ -12,13 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MenuService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 let MenuService = class MenuService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     async getLastUpdated() {
         try {
@@ -30,7 +28,6 @@ let MenuService = class MenuService {
             return { updatedAt: lastUpdated._max.updatedAt || 0 };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdated', error);
             throw error;
         }
     }
@@ -51,7 +48,6 @@ let MenuService = class MenuService {
             return menu;
         }
         catch (error) {
-            this._ErrorlogService.logError('findby', error);
             throw error;
         }
     }
@@ -65,7 +61,6 @@ let MenuService = class MenuService {
             return this.prisma.menu.update({ where: { id }, data });
         }
         catch (error) {
-            this._ErrorlogService.logError('updateMenu', error);
             throw error;
         }
     }
@@ -75,7 +70,6 @@ let MenuService = class MenuService {
             return this.prisma.menu.delete({ where: { id } });
         }
         catch (error) {
-            this._ErrorlogService.logError('removeMenu', error);
             throw error;
         }
     }
@@ -114,7 +108,6 @@ exports.MenuService = MenuService;
 exports.MenuService = MenuService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], MenuService);
 //# sourceMappingURL=menu.service.js.map

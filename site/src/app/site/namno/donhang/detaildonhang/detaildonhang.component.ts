@@ -161,14 +161,18 @@ export class DetailDonhangComponent {
   };
 
   onValueUpdated(event: { value: any; index: number | null; field: keyof any; row: any }) {
-    console.log('onValueUpdated event:', event);
-    this.DetailDonhang.update((v: any) => {
-      console.log(v);
-      
+    this.DetailDonhang.update((v: any) => {  
       if (event.index !== null) {
+        const item = v.donhangsanpham[event.index];
         if (event.field === 'sldat') {
           v.donhangsanpham[event.index]['sldat'] = event.value;
           v.donhangsanpham[event.index]['slgiao'] = event.value;
+          v.donhangsanpham[event.index]['slnhan'] = event.value;
+          v.donhangsanpham[event.index]['giaban'] = item.sanpham.bacgia.find((item: any) => event.value < item.max && event.value >= item.min)?.gia || 0;
+          const abc = item.sanpham.bacgia.find((item: any) => event.value < item.max && event.value >= item.min)?.gia || 0;
+         console.log('Updated abc:', abc);
+         console.log('Updated giaban:', v.donhangsanpham[event.index]);
+         
         } else {
           v.donhangsanpham[event.index][event.field] = event.value;
         }
@@ -177,8 +181,6 @@ export class DetailDonhangComponent {
       }
       return v;
     });
-    console.log('Value updated:', this.DetailDonhang());
-
   }
 
   moveToNextInput() {

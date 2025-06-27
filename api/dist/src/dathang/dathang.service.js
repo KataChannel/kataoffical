@@ -12,13 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DathangService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 let DathangService = class DathangService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     async getLastUpdatedDathang() {
         try {
@@ -28,7 +26,6 @@ let DathangService = class DathangService {
             return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdatedDathang', error);
             throw error;
         }
     }
@@ -48,7 +45,6 @@ let DathangService = class DathangService {
             return `DATH${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generateDathangCodeId', error);
             throw error;
         }
     }
@@ -98,7 +94,6 @@ let DathangService = class DathangService {
             return created;
         }
         catch (error) {
-            this._ErrorlogService.logError('createDathang', error);
             throw error;
         }
     }
@@ -140,7 +135,6 @@ let DathangService = class DathangService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findByDathang', error);
             throw error;
         }
     }
@@ -167,7 +161,6 @@ let DathangService = class DathangService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findAllDathang', error);
             throw error;
         }
     }
@@ -185,7 +178,6 @@ let DathangService = class DathangService {
             return item;
         }
         catch (error) {
-            this._ErrorlogService.logError('findOneDathang', error);
             throw error;
         }
     }
@@ -242,7 +234,6 @@ let DathangService = class DathangService {
             return updated;
         }
         catch (error) {
-            this._ErrorlogService.logError('updateDathang', error);
             throw error;
         }
     }
@@ -257,7 +248,6 @@ let DathangService = class DathangService {
             return deleted;
         }
         catch (error) {
-            this._ErrorlogService.logError('removeDathang', error);
             throw error;
         }
     }
@@ -273,7 +263,6 @@ let DathangService = class DathangService {
             return { status: 'success' };
         }
         catch (error) {
-            this._ErrorlogService.logError('reorderDathangs', error);
             throw error;
         }
     }
@@ -282,7 +271,6 @@ exports.DathangService = DathangService;
 exports.DathangService = DathangService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], DathangService);
 //# sourceMappingURL=dathang.service.js.map

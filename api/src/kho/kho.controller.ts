@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { KhoService } from './kho.service'; 
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
-import { Audit } from 'src/auditlog/audit.decorator';
+import { JwtAuthGuard } from 'src/shared/auth/jwt-auth.guard'; 
+import { Audit } from 'src/shared/decorators/audit.decorator';
 import { AuditAction } from '@prisma/client';
 @ApiTags('kho') 
 @Controller('kho') 
@@ -13,7 +13,6 @@ export class KhoController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard) 
   @Post()
-  @Audit({ entity: 'Kho', action: AuditAction.CREATE, includeResponse: true })
   async create(@Body() data: any) { 
     try {
       return await this.khoService.create(data);
@@ -70,7 +69,6 @@ export class KhoController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  @Audit({ entity: 'Kho', action: AuditAction.UPDATE, includeResponse: true })
   async update(@Param('id') id: string, @Body() data: any) { 
     try {
       return await this.khoService.update(id, data);
@@ -83,7 +81,6 @@ export class KhoController {
   @ApiParam({ name: 'id', type: String })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  @Audit({ entity: 'Kho', action: AuditAction.DELETE })
   async remove(@Param('id') id: string) {
     try {
       return await this.khoService.remove(id);

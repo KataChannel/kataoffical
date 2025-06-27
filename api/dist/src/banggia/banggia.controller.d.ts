@@ -10,9 +10,10 @@ export declare class BanggiaController {
                 updatedAt: Date;
                 description: string | null;
                 title: string;
+                status: string;
                 order: number | null;
                 codeId: string;
-                status: string;
+                createdById: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
@@ -55,9 +56,9 @@ export declare class BanggiaController {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         batdau: Date | null;
         ketthuc: Date | null;
     }>;
@@ -69,9 +70,10 @@ export declare class BanggiaController {
                 updatedAt: Date;
                 description: string | null;
                 title: string;
+                status: string;
                 order: number | null;
                 codeId: string;
-                status: string;
+                createdById: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
@@ -114,9 +116,9 @@ export declare class BanggiaController {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         batdau: Date | null;
         ketthuc: Date | null;
     }) | {
@@ -128,9 +130,10 @@ export declare class BanggiaController {
                     updatedAt: Date;
                     description: string | null;
                     title: string;
+                    status: string;
                     order: number | null;
                     codeId: string;
-                    status: string;
+                    createdById: string | null;
                     donvitinh: string | null;
                     bienthe: string | null;
                     giagoc: number;
@@ -173,9 +176,9 @@ export declare class BanggiaController {
             createdAt: Date;
             updatedAt: Date;
             title: string | null;
+            status: string;
             order: number | null;
             codeId: string;
-            status: string;
             batdau: Date | null;
             ketthuc: Date | null;
         })[];
@@ -192,9 +195,10 @@ export declare class BanggiaController {
                     updatedAt: Date;
                     description: string | null;
                     title: string;
+                    status: string;
                     order: number | null;
                     codeId: string;
-                    status: string;
+                    createdById: string | null;
                     donvitinh: string | null;
                     bienthe: string | null;
                     giagoc: number;
@@ -237,9 +241,9 @@ export declare class BanggiaController {
             createdAt: Date;
             updatedAt: Date;
             title: string | null;
+            status: string;
             order: number | null;
             codeId: string;
-            status: string;
             batdau: Date | null;
             ketthuc: Date | null;
         })[];
@@ -258,9 +262,10 @@ export declare class BanggiaController {
                 updatedAt: Date;
                 description: string | null;
                 title: string;
+                status: string;
                 order: number | null;
                 codeId: string;
-                status: string;
+                createdById: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
@@ -303,9 +308,9 @@ export declare class BanggiaController {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         batdau: Date | null;
         ketthuc: Date | null;
     }>;
@@ -317,9 +322,10 @@ export declare class BanggiaController {
                 updatedAt: Date;
                 description: string | null;
                 title: string;
+                status: string;
                 order: number | null;
                 codeId: string;
-                status: string;
+                createdById: string | null;
                 donvitinh: string | null;
                 bienthe: string | null;
                 giagoc: number;
@@ -362,9 +368,9 @@ export declare class BanggiaController {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         batdau: Date | null;
         ketthuc: Date | null;
     }>;
@@ -373,9 +379,9 @@ export declare class BanggiaController {
         createdAt: Date;
         updatedAt: Date;
         title: string | null;
+        status: string;
         order: number | null;
         codeId: string;
-        status: string;
         batdau: Date | null;
         ketthuc: Date | null;
     }>;

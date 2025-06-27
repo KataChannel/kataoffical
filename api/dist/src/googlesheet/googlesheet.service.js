@@ -13,13 +13,11 @@ exports.GooglesheetService = void 0;
 const common_1 = require("@nestjs/common");
 const googleapis_1 = require("googleapis");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 let GooglesheetService = class GooglesheetService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
         const serviceAccount = 'credentials.json';
         const auth = new googleapis_1.google.auth.GoogleAuth({
             keyFile: serviceAccount,
@@ -64,7 +62,6 @@ exports.GooglesheetService = GooglesheetService;
 exports.GooglesheetService = GooglesheetService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], GooglesheetService);
 //# sourceMappingURL=googlesheet.service.js.map

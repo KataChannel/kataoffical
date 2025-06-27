@@ -1,22 +1,20 @@
-// Components
+// Export all components
 export { Dashboard } from './components/Dashboard/Dashboard';
+export { Button } from './components/Button/Button';
 export { Sidebar } from './components/Sidebar/Sidebar';
 export { Header } from './components/Header/Header';
 
-// Hooks
-export { useDashboard } from './hooks/useDashboard';
-
-// Types
-export type {
-  DashboardConfig,
-  SidebarConfig,
+// Export all types
+export type { 
+  DashboardConfig, 
+  SidebarConfig, 
+  HeaderConfig, 
   SidebarItem,
-  HeaderConfig,
-  UserMenuItem,
-  DashboardStats
+  UserMenuItem 
 } from './types/common';
 
-// Component Props Types
-export type { DashboardProps } from './components/Dashboard/Dashboard';
-export type { SidebarProps } from './components/Sidebar/Sidebar';
-export type { HeaderProps } from './components/Header/Header';
+// Export hooks
+export { useDashboard } from './hooks/useDashboard';
+
+// Export styles
+import './styles/index.css';

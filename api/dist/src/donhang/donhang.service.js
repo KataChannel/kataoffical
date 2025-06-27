@@ -12,13 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DonhangService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 let DonhangService = class DonhangService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     async getLastUpdatedDonhang() {
         try {
@@ -28,7 +26,6 @@ let DonhangService = class DonhangService {
             return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdatedDonhang', error);
             throw error;
         }
     }
@@ -48,7 +45,6 @@ let DonhangService = class DonhangService {
             return `DON${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generateDonhangCodeId', error);
             throw error;
         }
     }
@@ -98,7 +94,6 @@ let DonhangService = class DonhangService {
             return created;
         }
         catch (error) {
-            this._ErrorlogService.logError('createDonhang', error);
             throw error;
         }
     }
@@ -140,7 +135,6 @@ let DonhangService = class DonhangService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findByDonhang', error);
             throw error;
         }
     }
@@ -167,7 +161,6 @@ let DonhangService = class DonhangService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findAllDonhang', error);
             throw error;
         }
     }
@@ -185,7 +178,6 @@ let DonhangService = class DonhangService {
             return item;
         }
         catch (error) {
-            this._ErrorlogService.logError('findOneDonhang', error);
             throw error;
         }
     }
@@ -242,7 +234,6 @@ let DonhangService = class DonhangService {
             return updated;
         }
         catch (error) {
-            this._ErrorlogService.logError('updateDonhang', error);
             throw error;
         }
     }
@@ -257,7 +248,6 @@ let DonhangService = class DonhangService {
             return deleted;
         }
         catch (error) {
-            this._ErrorlogService.logError('removeDonhang', error);
             throw error;
         }
     }
@@ -273,7 +263,6 @@ let DonhangService = class DonhangService {
             return { status: 'success' };
         }
         catch (error) {
-            this._ErrorlogService.logError('reorderDonhangs', error);
             throw error;
         }
     }
@@ -282,7 +271,6 @@ exports.DonhangService = DonhangService;
 exports.DonhangService = DonhangService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], DonhangService);
 //# sourceMappingURL=donhang.service.js.map

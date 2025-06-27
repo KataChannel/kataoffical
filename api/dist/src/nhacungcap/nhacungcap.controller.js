@@ -16,7 +16,7 @@ exports.NhacungcapController = void 0;
 const common_1 = require("@nestjs/common");
 const nhacungcap_service_1 = require("./nhacungcap.service");
 const swagger_1 = require("@nestjs/swagger");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../shared/auth/jwt-auth.guard");
 let NhacungcapController = class NhacungcapController {
     constructor(nhacungcapService) {
         this.nhacungcapService = nhacungcapService;

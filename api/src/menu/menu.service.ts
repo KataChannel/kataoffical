@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
@@ -8,7 +7,6 @@ export class MenuService {
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
-    private _ErrorlogService: ErrorlogService,
   ) {}
   async getLastUpdated() {
     try {
@@ -19,7 +17,6 @@ export class MenuService {
       });
       return { updatedAt: lastUpdated._max.updatedAt || 0 };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdated', error);
       throw error;
     }
   }
@@ -40,7 +37,6 @@ export class MenuService {
       if (!menu) throw new NotFoundException('menu not found');
       return menu;
     } catch (error) {
-      this._ErrorlogService.logError('findby',error);
       throw error;
     }
   }
@@ -54,7 +50,6 @@ export class MenuService {
           this._SocketGateway.sendUpdate('menu');
       return this.prisma.menu.update({ where: { id }, data });
     } catch (error) {
-      this._ErrorlogService.logError('updateMenu', error);
       throw error;
     }
   }
@@ -64,7 +59,6 @@ export class MenuService {
       this._SocketGateway.sendUpdate('menu');
       return this.prisma.menu.delete({ where: { id } });
     } catch (error) {
-      this._ErrorlogService.logError('removeMenu', error);
       throw error;
     }
   }

@@ -29,7 +29,7 @@ export class MailService {
             cid: 'qrcode',
           },
         ],
-      });
+      } as any);
   
       console.log('Email result:', result);
       return result;

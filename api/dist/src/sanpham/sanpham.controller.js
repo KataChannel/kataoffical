@@ -16,19 +16,34 @@ exports.SanphamController = void 0;
 const common_1 = require("@nestjs/common");
 const sanpham_service_1 = require("./sanpham.service");
 const swagger_1 = require("@nestjs/swagger");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
-const audit_decorator_1 = require("../auditlog/audit.decorator");
+const jwt_auth_guard_1 = require("../shared/auth/jwt-auth.guard");
+const audit_decorator_1 = require("../shared/decorators/audit.decorator");
 const client_1 = require("@prisma/client");
+const createdby_decorator_1 = require("../shared/decorators/createdby.decorator");
 let SanphamController = class SanphamController {
     constructor(sanphamService) {
         this.sanphamService = sanphamService;
     }
-    import(data) {
-        return this.sanphamService.import(data);
-    }
-    async create(data) {
+    async import(data, user) {
         try {
-            return await this.sanphamService.create(data);
+            const result = await this.sanphamService.import(data, user);
+            let entityId = 'N/A';
+            if (result && result.id) {
+                entityId = result.id;
+            }
+            else if (result && Array.isArray(result.results) && result.results.length > 0 && result.results[0].codeId) {
+                entityId = result.results[0].codeId;
+            }
+            return result;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Import failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async create(data, user) {
+        try {
+            const result = await this.sanphamService.create(data, user);
+            return result;
         }
         catch (error) {
             throw new common_1.HttpException(error.message || 'Create failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -68,15 +83,24 @@ let SanphamController = class SanphamController {
     }
     async update(id, data) {
         try {
-            return await this.sanphamService.update(id, data);
+            const existingEntity = await this.sanphamService.findOne(id);
+            if (!existingEntity) {
+                throw new common_1.HttpException('Sanpham not found', common_1.HttpStatus.NOT_FOUND);
+            }
+            const result = await this.sanphamService.update(id, data);
+            return result;
         }
         catch (error) {
+            if (error instanceof common_1.HttpException) {
+                throw error;
+            }
             throw new common_1.HttpException(error.message || 'Update failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async remove(id) {
         try {
-            return await this.sanphamService.remove(id);
+            const result = await this.sanphamService.remove(id);
+            return result;
         }
         catch (error) {
             throw new common_1.HttpException(error.message || 'Delete failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -97,23 +121,25 @@ __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Import Sanpham' }),
     (0, swagger_1.ApiBody)({ type: Object }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, audit_decorator_1.Audit)({ entity: 'Sanpham', action: client_1.AuditAction.CREATE, includeResponse: true }),
     (0, common_1.Post)('import'),
-    (0, audit_decorator_1.Audit)({ entity: 'Import Sanpham', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, createdby_decorator_1.User)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
 ], SanphamController.prototype, "import", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new sanpham' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Create Sanpham' }),
     (0, swagger_1.ApiBody)({ type: Object }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
     (0, audit_decorator_1.Audit)({ entity: 'Sanpham', action: client_1.AuditAction.CREATE, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, createdby_decorator_1.User)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], SanphamController.prototype, "create", null);
 __decorate([
@@ -153,12 +179,12 @@ __decorate([
 ], SanphamController.prototype, "findOne", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Update a sanpham' }),
-    (0, swagger_1.ApiParam)({ name: 'id', type: String }),
-    (0, swagger_1.ApiBody)({ type: Object }),
+    (0, swagger_1.ApiOperation)({ summary: 'Update Sanpham by ID' }),
+    (0, swagger_1.ApiParam)({ name: 'id', type: String, description: 'Sanpham ID' }),
+    (0, swagger_1.ApiBody)({ description: 'Update data for Sanpham' }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Sanpham', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -167,11 +193,11 @@ __decorate([
 ], SanphamController.prototype, "update", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Delete a sanpham' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Delete Sanpham by ID' }),
     (0, swagger_1.ApiParam)({ name: 'id', type: String }),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, audit_decorator_1.Audit)({ entity: 'Sanpham', action: client_1.AuditAction.DELETE, includeResponse: true }),
     (0, common_1.Delete)(':id'),
-    (0, audit_decorator_1.Audit)({ entity: 'Sanpham', action: client_1.AuditAction.DELETE }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

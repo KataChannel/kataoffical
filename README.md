@@ -180,3 +180,5 @@ cập nhật code like senior có trycatch và trả về lỗi
 npm install -g npm-check-updates
 ncu -u next
 npm install
+
+npm install ../nextjsshared/kataoffical-nextjs-1.0.1.tgz

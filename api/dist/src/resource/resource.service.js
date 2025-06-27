@@ -12,14 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ResourceService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const minio_service_1 = require("../minio/minio.service");
 const socket_gateway_1 = require("../socket.gateway");
 let ResourceService = class ResourceService {
-    constructor(prisma, _SocketGateway, _ErrorlogService, _MinioService) {
+    constructor(prisma, _SocketGateway, _MinioService) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
         this._MinioService = _MinioService;
     }
     async getLastUpdatedResource() {
@@ -30,7 +28,6 @@ let ResourceService = class ResourceService {
             return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdatedResource', error);
             throw error;
         }
     }
@@ -49,7 +46,6 @@ let ResourceService = class ResourceService {
             return `I1${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generateCodeId', error);
             throw error;
         }
     }
@@ -71,7 +67,6 @@ let ResourceService = class ResourceService {
             return created;
         }
         catch (error) {
-            this._ErrorlogService.logError('createResource', error);
             throw error;
         }
     }
@@ -104,7 +99,6 @@ let ResourceService = class ResourceService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findByResource', error);
             throw error;
         }
     }
@@ -127,7 +121,6 @@ let ResourceService = class ResourceService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findAllResource', error);
             throw error;
         }
     }
@@ -139,7 +132,6 @@ let ResourceService = class ResourceService {
             return item;
         }
         catch (error) {
-            this._ErrorlogService.logError('findOneResource', error);
             throw error;
         }
     }
@@ -158,7 +150,6 @@ let ResourceService = class ResourceService {
             return updated;
         }
         catch (error) {
-            this._ErrorlogService.logError('updateResource', error);
             throw error;
         }
     }
@@ -175,7 +166,6 @@ let ResourceService = class ResourceService {
             return fileDeleted;
         }
         catch (error) {
-            this._ErrorlogService.logError('removeResource', error);
             throw error;
         }
     }
@@ -190,7 +180,6 @@ let ResourceService = class ResourceService {
             return { status: 'success' };
         }
         catch (error) {
-            this._ErrorlogService.logError('reorderResources', error);
             throw error;
         }
     }
@@ -200,7 +189,6 @@ exports.ResourceService = ResourceService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService,
         minio_service_1.MinioService])
 ], ResourceService);
 //# sourceMappingURL=resource.service.js.map

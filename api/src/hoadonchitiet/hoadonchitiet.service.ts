@@ -1,6 +1,5 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 import * as moment from 'moment';
 import * as ExcelJS from 'exceljs';
@@ -11,7 +10,6 @@ export class HoadonchitietService {
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
-    private _ErrorlogService: ErrorlogService,
   ) {}
 
   async getLastUpdatedhoadonChitiet(): Promise<{ updatedAt: number }> {
@@ -25,7 +23,6 @@ export class HoadonchitietService {
           : 0,
       };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdatedhoadonChitiet', error);
       if (error instanceof HttpException) throw error;
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -47,7 +44,6 @@ export class HoadonchitietService {
       const newPrefix = 'DONHANG';
       return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
-      this._ErrorlogService.logError('generatehoadonChitietCodeId', error);
       if (error instanceof HttpException) throw error;
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -84,7 +80,6 @@ export class HoadonchitietService {
       this._SocketGateway.sendUpdate('hoadonchitiet');
       return created;
     } catch (error) {
-      this._ErrorlogService.logError('createhoadonChitiet', error);
       if (error instanceof HttpException) throw error;
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -156,7 +151,6 @@ export class HoadonchitietService {
         pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
-      this._ErrorlogService.logError('findByhoadonChitiet', error);
       if (error instanceof HttpException) throw error;
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -208,7 +202,6 @@ export class HoadonchitietService {
         pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
-      this._ErrorlogService.logError('findAllhoadonChitiet', error);
       if (error instanceof HttpException) throw error;
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -494,7 +487,6 @@ export class HoadonchitietService {
       };
 
     } catch (error) {
-      this._ErrorlogService.logError('xuatnhapton', error);
       if (error instanceof HttpException) throw error;
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -565,7 +557,6 @@ export class HoadonchitietService {
         pageCount: Math.ceil(total / pageSize),
       };
     } catch (error) {
-      this._ErrorlogService.logError('mathang', error);
       if (error instanceof HttpException) throw error;
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -583,7 +574,6 @@ export class HoadonchitietService {
         );
       return item;
     } catch (error) {
-      this._ErrorlogService.logError('findOnehoadonChitiet', error);
       if (error instanceof HttpException) throw error;
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -605,7 +595,6 @@ export class HoadonchitietService {
 
       return updated;
     } catch (error) {
-      this._ErrorlogService.logError('updateMathang', error);
       if (error instanceof HttpException) throw error;
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -630,7 +619,6 @@ export class HoadonchitietService {
       this._SocketGateway.sendUpdate('hoadonchitiet');
       return updated;
     } catch (error) {
-      this._ErrorlogService.logError('updatehoadonChitiet', error);
       if (error instanceof HttpException) throw error;
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -642,7 +630,6 @@ export class HoadonchitietService {
       this._SocketGateway.sendUpdate('hoadonchitiet');
       return deleted;
     } catch (error) {
-      this._ErrorlogService.logError('removehoadonChitiet', error);
       if (error instanceof HttpException) throw error;
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -659,7 +646,6 @@ export class HoadonchitietService {
       this._SocketGateway.sendUpdate('hoadonchitiet');
       return { status: 'success' };
     } catch (error) {
-      this._ErrorlogService.logError('reorderhoadonChitiets', error);
       if (error instanceof HttpException) throw error;
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

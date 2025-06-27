@@ -9,13 +9,14 @@ datasource postgres {
   url      = env("DATABASE_URL")
 }
 
+// schema.prisma
 model AuditLog {
   id            String          @id @default(uuid())
-  entityName    String?          // Tên entity (User, Product, Order...)
-  entityId      String?          // ID của entity
+  entityName    String?         // Tên entity (User, Product, Order...)
+  entityId      String?         // ID của entity
   action        AuditAction     // CREATE, UPDATE, DELETE
   userId        String?         // User thực hiện action
-  user          User?          @relation(fields: [userId], references: [id])
+  user          User?           @relation(fields: [userId], references: [id])
   userEmail     String?         // Email user (backup)
   oldValues     Json?           // Giá trị cũ (trước khi thay đổi)
   newValues     Json?           // Giá trị mới (sau khi thay đổi)
@@ -23,6 +24,8 @@ model AuditLog {
   ipAddress     String?         // IP address
   userAgent     String?         // User agent
   sessionId     String?         // Session ID
+  status        String          @default("SUCCESS")  
+  errorDetails  Json?           @map("error_details") // Thêm trường errorDetails
   metadata      Json?           // Metadata bổ sung
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -30,10 +33,12 @@ model AuditLog {
   @@index([userId])
   @@index([createdAt])
   @@index([action])
+  @@index([status]) // Thêm index cho status để tối ưu lọc
 }
 
 enum AuditAction {
   CREATE
+  READ
   UPDATE  
   DELETE
   LOGIN
@@ -108,6 +113,7 @@ model User {
   Setting       Setting[]
   kho           kho[]
   nhacungcap    nhacungcap[]
+  sanpham       sanpham[]
 }
 
 model Role {
@@ -181,15 +187,6 @@ model ChatAIHistory {
   userId    String
   message   String
   sender    String // 'user' hoặc 'bot'
-  createdAt DateTime @default(now())
-}
-
-model ErrorLog {
-  id        String   @id @default(uuid())
-  timestamp DateTime
-  message   String
-  details   Json? // Lưu thông tin bổ sung dưới dạng JSON
-  source    String // "client" hoặc "server" để phân biệt nguồn lỗi
   createdAt DateTime @default(now())
 }
 
@@ -575,6 +572,8 @@ model sanpham {
   updatedAt      DateTime         @updatedAt
   danhmucId      String?         // Foreign key referencing danhmuc
   danhmuc        danhmuc?         @relation(fields: [danhmucId], references: [id])
+  createdById    String?
+  createdBy      User?         @relation(fields: [createdById], references: [id])
   donhangsanpham donhangsanpham[]
   dathangsanpham dathangsanpham[]
   banggia        BangGiaSanPham[] @relation("SanphamBangGia")

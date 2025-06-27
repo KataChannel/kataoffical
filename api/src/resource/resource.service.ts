@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { MinioService } from 'src/minio/minio.service';
 import { SocketGateway } from 'src/socket.gateway';
 
@@ -9,7 +8,6 @@ export class ResourceService {
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
-    private _ErrorlogService: ErrorlogService,
     private _MinioService: MinioService,
   ) {}
 
@@ -20,7 +18,6 @@ export class ResourceService {
       });
       return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdatedResource', error);
       throw error;
     }
   }
@@ -39,7 +36,6 @@ export class ResourceService {
       }
       return `I1${nextNumber.toString().padStart(5, '0')}`;
     } catch (error) {
-      this._ErrorlogService.logError('generateCodeId', error);
       throw error;
     }
   }
@@ -61,7 +57,6 @@ export class ResourceService {
       this._SocketGateway.sendUpdate('resource');
       return created;
     } catch (error) {
-      this._ErrorlogService.logError('createResource', error);
       throw error;
     }
   }
@@ -94,7 +89,6 @@ export class ResourceService {
         pageCount: Math.ceil(total / limit)
       };
     } catch (error) {
-      this._ErrorlogService.logError('findByResource', error);
       throw error;
     }
   }
@@ -117,7 +111,6 @@ export class ResourceService {
         pageCount: Math.ceil(total / limit)
       };
     } catch (error) {
-      this._ErrorlogService.logError('findAllResource', error);
       throw error;
     }
   }
@@ -128,7 +121,6 @@ export class ResourceService {
       if (!item) throw new NotFoundException('Resource not found');
       return item;
     } catch (error) {
-      this._ErrorlogService.logError('findOneResource', error);
       throw error;
     }
   }
@@ -146,7 +138,6 @@ export class ResourceService {
       this._SocketGateway.sendUpdate('resource');
       return updated;
     } catch (error) {
-      this._ErrorlogService.logError('updateResource', error);
       throw error;
     }
   }
@@ -164,7 +155,6 @@ export class ResourceService {
       this._SocketGateway.sendUpdate('resource');
       return fileDeleted;
     } catch (error) {
-      this._ErrorlogService.logError('removeResource', error);
       throw error;
     }
   }
@@ -180,7 +170,6 @@ export class ResourceService {
       //this._SocketGateway.sendResourceUpdate();
       return { status: 'success' };
     } catch (error) {
-      this._ErrorlogService.logError('reorderResources', error);
       throw error;
     }
   }

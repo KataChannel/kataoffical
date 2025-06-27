@@ -16,7 +16,7 @@ exports.ResourceController = void 0;
 const common_1 = require("@nestjs/common");
 const resource_service_1 = require("./resource.service");
 const swagger_1 = require("@nestjs/swagger");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../shared/auth/jwt-auth.guard");
 let ResourceController = class ResourceController {
     constructor(resourceService) {
         this.resourceService = resourceService;

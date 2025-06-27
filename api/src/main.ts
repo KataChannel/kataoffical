@@ -6,7 +6,7 @@ import * as bodyParser from 'body-parser';
 import * as admin from 'firebase-admin';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { CreateByInterceptor } from './auth/auth.interceptor';
+import { CreateByInterceptor } from './shared/interceptor/auth.interceptor';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({

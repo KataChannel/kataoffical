@@ -1,39 +1,59 @@
+// sanpham.controller.ts
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
-import { SanphamService } from './sanpham.service'; 
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
-import { Audit } from 'src/auditlog/audit.decorator';
+import { SanphamService } from './sanpham.service';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/shared/auth/jwt-auth.guard';
+import { Audit } from 'src/shared/decorators/audit.decorator';
 import { AuditAction } from '@prisma/client';
-@ApiTags('sanpham') 
-@Controller('sanpham') 
-export class SanphamController { 
-  constructor(private readonly sanphamService: SanphamService) {} 
+import { User } from 'src/shared/decorators/createdby.decorator';
+@ApiTags('sanpham')
+@Controller('sanpham')
+export class SanphamController {
+  constructor(private readonly sanphamService: SanphamService) {}
 
-  @ApiBearerAuth() 
-  @ApiOperation({ summary: 'Import Sanpham' }) 
-  @ApiBody({ type: Object }) 
-  @UseGuards(JwtAuthGuard) 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Import Sanpham' })
+  @ApiBody({ type: Object })
+  @UseGuards(JwtAuthGuard)
+  @Audit({ entity: 'Sanpham', action: AuditAction.CREATE, includeResponse: true })
   @Post('import')
-  @Audit({entity: 'Import Sanpham', action: AuditAction.CREATE, includeResponse: true})
-  import(@Body() data: any) {
-    return this.sanphamService.import(data);
+  async import(
+    @Body() data: any,
+    @User() user: any,
+  ) {
+    try {
+      const result:any = await this.sanphamService.import(data,user);
+      let entityId = 'N/A';
+      if (result && result.id) {
+        entityId = result.id;
+      } else if (result && Array.isArray(result.results) && result.results.length > 0 && result.results[0].codeId) {
+        entityId = result.results[0].codeId;
+      }
+      return result;
+    } catch (error) {
+      throw new HttpException(error.message || 'Import failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
-  @ApiBearerAuth() 
-  @ApiOperation({ summary: 'Create a new sanpham' }) 
-  @ApiBody({ type: Object }) 
-  @UseGuards(JwtAuthGuard) 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create Sanpham' })
+  @ApiBody({ type: Object })
+  @UseGuards(JwtAuthGuard)
   @Post()
-  @Audit({ entity: 'Sanpham', action: AuditAction.CREATE, includeResponse: true })
-  async create(@Body() data: any) { 
+  @Audit({ entity: 'Sanpham', action: AuditAction.CREATE, includeResponse: true }) 
+  async create(
+    @Body() data: any,
+    @User() user: any,
+  ) {
     try {
-      return await this.sanphamService.create(data);
+      const result = await this.sanphamService.create(data,user);
+      return result;
     } catch (error) {
       throw new HttpException(error.message || 'Create failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
   @ApiOperation({ summary: 'Find sanphams by parameters' })
-  @ApiBody({ type: Object }) 
+  @ApiBody({ type: Object })
   @Post('findby')
   async findby(@Body() param: any) {
     try {
@@ -42,7 +62,6 @@ export class SanphamController {
       throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-  
   @ApiOperation({ summary: 'Get all sanphams with pagination' })
   @ApiResponse({ status: 200, description: 'List of sanphams with pagination info' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
@@ -55,12 +74,11 @@ export class SanphamController {
         error.message || 'Failed to fetch sanphams',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    } 
+    }
   }
-  
   @ApiOperation({ summary: 'Get last updated sanpham' })
-  @Get('lastupdated') 
-  async getLastUpdatedSanpham() { 
+  @Get('lastupdated')
+  async getLastUpdatedSanpham() {
     try {
       return await this.sanphamService.getLastUpdatedSanpham();
     } catch (error) {
@@ -68,7 +86,7 @@ export class SanphamController {
     }
   }
   @ApiOperation({ summary: 'Find sanpham by ID' })
-  @ApiParam({ name: 'id', type: String }) 
+  @ApiParam({ name: 'id', type: String })
   @Get('findid/:id')
   async findOne(@Param('id') id: string) {
     try {
@@ -78,42 +96,61 @@ export class SanphamController {
     }
   }
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update a sanpham' })
-  @ApiParam({ name: 'id', type: String })
-  @ApiBody({ type: Object }) 
+  @ApiOperation({ summary: 'Update Sanpham by ID' })
+  @ApiParam({ name: 'id', type: String, description: 'Sanpham ID' })
+  @ApiBody({ description: 'Update data for Sanpham' })
   @UseGuards(JwtAuthGuard)
+  @Audit({ entity: 'Sanpham',action: AuditAction.UPDATE, includeResponse: true})
   @Patch(':id')
-  @Audit({ entity: 'Sanpham', action: AuditAction.UPDATE, includeResponse: true })
-  async update(@Param('id') id: string, @Body() data: any) { 
+  async update(
+    @Param('id') id: string,
+    @Body() data: any,
+  ) {
     try {
-      return await this.sanphamService.update(id, data);
+      // Check if entity exists
+      const existingEntity = await this.sanphamService.findOne(id);
+      if (!existingEntity) {
+        throw new HttpException('Sanpham not found', HttpStatus.NOT_FOUND);
+      }
+
+      const result = await this.sanphamService.update(id, data);
+      return result;
     } catch (error) {
-      throw new HttpException(error.message || 'Update failed', HttpStatus.INTERNAL_SERVER_ERROR);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        error.message || 'Update failed', 
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
   }
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete a sanpham' })
+  @ApiOperation({ summary: 'Delete Sanpham by ID' })
   @ApiParam({ name: 'id', type: String })
   @UseGuards(JwtAuthGuard)
+  @Audit({ entity: 'Sanpham', action: AuditAction.DELETE, includeResponse: true })
   @Delete(':id')
-  @Audit({ entity: 'Sanpham', action: AuditAction.DELETE })
-  async remove(@Param('id') id: string) {
+  async remove(
+    @Param('id') id: string,
+  ) {
     try {
-      return await this.sanphamService.remove(id);
+      const result = await this.sanphamService.remove(id);
+      return result;
     } catch (error) {
       throw new HttpException(error.message || 'Delete failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
   @ApiOperation({ summary: 'Reorder sanphams' })
   @ApiBody({
-    schema: { 
+    schema: {
       properties: {
         sanphamIds: { type: 'array', items: { type: 'string' } },
       },
     },
   })
-  @Post('reorder') 
-  async reorder(@Body() body: { sanphamIds: string[] }) { 
+  @Post('reorder')
+  async reorder(@Body() body: { sanphamIds: string[] }) {
     try {
       return await this.sanphamService.reorderSanphams(body.sanphamIds);
     } catch (error) {

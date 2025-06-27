@@ -9,8 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HoadonModule = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_module_1 = require("../../prisma/prisma.module");
-const errorlog_module_1 = require("../errorlog/errorlog.module");
-const auth_module_1 = require("../auth/auth.module");
+const auth_module_1 = require("../shared/auth/auth.module");
 const donhang_controller_1 = require("./donhang.controller");
 const donhang_service_1 = require("./donhang.service");
 const socket_gateway_1 = require("../socket.gateway");
@@ -19,7 +18,7 @@ let HoadonModule = class HoadonModule {
 exports.HoadonModule = HoadonModule;
 exports.HoadonModule = HoadonModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule, auth_module_1.AuthModule],
+        imports: [prisma_module_1.PrismaModule, auth_module_1.AuthModule],
         controllers: [donhang_controller_1.HoadonController],
         providers: [donhang_service_1.HoadonService, socket_gateway_1.SocketGateway],
         exports: [donhang_service_1.HoadonService]

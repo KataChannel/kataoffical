@@ -12,14 +12,13 @@ const dathang_service_1 = require("./dathang.service");
 const dathang_controller_1 = require("./dathang.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const socket_gateway_1 = require("../socket.gateway");
-const errorlog_module_1 = require("../errorlog/errorlog.module");
-const auth_module_1 = require("../auth/auth.module");
+const auth_module_1 = require("../shared/auth/auth.module");
 let DathangModule = class DathangModule {
 };
 exports.DathangModule = DathangModule;
 exports.DathangModule = DathangModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule, auth_module_1.AuthModule],
+        imports: [prisma_module_1.PrismaModule, auth_module_1.AuthModule],
         controllers: [dathang_controller_1.DathangController],
         providers: [dathang_service_1.DathangService, socket_gateway_1.SocketGateway],
         exports: [dathang_service_1.DathangService]

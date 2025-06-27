@@ -62,7 +62,7 @@ import { DanhmucService } from '../../danhmuc/danhmuc.service';
           this._router.navigate(['sanpham', "new"]);
         }
         else{
-            await this._SanphamService.getSanphamBy({id:id,isOne:true});
+            await this._SanphamService.search({id:id,isOne:true});
             this._ListSanphamComponent.drawer.open();
             this._router.navigate(['sanpham', id]);
         }

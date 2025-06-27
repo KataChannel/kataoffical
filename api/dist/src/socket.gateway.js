@@ -29,7 +29,6 @@ let SocketGateway = class SocketGateway {
             return;
         }
         this.emitCount++;
-        console.log(`Emit count: ${this.emitCount}`);
         this.server.emit(`${event}-updated`, data);
     }
 };

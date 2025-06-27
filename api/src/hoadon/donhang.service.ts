@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import { ErrorlogService } from 'src/errorlog/errorlog.service';
 import { SocketGateway } from 'src/socket.gateway';
 
 @Injectable()
@@ -8,7 +7,6 @@ export class HoadonService {
   constructor(
     private readonly prisma: PrismaService,
     private _SocketGateway: SocketGateway,
-    private _ErrorlogService: ErrorlogService,
   ) {}
 
   async getLastUpdatedHoadon(): Promise<{ updatedAt: number }> {
@@ -22,7 +20,6 @@ export class HoadonService {
           : 0,
       };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdatedHoadon', error);
       throw error;
     }
   }
@@ -47,7 +44,6 @@ async create(data: any) {
     // this._SocketGateway.sendUpdate('donhang');
     return created;
   } catch (error) {
-    this._ErrorlogService.logError('createHoadon', error);
     throw error;
   }
 }
@@ -77,7 +73,6 @@ async create(data: any) {
         pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
-      this._ErrorlogService.logError('findByHoadon', error);
       throw error;
     }
   }
@@ -119,7 +114,6 @@ async create(data: any) {
         pageCount: Math.ceil(total / limit),
       };
     } catch (error) {
-      this._ErrorlogService.logError('findAllHoadon', error);
       throw error;
     }
   }
@@ -130,7 +124,6 @@ async create(data: any) {
       if (!item) throw new NotFoundException('Hoadon not found');
       return item;
     } catch (error) {
-      this._ErrorlogService.logError('findOneHoadon', error);
       throw error;
     }
   }
@@ -141,7 +134,6 @@ async create(data: any) {
       this._SocketGateway.sendUpdate('donhang');
       return updated;
     } catch (error) {
-      this._ErrorlogService.logError('updateHoadon', error);
       throw error;
     }
   }
@@ -152,7 +144,6 @@ async create(data: any) {
      this._SocketGateway.sendUpdate('donhang');
       return deleted;
     } catch (error) {
-      this._ErrorlogService.logError('removeHoadon', error);
       throw error;
     }
   }

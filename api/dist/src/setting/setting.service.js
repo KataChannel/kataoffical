@@ -12,13 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SettingService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 let SettingService = class SettingService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     parseValue(value, type) {
         if (value === null)
@@ -34,7 +32,6 @@ let SettingService = class SettingService {
                     return JSON.parse(value);
                 }
                 catch (error) {
-                    this._ErrorlogService.logError('parseValue', error);
                     return null;
                 }
             case 'string':
@@ -52,7 +49,6 @@ let SettingService = class SettingService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdatedSetting', error);
             throw error;
         }
     }
@@ -73,7 +69,6 @@ let SettingService = class SettingService {
             return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generateSettingCodeId', error);
             throw error;
         }
     }
@@ -98,7 +93,6 @@ let SettingService = class SettingService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('createSetting', error);
             throw error;
         }
     }
@@ -138,7 +132,6 @@ let SettingService = class SettingService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findBySetting', error);
             throw error;
         }
     }
@@ -164,7 +157,6 @@ let SettingService = class SettingService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findAllSetting', error);
             throw error;
         }
     }
@@ -179,7 +171,6 @@ let SettingService = class SettingService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findOneSetting', error);
             throw error;
         }
     }
@@ -201,7 +192,6 @@ let SettingService = class SettingService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('updateSetting', error);
             throw error;
         }
     }
@@ -215,7 +205,6 @@ let SettingService = class SettingService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('removeSetting', error);
             throw error;
         }
     }
@@ -231,7 +220,6 @@ let SettingService = class SettingService {
             return { status: 'success' };
         }
         catch (error) {
-            this._ErrorlogService.logError('reorderSettings', error);
             throw error;
         }
     }
@@ -240,7 +228,6 @@ exports.SettingService = SettingService;
 exports.SettingService = SettingService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], SettingService);
 //# sourceMappingURL=setting.service.js.map

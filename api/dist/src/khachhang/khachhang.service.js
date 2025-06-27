@@ -12,13 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.KhachhangService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const errorlog_service_1 = require("../errorlog/errorlog.service");
 const socket_gateway_1 = require("../socket.gateway");
 let KhachhangService = class KhachhangService {
-    constructor(prisma, _SocketGateway, _ErrorlogService) {
+    constructor(prisma, _SocketGateway) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
-        this._ErrorlogService = _ErrorlogService;
     }
     async getLastUpdatedKhachhang() {
         try {
@@ -28,7 +26,6 @@ let KhachhangService = class KhachhangService {
             return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
         }
         catch (error) {
-            this._ErrorlogService.logError('getLastUpdatedKhachhang', error);
             throw error;
         }
     }
@@ -49,7 +46,6 @@ let KhachhangService = class KhachhangService {
             return `${newPrefix}${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
-            this._ErrorlogService.logError('generateKhachhangCodeId', error);
             throw error;
         }
     }
@@ -71,7 +67,6 @@ let KhachhangService = class KhachhangService {
             return created;
         }
         catch (error) {
-            this._ErrorlogService.logError('createKhachhang', error);
             throw error;
         }
     }
@@ -103,7 +98,6 @@ let KhachhangService = class KhachhangService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findByKhachhang', error);
             throw error;
         }
     }
@@ -126,7 +120,6 @@ let KhachhangService = class KhachhangService {
             };
         }
         catch (error) {
-            this._ErrorlogService.logError('findAllKhachhang', error);
             throw error;
         }
     }
@@ -138,7 +131,6 @@ let KhachhangService = class KhachhangService {
             return item;
         }
         catch (error) {
-            this._ErrorlogService.logError('findOneKhachhang', error);
             throw error;
         }
     }
@@ -157,7 +149,6 @@ let KhachhangService = class KhachhangService {
             return updated;
         }
         catch (error) {
-            this._ErrorlogService.logError('updateKhachhang', error);
             throw error;
         }
     }
@@ -168,7 +159,6 @@ let KhachhangService = class KhachhangService {
             return deleted;
         }
         catch (error) {
-            this._ErrorlogService.logError('removeKhachhang', error);
             throw error;
         }
     }
@@ -184,7 +174,6 @@ let KhachhangService = class KhachhangService {
             return { status: 'success' };
         }
         catch (error) {
-            this._ErrorlogService.logError('reorderKhachhangs', error);
             throw error;
         }
     }
@@ -193,7 +182,6 @@ exports.KhachhangService = KhachhangService;
 exports.KhachhangService = KhachhangService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        socket_gateway_1.SocketGateway,
-        errorlog_service_1.ErrorlogService])
+        socket_gateway_1.SocketGateway])
 ], KhachhangService);
 //# sourceMappingURL=khachhang.service.js.map

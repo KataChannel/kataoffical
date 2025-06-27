@@ -16,7 +16,7 @@ exports.DathangController = void 0;
 const common_1 = require("@nestjs/common");
 const dathang_service_1 = require("./dathang.service");
 const swagger_1 = require("@nestjs/swagger");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const jwt_auth_guard_1 = require("../shared/auth/jwt-auth.guard");
 let DathangController = class DathangController {
     constructor(dathangService) {
         this.dathangService = dathangService;
