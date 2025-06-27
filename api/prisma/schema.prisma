@@ -9,11 +9,11 @@ datasource postgres {
 }
 model AuditLog {
   id            String          @id @default(uuid())
-  entityName    String          // Tên entity (User, Product, Order...)
-  entityId      String          // ID của entity
+  entityName    String?         // Tên entity (User, Product, Order...)
+  entityId      String?         // ID của entity
   action        AuditAction     // CREATE, UPDATE, DELETE
   userId        String?         // User thực hiện action
-  user          User?          @relation(fields: [userId], references: [id])
+  user          User?           @relation(fields: [userId], references: [id])
   userEmail     String?         // Email user (backup)
   oldValues     Json?           // Giá trị cũ (trước khi thay đổi)
   newValues     Json?           // Giá trị mới (sau khi thay đổi)
@@ -21,6 +21,8 @@ model AuditLog {
   ipAddress     String?         // IP address
   userAgent     String?         // User agent
   sessionId     String?         // Session ID
+  status        String          @default("SUCCESS")  
+  errorDetails  Json?           @map("error_details") // Thêm trường errorDetails
   metadata      Json?           // Metadata bổ sung
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
@@ -28,15 +30,20 @@ model AuditLog {
   @@index([userId])
   @@index([createdAt])
   @@index([action])
+  @@index([status]) // Thêm index cho status để tối ưu lọc
 }
+
 enum AuditAction {
   CREATE
+  READ
   UPDATE  
   DELETE
   LOGIN
   LOGOUT
   ACCESS
+  IMPORT
 }
+
 model User {
   id        String   @id @default(uuid())
   email     String?   @unique

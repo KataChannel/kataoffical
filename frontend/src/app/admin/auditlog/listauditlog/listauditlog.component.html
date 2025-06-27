@@ -100,8 +100,8 @@
             </span>
             }
             @case ('createdAt') {
-            <span class="max-w-40 line-clamp-4">
-              {{ row[column]|date:'dd/MM/yyyy'}}
+            <span class="max-w-40 line-clamp-4 text-xs">
+              {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
             </span>
             }
             @case ('user') {
@@ -120,9 +120,29 @@
               }
             </span>
             }
+            @case ('status') {
+            <span class="max-w-40 line-clamp-4 flex items-center">
+                @if (row[column] === 'SUCCESS') {
+                <mat-icon class="text-green-500">check_circle</mat-icon>
+                <span class="text-green-600 font-semibold ms-1">Thành công</span>
+                }
+                @else if (row[column] === 'ERROR') {
+                <mat-icon class="text-red-500">cancel</mat-icon>
+                <span class="text-red-600 font-semibold ms-1">Lỗi</span>
+                }
+                @else if (row[column] === 'WARNING') {
+                <mat-icon class="text-yellow-500">warning</mat-icon>
+                <span class="text-yellow-600 font-semibold ms-1">Cảnh báo</span>
+                }
+                @else {
+                <mat-icon class="text-gray-400">help</mat-icon>
+                <span class="text-gray-500 ms-1">{{ row[column] }}</span>
+                }
+            </span>
+            }
             @case ('updatedAt') {
-            <span class="max-w-40 line-clamp-4">
-              {{ row[column]|date:'dd/MM/yyyy'}}
+            <span class="max-w-40 line-clamp-4 text-xs">
+              {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
             </span>
             }
             @default {

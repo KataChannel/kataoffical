@@ -17,13 +17,12 @@ let AuditMiddleware = class AuditMiddleware {
         this.prisma = prisma;
     }
     async use(req, res, next) {
-        if (req.method === 'PUT' || req.method === 'PATCH') {
+        if (req.method === 'PUT' || req.method === 'PATCH' || req.method === 'DELETE') {
             try {
-                console.log(`Processing ${req.method} request for URL: ${req.originalUrl}`);
-                const entityId = req.params?.id || (Array.isArray(req.params?.path) ? req.params.path[1] : null);
+                const entityId = req.params?.id || req.params[0] || null;
                 if (entityId) {
                     const oldData = await this.getOldData(req.originalUrl, entityId);
-                    req.auditOldValues = oldData;
+                    req.auditOldValues = oldData ? this.sanitizeData(oldData) : null;
                 }
             }
             catch (error) {
@@ -33,7 +32,6 @@ let AuditMiddleware = class AuditMiddleware {
         next();
     }
     async getOldData(url, id) {
-        console.log(`Fetching old data for URL: ${url} with ID: ${id}`);
         if (url.includes('/users/')) {
             return await this.prisma.user.findUnique({ where: { id } });
         }
@@ -44,6 +42,18 @@ let AuditMiddleware = class AuditMiddleware {
             return await this.prisma.khachhang.findUnique({ where: { id } });
         }
         return null;
+    }
+    sanitizeData(data) {
+        const sensitiveFields = ['password', 'token', 'secret', 'key'];
+        if (typeof data !== 'object' || data === null)
+            return data;
+        const sanitized = { ...data };
+        sensitiveFields.forEach((field) => {
+            if (field in sanitized) {
+                sanitized[field] = '[REDACTED]';
+            }
+        });
+        return sanitized;
     }
 };
 exports.AuditMiddleware = AuditMiddleware;

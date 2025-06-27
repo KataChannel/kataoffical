@@ -8,4 +8,5 @@ export declare class AuditMiddleware implements NestMiddleware {
         auditOldValues?: any;
     }, res: Response, next: NextFunction): Promise<void>;
     private getOldData;
+    private sanitizeData;
 }

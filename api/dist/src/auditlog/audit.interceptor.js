@@ -11,9 +11,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuditInterceptor = void 0;
 const common_1 = require("@nestjs/common");
+const rxjs_1 = require("rxjs");
 const operators_1 = require("rxjs/operators");
 const core_1 = require("@nestjs/core");
-const auditlog_service_1 = require("./auditlog.service");
+const auditlog_service_1 = require("../auditlog/auditlog.service");
 const audit_decorator_1 = require("./audit.decorator");
 let AuditInterceptor = class AuditInterceptor {
     constructor(auditService, reflector) {
@@ -29,17 +30,18 @@ let AuditInterceptor = class AuditInterceptor {
         const startTime = Date.now();
         return next.handle().pipe((0, operators_1.tap)(async (result) => {
             try {
+                const dynamicConfig = request.auditConfig || {};
                 await this.auditService.logActivity({
-                    entityName: auditConfig.entity || 'Unknown',
-                    entityId: this.extractEntityId(request, result, auditConfig) || '',
+                    entityName: auditConfig.entity,
+                    entityId: dynamicConfig.entityId || this.extractEntityId(request, result, auditConfig),
                     action: auditConfig.action,
                     userId: request.user?.id || null,
                     userEmail: request.user?.email || null,
-                    oldValues: request.auditOldValues || null,
-                    newValues: this.extractNewValues(result, auditConfig),
-                    changedFields: Object.keys(request.auditOldValues || {}).filter((key) => request.auditOldValues[key] !== result?.[key]),
+                    oldValues: dynamicConfig.changes?.oldValues || request.auditOldValues || null,
+                    newValues: dynamicConfig.changes?.newValues || this.extractNewValues(result, auditConfig),
+                    changedFields: this.getChangedFields(dynamicConfig.changes?.oldValues || request.auditOldValues, dynamicConfig.changes?.newValues || result),
                     ipAddress: this.getClientIp(request),
-                    userAgent: request.headers['user-agent'] || '',
+                    userAgent: request.headers['user-agent'] || null,
                     sessionId: request.session?.id || null,
                     metadata: {
                         endpoint: request.url,
@@ -47,17 +49,48 @@ let AuditInterceptor = class AuditInterceptor {
                         responseTime: Date.now() - startTime,
                         ...auditConfig.metadata,
                     },
+                    status: dynamicConfig.status || 'SUCCESS',
+                    errorDetails: dynamicConfig.errorDetails || null,
                 });
             }
             catch (error) {
                 console.error('Audit logging failed:', error);
             }
+        }), (0, operators_1.catchError)((error) => {
+            const dynamicConfig = request.auditConfig || {};
+            this.auditService.logActivity({
+                entityName: auditConfig.entity,
+                entityId: dynamicConfig.entityId || request.params?.id || 'N/A',
+                action: auditConfig.action,
+                userId: request.user?.id || null,
+                userEmail: request.user?.email || null,
+                oldValues: dynamicConfig.changes?.oldValues || request.auditOldValues || null,
+                newValues: dynamicConfig.changes?.newValues || null,
+                changedFields: this.getChangedFields(dynamicConfig.changes?.oldValues || request.auditOldValues, dynamicConfig.changes?.newValues),
+                ipAddress: this.getClientIp(request),
+                userAgent: request.headers['user-agent'] || null,
+                sessionId: request.session?.id || null,
+                metadata: {
+                    endpoint: request.url,
+                    method: request.method,
+                    responseTime: Date.now() - startTime,
+                    ...auditConfig.metadata,
+                },
+                status: 'ERROR',
+                errorDetails: {
+                    message: error.message || 'Unknown error',
+                    statusCode: error instanceof common_1.HttpException ? error.getStatus() : 500,
+                },
+            }).catch((auditError) => {
+                console.error('Audit logging failed:', auditError);
+            });
+            return (0, rxjs_1.throwError)(() => error);
         }));
     }
     extractEntityId(request, result, config) {
         return config.entityIdField
-            ? result?.[config.entityIdField] || request.params?.id
-            : request.params?.id || result?.id;
+            ? result?.[config.entityIdField] || request.params?.id || 'N/A'
+            : request.params?.id || result?.id || 'N/A';
     }
     extractNewValues(result, config) {
         if (config.includeResponse && result) {
@@ -69,7 +102,8 @@ let AuditInterceptor = class AuditInterceptor {
         return (request.headers['x-forwarded-for'] ||
             request.headers['x-real-ip'] ||
             request.connection?.remoteAddress ||
-            request.ip);
+            request.ip ||
+            null);
     }
     sanitizeData(data) {
         const sensitiveFields = ['password', 'token', 'secret', 'key'];
@@ -82,6 +116,18 @@ let AuditInterceptor = class AuditInterceptor {
             }
         });
         return sanitized;
+    }
+    getChangedFields(oldValues, newValues) {
+        if (!oldValues || !newValues)
+            return [];
+        const changed = [];
+        const allKeys = new Set([...Object.keys(oldValues || {}), ...Object.keys(newValues || {})]);
+        for (const key of allKeys) {
+            if (JSON.stringify(oldValues[key]) !== JSON.stringify(newValues[key])) {
+                changed.push(key);
+            }
+        }
+        return changed;
     }
 };
 exports.AuditInterceptor = AuditInterceptor;

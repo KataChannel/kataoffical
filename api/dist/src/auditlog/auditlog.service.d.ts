@@ -4,15 +4,17 @@ export interface AuditLogData {
     entityName: string;
     entityId: string;
     action: AuditAction;
-    userId: string;
-    userEmail: string;
-    oldValues: any;
-    newValues: any;
-    changedFields: string[];
-    ipAddress: string;
-    userAgent: string;
-    sessionId: string;
-    metadata: any;
+    userId: string | null;
+    userEmail: string | null;
+    oldValues?: any;
+    newValues?: any;
+    changedFields?: string[];
+    ipAddress: string | null;
+    userAgent: string | null;
+    sessionId: string | null;
+    metadata?: any;
+    status?: 'SUCCESS' | 'ERROR';
+    errorDetails?: any;
 }
 export declare class AuditService {
     private readonly prisma;
@@ -21,14 +23,16 @@ export declare class AuditService {
     getAuditLogs(param: any): Promise<({
         user: {
             email: string | null;
+            SDT: string | null;
         } | null;
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
         userId: string | null;
-        entityName: string;
-        entityId: string;
+        status: string;
+        entityName: string | null;
+        entityId: string | null;
         action: import(".prisma/client").$Enums.AuditAction;
         userEmail: string | null;
         oldValues: import("@prisma/client/runtime/library").JsonValue | null;
@@ -37,19 +41,22 @@ export declare class AuditService {
         ipAddress: string | null;
         userAgent: string | null;
         sessionId: string | null;
+        errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
     }) | {
         data: ({
             user: {
                 email: string | null;
+                SDT: string | null;
             } | null;
         } & {
             id: string;
             createdAt: Date;
             updatedAt: Date;
             userId: string | null;
-            entityName: string;
-            entityId: string;
+            status: string;
+            entityName: string | null;
+            entityId: string | null;
             action: import(".prisma/client").$Enums.AuditAction;
             userEmail: string | null;
             oldValues: import("@prisma/client/runtime/library").JsonValue | null;
@@ -58,14 +65,13 @@ export declare class AuditService {
             ipAddress: string | null;
             userAgent: string | null;
             sessionId: string | null;
+            errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
             metadata: import("@prisma/client/runtime/library").JsonValue | null;
         })[];
-        pagination: {
-            page: any;
-            pageSize: any;
-            total: number;
-            pageCount: number;
-        };
+        page: any;
+        pageSize: any;
+        total: number;
+        pageCount: number;
     } | null>;
     private getChangedFields;
 }

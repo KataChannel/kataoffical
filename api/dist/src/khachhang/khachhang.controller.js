@@ -77,7 +77,7 @@ __decorate([
 ], KhachhangController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)('import'),
-    (0, audit_decorator_1.Audit)({ entity: 'Import Khachhang', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    (0, audit_decorator_1.Audit)({ entity: 'Import Khachhang', action: client_1.AuditAction.IMPORT, includeResponse: true }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

@@ -53,6 +53,7 @@ export class ListAuditlogComponent implements OnInit {
     stt: '#',
     entityName: 'Module',
     action: 'Hành Động',
+    status: 'Trạng Thái',
     user: 'Người Dùng',
     ipAddress: 'Địa Chỉ IP',
     createdAt: 'Ngày Tạo',
@@ -97,7 +98,6 @@ export class ListAuditlogComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this._AuditlogService.listenAuditlogUpdates();
     await this._AuditlogService.getAuditlogBy(this.param);
     this.displayedColumns = Object.keys(this.ColumnName);
     this.dataSource = new MatTableDataSource(this.Listauditlog());
@@ -115,12 +115,10 @@ export class ListAuditlogComponent implements OnInit {
       isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
   }
 
-  applyFilter(event: Event) {
+  async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+    this.param.status = filterValue
+     await this._AuditlogService.getAuditlogBy(this.param);
   }
 
   async getUpdatedCodeIds() {

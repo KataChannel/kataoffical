@@ -20,7 +20,7 @@ export class KhachhangController {
     return this.khachhangService.create(createKhachhangDto);
   }
   @Post('import')
-  @Audit({entity: 'Import Khachhang',action: AuditAction.CREATE,includeResponse: true})
+  @Audit({entity: 'Import Khachhang',action: AuditAction.IMPORT,includeResponse: true})
   import(@Body() data: any) {
     return this.khachhangService.import(data);
   }

@@ -18,8 +18,7 @@ let AuditService = class AuditService {
     }
     async logActivity(data) {
         try {
-            console.log(data);
-            const changedFields = this.getChangedFields(data.oldValues, data.newValues);
+            const changedFields = data.changedFields || this.getChangedFields(data.oldValues, data.newValues);
             await this.prisma.auditLog.create({
                 data: {
                     entityName: data.entityName,
@@ -27,13 +26,15 @@ let AuditService = class AuditService {
                     action: data.action,
                     userId: data.userId,
                     userEmail: data.userEmail,
-                    oldValues: data.oldValues,
-                    newValues: data.newValues,
-                    changedFields,
-                    ipAddress: data.ipAddress,
-                    userAgent: data.userAgent,
-                    sessionId: data.sessionId,
-                    metadata: data.metadata,
+                    oldValues: data.oldValues || null,
+                    newValues: data.newValues || null,
+                    changedFields: changedFields || [],
+                    ipAddress: data.ipAddress || null,
+                    userAgent: data.userAgent || null,
+                    sessionId: data.sessionId || null,
+                    metadata: data.metadata || null,
+                    status: data.status || 'SUCCESS',
+                    errorDetails: data.errorDetails || null,
                 },
             });
         }
@@ -43,42 +44,46 @@ let AuditService = class AuditService {
     }
     async getAuditLogs(param) {
         const { page = 1, pageSize = 50, isOne, ...where } = param;
-        console.log(isOne);
+        const skip = (page - 1) * pageSize;
         const whereClause = {};
         if (where.id)
             whereClause.id = where.id;
-        if (where.entityName)
-            whereClause.entityName = where.entityName;
-        if (where.entityId)
-            whereClause.entityId = where.entityId;
-        if (where.userId)
-            whereClause.userId = where.userId;
-        if (where.action)
-            whereClause.action = where.action;
+        if (where.entityName) {
+            whereClause.entityName = { contains: where.entityName, mode: 'insensitive' };
+        }
+        if (where.entityId) {
+            whereClause.entityId = { contains: where.entityId, mode: 'insensitive' };
+        }
+        if (where.userId) {
+            whereClause.userId = { contains: where.userId, mode: 'insensitive' };
+        }
+        if (where.action) {
+            whereClause.action = { contains: where.action, mode: 'insensitive' };
+        }
+        if (where.status) {
+            whereClause.status = { contains: where.status, mode: 'insensitive' };
+        }
         if (where.startDate || where.endDate) {
             whereClause.createdAt = {};
             if (where.startDate)
-                whereClause.createdAt.gte = where.startDate;
+                whereClause.createdAt.gte = new Date(where.startDate);
             if (where.endDate)
-                whereClause.createdAt.lte = where.endDate;
+                whereClause.createdAt.lte = new Date(where.endDate);
         }
-        console.log(whereClause);
         if (isOne) {
-            const oneLog = await this.prisma.auditLog.findFirst({
+            const result = await this.prisma.auditLog.findFirst({
                 where: whereClause,
                 include: {
-                    user: { select: { email: true } },
+                    user: { select: { email: true, SDT: true } },
                 },
-                orderBy: { createdAt: 'desc' },
             });
-            return oneLog;
+            return result;
         }
-        const skip = (page - 1) * pageSize;
         const [logs, total] = await Promise.all([
             this.prisma.auditLog.findMany({
                 where: whereClause,
                 include: {
-                    user: { select: { email: true } },
+                    user: { select: { email: true, SDT: true } },
                 },
                 skip,
                 take: pageSize,
@@ -88,19 +93,17 @@ let AuditService = class AuditService {
         ]);
         return {
             data: logs,
-            pagination: {
-                page,
-                pageSize,
-                total,
-                pageCount: Math.ceil(total / pageSize),
-            },
+            page,
+            pageSize,
+            total,
+            pageCount: Math.ceil(total / pageSize),
         };
     }
     getChangedFields(oldValues, newValues) {
         if (!oldValues || !newValues)
             return [];
         const changed = [];
-        const allKeys = new Set([...Object.keys(oldValues), ...Object.keys(newValues)]);
+        const allKeys = new Set([...Object.keys(oldValues || {}), ...Object.keys(newValues || {})]);
         for (const key of allKeys) {
             if (JSON.stringify(oldValues[key]) !== JSON.stringify(newValues[key])) {
                 changed.push(key);

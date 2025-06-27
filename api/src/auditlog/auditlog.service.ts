@@ -1,3 +1,4 @@
+// auditlog.service.ts
 import { Injectable } from '@nestjs/common';
 import { AuditAction } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
@@ -6,25 +7,26 @@ export interface AuditLogData {
   entityName: string;
   entityId: string;
   action: AuditAction;
-  userId: string;
-  userEmail: string;
-  oldValues: any;
-  newValues: any;
-  changedFields: string[];
-  ipAddress: string;
-  userAgent: string;
-  sessionId: string;
-  metadata: any;
+  userId: string | null;
+  userEmail: string | null;
+  oldValues?: any;
+  newValues?: any;
+  changedFields?: string[];
+  ipAddress: string | null;
+  userAgent: string | null;
+  sessionId: string | null;
+  metadata?: any;
+  status?: 'SUCCESS' | 'ERROR';
+  errorDetails?: any;
 }
 
 @Injectable()
 export class AuditService {
   constructor(private readonly prisma: PrismaService) {}
+
   async logActivity(data: AuditLogData): Promise<void> {
     try {
-      console.log(data);
-      
-      const changedFields = this.getChangedFields(data.oldValues, data.newValues);
+      const changedFields = data.changedFields || this.getChangedFields(data.oldValues, data.newValues);
       await this.prisma.auditLog.create({
         data: {
           entityName: data.entityName,
@@ -32,13 +34,15 @@ export class AuditService {
           action: data.action,
           userId: data.userId,
           userEmail: data.userEmail,
-          oldValues: data.oldValues,
-          newValues: data.newValues,
-          changedFields,
-          ipAddress: data.ipAddress,
-          userAgent: data.userAgent,
-          sessionId: data.sessionId,
-          metadata: data.metadata,
+          oldValues: data.oldValues || null,
+          newValues: data.newValues || null,
+          changedFields: changedFields || [],
+          ipAddress: data.ipAddress || null,
+          userAgent: data.userAgent || null,
+          sessionId: data.sessionId || null,
+          metadata: data.metadata || null,
+          status: data.status || 'SUCCESS',
+          errorDetails: data.errorDetails || null,
         },
       });
     } catch (error) {
@@ -47,72 +51,77 @@ export class AuditService {
     }
   }
 
-  async getAuditLogs(param:any) {
-    const { page = 1, pageSize = 50, isOne, ...where } = param;
-    console.log(isOne);
-    
+  async getAuditLogs(param: any) {
+    const { page = 1, pageSize = 50,isOne, ...where } = param;
+    const skip = (page - 1) * pageSize;
     const whereClause: any = {};
     if (where.id) whereClause.id = where.id;
-    if (where.entityName) whereClause.entityName = where.entityName;
-    if (where.entityId) whereClause.entityId = where.entityId;
-    if (where.userId) whereClause.userId = where.userId;
-    if (where.action) whereClause.action = where.action;
+    if (where.entityName) {
+      whereClause.entityName = { contains: where.entityName, mode: 'insensitive' };
+    }
+    if (where.entityId) {
+      whereClause.entityId = { contains: where.entityId, mode: 'insensitive' };
+    }
+    if (where.userId) {
+      whereClause.userId = { contains: where.userId, mode: 'insensitive' };
+    }
+    if (where.action) {
+      whereClause.action = { contains: where.action, mode: 'insensitive' };
+    }
+    if (where.status) {
+      whereClause.status = { contains: where.status, mode: 'insensitive' };
+    }
     if (where.startDate || where.endDate) {
       whereClause.createdAt = {};
-      if (where.startDate) whereClause.createdAt.gte = where.startDate;
-      if (where.endDate) whereClause.createdAt.lte = where.endDate;
+      if (where.startDate) whereClause.createdAt.gte = new Date(where.startDate);
+      if (where.endDate) whereClause.createdAt.lte = new Date(where.endDate);
     }
-    console.log(whereClause);
-    
-    if (isOne) {
-      const oneLog = await this.prisma.auditLog.findFirst({
-      where: whereClause,
-      include: {
-        user: { select: { email: true } },
-      },
-      orderBy: { createdAt: 'desc' },
-      });
-      return oneLog;
+    if(isOne){
+        const result =  await this.prisma.auditLog.findFirst({
+        where: whereClause,
+        include: {
+          user: { select: { email: true, SDT: true } },
+        },
+      })
+      return result
     }
-    
-    const skip = (page - 1) * pageSize;
+
     const [logs, total] = await Promise.all([
       this.prisma.auditLog.findMany({
-      where: whereClause,
-      include: {
-        user: { select: { email: true } },
-      },
-      skip,
-      take: pageSize,
-      orderBy: { createdAt: 'desc' },
+        where: whereClause,
+        include: {
+          user: { select: { email: true, SDT: true } },
+        },
+        skip,
+        take: pageSize,
+        orderBy: { createdAt: 'desc' },
       }),
       this.prisma.auditLog.count({ where: whereClause }),
     ]);
 
     return {
       data: logs,
-      pagination: {
       page,
       pageSize,
       total,
       pageCount: Math.ceil(total / pageSize),
-      },
     };
-  }
 
+
+  }
 
   private getChangedFields(oldValues: any, newValues: any): string[] {
     if (!oldValues || !newValues) return [];
-    
+
     const changed: string[] = [];
-    const allKeys = new Set([...Object.keys(oldValues), ...Object.keys(newValues)]);
-    
+    const allKeys = new Set([...Object.keys(oldValues || {}), ...Object.keys(newValues || {})]);
+
     for (const key of allKeys) {
       if (JSON.stringify(oldValues[key]) !== JSON.stringify(newValues[key])) {
         changed.push(key);
       }
     }
-    
+
     return changed;
   }
 }

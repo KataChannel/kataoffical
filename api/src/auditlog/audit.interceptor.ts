@@ -1,25 +1,21 @@
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-} from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+// audit.interceptor.ts
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, HttpException } from '@nestjs/common';
+import { Observable, throwError } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { Reflector } from '@nestjs/core';
-import { AuditService } from './auditlog.service';
+import { AuditService } from '../auditlog/auditlog.service';
 import { AUDIT_METADATA_KEY } from './audit.decorator';
+
+
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
   constructor(
     private readonly auditService: AuditService,
     private readonly reflector: Reflector,
   ) {}
+
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const auditConfig = this.reflector.get(
-      AUDIT_METADATA_KEY,
-      context.getHandler(),
-    );
+    const auditConfig = this.reflector.get(AUDIT_METADATA_KEY, context.getHandler());
     if (!auditConfig) {
       return next.handle();
     }
@@ -28,20 +24,21 @@ export class AuditInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap(async (result) => {
         try {
-          
+          const dynamicConfig = request.auditConfig || {};
           await this.auditService.logActivity({
-            entityName: auditConfig.entity || 'Unknown',
-            entityId: this.extractEntityId(request, result, auditConfig) || '',
+            entityName: auditConfig.entity,
+            entityId: dynamicConfig.entityId || this.extractEntityId(request, result, auditConfig),
             action: auditConfig.action,
             userId: request.user?.id || null,
             userEmail: request.user?.email || null,
-            oldValues: request.auditOldValues || null,
-            newValues: this.extractNewValues(result, auditConfig),
-            changedFields: Object.keys(request.auditOldValues || {}).filter(
-              (key) => request.auditOldValues[key] !== result?.[key],
+            oldValues: dynamicConfig.changes?.oldValues || request.auditOldValues || null,
+            newValues: dynamicConfig.changes?.newValues || this.extractNewValues(result, auditConfig),
+            changedFields: this.getChangedFields(
+              dynamicConfig.changes?.oldValues || request.auditOldValues,
+              dynamicConfig.changes?.newValues || result,
             ),
             ipAddress: this.getClientIp(request),
-            userAgent: request.headers['user-agent'] || '',
+            userAgent: request.headers['user-agent'] || null,
             sessionId: request.session?.id || null,
             metadata: {
               endpoint: request.url,
@@ -49,18 +46,53 @@ export class AuditInterceptor implements NestInterceptor {
               responseTime: Date.now() - startTime,
               ...auditConfig.metadata,
             },
+            status: dynamicConfig.status || 'SUCCESS',
+            errorDetails: dynamicConfig.errorDetails || null,
           });
         } catch (error) {
           console.error('Audit logging failed:', error);
         }
+      }),
+      catchError((error) => {
+        const dynamicConfig = request.auditConfig || {};
+        this.auditService.logActivity({
+          entityName: auditConfig.entity,
+          entityId: dynamicConfig.entityId || request.params?.id || 'N/A',
+          action: auditConfig.action,
+          userId: request.user?.id || null,
+          userEmail: request.user?.email || null,
+          oldValues: dynamicConfig.changes?.oldValues || request.auditOldValues || null,
+          newValues: dynamicConfig.changes?.newValues || null,
+          changedFields: this.getChangedFields(
+            dynamicConfig.changes?.oldValues || request.auditOldValues,
+            dynamicConfig.changes?.newValues,
+          ),
+          ipAddress: this.getClientIp(request),
+          userAgent: request.headers['user-agent'] || null,
+          sessionId: request.session?.id || null,
+          metadata: {
+            endpoint: request.url,
+            method: request.method,
+            responseTime: Date.now() - startTime,
+            ...auditConfig.metadata,
+          },
+          status: 'ERROR',
+          errorDetails: {
+            message: error.message || 'Unknown error',
+            statusCode: error instanceof HttpException ? error.getStatus() : 500,
+          },
+        }).catch((auditError) => {
+          console.error('Audit logging failed:', auditError);
+        });
+        return throwError(() => error);
       }),
     );
   }
 
   private extractEntityId(request: any, result: any, config: any): string {
     return config.entityIdField
-      ? result?.[config.entityIdField] || request.params?.id
-      : request.params?.id || result?.id;
+      ? result?.[config.entityIdField] || request.params?.id || 'N/A'
+      : request.params?.id || result?.id || 'N/A';
   }
 
   private extractNewValues(result: any, config: any): any {
@@ -75,7 +107,8 @@ export class AuditInterceptor implements NestInterceptor {
       request.headers['x-forwarded-for'] ||
       request.headers['x-real-ip'] ||
       request.connection?.remoteAddress ||
-      request.ip
+      request.ip ||
+      null
     );
   }
 
@@ -91,5 +124,20 @@ export class AuditInterceptor implements NestInterceptor {
     });
 
     return sanitized;
+  }
+
+  private getChangedFields(oldValues: any, newValues: any): string[] {
+    if (!oldValues || !newValues) return [];
+
+    const changed: string[] = [];
+    const allKeys = new Set([...Object.keys(oldValues || {}), ...Object.keys(newValues || {})]);
+
+    for (const key of allKeys) {
+      if (JSON.stringify(oldValues[key]) !== JSON.stringify(newValues[key])) {
+        changed.push(key);
+      }
+    }
+
+    return changed;
   }
 }

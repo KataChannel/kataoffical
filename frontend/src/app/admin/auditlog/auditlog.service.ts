@@ -2,24 +2,17 @@ import { inject, Injectable, signal, Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
-import { openDB } from 'idb';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { SharedSocketService } from '../../shared/services/sharedsocket.service';
 @Injectable({
   providedIn: 'root'
 })
 export class AuditlogService {
-  private socket: any;
   constructor(
     private _StorageService: StorageService,
     private router: Router,
     private _ErrorLogService: ErrorLogService,
-    private _sharedSocketService: SharedSocketService,
-  ) {
-    this.socket = this._sharedSocketService.getSocket();
-    this.listenAuditlogUpdates();
-  }
+  ) { }
 
   private _snackBar: MatSnackBar = inject(MatSnackBar);
   ListAuditlog = signal<any[]>([]);
@@ -29,53 +22,6 @@ export class AuditlogService {
   total = signal<number>(0);
   pageSize = signal<number>(50); // Mặc định 50 mục mỗi trang
   auditlogId = signal<string | null>(null);
-
-  // Khởi tạo IndexedDB
-  private async initDB() {
-    return await openDB('AuditlogDB', 4, {
-      upgrade(db, oldVersion) {
-        if (oldVersion < 1) {
-          db.createObjectStore('auditlogs', { keyPath: 'id' });
-        }
-        if (oldVersion < 3) {
-          if (db.objectStoreNames.contains('auditlogs')) {
-            db.deleteObjectStore('auditlogs');
-          }
-          if (db.objectStoreNames.contains('pagination')) {
-            db.deleteObjectStore('pagination');
-          }
-          db.createObjectStore('auditlogs', { keyPath: 'id' });
-        }
-        if (oldVersion < 4) {
-          // Không cần xóa store, vì cấu trúc vẫn tương thích
-          // Chỉ cần đảm bảo pagination có thêm pageSize
-        }
-      },
-    });
-  }
-
-  // Lưu dữ liệu và phân trang vào IndexedDB
-  private async saveAuditlogs(data: any[], pagination: { page: number, pageCount: number, total: number, pageSize: number }) {
-    const db = await this.initDB();
-    const tx = db.transaction('auditlogs', 'readwrite');
-    const store = tx.objectStore('auditlogs');
-    await store.clear();
-    await store.put({ id: 'data', auditlogs: data, pagination });
-    await tx.done;
-  }
-
-  // Lấy dữ liệu và phân trang từ cache
-  private async getCachedData() {
-    const db = await this.initDB();
-    const cached = await db.get('auditlogs', 'data');
-    if (cached && cached.auditlogs) {
-      return {
-        auditlogs: cached.auditlogs,
-        pagination: cached.pagination || { page: 1, pageCount: 1, total: cached.auditlogs.length, pageSize: 10 }
-      };
-    }
-    return { auditlogs: [], pagination: { page: 1, pageCount: 1, total: 0, pageSize: 10 } };
-  }
 
   setAuditlogId(id: string | null) {
     this.auditlogId.set(id);
@@ -105,20 +51,6 @@ export class AuditlogService {
   }
 
   async getAllAuditlog(pageSize: number = this.pageSize(), forceRefresh: boolean = false) {
-    this.pageSize.set(pageSize);
-    const cached = await this.getCachedData();   
-    const updatedAtCache = this._StorageService.getItem('auditlogs_updatedAt') || '0';    
-    
-    // Nếu không yêu cầu tải mới và cache hợp lệ, trả về cache
-    if (!forceRefresh && cached.auditlogs.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) {
-      this.ListAuditlog.set(cached.auditlogs);
-      this.page.set(cached.pagination.page);
-      this.pageCount.set(cached.pagination.pageCount);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.auditlogs;
-    }
-
     try {
       const options = {
         method: 'GET',
@@ -127,33 +59,6 @@ export class AuditlogService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-
-      // Kiểm tra thời gian cập nhật từ server, trừ khi được yêu cầu forceRefresh
-      if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/auditlog/lastupdated`, options);
-        if (!lastUpdatedResponse.ok) {
-          this.handleError(lastUpdatedResponse.status);
-          this.ListAuditlog.set(cached.auditlogs);
-          this.page.set(cached.pagination.page);
-          this.pageCount.set(cached.pagination.pageCount);
-          this.total.set(cached.pagination.total);
-          this.pageSize.set(cached.pagination.pageSize);
-          return cached.auditlogs;
-        }
-
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-
-        // Nếu cache còn mới, trả về cache
-        if (updatedAtServer <= updatedAtCache) {
-          this.ListAuditlog.set(cached.auditlogs);
-          this.page.set(cached.pagination.page);
-          this.pageCount.set(cached.pagination.pageCount);
-          this.total.set(cached.pagination.total);
-          this.pageSize.set(cached.pagination.pageSize);
-          return cached.auditlogs;
-        }
-      }
-
       // Tải dữ liệu mới từ server
       const query = new URLSearchParams({
         page: this.page().toString(),
@@ -162,29 +67,8 @@ export class AuditlogService {
       const response = await fetch(`${environment.APIURL}/auditlog?${query}`, options);
       if (!response.ok) {
         this.handleError(response.status);
-        this.ListAuditlog.set(cached.auditlogs);
-        this.page.set(cached.pagination.page);
-        this.pageCount.set(cached.pagination.pageCount);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-        return cached.auditlogs;
       }
-
       const data = await response.json();
-      await this.saveAuditlogs(data.data, {
-        page: data.page || 1,
-        pageCount: data.pageCount || 1,
-        total: data.total || data.data.length,
-        pageSize
-      });
-      // Với forceRefresh, cập nhật luôn với thời gian mới từ server, nếu không thì sử dụng thời gian lấy từ lastUpdatedResponse
-      if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/auditlog/lastupdated`, options);
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-        this._StorageService.setItem('auditlogs_updatedAt', updatedAtServer);
-      } else {
-        this._StorageService.setItem('auditlogs_updatedAt', new Date().toISOString());
-      }
       this.ListAuditlog.set(data.data);
       this.page.set(data.page || 1);
       this.pageCount.set(data.pageCount || 1);
@@ -192,14 +76,7 @@ export class AuditlogService {
       this.pageSize.set(pageSize);
       return data.data;
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getAllAuditlog', error);
       console.error(error);
-      this.ListAuditlog.set(cached.auditlogs);
-      this.page.set(cached.pagination.page);
-      this.pageCount.set(cached.pagination.pageCount);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.auditlogs;
     }
   }
 
@@ -225,15 +102,6 @@ export class AuditlogService {
     }
   }
 
-  listenAuditlogUpdates() {
-    this.socket.off('auditlog-updated'); // đảm bảo không đăng ký nhiều lần
-    this.socket.on('auditlog-updated', async () => {
-      console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-      this._StorageService.removeItem('auditlogs_updatedAt');
-      await this.getAllAuditlog();
-    });
-  }
-
   async getAuditlogBy(param: any) {
     param.pageSize = Number(this.pageSize())
     param.page = Number(this.page())
@@ -254,28 +122,14 @@ export class AuditlogService {
       if (param.isOne === true) {
         this.DetailAuditlog.set(data);
       } else {
-        await this.saveAuditlogs(data.data, {
-          page: data.pagination.page || 1,
-          pageCount: data.pagination.pageCount || 1,
-          total: data.pagination.total || data.data.length,
-          pageSize: this.pageSize()
-        });
         this._StorageService.setItem('auditlogs_updatedAt', new Date().toISOString());
         this.ListAuditlog.set(data.data);
-        this.page.set(data.pagination.page || 1);
-        this.pageCount.set(data.pagination.pageCount || 1);
-        this.total.set(data.pagination.total || data.data.length);
+        this.page.set(data.page || 1);
+        this.pageCount.set(data.pageCount || 1);
+        this.total.set(data.total || data.data.length);
         this.pageSize.set(this.pageSize());
       }
     } catch (error) { 
-      const cached = await this.getCachedData();
-      if (!param.isOne) {
-        this.ListAuditlog.set(cached.auditlogs);
-        this.page.set(cached.pagination.page);
-        this.pageCount.set(cached.pagination.pageCount);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-      }
     }
   }
 
