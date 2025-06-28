@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ListUserComponent } from '../listuser/listuser';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
@@ -16,16 +16,15 @@ import { UserService } from '../user.service';
   @Component({
     selector: 'app-detailuser',
     imports: [
-      MatFormFieldModule,
-      MatInputModule,
-      FormsModule,
-      MatIconModule,
-      MatButtonModule,
-      MatSelectModule,
-      MatDialogModule,
-      CommonModule,
-      MatSlideToggleModule
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSlideToggleModule
+],
     templateUrl: './detailuser.html',
     styleUrl: './detailuser.scss'
   })

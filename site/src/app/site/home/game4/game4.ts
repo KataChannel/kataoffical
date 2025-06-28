@@ -2,12 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { GameService } from './services/game.service';
 import { Character } from './models/character';
 import { Tile } from './models/tile';
-import { CommonModule } from '@angular/common';
+
 @Component({
   selector: 'app-game4',
-  imports: [
-    CommonModule
-  ],
+  imports: [],
   templateUrl: './game4.html',
   styleUrls: ['./game4.scss']
 })

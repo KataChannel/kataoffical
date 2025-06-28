@@ -5,21 +5,20 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { Debounce } from '../../../shared/utils/decorators';
 
 @Component({
   selector: 'kata-toolbar',
   standalone: true,
   imports: [
-    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule
-  ],
+],
   templateUrl: './toolbar.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

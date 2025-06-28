@@ -8,13 +8,11 @@ import {
   UPGRADE_COSTS, SPIRIT_BEAST_BONUS_PER_LEVEL,
   GameState, ResourceState, Tile, Source, SpiritBeast, LogEntry
 } from './constants';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
     selector: 'app-game1',
-    imports: [
-      CommonModule
-    ],
+    imports: [],
     templateUrl: './game1.component.html',
     styleUrl: './game1.component.scss'
 })

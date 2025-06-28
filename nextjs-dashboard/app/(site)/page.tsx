@@ -1,27 +1,29 @@
-'use client'
-import { useState, useEffect } from 'react';
-export default function Page() {
-  // Handle scroll to detect when navigation should be fixed
-  useEffect(() => {
+import React from 'react';
+import { Metadata } from 'next';
+import Swipe from '@/app/components/common/Swipe';
+import FeaturedCategories from '../components/common/FeaturedCategories';
+import Promo from '../components/common/Promo';
+import PopularProducts from '../components/common/PopularProducts';
+export const metadata: Metadata = {
+    title: 'Home Page - Your E-commerce',
+    description: 'This is the Home page for Your E-commerce.',
+};
 
-  }, []);
-
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto p-4 grid lg:grid-cols-3 gap-4">
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-2xl font-semibold text-gray-900">Game V1</h2>
-            <p className="text-gray-600">Welcome to your dashboard!</p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
-            <ul className="space-y-2">   
-              <li className="text-gray-700">User John Doe logged in</li>
-              <li className="text-gray-700">Order #1234 was placed</li>
-              <li className="text-gray-700">Product XYZ was updated</li>
-            </ul>
-          </div>
+export default function HomePage() {
+    return (
+        <div className="mx-auto">
+            <Swipe
+                slides={[
+                    { id: 1, content: <div>Slide 1 Content</div> },
+                    { id: 2, content: <div>Slide 2 Content</div> },
+                    { id: 3, content: <div>Slide 3 Content</div> },
+                ]}
+            />
+            <FeaturedCategories />
+            <Promo />
+            <PopularProducts />
+            <PopularProducts />
+            <PopularProducts />
         </div>
-      </div>
-  );
+    );
 }

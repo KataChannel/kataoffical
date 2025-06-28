@@ -8,7 +8,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ListSanphamComponent } from '../listsanpham/listsanpham.component';
 import { SanphamService } from '../sanpham.service';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
@@ -16,16 +16,15 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
   @Component({
     selector: 'app-detailsanpham',
     imports: [
-      MatFormFieldModule,
-      MatInputModule,
-      FormsModule,
-      MatIconModule,
-      MatButtonModule,
-      MatSelectModule,
-      MatDialogModule,
-      CommonModule,
-      MatSlideToggleModule
-    ],
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDialogModule,
+    MatSlideToggleModule
+],
     templateUrl: './detailsanpham.component.html',
     styleUrl: './detailsanpham.component.scss'
   })

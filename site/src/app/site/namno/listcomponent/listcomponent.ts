@@ -5,7 +5,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatTableDataSource } from '@angular/material/table';
-import { CommonModule } from '@angular/common';
+
 import { TableComponent } from './table';
 import { ToolbarComponent } from './toolbar';
 import { PaginationComponent } from './pagination';
@@ -15,14 +15,13 @@ import { ServiceInterface } from './service.interface';
   selector: 'app-listcomponent',
   standalone: true,
   imports: [
-    CommonModule,
     MatSidenavModule,
     RouterOutlet,
     MatDialogModule,
     TableComponent,
     ToolbarComponent,
     PaginationComponent
-  ],
+],
   templateUrl: './listcomponent.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

@@ -10,7 +10,7 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
+
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -25,6 +25,7 @@ import { readExcelFile, writeExcelFile } from '../../../../shared/utils/exceldri
 import { ConvertDriveData } from '../../../../shared/utils/shared.utils';
 import { TableComponent } from '@kataoffical/shared';
 import { KataTableComponent } from '../../../../shared/common/katatable/katatable.component';
+import { KataComboboxComponent } from '../../../../shared/common/combobox/combobox.component';
 @Component({
   selector: 'app-listsanpham',
   templateUrl: './listsanpham.component.html',
@@ -37,16 +38,15 @@ import { KataTableComponent } from '../../../../shared/common/katatable/katatabl
     MatPaginatorModule,
     MatMenuModule,
     MatSidenavModule,
-    // RouterOutlet,
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
-    CommonModule,
     FormsModule,
     MatTooltipModule,
     MatDialogModule,
-    KataTableComponent
-  ],
+    KataTableComponent,
+    KataComboboxComponent
+],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListSanphamComponent implements OnInit {
@@ -99,6 +99,20 @@ export class ListSanphamComponent implements OnInit {
     });
   }
 
+
+  items = [
+    { id: 1, name: 'Apple' },
+    { id: 2, name: 'Banana' },
+    { id: 3, name: 'Orange' },
+    { id: 4, name: 'Mango' },
+    { id: 5, name: 'Grape' }
+  ];
+
+  onSelectionChange(item: any) {
+    console.log('Selected item:', item);
+  }
+
+  
   async ngOnInit(): Promise<void> {
     await this._SanphamService.getAllSanpham();
     this.displayedColumns = Object.keys(this.ColumnName);

@@ -1,12 +1,14 @@
-import SideNav from '@/app/ui/dashboard/sidenav';
-
+import Footer from "@/app/components/common/Footer";
+import Header from "@/app/components/common/Header";
+export const metadata = {
+  title: "Kata Offical",
+};
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen flex-col md:flex-row md:overflow-hidden">
-      {/* <div className="w-full flex-none md:w-64">
-        <SideNav />
-      </div> */}
-      <div className="grow p-6 md:overflow-y-auto md:p-12">{children}</div>
+    <div className="root-layout space-y-4">
+      <Header />
+      <main>{children}</main>
+      <Footer />
     </div>
   );
 }

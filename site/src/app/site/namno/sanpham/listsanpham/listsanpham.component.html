@@ -1,4 +1,16 @@
+<div class="w-1/2 p-4">
+<kata-combobox
+  [items]="items"
+  displayField="name"
+  valueField="id"
+  placeholder="Select an item"
+  (selectionChange)="onSelectionChange($event)"
+></kata-combobox>
+
+</div>
 <kata-table></kata-table>
+
+
 <!-- <mat-drawer-container class="w-full h-full" autosize>
   <mat-drawer #drawer class="flex flex-col lg:!w-1/2 !w-full h-full" [position]="'end'" mode="over">
     <router-outlet></router-outlet>

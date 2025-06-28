@@ -10,7 +10,7 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
+
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -41,14 +41,13 @@ import { PaginationComponent, TableComponent, ToolbarComponent } from '@kataoffi
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
-    CommonModule,
     FormsModule,
     MatTooltipModule,
     MatDialogModule,
     TableComponent,
     ToolbarComponent,
     PaginationComponent
-  ],
+],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListDathangComponent implements OnInit {

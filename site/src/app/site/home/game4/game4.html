@@ -1,12 +1,18 @@
 <div class="map">
-  <div class="row" *ngFor="let row of map">
-    <div class="tile" *ngFor="let tile of row" (click)="selectTile(tile)"
-         [class.selected]="selectedCharacter && tile.occupiedBy?.id === selectedCharacter.id">
-      <span *ngIf="tile.occupiedBy" [class.player]="tile.occupiedBy.team === 'player'" [class.enemy]="tile.occupiedBy.team === 'enemy'">
-        {{ tile.occupiedBy.name }} ({{ tile.occupiedBy.hp }}/{{ tile.occupiedBy.maxHp }})
-      </span>
+  @for (row of map; track row) {
+    <div class="row">
+      @for (tile of row; track tile) {
+        <div class="tile" (click)="selectTile(tile)"
+          [class.selected]="selectedCharacter && tile.occupiedBy?.id === selectedCharacter.id">
+          @if (tile.occupiedBy) {
+            <span [class.player]="tile.occupiedBy.team === 'player'" [class.enemy]="tile.occupiedBy.team === 'enemy'">
+              {{ tile.occupiedBy.name }} ({{ tile.occupiedBy.hp }}/{{ tile.occupiedBy.maxHp }})
+            </span>
+          }
+        </div>
+      }
     </div>
-  </div>
+  }
 </div>
 <div class="controls">
   <button (click)="endTurn()" [disabled]="currentTurn !== 'player'">End Turn</button>

@@ -6,20 +6,19 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'kata-pagination',
   standalone: true,
   imports: [
-    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule
-  ],
+],
   templateUrl: './pagination.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })

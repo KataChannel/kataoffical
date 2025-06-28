@@ -44,7 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             ${collapsed ? 'justify-center' : ''}
                         `}
                         style={{ paddingLeft: collapsed ? '1rem' : `${1 + level * 0.5}rem` }}
-                    >
+                        legacyBehavior>
                         {content}
                     </Link>
                 ) : (
@@ -63,7 +63,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         {content}
                     </button>
                 )}
-                
                 {item.children && !collapsed && (
                     <ul className="ml-4 mt-1">
                         {item.children.map(child => renderSidebarItem(child, level + 1))}
