@@ -1,8 +1,21 @@
 export const siteConfig = {
     title: "Tên Website",
-    logo: "/logo.png", // Đường dẫn đến logo của website
-    logoDark: "/logo-dark.png", // Đường dẫn đến logo tối của website
-    logoLight: "/logo-light.png", // Đường dẫn đến logo sáng của website
+    offline: false, // Chỉ sử dụng khi website không cần kết nối internet
+    maintenance: {
+        enabled: true, // Bật/tắt chế độ bảo trì
+        message: "Website đang trong quá trình bảo trì. Vui lòng quay lại sau!",
+        allowedUsers: ["admin@example.com", "user@example.com"], // Email được phép truy cập khi bảo trì
+        estimatedTime: "2 giờ"
+    },
+    auth: {
+        loginRequired: true, // Yêu cầu đăng nhập để truy cập
+        redirectAfterLogin: "/dashboard", // Trang chuyển hướng sau khi đăng nhập thành công
+        redirectAfterLogout: "/login"
+    },
+    theme: "light", // Chế độ giao diện: 'light', 'dark',
+    logo: "/images/logo.png", // Đường dẫn đến logo của website
+    logoDark: "/images/logo-dark.png", // Đường dẫn đến logo tối của website
+    logoLight: "/images/logo-light.png", // Đường dẫn đến logo sáng của website
     logoWidth: 150, // Chiều rộng của logo
     logoHeight: 50, // Chiều cao của logo
     logoAlt: "Tên Website - Mô tả ngắn gọn về website",

@@ -1,69 +1,109 @@
+import React from 'react';
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
 
-export default function Footer() {
+interface FooterLink {
+  name: string;
+  href: string;
+}
+
+interface FooterLinks {
+  company: FooterLink[];
+  services: FooterLink[];
+  resources: FooterLink[];
+  legal: FooterLink[];
+}
+
+interface SocialLink {
+  name: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  href: string;
+}
+
+export interface FooterProps {
+  companyName: string;
+  description: string;
+  contact: {
+    address: string;
+    phone: string;
+    email: string;
+  };
+  footerLinks: FooterLinks;
+  socialLinks: SocialLink[];
+}
+
+// Default values
+const defaultCompanyName = "Kata Offical";
+const defaultDescription = "Your trusted partner in web development and digital solutions.";
+const defaultContact = {
+  address: "123 Kata Street, City, Country",
+  phone: "+1 (234) 567-890",    
+  email: "info@kataofficial.com"
+};
+const defaultFooterLinks: FooterLinks = {
+  company: [
+    { name: "About Us", href: "/about" },
+    { name: "Careers", href: "/careers" },
+    { name: "Blog", href: "/blog" },
+    { name: "Contact", href: "/contact" }
+  ],
+  services: [
+    { name: "Web Development", href: "/services/web-development" },
+    { name: "Mobile App Development", href: "/services/mobile-app-development" },
+    { name: "UI/UX Design", href: "/services/ui-ux-design" },
+    { name: "Digital Marketing", href: "/services/digital-marketing" }
+  ],
+  resources: [
+    { name: "Documentation", href: "/docs" },
+    { name: "API Reference", href: "/api" },
+    { name: "Support", href: "/support" }
+  ],
+  legal: [
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Terms of Service", href: "/terms-of-service" }
+  ]
+};
+const defaultSocialLinks: SocialLink[] = [
+  { name: "Facebook", icon: Facebook, href: "https://facebook.com" },
+  { name: "Twitter", icon: Twitter, href: "https://twitter.com" },
+  { name: "Instagram", icon: Instagram, href: "https://instagram.com" },
+  { name: "LinkedIn", icon: Linkedin, href: "https://linkedin.com" },
+  { name: "Email", icon: Mail, href: "mailto:info@kataofficial.com" }
+];
+
+export default function Footer({
+  companyName = defaultCompanyName,
+  description = defaultDescription,
+  contact = defaultContact,
+  footerLinks = defaultFooterLinks,
+  socialLinks = defaultSocialLinks
+}: Partial<FooterProps>) {
   const currentYear = new Date().getFullYear();
 
-  const footerLinks = {
-    company: [
-      { name: 'About Us', href: '/about' },
-      { name: 'Our Team', href: '/team' },
-      { name: 'Careers', href: '/careers' },
-      { name: 'Contact', href: '/contact' }
-    ],
-    services: [
-      { name: 'Web Development', href: '/services/web' },
-      { name: 'Mobile Apps', href: '/services/mobile' },
-      { name: 'Consulting', href: '/services/consulting' },
-      { name: 'Support', href: '/support' }
-    ],
-    resources: [
-      { name: 'Blog', href: '/blog' },
-      { name: 'Documentation', href: '/docs' },
-      { name: 'Help Center', href: '/help' },
-      { name: 'API Reference', href: '/api' }
-    ],
-    legal: [
-      { name: 'Privacy Policy', href: '/privacy' },
-      { name: 'Terms of Service', href: '/terms' },
-      { name: 'Cookie Policy', href: '/cookies' },
-      { name: 'GDPR', href: '/gdpr' }
-    ]
-  };
-
-  const socialLinks = [
-    { name: 'Facebook', icon: Facebook, href: 'https://facebook.com' },
-    { name: 'Twitter', icon: Twitter, href: 'https://twitter.com' },
-    { name: 'Instagram', icon: Instagram, href: 'https://instagram.com' },
-    { name: 'LinkedIn', icon: Linkedin, href: 'https://linkedin.com' }
-  ];
-
   return (
-    <footer className="bg-black text-white">
+    <footer className="bg-gray-900 dark:bg-black text-gray-100 dark:text-white">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
           {/* Company Info */}
           <div className="lg:col-span-2">
             <div className="mb-4">
-              <h3 className="text-2xl font-bold text-white mb-2">YourCompany</h3>
-              <p className="text-gray-400 mb-4">
-                Building amazing digital experiences with a monochrome twist. We help businesses grow through clean, modern design.
-              </p>
+              <h3 className="text-2xl font-bold text-white mb-2">{companyName}</h3>
+              <p className="text-gray-400 mb-4">{description}</p>
             </div>
             
             {/* Contact Info */}
             <div className="space-y-2 text-sm text-gray-400">
               <div className="flex items-center space-x-2">
                 <MapPin className="h-4 w-4 flex-shrink-0" />
-                <span>123 Tech Street, San Francisco, CA 94105</span>
+                <span>{contact.address}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="h-4 w-4 flex-shrink-0" />
-                <span>+1 (555) 123-4567</span>
+                <span>{contact.phone}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4 flex-shrink-0" />
-                <span>hello@yourcompany.com</span>
+                <span>{contact.email}</span>
               </div>
             </div>
           </div>
@@ -166,7 +206,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Copyright */}
             <div className="text-gray-400 text-sm">
-              © {currentYear} YourCompany. All rights reserved.
+              © {currentYear} {companyName}. All rights reserved.
             </div>
 
             {/* Social Links */}

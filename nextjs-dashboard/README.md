@@ -372,3 +372,5 @@ app/
 - Improved Core Web Vitals
 
 Cấu trúc này tận dụng tối đa các tính năng mới của Next.js 15 và đảm bảo ready cho production scale enterprise.
+
+Giao diện trực quan theo phong cách monochrome với dark mode.
