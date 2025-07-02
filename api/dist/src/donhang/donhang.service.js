@@ -740,11 +740,51 @@ let DonhangService = class DonhangService {
                         })),
                     },
                 };
-                await prisma.phieuKho.upsert({
+                const existingPhieu = await prisma.phieuKho.findUnique({
                     where: { maphieu: maphieuNew },
-                    create: { maphieu: maphieuNew, ...phieuPayload },
-                    update: phieuPayload,
+                    include: { sanpham: true },
                 });
+                if (existingPhieu) {
+                    await prisma.phieuKhoSanpham.deleteMany({
+                        where: { phieuKhoId: existingPhieu.id },
+                    });
+                    await prisma.phieuKho.update({
+                        where: { maphieu: maphieuNew },
+                        data: {
+                            ngay: phieuPayload.ngay,
+                            type: phieuPayload.type,
+                            khoId: phieuPayload.khoId,
+                            ghichu: phieuPayload.ghichu,
+                            isActive: phieuPayload.isActive,
+                            sanpham: {
+                                create: data.sanpham.map((sp) => ({
+                                    sanphamId: sp.id,
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    ghichu: sp.ghichu,
+                                })),
+                            },
+                        },
+                    });
+                }
+                else {
+                    await prisma.phieuKho.create({
+                        data: {
+                            maphieu: maphieuNew,
+                            ngay: phieuPayload.ngay,
+                            type: phieuPayload.type,
+                            khoId: phieuPayload.khoId,
+                            ghichu: phieuPayload.ghichu,
+                            isActive: phieuPayload.isActive,
+                            sanpham: {
+                                create: data.sanpham.map((sp) => ({
+                                    sanphamId: sp.id,
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    ghichu: sp.ghichu,
+                                })),
+                            },
+                        },
+                    });
+                }
                 return prisma.donhang.update({
                     where: { id },
                     data: {
@@ -920,11 +960,51 @@ let DonhangService = class DonhangService {
                         })),
                     },
                 };
-                await prisma.phieuKho.upsert({
+                const existingPhieu = await prisma.phieuKho.findUnique({
                     where: { maphieu: maphieuNew },
-                    create: { maphieu: maphieuNew, ...phieuPayload },
-                    update: phieuPayload,
+                    include: { sanpham: true },
                 });
+                if (existingPhieu) {
+                    await prisma.phieuKhoSanpham.deleteMany({
+                        where: { phieuKhoId: existingPhieu.id },
+                    });
+                    await prisma.phieuKho.update({
+                        where: { maphieu: maphieuNew },
+                        data: {
+                            ngay: phieuPayload.ngay,
+                            type: phieuPayload.type,
+                            khoId: phieuPayload.khoId,
+                            ghichu: phieuPayload.ghichu,
+                            isActive: phieuPayload.isActive,
+                            sanpham: {
+                                create: data.sanpham.map((sp) => ({
+                                    sanphamId: sp.id,
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    ghichu: sp.ghichu,
+                                })),
+                            },
+                        },
+                    });
+                }
+                else {
+                    await prisma.phieuKho.create({
+                        data: {
+                            maphieu: maphieuNew,
+                            ngay: phieuPayload.ngay,
+                            type: phieuPayload.type,
+                            khoId: phieuPayload.khoId,
+                            ghichu: phieuPayload.ghichu,
+                            isActive: phieuPayload.isActive,
+                            sanpham: {
+                                create: data.sanpham.map((sp) => ({
+                                    sanphamId: sp.id,
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    ghichu: sp.ghichu,
+                                })),
+                            },
+                        },
+                    });
+                }
                 const shortageItems = [];
                 for (const item of data.sanpham) {
                     const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(2));
@@ -1185,11 +1265,51 @@ let DonhangService = class DonhangService {
                         })),
                     },
                 };
-                await prisma.phieuKho.upsert({
+                const existingPhieu = await prisma.phieuKho.findUnique({
                     where: { maphieu: maphieuNew },
-                    create: { maphieu: maphieuNew, ...phieuPayload },
-                    update: phieuPayload,
+                    include: { sanpham: true },
                 });
+                if (existingPhieu) {
+                    await prisma.phieuKhoSanpham.deleteMany({
+                        where: { phieuKhoId: existingPhieu.id },
+                    });
+                    await prisma.phieuKho.update({
+                        where: { maphieu: maphieuNew },
+                        data: {
+                            ngay: phieuPayload.ngay,
+                            type: phieuPayload.type,
+                            khoId: phieuPayload.khoId,
+                            ghichu: phieuPayload.ghichu,
+                            isActive: phieuPayload.isActive,
+                            sanpham: {
+                                create: data.sanpham.map((sp) => ({
+                                    sanphamId: sp.id,
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    ghichu: sp.ghichu,
+                                })),
+                            },
+                        },
+                    });
+                }
+                else {
+                    await prisma.phieuKho.create({
+                        data: {
+                            maphieu: maphieuNew,
+                            ngay: phieuPayload.ngay,
+                            type: phieuPayload.type,
+                            khoId: phieuPayload.khoId,
+                            ghichu: phieuPayload.ghichu,
+                            isActive: phieuPayload.isActive,
+                            sanpham: {
+                                create: data.sanpham.map((sp) => ({
+                                    sanphamId: sp.id,
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    ghichu: sp.ghichu,
+                                })),
+                            },
+                        },
+                    });
+                }
                 return prisma.donhang.update({
                     where: { id },
                     data: {
@@ -1327,11 +1447,51 @@ let DonhangService = class DonhangService {
                         })),
                     },
                 };
-                await prisma.phieuKho.upsert({
+                const existingPhieu = await prisma.phieuKho.findUnique({
                     where: { maphieu: maphieuNew },
-                    create: { maphieu: maphieuNew, ...phieuPayload },
-                    update: phieuPayload,
+                    include: { sanpham: true },
                 });
+                if (existingPhieu) {
+                    await prisma.phieuKhoSanpham.deleteMany({
+                        where: { phieuKhoId: existingPhieu.id },
+                    });
+                    await prisma.phieuKho.update({
+                        where: { maphieu: maphieuNew },
+                        data: {
+                            ngay: phieuPayload.ngay,
+                            type: phieuPayload.type,
+                            khoId: phieuPayload.khoId,
+                            ghichu: phieuPayload.ghichu,
+                            isActive: phieuPayload.isActive,
+                            sanpham: {
+                                create: data.sanpham.map((sp) => ({
+                                    sanphamId: sp.id,
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    ghichu: sp.ghichu,
+                                })),
+                            },
+                        },
+                    });
+                }
+                else {
+                    await prisma.phieuKho.create({
+                        data: {
+                            maphieu: maphieuNew,
+                            ngay: phieuPayload.ngay,
+                            type: phieuPayload.type,
+                            khoId: phieuPayload.khoId,
+                            ghichu: phieuPayload.ghichu,
+                            isActive: phieuPayload.isActive,
+                            sanpham: {
+                                create: data.sanpham.map((sp) => ({
+                                    sanphamId: sp.id,
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    ghichu: sp.ghichu,
+                                })),
+                            },
+                        },
+                    });
+                }
                 const updatedOrder = await prisma.donhang.update({
                     where: { id },
                     data: {
@@ -1440,11 +1600,51 @@ let DonhangService = class DonhangService {
                                 })),
                             },
                         };
-                        await prisma.phieuKho.upsert({
+                        const existingPhieu = await prisma.phieuKho.findUnique({
                             where: { maphieu: maphieuNew },
-                            create: { maphieu: maphieuNew, ...phieuPayload },
-                            update: phieuPayload,
+                            include: { sanpham: true },
                         });
+                        if (existingPhieu) {
+                            await prisma.phieuKhoSanpham.deleteMany({
+                                where: { phieuKhoId: existingPhieu.id },
+                            });
+                            await prisma.phieuKho.update({
+                                where: { maphieu: maphieuNew },
+                                data: {
+                                    ngay: phieuPayload.ngay,
+                                    type: phieuPayload.type,
+                                    khoId: phieuPayload.khoId,
+                                    ghichu: phieuPayload.ghichu,
+                                    isActive: phieuPayload.isActive,
+                                    sanpham: {
+                                        create: oldDonhang.sanpham.map((sp) => ({
+                                            sanphamId: sp.idSP,
+                                            soluong: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                                            ghichu: sp.ghichu,
+                                        })),
+                                    },
+                                },
+                            });
+                        }
+                        else {
+                            await prisma.phieuKho.create({
+                                data: {
+                                    maphieu: maphieuNew,
+                                    ngay: phieuPayload.ngay,
+                                    type: phieuPayload.type,
+                                    khoId: phieuPayload.khoId,
+                                    ghichu: phieuPayload.ghichu,
+                                    isActive: phieuPayload.isActive,
+                                    sanpham: {
+                                        create: oldDonhang.sanpham.map((sp) => ({
+                                            sanphamId: sp.idSP,
+                                            soluong: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                                            ghichu: sp.ghichu,
+                                        })),
+                                    },
+                                },
+                            });
+                        }
                         await prisma.donhang.update({
                             where: { id },
                             data: {

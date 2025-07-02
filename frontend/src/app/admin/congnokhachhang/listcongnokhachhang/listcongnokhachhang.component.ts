@@ -376,13 +376,17 @@ export class ListcongnokhachhangComponent {
       disableClose: true,
     });
   }
+
   BackStatus()
   {
     this.editDonhang.forEach((v:any) => {
         v.status = 'dadat';
         this._DonhangService.updateDonhang(v);
     });
+    this.ngOnInit();
   }
+
+
   Hoanthanh()
   {
     this.editDonhang.forEach((v:any) => {
