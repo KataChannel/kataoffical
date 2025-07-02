@@ -1548,6 +1548,93 @@ async dagiao(id: string, data: any) {
     }
   }
 
+
+  async updateBulk(ids: string[], status: string) {
+    return this.prisma.$transaction(async (prisma) => {
+      let success = 0;
+      let fail = 0;
+
+      for (const id of ids) {
+        try {
+          // 1. Lấy đơn hàng cũ kèm chi tiết sản phẩm
+          const oldDonhang = await prisma.donhang.findUnique({
+            where: { id },
+            include: { sanpham: true },
+          });
+          
+          if (!oldDonhang) {
+            fail++;
+            continue;
+          }
+
+          // 2. Chuyển từ 'dadat' sang 'danhan'
+          if (oldDonhang.status === 'dadat' && status === 'danhan') {
+            // Giảm tồn kho cho từng sản phẩm
+            for (const sp of oldDonhang.sanpham) {
+              const decValue = parseFloat((sp.sldat ?? 0).toFixed(2));
+              await prisma.tonKho.update({
+                where: { sanphamId: sp.idSP },
+                data: {
+                  slchogiao: { decrement: decValue },
+                  slton: { decrement: decValue },
+                },
+              });
+            }
+
+            // Tạo phiếu xuất kho
+            const maphieuNew = `PX-${oldDonhang.madonhang}-${moment().format('DDMMYYYY')}`;
+            const phieuPayload = {
+              ngay: oldDonhang.ngaygiao ? new Date(oldDonhang.ngaygiao) : new Date(),
+              type: 'xuat',
+              khoId: DEFAUL_KHO_ID,
+              ghichu: oldDonhang.ghichu || 'Xuất kho hàng loạt',
+              isActive: true,
+              sanpham: {
+                create: oldDonhang.sanpham.map((sp: any) => ({
+                  sanphamId: sp.idSP,
+                  soluong: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                  ghichu: sp.ghichu,
+                })),
+              },
+            };
+
+            await prisma.phieuKho.upsert({
+              where: { maphieu: maphieuNew },
+              create: { maphieu: maphieuNew, ...phieuPayload },
+              update: phieuPayload,
+            });
+
+            // Cập nhật trạng thái đơn hàng và số liệu
+            await prisma.donhang.update({
+              where: { id },
+              data: {
+                status: 'danhan',
+                sanpham: {
+                  updateMany: oldDonhang.sanpham.map((sp: any) => ({
+                    where: { idSP: sp.idSP },
+                    data: {
+                      slgiao: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                      slnhan: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                    },
+                  })),
+                },
+              },
+            });
+
+            success++;
+          } else {
+            fail++;
+          }
+        } catch (error) {
+          console.error(`Error updating donhang ${id}:`, error);
+          fail++;
+        }
+      }
+
+      return { success, fail };
+    });
+  }
+
   async remove(id: string) {
     // return this.prisma.$transaction(async (prisma) => {
     //   // 1. Lấy đơn hàng bao gồm chi tiết sản phẩm

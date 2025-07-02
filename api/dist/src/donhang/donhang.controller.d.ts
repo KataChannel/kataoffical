@@ -501,6 +501,10 @@ export declare class DonhangController {
         khachhangId: string;
         printCount: number | null;
     }>;
+    updateBulk(data: any[]): Promise<{
+        success: number;
+        fail: number;
+    }>;
     update(id: string, updateDonhangDto: any): Promise<{
         id: string;
         title: string | null;

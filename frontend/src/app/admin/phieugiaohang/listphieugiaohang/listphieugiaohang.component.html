@@ -54,6 +54,9 @@
                 <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{CountItem}} Đơn hàng
                 </span>
+                  <button (click)="UpdateBulk()" *ngIf="EditList.length > 0" class="flex flex-row items-center" color="primary" mat-flat-button>
+                    <span>Đã Nhận</span>
+                </button>
             </div>
         </div>
         <div *ngIf="isSearch" class="py-2 w-full flex flex-row space-x-2 items-center">
@@ -156,6 +159,11 @@
                     </th>
                     <td mat-cell *matCellDef="let row; let idx = index">
                         @switch (column) {
+                       @case ('madonhang') {
+                        <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
+                            {{ row[column] }}
+                        </span>
+                        }
                         @case ('createdAt') {
                         <span class="max-w-40 line-clamp-4 text-xs">
                             {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
@@ -214,7 +222,7 @@
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                    class="hover:bg-slate-100 {{donhangId()==row.id?'!bg-slate-200':''}}" (click)="goToDetail(row);">
+                    class="hover:bg-slate-100 {{CheckItemInEdit(row)?'!bg-slate-200':''}}" (click)="AddToEdit(row)">
                 </tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>

@@ -367,6 +367,28 @@ export class DonhangService {
       }
   }
 
+  
+  async UpdateBulkDonhang(items:any[]) {    
+    try {
+        const options = {
+            method:'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(items),
+          };
+          const response = await fetch(`${environment.APIURL}/donhang/bulk`, options);
+          if (!response.ok) {
+          }
+           this.getAllDonhang()
+          const data = await response.json();
+          return data
+  
+      } catch (error) {
+          return console.error(error);
+      }
+  }
+
   async DeleteBulkDonhang(items:any[]) {    
     try {
         const options = {

@@ -480,6 +480,10 @@ export declare class DonhangService {
         khachhangId: string;
         printCount: number | null;
     }>;
+    updateBulk(ids: string[], status: string): Promise<{
+        success: number;
+        fail: number;
+    }>;
     remove(id: string): Promise<void>;
     removeBulk(ids: string[]): Promise<{
         success: number;

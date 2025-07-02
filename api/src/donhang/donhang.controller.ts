@@ -62,6 +62,11 @@ export class DonhangController {
     const result = await  this.donhangService.updatePhieugiao(id, updateDonhangDto);
     return result;
   }
+  @Patch('bulk')
+  @Audit({entity: 'Update bulk Donhang', action: AuditAction.UPDATE, includeResponse: true})
+  updateBulk(@Body() data: any[]) {
+    return this.donhangService.updateBulk(data,'danhan');
+  }
   @Patch(':id')
   @Audit({entity: 'Update Donhang', action: AuditAction.UPDATE, includeResponse: true})
   update(@Param('id') id: string, @Body() updateDonhangDto: any) {

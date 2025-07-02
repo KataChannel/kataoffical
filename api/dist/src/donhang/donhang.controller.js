@@ -60,6 +60,9 @@ let DonhangController = class DonhangController {
         const result = await this.donhangService.updatePhieugiao(id, updateDonhangDto);
         return result;
     }
+    updateBulk(data) {
+        return this.donhangService.updateBulk(data, 'danhan');
+    }
     update(id, updateDonhangDto) {
         return this.donhangService.update(id, updateDonhangDto);
     }
@@ -172,6 +175,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], DonhangController.prototype, "updatePhieugiao", null);
+__decorate([
+    (0, common_1.Patch)('bulk'),
+    (0, audit_decorator_1.Audit)({ entity: 'Update bulk Donhang', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", void 0)
+], DonhangController.prototype, "updateBulk", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, audit_decorator_1.Audit)({ entity: 'Update Donhang', action: client_1.AuditAction.UPDATE, includeResponse: true }),

@@ -249,6 +249,52 @@ export class ListPhieugiaohangComponent {
   {
     return this.ListFilter.includes(item.id);
   }
+
+  EditList: any = [];
+  AddToEdit(item: any): void {
+    const existingItem = this.EditList.find((v: any) => v.id === item.id);
+    if (existingItem) {
+      this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
+    } else {
+      this.EditList.push(item);
+    }
+    console.log(this.EditList); 
+  }
+  async UpdateBulk(){
+   if (!this.EditList?.length) {
+      this._snackBar.open('Không có mục nào được chọn để xóa', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    try {
+      const result:any = await this._DonhangService.UpdateBulkDonhang(this.EditList.map((v: any) => v.id));
+      this._snackBar.open(`Cập nhật thành công ${result.success} đơn hàng ${result.fail} lỗi`, '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+      });
+    } catch (error: any) {
+      console.error('Lỗi khi xóa đơn hàng:', error);
+      this._snackBar.open('Có lỗi xảy ra khi xóa đơn hàng', '', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.EditList = [];
+      await this.ngOnInit();
+    }
+  }
+  CheckItemInEdit(item: any): boolean {
+    return this.EditList.some((v: any) => v.id === item.id);
+  }
   ApplyFilterColum(menu:any)
   {    
     this.dataSource.data = this.Listphieugiaohang().filter((v: any) => this.ListFilter.includes(v.id));
