@@ -251,6 +251,7 @@ export class ListPhieugiaohangComponent {
   }
 
   EditList: any = [];
+
   AddToEdit(item: any): void {
     const existingItem = this.EditList.find((v: any) => v.id === item.id);
     if (existingItem) {
@@ -260,6 +261,11 @@ export class ListPhieugiaohangComponent {
     }
     console.log(this.EditList); 
   }
+  CheckAll(): void {
+      this.EditList.length == this.dataSource.data.length? this.EditList = [] : this.EditList = [...this.dataSource.data];
+  }
+
+
   async UpdateBulk(){
    if (!this.EditList?.length) {
       this._snackBar.open('Không có mục nào được chọn để xóa', '', {
