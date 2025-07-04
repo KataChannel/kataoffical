@@ -70,7 +70,7 @@ export class DetailLandingpageComponent {
   isDelete = signal(false);
   landingpageId: any = this._LandingpageService.landingpageId;
   async ngOnInit() {
-    await this._LandingpageService.getLandingpageBy({ id: this._LandingpageService.landingpageId(),isOne:true });
+    // await this._LandingpageService.getLandingpageBy({ id: this._LandingpageService.landingpageId(),isOne:true });
      this.DetailLandingpage.update((v: any) => {
         v.contentJson = JSON.stringify(v.contentJson);
         return v;
@@ -79,10 +79,8 @@ export class DetailLandingpageComponent {
   async handleLandingpageAction() {
     if (this.landingpageId() === 'new') {
       await this.createLandingpage();
-      location.reload();
     } else {
       await this.updateLandingpage();
-      location.reload();
     }
   }
   private async createLandingpage() {

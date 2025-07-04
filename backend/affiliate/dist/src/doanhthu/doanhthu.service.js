@@ -88,47 +88,53 @@ let DoanhthuService = class DoanhthuService {
                     where: { codeId: item.source_id },
                 });
                 const dichvu = await this.prisma.dichvu.findFirst({
-                    where: { OR: [
+                    where: {
+                        OR: [
                             { TabCode: item.TabCode },
                             { TabCardCode: item.TabCardCode },
                             { TabMedicineCode: item.TabMedicineCode }
-                        ] },
+                        ]
+                    },
                 });
                 if (!dichvu) {
                     throw new common_1.NotFoundException(`Dichvu not found for serviceCode: ${item.serviceCode}`);
                 }
-                if (!existing) {
-                    const data = {
-                        codeId: item.source_id,
-                        dichvuId: dichvu.id || null,
-                        codeDT: item.code || null,
-                        amount: item.amount || 0,
-                        commission: item.amount * 0.2 || 0,
-                    };
+                const data = {
+                    codeId: item.source_id,
+                    dichvuId: dichvu.id ? dichvu.id : undefined,
+                    codeDT: item.code || null,
+                    amount: item.amount || 0,
+                    commission: item.amount * 0.2 || 0,
+                    phone: item.custPhone || null,
+                };
+                if (existing) {
+                    await this.prisma.doanhthu.update({
+                        where: { id: existing.id },
+                        data,
+                    });
+                }
+                else {
                     await this.create(data);
                 }
             }
             catch (error) {
-                throw error;
+                failureCount++;
+                return;
             }
+            successCount++;
         });
         for (let i = 0; i < tasks.length; i += concurrencyLimit) {
             const chunk = tasks.slice(i, i + concurrencyLimit);
-            const results = await Promise.allSettled(chunk.map((task) => task()));
-            results.forEach((result) => {
-                if (result.status === 'fulfilled') {
-                    successCount++;
-                }
-                else {
-                    failureCount++;
-                }
-            });
+            await Promise.all(chunk.map((task) => task()));
         }
         return { success: successCount, failure: failureCount };
     }
     async findBy(param) {
         try {
-            const { isOne, page = 1, limit = 20, ...where } = param;
+            const { isOne, page = 1, pageSize = 20, listphone, ...where } = param;
+            if (listphone && Array.isArray(listphone)) {
+                where.phone = { in: listphone };
+            }
             if (isOne) {
                 const result = await this.prisma.doanhthu.findFirst({
                     where,
@@ -136,12 +142,12 @@ let DoanhthuService = class DoanhthuService {
                 });
                 return result;
             }
-            const skip = (page - 1) * limit;
+            const skip = (page - 1) * pageSize;
             const [data, total] = await Promise.all([
                 this.prisma.doanhthu.findMany({
                     where,
                     skip,
-                    take: limit,
+                    take: pageSize,
                     orderBy: { order: 'asc' },
                 }),
                 this.prisma.doanhthu.count({ where }),
@@ -150,7 +156,7 @@ let DoanhthuService = class DoanhthuService {
                 data,
                 total,
                 page,
-                pageCount: Math.ceil(total / limit)
+                pageCount: Math.ceil(total / pageSize)
             };
         }
         catch (error) {

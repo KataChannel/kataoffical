@@ -13,6 +13,7 @@ export declare class DoanhthuService {
     create(data: any): Promise<{
         id: string;
         codeId: string | null;
+        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
         order: number | null;
@@ -30,6 +31,7 @@ export declare class DoanhthuService {
     findBy(param: any): Promise<{
         id: string;
         codeId: string | null;
+        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
         order: number | null;
@@ -43,6 +45,7 @@ export declare class DoanhthuService {
         data: {
             id: string;
             codeId: string | null;
+            phone: string | null;
             createdAt: Date;
             updatedAt: Date;
             order: number | null;
@@ -61,6 +64,7 @@ export declare class DoanhthuService {
         data: {
             id: string;
             codeId: string | null;
+            phone: string | null;
             createdAt: Date;
             updatedAt: Date;
             order: number | null;
@@ -78,6 +82,7 @@ export declare class DoanhthuService {
     findOne(id: string): Promise<{
         id: string;
         codeId: string | null;
+        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
         order: number | null;
@@ -92,6 +97,7 @@ export declare class DoanhthuService {
     remove(id: string): Promise<{
         id: string;
         codeId: string | null;
+        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
         order: number | null;

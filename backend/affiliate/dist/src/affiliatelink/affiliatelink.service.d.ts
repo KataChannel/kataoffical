@@ -10,7 +10,9 @@ export declare class affiliateLinkService {
         updatedAt: number;
     }>;
     generateCodeId(): Promise<string>;
-    create(data: any): Promise<{
+    create(data: any, user: {
+        id: string;
+    }): Promise<{
         id: string;
         codeId: string | null;
         isActive: boolean;
@@ -26,6 +28,7 @@ export declare class affiliateLinkService {
         utmTerm: string | null;
         utmContent: string | null;
         url: string | null;
+        createdById: string | null;
     }>;
     findBy(param: any): Promise<({
         landingPage: {
@@ -81,6 +84,7 @@ export declare class affiliateLinkService {
         utmTerm: string | null;
         utmContent: string | null;
         url: string | null;
+        createdById: string | null;
     }) | {
         data: {
             id: string;
@@ -98,12 +102,13 @@ export declare class affiliateLinkService {
             utmTerm: string | null;
             utmContent: string | null;
             url: string | null;
+            createdById: string | null;
         }[];
         total: number;
         page: any;
         pageCount: number;
     } | null>;
-    findAll(page?: number, limit?: number): Promise<{
+    findAll(query: any): Promise<{
         data: ({
             landingPage: {
                 id: string;
@@ -158,10 +163,12 @@ export declare class affiliateLinkService {
             utmTerm: string | null;
             utmContent: string | null;
             url: string | null;
+            createdById: string | null;
         })[];
         total: number;
         page: number;
         pageCount: number;
+        pageSize: number;
     }>;
     findOne(id: string): Promise<{
         id: string;
@@ -179,6 +186,7 @@ export declare class affiliateLinkService {
         utmTerm: string | null;
         utmContent: string | null;
         url: string | null;
+        createdById: string | null;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
@@ -197,6 +205,7 @@ export declare class affiliateLinkService {
         utmTerm: string | null;
         utmContent: string | null;
         url: string | null;
+        createdById: string | null;
     }>;
     reorderaffiliateLinks(affiliateLinkIds: string[]): Promise<{
         status: string;

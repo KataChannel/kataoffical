@@ -1,4 +1,4 @@
-<div class="container mx-auto p-6 bg-gray-100">
+<div class="container mx-auto bg-gray-100">
   <!-- Header -->
    <header class="flex flex-row space-x-2 mb-6 items-center">
     <button [routerLink]="['../']" mat-icon-button color="primary"><mat-icon>arrow_back</mat-icon></button>
@@ -57,23 +57,27 @@
 
   <!-- Top Courses Table -->
   <div class="p-6 bg-white rounded-lg shadow-md">
-    <h2 class="text-lg font-semibold text-gray-700 mb-4">Khóa Học Hàng Đầu</h2>
+    <h2 class="text-lg font-semibold text-gray-700 mb-4">Khóa Học</h2>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-200">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Tên Khóa Học</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Lượt Đăng Ký</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Tỷ Lệ Chuyển Đổi</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Nguồn Chính</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap">Họ Tên</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap">Số Điện Thoại</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap">Giới Tính</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap">Khóa Học</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap">Chi Nhánh</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap">Ngày Đăng Ký</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr *ngFor="let element of dataSource">
-            <td class="px-6 py-4">{{ element.courseName }}</td>
-            <td class="px-6 py-4">{{ element.registrations }}</td>
-            <td class="px-6 py-4">{{ element.conversionRate }}</td>
-            <td class="px-6 py-4">{{ element.source }}</td>
+          <tr *ngFor="let element of Khoahocs.data">
+            <td class="px-6 py-4 whitespace-nowrap">{{ element.name }}</td>
+            <td class="px-6 py-4">{{ element.phone }}</td>
+            <td class="px-6 py-4">{{ element.gender }}</td>
+            <td class="px-6 py-4">{{ element.serviceName }}</td>
+            <td class="px-6 py-4">{{ element.branchId }}</td>
+            <td class="px-6 py-4">{{ element.createdDate | date: 'dd/MM/yyyy' }}</td>
           </tr>
         </tbody>
       </table>

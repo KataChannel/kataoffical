@@ -1,0 +1,168 @@
+import { LichhenService } from './lichhen.service';
+export declare class LichhenController {
+    private readonly lichhenService;
+    constructor(lichhenService: LichhenService);
+    create(data: any): Promise<{
+        id: string;
+        codeId: string;
+        phone: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        title: string | null;
+        order: number | null;
+        createdBy: string | null;
+        custCode: string | null;
+        custName: string | null;
+        dateFrom: Date | null;
+        statusName: string | null;
+        statusTime: Date | null;
+        isCancel: boolean;
+        branchName: string | null;
+        createdDate: Date;
+        modifiedDate: Date;
+    }>;
+    findby(param: any): Promise<{
+        id: string;
+        codeId: string;
+        phone: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        title: string | null;
+        order: number | null;
+        createdBy: string | null;
+        custCode: string | null;
+        custName: string | null;
+        dateFrom: Date | null;
+        statusName: string | null;
+        statusTime: Date | null;
+        isCancel: boolean;
+        branchName: string | null;
+        createdDate: Date;
+        modifiedDate: Date;
+    } | {
+        data: {
+            id: string;
+            codeId: string;
+            phone: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            title: string | null;
+            order: number | null;
+            createdBy: string | null;
+            custCode: string | null;
+            custName: string | null;
+            dateFrom: Date | null;
+            statusName: string | null;
+            statusTime: Date | null;
+            isCancel: boolean;
+            branchName: string | null;
+            createdDate: Date;
+            modifiedDate: Date;
+        }[];
+        total: number;
+        page: any;
+        pageCount: number;
+    } | null>;
+    findAll(query: any): Promise<{
+        data: {
+            id: string;
+            codeId: string;
+            phone: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            description: string | null;
+            title: string | null;
+            order: number | null;
+            createdBy: string | null;
+            custCode: string | null;
+            custName: string | null;
+            dateFrom: Date | null;
+            statusName: string | null;
+            statusTime: Date | null;
+            isCancel: boolean;
+            branchName: string | null;
+            createdDate: Date;
+            modifiedDate: Date;
+        }[];
+        total: number;
+        page: number;
+        pageSize: number;
+        totalPages: number;
+    }>;
+    getLastUpdatedLichhen(): Promise<{
+        updatedAt: number;
+    }>;
+    syncslichhen(param: any): Promise<{
+        success: number;
+        failure: number;
+        error?: string;
+    }>;
+    findOne(id: string): Promise<{
+        id: string;
+        codeId: string;
+        phone: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        title: string | null;
+        order: number | null;
+        createdBy: string | null;
+        custCode: string | null;
+        custName: string | null;
+        dateFrom: Date | null;
+        statusName: string | null;
+        statusTime: Date | null;
+        isCancel: boolean;
+        branchName: string | null;
+        createdDate: Date;
+        modifiedDate: Date;
+    }>;
+    update(id: string, data: any): Promise<{
+        id: string;
+        codeId: string;
+        phone: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        title: string | null;
+        order: number | null;
+        createdBy: string | null;
+        custCode: string | null;
+        custName: string | null;
+        dateFrom: Date | null;
+        statusName: string | null;
+        statusTime: Date | null;
+        isCancel: boolean;
+        branchName: string | null;
+        createdDate: Date;
+        modifiedDate: Date;
+    }>;
+    remove(id: string): Promise<{
+        id: string;
+        codeId: string;
+        phone: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        description: string | null;
+        title: string | null;
+        order: number | null;
+        createdBy: string | null;
+        custCode: string | null;
+        custName: string | null;
+        dateFrom: Date | null;
+        statusName: string | null;
+        statusTime: Date | null;
+        isCancel: boolean;
+        branchName: string | null;
+        createdDate: Date;
+        modifiedDate: Date;
+    }>;
+    reorder(body: {
+        lichhenIds: string[];
+    }): Promise<{
+        status: string;
+    }>;
+}

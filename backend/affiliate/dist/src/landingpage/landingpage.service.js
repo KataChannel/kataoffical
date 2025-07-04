@@ -36,16 +36,24 @@ let landingPageService = class landingPageService {
     }
     async generatecodeId() {
         try {
-            const latest = await this.prisma.landingPage.findFirst({
-                orderBy: { codeId: 'desc' },
+            const landingPages = await this.prisma.landingPage.findMany({
+                select: { codeId: true },
+                where: {
+                    codeId: {
+                        startsWith: 'LDP',
+                    },
+                },
             });
-            let nextNumber = 1;
-            if (latest) {
-                const match = latest.codeId.match(/LDP(\d+)/);
+            let maxNumber = 0;
+            for (const lp of landingPages) {
+                const match = lp.codeId?.match(/^LDP(\d{5})$/);
                 if (match) {
-                    nextNumber = parseInt(match[1]) + 1;
+                    const num = parseInt(match[1], 10);
+                    if (num > maxNumber)
+                        maxNumber = num;
                 }
             }
+            const nextNumber = maxNumber + 1;
             return `LDP${nextNumber.toString().padStart(5, '0')}`;
         }
         catch (error) {
@@ -62,7 +70,7 @@ let landingPageService = class landingPageService {
             newOrder = (maxOrder._max?.order || 0) + 1;
             this._SocketGateway.sendlandingPageUpdate();
             const codeId = await this.generatecodeId();
-            data.contentJson = JSON.parse(data.contentJson);
+            data.contentJson = JSON.parse(data.contentJson || '{}');
             return this.prisma.landingPage.create({
                 data: {
                     ...data,

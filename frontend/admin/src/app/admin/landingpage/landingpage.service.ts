@@ -142,8 +142,7 @@ export class LandingpageService {
       const data = await response.json();      
       this.DetailLandingpage.set(data)
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getLandingpageBy', error);
-      return console.error(error);
+      console.error(error);
     }
   }
   async updateLandingpage(dulieu: any) {

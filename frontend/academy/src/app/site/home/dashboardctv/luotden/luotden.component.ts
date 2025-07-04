@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,6 +10,9 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterLink } from '@angular/router';
+import { KhachhangService } from '../../../../admin/khachhang/khachhang.service';
+import { UserService } from '../../../../admin/user/user.service';
+import { LichhenService } from '../../../../admin/lichhen/lichhen.service';
 @Component({
   selector: 'app-luotden',
   imports: [
@@ -85,6 +88,27 @@ export class LuotdenComponent {
       position: 'bottom'
     }
   };
-
-  ngOnInit(): void {}
+  _UserService: UserService = inject(UserService);
+  _KhachhangService: KhachhangService = inject(KhachhangService);
+  _LichhenService: LichhenService = inject(LichhenService);
+  profile: any = this._UserService.profile;
+  pageSize: any = this._LichhenService.pageSize;
+  Lichhens: any = {data:[],Thanhcong:0,Tonglich:0,Chinhanh:0}
+  async ngOnInit(): Promise<void> {
+    await this._UserService.getProfile()
+    const listphone = this.profile()?.referrals?.map((item: any) => item.phone);
+     this.Lichhens = await this._LichhenService.SearchBy({listphone,pageSize:9999})
+   console.log('Lichhens:', this.Lichhens);
+    this.Lichhens.Thanhcong = this.Lichhens.data.filter((item: any) => item.isCancel ===false).length;
+    this.Lichhens.Tonglich = this.Lichhens.data.length;
+    this.Lichhens.Chinhanh = [...new Set(this.Lichhens.data.map((item: any) => item.branchName))].length;
+    // this.Doanhthu = await this._KhachhangService.getKhachhangDoanhthu({listphone: listphone});
+    // console.log('Doanhthu:', this.Doanhthu);
+    
+    // if(this.Doanhthu.dichvus.length > 0) {
+    //     await this._CourseService.getSyncsCourse(this.Doanhthu.dichvus);
+    //     await this._DoanhsoService.getSyncsDoanhso(this.Doanhthu.dichvus);
+    //     await this._DoanhthuService.getSyncsDoanhthu(this.Doanhthu.doanhthus);    
+    // }
+  }
 }

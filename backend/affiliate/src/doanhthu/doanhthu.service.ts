@@ -62,71 +62,60 @@ export class DoanhthuService {
     }
   }
 
-    async syncsdoanhthu(param: any) {
+  async syncsdoanhthu(param: any) {
     if (!param || !Array.isArray(param) || param.length === 0) {
       throw new NotFoundException('Invalid parameters for syncsdoanhthu');
     }
-    // console.log(param);
     
     const concurrencyLimit = 50;
     let successCount = 0;
     let failureCount = 0;
 
-    // Create an array of tasks to process each item
     const tasks = param.map((item: any) => async () => {
       try {
         const existing = await this.prisma.doanhthu.findFirst({
           where: { codeId: item.source_id },
         });
-        
+
         const dichvu = await this.prisma.dichvu.findFirst({
-          where: { OR: [
-            { TabCode: item.TabCode },
-            { TabCardCode: item.TabCardCode },
-            { TabMedicineCode: item.TabMedicineCode }
-          ] },
+          where: {
+            OR: [
+              { TabCode: item.TabCode },
+              { TabCardCode: item.TabCardCode },
+              { TabMedicineCode: item.TabMedicineCode }
+            ]
+          },
         });
         if (!dichvu) {
           throw new NotFoundException(`Dichvu not found for serviceCode: ${item.serviceCode}`);
         }
-        
-        if (!existing) {
-         const data = {
-            codeId: item.source_id, // using source_id as codeId
-            dichvuId: dichvu.id || null,
-            codeDT: item.code || null,
-            amount: item.amount || 0,
-            commission: item.amount * 0.2 || 0,
-          };
-         await this.create(data);
+        const data = {
+          codeId: item.source_id,
+          dichvuId: dichvu.id ? dichvu.id : undefined,
+          codeDT: item.code || null,
+          amount: item.amount || 0,
+          commission: item.amount * 0.2 || 0,
+          phone: item.custPhone || null,
+        };
+
+        if (existing) {
+          await this.prisma.doanhthu.update({
+            where: { id: existing.id },
+            data,
+          });
+        } else {
+          await this.create(data);
         }
-        // else {
-        //   const data = {
-        //     codeId: item.source_id, // using source_id as codeId
-        //     dichvuId: dichvu.id || null,
-        //     codeDT: item.code || null,
-        //     amount: item.amount || 0,
-        //     commission: item.amount * 0.2 || 0,
-        //   };
-        //   await this.update(existing.id, data);
-        // }
-        // successCount++;
-      } catch (error) {        
-        throw error;
+      } catch (error) {
+        failureCount++;
+        return;
       }
+      successCount++;
     });
-    
-    // Process tasks in chunks with limited concurrency
+
     for (let i = 0; i < tasks.length; i += concurrencyLimit) {
       const chunk = tasks.slice(i, i + concurrencyLimit);
-      const results = await Promise.allSettled(chunk.map((task) => task()));
-      results.forEach((result) => {
-        if (result.status === 'fulfilled') {
-          successCount++;
-        } else {
-          failureCount++;
-        }
-      });
+      await Promise.all(chunk.map((task) => task()));
     }
     return { success: successCount, failure: failureCount };
   }
@@ -134,7 +123,11 @@ export class DoanhthuService {
 
   async findBy(param: any) {
     try {
-      const { isOne, page = 1, limit = 20, ...where } = param;
+      const { isOne, page = 1, pageSize = 20,listphone, ...where } = param;
+
+    if (listphone && Array.isArray(listphone)) {
+      where.phone = { in: listphone };
+    }
       if (isOne) {
         const result = await this.prisma.doanhthu.findFirst({
           where,
@@ -142,12 +135,12 @@ export class DoanhthuService {
         });
         return result;
       }
-      const skip = (page - 1) * limit;
+      const skip = (page - 1) * pageSize;
       const [data, total] = await Promise.all([
         this.prisma.doanhthu.findMany({
           where,
           skip,
-          take: limit,
+          take: pageSize,
           orderBy: { order: 'asc' },
         }),
         this.prisma.doanhthu.count({ where }),
@@ -156,7 +149,7 @@ export class DoanhthuService {
         data,
         total,
         page,
-        pageCount: Math.ceil(total / limit)
+        pageCount: Math.ceil(total / pageSize)
       };
     } catch (error) {
       this._ErrorlogService.logError('findByDoanhthu', error);

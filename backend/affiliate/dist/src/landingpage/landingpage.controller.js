@@ -20,7 +20,6 @@ let LandingpageController = class LandingpageController {
         this.landingpageService = landingpageService;
     }
     create(data) {
-        console.log('createLandingpageDto', data);
         return this.landingpageService.create(data);
     }
     findby(param) {

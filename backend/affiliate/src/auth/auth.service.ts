@@ -30,7 +30,7 @@ export class AuthService {
   async register(data: any, affiliateCode?: string) {
     try {
       // Normalize input
-      const { email, phone, password, facebookId, googleId, zaloId } = data;
+      const { email, phone, password, facebookId, googleId, zaloId, khoahoc } = data;
 
       // Check for existing user by unique fields
       const existingUser = await this.prisma.user.findFirst({
@@ -74,6 +74,7 @@ export class AuthService {
           referrerId,
           facebookId: facebookId || null,
           googleId: googleId || null,
+          khoahoc: khoahoc || null,
         },
       });
 

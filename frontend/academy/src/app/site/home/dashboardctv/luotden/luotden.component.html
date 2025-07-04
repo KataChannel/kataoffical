@@ -1,4 +1,4 @@
-<div class="container mx-auto p-6 bg-gray-100">
+<div class="container mx-auto bg-gray-100">
   <!-- Header -->
     <header class="flex flex-row space-x-2 mb-6 items-center">
     <button [routerLink]="['../']" mat-icon-button color="primary"><mat-icon>arrow_back</mat-icon></button>
@@ -12,15 +12,15 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
     <div class="p-6 rounded-lg shadow-md bg-white">
       <h2 class="text-lg font-semibold text-gray-700">Tổng Lượt Hẹn</h2>
-      <div class="text-3xl font-bold text-green-600">1.500</div>
+      <div class="text-3xl font-bold text-green-600">{{Lichhens.total}}</div>
     </div>
     <div class="p-6 rounded-lg shadow-md bg-white">
       <h2 class="text-lg font-semibold text-gray-700">Tỷ Lệ Hẹn Thành Công</h2>
-      <div class="text-3xl font-bold text-blue-600">15,2%</div>
+      <div class="text-3xl font-bold text-blue-600">{{Lichhens.Thanhcong / Lichhens.Tonglich * 100 | number: '1.0-0'}}%</div>
     </div>
     <div class="p-6 rounded-lg shadow-md bg-white">
       <h2 class="text-lg font-semibold text-gray-700">Chi Nhánh Đang Hoạt Động</h2>
-      <div class="text-3xl font-bold text-purple-600">6</div>
+      <div class="text-3xl font-bold text-purple-600">{{Lichhens.Chinhanh}}</div>
     </div>
   </div>
 
@@ -58,18 +58,20 @@
       <table class="w-full">
         <thead>
           <tr class="bg-gray-200 text-gray-700">
+            <th class="p-3">Họ Tên</th>
+            <th class="p-3">Số Điện Thoại</th>
+            <th class="p-3">Hủy Lịch</th>
+            <th class="p-3">Trạng Thái</th>
             <th class="p-3">Tên Chi Nhánh</th>
-            <th class="p-3">Lượt Hẹn</th>
-            <th class="p-3">Tỷ Lệ Thành Công</th>
-            <th class="p-3">Nguồn Chính</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let element of dataSource" class="border-b">
+          <tr *ngFor="let element of Lichhens.data" class="border-b">
+            <td class="p-3">{{ element.custName }}</td>
+            <td class="p-3">{{ element.phone }}</td>
+            <td class="p-3">{{ element.isCancel }}</td>
+            <td class="p-3">{{ element.statusName }}</td>
             <td class="p-3">{{ element.branchName }}</td>
-            <td class="p-3">{{ element.appointments }}</td>
-            <td class="p-3">{{ element.successRate }}</td>
-            <td class="p-3">{{ element.source }}</td>
           </tr>
         </tbody>
       </table>

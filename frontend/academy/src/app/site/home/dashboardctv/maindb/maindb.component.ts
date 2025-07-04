@@ -3,7 +3,6 @@ import { Component, inject, signal, ViewChild } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink, RouterOutlet } from '@angular/router';
-
 import {
   ChartComponent,
   NgApexchartsModule
@@ -20,6 +19,10 @@ import { DoanhthuService } from '../../../../admin/doanhthu/doanhthu.service';
 import { KhachhangService } from '../../../../admin/khachhang/khachhang.service';
 import { TrackingService } from '../../../../admin/tracking/tracking.service';
 import { UserService } from '../../../../admin/user/user.service';
+import { HoahongService } from '../../../../admin/hoahong/hoahong.service';
+import { ThanhtoanhoahongService } from '../../../../admin/thanhtoanhoahong/thanhtoanhoahong.service';
+import { LichhenService } from '../../../../admin/lichhen/lichhen.service';
+import { KhoahocService } from '../../../../admin/khoahoc/khoahoc.service';
 
 @Component({
   imports: [
@@ -45,6 +48,10 @@ export class MaindbComponent {
   _CourseService: CourseService = inject(CourseService);
   _DoanhsoService: DoanhsoService = inject(DoanhsoService);
   _DoanhthuService: DoanhthuService = inject(DoanhthuService);
+  _HoahongService: HoahongService = inject(HoahongService);
+  _ThanhtoanhoahongService: ThanhtoanhoahongService = inject(ThanhtoanhoahongService);
+  _LichhenService: LichhenService = inject(LichhenService);
+  _KhoahocService: KhoahocService = inject(KhoahocService);
   _snackbar: MatSnackBar = inject(MatSnackBar);
   @ViewChild('chart') chart!: ChartComponent;
   profile: any = this._UserService.profile;
@@ -197,6 +204,10 @@ export class MaindbComponent {
       ],
     };
   }
+  TotalHoahong: any = 0;
+  TotalThanhtoanhoahong: any = 0;
+  TotalLichhen: any = 0;
+  TotalKhoahoc: any = 0;
   async ngOnInit(): Promise<void> {
     await this._UserService.getProfile()
     await this._TrackingService.getTrackingBy({
@@ -205,12 +216,27 @@ export class MaindbComponent {
         isCount: true,
       })
     const listphone = this.profile()?.referrals?.map((item: any) => item.phone);
-    this.Doanhthu = await this._KhachhangService.getKhachhangDoanhthu({listphone: listphone});
-    if(this.Doanhthu.dichvus.length > 0) {
-        await this._CourseService.getSyncsCourse(this.Doanhthu.dichvus);
-        await this._DoanhsoService.getSyncsDoanhso(this.Doanhthu.dichvus);
-        await this._DoanhthuService.getSyncsDoanhthu(this.Doanhthu.doanhthus);    
-    }
+    this.Doanhthu = await this._KhachhangService.getKhachhangDoanhthu(listphone);
+
+    // if(this.Doanhthu.dichvus.length > 0) {
+    //     await this._CourseService.getSyncsCourse(this.Doanhthu.dichvus);
+    //     await this._DoanhsoService.getSyncsDoanhso(this.Doanhthu.dichvus);
+    //     await this._DoanhthuService.getSyncsDoanhthu(this.Doanhthu.doanhthus);
+    //     await this._LichhenService.getSyncsLichhen(this.Doanhthu.lichhens);
+    //     await this._KhoahocService.getSyncsKhoahoc(this.Doanhthu.dichvus);
+    // }
+
+    this.TotalHoahong = await this._HoahongService.getTotalHoahongByUserId(this.profile().id);
+    this.TotalThanhtoanhoahong = await this._ThanhtoanhoahongService.getTotalThanhtoanhoahongByUserId(this.profile().id);
+    this.TotalLichhen = await this._LichhenService.getTotalLichhenByUserId(this.profile().id);
+    this.TotalKhoahoc = await this._KhoahocService.getTotalKhoahocByUserId(this.profile().id);
+
+    console.log('TotalLichhen',this.TotalLichhen);
+    console.log('TotalKhoahoc',this.TotalKhoahoc);
+    console.log('TotalThanhtoanhoahong',this.TotalThanhtoanhoahong);
+    console.log('TotalHoahong',this.TotalHoahong);
+    
+    // Uncomment the following line if you want to fetch doanhthu by doanhthus
     // await this._DoanhthuService.getDoanhthuBy(this.Doanhthu.doanhthus);
   }
 }

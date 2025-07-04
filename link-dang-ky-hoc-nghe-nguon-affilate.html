@@ -182,15 +182,17 @@
           
           // Show loading state
           buttonLoader.style.display = 'block';
-
+          const urlParams = new URLSearchParams(window.location.search);
+          const refCode = (typeof this !== 'undefined' && urlParams.get('ref')) || null;
           // Collect form data
           const formData = new FormData(form);
           const data = {
               name: formData.get('full_name')?.trim(),
               phone: formData.get('phone_number')?.trim(),
               address: formData.get('address')?.trim(),
-              question_1: formData.get('question_1')?.trim(),
-              select_1: formData.get('select_1')
+              ghichu: formData.get('question_1')?.trim(),
+              affiliateCode: refCode,
+              khoahoc: formData.get('select_1')
           };
           // Validate required fields
           if (!data.name || !validateName(data.name)) {

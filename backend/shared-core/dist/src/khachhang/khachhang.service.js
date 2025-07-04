@@ -13,10 +13,14 @@ exports.KhachhangService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const vttech_prisma_service_1 = require("../../prisma/vttech.prisma.service");
+const axios_1 = require("@nestjs/axios");
+const rxjs_1 = require("rxjs");
 let KhachhangService = class KhachhangService {
-    constructor(prisma, vttechPrisma) {
+    constructor(prisma, vttechPrisma, httpService) {
         this.prisma = prisma;
         this.vttechPrisma = vttechPrisma;
+        this.httpService = httpService;
+        this.ACADEMY_APIURL = process.env.ACADEMY_APIURL;
         this.Doanhthu = {
             "paidAmount": "Thanh Toán",
             "discountAmount": "Giảm Giá",
@@ -83,40 +87,148 @@ let KhachhangService = class KhachhangService {
             pageSize: limit,
         };
     }
+    async Syncdichvus(param) {
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(this.ACADEMY_APIURL + '/dichvu/syncsdichvu', param));
+            console.log(response.data);
+            return response.data;
+        }
+        catch (error) {
+            throw new Error(`Failed to call API: ${error.message}`);
+        }
+    }
+    async Syncdoanhthus(param) {
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(this.ACADEMY_APIURL + '/doanhthu/syncsdoanhthu', param));
+            console.log(response.data);
+            return response.data;
+        }
+        catch (error) {
+            throw new Error(`Failed to call API: ${error.message}`);
+        }
+    }
+    async Syncdoanhsos(param) {
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(this.ACADEMY_APIURL + '/doanhso/syncsdoanhso', param));
+            console.log(response.data);
+            return response.data;
+        }
+        catch (error) {
+            throw new Error(`Failed to call API: ${error.message}`);
+        }
+    }
+    async Syncdieutris(param) {
+        try {
+        }
+        catch (error) {
+            throw new Error(`Failed to call API: ${error.message}`);
+        }
+    }
+    async Synclichhens(param) {
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(this.ACADEMY_APIURL + '/lichhen/syncslichhen', param));
+            console.log(response.data);
+            return response.data;
+        }
+        catch (error) {
+            throw new Error(`Failed to call API: ${error.message}`);
+        }
+    }
+    async Synckhoahocs(param) {
+        try {
+            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(this.ACADEMY_APIURL + '/khoahoc/syncskhoahoc', param));
+            console.log(response.data);
+            return response.data;
+        }
+        catch (error) {
+            throw new Error(`Failed to call API: ${error.message}`);
+        }
+    }
     async findKhachhangDoanhthu(param) {
         try {
-            if (param.listphone && param.listphone.length > 0) {
+            if (param && param.length > 0) {
                 const khachhangs = await this.vttechPrisma.customer.findMany({
+                    select: { code: true, phone: true },
                     where: {
-                        OR: param.listphone.map(phone => ({ phone })),
+                        OR: param.map((phone) => ({ phone })),
                     },
                 });
+                let dichvusRaw = await this.vttechPrisma.dichvu.findMany({
+                    where: {
+                        phone: { in: khachhangs.map(kh => kh.phone).filter((phone) => phone !== null) },
+                    },
+                });
+                let dichvus = dichvusRaw.map((v) => {
+                    return {
+                        codeId: v.id,
+                        phone: v.phone,
+                        phone2: v.phone2,
+                        name: v.name,
+                        code: v.code,
+                        birthday: v.birthday,
+                        gender: v.gender,
+                        serviceCode: v.serviceCode,
+                        tabCode: v.tabCode,
+                        serviceName: v.serviceName,
+                        timeIndex: v.timeIndex,
+                        timeToTreatment: v.timeToTreatment,
+                        priceUnit: v.priceUnit,
+                        quantity: v.quantity,
+                        discount: v.discount,
+                        priceRoot: v.priceRoot,
+                        priceDiscounted: v.priceDiscounted,
+                        branchId: v.branchId,
+                        createdDate: v.createdDate,
+                        modifiedDate: v.modifiedDate,
+                        state: v.state,
+                    };
+                });
+                const dichvu = await this.Syncdichvus(dichvus);
                 let doanhthus = await this.vttechPrisma.revenue.findMany({
                     where: {
-                        custPhone: { in: param.listphone },
+                        custPhone: { in: param },
                     },
                 });
+                let doanhthu = await this.Syncdichvus(doanhthus);
                 let dieutris = await this.vttechPrisma.treatment.findMany({
                     where: {
-                        phone: { in: param.listphone },
+                        phone: { in: param },
                     },
                 });
-                let dichvus = await this.vttechPrisma.dichvu.findMany({
+                let lichhensRaw = await this.vttechPrisma.appointment.findMany({
                     where: {
-                        phone: { in: param.listphone },
+                        custCode: { in: khachhangs.map(kh => kh.code).filter((code) => code !== null) },
                     },
                 });
-                const doanhthu = doanhthus.reduce((acc, item) => {
-                    acc.total = (acc.total || 0) + Number(item.amount);
-                    return acc;
-                }, {});
-                const doanhso = doanhthus.reduce((acc, item) => {
-                    acc.total = (acc.total || 0) + Number(item.totalPaid);
-                    return acc;
-                }, {});
-                return { khachhangs, doanhthus, dieutris, dichvus, doanhthu, doanhso };
+                let lichhens = lichhensRaw.map((v) => {
+                    const kh = khachhangs.find(kh => kh.code === v.custCode);
+                    return {
+                        "id": v.id,
+                        "custCode": v.custCode,
+                        "custName": v.custName,
+                        "dateFrom": v.dateFrom,
+                        "statusName": v.statusName,
+                        "statusTime": v.statusTime,
+                        "isCancel": v.isCancel,
+                        "branchName": v.branchName,
+                        "createdDate": v.createdDate,
+                        "modifiedDate": v.modifiedDate,
+                        "phone": kh?.phone || null,
+                    };
+                });
+                const lichhen = await this.Synclichhens(lichhens);
+                doanhthu = {
+                    ...doanhthu,
+                    totaldoanhthu: doanhthus.reduce((acc, item) => {
+                        return acc + Number(item.amount);
+                    }, 0),
+                    totaldoanhso: doanhthus.reduce((acc, item) => {
+                        return acc + Number(item.totalPaid);
+                    }, 0)
+                };
+                return { lichhen, dichvu, doanhthu };
             }
-            return { khachhangs: [], doanhthus: [], dieutris: [], dichvus: [] };
+            return { khachhangs: [], doanhthus: [], dieutris: [], dichvus: [], lichhen: [] };
         }
         catch (error) {
             throw error;
@@ -173,6 +285,7 @@ exports.KhachhangService = KhachhangService;
 exports.KhachhangService = KhachhangService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        vttech_prisma_service_1.VttechPrismaService])
+        vttech_prisma_service_1.VttechPrismaService,
+        axios_1.HttpService])
 ], KhachhangService);
 //# sourceMappingURL=khachhang.service.js.map

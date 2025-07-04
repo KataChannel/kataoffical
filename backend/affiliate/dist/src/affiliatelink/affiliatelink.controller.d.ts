@@ -2,7 +2,7 @@ import { affiliateLinkService } from './affiliatelink.service';
 export declare class AffiliatelinkController {
     private readonly affiliatelinkService;
     constructor(affiliatelinkService: affiliateLinkService);
-    create(data: any): Promise<{
+    create(data: any, user: any): Promise<{
         id: string;
         codeId: string | null;
         isActive: boolean;
@@ -18,6 +18,7 @@ export declare class AffiliatelinkController {
         utmTerm: string | null;
         utmContent: string | null;
         url: string | null;
+        createdById: string | null;
     }>;
     findby(param: any): Promise<({
         landingPage: {
@@ -73,6 +74,7 @@ export declare class AffiliatelinkController {
         utmTerm: string | null;
         utmContent: string | null;
         url: string | null;
+        createdById: string | null;
     }) | {
         data: {
             id: string;
@@ -90,12 +92,13 @@ export declare class AffiliatelinkController {
             utmTerm: string | null;
             utmContent: string | null;
             url: string | null;
+            createdById: string | null;
         }[];
         total: number;
         page: any;
         pageCount: number;
     } | null>;
-    findAll(page?: string, limit?: string): Promise<{
+    findAll(query: Record<string, any>): Promise<{
         data: ({
             landingPage: {
                 id: string;
@@ -150,10 +153,12 @@ export declare class AffiliatelinkController {
             utmTerm: string | null;
             utmContent: string | null;
             url: string | null;
+            createdById: string | null;
         })[];
         total: number;
         page: number;
         pageCount: number;
+        pageSize: number;
     }>;
     getLastUpdatedAffiliatelink(): Promise<{
         updatedAt: number;
@@ -174,6 +179,7 @@ export declare class AffiliatelinkController {
         utmTerm: string | null;
         utmContent: string | null;
         url: string | null;
+        createdById: string | null;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
@@ -192,6 +198,7 @@ export declare class AffiliatelinkController {
         utmTerm: string | null;
         utmContent: string | null;
         url: string | null;
+        createdById: string | null;
     }>;
     reorder(body: {
         affiliatelinkIds: string[];

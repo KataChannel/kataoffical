@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,6 +10,10 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { NgApexchartsModule } from 'ng-apexcharts';
+import { KhachhangService } from '../../../../admin/khachhang/khachhang.service';
+import { LichhenService } from '../../../../admin/lichhen/lichhen.service';
+import { UserService } from '../../../../admin/user/user.service';
+import { KhoahocService } from '../../../../admin/khoahoc/khoahoc.service';
 
 @Component({
   selector: 'app-khoahoc',
@@ -88,6 +92,16 @@ export class KhoahocComponent {
       position: 'bottom'
     }
   };
-
-  ngOnInit(): void {}
+  _UserService: UserService = inject(UserService);
+  _KhachhangService: KhachhangService = inject(KhachhangService);
+  _KhoahocService: KhoahocService = inject(KhoahocService);
+  profile: any = this._UserService.profile;
+  pageSize: any = this._KhoahocService.pageSize;
+  Khoahocs:any  = {data: []};
+  async ngOnInit(): Promise<void> {
+    await this._UserService.getProfile()
+    const listphone = this.profile()?.referrals?.map((item: any) => item.phone);
+     this.Khoahocs = await this._KhoahocService.SearchBy({listphone,pageSize:9999})
+    console.log('Khoahocs:', this.Khoahocs);
+  }
 }

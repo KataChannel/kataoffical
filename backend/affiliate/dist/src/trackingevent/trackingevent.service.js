@@ -54,6 +54,7 @@ let TrackingeventService = class TrackingeventService {
         }
     }
     async findBy(param) {
+        console.log('findBy param:', param);
         try {
             if (param?.isCount) {
                 const { isCount, ...whereParams } = param;

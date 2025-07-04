@@ -1,0 +1,259 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khóa Học Chăm Sóc Da - Timona Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
+    <style>
+        :root {
+            --primary-color: rgb(0, 37, 110);
+            --primary-hover: rgb(0, 50, 150);
+        }
+        .bg-primary { background-color: var(--primary-color); }
+        .hover\:bg-primary:hover { background-color: var(--primary-hover); }
+        .text-primary { color: var(--primary-color); }
+        .animate__fadeInUp { animation-duration: 1s; }
+        .animate__zoomIn { animation-duration: 0.8s; }
+        .animate__pulse { animation-duration: 1.5s; }
+        /* Custom scroll-triggered animation */
+        [data-aos] {
+            opacity: 0;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        [data-aos].aos-animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        [data-aos="fade-up"] { transform: translateY(50px); }
+        [data-aos="fade-left"] { transform: translateX(-50px); }
+        [data-aos="fade-right"] { transform: translateX(50px); }
+        /* Hover scale effect */
+        .hover-scale { transition: transform 0.3s ease; }
+        .hover-scale:hover { transform: scale(1.05); }
+        /* Button pulse effect */
+        .pulse-button { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 37, 110, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 37, 110, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 37, 110, 0); }
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 bg-gray-100">
+    <!-- Hero Section -->
+    <section class="bg-primary text-white py-20">
+        <div class="container mx-auto px-4 text-center animate__animated animate__fadeInUp">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 animate__animated animate__zoomIn" style="animation-delay: 0.2s;">Thoát Khỏi Thu Nhập Thấp, Tìm Định Hướng Với Nghề Spa</h1>
+            <p class="text-xl mb-6 animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">Khóa học chăm sóc da tại Timona Academy giúp bạn tự tin làm chủ tương lai!</p>
+            <a href="#register" class="bg-white text-primary font-semibold py-3 px-6 rounded-full hover:bg-gray-200 transition pulse-button animate__animated animate__pulse" style="animation-delay: 0.6s;">Đăng Ký Ngay</a>
+        </div>
+    </section>
+
+    <!-- About Timona Academy -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-primary mb-8 animate__animated animate__fadeInUp" data-aos="fade-up">Về Học Viện Timona</h2>
+            <div class="flex flex-col md:flex-row items-center gap-8">
+                <div class="md:w-1/2 animate__animated animate__fadeInUp" data-aos="fade-right">
+                    <p class="text-lg mb-4">Timona Academy là học viện đào tạo spa hàng đầu Việt Nam, với hơn 10 năm kinh nghiệm và hàng ngàn học viên thành công. Chúng tôi cung cấp khóa học chăm sóc da chuyên sâu, từ cơ bản đến nâng cao.</p>
+                    <p class="text-lg mb-4">Học viên được học thực hành trên thiết bị hiện đại, dưới sự hướng dẫn của chuyên gia. Sau khóa học, bạn sẽ có kỹ năng vững chắc để làm việc tại spa lớn hoặc tự mở tiệm.</p>
+                </div>
+                <div class="md:w-1/2 animate__animated animate__zoomIn" data-aos="fade-left">
+                    <img src="https://via.placeholder.com/600x400" alt="Timona Academy" class="rounded-lg shadow-lg hover-scale">
+                </div>
+            </div>
+            <div class="mt-12">
+                <h3 class="text-2xl font-semibold text-center text-primary mb-6 animate__animated animate__fadeInUp" data-aos="fade-up">Lợi Ích Khi Học Nghề Spa</h3>
+                <ul class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <li class="bg-white p-6 rounded-lg shadow-md text-center animate__animated animate__fadeInUp hover-scale" data-aos="fade-up">
+                        <h4 class="text-xl font-semibold text-primary mb-2">Thu Nhập Cao</h4>
+                        <p>Ngành spa đang bùng nổ, với mức lương trung bình từ 15-30 triệu/tháng.</p>
+                    </li>
+                    <li class="bg-white p-6 rounded-lg shadow-md text-center animate__animated animate__fadeInUp hover-scale" data-aos="fade-up" style="animation-delay: 0.2s;">
+                        <h4 class="text-xl font-semibold text-primary mb-2">Cơ Hội Việc Làm</h4>
+                        <p>Cam kết hỗ trợ việc làm sau khóa học hoặc hướng dẫn mở spa riêng.</p>
+                    </li>
+                    <li class="bg-white p-6 rounded-lg shadow-md text-center animate__animated animate__fadeInUp hover-scale" data-aos="fade-up" style="animation-delay: 0.4s;">
+                        <h4 class="text-xl font-semibold text-primary mb-2">Phát Triển Bản Thân</h4>
+                        <p>Học kỹ năng giao tiếp, chăm sóc khách hàng, xây dựng sự nghiệp bền vững.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Offer Section -->
+    <section class="bg-primary text-white py-16">
+        <div class="container mx-auto px-4 text-center animate__animated animate__fadeInUp" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-6 animate__animated animate__zoomIn">Ưu Đãi Đặc Biệt Khi Đăng Ký Hôm Nay</h2>
+            <p class="text-lg mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">Giảm ngay <span class="font-bold">30% học phí</span> và tặng bộ dụng cụ spa chuyên nghiệp trị giá 5 triệu đồng!</p>
+            <div id="countdown" class="text-2xl font-semibold mb-6 animate__animated animate__pulse" style="animation-duration: 2s;"></div>
+            <a href="#register" class="bg-white text-primary font-semibold py-3 px-6 rounded-full hover:bg-gray-200 transition pulse-button animate__animated animate__pulse" style="animation-delay: 0.4s;">Nhận Ưu Đãi Ngay</a>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-primary mb-8 animate__animated animate__fadeInUp" data-aos="fade-up">Feedback Từ Học Viên</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-lg shadow-md animate__animated animate__fadeInUp hover-scale" data-aos="fade-up">
+                    <p class="italic mb-4">"Nhờ khóa học tại Timona, tôi đã mở spa riêng và thu nhập ổn định 25 triệu/tháng!"</p>
+                    <p class="font-semibold">Nguyễn Thị Mai</p>
+                    <img src="https://via.placeholder.com/150" alt="Học viên Mai" class="mt-4 rounded-full mx-auto hover-scale">
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md animate__animated animate__fadeInUp hover-scale" data-aos="fade-up" style="animation-delay: 0.2s;">
+                    <p class="italic mb-4">"Giảng viên tận tâm, thực hành nhiều, sau khóa học tôi được nhận vào spa 5 sao."</p>
+                    <p class="font-semibold">Trần Văn Hùng</p>
+                    <img src="https://via.placeholder.com/150" alt="Học viên Hùng" class="mt-4 rounded-full mx-auto hover-scale">
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md animate__animated animate__fadeInUp hover-scale" data-aos="fade-up" style="animation-delay: 0.4s;">
+                    <p class="italic mb-4">"Khóa học giúp tôi tìm được định hướng và tự tin hơn trong công việc."</p>
+                    <p class="font-semibold">Lê Thị Hồng</p>
+                    <img src="https://via.placeholder.com/150" alt="Học viên Hồng" class="mt-4 rounded-full mx-auto hover-scale">
+                </div>
+            </div>
+            <div class="mt-12 text-center animate__animated animate__zoomIn" data-aos="fade-up">
+                <h3 class="text-2xl font-semibold text-primary mb-4">Video Minh Chứng Thành Công</h3>
+                <video controls class="rounded-lg shadow-lg mx-auto hover-scale" style="max-width: 600px;">
+                    <source src="https://via.placeholder.com/600x400.mp4" type="video/mp4">
+                    Trình duyệt của bạn không hỗ trợ video.
+                </video>
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration Form -->
+    <section id="register" class="py-16 bg-gray-200">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center text-primary mb-8 animate__animated animate__fadeInUp" data-aos="fade-up">Đăng Ký Nhận Ưu Đãi</h2>
+            <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md animate__animated animate__zoomIn" data-aos="fade-up">
+                <form id="register-form">
+                    <div class="mb-4 animate__animated animate__fadeInUp" data-aos="fade-up">
+                        <label for="name" class="block text-gray-700 font-semibold mb-2">Họ và Tên</label>
+                        <input type="text" id="name" name="name" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition hover-scale" required>
+                    </div>
+                    <div class="mb-4 animate__animated animate__fadeInUp" data-aos="fade-up" style="animation-delay: 0.2s;">
+                        <label for="phone" class="block text-gray-700 font-semibold mb-2">Số Điện Thoại</label>
+                        <input type="tel" id="phone" name="phone" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition hover-scale" required>
+                    </div>
+                    <div class="mb-4 animate__animated animate__fadeInUp" data-aos="fade-up" style="animation-delay: 0.4s;">
+                        <label for="email" class="block text-gray-700 font-semibold mb-2">Email</label>
+                        <input type="email" id="email" name="email" class="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition hover-scale" required>
+                    </div>
+                    <button type="submit" class="w-full bg-primary text-white font-semibold py-3 rounded-lg hover:bg-primary-hover transition pulse-button animate__animated animate__pulse" data-aos="fade-up" style="animation-delay: 0.6s;">Gửi Thông Tin</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Guarantee Section -->
+    <section class="py-16 bg-primary text-white">
+        <div class="container mx-auto px-4 text-center animate__animated animate__fadeInUp" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-6 animate__animated animate__zoomIn">Cam Kết Từ Timona Academy</h2>
+            <p class="text-lg mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">Học xong, bạn sẽ:</p>
+            <ul class="text-lg space-y-2">
+                <li class="animate__animated animate__fadeInUp" data-aos="fade-up" style="animation-delay: 0.4s;">Được hỗ trợ tìm việc tại các spa lớn.</li>
+                <li class="animate__animated animate__fadeInUp" data-aos="fade-up" style="animation-delay: 0.6s;">Được hướng dẫn mở spa riêng với chi phí tối ưu.</li>
+                <li class="animate__animated animate__fadeInUp" data-aos="fade-up" style="animation-delay: 0.8s;">Nhận chứng chỉ uy tín từ Timona Academy.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center animate__animated animate__fadeInUp" data-aos="fade-up">
+            <p>© 2025 Timona Academy. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Countdown Timer
+        const countdownElement = document.getElementById('countdown');
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 3); // 3 days from now
+
+        function updateCountdown() {
+            const now = new Date();
+            const timeLeft = endDate - now;
+
+            if (timeLeft <= 0) {
+                countdownElement.textContent = 'Ưu đãi đã kết thúc!';
+                return;
+            }
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            countdownElement.textContent = `${days} ngày ${hours} giờ ${minutes} phút ${seconds} giây`;
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Form Submission
+        document.getElementById('register-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thông tin đã được gửi! Chúng tôi sẽ liên hệ với bạn sớm.');
+            this.reset();
+        });
+
+        // Scroll-triggered animations
+        function handleScrollAnimations() {
+            const elements = document.querySelectorAll('[data-aos]');
+            elements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top <= window.innerHeight * 0.8) {
+                    el.classList.add('aos-animate');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', handleScrollAnimations);
+        handleScrollAnimations(); // Initial check
+    </script>
+</body>
+</html>

@@ -27,6 +27,27 @@ export const routes: Routes = [
         (c) => c.AdminmainComponent
       ),
     children: [
+        {
+          path: 'lichhen',
+          canActivate: [PermissionGuard],
+          data: { permission: 'lichhen.view' },
+          loadChildren: () =>
+          import('./admin/lichhen/lichhen.route').then(m => m.LichhenRoutingModule),
+        },
+        {
+              path: 'khoahoc',
+              canActivate: [PermissionGuard],
+              data: { permission: 'khoahoc.view' },
+              loadChildren: () =>
+                import('./admin/khoahoc/khoahoc.route').then(m => m.KhoahocRoutingModule),
+        },       
+        {
+        path: 'hoahong',
+        canActivate: [PermissionGuard],
+        data: { permission: 'hoahong.view' },
+        loadChildren: () =>
+           import('./admin/hoahong/hoahong.route').then(m => m.HoahongRoutingModule),
+      },
       {
         path: 'welcome',
         loadComponent: () =>
@@ -533,6 +554,13 @@ export const routes: Routes = [
               import(
                 './site/home/dashboardctv/hoahong/hoahong.component'
               ).then((c) => c.HoahongComponent),
+          },
+          {
+            path: 'hoahongdarut',
+            loadComponent: () =>
+              import(
+                './site/home/dashboardctv/hoahongdarut/hoahongdarut.component'
+              ).then((c) => c.HoahongdarutComponent),
           },
         ],
       },

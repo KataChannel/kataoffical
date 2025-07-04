@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpExcep
 import { affiliateLinkService } from './affiliatelink.service'; 
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
+import { User } from '../decorators/user.decorator';
 @ApiTags('affiliatelink') 
 @Controller('affiliatelink') 
 export class AffiliatelinkController { 
@@ -11,9 +12,9 @@ export class AffiliatelinkController {
   @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard) 
   @Post()
-  async create(@Body() data: any) { 
+  async create(@Body() data: any,@User() user:any) { 
     try {
-      return await this.affiliatelinkService.create(data);
+      return await this.affiliatelinkService.create(data,user);
     } catch (error) {
       throw new HttpException(error.message || 'Create failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -35,19 +36,10 @@ export class AffiliatelinkController {
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get()
   async findAll(
-    @Query('page') page: string = '1', 
-    @Query('limit') limit: string = '10', 
+    @Query() query: Record<string, any>
   ) {
     try {
-      const pageNum = parseInt(page, 10);
-      const limitNum = parseInt(limit, 10);
-      if (isNaN(pageNum) || pageNum < 1) {
-        throw new HttpException('Page must be a positive integer', HttpStatus.BAD_REQUEST);
-      }
-      if (isNaN(limitNum) || limitNum < 1) {
-        throw new HttpException('Limit must be a positive integer', HttpStatus.BAD_REQUEST);
-      }
-      return await this.affiliatelinkService.findAll(pageNum, limitNum);
+      return await this.affiliatelinkService.findAll(query);
     } catch (error) {
       throw new HttpException(
         error.message || 'Failed to fetch affiliatelinks',
@@ -55,6 +47,7 @@ export class AffiliatelinkController {
       );
     }
   }
+
   @ApiOperation({ summary: 'Get last updated affiliatelink' })
   @Get('lastupdated') 
   async getLastUpdatedAffiliatelink() { 

@@ -1,120 +1,90 @@
 const fs = require('fs');
 const path = require('path');
 
-// --- Content of your 'donhang' files ---
-const donhangSocketGatewayContent = `
-import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { Server } from 'socket.io';
-
-@WebSocketGateway({ // Cấu hình CORS hoặc namespace có thể cần điều chỉnh tùy theo kiến trúc tổng thể
-  cors: {
-    origin: '*', // Cân nhắc cấu hình chặt chẽ hơn cho production
-  },
-  // namespace: 'donhang', // Tùy chọn: sử dụng namespace cho từng module
-})
-export class SocketGateway { // Tên class SocketGateway được giữ nguyên, nó được cung cấp trong module động
-  @WebSocketServer() server: Server;
-
-  sendDonhangUpdate(): { success: boolean; error?: string } { // This is a method
-    try {
-      this.server.emit('donhang-updated'); // Emitting an event
-      return { success: true };
-    } catch (error) {
-      // Logging error can be done here
-      return { success: false, error: (error as Error).message };
-    }
-  }
-
-  // Example of a method that might use the module name in its own name
-  notifyDonhangSpecificEvent(data: any): void {
-    /*
-     * This is a multi-line comment
-     * to describe the method.
-     */
-    this.server.emit('donhang-specific-event', data); // Another event
-  }
-}
-`;
-
-const donhangServiceContent = `
+const sanphamServiceContent = `
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'prisma/prisma.service'; // Giả sử đường dẫn này là cố định
-import { ErrorlogService } from 'src/errorlog/errorlog.service'; // Giả sử đường dẫn này là cố định
-import { SocketGateway } from './socket.gateway'; // Nằm trong cùng thư mục module
-
+import { PrismaService } from 'prisma/prisma.service'; 
+import { ErrorlogService } from 'src/errorlog/errorlog.service'; 
+import { SocketGateway } from 'src/socket.gateway'; 
 @Injectable()
-export class DonhangService { // Service class for Donhang
+export class SanphamService { 
   constructor(
     private readonly prisma: PrismaService,
-    private _SocketGateway: SocketGateway, // Injected gateway
+    private _SocketGateway: SocketGateway, 
     private _ErrorlogService: ErrorlogService,
   ) {}
-
-  async getLastUpdatedDonhang(): Promise<{ updatedAt: number }> { // Get last update timestamp
+  async getLastUpdatedSanpham(): Promise<{ updatedAt: number }> { 
     try {
-      const lastUpdated = await this.prisma.donhang.aggregate({
+      const lastUpdated = await this.prisma.sanpham.aggregate({
         _max: { updatedAt: true },
       });
       return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
     } catch (error) {
-      this._ErrorlogService.logError('getLastUpdatedDonhang', error);
       throw error;
     }
   }
-
-  /*
-   * Generates a new Code ID for Donhang.
-   * Prefix 'DONHANG' is used.
-   */
   async generateCodeId(): Promise<string> {
     try {
-      const latest = await this.prisma.donhang.findFirst({
-        orderBy: { codeId: 'desc' }, // Order by codeId
+      const latest = await this.prisma.sanpham.findFirst({
+        orderBy: { codeId: 'desc' }, 
       });
       let nextNumber = 1;
       if (latest && latest.codeId) {
-        const prefix = 'DONHANG';
-        const match = latest.codeId.match(new RegExp(prefix + '(\\d+)'));
+        const prefix = 'SP';
+        const match = latest.codeId.match(new RegExp(prefix + '(\\\\d+)'));
         if (match) {
           nextNumber = parseInt(match[1]) + 1;
         }
       }
-      const newPrefix = 'DONHANG'; // This prefix will be replaced
+      const newPrefix = 'SP'; // This prefix will be replaced
       return \`\${newPrefix}\${nextNumber.toString().padStart(5, '0')}\`;
     } catch (error) {
-      this._ErrorlogService.logError('generateDonhangCodeId', error);
+      this._ErrorlogService.logError('generateSanphamCodeId', error);
       throw error;
     }
   }
-
-  async create(data: any) { // Create a new Donhang
-    try {
-      const maxOrder = await this.prisma.donhang.aggregate({
-        _max: { order: true },
-      });
-      const newOrder = (maxOrder._max?.order || 0) + 1;
-      const codeId = await this.generateCodeId();
-      const created = await this.prisma.donhang.create({
-        data: {
-          ...data,
-          order: newOrder,
-          codeId: codeId
-        },
-      });
-      this._SocketGateway.sendDonhangUpdate(); // Send update via socket
-      return created;
-    } catch (error) {
-      this._ErrorlogService.logError('createDonhang', error);
-      throw error;
-    }
+  
+async create(data: any) { 
+  try {
+    const maxOrder = await this.prisma.sanpham.aggregate({
+      _max: { order: true },
+    });
+    const newOrder = (maxOrder._max?.order || 0) + 1;
+    const codeId = await this.generateCodeId();
+    
+    // Extract the expected fields from the payload
+    const { title, danhmucId, bienthe, donvitinh, price, status, ...restData } = data;
+    
+    const created = await this.prisma.sanpham.create({
+      data: {
+        title,
+        bienthe,
+        donvitinh,
+        giagoc: price || 0, // Map 'price' to 'giagoc' as per the schema
+        status: status || 'draft',
+        ...restData,
+        order: newOrder,
+        codeId: codeId,
+        // Connect the danhmuc relation using danhmucId
+        ...(danhmucId && { danhmuc: { connect: { id: danhmucId } } }),
+      },
+    });
+    
+    this._SocketGateway.sendUpdate('sanpham'); 
+    return created;
+  } catch (error) {
+    console.log('Error creating sanpham:', error);
+    this._ErrorlogService.logError('createSanpham', error);
+    throw error;
   }
+}
 
-  // Finds Donhang records based on parameters
+
   async findBy(param: any) {
     try {
       const { isOne, page = 1, limit = 20, ...where } = param;
       if (isOne) {
-        const result = await this.prisma.donhang.findFirst({
+        const result = await this.prisma.sanpham.findFirst({
           where,
           orderBy: { order: 'asc' },
         });
@@ -122,13 +92,13 @@ export class DonhangService { // Service class for Donhang
       }
       const skip = (page - 1) * limit;
       const [data, total] = await Promise.all([
-        this.prisma.donhang.findMany({
+        this.prisma.sanpham.findMany({
           where,
           skip,
           take: limit,
           orderBy: { order: 'asc' },
         }),
-        this.prisma.donhang.count({ where }),
+        this.prisma.sanpham.count({ where }),
       ]);
       return {
         data,
@@ -137,268 +107,308 @@ export class DonhangService { // Service class for Donhang
         pageCount: Math.ceil(total / limit)
       };
     } catch (error) {
-      this._ErrorlogService.logError('findByDonhang', error);
+      this._ErrorlogService.logError('findBySanpham', error);
       throw error;
     }
   }
 
-  async findAll(page: number = 1, limit: number = 20) { // Find all with pagination
-    try {
-      const skip = (page - 1) * limit;
-      const [data, total] = await Promise.all([
-        this.prisma.donhang.findMany({
-          skip,
-          take: limit,
-          orderBy: { order: 'asc' }, // Default ordering
-        }),
-        this.prisma.donhang.count(),
-      ]);
-      return {
-        data,
-        total,
-        page,
-        pageCount: Math.ceil(total / limit)
-      };
-    } catch (error) {
-      this._ErrorlogService.logError('findAllDonhang', error);
-      throw error;
+async findAll(query: any) {
+  console.log('findAllSanpham query:', query);
+  
+  try {
+    const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
+    const numericPage = Number(page);
+    const numericPageSize = Number(pageSize);
+    const skip = (numericPage - 1) * numericPageSize;
+    const take = numericPageSize;
+    const where: any = {};
+    // Xử lý tìm kiếm chung (OR condition)
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } }
+      ];
     }
+    // Xử lý lọc theo trường cụ thể
+    if (category) {
+      where.category = { equals: category, mode: 'insensitive' };
+    }
+    if (priceMin || priceMax) {
+      where.price = {};
+      if (priceMin) {
+        where.price.gte = priceMin;
+      }
+      if (priceMax) {
+        where.price.lte = priceMax;
+      }
+    }
+    const orderBy: any = {};
+    if (sortBy && sortOrder) {
+      orderBy[sortBy] = sortOrder;
+    } else {
+      orderBy.createdAt = 'desc'; // Mặc định nếu không có sortBy/sortOrder
+    }
+
+    const [sanphams, total] = await this.prisma.$transaction([
+      this.prisma.sanpham.findMany({
+        where,
+        skip,
+        take,
+        orderBy,
+      }),
+      this.prisma.sanpham.count({ where }),
+    ]);
+    
+    return {
+      data: sanphams,
+      total: Number(total),
+      page: numericPage,
+      pageSize: numericPageSize,
+      totalPages: Math.ceil(Number(total) / numericPageSize),
+    };
+  } catch (error) {
+    console.log('Error in findAllSanpham:', error);
+    throw error;
   }
+}
 
   async findOne(id: string) {
     try {
-      const item = await this.prisma.donhang.findUnique({ where: { id } });
-      if (!item) throw new NotFoundException('Donhang not found'); // Specific error message
+      const item = await this.prisma.sanpham.findUnique({ where: { id } });
+      if (!item) throw new NotFoundException('Sanpham not found'); 
       return item;
     } catch (error) {
-      this._ErrorlogService.logError('findOneDonhang', error);
+      console.log('Error finding sanpham:', error);
       throw error;
     }
   }
 
-  async update(id: string, data: any) { // Update existing Donhang
-    try {
-      let updated;
-      if (data.order) {
-        // Handle order update separately if needed
-        const { order, ...rest } = data;
-        await this.prisma.donhang.update({ where: { id }, data: rest });
-        updated = await this.prisma.donhang.update({ where: { id }, data: { order } });
-      } else {
-        updated = await this.prisma.donhang.update({ where: { id }, data });
-      }
-      this._SocketGateway.sendDonhangUpdate();
-      return updated;
-    } catch (error) {
-      this._ErrorlogService.logError('updateDonhang', error);
-      throw error;
-    }
-  }
 
-  async remove(id: string) { // Remove a Donhang
+async update(id: string, data: any) { 
+  try {
+    const { title, danhmucId, bienthe, donvitinh, price, status, order, ...restData } = data;
+    
+    const updated = await this.prisma.sanpham.update({ 
+      where: { id }, 
+      data: {
+        title,
+        bienthe,
+        donvitinh,
+        giagoc: price || 0, // Map 'price' to 'giagoc' as per the schema
+        status: status || 'draft',
+        order: order || undefined, // Include order if provided
+        ...restData,
+        // Connect the danhmuc relation using danhmucId if provided
+        ...(danhmucId && { danhmuc: { connect: { id: danhmucId } } }),
+        // If danhmucId is explicitly null, disconnect the relation
+        ...(data.danhmucId === null && { danhmuc: { disconnect: true } }),
+      },
+    });
+    this._SocketGateway.sendUpdate('sanpham');
+    return updated;
+  } catch (error) {
+    console.log('Error updating sanpham:', error);
+    throw error;
+  }
+}
+
+  async remove(id: string) { 
     try {
-      const deleted = await this.prisma.donhang.delete({ where: { id } });
-      this._SocketGateway.sendDonhangUpdate();
+      const deleted = await this.prisma.sanpham.delete({ where: { id } });
+      this._SocketGateway.sendUpdate('sanpham');
       return deleted;
     } catch (error) {
-      this._ErrorlogService.logError('removeDonhang', error);
+      console.log('Error removing sanpham:', error);
       throw error;
     }
   }
-
-  async reorderDonhangs(donhangIds: string[]) { // Reorder multiple Donhangs
+  async reorderSanphams(sanphamIds: string[]) { 
     try {
-      for (let i = 0; i < donhangIds.length; i++) {
-        await this.prisma.donhang.update({
-          where: { id: donhangIds[i] },
+      for (let i = 0; i < sanphamIds.length; i++) {
+        await this.prisma.sanpham.update({
+          where: { id: sanphamIds[i] },
           data: { order: i + 1 }
         });
       }
-      this._SocketGateway.sendDonhangUpdate(); // Notify after reordering
+      this._SocketGateway.sendUpdate('sanpham'); 
       return { status: 'success' };
     } catch (error) {
-      this._ErrorlogService.logError('reorderDonhangs', error);
+      console.log('Error reordering sanpham:', error);
       throw error;
     }
   }
 }
+
 `;
 
-const donhangModuleContent = `
+const sanphamModuleContent = `
 import { Module } from '@nestjs/common';
-import { DonhangService } from './donhang.service'; // Local service
-import { DonhangController } from './donhang.controller'; // Local controller
-import { PrismaModule } from 'prisma/prisma.module'; // Shared Prisma module
-import { SocketGateway } from './socket.gateway'; // Local WebSocket gateway
-import { ErrorlogModule } from 'src/errorlog/errorlog.module'; // Shared Errorlog module
-import { AuthModule } from 'src/auth/auth.module'; // Shared Auth module
-
+import { SanphamService } from './sanpham.service'; 
+import { SanphamController } from './sanpham.controller'; 
+import { PrismaModule } from 'prisma/prisma.module'; 
+import { SocketGateway } from 'src/socket.gateway'; 
+import { ErrorlogModule } from 'src/errorlog/errorlog.module'; 
+import { AuthModule } from 'src/auth/auth.module'; 
 @Module({
-  imports: [PrismaModule, ErrorlogModule, AuthModule], // Importing necessary modules
-  controllers: [DonhangController],
-  providers: [DonhangService, SocketGateway], // Providing service and gateway
-  exports: [DonhangService] // Exporting service for use in other modules
+  imports: [PrismaModule, ErrorlogModule, AuthModule], 
+  controllers: [SanphamController],
+  providers: [SanphamService, SocketGateway], 
+  exports: [SanphamService] 
 })
-// This defines the DonhangModule
-export class DonhangModule {}
+export class SanphamModule {}
 `;
 
-const donhangControllerContent = `
+const sanphamPrismaContent = `
+model sanpham {
+  id              String   @id @default(uuid())
+  codeId          String   @unique
+  title           String
+  description     String?
+  order           Int?     @default(1)
+  createdBy       String? 
+  createdByUser   User?   @relation(fields: [createdBy], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+`;
+
+const sanphamControllerContent = `
 import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
-import { DonhangService } from './donhang.service'; // Service import
+import { SanphamService } from './sanpham.service'; 
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; // Auth guard
-
-@ApiTags('donhang') // Swagger tag
-@Controller('donhang') // Route prefix
-export class DonhangController { // Controller for Donhang
-  constructor(private readonly donhangService: DonhangService) {} // Injecting DonhangService
-
-  @ApiBearerAuth() // Swagger: Bearer authentication
-  @ApiOperation({ summary: 'Create a new donhang' }) // Swagger: Operation summary
-  @ApiBody({ type: Object }) // Swagger: Request body (should be a DTO)
-  @UseGuards(JwtAuthGuard) // Apply authentication guard
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
+import { Audit } from 'src/auditlog/audit.decorator';
+import { AuditAction } from '@prisma/client';
+@ApiTags('sanpham') 
+@Controller('sanpham') 
+export class SanphamController { 
+  constructor(private readonly sanphamService: SanphamService) {} 
+  @ApiBearerAuth() 
+  @ApiOperation({ summary: 'Create a new sanpham' }) 
+  @ApiBody({ type: Object }) 
+  @UseGuards(JwtAuthGuard) 
   @Post()
-  async create(@Body() data: any) { // data should be CreateDonhangDto
+  @Audit({ entity: 'Sanpham', action: AuditAction.CREATE, includeResponse: true })
+  async create(@Body() data: any) { 
     try {
-      return await this.donhangService.create(data);
+      return await this.sanphamService.create(data);
     } catch (error) {
-      // Handle creation error
       throw new HttpException(error.message || 'Create failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-  @ApiOperation({ summary: 'Find donhangs by parameters' })
-  @ApiBody({ type: Object }) // Body for findBy criteria
+  @ApiOperation({ summary: 'Find sanphams by parameters' })
+  @ApiBody({ type: Object }) 
   @Post('findby')
   async findby(@Body() param: any) {
     try {
-      return await this.donhangService.findBy(param);
+      return await this.sanphamService.findBy(param);
     } catch (error) {
       throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-  @ApiOperation({ summary: 'Get all donhangs with pagination' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Number of items per page (default: 10)' })
-  @ApiResponse({ status: 200, description: 'List of donhangs with pagination info' })
+  
+  @ApiOperation({ summary: 'Get all sanphams with pagination' })
+  @ApiResponse({ status: 200, description: 'List of sanphams with pagination info' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @Get()
-  async findAll(
-    @Query('page') page: string = '1', // Default page
-    @Query('limit') limit: string = '10', // Default limit
-  ) {
+  async findAll(@Query() query: any) {
     try {
-      const pageNum = parseInt(page, 10);
-      const limitNum = parseInt(limit, 10);
-
-      // Validate pagination parameters
-      if (isNaN(pageNum) || pageNum < 1) {
-        throw new HttpException('Page must be a positive integer', HttpStatus.BAD_REQUEST);
-      }
-      if (isNaN(limitNum) || limitNum < 1) {
-        throw new HttpException('Limit must be a positive integer', HttpStatus.BAD_REQUEST);
-      }
-
-      return await this.donhangService.findAll(pageNum, limitNum);
+      return await this.sanphamService.findAll(query);
     } catch (error) {
       throw new HttpException(
-        error.message || 'Failed to fetch donhangs',
+        error.message || 'Failed to fetch sanphams',
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    }
+    } 
   }
-
-  @ApiOperation({ summary: 'Get last updated donhang' })
-  @Get('lastupdated') // Route for last updated
-  async getLastUpdatedDonhang() { // Method to get the last updated donhang
+  
+  @ApiOperation({ summary: 'Get last updated sanpham' })
+  @Get('lastupdated') 
+  async getLastUpdatedSanpham() { 
     try {
-      return await this.donhangService.getLastUpdatedDonhang();
+      return await this.sanphamService.getLastUpdatedSanpham();
     } catch (error) {
       throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-  @ApiOperation({ summary: 'Find donhang by ID' })
-  @ApiParam({ name: 'id', type: String }) // ID parameter for the route
+  @ApiOperation({ summary: 'Find sanpham by ID' })
+  @ApiParam({ name: 'id', type: String }) 
   @Get('findid/:id')
   async findOne(@Param('id') id: string) {
     try {
-      return await this.donhangService.findOne(id);
+      return await this.sanphamService.findOne(id);
     } catch (error) {
-      // Handle not found or other errors
       throw new HttpException(error.message || 'Find one failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update a donhang' })
+  @ApiOperation({ summary: 'Update a sanpham' })
   @ApiParam({ name: 'id', type: String })
-  @ApiBody({ type: Object }) // Body for update (should be UpdateDonhangDto)
+  @ApiBody({ type: Object }) 
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() data: any) { // data should be UpdateDonhangDto
+  @Audit({ entity: 'Sanpham', action: AuditAction.UPDATE, includeResponse: true })
+  async update(@Param('id') id: string, @Body() data: any) { 
     try {
-      return await this.donhangService.update(id, data);
+      return await this.sanphamService.update(id, data);
     } catch (error) {
       throw new HttpException(error.message || 'Update failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete a donhang' })
+  @ApiOperation({ summary: 'Delete a sanpham' })
   @ApiParam({ name: 'id', type: String })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
+  @Audit({ entity: 'Sanpham', action: AuditAction.DELETE })
   async remove(@Param('id') id: string) {
     try {
-      return await this.donhangService.remove(id);
+      return await this.sanphamService.remove(id);
     } catch (error) {
       throw new HttpException(error.message || 'Delete failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-  @ApiOperation({ summary: 'Reorder donhangs' })
+  @ApiOperation({ summary: 'Reorder sanphams' })
   @ApiBody({
-    schema: { // Schema for reordering
+    schema: { 
       properties: {
-        donhangIds: { type: 'array', items: { type: 'string' } },
+        sanphamIds: { type: 'array', items: { type: 'string' } },
       },
     },
   })
-  @Post('reorder') // Route for reordering
-  async reorder(@Body() body: { donhangIds: string[] }) { // Expects an array of IDs
+  @Post('reorder') 
+  async reorder(@Body() body: { sanphamIds: string[] }) { 
     try {
-      return await this.donhangService.reorderDonhangs(body.donhangIds);
+      return await this.sanphamService.reorderSanphams(body.sanphamIds);
     } catch (error) {
       throw new HttpException(error.message || 'Reorder failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
+
 `;
 
 // Base module name (the one being copied from)
-const baseModuleNameLower = "donhang";
-const baseModuleNameCapitalized = "Donhang";
+const baseModuleNameLower = "sanpham";
+const baseModuleNameCapitalized = "Sanpham";
 
-// File definitions based on the 'donhang' module
+// File definitions based on the 'sanpham' module
 const fileDefinitions = [
     {
-        originalPath: "donhang/socket.gateway.ts",
-        content: donhangSocketGatewayContent,
+        originalPath: "sanpham/sanpham.service.ts",
+        content: sanphamServiceContent,
     },
     {
-        originalPath: "donhang/donhang.service.ts",
-        content: donhangServiceContent,
+        originalPath: "sanpham/sanpham.module.ts",
+        content: sanphamModuleContent,
     },
     {
-        originalPath: "donhang/donhang.module.ts",
-        content: donhangModuleContent,
+        originalPath: "sanpham/sanpham.controller.ts",
+        content: sanphamControllerContent,
     },
     {
-        originalPath: "donhang/donhang.controller.ts",
-        content: donhangControllerContent,
+        originalPath: "sanpham/sanpham.prisma",
+        content: sanphamPrismaContent,
     }
 ];
 
@@ -441,12 +451,22 @@ function createModuleFiles(newModuleNameInput) {
     console.log(`Using capitalized form: ${newModuleCapitalized}`);
 
     fileDefinitions.forEach(fileDef => {
-        const newPathString = fileDef.originalPath
-            .split('/')
-            .map(segment => segment.replace(new RegExp(`^${baseModuleNameLower}$`, 'g'), newModuleLower))
-            .join('/');
-        const absolutePath = path.resolve(__dirname, newPathString);
+      
+        const replacements = {
+          [baseModuleNameLower]: newModuleLower,
+          [`${baseModuleNameLower}.module.ts`]: `${newModuleLower}.module.ts`,
+          [`${baseModuleNameLower}.controller.ts`]: `${newModuleLower}.controller.ts`,
+          [`${baseModuleNameLower}.service.ts`]: `${newModuleLower}.service.ts`,
+          [`${baseModuleNameLower}.prisma`]: `${newModuleLower}.prisma`,
+        };
 
+        const newPathString = fileDef.originalPath
+          .split('/')
+          .map(segment => replacements[segment.toLowerCase()] || segment)
+          .join('/');
+
+        const absolutePath = path.resolve(__dirname, newPathString);
+        
         let newContent = fileDef.content;
 
         // 1. Remove comments first
@@ -484,7 +504,7 @@ function createModuleFiles(newModuleNameInput) {
     console.log(`\nFinished creating files for module '${newModuleLower}'. All comments have been removed.`);
     console.log(`\nIMPORTANT: Review the generated files, especially:`);
     console.log(`- Prisma model names (e.g., 'prisma.${newModuleLower}') if your schema follows this pattern.`);
-    console.log(`- DTO names and imports if they were module-specific (e.g., CreateDonhangDto -> CreatePermissionDto).`);
+    console.log(`- DTO names and imports if they were module-specific (e.g., CreateSanphamDto -> CreatePermissionDto).`);
     console.log(`- Any hardcoded strings or logic that might be specific to the '${baseModuleNameLower}' module and needs manual adjustment for '${newModuleLower}'.`);
 }
 

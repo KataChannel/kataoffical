@@ -17,13 +17,14 @@ const common_1 = require("@nestjs/common");
 const affiliatelink_service_1 = require("./affiliatelink.service");
 const swagger_1 = require("@nestjs/swagger");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const user_decorator_1 = require("../decorators/user.decorator");
 let AffiliatelinkController = class AffiliatelinkController {
     constructor(affiliatelinkService) {
         this.affiliatelinkService = affiliatelinkService;
     }
-    async create(data) {
+    async create(data, user) {
         try {
-            return await this.affiliatelinkService.create(data);
+            return await this.affiliatelinkService.create(data, user);
         }
         catch (error) {
             throw new common_1.HttpException(error.message || 'Create failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -37,17 +38,9 @@ let AffiliatelinkController = class AffiliatelinkController {
             throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async findAll(page = '1', limit = '10') {
+    async findAll(query) {
         try {
-            const pageNum = parseInt(page, 10);
-            const limitNum = parseInt(limit, 10);
-            if (isNaN(pageNum) || pageNum < 1) {
-                throw new common_1.HttpException('Page must be a positive integer', common_1.HttpStatus.BAD_REQUEST);
-            }
-            if (isNaN(limitNum) || limitNum < 1) {
-                throw new common_1.HttpException('Limit must be a positive integer', common_1.HttpStatus.BAD_REQUEST);
-            }
-            return await this.affiliatelinkService.findAll(pageNum, limitNum);
+            return await this.affiliatelinkService.findAll(query);
         }
         catch (error) {
             throw new common_1.HttpException(error.message || 'Failed to fetch affiliatelinks', error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
@@ -102,8 +95,9 @@ __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, user_decorator_1.User)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AffiliatelinkController.prototype, "create", null);
 __decorate([
@@ -122,10 +116,9 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 200, description: 'List of affiliatelinks with pagination info' }),
     (0, swagger_1.ApiResponse)({ status: 500, description: 'Internal server error' }),
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('page')),
-    __param(1, (0, common_1.Query)('limit')),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AffiliatelinkController.prototype, "findAll", null);
 __decorate([

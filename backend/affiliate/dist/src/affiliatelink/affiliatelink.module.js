@@ -14,6 +14,8 @@ const prisma_module_1 = require("../../prisma/prisma.module");
 const socket_gateway_1 = require("../socket.gateway");
 const errorlog_module_1 = require("../errorlog/errorlog.module");
 const auth_module_1 = require("../auth/auth.module");
+const core_1 = require("@nestjs/core");
+const created_by_interceptor_1 = require("../interceptor/created-by.interceptor");
 let AffiliatelinkModule = class AffiliatelinkModule {
 };
 exports.AffiliatelinkModule = AffiliatelinkModule;
@@ -21,7 +23,14 @@ exports.AffiliatelinkModule = AffiliatelinkModule = __decorate([
     (0, common_1.Module)({
         imports: [prisma_module_1.PrismaModule, errorlog_module_1.ErrorlogModule, auth_module_1.AuthModule],
         controllers: [affiliatelink_controller_1.AffiliatelinkController],
-        providers: [affiliatelink_service_1.affiliateLinkService, socket_gateway_1.SocketGateway],
+        providers: [
+            affiliatelink_service_1.affiliateLinkService,
+            socket_gateway_1.SocketGateway,
+            {
+                provide: core_1.APP_INTERCEPTOR,
+                useClass: created_by_interceptor_1.CreatedByInterceptor,
+            },
+        ],
         exports: [affiliatelink_service_1.affiliateLinkService]
     })
 ], AffiliatelinkModule);

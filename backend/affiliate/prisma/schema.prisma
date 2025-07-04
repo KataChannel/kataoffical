@@ -42,6 +42,9 @@ model User {
   referrer           User?              @relation("Referrals", fields: [referrerId], references: [id])
   referrals          User[]             @relation("Referrals")
   roles              UserRole[]
+  AffiliateLink AffiliateLink[]
+  lichhen lichhen[]
+  khoahoc khoahoc[]
 }
 
 model Role {
@@ -198,6 +201,8 @@ model AffiliateLink {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   landingPage    LandingPage?    @relation(fields: [landingPageId], references: [id])
+  createdById    String? 
+  createdBy      User?           @relation(fields: [createdById], references: [id])
   Doanhso        Doanhso[]
   HoaHong        HoaHong[]
   trackingEvents TrackingEvent[]
@@ -274,6 +279,7 @@ model Doanhthu {
   id          String    @id @default(uuid())
   codeId      String?   @unique
   codeDT      String?   
+  phone       String?
   dichvuId    String
   dichvu      Dichvu   @relation(fields: [dichvuId], references: [id])
   amount      Float?
@@ -318,6 +324,89 @@ model ThanhToanHoaHong {
   hoaHong       HoaHong  @relation(fields: [hoaHongId], references: [id])
   user          User     @relation(fields: [userId], references: [id])
 }
+model lichhen {
+  id              String   @id @default(uuid())
+  codeId          String   @unique
+  custCode        String?
+  phone           String?
+  custName        String?
+  dateFrom        DateTime?
+  statusName      String?
+  statusTime      DateTime?
+  isCancel        Boolean  @default(false)
+  branchName      String?
+  createdDate     DateTime @default(now())
+  modifiedDate    DateTime @updatedAt
+  title           String?
+  description     String?
+  order           Int?     @default(1)
+  createdBy       String? 
+  createdByUser   User?   @relation(fields: [createdBy], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model khoahoc {
+  id              String   @id @default(uuid())
+  codeId          String   @unique
+  phone          String?
+  phone2         String?
+  name           String?
+  code           String?
+  birthday      DateTime? 
+  gender       String?
+  serviceCode  String?
+  tabCode      String?
+  serviceName  String?
+  timeIndex    Int?
+  timeToTreatment Int?
+  priceUnit    Float?
+  quantity     Int?
+  discount     Float?
+  priceRoot    Float?
+  priceDiscounted Float?
+  branchId    String?
+  createdDate  DateTime?
+  modifiedDate DateTime?
+  state       String?
+  title           String?
+  description     String?
+  order           Int?     @default(1)
+  createdBy       String? 
+  createdByUser   User?   @relation(fields: [createdBy], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model khachhang {
+  id                    String   @id @default(uuid())
+  CodeId                String?  @unique
+  name                  String?
+  code                  String?
+  email                 String?
+  phone                 String?
+  phone2                String?
+  birthday              DateTime?
+  gender                String?
+  address               String?
+  customerSource        String?
+  customerGroup         String?
+  branchId              Int?
+  firstPaidDate         DateTime?
+  firstCheckinDate      DateTime?
+  firstTreatmentDate    DateTime?
+  lastTreatmentDate     DateTime?
+  lastCheckinDate       DateTime?
+  caringStaffCode       String?
+  staffCode             String?
+  createdDate           DateTime?
+  modifiedDate          DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+
+
 
 enum Gender {
   MALE

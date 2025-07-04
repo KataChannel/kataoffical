@@ -53,18 +53,28 @@ let affiliateLinkService = class affiliateLinkService {
             throw error;
         }
     }
-    async create(data) {
+    async create(data, user) {
         try {
             const maxOrder = await this.prisma.affiliateLink.aggregate({
                 _max: { order: true },
             });
             const newOrder = (maxOrder._max?.order || 0) + 1;
             const codeId = await this.generateCodeId();
+            console.log('Generated Code ID:', codeId);
+            if (data.landingPageId) {
+                const landingPage = await this.prisma.landingPage.findUnique({
+                    where: { id: data.landingPageId },
+                });
+                if (!landingPage) {
+                    throw new common_1.NotFoundException('landingPageId does not exist');
+                }
+            }
             const created = await this.prisma.affiliateLink.create({
                 data: {
                     ...data,
                     order: newOrder,
-                    codeId: codeId
+                    codeId: codeId,
+                    createdById: user.id,
                 },
             });
             this._SocketGateway.sendAffiliatelinkUpdate();
@@ -108,23 +118,29 @@ let affiliateLinkService = class affiliateLinkService {
             throw error;
         }
     }
-    async findAll(page = 1, limit = 20) {
+    async findAll(query) {
         try {
-            const skip = (page - 1) * limit;
+            const { page = 1, pageSize = 20, ...filters } = query;
+            const pageInt = parseInt(page, 10) || 1;
+            const pageSizeInt = parseInt(pageSize, 10) || 20;
+            const skip = (pageInt - 1) * pageSizeInt;
+            console.log(filters);
             const [data, total] = await Promise.all([
                 this.prisma.affiliateLink.findMany({
                     skip,
-                    take: limit,
+                    take: pageSizeInt,
                     orderBy: { order: 'asc' },
                     include: { landingPage: true, trackingEvents: true },
+                    where: { ...filters },
                 }),
-                this.prisma.affiliateLink.count(),
+                this.prisma.affiliateLink.count({ where: { ...filters } }),
             ]);
             return {
                 data,
                 total,
-                page,
-                pageCount: Math.ceil(total / limit)
+                page: pageInt,
+                pageCount: Math.ceil(total / pageSizeInt),
+                pageSize: pageSizeInt
             };
         }
         catch (error) {

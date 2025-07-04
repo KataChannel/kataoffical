@@ -79,7 +79,11 @@ export class ListAffiliatelinkComponent implements OnInit {
   private _router: Router = inject(Router);
   private _dialog: MatDialog = inject(MatDialog);
   private _snackBar: MatSnackBar = inject(MatSnackBar);
-
+  dataSource:any = new MatTableDataSource([]);
+  EditList: any[] = [];
+  isSearch = signal<boolean>(false);
+  _UserService:UserService = inject(UserService);
+  _snackbar:MatSnackBar = inject(MatSnackBar);
   Listaffiliatelink = this._AffiliatelinkService.ListAffiliatelink;
   ListLandingpage = this._LandingpageService.ListLandingpage;
   page = this._AffiliatelinkService.page;
@@ -87,15 +91,9 @@ export class ListAffiliatelinkComponent implements OnInit {
   total = this._AffiliatelinkService.total;
   pageSize = this._AffiliatelinkService.pageSize;
   affiliatelinkId = this._AffiliatelinkService.affiliatelinkId;
-  dataSource:any = new MatTableDataSource([]);
-  EditList: any[] = [];
-  isSearch = signal<boolean>(false);
-  _UserService:UserService = inject(UserService);
-  _snackbar:MatSnackBar = inject(MatSnackBar);
-  profile:any = signal<any>({});
+  profile = this._UserService.profile;
   constructor() {
     effect(async () => {
-      await this._AffiliatelinkService.getAllAffiliatelink(this.pageSize(), true);
       await this._LandingpageService.getAllLandingpage();
       this.dataSource.data = this.Listaffiliatelink();
       this.dataSource.sort = this.sort;
@@ -108,14 +106,9 @@ export class ListAffiliatelinkComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-     this._UserService.getProfile().then(data => {
-        if(data){
-          this.profile.set(data);
-        }
-      });
+    await this._UserService.getProfile()
+    await this._AffiliatelinkService.getAllAffiliatelink({createdById: this.profile().id}, true);
     this._AffiliatelinkService.listenAffiliatelinkUpdates();
-    await this._LandingpageService.getAllLandingpage();
-    await this._AffiliatelinkService.getAllAffiliatelink(this.pageSize(),true);
     this.displayedColumns = Object.keys(this.ColumnName);
     this.dataSource = new MatTableDataSource(this.Listaffiliatelink());
     this.dataSource.sort = this.sort;
@@ -458,7 +451,7 @@ export class ListAffiliatelinkComponent implements OnInit {
   }
   getCoppyLink(item: any) {
     const url = this.getUrl(item);
-    const fullUrl = url + '?ref=' + this.profile()?.inviteCode  + `&codeId=${item.codeId}` + '&sharePlatform=website' + '&referrer=' + this.profile()?.phone;
+    const fullUrl = url + '?ref=' + this.profile()?.inviteCode  + `&codeId=${item.codeId}` + '&sharePlatform=website';
     navigator.clipboard.writeText(fullUrl).then(() => {
       this._snackbar.open('Đã Coppy', 'Close', {
         duration: 2000,
@@ -473,7 +466,7 @@ export class ListAffiliatelinkComponent implements OnInit {
   }
   share(platform: string, item: any, title?: string, description?: string, image?: string): void {
     let url = this.getUrl(item);
-    url = url + '?ref=' + this.profile()?.inviteCode+ `&codeId=${item.codeId}`+ '&referrer=' + this.profile()?.phone;
+    url = url + '?ref=' + this.profile()?.inviteCode+ `&codeId=${item.codeId}`;
     let shareUrl: string;
     switch (platform.toLowerCase()) {
       case 'facebook':

@@ -35,6 +35,7 @@ export declare class TrackingeventController {
             utmTerm: string | null;
             utmContent: string | null;
             url: string | null;
+            createdById: string | null;
         } | null;
     } & {
         id: string;

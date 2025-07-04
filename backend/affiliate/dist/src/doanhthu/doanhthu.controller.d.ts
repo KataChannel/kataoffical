@@ -5,6 +5,7 @@ export declare class DoanhthuController {
     create(data: any): Promise<{
         id: string;
         codeId: string | null;
+        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
         order: number | null;
@@ -22,6 +23,7 @@ export declare class DoanhthuController {
     findby(param: any): Promise<{
         id: string;
         codeId: string | null;
+        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
         order: number | null;
@@ -35,6 +37,7 @@ export declare class DoanhthuController {
         data: {
             id: string;
             codeId: string | null;
+            phone: string | null;
             createdAt: Date;
             updatedAt: Date;
             order: number | null;
@@ -53,6 +56,7 @@ export declare class DoanhthuController {
         data: {
             id: string;
             codeId: string | null;
+            phone: string | null;
             createdAt: Date;
             updatedAt: Date;
             order: number | null;
@@ -73,6 +77,7 @@ export declare class DoanhthuController {
     findOne(id: string): Promise<{
         id: string;
         codeId: string | null;
+        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
         order: number | null;
@@ -87,6 +92,7 @@ export declare class DoanhthuController {
     remove(id: string): Promise<{
         id: string;
         codeId: string | null;
+        phone: string | null;
         createdAt: Date;
         updatedAt: Date;
         order: number | null;

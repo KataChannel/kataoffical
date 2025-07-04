@@ -353,7 +353,7 @@ export class KhachhangService {
 
 
 
-  async getKhachhangDoanhthu(param: any) {
+  async getKhachhangDoanhthu(listphone: any) {
     try {
       const options = {
         method: 'POST',
@@ -361,7 +361,7 @@ export class KhachhangService {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
-        body: JSON.stringify({ ...param}),
+        body: JSON.stringify(listphone),
       };
       const response = await fetch(`${environment.SHARED_APIURL}/khachhang/vttech/doanhthu`, options);
       if (!response.ok) {

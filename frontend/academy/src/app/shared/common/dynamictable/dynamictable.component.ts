@@ -1,185 +1,512 @@
-import { Component, inject, Input, SimpleChanges, ViewChild } from '@angular/core';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu'
+import { GenId } from '../../utils/shared.utils';
+// import { v4 as uuidv4 } from 'uuid';
+
+// Define the structure for a single row of table data
+interface TableData {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: 'Active' | 'Inactive';
+}
+
+
+// Define sort order types
+type SortOrder = 'asc' | 'desc' | null;
+
+// Define the structure for sort configuration
+interface SortConfig {
+  key: string | null;
+  order: SortOrder;
+}
+
+// Define the structure for tracking which cell is being edited
+interface EditingCell {
+  rowId: number;
+  column: string;
+}
+
+// Define the structure for pagination information
+interface PaginationInfo {
+  currentPage: number;
+  itemsPerPage: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+// Define the structure for a single filter criterion
+interface FilterCriterion {
+  id: string;
+  columnKey: string;
+  operator: string;
+  value: string;
+}
+
+// Define column structure
+interface Column {
+  key: string;
+  label: string;
+  width: number;
+  filterable: boolean;
+  dataType: 'string' | 'select' | 'number';
+  options?: string[];
+}
+
 @Component({
-  selector: 'app-dynamictable',
-  templateUrl: './dynamictable.component.html',
-  styleUrl: './dynamictable.component.scss',
+  selector: 'app-resizable-table',
   imports: [
-    MatFormFieldModule,
-    MatInputModule,
-    MatTableModule,
-    MatSortModule,
-    MatPaginatorModule,
-    MatMenuModule,
-    MatSidenavModule,
-    MatIconModule,
-    MatButtonModule,
-    MatSelectModule,
-    CommonModule,
+    CommonModule, 
     FormsModule,
-    MatTooltipModule
-  ],
-})
-export class DynamictableComponent {
-  @Input() ListItem:any = [];
-  @Input() displayedColumns:any = [];
-  @Input() ColumnName:any = {};
-//   displayedColumns: string[] = [];
-//   ColumnName: any = {};
-  FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('NhacungcapColFilter') || '[]'
-  );
-  Columns: any[] = [];
-  isFilter: boolean = false;
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
-  filterValues: { [key: string]: string } = {};
-  private _router: Router = inject(Router)
-  dataSource = new MatTableDataSource([]);
-  constructor() {}
-  ngOnChanges(changes: SimpleChanges) {
-    console.log('Dữ liệu từ cha thay đổi:', changes['ListItem'].currentValue);
-    this.ListItem = changes['ListItem'].currentValue
-    this.dataSource.data = this.ListItem;
-    console.log(this.dataSource.data);
-  }
-  async ngOnInit(): Promise<void> {   
-    this.dataSource = new MatTableDataSource([]);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort
-    this.initializeColumns();
-    if (this.paginator) {
-        this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-        this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-        this.paginator._intl.previousPageLabel = 'Về Trước';
-        this.paginator._intl.firstPageLabel = 'Trang Đầu';
-        this.paginator._intl.lastPageLabel = 'Trang Cuối';
-    }
-
-  }
-  private initializeColumns(): void {
-    this.Columns = Object.keys(this.ColumnName).map((key) => ({
-      key,
-      value: this.ColumnName[key],
-      isShow: true,
-    }));
-    if (this.FilterColumns.length === 0) {
-      this.FilterColumns = this.Columns;
-    } else {
-      localStorage.setItem('NhacungcapColFilter',JSON.stringify(this.FilterColumns)
-      );
-    }
-    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
-      (item) => item.key
-    );
-    this.ColumnName = this.FilterColumns.reduce((obj, item) => {
-      if (item.isShow) obj[item.key] = item.value;
-      return obj;
-    }, {} as Record<string, string>);
-  }
-
-  toggleColumn(item: any): void {
-    const column = this.FilterColumns.find((v) => v.key === item.key);
-    if (column) {
-      column.isShow = !column.isShow;
-      this.updateDisplayedColumns();
-    }
-  }
-  FilterHederColumn(list:any,column:any)
-  {
-    const uniqueList = list.filter((obj: any, index: number, self: any) => 
-      index === self.findIndex((t: any) => t[column] === obj[column])
-    );
-    return uniqueList
-  }
-  doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.ListItem.filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();
-    console.log(query,column);
-    console.log(this.dataSource.filteredData);   
-  }
-  ListFilter:any[] =[]
-  ChosenItem(item:any)
-  {
-    if(this.ListFilter.includes(item.id))
-    {
-      this.ListFilter = this.ListFilter.filter((v) => v !== item.id);
-    }
-    else{
-      this.ListFilter.push(item.id);
-    }
-    console.log(this.ListFilter);
     
+  ],
+  templateUrl: './dynamictable.component.html',
+  styleUrls: ['./dynamictable.component.scss'],
+})
+export class ResizableTableComponent {
+  @ViewChild('tableRef') tableRef!: ElementRef<HTMLTableElement>;
+
+  // Initial data
+  initialData: TableData[] = [
+    { id: 1, name: 'Nguyen Van An', email: 'an.nguyen@email.com', role: 'Developer', status: 'Active' },
+    { id: 2, name: 'Tran Thi Binh', email: 'binh.tran@email.com', role: 'Designer', status: 'Active' },
+    { id: 3, name: 'Le Hoang Cuong', email: 'cuong.le@email.com', role: 'Manager', status: 'Inactive' },
+    { id: 4, name: 'Pham Thi Dung', email: 'dung.pham@email.com', role: 'Tester', status: 'Active' },
+    { id: 5, name: 'Hoang Minh Lan', email: 'lan.hoang@email.com', role: 'Developer', status: 'Active' },
+    { id: 6, name: 'Vo Thi Em', email: 'em.vo@email.com', role: 'Designer', status: 'Inactive' },
+    { id: 7, name: 'Do Van Phuc', email: 'phuc.do@email.com', role: 'Manager', status: 'Active' },
+    { id: 8, name: 'Bui Thi Giang', email: 'giang.bui@email.com', role: 'Tester', status: 'Active' },
+    { id: 9, name: 'Ly Van Hai', email: 'hai.ly@email.com', role: 'Developer', status: 'Inactive' },
+    { id: 10, name: 'Phan Thi Inh', email: 'inh.phan@email.com', role: 'Designer', status: 'Active' },
+    { id: 11, name: 'Ngo Van Khang', email: 'khang.ngo@email.com', role: 'Manager', status: 'Active' },
+    { id: 12, name: 'Dinh Thi Lan', email: 'lan.dinh@email.com', role: 'Tester', status: 'Inactive' },
+    { id: 13, name: 'Vu Van Minh', email: 'minh.vu@email.com', role: 'Developer', status: 'Active' },
+    { id: 14, name: 'To Thi Nga', email: 'nga.to@email.com', role: 'Designer', status: 'Active' },
+    { id: 15, name: 'Luu Van Oanh', email: 'oanh.luu@email.com', role: 'Manager', status: 'Inactive' },
+  ];
+
+  // State properties
+  data: TableData[] = [...this.initialData];
+  searchTerm: string = '';
+  filterCriteria: FilterCriterion[] = [];
+  newFilterColumn: string = 'name';
+  newFilterOperator: string = 'contains';
+  newFilterValue: string = '';
+  sortConfig: SortConfig = { key: null, order: null };
+  editingCell: EditingCell | null = null;
+  editValue: string = '';
+  currentPage: number = 1;
+  itemsPerPage: number = 5;
+  selectedRows: Set<number> = new Set();
+  selectAll: boolean = false;
+  showBulkActions: boolean = false;
+
+  // Column widths
+  columnWidths: any = {
+    select: 50,
+    name: 200,
+    email: 250,
+    role: 150,
+    status: 120,
+  };
+
+  // Resize state
+  isResizing: string | null = null;
+  startX: number = 0;
+  startWidth: number = 0;
+
+  // Operators
+  operators: { [key: string]: { label: string; value: string; apply: (itemVal: any, filterVal: string) => boolean }[] } = {
+    string: [
+      { label: 'chứa', value: 'contains', apply: (itemVal: string, filterVal: string) => itemVal.toLowerCase().includes(filterVal.toLowerCase()) },
+      { label: 'bằng', value: 'equals', apply: (itemVal: string, filterVal: string) => itemVal.toLowerCase() === filterVal.toLowerCase() },
+      { label: 'bắt đầu bằng', value: 'startsWith', apply: (itemVal: string, filterVal: string) => itemVal.toLowerCase().startsWith(filterVal.toLowerCase()) },
+      { label: 'kết thúc bằng', value: 'endsWith', apply: (itemVal: string, filterVal: string) => itemVal.toLowerCase().endsWith(filterVal.toLowerCase()) },
+    ],
+    select: [
+      { label: 'bằng', value: 'equals', apply: (itemVal: string, filterVal: string) => itemVal.toLowerCase() === filterVal.toLowerCase() },
+    ],
+    number: [
+      { label: 'bằng', value: 'equals', apply: (itemVal: number, filterVal: string) => itemVal === Number(filterVal) },
+      { label: 'lớn hơn', value: 'greaterThan', apply: (itemVal: number, filterVal: string) => itemVal > Number(filterVal) },
+      { label: 'nhỏ hơn', value: 'lessThan', apply: (itemVal: number, filterVal: string) => itemVal < Number(filterVal) },
+    ],
+  };
+
+  // Columns
+  get columns(): Column[] {
+    return [
+      { key: 'select', label: '', width: this.columnWidths.select, filterable: false, dataType: 'string' },
+      { key: 'name', label: 'Tên', width: this.columnWidths.name, filterable: true, dataType: 'string' },
+      { key: 'email', label: 'Email', width: this.columnWidths.email, filterable: true, dataType: 'string' },
+      { key: 'role', label: 'Vai trò', width: this.columnWidths.role, filterable: true, dataType: 'select', options: this.uniqueRoles },
+      { key: 'status', label: 'Trạng thái', width: this.columnWidths.status, filterable: true, dataType: 'select', options: ['Active', 'Inactive'] },
+    ];
   }
-  ChosenAll(list:any)
-  {
-    list.forEach((v:any) => {
-      if(this.ListFilter.includes(v.id))
-        {
-          this.ListFilter = this.ListFilter.filter((v) => v !== v.id);
+
+  // Unique roles
+  get uniqueRoles(): string[] {
+    return Array.from(new Set(this.initialData.map(item => item.role)));
+  }
+
+  // Available operators
+  get availableOperators() {
+    const selectedCol = this.columns.find(col => col.key === this.newFilterColumn);
+    return selectedCol ? this.operators[selectedCol.dataType] : [];
+  }
+
+  // Filtered and sorted data
+  get filteredAndSortedData(): TableData[] {
+    let filteredData = this.data.filter(item => {
+      const matchesSearch =
+        item.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        item.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        item.role.toLowerCase().includes(this.searchTerm.toLowerCase());
+
+      const matchesFilterCriteria = this.filterCriteria.every(criterion => {
+        const columnDefinition = this.columns.find(col => col.key === criterion.columnKey);
+        if (!columnDefinition) return false;
+
+        const itemValue = (item as any)[criterion.columnKey];
+        const operatorDefinition = this.operators[columnDefinition.dataType].find(op => op.value === criterion.operator);
+
+        if (!operatorDefinition) return false;
+
+        return operatorDefinition.apply(itemValue, criterion.value);
+      });
+
+      return matchesSearch && matchesFilterCriteria;
+    });
+
+    if (this.sortConfig.key && this.sortConfig.order) {
+      filteredData.sort((a, b) => {
+        const aValue = a[this.sortConfig.key as keyof TableData];
+        const bValue = b[this.sortConfig.key as keyof TableData];
+
+        if (aValue < bValue) return this.sortConfig.order === 'asc' ? -1 : 1;
+        if (aValue > bValue) return this.sortConfig.order === 'asc' ? 1 : -1;
+
+        return 0;
+      });
+    }
+
+    return filteredData;
+  }
+
+
+
+
+  // Pagination data
+  get paginatedData(): TableData[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredAndSortedData.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  // Pagination info
+  get paginationInfo(): PaginationInfo {
+    return {
+      currentPage: this.currentPage,
+      itemsPerPage: this.itemsPerPage,
+      totalItems: this.filteredAndSortedData.length,
+      totalPages: Math.ceil(this.filteredAndSortedData.length / this.itemsPerPage),
+    };
+  }
+
+  // Start and end index for display
+  get startIndex(): number {
+    return (this.currentPage - 1) * this.itemsPerPage;
+  }
+
+  get endIndex(): number {
+    return Math.min(this.startIndex + this.itemsPerPage, this.paginationInfo.totalItems);
+  }
+
+  // ngOnInit(): void {
+  //   // Initialize component
+  // }
+
+  // ngOnDestroy(): void {
+  //   // Clean up event listeners
+  //   document.removeEventListener('mousemove', this.handleMouseMove.bind(this));
+  //   document.removeEventListener('mouseup', this.handleMouseUp.bind(this));
+  // }
+
+  // Resize handlers
+  handleMouseDown(event: MouseEvent, column: string): void {
+    event.preventDefault();
+    this.isResizing = column;
+    this.startX = event.clientX;
+    this.startWidth = this.columnWidths[column];
+    document.addEventListener('mousemove', this.handleMouseMove.bind(this));
+    document.addEventListener('mouseup', this.handleMouseUp.bind(this));
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }
+
+  handleMouseMove(event: MouseEvent): void {
+    if (!this.isResizing) return;
+    const diff = event.clientX - this.startX;
+    const newWidth = Math.max(80, this.startWidth + diff);
+    this.columnWidths = { ...this.columnWidths, [this.isResizing]: newWidth };
+  }
+
+  handleMouseUp(): void {
+    this.isResizing = null;
+    document.removeEventListener('mousemove', this.handleMouseMove.bind(this));
+    document.removeEventListener('mouseup', this.handleMouseUp.bind(this));
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  }
+
+  // Sort handler
+  handleSort(key: string): void {
+    let order: SortOrder = 'asc';
+    if (this.sortConfig.key === key && this.sortConfig.order === 'asc') {
+      order = 'desc';
+    } else if (this.sortConfig.key === key && this.sortConfig.order === 'desc') {
+      order = null;
+    }
+    this.sortConfig = { key: order ? key : null, order };
+  }
+
+  // Cell editing handlers
+  handleCellClick(rowId: number, column: string, value: string): boolean {
+    if (column === 'status' || column === 'select') return false;
+
+    this.editingCell = { rowId, column };
+    this.editValue = value;
+    return true;
+  }
+
+  handleEditSubmit(): void {
+    if (this.editingCell) {
+      this.data = this.data.map(row => {
+        if (row.id === this.editingCell!.rowId) {
+          return { ...row, [this.editingCell!.column]: this.editValue };
         }
-        else{
-          this.ListFilter.push(v.id);
-        }
+        return row;
+      });
+      this.editingCell = null;
+      this.editValue = '';
+    }
+  }
+
+  handleEditCancel(): void {
+    this.editingCell = null;
+    this.editValue = '';
+  }
+
+  handleKeyDown(event: any): void {
+    if (event.key === 'Enter') {
+      this.handleEditSubmit();
+    } else if (event.key === 'Escape') {
+      this.handleEditCancel();
+    }
+  }
+
+  // Status change handler
+handleStatusChange(rowId: number, newStatus: string): void {
+  this.data = this.data.map(row => {
+    if (row.id === rowId) {
+      return { ...row, status: newStatus as 'Active' | 'Inactive' };
+    } else {
+      return row;
+    }
+  });
+}
+
+// Selection handlers
+handleSelectRow(rowId: number): void {
+  const newSelectedRows = new Set(this.selectedRows);
+  if (newSelectedRows.has(rowId)) {
+    newSelectedRows.delete(rowId);
+  } else {
+    newSelectedRows.add(rowId);
+  }
+  this.selectedRows = newSelectedRows;
+  this.selectAll = false;
+  this.showBulkActions = this.selectedRows.size > 0;
+}
+
+handleSelectAll(): void {
+  if (this.selectAll) {
+    this.selectedRows = new Set();
+    this.selectAll = false;
+    this.showBulkActions = false;
+  } else {
+    const currentPageIds = this.paginatedData.map(row => row.id);
+    this.selectedRows = new Set(currentPageIds);
+    this.selectAll = true;
+    this.showBulkActions = true;
+  }
+}
+
+// Bulk actions
+handleBulkDelete(): void {
+  if (confirm(`Bạn có chắc muốn xóa ${this.selectedRows.size} mục đã chọn?`)) {
+    this.data = this.data.filter(row => !this.selectedRows.has(row.id));
+    this.selectedRows.clear();
+    this.selectAll = false;
+    this.showBulkActions = false;
+    const newTotalPages = Math.ceil(this.data.length / this.itemsPerPage);
+    if (this.currentPage > newTotalPages && newTotalPages > 0) {
+      this.currentPage = 1;
+    }
+  }
+}
+
+handleBulkStatusUpdate(newStatus: string): boolean {
+  this.data = this.data.map(row => {
+    if (this.selectedRows.has(row.id)) {
+      return { ...row, status: newStatus as 'Active' | 'Inactive' };
+    } else {
+      return row;
+    }
+  });
+  this.selectedRows.clear();
+  this.selectAll = false;
+  this.showBulkActions = false;
+  return true;
+}
+
+  // Filter handlers
+  handleAddFilter(): void {
+    if (this.newFilterColumn && this.newFilterOperator && this.newFilterValue) {
+      this.filterCriteria.push({
+        id: GenId(4,false),
+        columnKey: this.newFilterColumn,
+        operator: this.newFilterOperator,
+        value: this.newFilterValue
+      });
+      this.newFilterValue = '';
+      this.currentPage = 1;
+    }
+  }
+
+  handleRemoveFilter(id: string): void {
+    this.filterCriteria = this.filterCriteria.filter(criterion => criterion.id !== id);
+    this.currentPage = 1;
+  }
+
+  updateOperator(): void {
+    const selectedCol = this.columns.find(col => col.key === this.newFilterColumn);
+    if (selectedCol && selectedCol.dataType) {
+      switch (selectedCol.dataType) {
+        case 'string':
+          this.newFilterOperator = 'contains';
+          break;
+        case 'select':
+          this.newFilterOperator = 'equals';
+          break;
+        case 'number':
+          this.newFilterOperator = 'equals';
+          break;
+      }
+    }
+  }
+
+  // Pagination handlers
+  handlePageChange(page: any): void {
+    this.currentPage = page;
+    this.selectedRows.clear();
+    this.selectAll = false;
+    this.showBulkActions = false;
+  }
+
+  handleItemsPerPageChange(newItemsPerPage: number): void {
+    this.itemsPerPage = newItemsPerPage;
+    this.currentPage = 1;
+    this.selectedRows.clear();
+    this.selectAll = false;
+    this.showBulkActions = false;
+  }
+
+  resetPagination(): void {
+    this.currentPage = 1;
+  }
+
+  clearAllFilters(): void {
+    this.searchTerm = '';
+    this.filterCriteria = [];
+    this.currentPage = 1;
+  }
+
+  // Helper methods
+  getSortIconType(columnKey: string): string {
+    if (this.sortConfig.key !== columnKey) {
+      return 'unsorted';
+    }
+    return this.sortConfig.order === 'asc' ? 'asc' : 'desc';
+  }
+
+  getColumnLabel(columnKey: string): string {
+    return this.columns.find(col => col.key === columnKey)?.label || columnKey;
+  }
+
+  getOperatorLabel(operator: string): string {
+    const selectedCol = this.columns.find(col => col.key === this.newFilterColumn);
+    return selectedCol ? this.operators[selectedCol.dataType].find(op => op.value === operator)?.label || operator : operator;
+  }
+
+  getPaginationNumbers(): (number | string)[] {
+    const delta = 2;
+    const range: number[] = [];
+    const rangeWithDots: (number | string)[] = [];
+
+    for (let i = Math.max(2, this.currentPage - delta); i <= Math.min(this.paginationInfo.totalPages - 1, this.currentPage + delta); i++) {
+      range.push(i);
+    }
+
+    if (this.currentPage - delta > 2) {
+      rangeWithDots.push(1, '...');
+    } else {
+      rangeWithDots.push(1);
+    }
+
+    rangeWithDots.push(...range);
+
+    if (this.currentPage + delta < this.paginationInfo.totalPages - 1) {
+      rangeWithDots.push('...', this.paginationInfo.totalPages);
+    } else if (this.paginationInfo.totalPages > 1) {
+      rangeWithDots.push(this.paginationInfo.totalPages);
+    }
+
+    return rangeWithDots;
+  }  
+  FilterPipe(items: any[], filter: { [key: string]: any }): any[] {
+    if (!items || !filter) {
+      return items;
+    }
+
+    return items.filter(item => {
+      return Object.keys(filter).every((key) => {
+        return item[key] === filter[key];
+      });
     });
   }
-  ResetFilter()
-  {
-    this.ListFilter = this.ListItem.map((v:any) => v.id);
-    this.dataSource.data = this.ListItem;
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-  EmptyFiter()
-  {
-    this.ListFilter = [];
-  }
-  CheckItem(item:any)
-  {
-    return this.ListFilter.includes(item.id);
-  }
-  ApplyFilterColum(menu:any)
-  {    
-    this.dataSource.data = this.ListItem.filter((v: any) => this.ListFilter.includes(v.id));
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    console.log(this.dataSource.data);
-    menu.closeMenu();
-    
-  }
-  private updateDisplayedColumns(): void {
-    this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
-      (item) => item.key
-    );
-    this.ColumnName = this.FilterColumns.reduce((obj, item) => {
-      if (item.isShow) obj[item.key] = item.value;
-      return obj;
-    }, {} as Record<string, string>);
-    localStorage.setItem('NhacungcapColFilter',JSON.stringify(this.FilterColumns)
-    );
-  }
-  doFilterColumns(event: any): void {
-    const query = event.target.value.toLowerCase();
-    this.FilterColumns = this.Columns.filter((v) =>
-      v.value.toLowerCase().includes(query)
-    );
-  }
-  goToDetail(item: any): void {
-    this.drawer.open();
-    this._router.navigate(['admin/nhacungcap', item.id]);
+
+
+}
+// Custom pipe for filtering columns
+import { Pipe, PipeTransform } from '@angular/core';
+import { forwardRef } from "@angular/core";
+
+@Pipe({
+  name: 'filter',
+  standalone: true
+})
+export class FilterPipe implements PipeTransform {
+  transform(items: any[], filter: { [key: string]: any }): any[] {
+    if (!items || !filter) {
+      return items;
+    }
+
+    return items.filter(item => {
+      return Object.keys(filter).every((key) => {
+        return item[key] === filter[key];
+      });
+    });
   }
 }

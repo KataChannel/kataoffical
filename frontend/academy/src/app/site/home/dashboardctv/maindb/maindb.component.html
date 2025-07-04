@@ -1,4 +1,4 @@
-<div class="w-full flex flex-col lg:space-y-8 space-y-2 mx-auto container p-4">
+<div class="w-full flex flex-col lg:space-y-8 space-y-2 mx-auto container">
     <div class="flex flex-row space-x-2 items-center justify-between">
         <div class="flex flex-col space-y-2">
             <div class="font-bold text-lg">Tổng Quan</div>
@@ -89,19 +89,18 @@
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Tổng Hoa Hồng</p>
-                        <p class="text-base font-semibold text-gray-900">{{Doanhthu.Hoahong ||0 | number: '1.0-0'}}đ</p>
+                        <p class="text-base font-semibold text-gray-900">{{TotalHoahong ||0 | number: '1.0-0'}}đ</p>
                     </div>
                 </a>
             </div>
             <div class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100">
-                <a [routerLink]="['hoahong']" class="flex items-center gap-3">
+                <a [routerLink]="['hoahongdarut']" class="flex items-center gap-3">
                     <div class="p-2 rounded-full bg-yellow-100 text-yellow-600">
                         <mat-icon>hourglass_empty</mat-icon>
                     </div>
                     <div>
                         <p class="text-sm font-medium text-gray-500">Hoa Hồng Đã Rút</p>
-                        <p class="text-base font-semibold text-gray-900">{{Doanhthu.HoahongDaRut || 0 | number:
-                            '1.0-0'}}đ</p>
+                        <p class="text-base font-semibold text-gray-900">{{TotalThanhtoanhoahong || 0 | number:'1.0-0'}}đ</p>
                     </div>
                 </a>
             </div>

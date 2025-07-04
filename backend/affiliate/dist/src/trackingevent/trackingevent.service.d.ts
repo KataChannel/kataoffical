@@ -53,6 +53,7 @@ export declare class TrackingeventService {
             utmTerm: string | null;
             utmContent: string | null;
             url: string | null;
+            createdById: string | null;
         } | null;
     } & {
         id: string;

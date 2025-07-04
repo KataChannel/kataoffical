@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 import { UserService } from '../../admin/user/user.service';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { title } from 'process';
+import { ThanhtoanhoahongService } from '../../admin/thanhtoanhoahong/thanhtoanhoahong.service';
 
 @Component({
   selector: 'app-home',
@@ -52,107 +53,13 @@ export class HomeComponent {
   ];
   drawerMode = signal<any>('side');
   drawerOpened = signal<any>(true);
-  ChuyenGiaConfig = {
-    // Các tùy chọn của Swiper
-    slidesPerView: 1,
-    spaceBetween: 30,
-    loop: true,
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true,
-    },
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
-    },
-    autoplay: false,
-    breakpoints: {
-      // when window width is >= 320px
-      320: {
-        slidesPerView: 1,
-        spaceBetween: 20,
-      },
-      // when window width is >= 480px
-      480: {
-        slidesPerView: 1,
-        spaceBetween: 30,
-      },
-      // when window width is >= 640px
-      640: {
-        slidesPerView: 1,
-        spaceBetween: 40,
-      },
-    },
-  };
-
-  SanphamNoibatConfig = {
-    // Các tùy chọn của Swiper
-    slidesPerView: 1,
-    spaceBetween: 30,
-    loop: true,
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true,
-    },
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
-    },
-    autoplay: false,
-    breakpoints: {
-      // when window width is >= 320px
-      320: {
-        slidesPerView: 1,
-        spaceBetween: 20,
-      },
-      // when window width is >= 480px
-      480: {
-        slidesPerView: 1,
-        spaceBetween: 30,
-      },
-      // when window width is >= 640px
-      640: {
-        slidesPerView: 5,
-        spaceBetween: 40,
-      },
-    },
-  };
-
-  BaivietConfig = {
-    // Các tùy chọn của Swiper
-    slidesPerView: 1,
-    spaceBetween: 30,
-    loop: true,
-    pagination: {
-      el: '.swiper-pagination',
-      clickable: true,
-    },
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
-    },
-    autoplay: false,
-    breakpoints: {
-      // when window width is >= 320px
-      320: {
-        slidesPerView: 1,
-        spaceBetween: 20,
-      },
-      // when window width is >= 480px
-      480: {
-        slidesPerView: 1,
-        spaceBetween: 30,
-      },
-      // when window width is >= 640px
-      640: {
-        slidesPerView: 3,
-        spaceBetween: 40,
-      },
-    },
-  };
   _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
-  ngOnInit() {
+  _ThanhtoanhoahongService: ThanhtoanhoahongService = inject(ThanhtoanhoahongService);
+  profile: any = this._UserService.profile;
+  TotalThanhtoanhoahong: any = 0;
+  async ngOnInit() {
+      await this._UserService.getProfile()
     this._breakpointObserver
       .observe([Breakpoints.Handset])
       .subscribe((result) => {
@@ -169,6 +76,7 @@ export class HomeComponent {
           }
         }
       });
+     this.TotalThanhtoanhoahong = await this._ThanhtoanhoahongService.getTotalThanhtoanhoahongByUserId(this.profile().id);
   }
   ChosenMenu() {
     this._breakpointObserver

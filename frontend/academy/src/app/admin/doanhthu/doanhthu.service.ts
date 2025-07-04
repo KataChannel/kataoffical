@@ -257,8 +257,7 @@ export class DoanhthuService {
     });
   }
 
-  async getDoanhthuBy(param: any, pageSize: number = this.pageSize()) {
-    this.pageSize.set(pageSize); // Cập nhật pageSize
+  async getDoanhthuBy(param: any) {
     try {
       const options = {
         method: 'POST',
@@ -266,7 +265,7 @@ export class DoanhthuService {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
-        body: JSON.stringify({ ...param, page: this.page(), limit: pageSize }),
+        body: JSON.stringify(param),
       };
       const response = await fetch(`${environment.ACADEMY_APIURL}/doanhthu/findby`, options);
       if (!response.ok) {
@@ -280,15 +279,16 @@ export class DoanhthuService {
           page: data.page || 1,
           pageCount: data.pageCount || 1,
           total: data.total || data.data.length,
-          pageSize
+          pageSize:data.pageSize || this.pageSize()
         });
         this._StorageService.setItem('doanhthus_updatedAt', new Date().toISOString());
         this.ListDoanhthu.set(data.data);
         this.page.set(data.page || 1);
         this.pageCount.set(data.pageCount || 1);
         this.total.set(data.total || data.data.length);
-        this.pageSize.set(pageSize);
+        this.pageSize.set(data.pageSize || this.pageSize());
       }
+      return data
     } catch (error) {
       this._ErrorLogService.logError('Failed to getDoanhthuBy', error);
       console.error(error);
@@ -319,7 +319,7 @@ export class DoanhthuService {
       }
       const data = await response.json();
       this.getAllDoanhthu(this.pageSize());
-      this.getDoanhthuBy({ id: data.id, isOne: true }, this.pageSize());
+      this.getDoanhthuBy({ id: data.id, isOne: true });
     } catch (error) {
       this._ErrorLogService.logError('Failed to updateDoanhthu', error);
       console.error(error);

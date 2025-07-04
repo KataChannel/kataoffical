@@ -104,21 +104,7 @@ export class AffiliatelinkService {
     }
   }
 
-  async getAllAffiliatelink(pageSize: number = this.pageSize(), forceRefresh: boolean = false) {
-    this.pageSize.set(pageSize);
-    const cached = await this.getCachedData();   
-    const updatedAtCache = this._StorageService.getItem('affiliatelinks_updatedAt') || '0';    
-    
-    // Nếu không yêu cầu tải mới và cache hợp lệ, trả về cache
-    if (!forceRefresh && cached.affiliatelinks.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) {
-      this.ListAffiliatelink.set(cached.affiliatelinks);
-      this.page.set(cached.pagination.page);
-      this.pageCount.set(cached.pagination.pageCount);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.affiliatelinks;
-    }
-
+  async getAllAffiliatelink(param:any, forceRefresh: boolean = false) { 
     try {
       const options = {
         method: 'GET',
@@ -127,79 +113,24 @@ export class AffiliatelinkService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-
-      // Kiểm tra thời gian cập nhật từ server, trừ khi được yêu cầu forceRefresh
-      if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.ACADEMY_APIURL}/affiliatelink/lastupdated`, options);
-        if (!lastUpdatedResponse.ok) {
-          this.handleError(lastUpdatedResponse.status);
-          this.ListAffiliatelink.set(cached.affiliatelinks);
-          this.page.set(cached.pagination.page);
-          this.pageCount.set(cached.pagination.pageCount);
-          this.total.set(cached.pagination.total);
-          this.pageSize.set(cached.pagination.pageSize);
-          return cached.affiliatelinks;
-        }
-
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-
-        // Nếu cache còn mới, trả về cache
-        if (updatedAtServer <= updatedAtCache) {
-          this.ListAffiliatelink.set(cached.affiliatelinks);
-          this.page.set(cached.pagination.page);
-          this.pageCount.set(cached.pagination.pageCount);
-          this.total.set(cached.pagination.total);
-          this.pageSize.set(cached.pagination.pageSize);
-          return cached.affiliatelinks;
-        }
-      }
-
       // Tải dữ liệu mới từ server
       const query = new URLSearchParams({
-        page: this.page().toString(),
-        limit: pageSize.toString()
+        ...param,
+        page: this.page(),
+        pageSize: this.pageSize()
       });
       const response = await fetch(`${environment.ACADEMY_APIURL}/affiliatelink?${query}`, options);
       if (!response.ok) {
         this.handleError(response.status);
-        this.ListAffiliatelink.set(cached.affiliatelinks);
-        this.page.set(cached.pagination.page);
-        this.pageCount.set(cached.pagination.pageCount);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-        return cached.affiliatelinks;
       }
-
       const data = await response.json();
-      await this.saveAffiliatelinks(data.data, {
-        page: data.page || 1,
-        pageCount: data.pageCount || 1,
-        total: data.total || data.data.length,
-        pageSize
-      });
-      // Với forceRefresh, cập nhật luôn với thời gian mới từ server, nếu không thì sử dụng thời gian lấy từ lastUpdatedResponse
-      if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.ACADEMY_APIURL}/affiliatelink/lastupdated`, options);
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-        this._StorageService.setItem('affiliatelinks_updatedAt', updatedAtServer);
-      } else {
-        this._StorageService.setItem('affiliatelinks_updatedAt', new Date().toISOString());
-      }
       this.ListAffiliatelink.set(data.data);
       this.page.set(data.page || 1);
       this.pageCount.set(data.pageCount || 1);
       this.total.set(data.total || data.data.length);
-      this.pageSize.set(pageSize);
       return data.data;
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getAllAffiliatelink', error);
       console.error(error);
-      this.ListAffiliatelink.set(cached.affiliatelinks);
-      this.page.set(cached.pagination.page);
-      this.pageCount.set(cached.pagination.pageCount);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.affiliatelinks;
     }
   }
 
@@ -230,7 +161,7 @@ export class AffiliatelinkService {
     this.socket.on('affiliatelink-updated', async () => {
       console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
       this._StorageService.removeItem('affiliatelinks_updatedAt');
-      await this.getAllAffiliatelink();
+      await this.getAllAffiliatelink(this.pageSize());
     });
   }
 

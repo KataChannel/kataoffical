@@ -19,6 +19,10 @@ import { AffiliatelinkModule } from './affiliatelink/affiliatelink.module';
 import { DichvuModule } from './dichvu/dichvu.module';
 import { DoanhsoModule } from './doanhso/doanhso.module';
 import { DoanhthuModule } from './doanhthu/doanhthu.module';
+import { HoahongModule } from './hoahong/hoahong.module';
+import { ThanhtoanhoahongModule } from './thanhtoanhoahong/thanhtoanhoahong.module';
+import { LichhenModule } from './lichhen/lichhen.module';
+import { KhoahocModule } from './khoahoc/khoahoc.module';
 @Module({
   imports: [
     AuthModule, 
@@ -36,7 +40,11 @@ import { DoanhthuModule } from './doanhthu/doanhthu.module';
     AffiliatelinkModule,
     DichvuModule,
     DoanhsoModule,
-    DoanhthuModule
+    DoanhthuModule,
+    HoahongModule,
+    ThanhtoanhoahongModule,
+    KhoahocModule,
+    LichhenModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

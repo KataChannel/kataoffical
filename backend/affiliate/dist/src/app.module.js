@@ -28,6 +28,10 @@ const affiliatelink_module_1 = require("./affiliatelink/affiliatelink.module");
 const dichvu_module_1 = require("./dichvu/dichvu.module");
 const doanhso_module_1 = require("./doanhso/doanhso.module");
 const doanhthu_module_1 = require("./doanhthu/doanhthu.module");
+const hoahong_module_1 = require("./hoahong/hoahong.module");
+const thanhtoanhoahong_module_1 = require("./thanhtoanhoahong/thanhtoanhoahong.module");
+const lichhen_module_1 = require("./lichhen/lichhen.module");
+const khoahoc_module_1 = require("./khoahoc/khoahoc.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -52,7 +56,11 @@ exports.AppModule = AppModule = __decorate([
             affiliatelink_module_1.AffiliatelinkModule,
             dichvu_module_1.DichvuModule,
             doanhso_module_1.DoanhsoModule,
-            doanhthu_module_1.DoanhthuModule
+            doanhthu_module_1.DoanhthuModule,
+            hoahong_module_1.HoahongModule,
+            thanhtoanhoahong_module_1.ThanhtoanhoahongModule,
+            khoahoc_module_1.KhoahocModule,
+            lichhen_module_1.LichhenModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],
