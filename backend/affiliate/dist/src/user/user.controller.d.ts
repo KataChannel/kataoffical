@@ -20,6 +20,7 @@ export declare class UserController {
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
+        isCTV: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -56,6 +57,7 @@ export declare class UserController {
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
+        isCTV: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -92,6 +94,7 @@ export declare class UserController {
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
+        isCTV: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -125,6 +128,7 @@ export declare class UserController {
             provider: string | null;
             providerId: string | null;
             isSuperAdmin: boolean;
+            isCTV: boolean;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
@@ -143,6 +147,7 @@ export declare class UserController {
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
+        isCTV: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -181,6 +186,7 @@ export declare class UserController {
             provider: string | null;
             providerId: string | null;
             isSuperAdmin: boolean;
+            isCTV: boolean;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
@@ -205,6 +211,7 @@ export declare class UserController {
             provider: string | null;
             providerId: string | null;
             isSuperAdmin: boolean;
+            isCTV: boolean;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
@@ -227,6 +234,7 @@ export declare class UserController {
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
+        isCTV: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -275,6 +283,7 @@ export declare class UserController {
             provider: string | null;
             providerId: string | null;
             isSuperAdmin: boolean;
+            isCTV: boolean;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
@@ -299,6 +308,7 @@ export declare class UserController {
             provider: string | null;
             providerId: string | null;
             isSuperAdmin: boolean;
+            isCTV: boolean;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
@@ -321,6 +331,7 @@ export declare class UserController {
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
+        isCTV: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -344,6 +355,7 @@ export declare class UserController {
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
+        isCTV: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
@@ -368,6 +380,7 @@ export declare class UserController {
         provider: string | null;
         providerId: string | null;
         isSuperAdmin: boolean;
+        isCTV: boolean;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;

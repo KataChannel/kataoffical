@@ -32,7 +32,7 @@ export class DangkyctvComponent implements OnInit {
 
   isRegister = false;
   refCode: string | undefined = this.storageService.getItem('refCode') ?? undefined;
-  Dangky:any = { affiliateCode: '' };
+  Dangky:any = { affiliateCode: '',isCTV:true };
 
   ngOnInit(): void {
     const urlParams = new URLSearchParams(window.location.search);

@@ -3,6 +3,13 @@ git add .
 git commit -m "update"
 git push
 
+ssh root@116.118.49.243 
+cd tazasandbox1/
+git pull
+docker compose -f 'docker-compose.yml' up -d --build 'affiliate-api'
+docker compose -f 'docker-compose.yml' up -d --build 'academy-affiliate'
+
+
 # server
 ssh root@116.118.49.243 
 git pull
