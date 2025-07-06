@@ -38,6 +38,35 @@ export declare class AuthController {
             referrerId: string | null;
         };
     }>;
+    registerctv(data: any): Promise<{
+        statusCode: HttpStatus;
+        message: string;
+        user: {
+            id: string;
+            codeId: string | null;
+            name: string | null;
+            avatar: string | null;
+            gender: import(".prisma/client").$Enums.Gender | null;
+            email: string | null;
+            SDT: string | null;
+            phone: string | null;
+            zaloId: string | null;
+            facebookId: string | null;
+            googleId: string | null;
+            password: string | null;
+            provider: string | null;
+            providerId: string | null;
+            isSuperAdmin: boolean;
+            isCTV: boolean;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            registrationSource: string | null;
+            inviteCode: string | null;
+            affiliateCode: string | null;
+            referrerId: string | null;
+        };
+    }>;
     login(body: {
         SDT: string;
         email: string;

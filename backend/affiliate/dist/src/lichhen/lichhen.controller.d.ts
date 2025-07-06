@@ -22,6 +22,9 @@ export declare class LichhenController {
         createdDate: Date;
         modifiedDate: Date;
     }>;
+    getTotalLichhenByUserId(userId: string): Promise<{
+        total: number;
+    }>;
     findby(param: any): Promise<{
         id: string;
         codeId: string;

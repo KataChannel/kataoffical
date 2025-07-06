@@ -281,11 +281,14 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
         this.handleError(response.status);
       }
       const data = await response.json();
-      const permissions = data.permissions.map((p: any) => p.name);
+      const permissions = data.permissions?.map((p: any) => p.name);
       this.profile.set(data)
-      if(permissions.length>0)
+      if(permissions?.length>0)
       {
         this._StorageService.setItem('permissions', JSON.stringify(permissions));
+      }
+      else {
+        this._StorageService.removeItem('permissions');
       }
       return data;
     } catch (error) {
@@ -320,12 +323,12 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
           break;
         case 403:
           message = 'Bạn không có quyền truy cập';
-          this._snackBar.open(message, '', {
-            duration: 1000,
-            horizontalPosition: "end",
-            verticalPosition: "top",
-            panelClass: ['snackbar-error'],
-          });
+          // this._snackBar.open(message, '', {
+          //   duration: 1000,
+          //   horizontalPosition: "end",
+          //   verticalPosition: "top",
+          //   panelClass: ['snackbar-error'],
+          // });
           break;
         case 500:
           message = 'Lỗi máy chủ, vui lòng thử lại sau';
@@ -430,6 +433,27 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
       return console.error(error);
     }
   }
+  async registerctv(user: any) {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+      };
+      const response = await fetch(`${environment.ACADEMY_APIURL}/auth/registerctv`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
+      }
+      const data = await response.json();
+      return data
+    } catch (error) {
+      return console.error(error);
+    }
+  }
+
+
   async LoginByGoogle(user: any) {
     if (this._authenticated) {
       return of([false, 'User Đã Đăng Nhập']);

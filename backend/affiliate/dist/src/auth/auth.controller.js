@@ -47,6 +47,15 @@ let AuthController = class AuthController {
             throw new common_1.HttpException(error.message, common_1.HttpStatus.BAD_REQUEST);
         }
     }
+    async registerctv(data) {
+        try {
+            const user = await this.authService.registerctv(data, data.affiliateCode);
+            return { statusCode: common_1.HttpStatus.CREATED, message: 'Đăng ký thành công', user };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.BAD_REQUEST);
+        }
+    }
     login(body) {
         console.log(body);
         return this.authService.login(body.SDT, body.email, body.password);
@@ -111,6 +120,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "register", null);
+__decorate([
+    (0, common_1.Post)('registerctv'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "registerctv", null);
 __decorate([
     (0, common_1.Post)('login'),
     __param(0, (0, common_1.Body)()),

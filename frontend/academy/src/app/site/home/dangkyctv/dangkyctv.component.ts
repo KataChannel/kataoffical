@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { UserService } from '../../../admin/user/user.service';
 import { StorageService } from '../../../shared/utils/storage.service';
 import { TrackingService } from '../../../admin/tracking/tracking.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-dangkyctv',
@@ -29,6 +30,7 @@ export class DangkyctvComponent implements OnInit {
   private userService = inject(UserService);
   private storageService = inject(StorageService);
   private trackingService = inject(TrackingService);
+  private _snackbar = inject(MatSnackBar);
 
   isRegister = false;
   refCode: string | undefined = this.storageService.getItem('refCode') ?? undefined;
@@ -46,8 +48,52 @@ export class DangkyctvComponent implements OnInit {
   }
 
   async onDangky(): Promise<void> {
+    // Validate phone
+    if (!this.Dangky.phone || this.Dangky.phone.trim() === '') {
+      this._snackbar.open('Số điện thoại không được để trống', '', {
+        duration: 3000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-warn'],
+      });
+      return;
+    }
+    
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (!phoneRegex.test(this.Dangky.phone)) {
+      this._snackbar.open('Số điện thoại không hợp lệ', '', {
+        duration: 3000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-warn'],
+      });
+      return;
+    }
+
+    // Validate email
+    if (!this.Dangky.email || this.Dangky.email.trim() === '') {
+      this._snackbar.open('Email không được để trống', '', {
+        duration: 3000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-warn'],
+      });
+      return;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.Dangky.email)) {
+      this._snackbar.open('Email không hợp lệ', '', {
+        duration: 3000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-warn'],
+      });
+      return;
+    }
+
     try {
-      const res = await this.userService.register(this.Dangky);
+      const res = await this.userService.registerctv(this.Dangky);
       if (res.statusCode === 201) {
         this.isRegister = true;
         this.trackingService.CreateTracking({
@@ -59,13 +105,28 @@ export class DangkyctvComponent implements OnInit {
           referrer: document.referrer || undefined,
         });
         this.storageService.removeItem('refCode');
-        // Optionally notify user or redirect here
+        this._snackbar.open('Đăng ký thành công!', '', {
+          duration: 3000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success'],
+        });
       } else {
-        // Optionally handle registration failure here
+        // this._snackbar.open('Đăng ký thất bại: ' + res.message, '', {
+        //   duration: 3000,
+        //   horizontalPosition: "end",
+        //   verticalPosition: "top",
+        //   panelClass: ['snackbar-error'],
+        // });
       }
     } catch (error) {
-      // Optionally handle error here
       console.error('Registration error:', error);
+      this._snackbar.open('Có lỗi xảy ra khi đăng ký', '', {
+        duration: 3000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-error'],
+      });
     }
   }
 }

@@ -163,6 +163,9 @@ export declare class LichhenService {
     reorderLichhens(lichhenIds: string[]): Promise<{
         status: string;
     }>;
+    getTotalLichhenByUserId(userId: string): Promise<{
+        total: number;
+    }>;
     syncslichhen(items: any[]): Promise<{
         success: number;
         failure: number;

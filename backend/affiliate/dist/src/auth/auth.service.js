@@ -21,17 +21,31 @@ let AuthService = class AuthService {
     }
     async generateCodeId() {
         try {
+            let nextNumber = 1;
+            let codeId = '';
+            let isUnique = false;
             const latest = await this.prisma.user.findFirst({
                 orderBy: { codeId: 'desc' },
             });
-            let nextNumber = 1;
             if (latest && latest.codeId) {
                 const match = latest.codeId.match(/CTV(\d+)/);
                 if (match) {
                     nextNumber = parseInt(match[1]) + 1;
                 }
             }
-            return `CTV${nextNumber.toString().padStart(5, '0')}`;
+            while (!isUnique) {
+                codeId = `CTV${nextNumber.toString().padStart(5, '0')}`;
+                const existingUser = await this.prisma.user.findFirst({
+                    where: { codeId },
+                });
+                if (!existingUser) {
+                    isUnique = true;
+                }
+                else {
+                    nextNumber++;
+                }
+            }
+            return codeId;
         }
         catch (error) {
             throw error;
@@ -78,6 +92,60 @@ let AuthService = class AuthService {
                     facebookId: facebookId || null,
                     googleId: googleId || null,
                     khoahoc: khoahoc || null,
+                },
+            });
+            return user;
+        }
+        catch (error) {
+            console.error('Register error:', error);
+            if (error instanceof common_1.UnauthorizedException) {
+                throw error;
+            }
+            throw new common_1.UnauthorizedException('Registration failed');
+        }
+    }
+    async registerctv(data, affiliateCode) {
+        try {
+            const { email, phone, password, facebookId, googleId, zaloId } = data;
+            console.log(data);
+            const existingUser = await this.prisma.user.findFirst({
+                where: {
+                    OR: [
+                        { email: email || undefined },
+                        { phone: phone || undefined },
+                        { SDT: phone || undefined },
+                        { zaloId: zaloId || undefined },
+                        { facebookId: facebookId || undefined },
+                        { googleId: googleId || undefined },
+                    ],
+                },
+            });
+            if (existingUser) {
+                throw new common_1.UnauthorizedException('User already exists');
+            }
+            let referrerId;
+            if (affiliateCode) {
+                const referrer = await this.prisma.user.findUnique({
+                    where: { inviteCode: affiliateCode },
+                    select: { id: true },
+                });
+                referrerId = referrer?.id;
+            }
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const inviteCode = phone || Math.random().toString(36).slice(-8);
+            const codeId = await this.generateCodeId();
+            console.log('codeId', codeId);
+            const user = await this.prisma.user.create({
+                data: {
+                    codeId,
+                    email: email || null,
+                    phone: phone || null,
+                    password: hashedPassword,
+                    inviteCode,
+                    affiliateCode: affiliateCode || null,
+                    referrerId,
+                    facebookId: facebookId || null,
+                    googleId: googleId || null,
                 },
             });
             return user;

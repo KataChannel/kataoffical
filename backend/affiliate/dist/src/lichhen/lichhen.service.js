@@ -207,6 +207,17 @@ let LichhenService = class LichhenService {
             throw error;
         }
     }
+    async getTotalLichhenByUserId(userId) {
+        try {
+            const result = await this.prisma.lichhen.count({
+                where: { phone: userId },
+            });
+            return { total: result || 0 };
+        }
+        catch (error) {
+            throw error;
+        }
+    }
     async syncslichhen(items) {
         if (!Array.isArray(items) || items.length === 0) {
             return { success: 0, failure: 0, error: 'Invalid parameters for syncslichhen' };

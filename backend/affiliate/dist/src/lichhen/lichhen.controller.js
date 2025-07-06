@@ -29,6 +29,14 @@ let LichhenController = class LichhenController {
             throw new common_1.HttpException(error.message || 'Create failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async getTotalLichhenByUserId(userId) {
+        try {
+            return await this.lichhenService.getTotalLichhenByUserId(userId);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Failed to fetch total lichhen', error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async findby(param) {
         try {
             return await this.lichhenService.findBy(param);
@@ -106,6 +114,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], LichhenController.prototype, "create", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Get total hoahong by userId' }),
+    (0, swagger_1.ApiQuery)({ name: 'userId', type: String, required: true }),
+    (0, common_1.Get)('total'),
+    __param(0, (0, common_1.Query)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], LichhenController.prototype, "getTotalLichhenByUserId", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Find lichhens by parameters' }),
     (0, swagger_1.ApiBody)({ type: Object }),

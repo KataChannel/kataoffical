@@ -51,6 +51,16 @@ export class AuthController {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+  @Post('registerctv')
+  async registerctv(@Body() data: any) {
+    try {
+      const user = await this.authService.registerctv(data, data.affiliateCode);
+      return { statusCode: HttpStatus.CREATED, message: 'Đăng ký thành công', user };
+    } catch (error) {      
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   @Post('login')
   login(@Body() body: {SDT:string; email: string; password: string }) {
     console.log(body);

@@ -30,6 +30,31 @@ export declare class AuthService {
         affiliateCode: string | null;
         referrerId: string | null;
     }>;
+    registerctv(data: any, affiliateCode?: string): Promise<{
+        id: string;
+        codeId: string | null;
+        name: string | null;
+        avatar: string | null;
+        gender: import(".prisma/client").$Enums.Gender | null;
+        email: string | null;
+        SDT: string | null;
+        phone: string | null;
+        zaloId: string | null;
+        facebookId: string | null;
+        googleId: string | null;
+        password: string | null;
+        provider: string | null;
+        providerId: string | null;
+        isSuperAdmin: boolean;
+        isCTV: boolean;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        registrationSource: string | null;
+        inviteCode: string | null;
+        affiliateCode: string | null;
+        referrerId: string | null;
+    }>;
     login(phone: string, email: string, password: string): Promise<{
         access_token: string;
         user: any;

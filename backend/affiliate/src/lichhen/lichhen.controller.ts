@@ -18,6 +18,21 @@ export class LichhenController {
       throw new HttpException(error.message || 'Create failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+    @ApiOperation({ summary: 'Get total hoahong by userId' })
+    @ApiQuery({ name: 'userId', type: String, required: true })
+    @Get('total')
+    async getTotalLichhenByUserId(@Query('userId') userId: string) {
+      try {
+        return await this.lichhenService.getTotalLichhenByUserId(userId);
+      } catch (error) {
+        throw new HttpException(
+          error.message || 'Failed to fetch total lichhen',
+          error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+
   @ApiOperation({ summary: 'Find lichhens by parameters' })
   @ApiBody({ type: Object }) 
   @Post('findby')
