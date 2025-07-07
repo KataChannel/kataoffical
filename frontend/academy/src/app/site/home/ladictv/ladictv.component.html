@@ -31,7 +31,8 @@
           <button (click)="getCoppyLink(getUrl(item))" class="!text-xs" mat-icon-button color="primary">
             <mat-icon>content_copy</mat-icon>
           </button>
-          <button mat-icon-button color="primary" [matMenuTriggerFor]="menu">
+
+          <!-- <button mat-icon-button color="primary" [matMenuTriggerFor]="menu">
             <mat-icon>share</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
@@ -65,10 +66,43 @@
               <mat-icon class="!text-blue-500">email</mat-icon>
               <span>Email</span>
             </button>
-          </mat-menu>
+          </mat-menu> -->
+
 
         </div>
+        <div class="w-full overflow-x-auto flex flex-row gap-2 items-center justify-between p-2 cursor-pointer">
+          <div class="flex flex-col gap-1 items-center p-2 rounded-lg hover:bg-slate-100"    
+              (click)="share('facebook', getUrl(item), item?.title, item?.description, item?.thumbnail)">
+              <mat-icon matBadge="0" matBadgeSize="small" class="!text-blue-500">facebook</mat-icon>
+              <span>Facebook</span>
+          </div>
+            <div class="flex flex-col gap-1 items-center p-2 rounded-lg hover:bg-slate-100"    
+              (click)="share('twitter', getUrl(item), item?.title, item?.description, item?.thumbnail)">
+              <mat-icon matBadge="0" matBadgeSize="small" class="!text-blue-500">linkedin</mat-icon>
+              <span>Twitter</span>
+            </div>
+            <div class="flex flex-col gap-1 items-center p-2 rounded-lg hover:bg-slate-100"    
+              (click)="share('linkedin', getUrl(item), item?.title, item?.description, item?.thumbnail)">
+              <mat-icon matBadge="0" matBadgeSize="small" class="!text-blue-500">linkedin</mat-icon>
+              <span>LinkedIn</span>
+            </div>
+            <div class="flex flex-col gap-1 items-center p-2 rounded-lg hover:bg-slate-100"    
+              (click)="share('pinterest', getUrl(item), item?.title, item?.description, item?.thumbnail)">
+              <mat-icon matBadge="0" matBadgeSize="small" class="!text-blue-500">pinterest</mat-icon>
+              <span>Pinterest</span>
+            </div>
+            <div class="flex flex-col gap-1 items-center p-2 rounded-lg hover:bg-slate-100"    
+              (click)="share('whatsapp', getUrl(item), item?.title, item?.description, item?.thumbnail)">
+              <mat-icon matBadge="0" matBadgeSize="small" class="!text-blue-500">link</mat-icon>
+              <span>WhatsApp</span>
+            </div>
+            <div class="flex flex-col gap-1 items-center p-2 rounded-lg hover:bg-slate-100"    
+              (click)="share('email', getUrl(item), item?.title, item?.description, item?.thumbnail)">
+              <mat-icon matBadge="0" matBadgeSize="small" class="!text-blue-500">email</mat-icon>
+              <span>Email</span>
+            </div>
 
+        </div>
     </div>
   </div>
 

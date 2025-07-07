@@ -10,9 +10,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { UserService } from '../../../admin/user/user.service';
 import { LandingpageService } from '../../../admin/landingpage/landingpage.service';
 import { MatMenuModule } from '@angular/material/menu';
-import { ClipboardModule } from '@angular/cdk/clipboard';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-  
+import {MatBadgeModule} from '@angular/material/badge';
   @Component({
     selector: 'app-ladictv',
     imports: [
@@ -25,7 +24,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
       MatSelectModule,
       MatIconModule,
       MatMenuModule,
-      MatSnackBarModule
+      MatSnackBarModule,
+      MatBadgeModule
     ], // Import các module cần thiết vào đây 
     templateUrl: './ladictv.component.html',
     styleUrls: ['./ladictv.component.scss'],
@@ -85,6 +85,9 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     });
   }
   share(platform: string, url: string, title?: string, description?: string, image?: string): void {
+    
+    
+
     url = url + '?ref=' + this.profile()?.inviteCode;
     let shareUrl: string;
     switch (platform.toLowerCase()) {

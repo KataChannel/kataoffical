@@ -44,12 +44,12 @@ export class HomeComponent {
     // { id: 2, title: 'Phân Tích', icon: 'info', link: '/thongkectv' },
     { id: 3, title: 'Liên Kết', icon: 'link', link: '/affiliatectv' },
     { id: 4, title: 'Landing Page', icon: 'web', link: '/ladictv' },
-    {
-      id: 5,
-      title: 'Tài Nguyên',
-      icon: 'photo_library',
-      link: '/tainguyenctv',
-    },
+    // {
+    //   id: 5,
+    //   title: 'Tài Nguyên',
+    //   icon: 'photo_library',
+    //   link: '/tainguyenctv',
+    // },
   ];
   drawerMode = signal<any>('side');
   drawerOpened = signal<any>(true);
