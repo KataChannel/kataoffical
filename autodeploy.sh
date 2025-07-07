@@ -43,10 +43,13 @@ ssh root@116.118.49.243 << 'EOF'
     git pull
     
     echo "Building and deploying affiliate-api..."
-    docker compose -f 'docker-compose.yml' up -d --build 'affiliate-api'
+    docker compose -f 'docker-compose.yml' up -d --build
+
+    # echo "Building and deploying affiliate-api..."
+    # docker compose -f 'docker-compose.yml' up -d --build 'affiliate-api'
     
-    echo "Building and deploying academy-affiliate..."
-    docker compose -f 'docker-compose.yml' up -d --build 'academy-affiliate'
+    # echo "Building and deploying academy-affiliate..."
+    # docker compose -f 'docker-compose.yml' up -d --build 'academy-affiliate'
     
     echo "Deployment completed successfully!"
 EOF

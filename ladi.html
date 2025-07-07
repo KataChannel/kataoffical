@@ -13,10 +13,10 @@
             };
 
             // Simple name validation (non-empty and only letters/spaces)
-            const validateName = (name) => {
-            const nameRegex = /^[\p{L}\s]+$/u;
-          return name.trim() !== '' && nameRegex.test(name);
-            };
+                const validateName = (name) => {
+                    const nameRegex = /[^\p{L}\p{N}\s]/gu; // Tìm tất cả ký tự không phải chữ cái, số hoặc khoảng trắng
+                    return name.trim().replace(nameRegex, '');
+                };
 
             form.addEventListener('submit', async (e) => {
           e.preventDefault();
