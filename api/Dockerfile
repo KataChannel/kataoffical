@@ -18,8 +18,8 @@ COPY . .
 
 # # Install Prisma globally and run migrations
 RUN bun install -g prisma
-# RUN bun prisma migrate dev --name rau3.1.1
-# RUN bun prisma generate
+RUN bun prisma migrate dev --name rau3.1.1
+RUN bun prisma generate
 
 # Use a smaller runtime image
 FROM oven/bun:latest
