@@ -22,7 +22,13 @@ async function backupTableToJson(table: string): Promise<void> {
   try {
     const data: any[] = await prisma.$queryRawUnsafe(`SELECT * FROM "${table}"`);
     const filePath: string = path.join(BACKUP_DIR, `${table}.json`);
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    
+    // Custom replacer to handle BigInt values
+    const bigIntReplacer = (key: string, value: any) => {
+      return typeof value === 'bigint' ? value.toString() : value;
+    };
+    
+    fs.writeFileSync(filePath, JSON.stringify(data, bigIntReplacer, 2));
     console.log(`✅ Backup JSON thành công: ${filePath}`);
   } catch (error) {
     console.error(`❌ Lỗi backup bảng ${table}:`, error);
