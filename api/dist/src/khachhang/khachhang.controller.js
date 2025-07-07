@@ -42,6 +42,14 @@ let KhachhangController = class KhachhangController {
     async searchfield(searchParams) {
         return this.khachhangService.searchfield(searchParams);
     }
+    async findAllForSelect() {
+        try {
+            return await this.khachhangService.findAllForSelect();
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Failed to fetch khachhangs', error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async findAll(query) {
         try {
             return await this.khachhangService.findAll(query);
@@ -97,6 +105,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], KhachhangController.prototype, "searchfield", null);
+__decorate([
+    (0, common_1.Get)('forselect'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], KhachhangController.prototype, "findAllForSelect", null);
 __decorate([
     (0, common_1.Get)(),
     __param(0, (0, common_1.Query)()),

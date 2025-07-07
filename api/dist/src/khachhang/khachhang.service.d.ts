@@ -38,6 +38,18 @@ export declare class KhachhangService {
         message: string;
         notifications: string[];
     }>;
+    findAllForSelect(): Promise<{
+        data: {
+            id: string;
+            banggia: {
+                id: string;
+                title: string | null;
+                mabanggia: string | null;
+            } | null;
+            name: string | null;
+            makh: string;
+        }[];
+    }>;
     findAll(query: any): Promise<{
         data: ({
             banggia: {

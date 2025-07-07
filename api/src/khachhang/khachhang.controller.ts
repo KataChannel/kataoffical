@@ -37,6 +37,17 @@ export class KhachhangController {
   // findAll() {
   //   return this.khachhangService.findAll();
   // }
+  @Get('forselect')
+  async findAllForSelect() {
+    try {
+      return await this.khachhangService.findAllForSelect();
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to fetch khachhangs',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    } 
+  }
   @Get()
   async findAll(@Query() query: any) {
     try {

@@ -1859,7 +1859,8 @@ async dagiao(id: string, data: any) {
       }
 
       return { success, fail };
-    });
+    },
+  );
   }
 
   async remove(id: string) {

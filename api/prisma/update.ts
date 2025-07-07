@@ -87,8 +87,10 @@ async function main() {
     await prisma.tonKho.update({
       where: { id: tonKho.id },
       data: {
-        slton: tonKho.slton.plus(tonKho.slchonhap),
+        // slton: tonKho.slton.plus(tonKho.slchonhap),
         slchonhap: 0,
+        slton: 0,
+        slchogiao: 0,
         // Nếu muốn reset slchogiao về 0 thì thêm dòng dưới:
         // slchogiao: 0,
       },

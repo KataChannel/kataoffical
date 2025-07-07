@@ -118,7 +118,7 @@ export class DetailDonhangComponent {
         this._ListdonhangComponent.drawer.open();
         this._router.navigate(['/admin/donhang', id]);
       }
-      await this._KhachhangService.getAllKhachhang({},true);
+      await this._KhachhangService.getKhachhangforselect();
       this.filterKhachhang = this.ListKhachhang()
       await this._SanphamService.getAllSanpham({},true);
       this.filterSanpham = this.ListSanpham()
@@ -137,6 +137,8 @@ export class DetailDonhangComponent {
   async ngOnInit() {
      await this._UserService.getProfile();
      this.permissions = this._UserService.profile().permissions.map((v:any)=>v.name);
+     await this._BanggiaService.getAllBanggia();
+     this.filterBanggia = this._BanggiaService.ListBanggia();
   }
   async handleDonhangAction() {
     if (this.donhangId() === 'new') {

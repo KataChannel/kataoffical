@@ -126,6 +126,30 @@ let KhachhangService = class KhachhangService {
         }
         return { message: 'Import completed', notifications };
     }
+    async findAllForSelect() {
+        try {
+            const khachhangs = await this.prisma.khachhang.findMany({
+                select: {
+                    id: true,
+                    makh: true,
+                    name: true,
+                    banggia: {
+                        select: {
+                            id: true,
+                            mabanggia: true,
+                            title: true,
+                        },
+                    },
+                },
+                orderBy: { createdAt: 'desc' },
+            });
+            return { data: khachhangs };
+        }
+        catch (error) {
+            console.log('Error in findAllKhachhang:', error);
+            throw error;
+        }
+    }
     async findAll(query) {
         try {
             const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;

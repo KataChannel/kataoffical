@@ -126,6 +126,31 @@ export class KhachhangService {
     }
   }
 
+  async getKhachhangforselect() {
+    try {
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+        },
+      };
+
+      const response = await fetch(`${environment.APIURL}/khachhang/forselect`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
+        return [];
+      }
+      const data = await response.json();
+      this.ListKhachhang.set(data.data);
+      return data.data;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
+
+
   async getAllKhachhang(queryParams: any = {}, forceRefresh: boolean = false) {
     const cached = await this.getCachedData();
     const updatedAtCacheDate = this._StorageService.getItem('khachhangs_updatedAt') || '0';
@@ -207,6 +232,8 @@ export class KhachhangService {
       return cached.khachhangs;
     }
   }
+
+
   async getUpdatedCodeIds() {
     try {
       const options = {

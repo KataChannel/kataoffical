@@ -14,8 +14,9 @@ async function main() {
         await prisma.tonKho.update({
             where: { id: tonKho.id },
             data: {
-                slton: tonKho.slton.plus(tonKho.slchonhap),
                 slchonhap: 0,
+                slton: 0,
+                slchogiao: 0,
             },
         });
     }
