@@ -29,6 +29,7 @@ export declare class AuthService {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
     registerctv(data: any, affiliateCode?: string): Promise<{
         id: string;
@@ -54,6 +55,7 @@ export declare class AuthService {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
     login(phone: string, email: string, password: string): Promise<{
         access_token: string;
@@ -83,6 +85,7 @@ export declare class AuthService {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
     generateRandomPassword(userId: string): Promise<{
         newPassword: string;
@@ -113,6 +116,7 @@ export declare class AuthService {
             inviteCode: string | null;
             affiliateCode: string | null;
             referrerId: string | null;
+            ghichu: string | null;
         };
     }>;
     getUserRoles(userId: string): Promise<({

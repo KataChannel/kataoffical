@@ -36,6 +36,7 @@ export declare class AuthController {
             inviteCode: string | null;
             affiliateCode: string | null;
             referrerId: string | null;
+            ghichu: string | null;
         };
     }>;
     registerctv(data: any): Promise<{
@@ -65,6 +66,7 @@ export declare class AuthController {
             inviteCode: string | null;
             affiliateCode: string | null;
             referrerId: string | null;
+            ghichu: string | null;
         };
     }>;
     login(body: {
@@ -105,6 +107,7 @@ export declare class AuthController {
             inviteCode: string | null;
             affiliateCode: string | null;
             referrerId: string | null;
+            ghichu: string | null;
         };
     }>;
     randomPassword(req: any): Promise<{

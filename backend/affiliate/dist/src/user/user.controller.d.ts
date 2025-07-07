@@ -28,6 +28,7 @@ export declare class UserController {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
     findby(param: any): Promise<{
         roles: {
@@ -65,6 +66,7 @@ export declare class UserController {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
     findAll(): Promise<{
         roles: {
@@ -102,6 +104,7 @@ export declare class UserController {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }[]>;
     getLastUpdated(): Promise<{
         updatedAt: number | Date;
@@ -136,6 +139,7 @@ export declare class UserController {
             inviteCode: string | null;
             affiliateCode: string | null;
             referrerId: string | null;
+            ghichu: string | null;
         }[];
         id: string;
         codeId: string | null;
@@ -155,6 +159,7 @@ export declare class UserController {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }[]>;
     getProfile(req: any): Promise<{
         roles: {
@@ -194,6 +199,7 @@ export declare class UserController {
             inviteCode: string | null;
             affiliateCode: string | null;
             referrerId: string | null;
+            ghichu: string | null;
         } | null;
         referrals: {
             id: string;
@@ -219,6 +225,7 @@ export declare class UserController {
             inviteCode: string | null;
             affiliateCode: string | null;
             referrerId: string | null;
+            ghichu: string | null;
         }[];
         id: string;
         codeId: string | null;
@@ -242,6 +249,7 @@ export declare class UserController {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
     assignRoleToUser(data: any): Promise<{
         id: string;
@@ -291,6 +299,7 @@ export declare class UserController {
             inviteCode: string | null;
             affiliateCode: string | null;
             referrerId: string | null;
+            ghichu: string | null;
         } | null;
         referrals: {
             id: string;
@@ -316,6 +325,7 @@ export declare class UserController {
             inviteCode: string | null;
             affiliateCode: string | null;
             referrerId: string | null;
+            ghichu: string | null;
         }[];
         id: string;
         codeId: string | null;
@@ -339,6 +349,7 @@ export declare class UserController {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -363,6 +374,7 @@ export declare class UserController {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -388,5 +400,6 @@ export declare class UserController {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
 }

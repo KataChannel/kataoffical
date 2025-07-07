@@ -51,11 +51,14 @@ export class AuthService {
 
 
   async register(data: any, affiliateCode?: string) {
+    console.log('Register data:', data);
+    
     try {
       // Normalize input
       const { email, phone, password, facebookId, googleId, zaloId, khoahoc } = data;
-
       // Check for existing user by unique fields
+      console.log('Checking for existing user with email:', email, 'or phone:', phone);
+      
       const existingUser = await this.prisma.user.findFirst({
         where: {
           OR: [
@@ -83,7 +86,10 @@ export class AuthService {
       }
 
       // Create new user
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = password 
+        ? await bcrypt.hash(password, 10)
+        : await bcrypt.hash(Math.random().toString(36).slice(-8), 10);
+
       const inviteCode = phone || Math.random().toString(36).slice(-8);
       const codeId = await this.generateCodeId();
       const user = await this.prisma.user.create({
@@ -97,7 +103,7 @@ export class AuthService {
           referrerId,
           facebookId: facebookId || null,
           googleId: googleId || null,
-          khoahoc: khoahoc || null,
+          ghichu: khoahoc || null,
         },
       });
 

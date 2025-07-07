@@ -33,6 +33,7 @@ model User {
   inviteCode         String?            @unique
   affiliateCode      String?
   referrerId         String?
+  ghichu             String?
   audits             AuditLog[]
   Doanhso            Doanhso[]
   HoaHong            HoaHong[]

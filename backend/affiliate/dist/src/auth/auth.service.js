@@ -52,8 +52,10 @@ let AuthService = class AuthService {
         }
     }
     async register(data, affiliateCode) {
+        console.log('Register data:', data);
         try {
             const { email, phone, password, facebookId, googleId, zaloId, khoahoc } = data;
+            console.log('Checking for existing user with email:', email, 'or phone:', phone);
             const existingUser = await this.prisma.user.findFirst({
                 where: {
                     OR: [
@@ -77,7 +79,9 @@ let AuthService = class AuthService {
                 });
                 referrerId = referrer?.id;
             }
-            const hashedPassword = await bcrypt.hash(password, 10);
+            const hashedPassword = password
+                ? await bcrypt.hash(password, 10)
+                : await bcrypt.hash(Math.random().toString(36).slice(-8), 10);
             const inviteCode = phone || Math.random().toString(36).slice(-8);
             const codeId = await this.generateCodeId();
             const user = await this.prisma.user.create({
@@ -91,7 +95,7 @@ let AuthService = class AuthService {
                     referrerId,
                     facebookId: facebookId || null,
                     googleId: googleId || null,
-                    khoahoc: khoahoc || null,
+                    ghichu: khoahoc || null,
                 },
             });
             return user;

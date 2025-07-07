@@ -34,6 +34,7 @@ export declare class UserService {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
     getUsers(): Promise<{
         name: string | null;
@@ -71,6 +72,7 @@ export declare class UserService {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }[]>;
     findAll(): Promise<{
         roles: {
@@ -108,6 +110,7 @@ export declare class UserService {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }[]>;
     findby(param: any): Promise<{
         roles: {
@@ -145,6 +148,7 @@ export declare class UserService {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
     leaderboard(): Promise<{
         name: string | null;
@@ -176,6 +180,7 @@ export declare class UserService {
             inviteCode: string | null;
             affiliateCode: string | null;
             referrerId: string | null;
+            ghichu: string | null;
         }[];
         id: string;
         codeId: string | null;
@@ -195,6 +200,7 @@ export declare class UserService {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }[]>;
     findOne(id: string): Promise<{
         roles: {
@@ -234,6 +240,7 @@ export declare class UserService {
             inviteCode: string | null;
             affiliateCode: string | null;
             referrerId: string | null;
+            ghichu: string | null;
         } | null;
         referrals: {
             id: string;
@@ -259,6 +266,7 @@ export declare class UserService {
             inviteCode: string | null;
             affiliateCode: string | null;
             referrerId: string | null;
+            ghichu: string | null;
         }[];
         id: string;
         codeId: string | null;
@@ -282,6 +290,7 @@ export declare class UserService {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
     update(id: string, data: Partial<Omit<any, 'id' | 'roles' | 'permissions'>>): Promise<{
         id: string;
@@ -306,6 +315,7 @@ export declare class UserService {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -331,6 +341,7 @@ export declare class UserService {
         inviteCode: string | null;
         affiliateCode: string | null;
         referrerId: string | null;
+        ghichu: string | null;
     }>;
     assignRoleToUser(data: {
         userId: string;
