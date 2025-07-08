@@ -93,6 +93,16 @@ import { MatMenuModule } from '@angular/material/menu';
     }
     private async createUser() {
       try {
+        if (!this.DetailUser().password || this.DetailUser().password.trim() === '') {
+          this._snackBar.open('Vui lòng nhập password', '', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+          return;
+        }
+        
         await this._UserService.CreateUser(this.DetailUser());
         this._snackBar.open('Tạo Mới Thành Công', '', {
           duration: 1000,
