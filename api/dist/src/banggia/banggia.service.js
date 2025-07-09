@@ -23,14 +23,14 @@ let BanggiaService = class BanggiaService {
     }
     async importSPBG(listBanggia) {
         try {
+            console.log(listBanggia[0]);
             const banggiagoc = listBanggia.find(bg => bg.mabanggia === 'giaban');
             if (banggiagoc) {
                 await Promise.all(banggiagoc.sanpham.map(async (sp) => {
-                    const result = await this.prisma.sanpham.update({
+                    await this.prisma.sanpham.updateMany({
                         where: { masp: sp.masp },
                         data: { giaban: Number(sp.giaban) }
                     });
-                    console.log(`Updated sanpham ${sp.masp} giaban successfully`, result);
                 }));
             }
             const productIds = Array.from(listBanggia.flatMap(bg => bg?.sanpham?.map((sp) => sp.masp) || []));
@@ -62,26 +62,44 @@ let BanggiaService = class BanggiaService {
                 where: { mabanggia: { in: mabanggiaList } },
             });
             const banggiaMap = new Map(existingBanggias.map(bg => [bg.mabanggia, bg]));
-            await Promise.all(listBanggia.map(async (bg) => {
-                const now = new Date();
-                if (banggiaMap.has(bg.mabanggia)) {
-                    if (!bg.batdau && !bg.ketthuc) {
-                        bg.batdau = new Date(now.getFullYear(), now.getMonth(), 1);
-                        bg.ketthuc = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const batchSize = 10;
+            for (let i = 0; i < listBanggia.length; i += batchSize) {
+                const batch = listBanggia.slice(i, i + batchSize);
+                await Promise.all(batch.map(async (bg) => {
+                    const now = new Date();
+                    if (banggiaMap.has(bg.mabanggia)) {
+                        if (!bg.batdau && !bg.ketthuc) {
+                            bg.batdau = new Date(now.getFullYear(), now.getMonth(), 1);
+                            bg.ketthuc = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                        }
+                        const existing = banggiaMap.get(bg.mabanggia);
+                        await this.update(existing.id, bg);
                     }
-                    const existing = banggiaMap.get(bg.mabanggia);
-                    await this.update(existing.id, bg);
-                }
-                else {
-                    bg.batdau = bg.batdau || new Date(now.getFullYear(), now.getMonth(), 1);
-                    bg.ketthuc = bg.ketthuc || new Date(now.getFullYear(), now.getMonth() + 1, 0);
-                    await this.createBanggia(bg);
-                }
-            }));
+                    else {
+                        bg.batdau = bg.batdau || new Date(now.getFullYear(), now.getMonth(), 1);
+                        bg.ketthuc = bg.ketthuc || new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                        await this.createBanggia(bg);
+                    }
+                }));
+            }
             return {};
         }
         catch (error) {
             console.log('Error importing san pham bang gia:', error);
+            if (error.code === 'ECONNRESET' || error.message?.includes('413') || error.message?.includes('Content Too Large')) {
+                await this._ImportdataService.create({
+                    caseDetail: {
+                        errorMessage: 'Content too large - try reducing batch size or splitting the import',
+                        errorStack: error.stack,
+                        additionalInfo: 'Error 413: Content Too Large during import process',
+                    },
+                    order: 1,
+                    createdBy: 'system',
+                    title: `Import Sản Phẩm Bảng giá (413 Error) ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                    type: 'banggia',
+                });
+                throw new common_1.InternalServerErrorException('Content too large. Please reduce the amount of data and try again.');
+            }
             await this._ImportdataService.create({
                 caseDetail: {
                     errorMessage: error.message,
@@ -137,58 +155,77 @@ let BanggiaService = class BanggiaService {
                 return acc;
             }, {});
             const results = [];
-            for (const mabanggia in grouped) {
-                const items = grouped[mabanggia];
-                const existingBanggia = await this.prisma.banggia.findFirst({
-                    where: { mabanggia },
-                    include: { khachhang: true },
-                });
-                if (existingBanggia) {
-                    for (const item of items) {
-                        const existingKH = existingBanggia.khachhang.find((kh) => kh.makh === item.makh);
-                        if (existingKH) {
-                            await this.prisma.khachhang.update({
-                                where: { id: existingKH.id },
-                                data: { name: item.name, makh: item.makh },
-                            });
-                        }
-                        else {
-                            await this.prisma.banggia.update({
-                                where: { id: existingBanggia.id },
-                                data: {
-                                    khachhang: {
-                                        create: { name: item.name, makh: item.makh },
+            const batchSize = 10;
+            const groupedEntries = Object.entries(grouped);
+            for (let i = 0; i < groupedEntries.length; i += batchSize) {
+                const batch = groupedEntries.slice(i, i + batchSize);
+                await Promise.all(batch.map(async ([mabanggia, items]) => {
+                    const existingBanggia = await this.prisma.banggia.findFirst({
+                        where: { mabanggia },
+                        include: { khachhang: true },
+                    });
+                    if (existingBanggia) {
+                        for (const item of items) {
+                            const existingKH = existingBanggia.khachhang.find((kh) => kh.makh === item.makh);
+                            if (existingKH) {
+                                await this.prisma.khachhang.update({
+                                    where: { id: existingKH.id },
+                                    data: { name: item.name, makh: item.makh },
+                                });
+                            }
+                            else {
+                                await this.prisma.banggia.update({
+                                    where: { id: existingBanggia.id },
+                                    data: {
+                                        khachhang: {
+                                            create: { name: item.name, makh: item.makh },
+                                        },
                                     },
-                                },
-                                include: { khachhang: true },
-                            });
+                                    include: { khachhang: true },
+                                });
+                            }
                         }
+                        const updated = await this.prisma.banggia.findUnique({
+                            where: { id: existingBanggia.id },
+                            include: { khachhang: true },
+                        });
+                        results.push(updated);
                     }
-                    const updated = await this.prisma.banggia.findUnique({
-                        where: { id: existingBanggia.id },
-                        include: { khachhang: true },
-                    });
-                    results.push(updated);
-                }
-                else {
-                    const created = await this.prisma.banggia.create({
-                        data: {
-                            mabanggia,
-                            khachhang: {
-                                create: items.map((item) => ({
-                                    name: item.name,
-                                    makh: item.makh,
-                                })),
+                    else {
+                        const created = await this.prisma.banggia.create({
+                            data: {
+                                mabanggia,
+                                khachhang: {
+                                    create: items.map((item) => ({
+                                        name: item.name,
+                                        makh: item.makh,
+                                    })),
+                                },
                             },
-                        },
-                        include: { khachhang: true },
-                    });
-                    results.push(created);
-                }
+                            include: { khachhang: true },
+                        });
+                        results.push(created);
+                    }
+                }));
             }
             return results;
         }
         catch (error) {
+            console.log('Error importing bang gia khach hang:', error);
+            if (error.code === 'ECONNRESET' || error.message?.includes('413') || error.message?.includes('Content Too Large')) {
+                await this._ImportdataService.create({
+                    caseDetail: {
+                        errorMessage: 'Content too large - try reducing batch size or splitting the import',
+                        errorStack: error.stack,
+                        additionalInfo: 'Error 413: Content Too Large during import process',
+                    },
+                    order: 1,
+                    createdBy: 'system',
+                    title: `Import Bảng giá khách hàng (413 Error) ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                    type: 'banggia',
+                });
+                throw new common_1.InternalServerErrorException('Content too large. Please reduce the amount of data and try again.');
+            }
             await this._ImportdataService.create({
                 caseDetail: {
                     errorMessage: error.message,
