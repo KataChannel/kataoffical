@@ -33,7 +33,7 @@ export declare class AuthService {
     generateRandomPassword(userId: string): Promise<{
         newPassword: string;
     }>;
-    validateOAuthLogin(provider: string, providerId: string, email?: string): Promise<{
+    validateOAuthLogin(provider: string, providerId: string, email?: string, SDT?: string): Promise<{
         token: string;
         user: {
             id: string;

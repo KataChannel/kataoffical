@@ -102,6 +102,16 @@ import { MatMenuModule } from '@angular/material/menu';
           });
           return;
         }
+
+        if (!this.DetailUser().SDT || this.DetailUser().SDT.trim() === '') {
+          this._snackBar.open('Vui lòng nhập SDT', '', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          });
+          return;
+        }
         
         await this._UserService.CreateUser(this.DetailUser());
         this._snackBar.open('Tạo Mới Thành Công', '', {

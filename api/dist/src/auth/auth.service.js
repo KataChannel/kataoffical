@@ -70,14 +70,41 @@ let AuthService = class AuthService {
         });
         return { newPassword };
     }
-    async validateOAuthLogin(provider, providerId, email) {
+    async validateOAuthLogin(provider, providerId, email, SDT) {
         let user = await this.prisma.user.findUnique({ where: { providerId } });
         if (!user) {
-            const newPassword = Math.random().toString(36).slice(-8);
-            const hashedPassword = await bcrypt.hash(newPassword, 10);
-            user = await this.prisma.user.create({
-                data: { provider, providerId, email: email || '', password: hashedPassword },
+            const existingUser = await this.prisma.user.findFirst({
+                where: {
+                    OR: [
+                        ...(email ? [{ email }] : []),
+                        ...(SDT ? [{ SDT }] : [])
+                    ]
+                }
             });
+            if (existingUser) {
+                user = await this.prisma.user.update({
+                    where: { id: existingUser.id },
+                    data: {
+                        provider,
+                        providerId,
+                        ...(email && { email }),
+                        ...(SDT && { SDT })
+                    }
+                });
+            }
+            else {
+                const newPassword = Math.random().toString(36).slice(-8);
+                const hashedPassword = await bcrypt.hash(newPassword, 10);
+                user = await this.prisma.user.create({
+                    data: {
+                        provider,
+                        providerId,
+                        email: email || '',
+                        password: hashedPassword,
+                        ...(SDT && { SDT })
+                    },
+                });
+            }
         }
         const token = this.jwtService.sign({ id: user.id, provider: user.provider });
         return { token, user };

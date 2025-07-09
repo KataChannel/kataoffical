@@ -61,20 +61,50 @@ export class AuthService {
     });
     return { newPassword };
   }
-  async validateOAuthLogin(provider: string, providerId: string, email?: string) {
+  async validateOAuthLogin(provider: string, providerId: string, email?: string, SDT?: string) {
     let user = await this.prisma.user.findUnique({ where: { providerId } });
 
     if (!user) {
-      const newPassword = Math.random().toString(36).slice(-8); // Tạo password ngẫu nhiên
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-      user = await this.prisma.user.create({
-        data: { provider, providerId, email: email || '', password: hashedPassword },
+      // Kiểm tra nếu email hoặc SDT đã tồn tại
+      const existingUser = await this.prisma.user.findFirst({
+        where: {
+          OR: [
+            ...(email ? [{ email }] : []),
+            ...(SDT ? [{ SDT }] : [])
+          ]
+        }
       });
-    }
 
+      if (existingUser) {
+        // Cập nhật user hiện có với providerId
+        user = await this.prisma.user.update({
+          where: { id: existingUser.id },
+          data: { 
+            provider, 
+            providerId,
+            ...(email && { email }),
+            ...(SDT && { SDT })
+          }
+        });
+      } else {
+        // Tạo user mới
+        const newPassword = Math.random().toString(36).slice(-8);
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user = await this.prisma.user.create({
+          data: { 
+            provider, 
+            providerId, 
+            email: email || '', 
+            password: hashedPassword,
+            ...(SDT && { SDT })
+          },
+        });
+      }
+    }
     const token = this.jwtService.sign({ id: user.id, provider: user.provider });
     return { token, user };
   }
+
   async getUserRoles(userId: string) {
     return this.prisma.userRole.findMany({
       where: { userId },
