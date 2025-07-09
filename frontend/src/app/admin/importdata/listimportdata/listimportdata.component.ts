@@ -462,9 +462,9 @@ convertBGSPToImport(
     mabanggia: boardKey,
     title: `Bảng giá ${boardKey.replace('BG', '')}`,
     sanpham: data.map((sp) => ({
-      masp: sp.masp,
-      title: sp.title,
-      giagoc: sp.giagoc,
+      masp: sp.masp?.toString().trim() || '',
+      title: sp.title?.toString().trim() || '',
+      giagoc: sp.giagoc || 0,
       giaban: sp[boardKey] || 0,
     })),
   }));

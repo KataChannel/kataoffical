@@ -46,27 +46,41 @@ export class BanggiaService {
         return console.error(error);
     }
   }
-  
+
   async importSPBG(dulieu: any) {
     try {
-      const options = {
-          method:'POST',
+      // Chia dữ liệu thành các batch 10 items
+      const batchSize = 10;
+      const batches = [];
+      
+      for (let i = 0; i < dulieu.length; i += batchSize) {
+        batches.push(dulieu.slice(i, i + batchSize));
+      }
+
+      // Gửi từng batch
+      for (const batch of batches) {
+        const options = {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(dulieu),
+          body: JSON.stringify(batch),
         };
+        
         const response = await fetch(`${environment.APIURL}/banggia/importspbg`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
         const data = await response.json();
         if (!response.ok) {
           this.handleError(response.status);
         }
-        this.getAllBanggia()
+      }
+      
+      this.getAllBanggia();
     } catch (error) {
-        return console.error(error);
+      return console.error(error);
     }
   }
 
