@@ -40,7 +40,7 @@ let ImportdataService = class ImportdataService {
             let nextNumber = 1;
             if (latest && latest.codeId) {
                 const prefix = 'IH';
-                const match = latest.codeId.match(new RegExp(prefix + '(\d+)'));
+                const match = latest.codeId.match(new RegExp(prefix + '(\\d+)'));
                 if (match) {
                     nextNumber = parseInt(match[1]) + 1;
                 }
@@ -60,6 +60,7 @@ let ImportdataService = class ImportdataService {
             });
             const newOrder = (maxOrder._max?.order || 0) + 1;
             const codeId = await this.generateCodeId();
+            console.log('Creating importdata with codeId:', codeId);
             const created = await this.prisma.importHistory.create({
                 data: {
                     ...data,
