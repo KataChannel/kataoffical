@@ -197,7 +197,7 @@ echo "Starting backup process from cloud server..."
 
 # Check available space on remote server before backup
 echo "Checking available space on remote server..."
-ssh $SSH_OPTIONS "${REMOTE_SERVER}" "df -h ${REMOTE_BACKUP_DIR}"
+ssh $SSH_OPTIONS "${REMOTE_SERVER}" "mkdir -p ${REMOTE_BACKUP_DIR} && df -h ${REMOTE_BACKUP_DIR}"
 
 # Transfer environment file to remote server if it exists
 if [ -n "$ENV_FILE" ]; then

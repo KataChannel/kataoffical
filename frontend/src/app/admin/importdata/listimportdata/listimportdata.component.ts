@@ -33,6 +33,7 @@ import moment from 'moment';
 import { PhieukhoService } from '../../phieukho/phieukho.service';
 import { KhoService } from '../../kho/kho.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
+import { UserService } from '../../user/user.service';
 
 @Component({
   selector: 'app-listimportdata',
@@ -83,6 +84,7 @@ export class ListImportdataComponent implements OnInit {
   private _DonhangService: DonhangService = inject(DonhangService);
   private _DathangService: DathangService = inject(DathangService);
   private _PhieukhoService: PhieukhoService = inject(PhieukhoService);
+  private _UserService: UserService = inject(UserService);
   private _KhoService: KhoService = inject(KhoService);
   private _ImportdataService: ImportdataService = inject(ImportdataService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
@@ -130,6 +132,21 @@ export class ListImportdataComponent implements OnInit {
     await this._KhoService.getTonKho('1', '1000').then((res: any) => {
       this.rawListTonkho = res.data;
     });
+    await this._UserService.getProfile();
+    const permissions = this._UserService.profile()?.permissions?.map((item: any) => item.name) || [];
+    this.ListImportType.update((items) =>
+      items.map((item) => ({
+        ...item,
+        status: permissions.includes('importdata.'+item.value)
+      }))
+    );
+    console.log('ListImportType:', this.ListImportType());
+    console.log('permissions:', permissions);
+    console.log('this._UserService.profile():', this._UserService.profile());
+
+    
+
+    
   });
 }
 
