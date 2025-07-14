@@ -1,0 +1,87 @@
+[
+  {
+    "id": "27d07de5-a91f-4eac-bda0-617e3905b5b6",
+    "caseDetail": {
+      "errorStack": "NotFoundException: Banggia với mabanggia BG88 không tồn tại\n    at new HttpException (/app/node_modules/@nestjs/common/exceptions/http.exception.js:48:9)\n    at new NotFoundException (/app/node_modules/@nestjs/common/exceptions/not-found.exception.js:40:9)\n    at <anonymous> (/app/dist/src/khachhang/khachhang.service.js:88:52)\n    at processTicksAndRejections (native:7:39)",
+      "errorMessage": "Banggia với mabanggia BG88 không tồn tại",
+      "additionalInfo": "Error during product import process"
+    },
+    "importTime": "2025-06-03T08:12:01.011Z",
+    "createdAt": "2025-06-03T08:12:01.011Z",
+    "updatedAt": "2025-06-03T08:12:01.011Z",
+    "codeId": "IH00001",
+    "order": 1,
+    "createdBy": "system",
+    "status": null,
+    "title": "Import Khách Hàng 08:12:01 03/06/2025 ",
+    "type": "khachhang"
+  },
+  {
+    "id": "43bf58f8-9733-4f95-bfaf-08eabd13c9c9",
+    "caseDetail": {
+      "errorStack": "",
+      "errorMessage": "Sanpham with ID \"I100986\" not found",
+      "additionalInfo": "Error during import process"
+    },
+    "importTime": "2025-07-09T09:38:47.533Z",
+    "createdAt": "2025-07-09T09:38:47.533Z",
+    "updatedAt": "2025-07-09T09:38:47.533Z",
+    "codeId": "IH00002",
+    "order": 2,
+    "createdBy": "system",
+    "status": null,
+    "title": "Import Sản Phẩm Bảng giá 09:38:47 09/07/2025 ",
+    "type": "banggia"
+  },
+  {
+    "id": "72f9b675-8d6b-423d-b09e-019bd6519c10",
+    "caseDetail": {
+      "errorStack": "NotFoundException: Sanpham with ID \"I100986\" not found\n    at new HttpException (/app/node_modules/@nestjs/common/exceptions/http.exception.js:48:9)\n    at new NotFoundException (/app/node_modules/@nestjs/common/exceptions/not-found.exception.js:40:9)\n    at importSPBG (/app/dist/src/banggia/banggia.service.js:55:44)\n    at processTicksAndRejections (native:7:39)",
+      "errorMessage": "Sanpham with ID \"I100986\" not found",
+      "additionalInfo": "Error during import process"
+    },
+    "importTime": "2025-07-09T09:38:47.538Z",
+    "createdAt": "2025-07-09T09:38:47.538Z",
+    "updatedAt": "2025-07-09T09:38:47.538Z",
+    "codeId": "IH00003",
+    "order": 3,
+    "createdBy": "system",
+    "status": null,
+    "title": "Import Sản Phẩm Bảng giá 09:38:47 09/07/2025 ",
+    "type": "banggia"
+  },
+  {
+    "id": "dcf6476f-2bb2-482b-92ed-7cb025103cac",
+    "caseDetail": {
+      "errorStack": "",
+      "errorMessage": "Sanpham with ID \"I100986\" not found",
+      "additionalInfo": "Error during import process"
+    },
+    "importTime": "2025-07-09T09:39:03.150Z",
+    "createdAt": "2025-07-09T09:39:03.150Z",
+    "updatedAt": "2025-07-09T09:39:03.150Z",
+    "codeId": "IH00004",
+    "order": 4,
+    "createdBy": "system",
+    "status": null,
+    "title": "Import Sản Phẩm Bảng giá 09:39:03 09/07/2025 ",
+    "type": "banggia"
+  },
+  {
+    "id": "7912e250-3393-4511-bf66-26b2e6ca5d1a",
+    "caseDetail": {
+      "errorStack": "NotFoundException: Sanpham with ID \"I100986\" not found\n    at new HttpException (/app/node_modules/@nestjs/common/exceptions/http.exception.js:48:9)\n    at new NotFoundException (/app/node_modules/@nestjs/common/exceptions/not-found.exception.js:40:9)\n    at importSPBG (/app/dist/src/banggia/banggia.service.js:55:44)\n    at processTicksAndRejections (native:7:39)",
+      "errorMessage": "Sanpham with ID \"I100986\" not found",
+      "additionalInfo": "Error during import process"
+    },
+    "importTime": "2025-07-09T09:39:03.155Z",
+    "createdAt": "2025-07-09T09:39:03.155Z",
+    "updatedAt": "2025-07-09T09:39:03.155Z",
+    "codeId": "IH00005",
+    "order": 5,
+    "createdBy": "system",
+    "status": null,
+    "title": "Import Sản Phẩm Bảng giá 09:39:03 09/07/2025 ",
+    "type": "banggia"
+  }
+]

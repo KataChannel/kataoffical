@@ -68,6 +68,8 @@ export function writeExcelFile(
     });
     return newItem;
   });
+  console.log('Transformed Data:', transfer);
+  
   const transformedData = headers.length > 0 && Object.keys(mapping).length > 0 ? transfer: data;
   const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(transformedData);
   const workbook: XLSX.WorkBook = {
@@ -81,6 +83,37 @@ export function writeExcelFile(
   });
   saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
 }
+
+// Demo usage examples:
+/*
+// Example 1: Basic usage without headers and mapping
+const basicData = [
+  { id: 1, name: 'John', age: 30 },
+  { id: 2, name: 'Jane', age: 25 }
+];
+writeExcelFile(basicData, 'BasicReport');
+
+// Example 2: With custom title only
+writeExcelFile(basicData, 'CustomTitleReport');
+
+// Example 3: With headers for column ordering
+const headers = ['Tên', 'Tuổi', 'ID'];
+writeExcelFile(basicData, 'HeaderReport', headers);
+
+// Example 4: Full usage with all 4 parameters
+const data = [
+  { userId: 1, fullName: 'Nguyễn Văn A', years: 30, email: 'a@email.com' },
+  { userId: 2, fullName: 'Trần Thị B', years: 25, email: 'b@email.com' }
+];
+const headers = ['Mã NV', 'Họ Tên', 'Tuổi', 'Email'];
+const mapping = {
+  'userId': 'Mã NV',
+  'fullName': 'Họ Tên', 
+  'years': 'Tuổi',
+  'email': 'Email'
+};
+writeExcelFile(data, 'EmployeeReport', headers, mapping);
+*/
 
 export function writeExcelMultiple(
   sheetsData: { [sheetName: string]: any[] },

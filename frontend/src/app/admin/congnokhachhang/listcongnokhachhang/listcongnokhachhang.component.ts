@@ -68,27 +68,43 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
 export class ListcongnokhachhangComponent {
   Detail: any = {};
   displayedColumns: string[] = [
+    'ngay',
+    'makhachhang',
+    'tenkhachhang',
     'madonhang',
-    'name',
-    'donhang',
-    'ngaygiao',
+    'mahang',
+    'tenhang',
+    'dvt',
+    'soluong',
+    'dongia',
+    'thanhtientruocvat',
+    'vat',
+    'dongiavathoadon',
+    'thanhtiensauvat',
     'ghichu',
-    'status',
-    'createdAt',
-    'updatedAt',
+    'tongtiensauthue',
   ];
   ColumnName: any = {
+    ngay: 'Ngày',
+    makhachhang: 'Mã Khách Hàng',
+    tenkhachhang: 'Tên Khách Hàng',
     madonhang: 'Mã Đơn Hàng',
-    name: 'Khách Hàng',
-    donhang: 'Sản Phẩm',
-    ngaygiao: 'Ngày Giao',
+    mahang: 'Mã Hàng',
+    tenhang: 'Tên Hàng',
+    dvt: 'ĐVT',
+    soluong: 'Số Lượng',
+    dongia: 'Đơn Giá',
+    thanhtientruocvat: 'Thành Tiền Trước VAT',
+    vat: 'VAT',
+    dongiavathoadon: 'Đơn Giá VAT',
+    thanhtiensauvat: 'Thành Tiền Sau VAT',
     ghichu: 'Ghi Chú',
-    status: 'Trạng Thái',
-    createdAt: 'Ngày Tạo',
-    updatedAt: 'Ngày Cập Nhật',
+    tongtiensauthue: 'Tổng Tiền Sau Thuế',
   };
+
+
   FilterColumns: any[] = JSON.parse(
-    localStorage.getItem('DonhangColFilter') || '[]'
+    localStorage.getItem('CongnoColFilter') || '[]'
   );
   Columns: any[] = [];
   isFilter: boolean = false;
@@ -102,6 +118,7 @@ export class ListcongnokhachhangComponent {
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   Listdonhang: any = this._DonhangService.ListDonhang;
+  ListCongno:any = [];
   dataSource = new MatTableDataSource([]);
   donhangId: any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -126,38 +143,6 @@ export class ListcongnokhachhangComponent {
     });
   }
   onSelectionChange(event: MatSelectChange): void {
-    // const timeFrames: { [key: string]: () => void } = {
-    //   day: () => {
-    //     this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment()
-    //       .endOf('day')
-    //       .add(1, 'day')
-    //       .format('YYYY-MM-DD');
-    //   },
-    //   week: () => {
-    //     this.SearchParams.Batdau = moment()
-    //       .startOf('week')
-    //       .format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
-    //   },
-    //   month: () => {
-    //     this.SearchParams.Batdau = moment()
-    //       .startOf('month')
-    //       .format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment()
-    //       .endOf('month')
-    //       .format('YYYY-MM-DD');
-    //   },
-    //   year: () => {
-    //     this.SearchParams.Batdau = moment()
-    //       .startOf('year')
-    //       .format('YYYY-MM-DD');
-    //     this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
-    //   },
-    // };
-
-    // timeFrames[event.value]?.();
-    // console.log(this.SearchParams);   
      this.ngOnInit();
   }
   onDateChange(event: any): void {
@@ -191,7 +176,33 @@ export class ListcongnokhachhangComponent {
     this.CountItem = this.Listdonhang().length;
     this.initializeColumns();
     this.setupDrawer();
-    this.dataSource = new MatTableDataSource(this.Listdonhang());
+    console.log(this.Listdonhang());
+
+    
+    this.ListCongno = this.Listdonhang().flatMap((v:any)=>
+      v.sanpham.map((v1:any)=>({
+        ngay:moment(v.ngay).format("DD/MM/YYYY"),
+        tenkhachhang:v.khachhang?.name,
+        makhachhang:v.khachhang?.makh,
+        madonhang:v.madonhang,
+        tenhang:v1.title,
+        mahang:v1.masp,
+        dvt:v1.dvt,
+        soluong:v1.slgiao,
+        dongia:v1.giaban,
+        thanhtientruocvat:v1.slgiao*v1.giaban,
+        vat:5,
+        dongiavathoadon:v1.giaban*1.05,
+        thanhtiensauvat:v1.slgiao*v1.giaban*1.05,
+        ghichu:v1.ghichu,
+        tongtiensauthue:v1.tongtiensauthue,
+      }))
+    )
+
+    console.log(this.ListCongno);
+
+
+    this.dataSource = new MatTableDataSource(this.ListCongno);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.createFilter();
@@ -201,6 +212,8 @@ export class ListcongnokhachhangComponent {
     this.paginator._intl.firstPageLabel = 'Trang Đầu';
     this.paginator._intl.lastPageLabel = 'Trang Cuối';
   }
+
+
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
       key,
@@ -211,7 +224,7 @@ export class ListcongnokhachhangComponent {
       this.FilterColumns = this.Columns;
     } else {
       localStorage.setItem(
-        'DonhangColFilter',
+        'CongnoColFilter',
         JSON.stringify(this.FilterColumns)
       );
     }
@@ -246,7 +259,7 @@ export class ListcongnokhachhangComponent {
       return obj;
     }, {} as Record<string, string>);
     localStorage.setItem(
-      'DonhangColFilter',
+      'CongnoColFilter',
       JSON.stringify(this.FilterColumns)
     );
   }
@@ -505,7 +518,26 @@ export class ListcongnokhachhangComponent {
     this.DoImportData(data);
   }
   ExportExcel(data: any, title: any) {
-    writeExcelFile(data, title);
+
+    const columns = [
+    'Ngày',
+    'Mã Khách Hàng',
+    'Tên Khách Hàng',
+    'Mã Đơn Hàng',
+    'Mã Hàng',
+    'Tên Hàng',
+    'ĐVT',
+    'Số Lượng', 
+    'Đơn Giá',
+    'Thành Tiền Trước VAT',
+    'VAT',
+    'Đơn Giá VAT',
+    'Thành Tiền Sau VAT',
+    'Ghi Chú',  
+    'Tổng Tiền Sau Thuế',
+  ];
+
+    writeExcelFile(data, title,columns,this.ColumnName);
   }
   printContent()
   {

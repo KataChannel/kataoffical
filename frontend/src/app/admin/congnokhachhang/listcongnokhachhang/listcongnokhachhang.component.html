@@ -27,6 +27,9 @@
                 <button matTooltip="Tìm Kiếm" color="primary" (click)="isSearch = !isSearch" mat-icon-button>
                     <mat-icon>search</mat-icon>
                 </button>
+              <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(ListCongno,'Congno')" color="primary" mat-icon-button>
+                    <mat-icon>file_download</mat-icon>
+                </button>
             </div>
         </div>
         <div *ngIf="isSearch" class="py-2 w-full flex flex-row space-x-2 items-center">
@@ -77,12 +80,11 @@
             <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button>
             <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Phiếu Chia</button>
           </div> -->
-          <div class="flex flex-row space-x-2">
-            <!-- <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button> -->
+          <!-- <div class="flex flex-row space-x-2">
             <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Công Nợ</button>
             <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="BackStatus()">Quay Lại Đã Đặt</button>
             <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="Hoanthanh()">Hoàn Thành</button>
-          </div>
+          </div> -->
         <div class="w-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {
