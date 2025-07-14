@@ -166,20 +166,25 @@ export class ListcongnokhachhangComponent {
       return isMatch;
     };
   }
-  applyFilter(event: Event) {
+  @Debounce(300)
+  async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+    console.log('filterValue', filterValue);
+    this.SearchParams = {
+      ...this.SearchParams,
+      query: filterValue
+    };
+   this.loadData(this.SearchParams);
   }
+
   async ngOnInit(): Promise<void> {
-    await this._DonhangService.searchDonhang(this.SearchParams);
-    this.CountItem = this.Listdonhang().length;
     this.initializeColumns();
     this.setupDrawer();
-    console.log(this.Listdonhang());
-
+    this.loadData(this.SearchParams);
+  }
+  async loadData(query:any): Promise<void> {
+    await this._DonhangService.searchDonhang(query);
+    this.CountItem = this.Listdonhang().length;
     // Nhóm dữ liệu theo khách hàng để tính tổng tiền sau thuế
     const customerTotals = new Map();
     
@@ -216,7 +221,6 @@ export class ListcongnokhachhangComponent {
         tongtiensauthue: customerTotals.get(v.khachhang?.makh) || 0,
       }))
     )
-
     this.dataSource = new MatTableDataSource(this.ListCongno);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
