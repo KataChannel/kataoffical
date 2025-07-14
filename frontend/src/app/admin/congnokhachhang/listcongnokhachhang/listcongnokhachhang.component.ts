@@ -32,6 +32,7 @@ import {
   convertToSlug,
   GenId,
 } from '../../../shared/utils/shared.utils';
+import * as XLSX from 'xlsx-js-style'; 
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -127,7 +128,8 @@ export class ListcongnokhachhangComponent {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
     Type: 'donsi',
-    Status:['danhan','hoanthanh']
+    Status:['danhan','hoanthanh'],
+    pageSize: 1000,
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -178,29 +180,42 @@ export class ListcongnokhachhangComponent {
     this.setupDrawer();
     console.log(this.Listdonhang());
 
+    // Nhóm dữ liệu theo khách hàng để tính tổng tiền sau thuế
+    const customerTotals = new Map();
     
-    this.ListCongno = this.Listdonhang().flatMap((v:any)=>
-      v.sanpham.map((v1:any)=>({
-        ngay:moment(v.ngay).format("DD/MM/YYYY"),
-        tenkhachhang:v.khachhang?.name,
-        makhachhang:v.khachhang?.makh,
-        madonhang:v.madonhang,
-        tenhang:v1.title,
-        mahang:v1.masp,
-        dvt:v1.dvt,
-        soluong:v1.slgiao,
-        dongia:v1.giaban,
-        thanhtientruocvat:v1.slgiao*v1.giaban,
-        vat:5,
-        dongiavathoadon:v1.giaban*1.05,
-        thanhtiensauvat:v1.slgiao*v1.giaban*1.05,
-        ghichu:v1.ghichu,
-        tongtiensauthue:v1.tongtiensauthue,
+    // Tính tổng tiền sau thuế cho từng khách hàng
+    this.Listdonhang().forEach((v: any) => {
+      const makh = v.khachhang?.makh;
+      if (makh) {
+        v.sanpham.forEach((v1: any) => {
+          const thanhtiensauvat = v1.slgiao * v1.giaban * 1.05;
+          if (!customerTotals.has(makh)) {
+            customerTotals.set(makh, 0);
+          }
+          customerTotals.set(makh, customerTotals.get(makh) + thanhtiensauvat);
+        });
+      }
+    });
+    
+    this.ListCongno = this.Listdonhang().flatMap((v: any) =>
+      v.sanpham.map((v1: any) => ({
+        ngay: moment(v.ngay).format("DD/MM/YYYY"),
+        tenkhachhang: v.khachhang?.name,
+        makhachhang: v.khachhang?.makh,
+        madonhang: v.madonhang,
+        tenhang: v1.title,
+        mahang: v1.masp,
+        dvt: v1.dvt,
+        soluong: v1.slgiao,
+        dongia: v1.giaban,
+        thanhtientruocvat: v1.slgiao * v1.giaban,
+        vat: 5,
+        dongiavathoadon: v1.giaban * 1.05,
+        thanhtiensauvat: v1.slgiao * v1.giaban * 1.05,
+        ghichu: v1.ghichu,
+        tongtiensauthue: customerTotals.get(v.khachhang?.makh) || 0,
       }))
     )
-
-    console.log(this.ListCongno);
-
 
     this.dataSource = new MatTableDataSource(this.ListCongno);
     this.dataSource.paginator = this.paginator;
@@ -518,26 +533,139 @@ export class ListcongnokhachhangComponent {
     this.DoImportData(data);
   }
   ExportExcel(data: any, title: any) {
-
     const columns = [
-    'Ngày',
-    'Mã Khách Hàng',
-    'Tên Khách Hàng',
-    'Mã Đơn Hàng',
-    'Mã Hàng',
-    'Tên Hàng',
-    'ĐVT',
-    'Số Lượng', 
-    'Đơn Giá',
-    'Thành Tiền Trước VAT',
-    'VAT',
-    'Đơn Giá VAT',
-    'Thành Tiền Sau VAT',
-    'Ghi Chú',  
-    'Tổng Tiền Sau Thuế',
-  ];
+      'Ngày',
+      'Mã Khách Hàng',
+      'Tên Khách Hàng',
+      'Mã Đơn Hàng',
+      'Mã Hàng',
+      'Tên Hàng',
+      'ĐVT',
+      'Số Lượng', 
+      'Đơn Giá',
+      'Thành Tiền Trước VAT',
+      'VAT',
+      'Đơn Giá VAT',
+      'Thành Tiền Sau VAT',
+      'Ghi Chú',  
+      'Tổng Tiền Sau Thuế',
+    ];
 
-    writeExcelFile(data, title,columns,this.ColumnName);
+    // Nhóm dữ liệu theo mã khách hàng và tính tổng tiền sau thuế
+    const groupedData = this.groupDataByCustomer(data);
+    
+    this.writeExcelFileWithMergedCells(groupedData, title, columns);
+  }
+
+  private groupDataByCustomer(data: any[]): any[] {
+    // Tạo map để nhóm theo mã khách hàng
+    const customerGroups = new Map();
+    
+    data.forEach(item => {
+      const makh = item.makhachhang;
+      if (!customerGroups.has(makh)) {
+        customerGroups.set(makh, []);
+      }
+      customerGroups.get(makh).push(item);
+    });
+
+    // Tính tổng tiền sau thuế cho từng khách hàng và chuẩn bị dữ liệu
+    const result: any[] = [];
+    
+    customerGroups.forEach((items, makh) => {
+      const totalAmount = items.reduce((sum: number, item: any) => 
+        sum + (item.thanhtiensauvat || 0), 0
+      );
+      
+      items.forEach((item: any, index: number) => {
+        result.push({
+          ...item,
+          tongtiensauthue: index === 0 ? totalAmount : null // Chỉ hiển thị tổng ở dòng đầu tiên
+        });
+      });
+    });
+
+    return result;
+  }
+
+  private writeExcelFileWithMergedCells(data: any[], title: string, columns: string[]): void {    
+    // Tạo dữ liệu cho worksheet
+    const worksheetData = data.map(item => ({
+      'Ngày': item.ngay,
+      'Mã Khách Hàng': item.makhachhang,
+      'Tên Khách Hàng': item.tenkhachhang,
+      'Mã Đơn Hàng': item.madonhang,
+      'Mã Hàng': item.mahang,
+      'Tên Hàng': item.tenhang,
+      'ĐVT': item.dvt,
+      'Số Lượng': item.soluong,
+      'Đơn Giá': item.dongia,
+      'Thành Tiền Trước VAT': item.thanhtientruocvat,
+      'VAT': item.vat,
+      'Đơn Giá VAT': item.dongiavathoadon,
+      'Thành Tiền Sau VAT': item.thanhtiensauvat,
+      'Ghi Chú': item.ghichu,
+      'Tổng Tiền Sau Thuế': item.tongtiensauthue
+    }));
+
+    // Tạo worksheet
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    
+    // Tạo merge ranges cho cột "Tổng Tiền Sau Thuế"
+    const mergeRanges = this.createMergeRanges(data);
+    
+    // Áp dụng merge ranges
+    if (mergeRanges.length > 0) {
+      worksheet['!merges'] = mergeRanges;
+    }
+
+    // Tạo workbook và thêm worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'CongNo');
+
+    // Xuất file
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    this.saveAsExcelFile(excelBuffer, `${title}_${moment().format('DD_MM_YYYY')}`);
+  }
+
+  private createMergeRanges(data: any[]): any[] {
+    const mergeRanges: any[] = [];
+    const customerGroups = new Map();
+    
+    // Nhóm theo mã khách hàng và lưu vị trí dòng
+    data.forEach((item, index) => {
+      const makh = item.makhachhang;
+      if (!customerGroups.has(makh)) {
+        customerGroups.set(makh, { start: index + 1, count: 0 }); // +1 vì có header
+      }
+      customerGroups.get(makh).count++;
+    });
+
+    // Tạo merge ranges cho cột "Tổng Tiền Sau Thuế" (cột thứ 15, index 14)
+    const totalColumnIndex = 14; // Cột "Tổng Tiền Sau Thuế"
+    
+    customerGroups.forEach((group) => {
+      if (group.count > 1) {
+        mergeRanges.push({
+          s: { r: group.start, c: totalColumnIndex }, // start row, column
+          e: { r: group.start + group.count - 1, c: totalColumnIndex } // end row, column
+        });
+      }
+    });
+
+    return mergeRanges;
+  }
+
+  private saveAsExcelFile(buffer: any, fileName: string): void {
+    const data = new Blob([buffer], { type: 'application/octet-stream' });
+    const url = window.URL.createObjectURL(data);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${fileName}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   }
   printContent()
   {
