@@ -31,8 +31,8 @@ git add .
 print_status "Committing changes..."
 git commit -m "update: $(date '+%Y-%m-%d %H:%M:%S')"
 
-# print_status "Pushing to remote repository..."
-# git push
+print_status "Pushing to remote repository..."
+git push
 
 # Remote deployment
 print_status "Connecting to remote server and deploying..."
