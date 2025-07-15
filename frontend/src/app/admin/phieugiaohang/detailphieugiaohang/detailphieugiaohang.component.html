@@ -52,7 +52,7 @@
             <div>Kho sơ chế: 30 Kha Vạn Cân, P. Hiệp Bình Chánh, TP. Thủ Đức, TP.HCM</div>
             <div>Website: http://rausachtrangia.com - Hotline: 090.245.8081</div>
           </div>
-
+          <img src="/images/qrcodedonhang.svg" class="h-32 ml-auto p-4">
         </div>
         <div class="font-bold text-[18px] uppercase">BẢNG KÊ GIAO HÀNG NGÀY
           {{DetailPhieugiaohang().ngaygiao|date:'dd/MM/yyyy'}}</div>
@@ -60,53 +60,7 @@
           {{DetailPhieugiaohang()?.khachhang?.name||"Chưa Chọn Khách Hàng"}}</div>
         <div *ngIf="isEdit() && DetailPhieugiaohang()?.khachhang?.ghichu" class="p-2 rounded-lg border text-red-600"
           [innerHTML]="DetailPhieugiaohang().khachhang.ghichu"></div>
-        <!-- <div *ngIf="isEdit()" class="grid lg:grid-cols-3 grid-cols-1 gap-4">
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Khách Hàng</mat-label>
-          <mat-select [(ngModel)]="DetailPhieugiaohang().khachhangId" [ngModelOptions]="{ standalone: true }"
-            (selectionChange)="SelectKhachhang($event)">
-            <div class="w-full flex flex-col">
-              <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
-                <input matInput (input)="DoFindKhachhang($event)" placeholder="Tìm Kiếm" />
-              </mat-form-field>
-              <div class="overflow-y-auto max-h-44">
-                @for (item of filterKhachhang; track item.id) {
-                <mat-option [value]="item.id">{{item.name}}</mat-option>
-                }
-              </div>
-            </div>
-          </mat-select>
-        </mat-form-field>
-  
-        <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Bảng Giá</mat-label>
-          <mat-select [(ngModel)]="DetailPhieugiaohang().banggiaId" [ngModelOptions]="{ standalone: true }"
-            (selectionChange)="SelectBanggia($event)">
-            <div class="w-full flex flex-col">
-              <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
-                <input matInput (input)="DoFindBanggia($event)" placeholder="Tìm Kiếm" />
-              </mat-form-field>
-              <div class="overflow-y-auto max-h-44">
-                @for (item of filterBanggia; track item.id) {
-                <mat-option [value]="item.id">{{item.title}}</mat-option>
-                }
-              </div>
-            </div>
-          </mat-select>
-        </mat-form-field>
 
-        <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-          <mat-label>Ngày Giao Hàng</mat-label>
-          <input matInput [matDatepicker]="datepicker" [(ngModel)]="DetailPhieugiaohang().ngaygiao" [ngModelOptions]="{ standalone: true }" />
-          <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
-          <mat-datepicker #datepicker></mat-datepicker>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="w-full lg:col-span-3" subscriptSizing="dynamic">
-          <mat-label>Ghi Chú Đơn Hàng</mat-label>  
-          <textarea matInput [(ngModel)]="DetailPhieugiaohang().ghichu" [ngModelOptions]="{ standalone: true }" placeholder="Vui lòng Nhập Ghi Chú"></textarea>   
-       </mat-form-field>
-      </div> -->
         <div class="w-full flex flex-row items-center">
           <div class="flex flex-col space-y-1">
             <div class="w-full flex items-start"><strong>Địa Chỉ : </strong>
@@ -119,7 +73,7 @@
                 ({{TinhTong(DetailPhieugiaohang()?.sanpham,'slgiao')|number:'1.0-2'}})
               </strong> </div>
           </div>
-          <img src="/images/qrcodedonhang.svg" class="h-32 ml-auto p-4">
+          
         </div>
 
 

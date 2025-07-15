@@ -2,8 +2,8 @@
     <mat-drawer #drawer class="flex flex-col !w-full h-full" [position]="'end'" mode="over">
         <router-outlet></router-outlet>
     </mat-drawer>
-    <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
-        <div *ngIf="!isSearch" class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
+    <div class="flex flex-col space-y-2 h-screen-12 w-full px-2">
+        <div *ngIf="!isSearch" class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center px-2 bg-white rounded-lg">
             <div class="flex flex-row space-x-2 items-center">
                 <!-- <button class="flex flex-row items-center btn-primary" matTooltip="Thêm mới" (click)="create()" mat-flat-button>
                     <mat-icon>add_circle</mat-icon>
@@ -41,7 +41,7 @@
                 <button matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
                     <mat-icon>cloud_download</mat-icon>
                 </button> -->
-                <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
+                <span class="lg:flex hidden whitespace-nowrap px-2 rounded-lg bg-slate-200">
                     {{CountItem}} Đơn Hàng
                 </span>
                 <!-- <button mat-flat-button color="primary" (click)="uploadfile.click()" [disabled]="isLoading">Upload</button> -->
@@ -144,7 +144,7 @@
                                             <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
                                         </div>
                                         <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
-                                                <div *ngFor="let item of FilterHederColumn(dataSource.filteredData,column); trackBy:trackByFn" (click)="ChosenItem(item,column)" class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
+                                                <div *ngFor="let item of FilterHederColumn(dataSource.filteredData,column); trackBy:trackByFn" (click)="ChosenItem(item,column)" class="flex flex-row space-x-2 items-center px-2 rounded-lg hover:bg-slate-100">
                                                    <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>
                                                    @switch (column) {
                                                        @case ('createdAt') {
@@ -265,23 +265,23 @@
                     <table id="printContent" class="text-left rtl:text-right leading-none p-4">
                         <thead class="p-2 border uppercase text-center">
                             <tr>
-                                <th scope="col" class="w-20 p-2 border">
+                                <th scope="col" class="w-20 px-2 border">
                                     Mã SP
                                 </th>
-                                <th scope="col" class="w-20 p-2 border">
+                                <th scope="col" class="w-20 px-2 border">
                                     Tên SP
                                 </th>
-                                <th scope="col" class="w-20 p-2 border">
+                                <th scope="col" class="w-20 px-2 border">
                                     Đơn vị
                                 </th>
-                                <th *ngFor="let kh of Phieuchia" scope="col" class="w-20 p-2 border">
+                                <th *ngFor="let kh of Phieuchia" scope="col" class="w-20 px-2 border">
                                    <div class="w-full flex flex-col space-y-1 justify-between">
                                     <span>{{ kh.name }}</span>
-                                    <span>{{ kh.madonhang }}</span>
+                                    <!-- <span>{{ kh.madonhang }}</span>
                                     <div class="flex justify-between items-center w-full">
-                                        <span class="w-1/2 text-center p-2 border rounded-lg">SLDAT</span>
-                                        <span class="w-1/2 text-center p-2 border rounded-lg">SLTT</span>
-                                      </div>
+                                        <span class="w-1/2 text-center px-2 border rounded-lg">SLDAT</span>
+                                        <span class="w-1/2 text-center px-2 border rounded-lg">SLTT</span>
+                                      </div> -->
                                    </div>
 
                                 </th>
@@ -289,19 +289,19 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let product of getUniqueProducts(Phieuchia)" class="p-2 border">
-                                <td scope="row" class="w-20 p-2 border font-medium text-gray-900 whitespace-nowrap">
+                                <td scope="row" class="w-20 px-2 border font-medium text-gray-900 whitespace-nowrap">
                                     {{ getDvtForProduct(Phieuchia,product)?.masp }}
                                 </td>
-                                <td scope="row" class="w-20 p-2 border font-medium text-gray-900 whitespace-nowrap">
+                                <td scope="row" class="w-20 px-2 border font-medium text-gray-900 whitespace-nowrap">
                                         {{ product }}
                                 </td>
-                                <td class="w-20 p-2 border text-start">
+                                <td class="w-20 px-2 border text-start">
                                     {{ getDvtForProduct(Phieuchia,product)?.dvt }}
                                 </td>
-                                <td class="w-20 text-end p-2 border" *ngFor="let kh of Phieuchia">
+                                <td class="w-20 text-end px-2 border" *ngFor="let kh of Phieuchia">
                                     <div class="flex justify-between items-center w-full">
-                                        <span class="w-1/2 text-center border rounded-lg p-2 h-8">{{ getProductQuantity(Phieuchia,product, kh.makh)?.slgiao || '' }}</span>
-                                        <span class="w-1/2 border rounded-lg p-2 h-8"></span>
+                                        <span class="w-1/2 px-2 h-8"></span>
+                                        <span class="w-1/2 flex items-center justify-end px-2 h-8">{{ getProductQuantity(Phieuchia,product, kh.makh)?.slgiao || '' }}</span>
                                       </div>
                                 </td>
                             </tr>
@@ -326,16 +326,16 @@
                     <table id="printContent" class="text-left rtl:text-right leading-none p-4">
                         <thead class="p-2 border uppercase text-center">
                             <tr>
-                                <th scope="col" class="w-20 p-2 border">
+                                <th scope="col" class="w-20 px-2 border">
                                     Mã SP
                                 </th>
-                                <th scope="col" class="w-20 p-2 border">
+                                <th scope="col" class="w-20 px-2 border">
                                     Tên SP
                                 </th>
-                                <th scope="col" class="w-20 p-2 border">
+                                <th scope="col" class="w-20 px-2 border">
                                     Đơn vị
                                 </th>
-                                <th *ngFor="let kh of ListBillXuly" scope="col" class="w-20 p-2 border">
+                                <th *ngFor="let kh of ListBillXuly" scope="col" class="w-20 px-2 border">
                                    <div class="w-full flex flex-col space-y-1 justify-between">
                                     <span>{{ kh.name }}</span>
                                     <span>{{ kh.madonhang }}</span>
@@ -347,20 +347,20 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let product of getUniqueProducts(ListBillXuly); let i = index" class="p-2 border">
-                                <td scope="row" class="w-20 p-2 border font-medium text-gray-900 whitespace-nowrap">
+                                <td scope="row" class="w-20 px-2 border font-medium text-gray-900 whitespace-nowrap">
                                     {{ getDvtForProduct(ListBillXuly,product)?.masp }}
                                 </td>
-                                <td scope="row" class="w-20 p-2 border font-medium text-gray-900 whitespace-nowrap">
+                                <td scope="row" class="w-20 px-2 border font-medium text-gray-900 whitespace-nowrap">
                                         {{ product }}
                                 </td>
-                                <td class="w-20 p-2 border text-start">
+                                <td class="w-20 px-2 border text-start">
                                     {{ getDvtForProduct(ListBillXuly,product)?.dvt }}
                                 </td>
-                                <td class="w-20 text-end p-2 border" *ngFor="let kh of ListBillXuly; trackBy:trackByFn; let j = index">
+                                <td class="w-20 text-end px-2 border" *ngFor="let kh of ListBillXuly; trackBy:trackByFn; let j = index">
                                 <div
                                     [contentEditable]="true"
                                     (keydown.enter)="updateValue($event,j, i, 'slgiao','number')"
-                                    class="slgiao-input-{{j}} p-2 min-w-28 text-end bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
+                                    class="slgiao-input-{{j}} px-2 min-w-28 text-end bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
                                     >
                                      {{ ListBillXuly[j]?.sanpham[i]?.slgiao||0|number:'1.0-2' }}
                                    </div>                          
