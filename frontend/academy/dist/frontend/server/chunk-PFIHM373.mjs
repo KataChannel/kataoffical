@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{Ab as o,ac as e,bc as i,yc as a}from"./chunk-IHTIFXQI.mjs";import"./chunk-KB5IWD3E.mjs";import"./chunk-RIAI3ORJ.mjs";var s=class n{static \u0275fac=function(t){return new(t||n)};static \u0275cmp=o({type:n,selectors:[["app-notifications"]],decls:2,vars:0,template:function(t,m){t&1&&(e(0,"p"),a(1,"notifications works!"),i())},encapsulation:2})};export{s as NotificationsComponent};
