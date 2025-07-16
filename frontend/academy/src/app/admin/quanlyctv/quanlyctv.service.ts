@@ -53,14 +53,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     }
   
     async getAllQuanlyctv() {
-      const db = await this.initDB();
-      const cachedData = await db.getAll('quanlyctvs');
-      const updatedAtCache = this._StorageService.getItem('quanlyctvs_updatedAt') || '0';
-      // Nếu có cache và dữ liệu chưa hết hạn, trả về ngay
-      if (cachedData.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) { // 5 phút cache TTL
-        this.ListQuanlyctv.set(cachedData);
-        return cachedData;
-      }
       try {
         const options = {
           method: 'GET',
@@ -69,33 +61,16 @@ import { MatSnackBar } from '@angular/material/snack-bar';
             'Authorization': `Bearer ${this._StorageService.getItem('token')}`
           },
         };
-        const lastUpdatedResponse = await fetch(`${environment.ACADEMY_APIURL}/users/last-updated`, options);
-        if (!lastUpdatedResponse.ok) {
-          this.handleError(lastUpdatedResponse.status);
-          return cachedData;
-        }    
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-        //Nếu cache vẫn mới, không cần tải lại dữ liệu
-        if (updatedAtServer <= updatedAtCache) {
-          this.ListQuanlyctv.set(cachedData);
-          return cachedData;
-        }
-        console.log(updatedAtServer, updatedAtCache); 
-        //Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
         const response = await fetch(`${environment.ACADEMY_APIURL}/users`, options);
         if (!response.ok) {
           this.handleError(response.status);
-          return cachedData;
         }
         const data = await response.json();
-        await this.saveQuanlyctvs(data);
-        this._StorageService.setItem('quanlyctvs_updatedAt', updatedAtServer);
         this.ListQuanlyctv.set(data);
         return data;
       } catch (error) {
         this._ErrorLogService.logError('Failed to create getAllQuanlyctv', error);
         console.error(error);
-        return cachedData;
       }
     }
   
@@ -107,23 +82,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
         this._StorageService.removeItem('quanlyctvs_updatedAt');
         await this.getAllQuanlyctv();
       });
-    }
-    //Khởi tạo IndexedDB
-    private async initDB() {
-      return await openDB('QuanlyctvDB', 1, {
-        upgrade(db) {
-          db.createObjectStore('quanlyctvs', { keyPath: 'id' });
-        },
-      });
-    }
-    // Lưu vào IndexedDB
-    private async saveQuanlyctvs(data: any[]) {
-      const db = await this.initDB();
-      const tx = db.transaction('quanlyctvs', 'readwrite');
-      const store = tx.objectStore('quanlyctvs');
-      await store.clear(); // Xóa dữ liệu cũ
-      data.forEach(item => store.put(item));
-      await tx.done;
     }
   
     async getQuanlyctvBy(param: any) {

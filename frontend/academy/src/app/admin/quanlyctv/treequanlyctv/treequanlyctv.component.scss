@@ -1,0 +1,38 @@
+.tree-node {
+    transition: all 0.2s ease-in-out;
+}
+
+.tree-node:hover {
+    background-color: #f9fafb;
+}
+
+.tree-toggle {
+    transition: transform 0.2s ease-in-out;
+}
+
+.tree-toggle.expanded {
+    transform: rotate(90deg);
+}
+
+mark {
+    background-color: #fef3c7;
+    padding: 1px 2px;
+    border-radius: 2px;
+}
+
+.search-highlight {
+    background-color: #fef3c7;
+    font-weight: 600;
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .tree-table {
+        font-size: 0.875rem;
+    }
+    
+    .tree-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}

@@ -24,6 +24,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
   import { env } from 'process';
   import { environment } from '../../../../environments/environment.development';
   import { KtableComponent } from '../../../shared/common/ktable/ktable.component';
+import { TreequanlyctvComponent } from '../treequanlyctv/treequanlyctv.component';
   @Component({
     selector: 'app-listquanlyctv',
     templateUrl: './listquanlyctv.component.html',
@@ -36,7 +37,6 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
       MatPaginatorModule,
       MatMenuModule,
       MatSidenavModule,
-      RouterOutlet,
       MatIconModule,
       MatButtonModule,
       MatSelectModule,
@@ -44,8 +44,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, in
       FormsModule,
       MatTooltipModule,
       MatDialogModule,
-      SearchfilterComponent,
-      KtableComponent
+      TreequanlyctvComponent
     ],
     changeDetection: ChangeDetectionStrategy.OnPush
   })
