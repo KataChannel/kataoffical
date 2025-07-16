@@ -1,6 +1,6 @@
 <div class="flex flex-col space-y-4 container mx-auto p-4">
   <div class="flex lg:flex-row flex-col gap-2 py-4">
-    <span class="text-2xl font-bold">Landing Pages</span>
+    <!-- <span class="text-2xl font-bold">Landing Pages</span> -->
     <div class="flex flex-row items-center justify-end">
     <div class="relative w-full">
       <input type="text" placeholder="Tìm Kiếm..." (input)="applyFilters($event)"
@@ -81,7 +81,7 @@
               <mat-icon matBadge="0" matBadgeSize="small" class="!text-blue-500">linkedin</mat-icon>
               <span>Twitter</span>
             </div>
-            <div class="flex flex-col gap-1 items-center p-2 rounded-lg hover:bg-slate-100"    
+            <!-- <div class="flex flex-col gap-1 items-center p-2 rounded-lg hover:bg-slate-100"    
               (click)="share('linkedin', getUrl(item), item?.title, item?.description, item?.thumbnail)">
               <mat-icon matBadge="0" matBadgeSize="small" class="!text-blue-500">linkedin</mat-icon>
               <span>LinkedIn</span>
@@ -90,7 +90,7 @@
               (click)="share('pinterest', getUrl(item), item?.title, item?.description, item?.thumbnail)">
               <mat-icon matBadge="0" matBadgeSize="small" class="!text-blue-500">pinterest</mat-icon>
               <span>Pinterest</span>
-            </div>
+            </div> -->
             <div class="flex flex-col gap-1 items-center p-2 rounded-lg hover:bg-slate-100"    
               (click)="share('whatsapp', getUrl(item), item?.title, item?.description, item?.thumbnail)">
               <mat-icon matBadge="0" matBadgeSize="small" class="!text-blue-500">link</mat-icon>

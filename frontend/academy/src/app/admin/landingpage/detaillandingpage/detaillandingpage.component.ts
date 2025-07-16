@@ -117,6 +117,43 @@ export class DetailLandingpageComponent {
       console.error('Lỗi khi cập nhật landingpage:', error);
     }
   }
+  async Copy() {
+    try {
+      const currentData = this.DetailLandingpage();
+      const copiedData = {
+        ...currentData,
+        id: undefined, // Remove the existing id
+        codeId:undefined,
+        title: `${currentData.title} - Copy`,
+        slug: convertToSlug(`${currentData.title} - Copy`),
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      await this._LandingpageService.CreateLandingpage(copiedData);
+      
+      this._snackBar.open('Sao Chép Thành Công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      
+      // Navigate to the new copied landingpage
+      this._router.navigate(['/admin/landingpage', copiedData.id]);
+    } catch (error) {
+      console.error('Lỗi khi sao chép landingpage:', error);
+      this._snackBar.open('Lỗi khi sao chép', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+
+
   async DeleteData() {
     try {
       await this._LandingpageService.DeleteLandingpage(

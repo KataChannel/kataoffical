@@ -54,7 +54,7 @@ export class DangkyctvComponent implements OnInit {
         duration: 3000,
         horizontalPosition: "end",
         verticalPosition: "top",
-        panelClass: ['snackbar-warn'],
+        panelClass: ['snackbar-error'],
       });
       return;
     }
@@ -65,7 +65,7 @@ export class DangkyctvComponent implements OnInit {
         duration: 3000,
         horizontalPosition: "end",
         verticalPosition: "top",
-        panelClass: ['snackbar-warn'],
+        panelClass: ['snackbar-error'],
       });
       return;
     }
@@ -76,7 +76,7 @@ export class DangkyctvComponent implements OnInit {
         duration: 3000,
         horizontalPosition: "end",
         verticalPosition: "top",
-        panelClass: ['snackbar-warn'],
+        panelClass: ['snackbar-error'],
       });
       return;
     }
@@ -87,7 +87,7 @@ export class DangkyctvComponent implements OnInit {
         duration: 3000,
         horizontalPosition: "end",
         verticalPosition: "top",
-        panelClass: ['snackbar-warn'],
+        panelClass: ['snackbar-error'],
       });
       return;
     }

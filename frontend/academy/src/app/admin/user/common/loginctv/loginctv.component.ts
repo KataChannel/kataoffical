@@ -116,7 +116,7 @@ import { Config } from '../login/login';
           console.log(data);
           if (data&&data[0]) {
             setTimeout(() => {
-              window.location.reload();
+              window.location.href = '/dashboardctv';
             }, 100);
             //  console.log(data);
             // this.postMessage(data[1]);
