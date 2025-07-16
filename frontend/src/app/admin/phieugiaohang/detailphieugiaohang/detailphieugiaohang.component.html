@@ -41,11 +41,11 @@
     </div>
   </ng-container>
   <ng-container *ngIf="!isDelete()">
-    <div id="printContent" class="min-w-[800px] flex flex-col space-y-6 items-center p-2 rounded-lg">
-      <div class="w-full flex flex-col space-y-4 items-center justify-center">
+    <div id="printContent" class="font-times min-w-[800px] flex flex-col space-y-6 items-center p-2 rounded-lg">
+      <div class="w-full flex flex-col items-center justify-center">
         <div *ngIf="!isEdit()" class="w-full flex flex-row space-x-2 items-center justify-between">
           <img src="/images/logo-full.png" class="h-14 mx-auto">
-          <div class="w-2/3 flex flex-col space-y-2">
+          <div class="w-2/3 flex flex-col">
             <div class="font-bold text-[18px]">CÔNG TY TNHH NÔNG SẢN THỰC PHẨM TRẦN GIA</div>
             <div>Hợp tác xã: Ấp Lộc Tiến, Xã Mỹ Lộc, Huyện Cần Giuộc, Tỉnh Long An</div>
             <div>Văn phòng: Tòa nhà An Phú Plaza, 117-119 Lý Chính Thắng, P.7, Q.3, TP.HCM</div>
@@ -61,8 +61,8 @@
         <div *ngIf="isEdit() && DetailPhieugiaohang()?.khachhang?.ghichu" class="p-2 rounded-lg border text-red-600"
           [innerHTML]="DetailPhieugiaohang().khachhang.ghichu"></div>
 
-        <div class="w-full flex flex-row items-center">
-          <div class="flex flex-col space-y-1">
+        <div class="w-full flex flex-row items-center mb-2">
+          <div class="w-full flex flex-col space-y-1 divide-y divide-gray-300">
             <div class="w-full flex items-start"><strong>Địa Chỉ : </strong>
               {{DetailPhieugiaohang()?.khachhang?.diachi}}</div>
             <div class="w-full flex items-start"><strong>Ghi Chú : </strong> {{DetailPhieugiaohang()?.ghichu}}</div>
@@ -71,49 +71,14 @@
             <div class="w-full flex items-start">
               <strong>Tổng khối lượng - Đơn Vị Tính : {{DetailPhieugiaohang()?.sanpham[0]?.dvt}}
                 ({{TinhTong(DetailPhieugiaohang()?.sanpham,'slgiao')|number:'1.0-2'}})
-              </strong> </div>
-          </div>
-          
+              </strong> 
+            </div>
+          </div>    
         </div>
 
 
         <div *ngIf="isEdit()" class="w-full flex flex-col overflow-y-auto">
           @defer () {
-          <!-- <div class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
-            <div class="flex flex-row space-x-2 items-center">
-                <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
-                  <mat-label>Sản Phẩm</mat-label>
-                  <mat-select (selectionChange)="SelectSanpham($event)">
-                    <div class="w-full flex flex-col">
-                      <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
-                        <input matInput (input)="DoFindSanpham($event)" placeholder="Tìm Kiếm" />
-                      </mat-form-field>
-                      <div class="overflow-y-auto max-h-44">
-                        @for (item of filterSanpham; track item.id) {
-                        <mat-option [value]="item.id">{{item.title}}</mat-option>
-                        }
-                        @empty {
-                        <mat-option disabled>Không có dữ liệu</mat-option>
-                        }
-                      </div>
-                    </div>
-                  </mat-select>
-                </mat-form-field>
-
-
-                <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-                    <mat-label>Tìm Kiếm</mat-label>
-                    <input matInput (keyup)="applyFilter($event)" placeholder="Tìm Kiếm" />
-                </mat-form-field>
-                <button [disabled]="!isEdit()" matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
-                  <mat-icon>cloud_download</mat-icon>
-              </button>
-                   <button [disabled]="!isEdit()" matTooltip="Làm Trống Giỏ Hàng" (click)="EmptyCart()" color="warn" mat-icon-button>
-                     <mat-icon>delete</mat-icon>
-                 </button>
-
-            </div>
-        </div> -->
           <div class="w-full overflow-auto">
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource()" matSort>
               @for (column of displayedColumns; track column) {
@@ -197,41 +162,41 @@
         <table *ngIf="!isEdit()" class="w-full border-collapse border mt-4">
           <thead>
             <tr class="border">
-              <th class="border p-2">STT</th>
-              <th class="border p-2">Tên sản phẩm</th>
-              <th class="border p-2">ĐVT</th>
-              <th class="border p-2 whitespace-nowrap">Số Lượng</th>
-              <th class="border p-2 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Đơn giá</th>
-              <th class="border p-2 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
-              <th class="border p-2 whitespace-nowrap">Số Lượng Nhận</th>
-              <th class="border p-2">Ghi chú</th>
+              <th class="border px-2">STT</th>
+              <th class="border px-2">Tên sản phẩm</th>
+              <th class="border px-2">ĐVT</th>
+              <th class="border px-2 whitespace-nowrap">Số Lượng</th>
+              <th class="border px-2 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Đơn giá</th>
+              <th class="border px-2 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
+              <th class="border px-2 whitespace-nowrap">Số Lượng Nhận</th>
+              <th class="border px-2">Ghi chú</th>
             </tr>
           </thead>
           <tbody>
             @for (item of DetailPhieugiaohang().sanpham; track item.id; let idx = $index) {
             <tr class="border">
-              <td class="border p-2 text-center">{{idx+1}}</td>
-              <td class="border p-2">{{DetailPhieugiaohang()?.khachhang?.istitle2?item.title2:item.title}}</td>
-              <td class="border p-2 text-center">{{item.dvt}}</td>
-              <td class="border p-2 text-end max-w-10">{{item.slgiao|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{item.giaban|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
+              <td class="border px-2 text-center">{{idx+1}}</td>
+              <td class="border px-2">{{DetailPhieugiaohang()?.khachhang?.istitle2?item.title2:item.title}}</td>
+              <td class="border px-2 text-center">{{item.dvt}}</td>
+              <td class="border px-2 text-end max-w-10">{{item.slgiao|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{item.giaban|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end max-w-20" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
                 {{item.ttgiao|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end max-w-10">{{DetailPhieugiaohang()?.status=== 'danhan'?
+              <td class="border px-2 text-end max-w-10">{{DetailPhieugiaohang()?.status=== 'danhan'?
                 (item.slnhan|number:'1.0-2':''):''}}</td>
-              <td class="border p-2">{{item.ghichu}}</td>
+              <td class="border px-2">{{item.ghichu}}</td>
             </tr>
             }
             <tr class="border">
-              <td colspan="3" class="border p-2 text-start">Tổng:</td>
-              <td class="border p-2 text-end font-bold">
+              <td colspan="3" class="border px-2 text-start">Tổng:</td>
+              <td class="border px-2 text-end font-bold">
                 {{TinhTong(DetailPhieugiaohang().sanpham,'slgiao')|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia"></td>
-              <td class="border p-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
+              <td class="border px-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia"></td>
+              <td class="border px-2 text-end font-bold" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
                 {{TinhTong(DetailPhieugiaohang().sanpham,'ttgiao')|number:'1.0-2'}}</td>
-              <td class="border p-2 text-end font-bold">{{DetailPhieugiaohang()?.status=== 'danhan'?
+              <td class="border px-2 text-end font-bold">{{DetailPhieugiaohang()?.status=== 'danhan'?
                 (TinhTong(DetailPhieugiaohang().sanpham,'slnhan')|number:'1.0-2'):''}}</td>
-              <td class="border p-2 text-end"></td>
+              <td class="border px-2 text-end"></td>
             </tr>
           </tbody>
         </table>
