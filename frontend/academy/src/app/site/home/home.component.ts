@@ -43,7 +43,7 @@ export class HomeComponent {
     { id: 1, title: 'Tổng Quan', icon: 'home', link: '/dashboardctv' },
     // { id: 2, title: 'Phân Tích', icon: 'info', link: '/thongkectv' },
     { id: 3, title: 'Liên Kết', icon: 'link', link: '/affiliatectv' },
-    { id: 4, title: 'Landing Page', icon: 'web', link: '/ladictv' },
+    { id: 4, title: 'Khóa Học', icon: 'web', link: '/ladictv' },
     // {
     //   id: 5,
     //   title: 'Tài Nguyên',

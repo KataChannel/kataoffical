@@ -71,7 +71,7 @@ export class MaindbComponent {
       series: [
         {
           name: "Hoa Hồng",
-          data: ["1", "2", "5", "7", "6", "3", "0.5", "2", "4", "8", "6", "3"]
+          data: ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"]
         }
       ],
       chart: {
@@ -191,7 +191,33 @@ export class MaindbComponent {
       },
     };
   }
-
+  ListKhoahoc:any = []
+// {
+//                     name: 'Khóa Học 1',
+//                     category: 'Cơ Bản',
+//                     sales: 245,
+//                     price: 24500000
+//                 }, {
+//                     name: 'Khóa Học 2',
+//                     category: 'Nâng Cao',
+//                     sales: 189,
+//                     price: 56700000
+//                 }, {
+//                     name: 'Khóa Học 3',
+//                     category: 'Nâng Cao',
+//                     sales: 156,
+//                     price: 15600000
+//                 }, {
+//                     name: 'Khóa Học 4',
+//                     category: 'Chuyển Sâu',
+//                     sales: 132,
+//                     price: 39600000
+//                 }, {
+//                     name: 'Khóa Học 5',
+//                     category: 'Nâng Cao',
+//                     sales: 124,
+//                     price: 12400000
+//                 }
   updateData() {
     this.currentDataIndex = (this.currentDataIndex + 1) % this.dataSets.length;
     this.chartOptions = {

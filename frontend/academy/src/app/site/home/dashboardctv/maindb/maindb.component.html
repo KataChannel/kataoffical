@@ -127,42 +127,17 @@
             <div class="text-sm text-muted-foreground">Top sản phẩm có doanh thu cao nhất.</div>
 
             <div class="w-full mt-8 space-y-4">
-                <div *ngFor="let item of [{
-                    name: 'Khóa Học 1',
-                    category: 'Cơ Bản',
-                    sales: 245,
-                    price: 24500000
-                }, {
-                    name: 'Khóa Học 2',
-                    category: 'Nâng Cao',
-                    sales: 189,
-                    price: 56700000
-                }, {
-                    name: 'Khóa Học 3',
-                    category: 'Nâng Cao',
-                    sales: 156,
-                    price: 15600000
-                }, {
-                    name: 'Khóa Học 4',
-                    category: 'Chuyển Sâu',
-                    sales: 132,
-                    price: 39600000
-                }, {
-                    name: 'Khóa Học 5',
-                    category: 'Nâng Cao',
-                    sales: 124,
-                    price: 12400000
-                }]; let i=index" class="flex items-start justify-between">
+                <div *ngFor="let item of ListKhoahoc; let i=index" class="flex items-start justify-between">
                     <div class="space-y-1">
-                        <p class="text-sm font-medium leading-none">{{item.name}}</p>
+                        <p class="text-sm font-medium leading-none">{{item?.name}}</p>
                         <div class="flex items-center gap-2">
                             <div
                                 class="inline-flex items-center rounded-full border px-2.5 py-0.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground text-xs">
-                                {{item.category}}</div>
-                            <span class="text-xs text-blue-600">{{item.sales}} chuyển đổi</span>
+                                {{item?.category}}</div>
+                            <span class="text-xs text-blue-600">{{item?.sales}} chuyển đổi</span>
                         </div>
                     </div>
-                    <div class="text-sm font-medium">{{item.price | number: '1.0-0'}}đ</div>
+                    <div class="text-sm font-medium">{{item?.price | number: '1.0-0'}}đ</div>
                 </div>
             </div>
         </div>
