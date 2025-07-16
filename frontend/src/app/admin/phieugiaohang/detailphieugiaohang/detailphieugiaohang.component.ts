@@ -495,12 +495,14 @@ export class DetailPhieugiaohangComponent {
             <title></title>
              ${tailwindCSS}
             <style>
-              body { font-size: 12px; font-family: Arial, sans-serif; }
+              body { font-size: 12px; 'Times New Roman', Times, serif !important; }
               table { width: 100%; border-collapse: collapse; }
               th, td { border: 1px solid #000; padding: 4px; text-align: left; }
+              .font-times {font-family: 'Times New Roman', Times, serif !important;}
               @media print { 
-              body { margin: 0; } 
+              body { margin: 0; font-family: 'Times New Roman', Times, serif !important;} 
               img {height:80px}
+             .font-times {font-family: 'Times New Roman', Times, serif !important;}
               }
             </style>
           </head>
