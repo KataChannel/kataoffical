@@ -162,25 +162,25 @@
         <table *ngIf="!isEdit()" class="w-full border-collapse border mt-4">
           <thead>
             <tr class="border">
-              <th class="border px-2">STT</th>
-              <th class="border px-2">Tên sản phẩm</th>
-              <th class="border px-2">ĐVT</th>
-              <th class="border px-2 max-w-10 whitespace-nowrap">Số Lượng</th>
-              <th class="border px-2 max-w-10 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Đơn giá</th>
-              <th class="border px-2 max-w-10 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
-              <th class="border px-2 max-w-10 whitespace-nowrap">Số Lượng Nhận</th>
-              <th class="border px-2">Ghi chú</th>
+              <th class="border px-2 max-w-10 text-center">STT</th>
+              <th class="border px-2 text-center">Tên sản phẩm</th>
+              <th class="border px-2 text-center">ĐVT</th>
+              <th class="border px-2 text-center max-w-10 whitespace-nowrap">SL</th>
+              <th class="border px-2 text-center max-w-15 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Đơn giá</th>
+              <th class="border px-2 text-center max-w-15 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
+              <th class="border px-2 text-center max-w-10 whitespace-nowrap">SL Nhận</th>
+              <th class="border px-2 text-center">Ghi chú</th>
             </tr>
           </thead>
           <tbody>
             @for (item of DetailPhieugiaohang().sanpham; track item.id; let idx = $index) {
             <tr class="border">
-              <td class="border px-2 text-center">{{idx+1}}</td>
+              <td class="border px-2 text-center max-w-10">{{idx+1}}</td>
               <td class="border px-2">{{DetailPhieugiaohang()?.khachhang?.istitle2?item.title2:item.title}}</td>
               <td class="border px-2 text-center">{{item.dvt}}</td>
               <td class="border px-2 text-end max-w-10">{{item.slgiao|number:'1.0-2'}}</td>
-              <td class="border px-2 text-end max-w-10" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{item.giaban|number:'1.0-2'}}</td>
-              <td class="border px-2 text-end max-w-10" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
+              <td class="border px-2 text-end max-w-15" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{item.giaban|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end max-w-15" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
                 {{item.ttgiao|number:'1.0-2'}}</td>
               <td class="border px-2 text-end max-w-10">{{DetailPhieugiaohang()?.status=== 'danhan'?
                 (item.slnhan|number:'1.0-2':''):''}}</td>

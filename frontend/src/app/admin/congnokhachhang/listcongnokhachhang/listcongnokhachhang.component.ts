@@ -42,6 +42,7 @@ import html2canvas from 'html2canvas';
 import { DonhangService } from '../../donhang/donhang.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
+import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 @Component({
   selector: 'app-listcongnokhachhang',
   templateUrl: './listcongnokhachhang.component.html',
@@ -63,6 +64,7 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
     MatTooltipModule,
     MatDatepickerModule,
     MatDialogModule,
+    MatAutocompleteModule
   ],
   // providers: [provideNativeDateAdapter()],
 })
@@ -119,6 +121,7 @@ export class ListcongnokhachhangComponent {
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   Listdonhang: any = this._DonhangService.ListDonhang;
+  ListKhachhang:any =[];
   ListCongno:any = [];
   dataSource = new MatTableDataSource([]);
   donhangId: any = this._DonhangService.donhangId;
@@ -148,7 +151,7 @@ export class ListcongnokhachhangComponent {
      this.ngOnInit();
   }
   onDateChange(event: any): void {
-    this.ngOnInit()
+    // this.ngOnInit()
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -182,6 +185,39 @@ export class ListcongnokhachhangComponent {
     this.setupDrawer();
     this.loadData(this.SearchParams);
   }
+  doSearch(){
+    this.loadData(this.SearchParams); 
+    // Create a Map to track unique customers
+    const uniqueCustomers = new Map();
+    this.Listdonhang().forEach((v: any) => {
+      const makh = v.khachhang?.makh;
+      const tenkh = v.khachhang?.name;
+      if (makh && !uniqueCustomers.has(makh)) {
+      uniqueCustomers.set(makh, tenkh);
+      }
+    });
+    // Convert Map to array
+    this.ListKhachhang = Array.from(uniqueCustomers.values());
+    console.log('ListKhachhang', this.ListKhachhang);
+    
+  }
+ListExport:any =[]
+onKhachhangChange(event: MatAutocompleteSelectedEvent){
+  const selectedValue = event.option.value;
+  // Update dataSource and ListExport based on selection
+  if (selectedValue && selectedValue !== '') {
+    // Filter by customer name
+    this.dataSource.data = this.ListExport = this.ListCongno.filter((item: any) =>
+      item.tenkhachhang === selectedValue
+    );
+  } else {
+    // Reset to show all data
+    this.dataSource.data = this.ListExport  =  this.ListCongno;
+  }
+  this.dataSource.paginator = this.paginator;
+  this.dataSource.sort = this.sort;
+}
+
   async loadData(query:any): Promise<void> {
     await this._DonhangService.searchDonhang(query);
     this.CountItem = this.Listdonhang().length;
