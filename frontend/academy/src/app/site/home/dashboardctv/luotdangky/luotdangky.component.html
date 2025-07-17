@@ -12,7 +12,7 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
     <div class="p-6 rounded-lg shadow-md bg-white">
       <div class="text-lg font-semibold text-gray-700">Tổng Lượt Đăng Ký</div>
-      <div class="text-3xl font-bold text-green-600">1.240</div>
+      <div class="text-3xl font-bold text-green-600">{{Tongdangky}}</div>
     </div>
     <div class="p-6 rounded-lg shadow-md bg-white">
       <div class="text-lg font-semibold text-gray-700">Tỷ Lệ Chuyển Đổi</div>
@@ -58,17 +58,17 @@
         <thead>
           <tr class="bg-gray-200">
             <th class="p-3 text-gray-700">Tên Chiến Dịch</th>
-            <th class="p-3 text-gray-700">Lượt Đăng Ký</th>
-            <th class="p-3 text-gray-700">Tỷ Lệ Chuyển Đổi</th>
+            <th class="p-3 text-gray-700">Liên Kết</th>
             <th class="p-3 text-gray-700">Nền Tảng</th>
+            <th class="p-3 text-gray-700">Ngày Tạo</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let element of dataSource" class="border-b">
-            <td class="p-3">{{ element.campaignName }}</td>
-            <td class="p-3">{{ element.registrations }}</td>
-            <td class="p-3">{{ element.conversionRate }}</td>
-            <td class="p-3">{{ element.platform }}</td>
+          <tr *ngFor="let item of ListTracking()" class="border-b">
+            <td class="p-3">{{ item.affiliateLink?.campaignName ||"Trang Sản Phẩm" }}</td>
+            <td class="p-3">{{ item.pageUrl }}</td>
+            <td class="p-3">{{ item.sharePlatform || "N/A" }}</td>
+            <td class="p-3">{{ item.createdAt | date: 'dd/MM/yyyy' }}</td>
           </tr>
         </tbody>
       </table>
