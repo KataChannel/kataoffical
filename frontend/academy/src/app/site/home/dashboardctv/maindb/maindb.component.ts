@@ -242,8 +242,8 @@ export class MaindbComponent {
         isCount: true,
       })
     const listphone = this.profile()?.referrals?.map((item: any) => item.phone);
-    this.Doanhthu = await this._KhachhangService.getKhachhangDoanhthu(listphone);
-
+    // this.Doanhthu = await this._KhachhangService.getKhachhangDoanhthu(listphone);
+ 
     // if(this.Doanhthu.dichvus.length > 0) {
     //     await this._CourseService.getSyncsCourse(this.Doanhthu.dichvus);
     //     await this._DoanhsoService.getSyncsDoanhso(this.Doanhthu.dichvus);

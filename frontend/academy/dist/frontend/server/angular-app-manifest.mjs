@@ -100,7 +100,7 @@ export default {
       "chunk-DZJMYHXN.js",
       "chunk-ZUCVSP5M.js"
     ],
-    "route": "/admin/hoahong"
+    "route": "/admin/hoahongctv"
   },
   {
     "renderMode": 1,
@@ -116,7 +116,7 @@ export default {
       "chunk-DZJMYHXN.js",
       "chunk-ZUCVSP5M.js"
     ],
-    "route": "/admin/hoahong/*"
+    "route": "/admin/hoahongctv/*"
   },
   {
     "renderMode": 1,
@@ -1206,8 +1206,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72766, hash: 'eb55a9ded6cb45badb99bfd567efc8753f0721c55f14b4d95847e629ee55a08f', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24057, hash: '62ff1e4a63f3078a77d8c31f5c6c8627be3f03687250c3aeeeecdac257e5a97f', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 72766, hash: 'c052a0d76f1dabd8049a8e8a810f3a57c64c775664d52007b845b4532c997731', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24057, hash: '8f13ff1019f2dc9321d4b9dd501e3c0d0a920c0fa2c52951150ac949d74cc694', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-E3YSXSW3.css': {size: 173676, hash: 'Rk5X9SUsG34', text: () => import('./assets-chunks/styles-E3YSXSW3_css.mjs').then(m => m.default)}
   },
 };
