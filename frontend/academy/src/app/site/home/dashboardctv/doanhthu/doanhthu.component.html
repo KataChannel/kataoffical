@@ -1,63 +1,101 @@
 <div class="container mx-auto bg-gray-100">
   <!-- Header -->
-   <header class="flex flex-row space-x-2 mb-6 items-center">
-    <button [routerLink]="['../']" mat-icon-button color="primary"><mat-icon>arrow_back</mat-icon></button>
+  <header class="flex flex-row space-x-2 mb-6 items-center">
+    <button [routerLink]="['../']" mat-icon-button color="primary">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     <div class="flex flex-col">
-      <span class="text-xl font-bold text-gray-800">Doanh Thu</span>
+      <span class="text-xl font-bold text-gray-800">Bảng Điều Khiển Doanh Thu & Hoa Hồng</span>
+      <span class="text-sm text-gray-600">Quản lý và phân tích doanh thu từ giới thiệu khách hàng</span>
     </div>
   </header>
-  <!-- Summary Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-    <div class="p-6 bg-white rounded-lg shadow-md">
-      <h2 class="text-lg font-semibold text-gray-700">Tổng Lượt Đăng Ký</h2>
-      <p class="text-3xl font-bold text-green-600">1.200</p>
+
+  <!-- Custom Chart Component -->
+  <app-customchart 
+    [chartData]="chartData"
+    [config]="chartConfig"
+    [rawData]="Doanhthus.data"
+    [dateField]="'createdAt'"
+    [categoryField]="'status'">
+  </app-customchart>
+
+  <!-- Analysis Section -->
+  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Top Customers Table -->
+    <div class="p-6 rounded-lg shadow-md bg-white">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-gray-700">Khách Hàng Hàng Đầu</h2>
+        <mat-icon class="text-gray-400">star</mat-icon>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-100 text-gray-700">
+              <th class="p-3 text-left">Số Điện Thoại</th>
+              <th class="p-3 text-center">Doanh Thu</th>
+              <th class="p-3 text-center">Hoa Hồng</th>
+              <th class="p-3 text-center">Giao Dịch</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let customer of getTopCustomers(5); let i = index" 
+                class="border-b hover:bg-gray-50 transition-colors">
+              <td class="p-3">
+                <div class="flex items-center space-x-2">
+                  <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">
+                    {{i + 1}}
+                  </div>
+                  <span class="font-medium">{{ customer.phone }}</span>
+                </div>
+              </td>
+              <td class="p-3 text-center font-semibold text-green-600">{{ formatCurrency(customer.totalRevenue) }}</td>
+              <td class="p-3 text-center font-semibold text-blue-600">{{ formatCurrency(customer.totalCommission) }}</td>
+              <td class="p-3 text-center text-gray-600">{{ customer.transactions }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div class="p-6 bg-white rounded-lg shadow-md">
-      <h2 class="text-lg font-semibold text-gray-700">Tỷ Lệ Chuyển Đổi</h2>
-      <p class="text-3xl font-bold text-blue-600">14,8%</p>
-    </div>
-    <div class="p-6 bg-white rounded-lg shadow-md">
-      <h2 class="text-lg font-semibold text-gray-700">Khóa Học Đang Hoạt Động</h2>
-      <p class="text-3xl font-bold text-purple-600">5</p>
+
+    <!-- Recent Transactions -->
+    <div class="p-6 rounded-lg shadow-md bg-white">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-gray-700">Giao Dịch Gần Đây</h2>
+        <mat-icon class="text-gray-400">schedule</mat-icon>
+      </div>
+      <div class="space-y-3 max-h-96 overflow-y-auto">
+        <div *ngFor="let transaction of Doanhthus.data.slice(0, 10)" 
+             class="p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <div class="font-medium text-gray-900">{{ transaction.phone }}</div>
+              <div class="text-sm text-green-600">{{ formatCurrency(transaction.amount) }}</div>
+              <div class="text-xs text-blue-500">Hoa hồng: {{ formatCurrency(transaction.commission) }}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm font-medium" 
+                   [ngClass]="{
+                     'text-green-600': transaction.status === 'Hoàn thành',
+                     'text-yellow-600': transaction.status === 'Đang xử lý',
+                     'text-red-600': transaction.status === 'Đã hủy'
+                   }">
+                {{ transaction.status }}
+              </div>
+              <div class="text-xs text-gray-500">
+                {{ transaction.createdAt | date:'dd/MM/yyyy' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Charts Section -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-    <!-- Bar Chart -->
-    <div class="p-6 bg-white rounded-lg shadow-md">
-      <h2 class="text-lg font-semibold text-gray-700 mb-4">Lượt Đăng Ký Theo Thời Gian</h2>
-      <div>
-        <apx-chart
-          [series]="barChartSeries"
-          [chart]="barChartOptions['chart']"
-          [xaxis]="barChartOptions['xaxis']"
-          [yaxis]="barChartOptions['yaxis']"
-          [title]="barChartOptions['title']"
-          [legend]="barChartOptions['legend']"
-          [colors]="barChartOptions['colors']"
-        ></apx-chart>
-      </div>
+  <!-- Detailed Revenue Table -->
+  <div class="mt-8 p-6 bg-white rounded-lg shadow-md">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-gray-700">Chi Tiết Doanh Thu & Hoa Hồng</h2>
     </div>
-    <!-- Pie Chart -->
-    <div class="p-6 bg-white rounded-lg shadow-md">
-      <h2 class="text-lg font-semibold text-gray-700 mb-4">Nguồn Đăng Ký</h2>
-      <div>
-        <apx-chart
-          [series]="pieChartSeries"
-          [chart]="pieChartOptions['chart']"
-          [labels]="pieChartOptions['labels']"
-          [title]="pieChartOptions['title']"
-          [legend]="pieChartOptions['legend']"
-          [colors]="pieChartOptions['colors']"
-        ></apx-chart>
-      </div>
-    </div>
-  </div>
-
-  <!-- Top Courses Table -->
-  <div class="p-6 bg-white rounded-lg shadow-md">
-    <h2 class="text-lg font-semibold text-gray-700 mb-4">Khóa Học</h2>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-200">
@@ -65,17 +103,33 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap">Số Điện Thoại</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap">Doanh Thu</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap">Hoa Hồng</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap">Tỷ Lệ (%)</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap">Trạng Thái</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase whitespace-nowrap">Ngày</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr *ngFor="let element of Doanhthus.data">
-            <td class="px-6 py-4">{{ element.phone }}</td>
-            <td class="px-6 py-4">{{ element.amount|number: '1.0-2' }}</td>
-            <td class="px-6 py-4">{{ element.commission|number: '1.0-2' }}</td>
-            <td class="px-6 py-4">{{ element.status }}</td>
-            <td class="px-6 py-4">{{ element.createdAt | date: 'dd/MM/yyyy' }}</td>
+          <tr *ngFor="let element of Doanhthus.data" class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ element.phone }}</td>
+            <td class="px-6 py-4 font-semibold text-green-600">{{ formatCurrency(element.amount) }}</td>
+            <td class="px-6 py-4 font-semibold text-blue-600">{{ formatCurrency(element.commission) }}</td>
+            <td class="px-6 py-4">
+              <span class="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-full">
+                {{ element.amount > 0 ? ((element.commission / element.amount) * 100).toFixed(1) : '0' }}%
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <span class="px-2 py-1 text-xs rounded-full"
+                    [ngClass]="{
+                      'bg-green-100 text-green-800': element.status === 'Hoàn thành',
+                      'bg-yellow-100 text-yellow-800': element.status === 'Đang xử lý',
+                      'bg-red-100 text-red-800': element.status === 'Đã hủy',
+                      'bg-gray-100 text-gray-800': !element.status
+                    }">
+                {{ element.status || 'Không xác định' }}
+              </span>
+            </td>
+            <td class="px-6 py-4">{{ element.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
           </tr>
         </tbody>
       </table>

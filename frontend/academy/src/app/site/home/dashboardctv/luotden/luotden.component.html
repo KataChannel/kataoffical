@@ -1,80 +1,101 @@
 <div class="container mx-auto bg-gray-100">
   <!-- Header -->
-    <header class="flex flex-row space-x-2 mb-6 items-center">
-    <button [routerLink]="['../']" mat-icon-button color="primary"><mat-icon>arrow_back</mat-icon></button>
+  <header class="flex flex-row space-x-2 mb-6 items-center">
+    <button [routerLink]="['../']" mat-icon-button color="primary">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     <div class="flex flex-col">
       <span class="text-xl font-bold text-gray-800">Bảng Điều Khiển Lượt Hẹn Đến Chi Nhánh</span>
+      <span class="text-sm text-gray-600">Quản lý và phân tích lượt hẹn khách hàng</span>
     </div>
   </header>
 
+  <!-- Custom Chart Component -->
+  <app-customchart 
+    [chartData]="chartData"
+    [config]="chartConfig"
+    [rawData]="Lichhens.data"
+    [dateField]="'createdAt'"
+    [categoryField]="'branchName'">
+  </app-customchart>
 
-  <!-- Summary Cards -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+  <!-- Top Branches Analysis -->
+  <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Top Branches Table -->
     <div class="p-6 rounded-lg shadow-md bg-white">
-      <h2 class="text-lg font-semibold text-gray-700">Tổng Lượt Hẹn</h2>
-      <div class="text-3xl font-bold text-green-600">{{Lichhens.total}}</div>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-gray-700">Chi Nhánh Hàng Đầu</h2>
+        <mat-icon class="text-gray-400">leaderboard</mat-icon>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-gray-100 text-gray-700">
+              <th class="p-3 text-left">Tên Chi Nhánh</th>
+              <th class="p-3 text-center">Tổng Hẹn</th>
+              <th class="p-3 text-center">Thành Công</th>
+              <th class="p-3 text-center">Tỷ Lệ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let branch of getTopBranches(5); let i = index" 
+                class="border-b hover:bg-gray-50 transition-colors">
+              <td class="p-3">
+                <div class="flex items-center space-x-2">
+                  <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">
+                    {{i + 1}}
+                  </div>
+                  <span class="font-medium">{{ branch.name }}</span>
+                </div>
+              </td>
+              <td class="p-3 text-center font-semibold">{{ branch.total }}</td>
+              <td class="p-3 text-center text-green-600 font-semibold">{{ branch.successful }}</td>
+              <td class="p-3 text-center">
+                <span class="px-2 py-1 rounded-full text-xs font-medium"
+                      [ngClass]="{
+                        'bg-green-100 text-green-800': +branch.successRate >= 80,
+                        'bg-yellow-100 text-yellow-800': +branch.successRate >= 60 && +branch.successRate < 80,
+                        'bg-red-100 text-red-800': +branch.successRate < 60
+                      }">
+                  {{ branch.successRate }}%
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-    <div class="p-6 rounded-lg shadow-md bg-white">
-      <h2 class="text-lg font-semibold text-gray-700">Tỷ Lệ Hẹn Thành Công</h2>
-      <div class="text-3xl font-bold text-blue-600">{{Lichhens.Thanhcong / Lichhens.Tonglich * 100 | number: '1.0-0'}}%</div>
-    </div>
-    <div class="p-6 rounded-lg shadow-md bg-white">
-      <h2 class="text-lg font-semibold text-gray-700">Chi Nhánh Đang Hoạt Động</h2>
-      <div class="text-3xl font-bold text-purple-600">{{Lichhens.Chinhanh}}</div>
-    </div>
-  </div>
 
-  <!-- Charts Section -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <!-- Recent Appointments -->
     <div class="p-6 rounded-lg shadow-md bg-white">
-      <h2 class="text-lg font-semibold text-gray-700 mb-4">Lượt Hẹn Theo Thời Gian</h2>
-      <apx-chart
-        [series]="barChartSeries"
-        [chart]="barChartOptions['chart']"
-        [xaxis]="barChartOptions['xaxis']"
-        [yaxis]="barChartOptions['yaxis']"
-        [title]="barChartOptions['title']"
-        [legend]="barChartOptions['legend']"
-        [colors]="barChartOptions['colors']"
-      ></apx-chart>
-    </div>
-    <div class="p-6 rounded-lg shadow-md bg-white">
-      <h2 class="text-lg font-semibold text-gray-700 mb-4">Nguồn Hẹn</h2>
-      <apx-chart
-        [series]="pieChartSeries"
-        [chart]="pieChartOptions['chart']"
-        [labels]="pieChartOptions['labels']"
-        [title]="pieChartOptions['title']"
-        [legend]="pieChartOptions['legend']"
-        [colors]="pieChartOptions['colors']"
-      ></apx-chart>
-    </div>
-  </div>
-
-  <!-- Top Branches Table -->
-  <div class="p-6 rounded-lg shadow-md bg-white">
-    <h2 class="text-lg font-semibold text-gray-700 mb-4">Chi Nhánh Hàng Đầu</h2>
-    <div class="overflow-x-auto">
-      <table class="w-full">
-        <thead>
-          <tr class="bg-gray-200 text-gray-700">
-            <th class="p-3">Họ Tên</th>
-            <th class="p-3">Số Điện Thoại</th>
-            <th class="p-3">Hủy Lịch</th>
-            <th class="p-3">Trạng Thái</th>
-            <th class="p-3">Tên Chi Nhánh</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let element of Lichhens.data" class="border-b">
-            <td class="p-3">{{ element.custName }}</td>
-            <td class="p-3">{{ element.phone }}</td>
-            <td class="p-3">{{ element.isCancel }}</td>
-            <td class="p-3">{{ element.statusName }}</td>
-            <td class="p-3">{{ element.branchName }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-gray-700">Lượt Hẹn Gần Đây</h2>
+        <mat-icon class="text-gray-400">schedule</mat-icon>
+      </div>
+      <div class="space-y-3 max-h-96 overflow-y-auto">
+        <div *ngFor="let appointment of Lichhens.data.slice(0, 10)" 
+             class="p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+          <div class="flex items-center justify-between">
+            <div class="flex-1">
+              <div class="font-medium text-gray-900">{{ appointment.custName }}</div>
+              <div class="text-sm text-gray-600">{{ appointment.phone }}</div>
+              <div class="text-xs text-gray-500">{{ appointment.branchName }}</div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm font-medium" 
+                   [ngClass]="{
+                     'text-green-600': !appointment.isCancel,
+                     'text-red-600': appointment.isCancel
+                   }">
+                {{ appointment.statusName }}
+              </div>
+              <div class="text-xs text-gray-500">
+                {{ appointment.createdAt | date:'dd/MM/yyyy' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

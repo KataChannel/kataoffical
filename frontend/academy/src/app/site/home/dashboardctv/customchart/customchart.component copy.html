@@ -1,0 +1,266 @@
+<!-- filepath: /chikiet/kataoffical/tazasandbox1/frontend/academy/src/app/site/home/dashboardctv/customchart/customchart.component.html -->
+<div class="custom-chart-container p-6 bg-white rounded-lg shadow-md">
+  <!-- Header with Date Range Controls -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div class="flex-1">
+      <h2 class="text-xl font-bold text-gray-800 mb-2">{{ config.barChart.title }}</h2>
+      <div class="text-sm text-gray-600" *ngIf="getSummaryStats().totalCount > 0">
+        Tổng cộng: {{ getSummaryStats().totalCount }} | 
+        Trung bình: {{ getSummaryStats().avgPerDay }}/ngày |
+        Khoảng thời gian: {{ getSummaryStats().dateRange }}
+      </div>
+    </div>
+    
+    <!-- Date Range Selector -->
+    <div class="flex flex-col md:flex-row gap-3 min-w-max">
+      <mat-form-field appearance="outline" class="min-w-32">
+        <mat-label>Khoảng thời gian</mat-label>
+        <mat-select [(value)]="selectedDateRange" (selectionChange)="onDateRangeChange()">
+          <mat-option *ngFor="let option of dateRangeOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      
+      <!-- Custom Date Range -->
+      <div class="flex gap-2" *ngIf="selectedDateRange === 'custom'">
+        <mat-form-field appearance="outline">
+          <mat-label>Từ ngày</mat-label>
+          <input matInput [matDatepicker]="startPicker" [(ngModel)]="startDay" (dateChange)="onCustomDateChange()">
+          <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+          <mat-datepicker #startPicker></mat-datepicker>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Đến ngày</mat-label>
+          <input matInput [matDatepicker]="endPicker" [(ngModel)]="endDay" (dateChange)="onCustomDateChange()">
+          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      
+      <!-- Refresh Button -->
+      <button mat-icon-button (click)="refresh()" matTooltip="Làm mới dữ liệu">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="hasError && !isLoading" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+    <div class="flex items-center">
+      <mat-icon class="text-red-500 mr-2">error</mat-icon>
+      <span class="text-red-700">{{ errorMessage }}</span>
+      <button mat-button class="ml-auto" (click)="clearError()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div *ngIf="!isLoading && !hasError" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Bar Chart -->
+    <div class="bg-gray-50 rounded-lg p-4">
+      <h3 class="text-lg font-semibold text-gray-700 mb-3">{{ config.barChart.title }}</h3>
+      <div class="chart-wrapper">
+        <apx-chart
+          [series]="barChartSeries"
+          [chart]="barChartOptions['chart']"
+          [xaxis]="barChartOptions['xaxis']"
+          [yaxis]="barChartOptions['yaxis']"
+          [title]="barChartOptions['title']"
+          [legend]="barChartOptions['legend']"
+          [colors]="barChartOptions['colors']"
+          [dataLabels]="barChartOptions['dataLabels']"
+          [grid]="barChartOptions['grid']"
+          [plotOptions]="barChartOptions['plotOptions']"
+        ></apx-chart>
+      </div>
+      
+      <!-- Bar Chart Stats -->
+      <div class="mt-3 grid grid-cols-2 gap-4 text-sm">
+        <div class="bg-white p-3 rounded">
+          <div class="text-gray-600">Ngày cao nhất</div>
+          <div class="font-semibold text-green-600">{{ getMaxDay() }}</div>
+        </div>
+        <div class="bg-white p-3 rounded">
+          <div class="text-gray-600">Giá trị cao nhất</div>
+          <div class="font-semibold text-blue-600">{{ getMaxValue() }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="bg-gray-50 rounded-lg p-4">
+      <h3 class="text-lg font-semibold text-gray-700 mb-3">{{ config.pieChart.title }}</h3>
+      <div class="chart-wrapper">
+        <apx-chart
+          [series]="pieChartSeries"
+          [chart]="pieChartOptions['chart']"
+          [labels]="pieChartOptions['labels']"
+          [title]="pieChartOptions['title']"
+          [legend]="pieChartOptions['legend']"
+          [colors]="pieChartOptions['colors']"
+          [dataLabels]="pieChartOptions['dataLabels']"
+          [responsive]="pieChartOptions['responsive']"
+          [plotOptions]="pieChartOptions['plotOptions']"
+        ></apx-chart>
+      </div>
+      
+      <!-- Pie Chart Legend/Stats -->
+      <div class="mt-3" *ngIf="pieChartSeries.length > 0">
+        <div class="grid grid-cols-1 gap-2 text-sm">
+          <div *ngFor="let label of pieChartOptions['labels']; let i = index" 
+               class="flex justify-between items-center bg-white p-2 rounded">
+            <div class="flex items-center">
+              <div class="w-3 h-3 rounded-full mr-2" 
+                   [style.background-color]="pieChartOptions['colors'][i]"></div>
+              <span>{{ label }}</span>
+            </div>
+            <span class="font-semibold">{{ pieChartSeries[i] }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && !hasError && getSummaryStats().totalCount === 0" 
+       class="text-center py-12">
+    <mat-icon class="text-gray-400 text-6xl mb-4">assessment</mat-icon>
+    <h3 class="text-lg font-medium text-gray-600 mb-2">Không có dữ liệu</h3>
+    <p class="text-gray-500">Không có dữ liệu trong khoảng thời gian đã chọn</p>
+    <button mat-raised-button color="primary" class="mt-4" (click)="refresh()">
+      Làm mới dữ liệu
+    </button>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex justify-end gap-2 mt-6" *ngIf="!isLoading && !hasError && getSummaryStats().totalCount > 0">
+    <button mat-stroked-button (click)="exportData()" matTooltip="Xuất dữ liệu">
+      <mat-icon>download</mat-icon>
+      Xuất dữ liệu
+    </button>
+    <button mat-stroked-button (click)="refresh()" matTooltip="Làm mới">
+      <mat-icon>refresh</mat-icon>
+      Làm mới
+    </button>
+  </div>
+</div>
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+    <div class="p-6 rounded-lg shadow-md bg-white">
+      <div class="text-lg font-semibold text-gray-700">Tổng Số</div>
+      <div class="text-3xl font-bold text-green-600">{{ getSummaryStats().totalCount }}</div>
+    </div>
+    <div class="p-6 rounded-lg shadow-md bg-white">
+      <div class="text-lg font-semibold text-gray-700">Số Ngày</div>
+      <div class="text-3xl font-bold text-blue-600">{{ getSummaryStats().totalDays }}</div>
+    </div>
+    <div class="p-6 rounded-lg shadow-md bg-white">
+      <div class="text-lg font-semibold text-gray-700">Trung Bình/Ngày</div>
+      <div class="text-3xl font-bold text-purple-600">{{ getSummaryStats().avgPerDay }}</div>
+    </div>
+    <div class="p-6 rounded-lg shadow-md bg-white">
+      <div class="text-lg font-semibold text-gray-700">Khoảng Thời Gian</div>
+      <div class="text-sm font-medium text-gray-600">{{ getSummaryStats().dateRange }}</div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+    <!-- Bar Chart -->
+    <div class="p-6 rounded-lg shadow-md bg-white">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-gray-700">{{ config.barChartTitle }}</h2>
+        <mat-icon class="text-gray-400">bar_chart</mat-icon>
+      </div>
+      <div class="w-full">
+        <apx-chart
+          [series]="barChartSeries"
+          [chart]="barChartOptions['chart']"
+          [xaxis]="barChartOptions['xaxis']"
+          [yaxis]="barChartOptions['yaxis']"
+          [title]="barChartOptions['title']"
+          [legend]="barChartOptions['legend']"
+          [colors]="barChartOptions['colors']"
+          [dataLabels]="barChartOptions['dataLabels']"
+          [grid]="barChartOptions['grid']"
+        ></apx-chart>
+      </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="p-6 rounded-lg shadow-md bg-white">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-gray-700">{{ config.pieChartTitle }}</h2>
+        <mat-icon class="text-gray-400">pie_chart</mat-icon>
+      </div>
+      <div class="w-full">
+        <apx-chart
+          [series]="pieChartSeries"
+          [chart]="pieChartOptions['chart']"
+          [labels]="pieChartOptions['labels']"
+          [title]="pieChartOptions['title']"
+          [legend]="pieChartOptions['legend']"
+          [colors]="pieChartOptions['colors']"
+          [dataLabels]="pieChartOptions['dataLabels']"
+          [responsive]="pieChartOptions['responsive']"
+        ></apx-chart>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Preview Table (Optional) -->
+  <div class="p-6 rounded-lg shadow-md bg-white" *ngIf="Object_keys(chartData['categoryData']).length > 0">
+    <h2 class="text-lg font-semibold text-gray-700 mb-4">Chi Tiết Dữ Liệu</h2>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Category Breakdown -->
+      <div>
+        <h3 class="font-medium text-gray-600 mb-3">Phân Bố Theo Danh Mục</h3>
+        <div class="space-y-2">
+          <div *ngFor="let item of chartData.categoryData | keyvalue" 
+               class="flex justify-between items-center p-2 bg-gray-50 rounded">
+            <span class="font-medium">{{ item.key }}</span>
+            <div class="flex items-center space-x-2">
+              <span class="text-gray-600">{{ item.value }}</span>
+              <span class="text-sm text-gray-400">
+                ({{ ((item.value / (chartData['totalCount'] || 1)) * 100).toFixed(1) }}%)
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Time Period Summary -->
+      <div>
+        <h3 class="font-medium text-gray-600 mb-3">Thống Kê Theo Thời Gian</h3>
+        <div class="space-y-2">
+          <div class="flex justify-between p-2 bg-gray-50 rounded">
+            <span>Tổng số ngày có dữ liệu:</span>
+            <span class="font-medium">{{ Object_keys(chartData.timeData || {}).length }}</span>
+          </div>
+          <div class="flex justify-between p-2 bg-gray-50 rounded">
+            <span>Ngày có nhiều nhất:</span>
+            <span class="font-medium">{{ getMaxDay() }}</span>
+          </div>
+          <div class="flex justify-between p-2 bg-gray-50 rounded">
+            <span>Giá trị cao nhất:</span>
+            <span class="font-medium">{{ getMaxValue() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="chartData.totalCount === 0" class="text-center py-12">
+    <mat-icon class="text-gray-300 text-6xl mb-4">analytics</mat-icon>
+    <h3 class="text-xl font-medium text-gray-500 mb-2">Không có dữ liệu</h3>
+    <p class="text-gray-400">Chưa có dữ liệu trong khoảng thời gian đã chọn</p>
+  </div>

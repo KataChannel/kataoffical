@@ -12,6 +12,7 @@ import { RouterLink } from '@angular/router';
 import {NgApexchartsModule} from 'ng-apexcharts';
 import { TrackingService } from '../../../../admin/tracking/tracking.service';
 import { UserService } from '../../../../admin/user/user.service';
+import { CustomchartComponent, ChartData, ChartConfig } from '../customchart/customchart.component';
 
 @Component({
   selector: 'app-luotdangky',
@@ -26,7 +27,8 @@ import { UserService } from '../../../../admin/user/user.service';
     MatIconModule,
     MatButtonModule,
     RouterLink,
-    CommonModule
+    CommonModule,
+    CustomchartComponent
   ],
   templateUrl: './luotdangky.component.html',
   styleUrls: ['./luotdangky.component.scss']
@@ -90,6 +92,54 @@ export class LuotdangkyComponent implements OnInit {
     }
   };
 
+  // Custom chart data and config
+  customChartData: ChartData = {
+    timeData: {},
+    categoryData: {}
+  };
+
+  customChartConfig: ChartConfig = {
+    barChart: {
+      title: 'Lượt Đăng Ký Theo Thời Gian',
+      yAxisTitle: 'Số Lượt Đăng Ký',
+      seriesName: 'Lượt Đăng Ký Thành Công',
+      color: '#4CAF50'
+    },
+    pieChart: {
+      title: 'Phân Bố Nguồn Đăng Ký',
+      colors: ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#E91E63', '#F44336', '#00BCD4', '#3F51B5']
+    },
+    pieChartTitle: 'Biểu Đồ Tròn Phân Bố',
+    barChartTitle: 'Biểu Đồ Cột Theo Thời Gian',
+    labels: {
+      dashboard: 'Bảng Điều Khiển',
+      analytics: 'Phân Tích Dữ Liệu',
+      totalCount: 'Tổng Số Lượt',
+      daysActive: 'Số Ngày Hoạt Động',
+      dailyAverage: 'Trung Bình Hàng Ngày',
+      peakValue: 'Giá Trị Đỉnh',
+      timeRange: 'Khoảng Thời Gian',
+      from: 'Từ',
+      to: 'Đến',
+      refreshData: 'Làm Mới Dữ Liệu',
+      exportData: 'Xuất Dữ Liệu',
+      loadingAnalytics: 'Đang Tải Phân Tích...',
+      errorLoadingData: 'Lỗi Tải Dữ Liệu',
+      noDataAvailable: 'Không Có Dữ Liệu',
+      noDataMessage: 'Không có dữ liệu để hiển thị trong khoảng thời gian này',
+      categoryDistribution: 'Phân Bố Theo Danh Mục',
+      temporalAnalysis: 'Phân Tích Theo Thời Gian',
+      categoryBreakdown: 'Chi Tiết Theo Danh Mục',
+      peakDay: 'Ngày Đỉnh',
+      timeAnalytics: 'Phân Tích Thời Gian',
+      activeDays: 'Ngày Có Hoạt Động',
+      peakPerformanceDay: 'Ngày Hiệu Suất Cao Nhất',
+      highestValue: 'Giá Trị Cao Nhất',
+      dataInsights: 'Thông Tin Chi Tiết',
+      detailedBreakdown: 'Phân Tích Chi Tiết'
+    }
+  };
+
   updateChartData(): void {
     // Generate date range from startDay to endDay
     const dateRange: string[] = [];
@@ -123,9 +173,28 @@ export class LuotdangkyComponent implements OnInit {
     
     // Update pie chart data from ListTracking sharePlatform
     this.updatePieChartData();
+
+    // Update custom chart data
+    this.updateCustomChartData();
     
     // Trigger change detection
     this.cdr.detectChanges();
+  }
+
+  updateCustomChartData(): void {
+    // Update custom chart with processed data
+    this.customChartData = {
+      timeData: this.ThoigianDangky,
+      categoryData: this.getPlatformData()
+    };
+  }
+
+  getPlatformData(): { [key: string]: number } {
+    return this.ListTracking().reduce((acc, item) => {
+      const platform = item.sharePlatform || 'Website';
+      acc[platform] = (acc[platform] || 0) + 1;
+      return acc;
+    }, {} as { [key: string]: number });
   }
 
   updatePieChartData(): void {
