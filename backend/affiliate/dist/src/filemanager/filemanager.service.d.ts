@@ -18,13 +18,13 @@ export declare class fileManagerService {
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
-        title: string | null;
         order: number | null;
+        title: string | null;
+        category: string | null;
         url: string | null;
         fileType: string | null;
         fileSize: number | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
-        category: string | null;
         group: string | null;
     }>;
     findBy(param: any): Promise<{
@@ -33,13 +33,13 @@ export declare class fileManagerService {
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
-        title: string | null;
         order: number | null;
+        title: string | null;
+        category: string | null;
         url: string | null;
         fileType: string | null;
         fileSize: number | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
-        category: string | null;
         group: string | null;
     } | {
         data: {
@@ -48,13 +48,13 @@ export declare class fileManagerService {
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
-            title: string | null;
             order: number | null;
+            title: string | null;
+            category: string | null;
             url: string | null;
             fileType: string | null;
             fileSize: number | null;
             metaData: import(".prisma/client/runtime/library").JsonValue | null;
-            category: string | null;
             group: string | null;
         }[];
         total: number;
@@ -68,13 +68,13 @@ export declare class fileManagerService {
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
-            title: string | null;
             order: number | null;
+            title: string | null;
+            category: string | null;
             url: string | null;
             fileType: string | null;
             fileSize: number | null;
             metaData: import(".prisma/client/runtime/library").JsonValue | null;
-            category: string | null;
             group: string | null;
         }[];
         total: number;
@@ -87,13 +87,13 @@ export declare class fileManagerService {
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
-        title: string | null;
         order: number | null;
+        title: string | null;
+        category: string | null;
         url: string | null;
         fileType: string | null;
         fileSize: number | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
-        category: string | null;
         group: string | null;
     }>;
     update(id: string, data: any): Promise<any>;

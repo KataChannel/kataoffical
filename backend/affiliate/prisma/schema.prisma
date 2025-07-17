@@ -300,7 +300,9 @@ model HoaHong {
   userId          String
   doanhthuId      String
   affiliateLinkId String?
-  tienhoahong     Float
+  tienhoahong     Float             @default(0)
+  refphone        String?           // e.g., 'register', 'referral', 'sale' 
+  type            String?           // e.g., 'register', 'referral', 'sale' 
   description     String?
   status          CommissionStatus   @default(PENDING)
   order           Int?               @default(1)

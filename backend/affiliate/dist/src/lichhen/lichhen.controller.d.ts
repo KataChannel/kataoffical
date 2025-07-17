@@ -9,8 +9,8 @@ export declare class LichhenController {
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
-        title: string | null;
         order: number | null;
+        title: string | null;
         createdBy: string | null;
         custCode: string | null;
         custName: string | null;
@@ -32,8 +32,8 @@ export declare class LichhenController {
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
-        title: string | null;
         order: number | null;
+        title: string | null;
         createdBy: string | null;
         custCode: string | null;
         custName: string | null;
@@ -52,8 +52,8 @@ export declare class LichhenController {
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
-            title: string | null;
             order: number | null;
+            title: string | null;
             createdBy: string | null;
             custCode: string | null;
             custName: string | null;
@@ -77,8 +77,8 @@ export declare class LichhenController {
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
-            title: string | null;
             order: number | null;
+            title: string | null;
             createdBy: string | null;
             custCode: string | null;
             custName: string | null;
@@ -110,8 +110,8 @@ export declare class LichhenController {
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
-        title: string | null;
         order: number | null;
+        title: string | null;
         createdBy: string | null;
         custCode: string | null;
         custName: string | null;
@@ -130,8 +130,8 @@ export declare class LichhenController {
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
-        title: string | null;
         order: number | null;
+        title: string | null;
         createdBy: string | null;
         custCode: string | null;
         custName: string | null;
@@ -150,8 +150,8 @@ export declare class LichhenController {
         createdAt: Date;
         updatedAt: Date;
         description: string | null;
-        title: string | null;
         order: number | null;
+        title: string | null;
         createdBy: string | null;
         custCode: string | null;
         custName: string | null;

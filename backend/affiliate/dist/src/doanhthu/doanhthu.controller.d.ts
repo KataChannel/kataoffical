@@ -8,8 +8,8 @@ export declare class DoanhthuController {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
         status: string;
+        order: number | null;
         dichvuId: string;
         codeDT: string | null;
         amount: number | null;
@@ -26,8 +26,8 @@ export declare class DoanhthuController {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
         status: string;
+        order: number | null;
         dichvuId: string;
         codeDT: string | null;
         amount: number | null;
@@ -40,8 +40,8 @@ export declare class DoanhthuController {
             phone: string | null;
             createdAt: Date;
             updatedAt: Date;
-            order: number | null;
             status: string;
+            order: number | null;
             dichvuId: string;
             codeDT: string | null;
             amount: number | null;
@@ -59,8 +59,8 @@ export declare class DoanhthuController {
             phone: string | null;
             createdAt: Date;
             updatedAt: Date;
-            order: number | null;
             status: string;
+            order: number | null;
             dichvuId: string;
             codeDT: string | null;
             amount: number | null;
@@ -80,8 +80,8 @@ export declare class DoanhthuController {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
         status: string;
+        order: number | null;
         dichvuId: string;
         codeDT: string | null;
         amount: number | null;
@@ -95,8 +95,8 @@ export declare class DoanhthuController {
         phone: string | null;
         createdAt: Date;
         updatedAt: Date;
-        order: number | null;
         status: string;
+        order: number | null;
         dichvuId: string;
         codeDT: string | null;
         amount: number | null;

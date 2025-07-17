@@ -9,7 +9,7 @@ git push
 npx bun add @nestjs/config @nestjs/jwt @nestjs/passport passport passport-jwt bcryptjs
 npx bun add @prisma/client
 npx bun add -d prisma
-npx bun prisma migrate dev --name affiliate isCTV
+npx bun prisma migrate dev --name affiliate hoahong
 npx prisma db push
 npx bun prisma generate 
 npx ts-node prisma/scriptdb/exportData.ts

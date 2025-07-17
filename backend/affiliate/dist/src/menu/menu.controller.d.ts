@@ -7,11 +7,11 @@ export declare class MenuController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         title: string;
         icon: string | null;
         slug: string | null;
         parentId: string | null;
-        order: number | null;
     }>;
     findAll(): Promise<({
         children: {
@@ -19,22 +19,22 @@ export declare class MenuController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            order: number | null;
             title: string;
             icon: string | null;
             slug: string | null;
             parentId: string | null;
-            order: number | null;
         }[];
     } & {
         id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         title: string;
         icon: string | null;
         slug: string | null;
         parentId: string | null;
-        order: number | null;
     })[]>;
     getLastUpdated(): Promise<{
         updatedAt: number | Date;
@@ -44,11 +44,11 @@ export declare class MenuController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         title: string;
         icon: string | null;
         slug: string | null;
         parentId: string | null;
-        order: number | null;
     }>;
     getTree(data: any): Promise<any>;
     findOne(id: string): Promise<({
@@ -57,43 +57,43 @@ export declare class MenuController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            order: number | null;
             title: string;
             icon: string | null;
             slug: string | null;
             parentId: string | null;
-            order: number | null;
         }[];
     } & {
         id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         title: string;
         icon: string | null;
         slug: string | null;
         parentId: string | null;
-        order: number | null;
     }) | null>;
     update(id: string, updateMenuDto: any): Promise<{
         id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         title: string;
         icon: string | null;
         slug: string | null;
         parentId: string | null;
-        order: number | null;
     }>;
     remove(id: string): Promise<{
         id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         title: string;
         icon: string | null;
         slug: string | null;
         parentId: string | null;
-        order: number | null;
     }>;
 }

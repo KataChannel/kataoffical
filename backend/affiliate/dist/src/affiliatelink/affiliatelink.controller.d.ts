@@ -28,11 +28,11 @@ export declare class AffiliatelinkController {
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
+            status: string;
+            order: number | null;
             title: string;
             slug: string;
-            order: number | null;
             thumbnail: string | null;
-            status: string;
             contentHtml: string | null;
             customCss: string | null;
             customJs: string | null;
@@ -107,11 +107,11 @@ export declare class AffiliatelinkController {
                 createdAt: Date;
                 updatedAt: Date;
                 description: string | null;
+                status: string;
+                order: number | null;
                 title: string;
                 slug: string;
-                order: number | null;
                 thumbnail: string | null;
-                status: string;
                 contentHtml: string | null;
                 customCss: string | null;
                 customJs: string | null;

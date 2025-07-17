@@ -1,0 +1,34 @@
+[
+  {
+    "id": "f98e1268-38a7-44bd-8d36-0724426f4e8b",
+    "eventType": "page_view",
+    "pageUrl": "https://ladiaffiliate.timona.edu.vn/?ref=0373219362&sharePlatform=website&fbclid=IwZXh0bgNhZW0CMTEAAR53suD-ct80Npiog0sgRR_X0j4F3e_PS5rM9POBVPidACgNnFKt7F9u-_IkqA_aem_uQTl8ccqcPlvbAkiBYxUIg",
+    "refCode": "0373219362",
+    "referrer": null,
+    "pageIdentifier": "unique-page-slug",
+    "pageType": "LadiCTV",
+    "userId": null,
+    "ipAddress": "::ffff:116.118.49.243",
+    "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 [FBAN/FBIOS;FBAV/512.0.0.44.109;FBBV/749838383;FBDV/iPhone15,3;FBMD/iPhone;FBSN/iOS;FBSV/18.5;FBSS/3;FBCR/;FBID/phone;FBLC/vi_VN;FBOP/80]",
+    "affiliateLinkId": null,
+    "sharePlatform": "website",
+    "createdAt": "2025-07-17T08:28:00.831Z",
+    "updatedAt": "2025-07-17T08:28:00.831Z"
+  },
+  {
+    "id": "26d5ef0a-969d-4b07-95e8-c8ef24353a07",
+    "eventType": "page_view",
+    "pageUrl": "https://ladiaffiliate.timona.edu.vn/?ref=0898302234&sharePlatform=website&fbclid=IwY2xjawLllARleHRuA2FlbQIxMQABHpu2JtA3OQYZ-tpNhxNjpR3yra0W6iM6gODZviuuURMsd_Id9xYZ1gjaXrN__aem_ZMPWBpvEDwEY-0OHrF-YGw",
+    "refCode": "0898302234",
+    "referrer": null,
+    "pageIdentifier": "unique-page-slug",
+    "pageType": "LadiCTV",
+    "userId": null,
+    "ipAddress": "::ffff:116.118.49.243",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0",
+    "affiliateLinkId": null,
+    "sharePlatform": "website",
+    "createdAt": "2025-07-17T08:30:45.817Z",
+    "updatedAt": "2025-07-17T08:30:45.817Z"
+  }
+]

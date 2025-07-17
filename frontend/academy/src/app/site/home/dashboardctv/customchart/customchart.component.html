@@ -7,7 +7,7 @@
                         <span class="flex flex-row items-center space-x-4">
                             <span class="flex items-center rounded-lg p-2 border bg-slate-50"><mat-icon>assessment</mat-icon>{{ getSummaryStats().totalCount|number:'1.0-2' }}</span>
                             <span class="flex items-center rounded-lg p-2 border bg-slate-50"><mat-icon>trending_up</mat-icon>{{ getSummaryStats().avgPerDay|number:'1.0-2' }}/ngày</span>
-                            <span class="flex items-center rounded-lg p-2 border bg-slate-50"><mat-icon>date_range</mat-icon>{{ getSummaryStats().dateRange |number:'1.0-2' }}</span>
+                            <span class="flex items-center rounded-lg p-2 border bg-slate-50"><mat-icon>date_range</mat-icon>{{ getSummaryStats().dateRange }}</span>
                         </span>
                     </div>
                 </div>
@@ -104,7 +104,7 @@
                     <div>
                         <p class="text-sm font-medium text-gray-600">{{ config.labels.daysActive }}</p>
                         <p class="text-3xl font-bold text-gray-900 mt-2">{{ getSummaryStats().totalDays |number:'1.0-2'}}</p>
-                        <p class="text-sm text-blue-600 mt-1">{{ getSummaryStats().dateRange |number:'1.0-2'}}</p>
+                        <p class="text-sm text-blue-600 mt-1">{{ getSummaryStats().dateRange}}</p>
                     </div>
                     <div class="p-3 bg-green-50 rounded-lg">
                         <mat-icon class="text-green-600">calendar_today</mat-icon>

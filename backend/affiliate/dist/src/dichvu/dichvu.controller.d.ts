@@ -9,12 +9,12 @@ export declare class DichvuController {
         updatedAt: Date;
         description: string | null;
         order: number | null;
+        price: number;
         TabCode: string | null;
         TabCardCode: string | null;
         TabMedicineCode: string | null;
         serviceCode: string | null;
         serviceName: string | null;
-        price: number;
     }>;
     syncsdichvu(param: any): Promise<{
         success: number;
@@ -27,12 +27,12 @@ export declare class DichvuController {
         updatedAt: Date;
         description: string | null;
         order: number | null;
+        price: number;
         TabCode: string | null;
         TabCardCode: string | null;
         TabMedicineCode: string | null;
         serviceCode: string | null;
         serviceName: string | null;
-        price: number;
     } | {
         data: {
             id: string;
@@ -41,12 +41,12 @@ export declare class DichvuController {
             updatedAt: Date;
             description: string | null;
             order: number | null;
+            price: number;
             TabCode: string | null;
             TabCardCode: string | null;
             TabMedicineCode: string | null;
             serviceCode: string | null;
             serviceName: string | null;
-            price: number;
         }[];
         total: number;
         page: any;
@@ -60,12 +60,12 @@ export declare class DichvuController {
             updatedAt: Date;
             description: string | null;
             order: number | null;
+            price: number;
             TabCode: string | null;
             TabCardCode: string | null;
             TabMedicineCode: string | null;
             serviceCode: string | null;
             serviceName: string | null;
-            price: number;
         }[];
         total: number;
         page: number;
@@ -81,12 +81,12 @@ export declare class DichvuController {
         updatedAt: Date;
         description: string | null;
         order: number | null;
+        price: number;
         TabCode: string | null;
         TabCardCode: string | null;
         TabMedicineCode: string | null;
         serviceCode: string | null;
         serviceName: string | null;
-        price: number;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
@@ -96,12 +96,12 @@ export declare class DichvuController {
         updatedAt: Date;
         description: string | null;
         order: number | null;
+        price: number;
         TabCode: string | null;
         TabCardCode: string | null;
         TabMedicineCode: string | null;
         serviceCode: string | null;
         serviceName: string | null;
-        price: number;
     }>;
     reorder(body: {
         dichvuIds: string[];

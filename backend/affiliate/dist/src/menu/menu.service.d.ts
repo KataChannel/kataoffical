@@ -14,11 +14,11 @@ export declare class MenuService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         title: string;
         icon: string | null;
         slug: string | null;
         parentId: string | null;
-        order: number | null;
     }>;
     findAll(): Promise<({
         children: {
@@ -26,33 +26,33 @@ export declare class MenuService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            order: number | null;
             title: string;
             icon: string | null;
             slug: string | null;
             parentId: string | null;
-            order: number | null;
         }[];
     } & {
         id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         title: string;
         icon: string | null;
         slug: string | null;
         parentId: string | null;
-        order: number | null;
     })[]>;
     findby(param: any): Promise<{
         id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         title: string;
         icon: string | null;
         slug: string | null;
         parentId: string | null;
-        order: number | null;
     }>;
     findOne(id: string): Promise<({
         children: {
@@ -60,44 +60,44 @@ export declare class MenuService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            order: number | null;
             title: string;
             icon: string | null;
             slug: string | null;
             parentId: string | null;
-            order: number | null;
         }[];
     } & {
         id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         title: string;
         icon: string | null;
         slug: string | null;
         parentId: string | null;
-        order: number | null;
     }) | null>;
     update(id: string, data: any): Promise<{
         id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         title: string;
         icon: string | null;
         slug: string | null;
         parentId: string | null;
-        order: number | null;
     }>;
     remove(id: string): Promise<{
         id: string;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        order: number | null;
         title: string;
         icon: string | null;
         slug: string | null;
         parentId: string | null;
-        order: number | null;
     }>;
     getTree(data: any): Promise<any>;
     private buildTree;

@@ -41,10 +41,10 @@ export const routes: Routes = [
               loadChildren: () =>
                 import('./admin/khoahoc/khoahoc.route').then(m => m.KhoahocRoutingModule),
         },       
-        {
-        path: 'hoahong',
+      {
+        path: 'hoahongctv',
         canActivate: [PermissionGuard],
-        data: { permission: 'hoahong.view' },
+        data: { permission: 'hoahongctv.view' },
         loadChildren: () =>
            import('./admin/hoahong/hoahong.route').then(m => m.HoahongRoutingModule),
       },
@@ -291,6 +291,7 @@ export const routes: Routes = [
           },
         ],
       },
+
       {
         path: 'goooglesheets',
         loadComponent: () =>

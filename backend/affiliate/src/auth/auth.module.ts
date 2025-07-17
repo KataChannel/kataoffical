@@ -7,6 +7,7 @@ import { FacebookStrategy } from './strategies/facebook.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { ZaloStrategy } from './strategies/zalo.strategy';
 import { PassportModule } from '@nestjs/passport';
+import { HoahongModule } from 'src/hoahong/hoahong.module';
 
 @Module({
   controllers: [AuthController],

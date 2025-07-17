@@ -32,8 +32,8 @@ export declare class KhoahocService {
         updatedAt: Date;
         description: string | null;
         state: string | null;
-        title: string | null;
         order: number | null;
+        title: string | null;
         createdBy: string | null;
         serviceCode: string | null;
         serviceName: string | null;
@@ -62,8 +62,8 @@ export declare class KhoahocService {
         updatedAt: Date;
         description: string | null;
         state: string | null;
-        title: string | null;
         order: number | null;
+        title: string | null;
         createdBy: string | null;
         serviceCode: string | null;
         serviceName: string | null;
@@ -92,8 +92,8 @@ export declare class KhoahocService {
             updatedAt: Date;
             description: string | null;
             state: string | null;
-            title: string | null;
             order: number | null;
+            title: string | null;
             createdBy: string | null;
             serviceCode: string | null;
             serviceName: string | null;
@@ -127,8 +127,8 @@ export declare class KhoahocService {
             updatedAt: Date;
             description: string | null;
             state: string | null;
-            title: string | null;
             order: number | null;
+            title: string | null;
             createdBy: string | null;
             serviceCode: string | null;
             serviceName: string | null;
@@ -162,8 +162,8 @@ export declare class KhoahocService {
         updatedAt: Date;
         description: string | null;
         state: string | null;
-        title: string | null;
         order: number | null;
+        title: string | null;
         createdBy: string | null;
         serviceCode: string | null;
         serviceName: string | null;
@@ -192,8 +192,8 @@ export declare class KhoahocService {
         updatedAt: Date;
         description: string | null;
         state: string | null;
-        title: string | null;
         order: number | null;
+        title: string | null;
         createdBy: string | null;
         serviceCode: string | null;
         serviceName: string | null;
@@ -222,8 +222,8 @@ export declare class KhoahocService {
         updatedAt: Date;
         description: string | null;
         state: string | null;
-        title: string | null;
         order: number | null;
+        title: string | null;
         createdBy: string | null;
         serviceCode: string | null;
         serviceName: string | null;

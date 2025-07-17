@@ -107,7 +107,6 @@ export class AuthService {
           ghichu: khoahoc || null,
         },
       });
-
       return user;
     } catch (error) {
       // Log error for debugging

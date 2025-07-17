@@ -1,0 +1,622 @@
+[
+  {
+    "id": "1920a8c6-0edb-43dc-92b2-8e7f6b2e3b2e",
+    "codeId": "FILE00001",
+    "title": "banner-trangchu-tazagroup.webp",
+    "url": "timona/1748240300665-banner-trangchu-tazagroup.webp",
+    "description": null,
+    "fileType": "image/webp",
+    "fileSize": null,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/webp",
+      "originalname": "banner-trangchu-tazagroup.webp"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-26T06:18:20.720Z",
+    "updatedAt": "2025-05-26T06:18:20.720Z"
+  },
+  {
+    "id": "078b9600-6570-4cef-ba26-6bf64548759d",
+    "codeId": "FILE00002",
+    "title": "desk 1222x586-01.jpg",
+    "url": "timona/1748244064373-desk 1222x586-01.jpg",
+    "description": null,
+    "fileType": "image/jpeg",
+    "fileSize": 954657,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "desk 1222x586-01.jpg"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-26T07:21:04.449Z",
+    "updatedAt": "2025-05-26T07:21:04.449Z"
+  },
+  {
+    "id": "d241f969-b808-4b4a-8c81-fff845b2b580",
+    "codeId": "FILE00007",
+    "title": "Logo Taza Group.png",
+    "url": "timona/1748246154372-Logo Taza Group.png",
+    "description": null,
+    "fileType": "image/png",
+    "fileSize": 350153,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/png",
+      "originalname": "Logo Taza Group.png"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-26T07:55:54.430Z",
+    "updatedAt": "2025-05-26T07:55:54.430Z"
+  },
+  {
+    "id": "3f162d6f-ed23-4bb4-ab4a-3083e3003671",
+    "codeId": "FILE00008",
+    "title": "Logo Taza Group black.png",
+    "url": "timona/1748246154460-Logo Taza Group black.png",
+    "description": null,
+    "fileType": "image/png",
+    "fileSize": 346174,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/png",
+      "originalname": "Logo Taza Group black.png"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-26T07:55:54.478Z",
+    "updatedAt": "2025-05-26T07:55:54.478Z"
+  },
+  {
+    "id": "f274b191-057f-4d14-a907-a59b5ef0e459",
+    "codeId": "FILE00009",
+    "title": "Logo Taza Group.png",
+    "url": "timona/1748246165250-Logo Taza Group.png",
+    "description": null,
+    "fileType": "image/png",
+    "fileSize": 350153,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/png",
+      "originalname": "Logo Taza Group.png"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-26T07:56:05.271Z",
+    "updatedAt": "2025-05-26T07:56:05.271Z"
+  },
+  {
+    "id": "49c3847c-d476-4fb9-8227-fc586c95e1e5",
+    "codeId": "FILE00010",
+    "title": "cay-canh-noi-that-15.webp",
+    "url": "timona/1748320303105-cay-canh-noi-that-15.webp",
+    "description": null,
+    "fileType": "image/webp",
+    "fileSize": 72110,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/webp",
+      "originalname": "cay-canh-noi-that-15.webp"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-27T04:31:43.163Z",
+    "updatedAt": "2025-05-27T04:31:43.163Z"
+  },
+  {
+    "id": "d32e9011-6e2d-45fd-b857-41982310b07c",
+    "codeId": "FILE00011",
+    "title": "hanh-phuc-de-ban-02.jpg",
+    "url": "timona/1748320303191-hanh-phuc-de-ban-02.jpg",
+    "description": null,
+    "fileType": "image/jpeg",
+    "fileSize": 115345,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "hanh-phuc-de-ban-02.jpg"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-27T04:31:43.208Z",
+    "updatedAt": "2025-05-27T04:31:43.208Z"
+  },
+  {
+    "id": "09358a5d-40c1-499c-a538-df4c017eccf0",
+    "codeId": "FILE00012",
+    "title": "cay-de-ban-lam-viec-12.jpg",
+    "url": "timona/1748320303226-cay-de-ban-lam-viec-12.jpg",
+    "description": null,
+    "fileType": "image/jpeg",
+    "fileSize": 51128,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "cay-de-ban-lam-viec-12.jpg"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-27T04:31:43.243Z",
+    "updatedAt": "2025-05-27T04:31:43.243Z"
+  },
+  {
+    "id": "e5fd29b3-dc07-4ada-9107-bbf0e5e14496",
+    "codeId": "FILE00013",
+    "title": "DSC_4024-Edit_800x800.png",
+    "url": "timona/1748320303275-DSC_4024-Edit_800x800.png",
+    "description": null,
+    "fileType": "image/png",
+    "fileSize": 468434,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/png",
+      "originalname": "DSC_4024-Edit_800x800.png"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-27T04:31:43.322Z",
+    "updatedAt": "2025-05-27T04:31:43.322Z"
+  },
+  {
+    "id": "b1876f2d-0779-45bc-b22b-1358902ab28a",
+    "codeId": "FILE00014",
+    "title": "cay-de-ban-lam-viec-theo-phong-thuy.jpg",
+    "url": "timona/1748320303349-cay-de-ban-lam-viec-theo-phong-thuy.jpg",
+    "description": null,
+    "fileType": "image/jpeg",
+    "fileSize": 64478,
+    "metaData": {
+      "group": "timona",
+      "category": "default",
+      "Content-Type": "image/jpeg",
+      "originalname": "cay-de-ban-lam-viec-theo-phong-thuy.jpg"
+    },
+    "category": "default",
+    "group": "timona",
+    "order": 1,
+    "createdAt": "2025-05-27T04:31:43.364Z",
+    "updatedAt": "2025-05-27T04:31:43.364Z"
+  },
+  {
+    "id": "73317f92-03bb-4546-a6da-245e93cb3fa4",
+    "codeId": "FILE00015",
+    "title": "Tazagroup_vn_t5_2025.pdf",
+    "url": "timona/1749196269523-Tazagroup_vn_t5_2025.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 57952,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "Tazagroup_vn_t5_2025.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-06-06T07:51:09.589Z",
+    "updatedAt": "2025-06-06T07:51:09.589Z"
+  },
+  {
+    "id": "db1ce70e-1c0b-4d61-b9f0-5ff22d8cc463",
+    "codeId": "FILE00016",
+    "title": "Tazagroup_vn_t5_2025.pdf",
+    "url": "timona/1749198623096-Tazagroup_vn_t5_2025.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 57952,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "Tazagroup_vn_t5_2025.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-06-06T08:30:23.152Z",
+    "updatedAt": "2025-06-06T08:30:23.152Z"
+  },
+  {
+    "id": "35665b26-1bfe-4a0c-b92c-0b57ca4e1ead",
+    "codeId": "FILE00017",
+    "title": "Tazagroup_vn_t5_2025.pdf",
+    "url": "timona/1749198850271-Tazagroup_vn_t5_2025.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 57952,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "Tazagroup_vn_t5_2025.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-06-06T08:34:10.286Z",
+    "updatedAt": "2025-06-06T08:34:10.286Z"
+  },
+  {
+    "id": "4e96227f-201d-47e0-9241-0e18f0e0a89d",
+    "codeId": "FILE00018",
+    "title": "Tazagroup_vn_t5_2025.pdf",
+    "url": "timona/1749198946620-Tazagroup_vn_t5_2025.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 57952,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "Tazagroup_vn_t5_2025.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-06-06T08:35:46.637Z",
+    "updatedAt": "2025-06-06T08:35:46.637Z"
+  },
+  {
+    "id": "a5930212-6435-4bb3-902f-3591c1c91f95",
+    "codeId": "FILE00019",
+    "title": "Tazagroup_vn_t5_2025.pdf",
+    "url": "timona/1749200659865-Tazagroup_vn_t5_2025.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 57952,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "Tazagroup_vn_t5_2025.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-06-06T09:04:19.886Z",
+    "updatedAt": "2025-06-06T09:04:19.886Z"
+  },
+  {
+    "id": "19e832cc-534b-488c-ba49-f44cf3f52bb6",
+    "codeId": "FILE00020",
+    "title": "tazagroup_net_t5_2025.pdf",
+    "url": "timona/1749201395643-tazagroup_net_t5_2025.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 58029,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "tazagroup_net_t5_2025.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-06-06T09:16:35.686Z",
+    "updatedAt": "2025-06-06T09:16:35.686Z"
+  },
+  {
+    "id": "a20a494a-0730-440a-bdcc-1d8998d2d81f",
+    "codeId": "FILE00021",
+    "title": "Screenshot From 2025-06-07 10-16-39.png",
+    "url": "timona/1749266307399-Screenshot From 2025-06-07 10-16-39.png",
+    "description": null,
+    "fileType": "image/png",
+    "fileSize": 182716,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "image/png",
+      "originalname": "Screenshot From 2025-06-07 10-16-39.png"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-06-07T03:18:27.471Z",
+    "updatedAt": "2025-06-07T03:18:27.471Z"
+  },
+  {
+    "id": "e3eea2c1-169d-4ca6-974a-a347ffa783d8",
+    "codeId": "FILE00022",
+    "title": "1C25TCT_00000028.pdf",
+    "url": "timona/1749695740588-1C25TCT_00000028.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 357984,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "1C25TCT_00000028.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-06-12T02:35:40.663Z",
+    "updatedAt": "2025-06-12T02:35:40.663Z"
+  },
+  {
+    "id": "bdc77098-4288-4e34-8110-db116d5be128",
+    "codeId": "FILE00023",
+    "title": "tamungt6.pdf",
+    "url": "timona/1750041933080-tamungt6.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 37382,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "tamungt6.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-06-16T02:45:33.176Z",
+    "updatedAt": "2025-06-16T02:45:33.176Z"
+  },
+  {
+    "id": "576c46bd-882b-4652-bc3f-4a7195b68f7a",
+    "codeId": "FILE00024",
+    "title": "cmctazagroup2606.jpg",
+    "url": "timona/1750902224790-cmctazagroup2606.jpg",
+    "description": null,
+    "fileType": "image/jpeg",
+    "fileSize": 129972,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "image/jpeg",
+      "originalname": "cmctazagroup2606.jpg"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-06-26T01:43:44.955Z",
+    "updatedAt": "2025-06-26T01:43:44.955Z"
+  },
+  {
+    "id": "e2c353a2-4b42-463e-a2d6-6c6535ac3d9e",
+    "codeId": "FILE00025",
+    "title": "cmctimona2606.jpg",
+    "url": "timona/1750902236050-cmctimona2606.jpg",
+    "description": null,
+    "fileType": "image/jpeg",
+    "fileSize": 110974,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "image/jpeg",
+      "originalname": "cmctimona2606.jpg"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-06-26T01:43:56.070Z",
+    "updatedAt": "2025-06-26T01:43:56.070Z"
+  },
+  {
+    "id": "23624fa4-1769-4d55-9143-3d28de6fd82e",
+    "codeId": "FILE00026",
+    "title": "PHá»¤ Lá»¤C 09 - THUÃ SEVER 3 CHI NHÃNH Má»I - QUáº¬N BÃNH TÃN.docx",
+    "url": "timona/1751441260800-PHá»¤ Lá»¤C 09 - THUÃ SEVER 3 CHI NHÃNH Má»I - QUáº¬N BÃNH TÃN.docx",
+    "description": null,
+    "fileType": "application/wps-office.docx",
+    "fileSize": 29530,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/wps-office.docx",
+      "originalname": "PHá»¤ Lá»¤C 09 - THUÃ SEVER 3 CHI NHÃNH Má»I - QUáº¬N BÃNH TÃN.docx"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-07-02T07:27:40.862Z",
+    "updatedAt": "2025-07-02T07:27:40.862Z"
+  },
+  {
+    "id": "7998fe7f-596b-407c-8089-80f4710dc368",
+    "codeId": "FILE00027",
+    "title": "Taca072025.pdf",
+    "url": "timona/1752131271285-Taca072025.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 351997,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "Taca072025.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-07-10T07:07:51.360Z",
+    "updatedAt": "2025-07-10T07:07:51.360Z"
+  },
+  {
+    "id": "90863c77-1afa-4fee-be12-b5962f702a39",
+    "codeId": "FILE00028",
+    "title": "Dongduong062025.pdf",
+    "url": "timona/1752131288755-Dongduong062025.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 133159,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "Dongduong062025.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-07-10T07:08:08.778Z",
+    "updatedAt": "2025-07-10T07:08:08.778Z"
+  },
+  {
+    "id": "742d8961-6949-4a29-9bf7-37c6aa6673a7",
+    "codeId": "FILE00029",
+    "title": "tazagroupnet062025.pdf",
+    "url": "timona/1752131309523-tazagroupnet062025.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 58196,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "tazagroupnet062025.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-07-10T07:08:29.536Z",
+    "updatedAt": "2025-07-10T07:08:29.536Z"
+  },
+  {
+    "id": "464487aa-2c3f-4926-a42e-b0c9347a7381",
+    "codeId": "FILE00030",
+    "title": "tazagroup062025.pdf",
+    "url": "timona/1752131309584-tazagroup062025.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 60967,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "tazagroup062025.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-07-10T07:08:29.603Z",
+    "updatedAt": "2025-07-10T07:08:29.603Z"
+  },
+  {
+    "id": "05b53c47-e6ee-4485-b922-f2d22015d810",
+    "codeId": "FILE00031",
+    "title": "06.072025-TB-UBG_ThoÌng baÌo veÌÌ vieÌ£Ìc ÄaÌng kyÌ nuoÌi thuÌ cuÌng vaÌ quy ÄiÌ£nh nuoÌi thuÌ cuÌng taÌ£i toÌa nhaÌ Urban Green.pdf",
+    "url": "timona/1752133828929-06.072025-TB-UBG_ThoÌng baÌo veÌÌ vieÌ£Ìc ÄaÌng kyÌ nuoÌi thuÌ cuÌng vaÌ quy ÄiÌ£nh nuoÌi thuÌ cuÌng taÌ£i toÌa nhaÌ Urban Green.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 603890,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "06.072025-TB-UBG_ThoÌng baÌo veÌÌ vieÌ£Ìc ÄaÌng kyÌ nuoÌi thuÌ cuÌng vaÌ quy ÄiÌ£nh nuoÌi thuÌ cuÌng taÌ£i toÌa nhaÌ Urban Green.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-07-10T07:50:29.029Z",
+    "updatedAt": "2025-07-10T07:50:29.029Z"
+  },
+  {
+    "id": "b70d72de-3700-4090-9c2b-8b704540f556",
+    "codeId": "FILE00032",
+    "title": "UG-VH-24_PhieÌÌu ÄaÌng kiÌ thuÌ cuÌng ( vaÌ£Ìt nuoÌi).pdf",
+    "url": "timona/1752133829111-UG-VH-24_PhieÌÌu ÄaÌng kiÌ thuÌ cuÌng ( vaÌ£Ìt nuoÌi).pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 524149,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "UG-VH-24_PhieÌÌu ÄaÌng kiÌ thuÌ cuÌng ( vaÌ£Ìt nuoÌi).pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-07-10T07:50:29.136Z",
+    "updatedAt": "2025-07-10T07:50:29.136Z"
+  },
+  {
+    "id": "9d04a8d9-afae-4f6f-905a-473dae3bac58",
+    "codeId": "FILE00033",
+    "title": "06.072025-TB-UBG_ThoÌng baÌo veÌÌ vieÌ£Ìc ÄaÌng kyÌ nuoÌi thuÌ cuÌng vaÌ quy ÄiÌ£nh nuoÌi thuÌ cuÌng taÌ£i toÌa nhaÌ Urban Green.pdf",
+    "url": "timona/1752133876227-06.072025-TB-UBG_ThoÌng baÌo veÌÌ vieÌ£Ìc ÄaÌng kyÌ nuoÌi thuÌ cuÌng vaÌ quy ÄiÌ£nh nuoÌi thuÌ cuÌng taÌ£i toÌa nhaÌ Urban Green.pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 603890,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "06.072025-TB-UBG_ThoÌng baÌo veÌÌ vieÌ£Ìc ÄaÌng kyÌ nuoÌi thuÌ cuÌng vaÌ quy ÄiÌ£nh nuoÌi thuÌ cuÌng taÌ£i toÌa nhaÌ Urban Green.pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-07-10T07:51:16.260Z",
+    "updatedAt": "2025-07-10T07:51:16.260Z"
+  },
+  {
+    "id": "1391172b-0768-416e-8ffb-769ddf3a66e4",
+    "codeId": "FILE00034",
+    "title": "UG-VH-24_PhieÌÌu ÄaÌng kiÌ thuÌ cuÌng ( vaÌ£Ìt nuoÌi).pdf",
+    "url": "timona/1752133876345-UG-VH-24_PhieÌÌu ÄaÌng kiÌ thuÌ cuÌng ( vaÌ£Ìt nuoÌi).pdf",
+    "description": null,
+    "fileType": "application/pdf",
+    "fileSize": 524149,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "application/pdf",
+      "originalname": "UG-VH-24_PhieÌÌu ÄaÌng kiÌ thuÌ cuÌng ( vaÌ£Ìt nuoÌi).pdf"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-07-10T07:51:16.374Z",
+    "updatedAt": "2025-07-10T07:51:16.374Z"
+  },
+  {
+    "id": "872465d8-e757-426c-a8bb-2aadf64d8f5a",
+    "codeId": "FILE00035",
+    "title": "domain tazaskinclinic.png",
+    "url": "timona/1752134672360-domain tazaskinclinic.png",
+    "description": null,
+    "fileType": "image/png",
+    "fileSize": 165270,
+    "metaData": {
+      "group": "hrm",
+      "category": "dexuat",
+      "Content-Type": "image/png",
+      "originalname": "domain tazaskinclinic.png"
+    },
+    "category": "dexuat",
+    "group": "hrm",
+    "order": 1,
+    "createdAt": "2025-07-10T08:04:32.403Z",
+    "updatedAt": "2025-07-10T08:04:32.403Z"
+  }
+]
