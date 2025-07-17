@@ -54,7 +54,7 @@ let AuthService = class AuthService {
     async register(data, affiliateCode) {
         console.log('Register data:', data);
         try {
-            const { email, phone, password, facebookId, googleId, zaloId, khoahoc } = data;
+            const { name, email, phone, password, facebookId, googleId, zaloId, khoahoc } = data;
             console.log('Checking for existing user with email:', email, 'or phone:', phone);
             const existingUser = await this.prisma.user.findFirst({
                 where: {
@@ -87,6 +87,7 @@ let AuthService = class AuthService {
             const user = await this.prisma.user.create({
                 data: {
                     codeId,
+                    name: name || null,
                     email: email || null,
                     phone: phone || null,
                     password: hashedPassword,

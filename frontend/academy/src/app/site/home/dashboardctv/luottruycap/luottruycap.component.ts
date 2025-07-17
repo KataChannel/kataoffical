@@ -24,6 +24,7 @@ export class LuottruycapComponent {
   Unique:any = 0
   BounceRate:any = 0
   groupedByPlatform:any[]=[]
+  groupByPages:any[]=[]
   constructor() {
     effect(async () => {
        await this._UserService.getProfile();
@@ -62,6 +63,17 @@ export class LuottruycapComponent {
       return acc;
     }, [] as { key: string; value: { count: number; ratio: string } }[]);
 
+    const groupedPages = this.ListTracking().reduce((acc, item) => {
+      const pageIdentifier = item.pageIdentifier || 'Unknown';
+      acc[pageIdentifier] = (acc[pageIdentifier] || 0) + 1;
+      return acc;
+    }, {} as { [key: string]: number });
+
+    this.groupByPages = Object.entries(groupedPages).map(([pageIdentifier, count]) => ({
+      pageIdentifier,
+      count
+    }));
+    console.log('Tracking events grouped by pages:', this.groupByPages);
     console.log('Tracking events grouped by sharePlatform with counts and ratios:', this.groupedByPlatform);
   }
 

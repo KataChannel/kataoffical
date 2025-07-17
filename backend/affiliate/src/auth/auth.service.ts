@@ -55,7 +55,7 @@ export class AuthService {
     
     try {
       // Normalize input
-      const { email, phone, password, facebookId, googleId, zaloId, khoahoc } = data;
+      const { name,email, phone, password, facebookId, googleId, zaloId, khoahoc } = data;
       // Check for existing user by unique fields
       console.log('Checking for existing user with email:', email, 'or phone:', phone);
       
@@ -95,6 +95,7 @@ export class AuthService {
       const user = await this.prisma.user.create({
         data: {
           codeId,
+          name: name || null,
           email: email || null,
           phone: phone || null,
           password: hashedPassword,

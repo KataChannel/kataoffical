@@ -257,10 +257,10 @@ export class MaindbComponent {
     this.TotalLichhen = await this._LichhenService.getTotalLichhenByUserId(this.profile().id);
     this.TotalKhoahoc = await this._KhoahocService.getTotalKhoahocByUserId(this.profile().id);
 
-    console.log('TotalLichhen',this.TotalLichhen);
-    console.log('TotalKhoahoc',this.TotalKhoahoc);
-    console.log('TotalThanhtoanhoahong',this.TotalThanhtoanhoahong);
-    console.log('TotalHoahong',this.TotalHoahong);
+    // console.log('TotalLichhen',this.TotalLichhen);
+    // console.log('TotalKhoahoc',this.TotalKhoahoc);
+    // console.log('TotalThanhtoanhoahong',this.TotalThanhtoanhoahong);
+    // console.log('TotalHoahong',this.TotalHoahong);
     
     // Uncomment the following line if you want to fetch doanhthu by doanhthus
     // await this._DoanhthuService.getDoanhthuBy(this.Doanhthu.doanhthus);
