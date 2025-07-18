@@ -41,7 +41,7 @@
                 <button matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
                     <mat-icon>cloud_download</mat-icon>
                 </button> -->
-                <span class="lg:flex hidden whitespace-nowrap px-2 rounded-lg bg-slate-200">
+                <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{CountItem}} Đơn Hàng
                 </span>
                 <!-- <button mat-flat-button color="primary" (click)="uploadfile.click()" [disabled]="isLoading">Upload</button> -->
@@ -263,19 +263,22 @@
             </div>
             <div class="w-full h-full flex flex-col space-y-8 items-center p-4 relative overflow-x-auto ">
                     <table id="printContent" class="text-left rtl:text-right leading-none p-4">
-                        <thead class="p-2 border uppercase text-center">
+                        <thead class="p-2 border uppercase text-center text-[10px]">
                             <tr>
-                                <th scope="col" class="w-20 px-2 border">
-                                    Mã SP
+                                <th scope="col" class="w-5 px-2 border">
+                                   STT
                                 </th>
+                                <!-- <th scope="col" class="w-20 px-2 border">
+                                    Mã SP
+                                </th> -->
                                 <th scope="col" class="w-20 px-2 border">
                                     Tên SP
                                 </th>
                                 <th scope="col" class="w-20 px-2 border">
-                                    Đơn vị
+                                    ĐVT
                                 </th>
-                                <th *ngFor="let kh of Phieuchia" scope="col" class="w-20 px-2 border">
-                                   <div class="w-full flex flex-col space-y-1 justify-between">
+                                <th *ngFor="let kh of Phieuchia" scope="col" class="px-2 border">
+                                   <div class="!w-16 flex flex-col space-y-1 justify-between">
                                     <span>{{ kh.name }}</span>
                                     <!-- <span>{{ kh.madonhang }}</span>
                                     <div class="flex justify-between items-center w-full">
@@ -288,18 +291,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let product of getUniqueProducts(Phieuchia)" class="p-2 border">
-                                <td scope="row" class="w-20 px-2 border font-medium text-gray-900 whitespace-nowrap">
-                                    {{ getDvtForProduct(Phieuchia,product)?.masp }}
+                            <tr *ngFor="let product of getUniqueProducts(Phieuchia);let idx = index" class="px-2 border">
+                                <td scope="row" class="w-5 px-2 border font-medium text-gray-900 whitespace-nowrap">
+                                    {{ idx+1 }}
                                 </td>
+                                <!-- <td scope="row" class="w-20 px-2 border font-medium text-gray-900 whitespace-nowrap">
+                                    {{ getDvtForProduct(Phieuchia,product)?.masp }}
+                                </td> -->
                                 <td scope="row" class="w-20 px-2 border font-medium text-gray-900 whitespace-nowrap">
                                         {{ product }}
                                 </td>
                                 <td class="w-20 px-2 border text-start">
                                     {{ getDvtForProduct(Phieuchia,product)?.dvt }}
                                 </td>
-                                <td class="w-20 text-end px-2 border" *ngFor="let kh of Phieuchia">
-                                    <div class="flex justify-between items-center w-full">
+                                <td class="text-end px-2 border" *ngFor="let kh of Phieuchia">
+                                    <div class="!w-16 flex justify-between items-center">
                                         <span class="w-1/2 px-2 h-8"></span>
                                         <span class="w-1/2 flex items-center justify-end px-2 h-8">{{ getProductQuantity(Phieuchia,product, kh.makh)?.slgiao || '' }}</span>
                                       </div>

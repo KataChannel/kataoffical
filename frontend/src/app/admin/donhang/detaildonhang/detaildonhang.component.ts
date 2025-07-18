@@ -105,6 +105,7 @@ export class DetailDonhangComponent {
           title: GenId(8, false),
           // madonhang: GenId(8, false),
           ngaygiao: moment().add(1, 'days').format('YYYY-MM-DD'),
+          khachhang: {banggiaId:''},
         });
         this._ListdonhangComponent.drawer.open();
         this.isEdit.update((value) => !value);
@@ -449,9 +450,10 @@ export class DetailDonhangComponent {
           disableClose: true,
         })
         dialogRef.afterClosed().subscribe((result) => {
-          if (result=="true") {
+          if (result==="true") {
           this.DetailDonhang.update((v: any) => {
-            v.banggiaId = selectedKhachhang?.banggiaId;
+            v.banggiaId = selectedKhachhang?.banggia?.id;
+            console.log(v.banggiaId);
             return v;
           });
         }
