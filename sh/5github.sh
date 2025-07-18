@@ -1,338 +1,223 @@
 #!/bin/bash
 
-# GitHub Utilities Script
-# Comprehensive GitHub management tools
+# GitHub Utilities Script - Phiên bản tiếng Việt
+# Các công cụ quản lý GitHub cơ bản
 
 set -e
 
-# Colors for output
+# Màu sắc cho output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m' # Không màu
 
-# Function to print colored output
+# Hàm in màu
 print_color() {
     printf "${1}%s${NC}\n" "$2"
 }
 
-# Function to check if git is installed
+# Kiểm tra git đã cài đặt chưa
 check_git() {
     if ! command -v git &> /dev/null; then
-        print_color $RED "Git is not installed. Please install git first."
+        print_color $RED "Git chưa được cài đặt. Vui lòng cài đặt git trước."
         exit 1
     fi
 }
 
-# Function to check if gh CLI is installed
-check_gh_cli() {
-    if ! command -v gh &> /dev/null; then
-        print_color $YELLOW "GitHub CLI (gh) is not installed."
-        read -p "Do you want to install it? (y/n): " install_gh
-        if [[ $install_gh == "y" || $install_gh == "Y" ]]; then
-            install_gh_cli
-        else
-            print_color $RED "Some features require GitHub CLI."
-        fi
+# Kiểm tra có phải git repository không
+check_git_repo() {
+    if ! git rev-parse --git-dir > /dev/null 2>&1; then
+        print_color $RED "Không phải git repository. Vui lòng di chuyển đến thư mục git repository."
+        return 1
     fi
 }
 
-# Function to install GitHub CLI
-install_gh_cli() {
-    print_color $BLUE "Installing GitHub CLI..."
-    if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-        sudo apt update
-        sudo apt install gh
-    elif [[ "$OSTYPE" == "darwin"* ]]; then
-        brew install gh
-    else
-        print_color $RED "Please install GitHub CLI manually from https://cli.github.com/"
-    fi
-}
-
-# Function to setup git configuration
-setup_git_config() {
-    print_color $BLUE "Setting up Git configuration..."
-    read -p "Enter your name: " git_name
-    read -p "Enter your email: " git_email
-    
-    git config --global user.name "$git_name"
-    git config --global user.email "$git_email"
-    
-    print_color $GREEN "Git configuration completed!"
-}
-
-# Function to initialize a new repository
-init_repo() {
-    read -p "Enter repository name: " repo_name
-    read -p "Enter description (optional): " repo_desc
-    read -p "Make repository private? (y/n): " is_private
-    
-    mkdir -p "$repo_name"
-    cd "$repo_name"
-    
-    git init
-    echo "# $repo_name" > README.md
-    if [[ -n "$repo_desc" ]]; then
-        echo "$repo_desc" >> README.md
+# Hiển thị thông tin nhánh
+show_branches() {
+    if ! check_git_repo; then
+        return 1
     fi
     
-    git add README.md
-    git commit -m "Initial commit"
+    print_color $CYAN "=== Thông tin nhánh ==="
     
-    if command -v gh &> /dev/null; then
-        if [[ $is_private == "y" || $is_private == "Y" ]]; then
-            gh repo create "$repo_name" --private --source=. --remote=origin --push
-        else
-            gh repo create "$repo_name" --public --source=. --remote=origin --push
-        fi
-        print_color $GREEN "Repository created and pushed to GitHub!"
-    else
-        print_color $YELLOW "Created local repository. Push to GitHub manually."
-    fi
-}
-
-# Function to clone a repository
-clone_repo() {
-    read -p "Enter GitHub repository URL or username/repo: " repo_url
-    
-    if [[ $repo_url == *"github.com"* ]]; then
-        git clone "$repo_url"
-    else
-        git clone "https://github.com/$repo_url.git"
-    fi
-    
-    print_color $GREEN "Repository cloned successfully!"
-}
-
-# Function to manage branches
-manage_branches() {
-    echo "Current branches:"
-    git branch -a
+    # Hiển thị nhánh hiện tại
+    current_branch=$(git branch --show-current)
+    print_color $GREEN "Nhánh hiện tại: $current_branch"
     echo
-    echo "1. Create new branch"
-    echo "2. Switch branch"
-    echo "3. Delete branch"
-    echo "4. Merge branch"
-    read -p "Choose option (1-4): " branch_option
     
-    case $branch_option in
-        1)
-            read -p "Enter new branch name: " branch_name
-            git checkout -b "$branch_name"
-            print_color $GREEN "Created and switched to branch: $branch_name"
-            ;;
-        2)
-            read -p "Enter branch name to switch: " branch_name
-            git checkout "$branch_name"
-            print_color $GREEN "Switched to branch: $branch_name"
-            ;;
-        3)
-            read -p "Enter branch name to delete: " branch_name
-            git branch -d "$branch_name"
-            print_color $GREEN "Deleted branch: $branch_name"
-            ;;
-        4)
-            read -p "Enter branch name to merge: " branch_name
-            git merge "$branch_name"
-            print_color $GREEN "Merged branch: $branch_name"
-            ;;
-    esac
+    # Hiển thị nhánh local
+    print_color $BLUE "Các nhánh local:"
+    git branch -v --color=always
+    echo
+    
+    # Hiển thị nhánh remote
+    print_color $PURPLE "Các nhánh remote:"
+    git branch -r --color=always
+    echo
 }
 
-# Function to handle commits
-commit_changes() {
-    git status
+# Commit và push
+commit_and_push() {
+    if ! check_git_repo; then
+        return 1
+    fi
+    
+    print_color $CYAN "=== Trạng thái Repository ==="
+    git status --short
     echo
-    echo "1. Add all files and commit"
-    echo "2. Add specific files and commit"
-    echo "3. Commit staged files"
-    read -p "Choose option (1-3): " commit_option
+    
+    echo "1. Thêm tất cả file và commit"
+    echo "2. Commit các file đã staged"
+    echo "3. Push nhánh hiện tại"
+    read -p "Chọn tùy chọn (1-3): " commit_option
     
     case $commit_option in
         1)
             git add .
+            print_color $GREEN "Đã thêm tất cả file"
+            read -p "Nhập nội dung commit: " commit_msg
+            git commit -m "$commit_msg"
+            print_color $GREEN "Commit thành công"
+            read -p "Push lên remote? (y/n): " push_changes
+            if [[ $push_changes == "y" || $push_changes == "Y" ]]; then
+                git push
+                print_color $GREEN "Push thành công"
+            fi
             ;;
         2)
-            read -p "Enter file names (space-separated): " files
-            git add $files
+            if [[ -z $(git diff --cached --name-only) ]]; then
+                print_color $RED "Không có file nào được staged"
+                return 1
+            fi
+            print_color $BLUE "Các file đã staged:"
+            git diff --cached --name-only
+            read -p "Nhập nội dung commit: " commit_msg
+            git commit -m "$commit_msg"
+            print_color $GREEN "Commit thành công"
+            read -p "Push lên remote? (y/n): " push_changes
+            if [[ $push_changes == "y" || $push_changes == "Y" ]]; then
+                git push
+                print_color $GREEN "Push thành công"
+            fi
             ;;
         3)
-            # Files already staged
+            current_branch=$(git branch --show-current)
+            git push
+            print_color $GREEN "Đã push nhánh $current_branch"
             ;;
     esac
-    
-    read -p "Enter commit message: " commit_msg
-    git commit -m "$commit_msg"
-    
-    read -p "Push to remote? (y/n): " push_changes
-    if [[ $push_changes == "y" || $push_changes == "Y" ]]; then
-        git push
-        print_color $GREEN "Changes committed and pushed!"
-    else
-        print_color $GREEN "Changes committed locally!"
-    fi
 }
 
-# Function to manage remotes
-manage_remotes() {
-    echo "Current remotes:"
-    git remote -v
+# Merge nhánh hiện tại với nhánh khác
+merge_branches() {
+    if ! check_git_repo; then
+        return 1
+    fi
+    
+    current_branch=$(git branch --show-current)
+    print_color $CYAN "=== Merge nhánh ==="
+    print_color $BLUE "Nhánh hiện tại: $current_branch"
     echo
-    echo "1. Add remote"
-    echo "2. Remove remote"
-    echo "3. Update remote URL"
-    read -p "Choose option (1-3): " remote_option
     
-    case $remote_option in
+    show_branches
+    read -p "Nhập tên nhánh muốn merge vào nhánh hiện tại: " source_branch
+    
+    read -p "Xác nhận merge $source_branch vào $current_branch? (y/n): " confirm
+    if [[ $confirm == "y" || $confirm == "Y" ]]; then
+        if git merge "$source_branch"; then
+            print_color $GREEN "Merge thành công"
+        else
+            print_color $RED "Có xung đột khi merge. Vui lòng giải quyết xung đột."
+            git status
+        fi
+    fi
+}
+
+# Xóa nhánh
+remove_branch() {
+    if ! check_git_repo; then
+        return 1
+    fi
+    
+    print_color $CYAN "=== Xóa nhánh ==="
+    show_branches
+    
+    echo "1. Xóa nhánh local"
+    echo "2. Xóa nhánh remote"
+    read -p "Chọn tùy chọn (1-2): " delete_option
+    
+    case $delete_option in
         1)
-            read -p "Enter remote name: " remote_name
-            read -p "Enter remote URL: " remote_url
-            git remote add "$remote_name" "$remote_url"
-            print_color $GREEN "Remote added: $remote_name"
+            read -p "Nhập tên nhánh local cần xóa: " branch_name
+            current_branch=$(git branch --show-current)
+            if [[ "$branch_name" == "$current_branch" ]]; then
+                print_color $RED "Không thể xóa nhánh đang sử dụng. Vui lòng chuyển sang nhánh khác."
+            else
+                read -p "Xác nhận xóa nhánh $branch_name? (y/n): " confirm
+                if [[ $confirm == "y" || $confirm == "Y" ]]; then
+                    git branch -d "$branch_name" 2>/dev/null && print_color $GREEN "Đã xóa nhánh: $branch_name" || {
+                        print_color $YELLOW "Nhánh chưa được merge. Bạn có muốn xóa bắt buộc? (y/n): "
+                        read force_delete
+                        if [[ $force_delete == "y" || $force_delete == "Y" ]]; then
+                            git branch -D "$branch_name"
+                            print_color $GREEN "Đã xóa bắt buộc nhánh: $branch_name"
+                        fi
+                    }
+                fi
+            fi
             ;;
         2)
-            read -p "Enter remote name to remove: " remote_name
-            git remote remove "$remote_name"
-            print_color $GREEN "Remote removed: $remote_name"
-            ;;
-        3)
-            read -p "Enter remote name: " remote_name
-            read -p "Enter new URL: " remote_url
-            git remote set-url "$remote_name" "$remote_url"
-            print_color $GREEN "Remote URL updated: $remote_name"
+            read -p "Nhập tên nhánh remote cần xóa (vd: origin/feature): " remote_branch
+            branch_name=${remote_branch#origin/}
+            read -p "Xác nhận xóa nhánh remote '$branch_name'? (y/n): " confirm
+            if [[ $confirm == "y" || $confirm == "Y" ]]; then
+                git push origin --delete "$branch_name" && print_color $GREEN "Đã xóa nhánh remote: $branch_name"
+            fi
             ;;
     esac
 }
 
-# Function to create pull request
-create_pull_request() {
-    if ! command -v gh &> /dev/null; then
-        print_color $RED "GitHub CLI is required for this feature."
-        return 1
-    fi
-    
-    read -p "Enter PR title: " pr_title
-    read -p "Enter PR description: " pr_desc
-    read -p "Enter base branch (default: main): " base_branch
-    base_branch=${base_branch:-main}
-    
-    gh pr create --title "$pr_title" --body "$pr_desc" --base "$base_branch"
-    print_color $GREEN "Pull request created!"
-}
-
-# Function to view repository information
-repo_info() {
-    if command -v gh &> /dev/null; then
-        gh repo view
-    else
-        echo "Repository: $(git config --get remote.origin.url)"
-        echo "Current branch: $(git branch --show-current)"
-        echo "Last commit: $(git log -1 --oneline)"
-    fi
-}
-
-# Function to sync fork
-sync_fork() {
-    if ! command -v gh &> /dev/null; then
-        print_color $RED "GitHub CLI is required for this feature."
-        return 1
-    fi
-    
-    gh repo sync
-    print_color $GREEN "Fork synced with upstream!"
-}
-
-# Function to manage issues
-manage_issues() {
-    if ! command -v gh &> /dev/null; then
-        print_color $RED "GitHub CLI is required for this feature."
-        return 1
-    fi
-    
-    echo "1. List issues"
-    echo "2. Create issue"
-    echo "3. View issue"
-    echo "4. Close issue"
-    read -p "Choose option (1-4): " issue_option
-    
-    case $issue_option in
-        1)
-            gh issue list
-            ;;
-        2)
-            read -p "Enter issue title: " issue_title
-            read -p "Enter issue description: " issue_desc
-            gh issue create --title "$issue_title" --body "$issue_desc"
-            print_color $GREEN "Issue created!"
-            ;;
-        3)
-            read -p "Enter issue number: " issue_num
-            gh issue view "$issue_num"
-            ;;
-        4)
-            read -p "Enter issue number to close: " issue_num
-            gh issue close "$issue_num"
-            print_color $GREEN "Issue closed!"
-            ;;
-    esac
-}
-
-# Main menu
+# Menu chính
 show_menu() {
     clear
-    print_color $BLUE "=== GitHub Utilities ==="
-    echo "1.  Setup Git Configuration"
-    echo "2.  Initialize New Repository"
-    echo "3.  Clone Repository"
-    echo "4.  Manage Branches"
-    echo "5.  Commit Changes"
-    echo "6.  Manage Remotes"
-    echo "7.  Create Pull Request"
-    echo "8.  Repository Information"
-    echo "9.  Sync Fork"
-    echo "10. Manage Issues"
-    echo "11. Install/Check GitHub CLI"
-    echo "0.  Exit"
+    print_color $BLUE "=== Tiện ích GitHub ==="
+    echo "1. Hiển thị các nhánh"
+    echo "2. Commit và Push" 
+    echo "3. Merge nhánh"
+    echo "4. Xóa nhánh"
+    echo "0. Thoát"
     echo
 }
 
-# Main loop
+# Vòng lặp chính
 main() {
     check_git
     
     while true; do
         show_menu
-        read -p "Choose an option (0-11): " choice
+        read -p "Chọn một tùy chọn (0-4): " choice
         
         case $choice in
-            1) setup_git_config ;;
-            2) init_repo ;;
-            3) clone_repo ;;
-            4) manage_branches ;;
-            5) commit_changes ;;
-            6) manage_remotes ;;
-            7) create_pull_request ;;
-            8) repo_info ;;
-            9) sync_fork ;;
-            10) manage_issues ;;
-            11) check_gh_cli ;;
+            1) show_branches ;;
+            2) commit_and_push ;;
+            3) merge_branches ;;
+            4) remove_branch ;;
             0) 
-                print_color $GREEN "Goodbye!"
+                print_color $GREEN "Tạm biệt!"
                 exit 0
                 ;;
             *)
-                print_color $RED "Invalid option. Please try again."
+                print_color $RED "Tùy chọn không hợp lệ. Vui lòng thử lại."
                 ;;
         esac
         
         echo
-        read -p "Press Enter to continue..."
+        read -p "Nhấn Enter để tiếp tục..."
     done
 }
 
-# Run the script
+# Chạy script
 main "$@"
