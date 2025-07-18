@@ -79,7 +79,8 @@ commit_and_push() {
             git add .
             print_color $GREEN "Đã thêm tất cả file"
             read -p "Nhập nội dung commit: " commit_msg
-            git commit -m "$commit_msg"
+            current_time=$(date "+%Y-%m-%d %H:%M:%S")
+            git commit -m "$commit_msg [$current_time]"
             print_color $GREEN "Commit thành công"
             read -p "Push lên remote? (y/n): " push_changes
             if [[ $push_changes == "y" || $push_changes == "Y" ]]; then
@@ -95,7 +96,8 @@ commit_and_push() {
             print_color $BLUE "Các file đã staged:"
             git diff --cached --name-only
             read -p "Nhập nội dung commit: " commit_msg
-            git commit -m "$commit_msg"
+            current_time=$(date "+%Y-%m-%d %H:%M:%S")
+            git commit -m "$commit_msg [$current_time]"
             print_color $GREEN "Commit thành công"
             read -p "Push lên remote? (y/n): " push_changes
             if [[ $push_changes == "y" || $push_changes == "Y" ]]; then
