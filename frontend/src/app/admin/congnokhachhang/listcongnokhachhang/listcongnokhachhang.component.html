@@ -42,17 +42,24 @@
         <mat-datepicker #pickerKetthuc></mat-datepicker>
       </mat-form-field>
 
-      <div class="flex flex-row space-x-2 items-center">
+      <div class="w-full flex flex-row space-x-2 items-center">
         @if(ListKhachhang.length > 0) {
-        <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+
+
+        <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'" class="w-full">
           <mat-label>Khách Hàng</mat-label>
           <input type="text" [matAutocomplete]="auto" matInput placeholder="Tìm kiếm khách hàng" />
         </mat-form-field>
-        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onKhachhangChange($event)">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onKhachhangChange($event)" 
+          class="max-w-none" panelWidth="auto">
           @for (option of ListKhachhang; track option) {
-          <mat-option [value]="option">{{option}}</mat-option>
+          <mat-option [value]="option" class="!whitespace-normal !h-auto !py-2">
+            <span class="text-sm">{{option}}</span>
+          </mat-option>
           }
         </mat-autocomplete>
+
+
         <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(ListExport,'Congno')" color="primary"
           mat-icon-button>
           <mat-icon>file_download</mat-icon>
