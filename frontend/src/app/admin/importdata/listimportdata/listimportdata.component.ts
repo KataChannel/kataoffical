@@ -34,6 +34,51 @@ import { PhieukhoService } from '../../phieukho/phieukho.service';
 import { KhoService } from '../../kho/kho.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { UserService } from '../../user/user.service';
+import { ImportConfirmationDialogComponent, ImportConfirmationData } from '../import-confirmation-dialog.component';
+
+// Service utility để kiểm tra trùng lặp
+class ImportDataValidationService {
+  static checkDuplicates(newData: any[], existingData: any[], keyField: string): any[] {
+    const existingKeys = new Set(existingData.map(item => item[keyField]));
+    return newData.filter(item => existingKeys.has(item[keyField]));
+  }
+
+  static prepareSanphamData(data: any[], existingData: any[], overwrite: boolean) {
+    if (overwrite) {
+      return data;
+    } else {
+      const existingCodes = new Set(existingData.map(item => item.masp));
+      return data.filter(item => !existingCodes.has(item.masp));
+    }
+  }
+
+  static prepareKhachhangData(data: any[], existingData: any[], overwrite: boolean) {
+    if (overwrite) {
+      return data;
+    } else {
+      const existingCodes = new Set(existingData.map(item => item.makh));
+      return data.filter(item => !existingCodes.has(item.makh));
+    }
+  }
+
+  static prepareNhacungcapData(data: any[], existingData: any[], overwrite: boolean) {
+    if (overwrite) {
+      return data;
+    } else {
+      const existingCodes = new Set(existingData.map(item => item.mancc));
+      return data.filter(item => !existingCodes.has(item.mancc));
+    }
+  }
+
+  static prepareBanggiaData(data: any[], existingData: any[], overwrite: boolean) {
+    if (overwrite) {
+      return data;
+    } else {
+      const existingCodes = new Set(existingData.map(item => item.mabanggia));
+      return data.filter(item => !existingCodes.has(item.mabanggia));
+    }
+  }
+}
 
 @Component({
   selector: 'app-listimportdata',
@@ -115,6 +160,7 @@ export class ListImportdataComponent implements OnInit {
   rawListDathang: any[] = [];
   rawListTonkho: any[] = [];
   constructor() {
+
     effect(async () => {
     await this._ImportdataService.getAllImportdata(100, true);
     await this._SanphamService.getAllSanpham({pageSize:9999},true);
@@ -534,6 +580,29 @@ convertNCCSPToImport(data: any){
     this.DoImportData(data);
   }
 
+  // Method để hiển thị dialog xác nhận import
+  private async showImportConfirmDialog(dataType: string, existingCount: number, newCount: number, duplicateItems: any[]): Promise<{confirmed: boolean, overwrite: boolean}> {
+    return new Promise((resolve) => {
+      const dialogData: ImportConfirmationData = {
+        dataType,
+        existingCount,
+        newCount,
+        duplicateItems,
+        isOverwrite: false
+      };
+
+      const dialogRef = this._dialog.open(ImportConfirmationDialogComponent, {
+        width: '500px',
+        data: dialogData,
+        disableClose: true
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        resolve(result || { confirmed: false, overwrite: false });
+      });
+    });
+  }
+
   async DoImportData(data:any)
   {
 
@@ -558,6 +627,7 @@ convertNCCSPToImport(data: any){
       return;
     }
 
+    // Import Sản phẩm với xác nhận
     if(data.sanpham && data.sanpham.length > 0 && this.ListEdit().some((item: any) => item.value === 'sanpham'))
     {
       const ListSP = (data.sanpham || []).map((v: any) => ({
@@ -571,20 +641,52 @@ convertNCCSPToImport(data: any){
         haohut: Number(v.haohut)||0,
         ghichu: v.ghichu,
       })).filter((v: any) => v.masp !== undefined && v.masp !== null && v.masp !== '');
-      const importSnackbar = this._snackBar.open('Đang import Sản phẩm...', '', {
+      
+      // Kiểm tra trùng lặp
+      const duplicates = ImportDataValidationService.checkDuplicates(ListSP, this.rawListSP, 'masp');
+      const result = await this.showImportConfirmDialog('Sản Phẩm', this.rawListSP.length, ListSP.length, duplicates);
+      
+      if (!result.confirmed) return;
+      
+      const finalData = ImportDataValidationService.prepareSanphamData(ListSP, this.rawListSP, result.overwrite);
+      if (finalData.length === 0) {
+        this._snackBar.open('Không có dữ liệu mới để import', '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-warning'],
+        });
+        return;
+      }
+
+      const importSnackbar = this._snackBar.open(`Đang import ${finalData.length} sản phẩm...`, '', {
         horizontalPosition: "end",
         verticalPosition: "top",
         panelClass: ['snackbar-warning']
       });
-      await this._SanphamService.ImportSanpham(ListSP);
-      importSnackbar.dismiss();
-      this._snackBar.open('Import Sản phẩm thành công!', '', {
-        duration: 1000,
-        horizontalPosition: "end",
-        verticalPosition: "top",
-        panelClass: ['snackbar-success']
-      });
+      
+      try {
+        await this._SanphamService.ImportSanpham(finalData);
+        
+        importSnackbar.dismiss();
+        this._snackBar.open(`Import thành công ${finalData.length} sản phẩm${result.overwrite ? ' (ghi đè)' : ' (thêm mới)'}!`, '', {
+          duration: 2000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success']
+        });
+      } catch (error) {
+        importSnackbar.dismiss();
+        this._snackBar.open('Có lỗi xảy ra khi import sản phẩm', '', {
+          duration: 2000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-error']
+        });
+      }
     }
+    
+    // Import Khách hàng với xác nhận
     if(data.khachhang && data.khachhang.length > 0 && this.ListEdit().some((item: any) => item.value === 'khachhang'))
     {
       const ListKH = (data.khachhang || []).map((v: any) => ({
@@ -604,21 +706,50 @@ convertNCCSPToImport(data: any){
         mabanggia: v.mabanggia,
       })).filter((v: any) => v.makh !== undefined && v.makh !== null && v.makh !== '');
 
-      const importSnackbar = this._snackBar.open('Đang import Khách hàng...', '', {
+      // Kiểm tra trùng lặp
+      const duplicates = ImportDataValidationService.checkDuplicates(ListKH, this.rawListKH, 'makh');
+      const result = await this.showImportConfirmDialog('Khách Hàng', this.rawListKH.length, ListKH.length, duplicates);
+      
+      if (!result.confirmed) return;
+      
+      const finalData = ImportDataValidationService.prepareKhachhangData(ListKH, this.rawListKH, result.overwrite);
+      if (finalData.length === 0) {
+        this._snackBar.open('Không có dữ liệu mới để import', '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-warning'],
+        });
+        return;
+      }
+
+      const importSnackbar = this._snackBar.open(`Đang import ${finalData.length} khách hàng...`, '', {
         horizontalPosition: "end",
         verticalPosition: "top",
         panelClass: ['snackbar-warning']
       });
-      await this._KhachhangService.ImportKhachhang(ListKH);
-      importSnackbar.dismiss();
-      this._snackBar.open('Import Khách hàng thành công!', '', {
-        duration: 1000,
-        horizontalPosition: "end",
-        verticalPosition: "top",
-        panelClass: ['snackbar-success']
-      });
+      
+      try {
+        await this._KhachhangService.ImportKhachhang(finalData);
+        importSnackbar.dismiss();
+        this._snackBar.open(`Import thành công ${finalData.length} khách hàng${result.overwrite ? ' (ghi đè)' : ' (thêm mới)'}!`, '', {
+          duration: 2000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success']
+        });
+      } catch (error) {
+        importSnackbar.dismiss();
+        this._snackBar.open('Có lỗi xảy ra khi import khách hàng', '', {
+          duration: 2000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-error']
+        });
+      }
     }
 
+    // Import Nhà cung cấp với xác nhận
     if(data.nhacungcap && data.nhacungcap.length > 0 && this.ListEdit().some((item: any) => item.value === 'nhacungcap'))
     {
       const ListNCC = (data.nhacungcap || []).map((v: any) => ({
@@ -629,20 +760,51 @@ convertNCCSPToImport(data: any){
         sdt: v.sdt.toString(),
         ghichu: v.ghichu
       })).filter((v: any) => v.mancc !== undefined && v.mancc !== null && v.mancc !== '');
-      const importSnackbar = this._snackBar.open('Đang import Nhà cung cấp...', '', {
+      
+      // Kiểm tra trùng lặp
+      const duplicates = ImportDataValidationService.checkDuplicates(ListNCC, this.rawListNCC, 'mancc');
+      const result = await this.showImportConfirmDialog('Nhà Cung Cấp', this.rawListNCC.length, ListNCC.length, duplicates);
+      
+      if (!result.confirmed) return;
+      
+      const finalData = ImportDataValidationService.prepareNhacungcapData(ListNCC, this.rawListNCC, result.overwrite);
+      if (finalData.length === 0) {
+        this._snackBar.open('Không có dữ liệu mới để import', '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-warning'],
+        });
+        return;
+      }
+
+      const importSnackbar = this._snackBar.open(`Đang import ${finalData.length} nhà cung cấp...`, '', {
         horizontalPosition: "end",
         verticalPosition: "top",
         panelClass: ['snackbar-warning']
       });
-      await this._NhacungcapService.ImportNhacungcap(ListNCC);
-      importSnackbar.dismiss();
-      this._snackBar.open('Import Nhà cung cấp thành công!', '', {
-        duration: 1000,
-        horizontalPosition: "end",
-        verticalPosition: "top",
-        panelClass: ['snackbar-success']
-      });
+      
+      try {
+        await this._NhacungcapService.ImportNhacungcap(finalData);
+        importSnackbar.dismiss();
+        this._snackBar.open(`Import thành công ${finalData.length} nhà cung cấp${result.overwrite ? ' (ghi đè)' : ' (thêm mới)'}!`, '', {
+          duration: 2000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success']
+        });
+      } catch (error) {
+        importSnackbar.dismiss();
+        this._snackBar.open('Có lỗi xảy ra khi import nhà cung cấp', '', {
+          duration: 2000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-error']
+        });
+      }
     }
+    
+    // Import Bảng giá với xác nhận
     if(data.banggia && data.banggia.length > 0 && this.ListEdit().some((item: any) => item.value === 'banggia'))
     {
       const ListBG = (data.banggia || []).map((v: any) => ({
@@ -654,20 +816,51 @@ convertNCCSPToImport(data: any){
         ghichu: v.ghichu,
         status: v.status
       })).filter((v: any) => v.mabanggia !== undefined && v.mabanggia !== null && v.mabanggia !== '');
-      const importSnackbar = this._snackBar.open('Đang import Bảng giá...', '', {
+      
+      // Kiểm tra trùng lặp
+      const duplicates = ImportDataValidationService.checkDuplicates(ListBG, this.rawListBG, 'mabanggia');
+      const result = await this.showImportConfirmDialog('Bảng Giá', this.rawListBG.length, ListBG.length, duplicates);
+      
+      if (!result.confirmed) return;
+      
+      const finalData = ImportDataValidationService.prepareBanggiaData(ListBG, this.rawListBG, result.overwrite);
+      if (finalData.length === 0) {
+        this._snackBar.open('Không có dữ liệu mới để import', '', {
+          duration: 1000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-warning'],
+        });
+        return;
+      }
+
+      const importSnackbar = this._snackBar.open(`Đang import ${finalData.length} bảng giá...`, '', {
         horizontalPosition: "end",
         verticalPosition: "top",
         panelClass: ['snackbar-warning']
       });
-      await this._BanggiaService.ImportBanggia(ListBG);
-      importSnackbar.dismiss();
-      this._snackBar.open('Import Bảng giá thành công!', '', {
-        duration: 1000,
-        horizontalPosition: "end",
-        verticalPosition: "top",
-        panelClass: ['snackbar-success']
-      });
+      
+      try {
+        await this._BanggiaService.ImportBanggia(finalData);
+        importSnackbar.dismiss();
+        this._snackBar.open(`Import thành công ${finalData.length} bảng giá${result.overwrite ? ' (ghi đè)' : ' (thêm mới)'}!`, '', {
+          duration: 2000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success']
+        });
+      } catch (error) {
+        importSnackbar.dismiss();
+        this._snackBar.open('Có lỗi xảy ra khi import bảng giá', '', {
+          duration: 2000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-error']
+        });
+      }
     }
+
+    // Phần còn lại giữ nguyên cho đơn hàng và các dữ liệu khác
     if(data.donhang && data.donhang.length > 0 && this.ListEdit().some((item: any) => item.value === 'donhang'))
     {
       const ListDH = (data.donhang || []).map((v: any) => ({
