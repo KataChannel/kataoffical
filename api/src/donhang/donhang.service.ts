@@ -854,6 +854,20 @@ async update(id: string, data: any) {
         });
       } else {
         // Create new phieuKho with sanpham
+        const uniqueSanpham = data.sanpham.reduce((acc: any[], sp: any) => {
+          const existing = acc.find(item => item.sanphamId === sp.id);
+          if (existing) {
+            existing.soluong += parseFloat((sp.slgiao ?? 0).toFixed(2));
+          } else {
+            acc.push({
+              sanphamId: sp.id,
+              soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+              ghichu: sp.ghichu,
+            });
+          }
+          return acc;
+        }, []);
+
         await prisma.phieuKho.create({
           data: {
             maphieu: maphieuNew,
@@ -863,11 +877,7 @@ async update(id: string, data: any) {
             ghichu: phieuPayload.ghichu,
             isActive: phieuPayload.isActive,
             sanpham: {
-              create: data.sanpham.map((sp: any) => ({
-                sanphamId: sp.id,
-                soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-                ghichu: sp.ghichu,
-              })),
+              create: uniqueSanpham,
             },
           },
         });
@@ -1764,6 +1774,21 @@ async dagiao(id: string, data: any) {
               });
             }
 
+            // Deduplicate products and aggregate quantities
+            const uniqueSanpham = oldDonhang.sanpham.reduce((acc: any[], sp: any) => {
+              const existing = acc.find(item => item.sanphamId === sp.idSP);
+              if (existing) {
+                existing.soluong += parseFloat((sp.sldat ?? 0).toFixed(2));
+              } else {
+                acc.push({
+                  sanphamId: sp.idSP,
+                  soluong: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                  ghichu: sp.ghichu,
+                });
+              }
+              return acc;
+            }, []);
+
             // Tạo phiếu xuất kho
             const maphieuNew = `PX-${oldDonhang.madonhang}-${moment().format('DDMMYYYY')}`;
             const phieuPayload = {
@@ -1772,12 +1797,6 @@ async dagiao(id: string, data: any) {
               khoId: DEFAUL_KHO_ID,
               ghichu: oldDonhang.ghichu || 'Xuất kho hàng loạt',
               isActive: true,
-              sanpham: {
-                create: oldDonhang.sanpham.map((sp: any) => ({
-                  sanphamId: sp.idSP,
-                  soluong: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                  ghichu: sp.ghichu,                })),
-              },
             };
 
             // Handle phieuKho upsert manually to avoid unique constraint violation
@@ -1802,11 +1821,7 @@ async dagiao(id: string, data: any) {
                   ghichu: phieuPayload.ghichu,
                   isActive: phieuPayload.isActive,
                   sanpham: {
-                    create: oldDonhang.sanpham.map((sp: any) => ({
-                      sanphamId: sp.idSP,
-                      soluong: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                      ghichu: sp.ghichu,
-                    })),
+                    create: uniqueSanpham,
                   },
                 },
               });
@@ -1821,11 +1836,7 @@ async dagiao(id: string, data: any) {
                   ghichu: phieuPayload.ghichu,
                   isActive: phieuPayload.isActive,
                   sanpham: {
-                    create: oldDonhang.sanpham.map((sp: any) => ({
-                      sanphamId: sp.idSP,
-                      soluong: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                      ghichu: sp.ghichu,
-                    })),
+                    create: uniqueSanpham,
                   },
                 },
               });

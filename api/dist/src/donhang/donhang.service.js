@@ -767,6 +767,20 @@ let DonhangService = class DonhangService {
                     });
                 }
                 else {
+                    const uniqueSanpham = data.sanpham.reduce((acc, sp) => {
+                        const existing = acc.find(item => item.sanphamId === sp.id);
+                        if (existing) {
+                            existing.soluong += parseFloat((sp.slgiao ?? 0).toFixed(2));
+                        }
+                        else {
+                            acc.push({
+                                sanphamId: sp.id,
+                                soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                ghichu: sp.ghichu,
+                            });
+                        }
+                        return acc;
+                    }, []);
                     await prisma.phieuKho.create({
                         data: {
                             maphieu: maphieuNew,
@@ -776,11 +790,7 @@ let DonhangService = class DonhangService {
                             ghichu: phieuPayload.ghichu,
                             isActive: phieuPayload.isActive,
                             sanpham: {
-                                create: data.sanpham.map((sp) => ({
-                                    sanphamId: sp.id,
-                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-                                    ghichu: sp.ghichu,
-                                })),
+                                create: uniqueSanpham,
                             },
                         },
                     });
@@ -1585,6 +1595,20 @@ let DonhangService = class DonhangService {
                                 },
                             });
                         }
+                        const uniqueSanpham = oldDonhang.sanpham.reduce((acc, sp) => {
+                            const existing = acc.find(item => item.sanphamId === sp.idSP);
+                            if (existing) {
+                                existing.soluong += parseFloat((sp.sldat ?? 0).toFixed(2));
+                            }
+                            else {
+                                acc.push({
+                                    sanphamId: sp.idSP,
+                                    soluong: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                                    ghichu: sp.ghichu,
+                                });
+                            }
+                            return acc;
+                        }, []);
                         const maphieuNew = `PX-${oldDonhang.madonhang}-${moment().format('DDMMYYYY')}`;
                         const phieuPayload = {
                             ngay: oldDonhang.ngaygiao ? new Date(oldDonhang.ngaygiao) : new Date(),
@@ -1592,13 +1616,6 @@ let DonhangService = class DonhangService {
                             khoId: DEFAUL_KHO_ID,
                             ghichu: oldDonhang.ghichu || 'Xuất kho hàng loạt',
                             isActive: true,
-                            sanpham: {
-                                create: oldDonhang.sanpham.map((sp) => ({
-                                    sanphamId: sp.idSP,
-                                    soluong: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                                    ghichu: sp.ghichu,
-                                })),
-                            },
                         };
                         const existingPhieu = await prisma.phieuKho.findUnique({
                             where: { maphieu: maphieuNew },
@@ -1617,11 +1634,7 @@ let DonhangService = class DonhangService {
                                     ghichu: phieuPayload.ghichu,
                                     isActive: phieuPayload.isActive,
                                     sanpham: {
-                                        create: oldDonhang.sanpham.map((sp) => ({
-                                            sanphamId: sp.idSP,
-                                            soluong: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                                            ghichu: sp.ghichu,
-                                        })),
+                                        create: uniqueSanpham,
                                     },
                                 },
                             });
@@ -1636,11 +1649,7 @@ let DonhangService = class DonhangService {
                                     ghichu: phieuPayload.ghichu,
                                     isActive: phieuPayload.isActive,
                                     sanpham: {
-                                        create: oldDonhang.sanpham.map((sp) => ({
-                                            sanphamId: sp.idSP,
-                                            soluong: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                                            ghichu: sp.ghichu,
-                                        })),
+                                        create: uniqueSanpham,
                                     },
                                 },
                             });
