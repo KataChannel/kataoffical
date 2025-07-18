@@ -91,8 +91,18 @@
         <!-- <div class="flex flex-row space-x-2">
             <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button>
             <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Phiếu Chia</button>
-          </div> -->
-        <div class="w-full overflow-auto">
+          </div> -->        <div class="w-full overflow-auto relative">
+            <!-- Loading Overlay -->
+            @if (isLoading()) {
+            <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+                <div class="flex flex-col items-center space-y-4">
+                    <mat-spinner diameter="40"></mat-spinner>
+                    <span class="text-sm text-gray-600">Đang tải dữ liệu...</span>
+                </div>
+            </div>
+            }
+            
+            <!-- Table Content -->
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
@@ -228,13 +238,11 @@
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="AddToEdit(row)"
-                    class="hover:bg-slate-100 {{CheckItemInEdit(row)?'!bg-slate-200':''}}"></tr>
-                <tr class="mat-row" *matNoDataRow>
-                    <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
-                </tr>
-            </table>
+                    class="hover:bg-slate-100 {{CheckItemInEdit(row)?'!bg-slate-200':''}}"></tr>                <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
+                </tr>            </table>
         </div>
-
+        
         <app-sharepagination [pageSize]="pageSize()" [page]="page()" [total]="total()" [pageCount]="pageCount()"
             (emitChange)="onPageChange($event)">
         </app-sharepagination>

@@ -50,11 +50,11 @@ import { BanggiaService } from '../../banggia/banggia.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import { SharepaginationComponent } from '../../../shared/common/sharepagination/sharepagination.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @Component({
   selector: 'app-listdonhang',
   templateUrl: './listdonhang.component.html',
-  styleUrls: ['./listdonhang.component.scss'],
-  imports: [
+  styleUrls: ['./listdonhang.component.scss'],  imports: [
     MatFormFieldModule,
     MatInputModule,
     MatTableModule,
@@ -73,6 +73,7 @@ import { SharepaginationComponent } from '../../../shared/common/sharepagination
     MatDialogModule,
     MatTabsModule,
     SharepaginationComponent,
+    MatProgressSpinnerModule,
   ],
 })
 export class ListDonhangComponent {
@@ -105,6 +106,7 @@ export class ListDonhangComponent {
   totalPages = 1;
   Columns: any[] = [];
   isFilter: boolean = false;
+  isLoading = signal<boolean>(false);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
@@ -129,7 +131,7 @@ export class ListDonhangComponent {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
     Type: 'donsi',
-    pageSize: 100,
+    pageSize: 10,
     pageNumber: 1,
   };
   ListDate: any[] = [
@@ -144,71 +146,141 @@ export class ListDonhangComponent {
   page = signal<number>(1);
   total = signal<number>(0);
   pageCount = signal<number>(0);
-  FilterKhachhang: any[] = [];
-  constructor() {
+  FilterKhachhang: any[] = [];  constructor() {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
-    effect(async () => {
+  }async onPageChange(event: any): Promise<void> {
+    console.log('Page change event:', event);
+    
+    // Show loading indicator during page change
+    this.isLoading.set(true);
+    
+    try {
+      this.SearchParams.pageSize = event.pageSize;
+      this.SearchParams.pageNumber = event.page;
       await this.LoadData();
-    });
-  }
-  async onPageChange(event: any): Promise<void> {
-    console.log(event);
-    this.SearchParams.pageSize = event.pageSize;
-    this.SearchParams.pageNumber = event.page;
-    await this.LoadData();
-  }
-  async LoadData() {
-    await this._KhachhangService.getKhachhangBy({ page: 1, pageSize: 9999 });
-    const data = await this._DonhangService.searchDonhang(this.SearchParams);
-    this.Listdonhang.set(data);
-    if (data.data) {
-      this.total.set(Number(data.total));
-      this.pageSize.set(Number(data.pageSize));
-      this.page.set(Number(data.pageNumber));
-      this.pageCount.set(data.totalPages);
-      this.dataSource = new MatTableDataSource(this.Listdonhang().data);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+    } catch (error) {
+      console.error('Error changing page:', error);
+      this._snackBar.open('Lỗi khi chuyển trang', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
     }
   }
-
-  async onSelectionChange(event: MatSelectChange): Promise<void> {
-    const timeFrames: { [key: string]: () => void } = {
-      day: () => {
-        this.SearchParams.Batdau = moment();
-        this.SearchParams.Ketthuc = moment()
-          .endOf('day')
-          .add(1, 'day')
-          .format('YYYY-MM-DD');
-      },
-      week: () => {
-        this.SearchParams.Batdau = moment()
-          .startOf('week')
-          .format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
-      },
-      month: () => {
-        this.SearchParams.Batdau = moment()
-          .startOf('month')
-          .format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment()
-          .endOf('month')
-          .format('YYYY-MM-DD');
-      },
-      year: () => {
-        this.SearchParams.Batdau = moment()
-          .startOf('year')
-          .format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
-      },
-    };
-    await this.LoadData();
-    //  this.ngOnInit();
-  }
-  onDateChange(event: any): void {
-    this.ngOnInit();
+    async LoadData() {
+    this.isLoading.set(true);
+    try {
+      // Load customers in background if needed
+      if (!this._KhachhangService.ListKhachhang()?.length) {
+        await this._KhachhangService.getKhachhangBy({ page: 1, pageSize: 9999 });
+      }
+      
+      // Fetch paginated data from server
+      const data = await this._DonhangService.searchDonhang(this.SearchParams);
+      this.Listdonhang.set(data);
+      
+      if (data && data.data) {
+        this.total.set(Number(data.total || 0));
+        this.pageSize.set(Number(data.pageSize || 10));
+        this.page.set(Number(data.pageNumber || 1));
+        this.pageCount.set(Number(data.totalPages || 1));
+        
+        // Set data to table without client-side pagination since we're using server-side
+        this.dataSource = new MatTableDataSource(data.data);
+        // Disable client-side pagination/sorting since we're using server-side
+        this.dataSource.paginator = null;
+        this.dataSource.sort = null;
+      } else {
+        // Handle empty or invalid response
+        this.total.set(0);
+        this.pageSize.set(10);
+        this.page.set(1);
+        this.pageCount.set(0);
+        this.dataSource = new MatTableDataSource([]);
+      }
+    } catch (error) {
+      console.error('Error loading data:', error);
+      this._snackBar.open('Lỗi tải dữ liệu', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+      // Reset data on error
+      this.total.set(0);
+      this.pageCount.set(0);
+      this.dataSource = new MatTableDataSource([]);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }  async onSelectionChange(event: MatSelectChange): Promise<void> {
+    // Show loading indicator during time frame change
+    this.isLoading.set(true);
+    
+    try {
+      const timeFrames: { [key: string]: () => void } = {
+        day: () => {
+          this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
+          this.SearchParams.Ketthuc = moment().endOf('day').format('YYYY-MM-DD');
+        },
+        week: () => {
+          this.SearchParams.Batdau = moment()
+            .startOf('week')
+            .format('YYYY-MM-DD');
+          this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
+        },
+        month: () => {
+          this.SearchParams.Batdau = moment()
+            .startOf('month')
+            .format('YYYY-MM-DD');
+          this.SearchParams.Ketthuc = moment()
+            .endOf('month')
+            .format('YYYY-MM-DD');
+        },
+        year: () => {
+          this.SearchParams.Batdau = moment()
+            .startOf('year')
+            .format('YYYY-MM-DD');
+          this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
+        },
+      };
+      
+      const selectedTimeFrame = timeFrames[event.value];
+      if (selectedTimeFrame) {
+        selectedTimeFrame();
+        // Reset to first page when changing time frame
+        this.SearchParams.pageNumber = 1;
+        await this.LoadData();
+      }
+    } catch (error) {
+      console.error('Error changing time selection:', error);
+      this._snackBar.open('Lỗi khi thay đổi thời gian', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }  onDateChange(event: any): void {
+    // Show loading indicator during date change
+    this.isLoading.set(true);
+    
+    try {
+      // Reset to first page when changing date
+      this.SearchParams.pageNumber = 1;
+      this.LoadData();
+    } catch (error) {
+      console.error('Error changing date:', error);
+      this._snackBar.open('Lỗi khi thay đổi ngày', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -226,34 +298,49 @@ export class ListDonhangComponent {
       return isMatch;
     };
   }
-  applyFilter(event: Event) {
+  @Debounce(500)
+  async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
+    console.log('filterValue', filterValue);
+    
+    // Show loading indicator while filtering
+    this.isLoading.set(true);
+    
+    try {
+      // Reset to first page when searching
+      this.SearchParams.pageNumber = 1;
+      this.SearchParams.query = filterValue.trim();
+      
+      // Load data from server with search query
+      await this.LoadData();
+    } catch (error) {
+      console.error('Error applying filter:', error);
+      this._snackBar.open('Lỗi tìm kiếm dữ liệu', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
     }
   }
   async ngOnInit(): Promise<void> {
-    await this.LoadData();
-    this.initializeColumns();
-    this.setupDrawer();
-
-    // this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    // this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    // this.paginator._intl.previousPageLabel = 'Về Trước';
-    // this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    // this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    this.isLoading.set(true);
+    try {
+      this.initializeColumns();
+      this.setupDrawer();
+      await this.LoadData();
+    } catch (error) {
+      console.error('Error initializing component:', error);
+      this._snackBar.open('Lỗi khởi tạo trang', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading.set(false);
+    }
   }
-
-  // async onPageChange(event: any): Promise<void> {
-  //   console.log(event);
-  //   this.SearchParams.pageSize = event.pageSize;
-  //   this.SearchParams.pageNumber = event.pageIndex + 1;
-  //   const data = await this._DonhangService.searchDonhang(this.SearchParams);
-  //   this.Listdonhang.set(data);
-  //   this.dataSource = new MatTableDataSource(this.Listdonhang().data);
-  //   this.dataSource.sort = this.sort;
-  // }
 
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -325,20 +412,32 @@ export class ListDonhangComponent {
         index === self.findIndex((t: any) => t[column] === obj[column])
     );
     return uniqueList;
-  }
-  @Debounce(300)
-  doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listdonhang().data.filter(
-      (v: any) =>
-        removeVietnameseAccents(v[column]).includes(
-          event.target.value.toLowerCase()
-        ) || v[column].toLowerCase().includes(event.target.value.toLowerCase())
-    );
+  }  @Debounce(300)
+  async doFilterHederColumn(event: any, column: any): Promise<void> {
     const query = event.target.value.toLowerCase();
+    
+    // Show loading indicator during column filtering
+    this.isLoading.set(true);
+    
+    try {
+      // Reset to first page when filtering
+      this.SearchParams.pageNumber = 1;
+      this.SearchParams[`${column}Filter`] = query;
+      
+      // Load data from server with column filter
+      await this.LoadData();
+    } catch (error) {
+      console.error('Error filtering column:', error);
+      this._snackBar.open('Lỗi khi lọc dữ liệu', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
   }
-  ListFilter: any[] = [];
-  ChosenItem(item: any, column: any) {
-    const CheckItem = this.dataSource.filteredData.filter(
+  ListFilter: any[] = [];  ChosenItem(item: any, column: any) {
+    const CheckItem = this.dataSource.data.filter(
       (v: any) => v[column] === item[column]
     );
     const CheckItem1 = this.ListFilter.filter(
@@ -363,23 +462,19 @@ export class ListDonhangComponent {
         this.ListFilter.push(v);
       }
     });
-  }
-  ResetFilter() {
-    this.ListFilter = this.Listdonhang().data;
-    this.dataSource.data = this.Listdonhang().data;
-    this.dataSource.sort = this.sort;
+  }  ResetFilter() {
+    this.ListFilter = this.Listdonhang().data || [];
+    this.dataSource.data = this.Listdonhang().data || [];
   }
   EmptyFiter() {
     this.ListFilter = [];
   }
   CheckItem(item: any) {
     return this.ListFilter.find((v) => v.id === item.id) ? true : false;
-  }
-  ApplyFilterColum(menu: any) {
+  }  ApplyFilterColum(menu: any) {
     this.dataSource.data = this.Listdonhang().data.filter((v: any) =>
       this.ListFilter.some((v1) => v1.id === v.id)
     );
-    this.dataSource.sort = this.sort;
     menu.closeMenu();
   }
 
