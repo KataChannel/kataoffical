@@ -765,9 +765,9 @@ export class DetailDonhangComponent {
 
     this.ListFilter.forEach((v) => {
       const exists = this.dataSource().data.find((d: any) => d.id === v.id);
-       v.sldat = exists.sldat || 1;
-       v.slgiao = exists.slgiao || 1;
-       v.slnhan = exists.slnhan || 1;
+       v.sldat = exists?.sldat || 1;
+       v.slgiao = exists?.slgiao || 1;
+       v.slnhan = exists?.slnhan || 1;
     });
     this.DetailDonhang.update((v:any)=>{
       v.sanpham =  this.ListFilter
