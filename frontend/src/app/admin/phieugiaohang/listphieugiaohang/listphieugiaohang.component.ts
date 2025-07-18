@@ -24,11 +24,12 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import moment from 'moment';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
+import { SharepaginationComponent } from '../../../shared/common/sharepagination/sharepagination.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @Component({
   selector: 'app-listphieugiaohang',
   templateUrl: './listphieugiaohang.component.html',
-  styleUrls: ['./listphieugiaohang.component.scss'],
-  imports: [
+  styleUrls: ['./listphieugiaohang.component.scss'],  imports: [
     MatFormFieldModule,
     MatInputModule,
     MatTableModule,
@@ -44,12 +45,14 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
     FormsModule,
     MatTooltipModule,
     MatDatepickerModule,
+    SharepaginationComponent,
+    MatProgressSpinnerModule,
   ],
   // providers: [provideNativeDateAdapter()],
 })
-export class ListPhieugiaohangComponent {
-  Detail: any = {};
+export class ListPhieugiaohangComponent {  Detail: any = {};
   displayedColumns: string[] = [
+    'STT',
     'madonhang',
     'khachhang',
     'sanpham',
@@ -60,6 +63,7 @@ export class ListPhieugiaohangComponent {
     'updatedAt',
   ];
   ColumnName: any = {
+    STT: 'STT',
     madonhang: 'Mã Đơn Hàng',
     khachhang: 'Khách Hàng',
     sanpham: 'Sản Phẩm',
@@ -68,12 +72,12 @@ export class ListPhieugiaohangComponent {
     ghichu: 'Ghi Chú',
     createdAt:'Ngày Tạo',
     updatedAt:'Ngày Cập Nhật'
-  };
-  FilterColumns: any[] = JSON.parse(
+  };FilterColumns: any[] = JSON.parse(
     localStorage.getItem('PhieugiaohangColFilter') || '[]'
   );
   Columns: any[] = [];
   isFilter: boolean = false;
+  isLoading = signal<boolean>(false);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -83,7 +87,7 @@ export class ListPhieugiaohangComponent {
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
-  Listphieugiaohang:any = this._DonhangService.ListDonhang;
+  Listphieugiaohang:any = signal<any>({});
   dataSource = new MatTableDataSource([]);
   donhangId:any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -92,14 +96,15 @@ export class ListPhieugiaohangComponent {
   page = signal<number>(1);
   pageCount = signal<number>(1);
   total = signal<number>(0);
-  pageSize = signal<number>(50);
+  pageSize = signal<number>(10);
   Trangthaidon:any = TrangThaiDon 
   SearchParams: any = {
       Batdau: moment().toDate(),
       Ketthuc: moment().toDate(),
       Type: 'donsi',
       Status:['dadat','dagiao'],
-      pageSize:9999
+      pageSize: 10,
+      pageNumber: 1
     };
     ListDate: any[] = [
       { id: 1, Title: '1 Ngày', value: 'day' },
@@ -125,36 +130,99 @@ export class ListPhieugiaohangComponent {
       });
       return isMatch;
     };
-  }
-  async ngOnInit(): Promise<void> {    
-    await this._DonhangService.searchDonhang(this.SearchParams);
-    this.CountItem = this.Listphieugiaohang().length;
-    this.dataSource = new MatTableDataSource(this.Listphieugiaohang());
-    // this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.dataSource.filterPredicate = this.createFilter();
+  }  async ngOnInit(): Promise<void> {    
+    await this.LoadData();
     this.initializeColumns();
     this.setupDrawer();
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    if (this.paginator) {
+      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+      this.paginator._intl.previousPageLabel = 'Về Trước';
+      this.paginator._intl.firstPageLabel = 'Trang Đầu';
+      this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    }
   }
+
+  async onPageChange(event: any): Promise<void> {
+    console.log('Page change event:', event);
+    
+    // Show loading indicator during page change
+    this.isLoading.set(true);
+    
+    try {
+      this.SearchParams.pageSize = event.pageSize;
+      this.SearchParams.pageNumber = event.page;
+      await this.LoadData();
+    } catch (error) {
+      console.error('Error changing page:', error);
+      this._snackBar.open('Lỗi khi chuyển trang', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+  async LoadData() {
+    this.isLoading.set(true);
+    try {
+      // Fetch paginated data from server
+      const data = await this._DonhangService.searchDonhang(this.SearchParams);
+      this.Listphieugiaohang.set(data);
+      
+      if (data && data.data) {
+        this.total.set(Number(data.total || 0));
+        this.pageSize.set(Number(data.pageSize || 10));
+        this.page.set(Number(data.pageNumber || 1));
+        this.pageCount.set(Number(data.totalPages || 1));
+        
+        // Set data to table without client-side pagination since we're using server-side
+        this.dataSource = new MatTableDataSource(data.data);
+        // Disable client-side pagination/sorting since we're using server-side
+        this.dataSource.paginator = null;
+        this.dataSource.sort = null;
+      } else {
+        // Handle empty or invalid response
+        this.total.set(0);
+        this.pageSize.set(10);
+        this.page.set(1);
+        this.pageCount.set(0);
+        this.dataSource = new MatTableDataSource([]);
+      }
+    } catch (error) {
+      console.error('Error loading data:', error);
+      this._snackBar.open('Lỗi khi tải dữ liệu', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+      
+      // Set empty state on error
+      this.total.set(0);
+      this.pageSize.set(10);
+      this.page.set(1);
+      this.pageCount.set(0);
+      this.dataSource = new MatTableDataSource([]);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
   async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.SearchParams.query = filterValue
-    await this._DonhangService.searchDonhang(this.SearchParams);
-    this.dataSource.data = this.Listphieugiaohang();
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
-    onSelectionChange(event: MatSelectChange): void {
-      this.ngOnInit();
+    this.SearchParams.query = filterValue;
+    // Reset to first page when filtering
+    this.SearchParams.pageNumber = 1;
+    await this.LoadData();
+  }    onSelectionChange(event: MatSelectChange): void {
+      this.SearchParams.pageNumber = 1; // Reset to first page
+      this.LoadData();
     }
     onDateChange(event: any): void {
-      this.ngOnInit()
+      this.SearchParams.pageNumber = 1; // Reset to first page
+      this.LoadData();
     }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -195,19 +263,30 @@ export class ListPhieugiaohangComponent {
       column.isShow = !column.isShow;
       this.updateDisplayedColumns();
     }
-  }
-  FilterHederColumn(list:any,column:any)
+  }  FilterHederColumn(list:any,column:any)
   {
-    const uniqueList = list.filter((obj: any, index: number, self: any) => 
+    // Use the current data source data instead of the full list for filtering
+    const dataToFilter = this.dataSource.data || [];
+    const uniqueList = dataToFilter.filter((obj: any, index: number, self: any) => 
       index === self.findIndex((t: any) => t[column] === obj[column])
     );
     return uniqueList
   }
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listphieugiaohang().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    // Since we're using server-side pagination, this should filter within current page data
     const query = event.target.value.toLowerCase();
-    console.log(query,column);
-    console.log(this.dataSource.filteredData);   
+    const filteredData = this.dataSource.data.filter((v: any) => {
+      const value = v[column];
+      if (value) {
+        return removeVietnameseAccents(value.toString()).toLowerCase().includes(query) ||
+               value.toString().toLowerCase().includes(query);
+      }
+      return false;
+    });
+    
+    // Update the displayed data temporarily for the filter menu
+    this.dataSource.filteredData = filteredData;
+    console.log(query, column, filteredData);   
   }
   ListFilter:any[] =[]
   ChosenItem(item:any)
@@ -233,13 +312,11 @@ export class ListPhieugiaohangComponent {
           this.ListFilter.push(v.id);
         }
     });
-  }
-  ResetFilter()
+  }  ResetFilter()
   {
-    this.ListFilter = this.Listphieugiaohang().map((v:any) => v.id);
-    this.dataSource.data = this.Listphieugiaohang();
-    // this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.ListFilter = this.dataSource.data.map((v:any) => v.id);
+    // Reset the filtered data to show all current page data
+    this.dataSource.filteredData = this.dataSource.data;
   }
   EmptyFiter()
   {
@@ -260,9 +337,19 @@ export class ListPhieugiaohangComponent {
       this.EditList.push(item);
     }
     console.log(this.EditList); 
-  }
-  CheckAll(): void {
+  }  ToggleAll(): void {
       this.EditList.length == this.dataSource.data.length? this.EditList = [] : this.EditList = [...this.dataSource.data];
+  }
+
+  togglePhieugiaohang(row: any): void {
+    this.AddToEdit(row);
+  }
+  CheckItemInPhieugiaohang(item: any): boolean {
+    return this.CheckItemInEdit(item);
+  }
+
+  trackByFn(index: number, item: any): any {
+    return item.id || index;
   }
 
 
@@ -292,23 +379,19 @@ export class ListPhieugiaohangComponent {
       horizontalPosition: 'end',
       verticalPosition: 'top',
       panelClass: ['snackbar-error'],
-      });
-    } finally {
+      });    } finally {
       this.EditList = [];
-      await this.ngOnInit();
+      await this.LoadData();
     }
   }
   CheckItemInEdit(item: any): boolean {
     return this.EditList.some((v: any) => v.id === item.id);
-  }
-  ApplyFilterColum(menu:any)
+  }  ApplyFilterColum(menu:any)
   {    
-    this.dataSource.data = this.Listphieugiaohang().filter((v: any) => this.ListFilter.includes(v.id));
-    // this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    console.log(this.dataSource.data);
+    // Apply the filter to current page data only since we're using server-side pagination
+    this.dataSource.filteredData = this.dataSource.data.filter((v: any) => this.ListFilter.includes(v.id));
+    console.log(this.dataSource.filteredData);
     menu.closeMenu();
-    
   }
   private updateDisplayedColumns(): void {
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
