@@ -59,6 +59,64 @@ show_branches() {
     echo
 }
 
+# Checkout nhánh
+checkout_branch() {
+    if ! check_git_repo; then
+        return 1
+    fi
+    
+    print_color $CYAN "=== Checkout nhánh ==="
+    current_branch=$(git branch --show-current)
+    print_color $BLUE "Nhánh hiện tại: $current_branch"
+    echo
+    
+    echo "1. Chuyển sang nhánh có sẵn"
+    echo "2. Tạo nhánh mới từ nhánh hiện tại"
+    echo "3. Tạo nhánh mới từ nhánh khác"
+    read -p "Chọn tùy chọn (1-3): " checkout_option
+    
+    case $checkout_option in
+        1)
+            print_color $YELLOW "Các nhánh có sẵn:"
+            git branch --all --color=always
+            echo
+            read -p "Nhập tên nhánh muốn chuyển: " branch_name
+            
+            # Kiểm tra nếu là nhánh remote
+            if [[ $branch_name == origin/* ]]; then
+                local_branch=${branch_name#origin/}
+                git checkout -b "$local_branch" "$branch_name" 2>/dev/null && \
+                    print_color $GREEN "Đã checkout và tạo nhánh local '$local_branch' từ '$branch_name'" || \
+                    git checkout "$local_branch" && print_color $GREEN "Đã chuyển sang nhánh: $local_branch"
+            else
+                git checkout "$branch_name" && print_color $GREEN "Đã chuyển sang nhánh: $branch_name"
+            fi
+            ;;
+        2)
+            read -p "Nhập tên nhánh mới: " new_branch
+            git checkout -b "$new_branch"
+            print_color $GREEN "Đã tạo và chuyển sang nhánh mới: $new_branch"
+            read -p "Push nhánh mới lên remote? (y/n): " push_new
+            if [[ $push_new == "y" || $push_new == "Y" ]]; then
+                git push -u origin "$new_branch"
+                print_color $GREEN "Đã push nhánh mới lên remote"
+            fi
+            ;;
+        3)
+            show_branches
+            read -p "Nhập tên nhánh gốc: " base_branch
+            read -p "Nhập tên nhánh mới: " new_branch
+            git checkout -b "$new_branch" "$base_branch"
+            print_color $GREEN "Đã tạo nhánh '$new_branch' từ '$base_branch' và chuyển sang"
+            read -p "Push nhánh mới lên remote? (y/n): " push_new
+            if [[ $push_new == "y" || $push_new == "Y" ]]; then
+                git push -u origin "$new_branch"
+                print_color $GREEN "Đã push nhánh mới lên remote"
+            fi
+            ;;
+    esac
+}
+
 # Commit và push
 commit_and_push() {
     if ! check_git_repo; then
@@ -187,9 +245,10 @@ show_menu() {
     clear
     print_color $BLUE "=== Tiện ích GitHub ==="
     echo "1. Hiển thị các nhánh"
-    echo "2. Commit và Push" 
-    echo "3. Merge nhánh"
-    echo "4. Xóa nhánh"
+    echo "2. Checkout nhánh"
+    echo "3. Commit và Push" 
+    echo "4. Merge nhánh"
+    echo "5. Xóa nhánh"
     echo "0. Thoát"
     echo
 }
@@ -200,13 +259,14 @@ main() {
     
     while true; do
         show_menu
-        read -p "Chọn một tùy chọn (0-4): " choice
+        read -p "Chọn một tùy chọn (0-5): " choice
         
         case $choice in
             1) show_branches ;;
-            2) commit_and_push ;;
-            3) merge_branches ;;
-            4) remove_branch ;;
+            2) checkout_branch ;;
+            3) commit_and_push ;;
+            4) merge_branches ;;
+            5) remove_branch ;;
             0) 
                 print_color $GREEN "Tạm biệt!"
                 exit 0
