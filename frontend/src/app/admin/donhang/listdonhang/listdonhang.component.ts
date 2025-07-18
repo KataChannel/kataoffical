@@ -666,9 +666,9 @@ export class ListDonhangComponent {
     //     }
     //   );
     this.statusDetails.push({
-      fileName: 'Overall',
+      fileName: `Overall Đang Xử Lý: ${processedCount}, Bỏ Qua: ${skippedCount}, Lỗi: ${errorCount}`,
       status: 'Success',
-      message: `Files processed: ${processedCount}, Skipped: ${skippedCount}, Errors: ${errorCount}`,
+      message: ``,
     });
     // After all files have been processed, perform the import
     this.dialog.open(this.dialogImportExcelCu, {});

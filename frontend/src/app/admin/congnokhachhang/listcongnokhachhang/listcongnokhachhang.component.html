@@ -3,29 +3,8 @@
     <router-outlet></router-outlet>
   </mat-drawer>
   <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
-    <div class="w-full grid lg:grid-cols-4 grid-cols-2 gap-2 items-center">
-      <!-- <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Loại Đơn</mat-label>
-              <mat-select [(ngModel)]="SearchParams.Type" [ngModelOptions]="{standalone: true}"
-                (selectionChange)="onSelectionChange($event)">
-                @for (item of [
-                {id:1,Title:'Đơn Sỉ',value:'donsi'},
-                {id:2,Title:'Đơn Lẻ',value:'donle'},
-                ]; track item) {
-                <mat-option [value]="item.value">{{item.Title}}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field> -->
-
-      <!-- <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-              <mat-label>Chọn Thời Gian</mat-label>
-              <mat-select [(ngModel)]="Chonthoigian" [ngModelOptions]="{standalone: true}"
-                (selectionChange)="onSelectionChange($event)">
-                @for (item of ListDate; track item) {
-                <mat-option [value]="item.value">{{item.Title}}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field> -->
+    <div class="w-full grid lg:grid-cols-2 gap-2 items-center">
+    <div class="w-full flex flex-row space-x-2 items-center">
       <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
         <mat-label>Bắt Đầu</mat-label>
         <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau"
@@ -41,6 +20,7 @@
         <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
         <mat-datepicker #pickerKetthuc></mat-datepicker>
       </mat-form-field>
+    </div>
 
       <div class="w-full flex flex-row space-x-2 items-center">
         @if(ListKhachhang.length > 0) {
@@ -48,11 +28,11 @@
 
         <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'" class="w-full">
           <mat-label>Khách Hàng</mat-label>
-          <input type="text" [matAutocomplete]="auto" matInput placeholder="Tìm kiếm khách hàng" />
+          <input type="text" [matAutocomplete]="auto" (keyup)="doFilterKhachhang($event)" matInput placeholder="Tìm kiếm khách hàng" />
         </mat-form-field>
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onKhachhangChange($event)" 
           class="max-w-none" panelWidth="auto">
-          @for (option of ListKhachhang; track option) {
+          @for (option of filterListKhachhang; track option) {
           <mat-option [value]="option" class="!whitespace-normal !h-auto !py-2">
             <span class="text-sm">{{option}}</span>
           </mat-option>
@@ -230,7 +210,7 @@
         </tr>
       </table>
     </div>
-          <mat-paginator [pageSizeOptions]="[50]"></mat-paginator>
+          <mat-paginator [pageSizeOptions]="[10]"></mat-paginator>
   </div>
 </mat-drawer-container>
 

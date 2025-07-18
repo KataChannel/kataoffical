@@ -132,7 +132,6 @@ export class ListcongnokhachhangComponent {
     Ketthuc: moment().toDate(),
     Type: 'donsi',
     Status:['danhan','hoanthanh'],
-    pageSize: 1000,
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -185,6 +184,7 @@ export class ListcongnokhachhangComponent {
     this.setupDrawer();
     this.loadData(this.SearchParams);
   }
+
   doSearch(){
     this.loadData(this.SearchParams); 
     // Create a Map to track unique customers
@@ -197,7 +197,7 @@ export class ListcongnokhachhangComponent {
       }
     });
     // Convert Map to array
-    this.ListKhachhang = Array.from(uniqueCustomers.values());
+    this.ListKhachhang = this.filterListKhachhang = Array.from(uniqueCustomers.values());
     console.log('ListKhachhang', this.ListKhachhang);
     
   }
@@ -212,10 +212,24 @@ onKhachhangChange(event: MatAutocompleteSelectedEvent){
     );
   } else {
     // Reset to show all data
-    this.dataSource.data = this.ListExport  =  this.ListCongno;
+    this.dataSource.data = this.ListExport = this.ListCongno;
   }
   this.dataSource.paginator = this.paginator;
   this.dataSource.sort = this.sort;
+}
+filterListKhachhang:any = []
+@Debounce(100)
+doFilterKhachhang(event: Event){
+  const query = (event.target as HTMLInputElement).value.toLowerCase();
+  console.log('query', query);
+  
+  if(!query) {
+    this.filterListKhachhang = this.ListKhachhang;
+    return;
+  }
+ this.filterListKhachhang = this.ListKhachhang.filter((item: any) =>
+   item.toLowerCase().includes(query) || removeVietnameseAccents(item).toLowerCase().includes(removeVietnameseAccents(query))
+ );
 }
 
   async loadData(query:any): Promise<void> {
