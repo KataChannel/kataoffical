@@ -150,6 +150,8 @@ export class KhachhangService {
                 id: true,
                 mabanggia: true,
                 title: true,
+                batdau: true,
+                ketthuc: true,
               },
             },
           },

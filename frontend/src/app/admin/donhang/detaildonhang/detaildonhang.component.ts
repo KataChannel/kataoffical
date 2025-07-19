@@ -442,9 +442,13 @@ export class DetailDonhangComponent {
     if (selectedKhachhang) {
 
         const isExpired = moment() > moment(selectedKhachhang?.banggia?.batdau) && moment() < moment(selectedKhachhang.banggia.ketthuc) ? true : false;
+        console.log(selectedKhachhang);
+        
         console.log(isExpired);
         
         if (!isExpired) {
+          console.log(selectedKhachhang?.banggia?.id);
+          
         const dialogRef = this._dialog.open(this.BgHethanDialog, {
           hasBackdrop: true,
           disableClose: true,
@@ -461,7 +465,7 @@ export class DetailDonhangComponent {
       }
       else {
         this.DetailDonhang.update((v: any) => {
-          v.banggiaId = selectedKhachhang?.banggiaId;
+          v.banggiaId = selectedKhachhang?.banggia?.id;
           return v
         });
       }
@@ -721,9 +725,13 @@ export class DetailDonhangComponent {
   async doFilterSanpham(event: any): Promise<void> {
     const value = event.target.value.trim().toLowerCase();
     await this._SanphamService.getAllSanpham({subtitle: value},true)
-    this.filterSanpham = this.ListSanpham()
+    this.filterSanpham = this.ListSanpham().sort((a:any, b:any) => {
+      const titleA = removeVietnameseAccents(a.title || '').toLowerCase();
+      const titleB = removeVietnameseAccents(b.title || '').toLowerCase();
+      return titleA.localeCompare(titleB);
+    });
 
-    if (event.key === 'Enter') {      
+    if (event.key === 'Enter') {
       if (this.filterSanpham.length > 0) {
         this.ChosenItem(this.filterSanpham[0]);
         // this.filterSanpham = [...this._SanphamService.ListSanpham()];

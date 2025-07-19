@@ -173,6 +173,8 @@ export declare class KhachhangController {
                 id: string;
                 title: string | null;
                 mabanggia: string | null;
+                batdau: Date | null;
+                ketthuc: Date | null;
             } | null;
             name: string | null;
             makh: string;

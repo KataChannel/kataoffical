@@ -1,8 +1,11 @@
 import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
   inject,
+  OnInit,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -57,13 +60,43 @@ import { SanphamService } from '../../sanpham/sanpham.service';
   templateUrl: './detailphieugiaohang.component.html',
   styleUrl: './detailphieugiaohang.component.scss',
 })
-export class DetailPhieugiaohangComponent {
+export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   _ListphieugiaohangComponent: ListPhieugiaohangComponent = inject(ListPhieugiaohangComponent);
   _PhieugiaohangService: DonhangService = inject(DonhangService);
   _SanphamService: SanphamService = inject(SanphamService);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
+    displayedColumns: string[] = [
+    'STT',
+    'title',
+    'masp',
+    'dvt',
+    'sldat',
+    'slgiao',
+    'giaban',
+    'ttgiao',
+    'slnhan',
+    'ghichu'
+  ];
+  
+  ColumnName: any = {
+    STT: 'STT',
+    title: 'Tiêu Đề',
+    masp: 'Mã SP',
+    dvt: 'Đơn Vị Tính',
+    sldat: 'SL Đặt',
+    slgiao: 'SL Giao',
+    giaban: 'Giá Bán',
+    ttgiao: 'TT Giao',
+    slnhan: 'Thực Nhận',
+    ghichu: 'Ghi Chú'
+  };
+
+  dataSource = new MatTableDataSource<any>([]);
+  CountItem = computed(() => this.dataSource.data.length);
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
   constructor() {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
@@ -80,14 +113,27 @@ export class DetailPhieugiaohangComponent {
       }
       else {
         await this._PhieugiaohangService.Phieugiaohang({id:id});
-        this.DetailPhieugiaohang().status ==="danhan"? this.isEdit.set(false):this.isEdit.set(true);
-        this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang()?.sanpham.map((v:any)=>{
-          v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
-          return v;
-        })
-        this.dataSource().data = this.DetailPhieugiaohang().sanpham;
-        this.dataSource().paginator = this.paginator;
-        this.dataSource().sort = this.sort;
+        const phieuGiaoHang = this.DetailPhieugiaohang();
+
+        // Update edit mode based on status
+        this.isEdit.set(phieuGiaoHang.status !== 'danhan');
+        
+        // Process sanpham data with proper typing
+        const processedSanpham = phieuGiaoHang?.sanpham?.map((item: any) => ({
+          ...item,
+          ttgiao: (Number(item.slgiao) || 0) * (Number(item.giaban) || 0)
+        })) || [];
+        
+        // Update the signal with processed data
+        this.DetailPhieugiaohang.update((data: any) => ({
+          ...data,
+          sanpham: processedSanpham
+        }));
+          // Initialize datasource with processed data
+        this.dataSource.data = processedSanpham;
+        
+        // Set up paginator and sort after view init
+        this.setupDataSource();
         this._ListphieugiaohangComponent.drawer.open();
         this._router.navigate(['/admin/phieugiaohang', id]);
       }
@@ -111,15 +157,79 @@ export class DetailPhieugiaohangComponent {
   getTitle(item: any) {
     return this.Trangthai.find((v:any) => v.value === item)?.title;
 
+  } 
+ async ngOnInit() {
+    const phieugiaohangId = this.phieugiaohangId();
+    if (!phieugiaohangId) return;
+
+    try {
+      await this._PhieugiaohangService.Phieugiaohang({ id: phieugiaohangId });
+      
+      const phieuGiaoHang = this.DetailPhieugiaohang();
+      
+      // Set edit mode based on status
+      this.isEdit.set(phieuGiaoHang.status !== 'danhan');
+
+      // Process sanpham data
+      if (phieuGiaoHang?.sanpham?.length) {
+      const processedSanpham = phieuGiaoHang.sanpham.map((item: any) => ({
+        ...item,
+        ttgiao: (Number(item.slgiao) || 0) * (Number(item.giaban) || 0)
+      }));
+
+      // Update signal with processed data
+      this.DetailPhieugiaohang.update((data: any) => ({
+        ...data,
+        sanpham: processedSanpham
+      }));
+      }
+    } catch (error) {
+      console.error('Error loading phieu giao hang:', error);
+      this._snackBar.open('Lỗi khi tải phiếu giao hàng', '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-error']
+      });
+    }
+      this.updateDataSource();
   }
-  async ngOnInit() {
-     await this._PhieugiaohangService.Phieugiaohang({id:this.phieugiaohangId()});
-        this.DetailPhieugiaohang().status ==="danhan"? this.isEdit.set(false):this.isEdit.set(true);
-        this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang()?.sanpham.map((v:any)=>{
-          v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
-          return v;
-        })
+
+  ngAfterViewInit() {
+    // Setup paginator và sort sau khi view được khởi tạo
+    this.setupDataSource();
   }
+
+  private setupDataSource(): void {
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+    }
+  }
+
+  private updateDataSource(): void {
+    this.dataSource.data = this.DetailPhieugiaohang().sanpham || [];
+    
+    // Setup paginator và sort nếu đã khởi tạo
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+    }
+  }
+
+  GetDVT(item:any) {
+    console.log(item);
+    if(item?.sanpham?.length > 0) {
+      return item?.sanpham[0]?.dvt || '';
+    }
+    return '';
+  }
+  // Thêm method để setup datasource
+
   async handlePhieugiaohangAction() {
     if (this.phieugiaohangId() === '0') {
       await this.createPhieugiaohang();
@@ -235,9 +345,7 @@ export class DetailPhieugiaohangComponent {
           if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
             event.preventDefault();
           }
-        } 
-
-        this.DetailPhieugiaohang.update((v: any) => {
+        }        this.DetailPhieugiaohang.update((v: any) => {
       if (index !== null) {
         if (field === 'sldat') {
           v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
@@ -247,7 +355,7 @@ export class DetailPhieugiaohangComponent {
           
           v.sanpham[index]['ghichu'] = newValue;
           const inputs = document.querySelectorAll('.ghichu-input')as NodeListOf<HTMLInputElement>;
-              if (index < this.dataSource().filteredData.length - 1) {
+              if (index < this.dataSource.filteredData.length - 1) {
                 const nextInput = inputs[index + 1]as HTMLInputElement
                 if (nextInput) {
                   if (nextInput instanceof HTMLInputElement) {
@@ -283,7 +391,7 @@ export class DetailPhieugiaohangComponent {
             v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newGiao;
             v.sanpham[index]['ttgiao']=v.sanpham[index]['slgiao']*v.sanpham[index]['giaban']
             const inputs = document.querySelectorAll('.slgiao-input')as NodeListOf<HTMLInputElement>;
-            if (index < this.dataSource().filteredData.length - 1) {
+            if (index < this.dataSource.filteredData.length - 1) {
               const nextInput = inputs[index + 1]as HTMLInputElement
               if (nextInput) {
                 if (nextInput instanceof HTMLInputElement) {
@@ -310,7 +418,10 @@ export class DetailPhieugiaohangComponent {
         v[field] = newValue;
       }      
       return v;
-    });    
+    });
+    
+    // Cập nhật dataSource sau khi thay đổi dữ liệu
+    this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
   }
 
   updateBlurValue(
@@ -324,9 +435,7 @@ export class DetailPhieugiaohangComponent {
     const newValue =
       type === 'number'
         ? Number(target.innerText.trim()) || 0
-        : target.innerText.trim();
-
-    // Cập nhật giá trị sau khi input mất focus (blur)
+        : target.innerText.trim();    // Cập nhật giá trị sau khi input mất focus (blur)
     this.DetailPhieugiaohang.update((v: any) => {
       if (index !== null) {
         if (field === 'sldat') {
@@ -344,6 +453,9 @@ export class DetailPhieugiaohangComponent {
       }
       return v;
     });
+    
+    // Cập nhật dataSource sau khi thay đổi dữ liệu
+    this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
   }
 
 
@@ -408,52 +520,22 @@ export class DetailPhieugiaohangComponent {
     );
   }
 
-  displayedColumns: string[] = [
-    'STT',
-    'title',
-    'masp',
-    'dvt',
-    'sldat',
-    'slgiao',
-    'giaban',
-    'ttgiao',
-    'slnhan',
-    'ghichu'
-  ];
-  
-  ColumnName: any = {
-    STT: 'STT',
-    title: 'Tiêu Đề',
-    masp: 'Mã SP',
-    dvt: 'Đơn Vị Tính',
-    sldat: 'SL Đặt',
-    slgiao: 'SL Giao',
-    giaban: 'Giá Bán',
-    ttgiao: 'TT Giao',
-    slnhan: 'Thực Nhận',
-    ghichu: 'Ghi Chú'
-  };
-
-  dataSource = signal(new MatTableDataSource<any>([]));
-  CountItem = computed(() => this.dataSource().data.length);
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource().filter = filterValue.trim().toLowerCase();
-  }
-  EmptyCart()
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+    
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }  EmptyCart()
   {
     this.DetailPhieugiaohang.update((v:any)=>{
       v.sanpham = []
       return v;
     })
-    this.dataSource().data = this.DetailPhieugiaohang().sanpham;
-    this.dataSource().paginator = this.paginator;
-    this.dataSource().sort = this.sort;
+    this.updateDataSource();
   }
-
 
   RemoveSanpham(item:any){
     console.log(item);
@@ -463,7 +545,7 @@ export class DetailPhieugiaohangComponent {
       this.reloadfilter();
       return v;
     })
-    this.dataSource().data = this.DetailPhieugiaohang().sanpham;
+    this.updateDataSource();
   }
   reloadfilter(){
     this.filterSanpham = this.ListSanpham().filter((v:any) => !this.DetailPhieugiaohang().sanpham.some((v2:any) => v2.id === v.id));

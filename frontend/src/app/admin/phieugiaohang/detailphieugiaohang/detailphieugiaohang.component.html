@@ -69,18 +69,24 @@
             <div class="w-full flex items-start"><strong>Số Điện Thoại : </strong>
               {{DetailPhieugiaohang()?.khachhang?.sdt}}</div>
             <div class="w-full flex items-start">
-              <strong>Tổng khối lượng - Đơn Vị Tính : {{DetailPhieugiaohang()?.sanpham[0]?.dvt}}
+              <strong>Tổng khối lượng - Đơn Vị Tính : {{GetDVT(DetailPhieugiaohang())}}
                 ({{TinhTong(DetailPhieugiaohang()?.sanpham,'slgiao')|number:'1.0-2'}})
-              </strong> 
+              </strong>
             </div>
-          </div>    
+          </div>
         </div>
-
-
         <div *ngIf="isEdit()" class="w-full flex flex-col overflow-y-auto">
           @defer () {
           <div class="w-full overflow-auto">
-            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource()" matSort>
+            <!-- Filter input -->
+            <div class="relative w-full py-2">
+              <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
+                class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <span class="material-symbols-outlined text-gray-500">search</span>
+              </div>
+            </div>
+            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort #sort="matSort">
               @for (column of displayedColumns; track column) {
               <ng-container [matColumnDef]="column">
                 <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -93,7 +99,8 @@
                   @case ('STT') {
                   <span class="max-w-20 line-clamp-4 flex flex-row items-center">
                     <span>{{ idx + 1 }} </span>
-                    <button mat-icon-button color="warn" (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
+                    <button mat-icon-button color="warn"
+                      (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
                   </span>
                   }
                   @case ('sldat') {
@@ -151,10 +158,10 @@
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
               <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
+                <td class="mat-cell p-4" [attr.colspan]="displayedColumns.length">Không tìm thấy</td>
               </tr>
             </table>
-            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+            <mat-paginator #paginator="matPaginator" [pageSizeOptions]="[50, 100]"></mat-paginator>
           </div>
           }
         </div>
@@ -166,9 +173,11 @@
               <th class="border px-2 text-center">Tên sản phẩm</th>
               <th class="border px-2 text-center">ĐVT</th>
               <th class="border px-2 text-center max-w-10 whitespace-nowrap">SL</th>
-              <th class="border px-2 text-center max-w-15 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Đơn giá</th>
-              <th class="border px-2 text-center max-w-15 whitespace-nowrap" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
-              <th class="border px-2 text-center max-w-10 whitespace-nowrap">SL Nhận</th>
+              <th class="border px-2 text-center max-w-15 whitespace-nowrap"
+                *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Đơn giá</th>
+              <th class="border px-2 text-center max-w-15 whitespace-nowrap"
+                *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">Thành Tiền</th>
+              <th class="border px-2 text-center max-w-15 whitespace-nowrap">SL Nhận</th>
               <th class="border px-2 text-center">Ghi chú</th>
             </tr>
           </thead>
@@ -179,10 +188,11 @@
               <td class="border px-2">{{DetailPhieugiaohang()?.khachhang?.istitle2?item.title2:item.title}}</td>
               <td class="border px-2 text-center">{{item.dvt}}</td>
               <td class="border px-2 text-end max-w-10">{{item.slgiao|number:'1.0-2'}}</td>
-              <td class="border px-2 text-end max-w-15" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">{{item.giaban|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end max-w-15" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
+                {{item.giaban|number:'1.0-2'}}</td>
               <td class="border px-2 text-end max-w-15" *ngIf="DetailPhieugiaohang()?.khachhang?.hiengia">
                 {{item.ttgiao|number:'1.0-2'}}</td>
-              <td class="border px-2 text-end max-w-10">{{DetailPhieugiaohang()?.status=== 'danhan'?
+              <td class="border px-2 text-end max-w-15">{{DetailPhieugiaohang()?.status=== 'danhan'?
                 (item.slnhan|number:'1.0-2':''):''}}</td>
               <td class="border px-2">{{item.ghichu}}</td>
             </tr>

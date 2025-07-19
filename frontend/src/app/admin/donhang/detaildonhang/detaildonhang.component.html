@@ -76,7 +76,7 @@
   
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Bảng Giá</mat-label>
-          <mat-select [(ngModel)]="DetailDonhang().khachhang.banggiaId" [ngModelOptions]="{ standalone: true }"
+          <mat-select [(ngModel)]="DetailDonhang().banggiaId" [ngModelOptions]="{ standalone: true }"
             (selectionChange)="SelectBanggia($event)">
             <div class="w-full flex flex-col">
               <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
@@ -157,7 +157,7 @@
                            <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
                                    <div *ngFor="let item of filterSanpham; trackBy:trackByFn" (click)="ChosenItem(item)" class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
                                       <span *ngIf="CheckItem(item)" class="material-symbols-outlined text-blue-600">check</span>   
-                                      {{item.masp}} {{item.title ||'Chưa Có Tên'}}                      
+                                     {{item.title ||'Chưa Có Tên'}}                      
                                    </div>
                            </div>
                            <div class="flex flex-row space-x-2 items-end justify-end">
