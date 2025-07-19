@@ -18,11 +18,6 @@ export class RoleService {
   setRoleId(id: string | null) {
     this.roleId.set(id);
   }
-  private socket = io(`${environment.APIURL}`,{
-    transports: ['websocket', 'polling'], // Thêm polling để fallback
-    reconnectionAttempts: 5, // Giới hạn reconnect nếu fail
-    timeout: 5000, // Timeout 5s
-  });
   async CreateRole(dulieu: any) {
     try {
       const options = {
@@ -63,11 +58,6 @@ export class RoleService {
   }
 
   async getAllRole() {
-    const db = await this.initDB();
-    const cachedData = await db.getAll('roles');
-    const updatedAtCache = parseInt(localStorage.getItem('updatedAt') || '0');
-    
-    // 1️⃣ Gọi API lấy lastUpdated từ server
     try {
       const options = {
         method: 'GET',
@@ -95,47 +85,13 @@ export class RoleService {
         }
       }
       const data = await response.json();       
-      const updatedAtServer = data.reduce((max:any, p:any) => Math.max(max, new Date(p.updatedAt).getTime()), 0);
-
-      // 2️⃣ Nếu dữ liệu trên server mới hơn, cập nhật IndexedDB + LocalStorage
-      if (updatedAtServer > updatedAtCache) {
-        await this.saveRoles(data);
-        localStorage.setItem('lastUpdated', updatedAtServer);
-        localStorage.setItem('roles', JSON.stringify(data));
-      }
-      this.ListRole.set(data);
-      return cachedData.length > 0 ? cachedData : data;    
+      return data;    
       // localStorage.setItem('roles', JSON.stringify(data)); // Cache vào LocalStorage
     } catch (error) {
       return console.error(error);
     }
   }
 
-  // 3️⃣ Lắng nghe cập nhật từ WebSocket
-  listenRoleUpdates() {
-    this.socket.on('role-updated', async () => {
-      console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-      await this.getAllRole();
-    });
-  }
-  // Khởi tạo IndexedDB
-  private async initDB() {
-    return await openDB('RoleDB', 1, {
-      upgrade(db) {
-        db.createObjectStore('roles', { keyPath: 'id' });
-      },
-    });
-  }
-
-  // Lưu vào IndexedDB
-  private async saveRoles(data: any[]) {
-    const db = await this.initDB();
-    const tx = db.transaction('roles', 'readwrite');
-    const store = tx.objectStore('roles');
-    await store.clear(); // Xóa dữ liệu cũ
-    data.forEach(item => store.put(item));
-    await tx.done;
-  }
 
   async getRoleByid(id: any) {
     try {

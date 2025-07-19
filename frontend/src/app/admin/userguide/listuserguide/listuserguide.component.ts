@@ -97,7 +97,6 @@ import { SearchfilterComponent } from '../../../shared/common/searchfilter/searc
       }
     }
     async ngOnInit(): Promise<void> {    
-      this._UserguideService.listenUserguideUpdates();
       await this._UserguideService.getAllUserguide();
       this.displayedColumns = Object.keys(this.ColumnName)
       console.log(this.displayedColumns);

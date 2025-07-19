@@ -348,12 +348,6 @@ export class DathangService {
       if (param.isOne === true) {
         this.DetailDathang.set(data);
       } else {
-        await this.saveDathangs(data.data, {
-          page: data.page || 1,
-          pageCount: data.pageCount || 1,
-          total: data.total || data.data.length,
-          pageSize: this.pageSize()
-        });
         this._StorageService.setItem('dathangs_updatedAt', new Date().toISOString());
         this.ListDathang.set(data.data);
         this.page.set(data.page || 1);
@@ -362,60 +356,10 @@ export class DathangService {
         this.pageSize.set(this.pageSize());
       }
     } catch (error) {
-      const cached = await this.getCachedData();
-      if (!param.isOne) {
-        this.ListDathang.set(cached.dathangs);
-        this.page.set(cached.pagination.page);
-        this.pageCount.set(cached.pagination.pageCount);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-      }
+
     }
   }
-
-    private async saveDathangs(data: any[], pagination: { page: number, pageCount: number, total: number, pageSize: number }) {
-    const db = await this.initDB();
-    const tx = db.transaction('dathangs', 'readwrite');
-    const store = tx.objectStore('dathangs');
-    await store.clear();
-    await store.put({ id: 'data', dathangs: data, pagination });
-    await tx.done;
-  }
-
-  private async getCachedData() {
-    const db = await this.initDB();
-    const cached = await db.get('dathangs', 'data');
-    if (cached && cached.dathangs) {
-      return {
-        dathangs: cached.dathangs,
-        pagination: cached.pagination || { page: 1, pageCount: 1, total: cached.dathangs.length, pageSize: 10 }
-      };
-    }
-    return { dathangs: [], pagination: { page: 1, pageCount: 1, total: 0, pageSize: 10 } };
-  }
-    private async initDB() {
-    return await openDB('DathangDB', 4, {
-      upgrade(db, oldVersion) {
-        if (oldVersion < 1) {
-          db.createObjectStore('dathangs', { keyPath: 'id' });
-        }
-        if (oldVersion < 3) {
-          if (db.objectStoreNames.contains('dathangs')) {
-            db.deleteObjectStore('dathangs');
-          }
-          if (db.objectStoreNames.contains('pagination')) {
-            db.deleteObjectStore('pagination');
-          }
-          db.createObjectStore('dathangs', { keyPath: 'id' });
-        }
-        if (oldVersion < 4) {
-          // Không cần xóa store, vì cấu trúc vẫn tương thích
-          // Chỉ cần đảm bảo pagination có thêm pageSize
-        }
-      },
-    });
-  }
-   private handleError(status: number) {
+  private handleError(status: number) {
     let message = 'Lỗi không xác định';
     switch (status) {
       case 400:

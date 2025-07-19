@@ -54,29 +54,6 @@ export class ImportdataService {
     });
   }
 
-  // Lưu dữ liệu và phân trang vào IndexedDB
-  private async saveImportdatas(data: any[], pagination: { page: number, pageCount: number, total: number, pageSize: number }) {
-    const db = await this.initDB();
-    const tx = db.transaction('importdatas', 'readwrite');
-    const store = tx.objectStore('importdatas');
-    await store.clear();
-    await store.put({ id: 'data', importdatas: data, pagination });
-    await tx.done;
-  }
-
-  // Lấy dữ liệu và phân trang từ cache
-  private async getCachedData() {
-    const db = await this.initDB();
-    const cached = await db.get('importdatas', 'data');
-    if (cached && cached.importdatas) {
-      return {
-        importdatas: cached.importdatas,
-        pagination: cached.pagination || { page: 1, pageCount: 1, total: cached.importdatas.length, pageSize: 10 }
-      };
-    }
-    return { importdatas: [], pagination: { page: 1, pageCount: 1, total: 0, pageSize: 10 } };
-  }
-
   setImportdataId(id: string | null) {
     this.importdataId.set(id);
   }
@@ -106,20 +83,8 @@ export class ImportdataService {
 
   async getAllImportdata(pageSize: number = this.pageSize(), forceRefresh: boolean = false) {
     this.pageSize.set(pageSize);
-    const cached = await this.getCachedData();   
     const updatedAtCache = this._StorageService.getItem('importdatas_updatedAt') || '0';    
-    
-    // Nếu không yêu cầu tải mới và cache hợp lệ, trả về cache
-    if (!forceRefresh && cached.importdatas.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) {
-      this.ListImportdata.set(cached.importdatas);
-      this.page.set(cached.pagination.page);
-      this.pageCount.set(cached.pagination.pageCount);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.importdatas;
-    }
-
-    try {
+  try {
       const options = {
         method: 'GET',
         headers: {
@@ -127,32 +92,6 @@ export class ImportdataService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-
-      // Kiểm tra thời gian cập nhật từ server, trừ khi được yêu cầu forceRefresh
-      if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/importdata/lastupdated`, options);
-        if (!lastUpdatedResponse.ok) {
-          this.handleError(lastUpdatedResponse.status);
-          this.ListImportdata.set(cached.importdatas);
-          this.page.set(cached.pagination.page);
-          this.pageCount.set(cached.pagination.pageCount);
-          this.total.set(cached.pagination.total);
-          this.pageSize.set(cached.pagination.pageSize);
-          return cached.importdatas;
-        }
-
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-
-        // Nếu cache còn mới, trả về cache
-        if (updatedAtServer <= updatedAtCache) {
-          this.ListImportdata.set(cached.importdatas);
-          this.page.set(cached.pagination.page);
-          this.pageCount.set(cached.pagination.pageCount);
-          this.total.set(cached.pagination.total);
-          this.pageSize.set(cached.pagination.pageSize);
-          return cached.importdatas;
-        }
-      }
 
       // Tải dữ liệu mới từ server
       const query = new URLSearchParams({
@@ -162,29 +101,10 @@ export class ImportdataService {
       const response = await fetch(`${environment.APIURL}/importdata?${query}`, options);
       if (!response.ok) {
         this.handleError(response.status);
-        this.ListImportdata.set(cached.importdatas);
-        this.page.set(cached.pagination.page);
-        this.pageCount.set(cached.pagination.pageCount);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-        return cached.importdatas;
       }
 
       const data = await response.json();
-      await this.saveImportdatas(data.data, {
-        page: data.page || 1,
-        pageCount: data.pageCount || 1,
-        total: data.total || data.data.length,
-        pageSize
-      });
-      // Với forceRefresh, cập nhật luôn với thời gian mới từ server, nếu không thì sử dụng thời gian lấy từ lastUpdatedResponse
-      if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/importdata/lastupdated`, options);
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-        this._StorageService.setItem('importdatas_updatedAt', updatedAtServer);
-      } else {
-        this._StorageService.setItem('importdatas_updatedAt', new Date().toISOString());
-      }
+
       this.ListImportdata.set(data.data);
       this.page.set(data.page || 1);
       this.pageCount.set(data.pageCount || 1);
@@ -192,14 +112,7 @@ export class ImportdataService {
       this.pageSize.set(pageSize);
       return data.data;
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getAllImportdata', error);
       console.error(error);
-      this.ListImportdata.set(cached.importdatas);
-      this.page.set(cached.pagination.page);
-      this.pageCount.set(cached.pagination.pageCount);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.importdatas;
     }
   }
 
@@ -253,12 +166,6 @@ export class ImportdataService {
       if (param.isOne === true) {
         this.DetailImportdata.set(data);
       } else {
-        await this.saveImportdatas(data.data, {
-          page: data.page || 1,
-          pageCount: data.pageCount || 1,
-          total: data.total || data.data.length,
-          pageSize
-        });
         this._StorageService.setItem('importdatas_updatedAt', new Date().toISOString());
         this.ListImportdata.set(data.data);
         this.page.set(data.page || 1);
@@ -267,16 +174,7 @@ export class ImportdataService {
         this.pageSize.set(pageSize);
       }
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getImportdataBy', error);
       console.error(error);
-      const cached = await this.getCachedData();
-      if (!param.isOne) {
-        this.ListImportdata.set(cached.importdatas);
-        this.page.set(cached.pagination.page);
-        this.pageCount.set(cached.pagination.pageCount);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-      }
     }
   }
 

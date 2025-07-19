@@ -138,11 +138,6 @@ export class NhomkhachhangService {
   }
 
   async getAllNhomkhachhang() {
-    const db = await this.initDB();
-    const cachedData = await db.getAll('nhomkhachhangs');
-    const updatedAtCache = parseInt(localStorage.getItem('updatedAt') || '0');
-    
-    // 1️⃣ Gọi API lấy lastUpdated từ server
     try {
       const options = {
         method: 'GET',
@@ -170,16 +165,7 @@ export class NhomkhachhangService {
         }
       }
       const data = await response.json();       
-      const updatedAtServer = data.reduce((max:any, p:any) => Math.max(max, new Date(p.updatedAt).getTime()), 0);
-
-      // 2️⃣ Nếu dữ liệu trên server mới hơn, cập nhật IndexedDB + LocalStorage
-      if (updatedAtServer > updatedAtCache) {
-        await this.saveNhomkhachhangs(data);
-        localStorage.setItem('lastUpdated', updatedAtServer);
-        localStorage.setItem('nhomkhachhangs', JSON.stringify(data));
-      }
-      this.ListNhomkhachhang.set(data);
-      return cachedData.length > 0 ? cachedData : data;    
+      this.ListNhomkhachhang.set(data);   
       // localStorage.setItem('nhomkhachhangs', JSON.stringify(data)); // Cache vào LocalStorage
     } catch (error) {
       return console.error(error);
@@ -200,16 +186,6 @@ export class NhomkhachhangService {
         db.createObjectStore('nhomkhachhangs', { keyPath: 'id' });
       },
     });
-  }
-
-  // Lưu vào IndexedDB
-  private async saveNhomkhachhangs(data: any[]) {
-    const db = await this.initDB();
-    const tx = db.transaction('nhomkhachhangs', 'readwrite');
-    const store = tx.objectStore('nhomkhachhangs');
-    await store.clear(); // Xóa dữ liệu cũ
-    data.forEach(item => store.put(item));
-    await tx.done;
   }
 
   async getNhomkhachhangByid(id: any) {

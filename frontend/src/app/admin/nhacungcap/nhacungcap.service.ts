@@ -50,29 +50,6 @@ export class NhacungcapService {
     });
   }
 
-  // Lưu dữ liệu và phân trang vào IndexedDB
-  private async saveNhacungcaps(data: any[], pagination: { page: number, totalPages: number, total: number, pageSize: number }) {
-    const db = await this.initDB();
-    const tx = db.transaction('nhacungcaps', 'readwrite');
-    const store = tx.objectStore('nhacungcaps');
-    await store.clear();
-    await store.put({ id: 'data', nhacungcaps: data, pagination });
-    await tx.done;
-  }
-
-  // Lấy dữ liệu và phân trang từ cache
-  private async getCachedData() {
-    const db = await this.initDB();
-    const cached = await db.get('nhacungcaps', 'data');
-    if (cached && cached.nhacungcaps) {
-      return {
-        nhacungcaps: cached.nhacungcaps,
-        pagination: cached.pagination || { page: 1, totalPages: 1, total: cached.nhacungcaps.length, pageSize: 10 }
-      };
-    }
-    return { nhacungcaps: [], pagination: { page: 1, totalPages: 1, total: 0, pageSize: 10 } };
-  }
-
   setNhacungcapId(id: string | null) {
     this.nhacungcapId.set(id);
   }
@@ -151,19 +128,6 @@ export class NhacungcapService {
   }
 
   async getAllNhacungcap(queryParams: any = {}, forceRefresh: boolean = false) {
-    const cached = await this.getCachedData();
-    const updatedAtCacheDate = this._StorageService.getItem('nhacungcaps_updatedAt') || '0';
-    const updatedAtCache = new Date(updatedAtCacheDate).getTime();
-    // Nếu không yêu cầu tải mới và cache hợp lệ, trả về cache
-    if (!forceRefresh && cached.nhacungcaps.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) {
-      this.ListNhacungcap.set(cached.nhacungcaps);
-      this.page.set(cached.pagination.page);
-      this.totalPages.set(cached.pagination.totalPages);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.nhacungcaps;
-    }
-
     try {
       const options = {
         method: 'GET',
@@ -190,22 +154,9 @@ export class NhacungcapService {
       const response = await fetch(`${environment.APIURL}/nhacungcap?${query}`, options);
       if (!response.ok) {
         this.handleError(response.status);
-        this.ListNhacungcap.set(cached.nhacungcaps);
-        this.page.set(cached.pagination.page);
-        this.totalPages.set(cached.pagination.totalPages);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-        return cached.nhacungcaps;
       }
       // Lưu dữ liệu mới vào cache
       const data = await response.json();
-      await this.saveNhacungcaps(data.data, {
-        page: data.page || 1,
-        totalPages: data.totalPages || 1,
-        total: data.total || data.data.length,
-        pageSize: this.pageSize()
-      });
-
       // Cập nhật thời gian cache: với forceRefresh, sử dụng thời gian hiện tại
       if (forceRefresh) {
         this._StorageService.setItem('nhacungcaps_updatedAt', new Date().toISOString());
@@ -223,12 +174,6 @@ export class NhacungcapService {
 
     } catch (error) {
       console.error(error);
-      this.ListNhacungcap.set(cached.nhacungcaps);
-      this.page.set(cached.pagination.page);
-      this.totalPages.set(cached.pagination.totalPages);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.nhacungcaps;
     }
   }
 
@@ -281,12 +226,6 @@ export class NhacungcapService {
       if (param.isOne === true) {
         this.DetailNhacungcap.set(data);
       } else {
-        await this.saveNhacungcaps(data.data, {
-          page: data.page || 1,
-          totalPages: data.totalPages || 1,
-          total: data.total || data.data.length,
-          pageSize
-        });
         this._StorageService.setItem('nhacungcaps_updatedAt', new Date().toISOString());
         this.ListNhacungcap.set(data.data);
         this.page.set(data.page || 1);
@@ -296,14 +235,6 @@ export class NhacungcapService {
       }
     } catch (error) {
       console.error(error);
-      const cached = await this.getCachedData();
-      if (!param.isOne) {
-        this.ListNhacungcap.set(cached.nhacungcaps);
-        this.page.set(cached.pagination.page);
-        this.totalPages.set(cached.pagination.totalPages);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-      }
     }
   }
 

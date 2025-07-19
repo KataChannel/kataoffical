@@ -18,11 +18,6 @@ export class BanggiaService {
   setBanggiaId(id: string | null) {
     this.banggiaId.set(id);
   }
-  private socket = io(`${environment.APIURL}`,{
-    transports: ['websocket', 'polling'], // Thêm polling để fallback
-    reconnectionAttempts: 5, // Giới hạn reconnect nếu fail
-    timeout: 5000, // Timeout 5s
-  });
 
   async importBGKH(dulieu: any) {
     try {
@@ -136,15 +131,6 @@ export class BanggiaService {
 
 
   async getAllBanggia() {
-    const db = await this.initDB();
-    const cachedData = await db.getAll('banggias');
-    const updatedAtCache = this._StorageService.getItem('banggias_updatedAt') || '0'; 
-          
-    if (cachedData.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) { // 5 phút cache TTL
-      this.ListBanggia.set(cachedData);
-      return cachedData;
-    }
-  
     try {
       // ✅ Gọi API chỉ để lấy `updatedAt` mới nhất
       const options = {
@@ -154,31 +140,18 @@ export class BanggiaService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-      
-      const lastUpdatedResponse = await fetch(`${environment.APIURL}/last-updated?table=banggia`, options);
-      if (!lastUpdatedResponse.ok) {
-        this.handleError(lastUpdatedResponse.status);
-        return cachedData;
-      }    
-      const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();     
-      if (updatedAtServer <= updatedAtCache) {
-        this.ListBanggia.set(cachedData);
-        return cachedData;
-      }
-      // ✅ Nếu cache cũ, tải lại toàn bộ dữ liệu từ server
+
       const response = await fetch(`${environment.APIURL}/banggia`, options);
       if (!response.ok) {
         this.handleError(response.status);
-        return cachedData;
+
       }
       const data = await response.json();
-      await this.saveBanggias(data);
-      this._StorageService.setItem('banggias_updatedAt', updatedAtServer);
       this.ListBanggia.set(data);
       return data;
     } catch (error) {
       console.error(error);
-      return cachedData;
+
     }
   }
   async getAllBGSP() {
@@ -235,32 +208,6 @@ export class BanggiaService {
     }
     const result = JSON.stringify({ code: status, title: message });
     this.router.navigate(['/errorserver'], { queryParams: { data: result } });
-  }
-
-  // 3️⃣ Lắng nghe cập nhật từ WebSocket
-  listenBanggiaUpdates() {
-    this.socket.on('banggia-updated', async () => {
-      console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-      await this.getAllBanggia();
-    });
-  }
-  // Khởi tạo IndexedDB
-  private async initDB() {
-    return await openDB('BanggiaDB', 1, {
-      upgrade(db) {
-        db.createObjectStore('banggias', { keyPath: 'id' });
-      },
-    });
-  }
-
-  // Lưu vào IndexedDB
-  private async saveBanggias(data: any[]) {
-    const db = await this.initDB();
-    const tx = db.transaction('banggias', 'readwrite');
-    const store = tx.objectStore('banggias');
-    await store.clear(); // Xóa dữ liệu cũ
-    data.forEach(item => store.put(item));
-    await tx.done;
   }
 
   async getBanggiaByid(id: any) {

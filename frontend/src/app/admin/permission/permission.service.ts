@@ -26,58 +26,6 @@ export class PermissionService {
   pageSize = signal<number>(10); // Mặc định 10 mục mỗi trang
   permissionId = signal<string | null>(null);
 
-  private socket = io(`${environment.APIURL}`, {
-    transports: ['websocket'],
-    reconnectionAttempts: 5,
-    timeout: 5000,
-  });
-
-  // Khởi tạo IndexedDB
-  private async initDB() {
-    return await openDB('PermissionDB', 4, {
-      upgrade(db, oldVersion) {
-        if (oldVersion < 1) {
-          db.createObjectStore('permissions', { keyPath: 'id' });
-        }
-        if (oldVersion < 3) {
-          if (db.objectStoreNames.contains('permissions')) {
-            db.deleteObjectStore('permissions');
-          }
-          if (db.objectStoreNames.contains('pagination')) {
-            db.deleteObjectStore('pagination');
-          }
-          db.createObjectStore('permissions', { keyPath: 'id' });
-        }
-        if (oldVersion < 4) {
-          // Không cần xóa store, vì cấu trúc vẫn tương thích
-          // Chỉ cần đảm bảo pagination có thêm pageSize
-        }
-      },
-    });
-  }
-
-  // Lưu dữ liệu và phân trang vào IndexedDB
-  private async savePermissions(data: any[], pagination: { page: number, pageCount: number, total: number, pageSize: number }) {
-    const db = await this.initDB();
-    const tx = db.transaction('permissions', 'readwrite');
-    const store = tx.objectStore('permissions');
-    await store.clear();
-    await store.put({ id: 'data', permissions: data, pagination });
-    await tx.done;
-  }
-
-  // Lấy dữ liệu và phân trang từ cache
-  private async getCachedData() {
-    const db = await this.initDB();
-    const cached = await db.get('permissions', 'data');
-    if (cached && cached.permissions) {
-      return {
-        permissions: cached.permissions,
-        pagination: cached.pagination || { page: 1, pageCount: 1, total: cached.permissions.length, pageSize: 10 }
-      };
-    }
-    return { permissions: [], pagination: { page: 1, pageCount: 1, total: 0, pageSize: 10 } };
-  }
 
   setPermissionId(id: string | null) {
     this.permissionId.set(id);
@@ -108,21 +56,6 @@ export class PermissionService {
 
   async getAllPermission(pageSize: number = this.pageSize(), forceRefresh: boolean = false) {
     this.pageSize.set(pageSize);
-    console.log('getAllPermission', pageSize);
-    
-    const cached = await this.getCachedData();   
-    const updatedAtCache = this._StorageService.getItem('permissions_updatedAt') || '0';    
-    
-    // Nếu không yêu cầu tải mới và cache hợp lệ, trả về cache
-    if (!forceRefresh && cached.permissions.length > 0 && Date.now() - new Date(updatedAtCache).getTime() < 5 * 60 * 1000) {
-      this.ListPermission.set(cached.permissions);
-      this.page.set(cached.pagination.page);
-      this.pageCount.set(cached.pagination.pageCount);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.permissions;
-    }
-
     try {
       const options = {
         method: 'GET',
@@ -131,33 +64,6 @@ export class PermissionService {
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
       };
-
-      // Kiểm tra thời gian cập nhật từ server, trừ khi được yêu cầu forceRefresh
-      if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/permission/lastupdated`, options);
-        if (!lastUpdatedResponse.ok) {
-          this.handleError(lastUpdatedResponse.status);
-          this.ListPermission.set(cached.permissions);
-          this.page.set(cached.pagination.page);
-          this.pageCount.set(cached.pagination.pageCount);
-          this.total.set(cached.pagination.total);
-          this.pageSize.set(cached.pagination.pageSize);
-          return cached.permissions;
-        }
-
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-
-        // Nếu cache còn mới, trả về cache
-        if (updatedAtServer <= updatedAtCache) {
-          this.ListPermission.set(cached.permissions);
-          this.page.set(cached.pagination.page);
-          this.pageCount.set(cached.pagination.pageCount);
-          this.total.set(cached.pagination.total);
-          this.pageSize.set(cached.pagination.pageSize);
-          return cached.permissions;
-        }
-      }
-
       // Tải dữ liệu mới từ server
       const query = new URLSearchParams({
         page: this.page().toString(),
@@ -166,29 +72,10 @@ export class PermissionService {
       const response = await fetch(`${environment.APIURL}/permission?${query}`, options);
       if (!response.ok) {
         this.handleError(response.status);
-        this.ListPermission.set(cached.permissions);
-        this.page.set(cached.pagination.page);
-        this.pageCount.set(cached.pagination.pageCount);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-        return cached.permissions;
       }
 
       const data = await response.json();
-      await this.savePermissions(data.data, {
-        page: data.page || 1,
-        pageCount: data.pageCount || 1,
-        total: data.total || data.data.length,
-        pageSize
-      });
       // Với forceRefresh, cập nhật luôn với thời gian mới từ server, nếu không thì sử dụng thời gian lấy từ lastUpdatedResponse
-      if (!forceRefresh) {
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/permission/lastupdated`, options);
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-        this._StorageService.setItem('permissions_updatedAt', updatedAtServer);
-      } else {
-        this._StorageService.setItem('permissions_updatedAt', new Date().toISOString());
-      }
       this.ListPermission.set(data.data);
       this.page.set(data.page || 1);
       this.pageCount.set(data.pageCount || 1);
@@ -196,14 +83,8 @@ export class PermissionService {
       this.pageSize.set(pageSize);
       return data.data;
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getAllPermission', error);
+
       console.error(error);
-      this.ListPermission.set(cached.permissions);
-      this.page.set(cached.pagination.page);
-      this.pageCount.set(cached.pagination.pageCount);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.permissions;
     }
   }
 
@@ -229,14 +110,6 @@ export class PermissionService {
     }
   }
 
-  listenPermissionUpdates() {
-    this.socket.on('permission-updated', async () => {
-      console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-      this._StorageService.removeItem('permissions_updatedAt');
-      await this.getAllPermission(this.pageSize());
-    });
-  }
-
   async getPermissionBy(param: any, pageSize: number = this.pageSize()) {
     this.pageSize.set(pageSize); // Cập nhật pageSize
     try {
@@ -256,12 +129,6 @@ export class PermissionService {
       if (param.isOne === true) {
         this.DetailPermission.set(data);
       } else {
-        await this.savePermissions(data.data, {
-          page: data.page || 1,
-          pageCount: data.pageCount || 1,
-          total: data.total || data.data.length,
-          pageSize
-        });
         this._StorageService.setItem('permissions_updatedAt', new Date().toISOString());
         this.ListPermission.set(data.data);
         this.page.set(data.page || 1);
@@ -270,16 +137,7 @@ export class PermissionService {
         this.pageSize.set(pageSize);
       }
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getPermissionBy', error);
       console.error(error);
-      const cached = await this.getCachedData();
-      if (!param.isOne) {
-        this.ListPermission.set(cached.permissions);
-        this.page.set(cached.pagination.page);
-        this.pageCount.set(cached.pagination.pageCount);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-      }
     }
   }
 

@@ -18,11 +18,6 @@ export class PhieuchiahangService {
   setPhieuchiahangId(id: string | null) {
     this.phieuchiahangId.set(id);
   }
-  private socket = io(`${environment.APIURL}`,{
-    transports: ['websocket', 'polling'], // Thêm polling để fallback
-    reconnectionAttempts: 5, // Giới hạn reconnect nếu fail
-    timeout: 5000, // Timeout 5s
-  });
   async CreatePhieuchiahang(dulieu: any) {
     try {
       const options = {
@@ -63,11 +58,6 @@ export class PhieuchiahangService {
   }
 
   async getAllPhieuchiahang() {
-    const db = await this.initDB();
-    const cachedData = await db.getAll('phieuchiahangs');
-    const updatedAtCache = parseInt(localStorage.getItem('updatedAt') || '0');
-    
-    // 1️⃣ Gọi API lấy lastUpdated từ server
     try {
       const options = {
         method: 'GET',
@@ -95,46 +85,9 @@ export class PhieuchiahangService {
         }
       }
       const data = await response.json();       
-      const updatedAtServer = data.reduce((max:any, p:any) => Math.max(max, new Date(p.updatedAt).getTime()), 0);
-
-      // 2️⃣ Nếu dữ liệu trên server mới hơn, cập nhật IndexedDB + LocalStorage
-      if (updatedAtServer > updatedAtCache) {
-        await this.savePhieuchiahangs(data);
-        localStorage.setItem('lastUpdated', updatedAtServer);
-        localStorage.setItem('phieuchiahangs', JSON.stringify(data));
-      }
-      this.ListPhieuchiahang.set(data);
-      return cachedData.length > 0 ? cachedData : data;    
-      // localStorage.setItem('phieuchiahangs', JSON.stringify(data)); // Cache vào LocalStorage
     } catch (error) {
       return console.error(error);
     }
-  }
-
-  // 3️⃣ Lắng nghe cập nhật từ WebSocket
-  listenPhieuchiahangUpdates() {
-    this.socket.on('phieuchiahang-updated', async () => {
-      console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-      await this.getAllPhieuchiahang();
-    });
-  }
-  // Khởi tạo IndexedDB
-  private async initDB() {
-    return await openDB('PhieuchiahangDB', 1, {
-      upgrade(db) {
-        db.createObjectStore('phieuchiahangs', { keyPath: 'id' });
-      },
-    });
-  }
-
-  // Lưu vào IndexedDB
-  private async savePhieuchiahangs(data: any[]) {
-    const db = await this.initDB();
-    const tx = db.transaction('phieuchiahangs', 'readwrite');
-    const store = tx.objectStore('phieuchiahangs');
-    await store.clear(); // Xóa dữ liệu cũ
-    data.forEach(item => store.put(item));
-    await tx.done;
   }
 
   async getPhieuchiahangByid(id: any) {

@@ -98,7 +98,6 @@ export class ListPermissionComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this._PermissionService.listenPermissionUpdates();
     await this._PermissionService.getAllPermission(this.pageSize(),true);
     this.displayedColumns = Object.keys(this.ColumnName);
     this.dataSource = new MatTableDataSource(this.Listpermission());

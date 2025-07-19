@@ -126,19 +126,6 @@ export class SanphamService {
   }
 
   async getAllSanpham(queryParams: any = {}, forceRefresh: boolean = false) {
-    const cached = await this.getCachedData();
-    const updatedAtCacheDate = this._StorageService.getItem('sanphams_updatedAt') || '0';
-    const updatedAtCache = new Date(updatedAtCacheDate).getTime();
-    // Nếu không yêu cầu tải mới và cache hợp lệ, trả về cache
-    if (!forceRefresh && cached.sanphams.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) {
-      this.ListSanpham.set(cached.sanphams);
-      this.page.set(cached.pagination.page);
-      this.totalPages.set(cached.pagination.totalPages);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.sanphams;
-    }
-
     try {
       const options = {
         method: 'GET',
@@ -165,30 +152,9 @@ export class SanphamService {
       const response = await fetch(`${environment.APIURL}/sanpham?${query}`, options);
       if (!response.ok) {
         this.handleError(response.status);
-        this.ListSanpham.set(cached.sanphams);
-        this.page.set(cached.pagination.page);
-        this.totalPages.set(cached.pagination.totalPages);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-        return cached.sanphams;
       }
       // Lưu dữ liệu mới vào cache
       const data = await response.json();
-      await this.saveSanphams(data.data, {
-        page: data.page || 1,
-        totalPages: data.totalPages || 1,
-        total: data.total || data.data.length,
-        pageSize: this.pageSize()
-      });
-
-      // Cập nhật thời gian cache: với forceRefresh, sử dụng thời gian hiện tại
-      if (forceRefresh) {
-        this._StorageService.setItem('sanphams_updatedAt', new Date().toISOString());
-      } else {
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/sanpham/lastupdated`, options);
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-        this._StorageService.setItem('sanphams_updatedAt', updatedAtServer);
-      }
       this.ListSanpham.set(data.data);
       this.page.set(data.page || 1);
       this.totalPages.set(data.totalPages || 1);
@@ -198,12 +164,6 @@ export class SanphamService {
 
     } catch (error) {
       console.error(error);
-      this.ListSanpham.set(cached.sanphams);
-      this.page.set(cached.pagination.page);
-      this.totalPages.set(cached.pagination.totalPages);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.sanphams;
     }
   }
 
@@ -258,29 +218,7 @@ export class SanphamService {
     });
   }
 
-  // Lưu dữ liệu và phân trang vào IndexedDB
-  private async saveSanphams(data: any[], pagination: { page: number, totalPages: number, total: number, pageSize: number }) {
-    const db = await this.initDB();
-    const tx = db.transaction('sanphams', 'readwrite');
-    const store = tx.objectStore('sanphams');
-    await store.clear();
-    await store.put({ id: 'data', sanphams: data, pagination });
-    await tx.done;
-  }
-
   // Lấy dữ liệu và phân trang từ cache
-  private async getCachedData() {
-    const db = await this.initDB();
-    const cached = await db.get('sanphams', 'data');
-    if (cached && cached.sanphams) {
-      return {
-        sanphams: cached.sanphams,
-        pagination: cached.pagination || { page: 1, totalPages: 1, total: cached.sanphams.length, pageSize: 10 }
-      };
-    }
-    return { sanphams: [], pagination: { page: 1, totalPages: 1, total: 0, pageSize: 10 } };
-  }
-
   async getSanphamByid(id: any) {
     try {
       const options = {
@@ -320,13 +258,6 @@ export class SanphamService {
         this.DetailSanpham.set(data);        
         return data;
       } else {
-        await this.saveSanphams(data.data, {
-          page: data.page || 1,
-          totalPages: data.totalPages || 1,
-          total: data.total || data?.data?.length,
-          pageSize: this.pageSize()
-        });
-        this._StorageService.setItem('sanphams_updatedAt', new Date().toISOString());
         this.ListSanpham.set(data.data);
         this.page.set(data.page || 1);
         this.totalPages.set(data.totalPages || 1);
@@ -335,14 +266,6 @@ export class SanphamService {
         return data.data;
       }
     } catch (error) {
-      const cached = await this.getCachedData();
-      if (!param.isOne) {
-        this.ListSanpham.set(cached.sanphams);
-        this.page.set(cached.pagination.page);
-        this.totalPages.set(cached.pagination.totalPages);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-      }
     }
   }
 

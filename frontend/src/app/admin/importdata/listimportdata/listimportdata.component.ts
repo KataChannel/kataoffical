@@ -811,8 +811,8 @@ convertNCCSPToImport(data: any){
         title:'Bảng Giá '+v.mabanggia,
         mabanggia: v.mabanggia,
         type: v.type,
-        batdau: moment(excelSerialDateToJSDate(v.batdau)).toDate(),
-        ketthuc: moment(excelSerialDateToJSDate(v.ketthuc)).toDate(),
+        batdau: moment(v.batdau, 'DD/MM/YYYY').toDate(),
+        ketthuc: moment(v.ketthuc, 'DD/MM/YYYY').toDate(),
         ghichu: v.ghichu,
         status: v.status
       })).filter((v: any) => v.mabanggia !== undefined && v.mabanggia !== null && v.mabanggia !== '');

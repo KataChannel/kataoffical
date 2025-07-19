@@ -54,27 +54,8 @@ export class KhachhangService {
   }
 
   // Lưu dữ liệu và phân trang vào IndexedDB
-  private async saveKhachhangs(data: any[], pagination: { page: number, totalPages: number, total: number, pageSize: number }) {
-    const db = await this.initDB();
-    const tx = db.transaction('khachhangs', 'readwrite');
-    const store = tx.objectStore('khachhangs');
-    await store.clear();
-    await store.put({ id: 'data', khachhangs: data, pagination });
-    await tx.done;
-  }
 
   // Lấy dữ liệu và phân trang từ cache
-  private async getCachedData() {
-    const db = await this.initDB();
-    const cached = await db.get('khachhangs', 'data');
-    if (cached && cached.khachhangs) {
-      return {
-        khachhangs: cached.khachhangs,
-        pagination: cached.pagination || { page: 1, totalPages: 1, total: cached.khachhangs.length, pageSize: 10 }
-      };
-    }
-    return { khachhangs: [], pagination: { page: 1, totalPages: 1, total: 0, pageSize: 10 } };
-  }
 
   setKhachhangId(id: string | null) {
     this.khachhangId.set(id);
@@ -152,19 +133,6 @@ export class KhachhangService {
 
 
   async getAllKhachhang(queryParams: any = {}, forceRefresh: boolean = false) {
-    const cached = await this.getCachedData();
-    const updatedAtCacheDate = this._StorageService.getItem('khachhangs_updatedAt') || '0';
-    const updatedAtCache = new Date(updatedAtCacheDate).getTime();
-    // Nếu không yêu cầu tải mới và cache hợp lệ, trả về cache
-    if (!forceRefresh && cached.khachhangs.length > 0 && Date.now() - updatedAtCache < 5 * 60 * 1000) {
-      this.ListKhachhang.set(cached.khachhangs);
-      this.page.set(cached.pagination.page);
-      this.totalPages.set(cached.pagination.totalPages);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.khachhangs;
-    }
-
     try {
       const options = {
         method: 'GET',
@@ -191,30 +159,11 @@ export class KhachhangService {
       const response = await fetch(`${environment.APIURL}/khachhang?${query}`, options);
       if (!response.ok) {
         this.handleError(response.status);
-        this.ListKhachhang.set(cached.khachhangs);
-        this.page.set(cached.pagination.page);
-        this.totalPages.set(cached.pagination.totalPages);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-        return cached.khachhangs;
       }
       // Lưu dữ liệu mới vào cache
       const data = await response.json();
-      await this.saveKhachhangs(data.data, {
-        page: data.page || 1,
-        totalPages: data.totalPages || 1,
-        total: data.total || data.data.length,
-        pageSize: this.pageSize()
-      });
 
       // Cập nhật thời gian cache: với forceRefresh, sử dụng thời gian hiện tại
-      if (forceRefresh) {
-        this._StorageService.setItem('khachhangs_updatedAt', new Date().toISOString());
-      } else {
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/khachhang/lastupdated`, options);
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-        this._StorageService.setItem('khachhangs_updatedAt', updatedAtServer);
-      }
       this.ListKhachhang.set(data.data);
       this.page.set(data.page || 1);
       this.totalPages.set(data.totalPages || 1);
@@ -224,12 +173,6 @@ export class KhachhangService {
 
     } catch (error) {
       console.error(error);
-      this.ListKhachhang.set(cached.khachhangs);
-      this.page.set(cached.pagination.page);
-      this.totalPages.set(cached.pagination.totalPages);
-      this.total.set(cached.pagination.total);
-      this.pageSize.set(cached.pagination.pageSize);
-      return cached.khachhangs;
     }
   }
 
@@ -285,12 +228,6 @@ export class KhachhangService {
         this.DetailKhachhang.set(data);        
         return data;
       } else {
-        await this.saveKhachhangs(data.data, {
-          page: data.page || 1,
-          totalPages: data.totalPages || 1,
-          total: data.total || data?.data?.length,
-          pageSize: this.pageSize()
-        });
         this._StorageService.setItem('khachhangs_updatedAt', new Date().toISOString());
         this.ListKhachhang.set(data.data);
         this.page.set(data.page || 1);
@@ -300,16 +237,7 @@ export class KhachhangService {
         return data.data;
       }
     } catch (error) {
-      this._ErrorLogService.logError('Failed to getKhachhangBy', error);
       console.error(error);
-      const cached = await this.getCachedData();
-      if (!param.isOne) {
-        this.ListKhachhang.set(cached.khachhangs);
-        this.page.set(cached.pagination.page);
-        this.totalPages.set(cached.pagination.totalPages);
-        this.total.set(cached.pagination.total);
-        this.pageSize.set(cached.pagination.pageSize);
-      }
     }
   }
 
