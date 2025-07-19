@@ -5,6 +5,7 @@ export declare class DonhangController {
     create(createDonhangDto: any): Promise<{
         sanpham: {
             id: string;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             order: number | null;
             isActive: boolean | null;
@@ -16,6 +17,8 @@ export declare class DonhangController {
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
+            vat: import("@prisma/client/runtime/library").Decimal;
+            ttsauvat: import("@prisma/client/runtime/library").Decimal;
             donhangId: string;
         }[];
     } & {
@@ -112,6 +115,10 @@ export declare class DonhangController {
         khachhangId: string;
         printCount: number | null;
     }[]>;
+    dongbogia(params: any): Promise<{
+        status: string;
+        message: string;
+    }>;
     getchogiao(params: any): Promise<{
         idSP: string;
         title: string;
@@ -322,6 +329,7 @@ export declare class DonhangController {
             };
         } & {
             id: string;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             order: number | null;
             isActive: boolean | null;
@@ -333,6 +341,8 @@ export declare class DonhangController {
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
+            vat: import("@prisma/client/runtime/library").Decimal;
+            ttsauvat: import("@prisma/client/runtime/library").Decimal;
             donhangId: string;
         }) | undefined;
         khachhang: {
@@ -473,6 +483,7 @@ export declare class DonhangController {
     updatePhieugiao(id: string, updateDonhangDto: any): Promise<{
         sanpham: {
             id: string;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             order: number | null;
             isActive: boolean | null;
@@ -484,6 +495,8 @@ export declare class DonhangController {
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
+            vat: import("@prisma/client/runtime/library").Decimal;
+            ttsauvat: import("@prisma/client/runtime/library").Decimal;
             donhangId: string;
         }[];
     } & {

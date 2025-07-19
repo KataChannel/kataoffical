@@ -222,7 +222,6 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   }
 
   GetDVT(item:any) {
-    console.log(item);
     if(item?.sanpham?.length > 0) {
       return item?.sanpham[0]?.dvt || '';
     }

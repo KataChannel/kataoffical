@@ -108,3 +108,12 @@ CREATE INDEX search_vector_idx ON Khachhang USING gin(search_vector);
 
 
 [{"title":"Trứng bắc thảo","dvt":"Quả","khachhang":[{"name":"99 SOUL","data":{"SLDAT":1,"SLTT":"1,2"}},{"name":"NHÀ HÀNG DOOKKI","data":{"SLDAT":1,"SLTT":"1,2"}}]},{"title":"Bún gạo","dvt":"Kg","khachhang":[{"name":"99 SOUL","data":{"SLDAT":1,"SLTT":"1,2"}},{"name":"NHÀ HÀNG DOOKKI","data":{"SLDAT":"","SLTT":"1,2"}}]}]
+
+
+
+
+đồng bộ lại giá của listdonhang với tiêu chí
+1. có list donhang.id
+2. Tìm bảng giá của khách hàng trong đớn hàng đó
+3. Cập nhật giaban của bảng Banggiasanpham vào giaban của bảng Donhangsanpham
+4. Cập nhật logic giá trị : ttdat = giaban*sldat, ttgiao = giaban*slgiao, ttnhan=giaban*slnhan, ttsauvat = ttnhan*vat

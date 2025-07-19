@@ -446,9 +446,7 @@ export class DetailDonhangComponent {
         
         console.log(isExpired);
         
-        if (!isExpired) {
-          console.log(selectedKhachhang?.banggia?.id);
-          
+        if (!isExpired) {          
         const dialogRef = this._dialog.open(this.BgHethanDialog, {
           hasBackdrop: true,
           disableClose: true,
@@ -456,8 +454,8 @@ export class DetailDonhangComponent {
         dialogRef.afterClosed().subscribe((result) => {
           if (result==="true") {
           this.DetailDonhang.update((v: any) => {
-            v.banggiaId = selectedKhachhang?.banggia?.id;
-            console.log(v.banggiaId);
+            v.khachhang.banggiaId = selectedKhachhang?.banggia?.id;
+            console.log(v.khachhang.banggiaId);
             return v;
           });
         }
@@ -465,7 +463,7 @@ export class DetailDonhangComponent {
       }
       else {
         this.DetailDonhang.update((v: any) => {
-          v.banggiaId = selectedKhachhang?.banggia?.id;
+         v.khachhang.banggiaId = selectedKhachhang?.banggia?.id;
           return v
         });
       }
@@ -476,6 +474,7 @@ export class DetailDonhangComponent {
           diachi: selectedKhachhang.diachi,
           sdt: selectedKhachhang.sdt,
           ghichu: selectedKhachhang.ghichu,
+          banggiaId: selectedKhachhang?.banggia?.id
         };
         v.khachhangId = selectedKhachhang.id;
         v.khachhang = khachhang;

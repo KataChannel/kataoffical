@@ -8,7 +8,7 @@
             class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
             <div class="flex flex-row space-x-2 items-center">
 
-             
+
                 <div class="relative w-full">
                     <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
                         class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
@@ -51,6 +51,9 @@
                 <span (click)="ToggleAll()" class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{Listdonhang().total}} Đơn Hàng
                 </span>
+                <button mat-flat-button color="primary" (click)="Dongbogia()">
+                    <span class="whitespace-nowrap"> Giá Bán</span>
+                </button>
                 <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
                     class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button>
                     <mat-icon>delete</mat-icon>
@@ -71,7 +74,7 @@
                     }
                 </mat-select>
             </mat-form-field>
-            
+
             <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
                 <mat-label>Bắt Đầu</mat-label>
                 <input matInput (dateChange)="onDateChange($event)" [matDatepicker]="pickerBatdau"
@@ -91,7 +94,8 @@
         <!-- <div class="flex flex-row space-x-2">
             <button *ngIf="editDonhang.length>0" mat-flat-button color="warn" (click)="DeleteDonhang()">Xóa</button>
             <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Phiếu Chia</button>
-          </div> -->        <div class="w-full overflow-auto relative">
+          </div> -->
+        <div class="w-full overflow-auto relative">
             <!-- Loading Overlay -->
             @if (isLoading()) {
             <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
@@ -101,7 +105,7 @@
                 </div>
             </div>
             }
-            
+
             <!-- Table Content -->
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {
@@ -238,11 +242,13 @@
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky:true"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="AddToEdit(row)"
-                    class="hover:bg-slate-100 {{CheckItemInEdit(row)?'!bg-slate-200':''}}"></tr>                <tr class="mat-row" *matNoDataRow>
-                <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
-                </tr>            </table>
+                    class="hover:bg-slate-100 {{CheckItemInEdit(row)?'!bg-slate-200':''}}"></tr>
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
+                </tr>
+            </table>
         </div>
-        
+
         <app-sharepagination [pageSize]="pageSize()" [page]="page()" [total]="total()" [pageCount]="pageCount()"
             (emitChange)="onPageChange($event)">
         </app-sharepagination>
@@ -386,15 +392,18 @@
                 <table class="min-w-full divide-y divide-gray-200 shadow-md rounded-lg">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="w-16 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="w-16 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 #
                             </th>
-                            <th class="min-w-[350px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="min-w-[350px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Khách hàng
                             </th>
-                            <th class="w-48 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="w-48 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Ngày Giao
-                          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                <mat-form-field appearance="outline" subscriptSizing="dynamic">
                                     <mat-label>Ngày Giao All </mat-label>
                                     <input (dateChange)="DoChonNgaygiao($event,'All')" matInput
                                         [matDatepicker]="picker">
@@ -402,29 +411,34 @@
                                     <mat-datepicker #picker></mat-datepicker>
                                 </mat-form-field>
                             </th>
-                            <th class="w-40 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="w-40 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 File Name</th>
-                            <th class="w-40 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="w-40 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Tên Không Dấu</th>
-                            <th class="w-24 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="w-24 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Status</th>
-                            <th class="w-32 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th
+                                class="w-32 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Message</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <tr *ngFor="let detail of statusDetails;let i = index">
                             <td class="w-16 px-4 py-4 whitespace-nowrap text-gray-900 items-center">
-                                 @if(detail.status === 'Processed'){
+                                @if(detail.status === 'Processed'){
                                 {{i+1}}
-                                <button mat-icon-button color="warn" (click)="removeItemImport(detail)"><mat-icon>delete</mat-icon></button>
-                                    }
+                                <button mat-icon-button color="warn"
+                                    (click)="removeItemImport(detail)"><mat-icon>delete</mat-icon></button>
+                                }
                             </td>
                             <td class="min-w-[350px] px-6 py-4 whitespace-nowrap text-gray-900">
                                 @if(detail.status === 'Processed'){
                                 <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
                                     <mat-label>Khách Hàng</mat-label>
-                                    <mat-select  (selectionChange)="SelectKhachhang(detail,$event)">
+                                    <mat-select (selectionChange)="SelectKhachhang(detail,$event)">
                                         <div class="w-full flex flex-col">
                                             <mat-form-field appearance="outline" class="w-full p-2"
                                                 subscriptSizing="dynamic">
@@ -433,7 +447,8 @@
                                             </mat-form-field>
                                             <div class="overflow-y-auto max-h-44">
                                                 @for (item of FilterKhachhang[i]; track item.id) {
-                                                <mat-option [value]="item.id" class="!whitespace-normal !h-auto !py-2">{{item.name}}</mat-option>
+                                                <mat-option [value]="item.id"
+                                                    class="!whitespace-normal !h-auto !py-2">{{item.name}}</mat-option>
                                                 }
                                             </div>
                                         </div>
@@ -446,15 +461,17 @@
                                 @if(detail.status === 'Processed'){
                                 <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
                                     <mat-label>Ngày Giao </mat-label>
-                                    <input [ngModel]="statusDetails[i]?.ngaygiao" (dateChange)="DoChonNgaygiao($event,detail)" matInput
-                                        [matDatepicker]="picker">
+                                    <input [ngModel]="statusDetails[i]?.ngaygiao"
+                                        (dateChange)="DoChonNgaygiao($event,detail)" matInput [matDatepicker]="picker">
                                     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                                     <mat-datepicker #picker></mat-datepicker>
                                 </mat-form-field>
                                 }
                             </td>
-                            <td class="w-40 px-4 py-4 whitespace-nowrap text-sm text-gray-900 truncate">{{ detail.fileName }}</td>
-                            <td class="w-40 px-4 py-4 whitespace-nowrap text-sm text-gray-900 truncate">{{ detail.tenkhongdau }}</td>
+                            <td class="w-40 px-4 py-4 whitespace-nowrap text-sm text-gray-900 truncate">{{
+                                detail.fileName }}</td>
+                            <td class="w-40 px-4 py-4 whitespace-nowrap text-sm text-gray-900 truncate">{{
+                                detail.tenkhongdau }}</td>
                             <td class="w-24 px-4 py-4 whitespace-nowrap text-sm">
                                 <span [ngClass]="{
                                         'text-green-600 font-semibold': detail.status === 'Processed' || detail.status === 'Success',
@@ -463,7 +480,8 @@
                                     {{ detail.status }}
                                 </span>
                             </td>
-                            <td class="w-32 px-4 py-4 whitespace-nowrap text-sm text-gray-500 truncate">{{ detail.message }}</td>
+                            <td class="w-32 px-4 py-4 whitespace-nowrap text-sm text-gray-500 truncate">{{
+                                detail.message }}</td>
                         </tr>
                     </tbody>
                 </table>

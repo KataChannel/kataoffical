@@ -201,6 +201,83 @@ export class DonhangService {
     }));
   }
   
+  async dongbogia(listdonhang: any) {
+    console.log('listdonhang', listdonhang);
+
+    return this.prisma.$transaction(async (prisma) => {
+      let updatedCount = 0;
+      
+      for (const donhangId of listdonhang) {
+        try {
+          // 1. Tìm đơn hàng với khách hàng và bảng giá
+          const donhang = await prisma.donhang.findUnique({
+            where: { id: donhangId },
+            include: {
+              khachhang: {
+                include: {
+                  banggia: {
+                    include: {
+                      sanpham: true
+                    }
+                  }
+                }
+              },
+              sanpham: true
+            }
+          });
+
+          if (!donhang) {
+            console.warn(`Đơn hàng ${donhangId} không tồn tại`);
+            continue;
+          }
+
+          // 2. Kiểm tra khách hàng có bảng giá không
+          if (!donhang.khachhang.banggia) {
+            console.warn(`Khách hàng ${donhang.khachhang.name} không có bảng giá`);
+            continue;
+          }
+
+          // 3. Cập nhật giá cho từng sản phẩm trong đơn hàng
+          for (const donhangSanpham of donhang.sanpham) {
+            // Tìm giá từ bảng giá của khách hàng
+            const giaSanpham = donhang.khachhang.banggia.sanpham.find(
+              (sp) => sp.sanphamId === donhangSanpham.idSP
+            );
+
+            if (giaSanpham) {
+              const giaban = giaSanpham.giaban;
+              const sldat = Number(donhangSanpham.sldat);
+              const slgiao = Number(donhangSanpham.slgiao);
+              const slnhan = Number(donhangSanpham.slnhan);
+              const vat = Number(donhangSanpham.vat) || 0;
+
+              // 4. Cập nhật giá và tính toán lại các giá trị
+              await prisma.donhangsanpham.update({
+                where: { id: donhangSanpham.id },
+                data: {
+                  giaban: giaban,
+                  ttdat: giaban * sldat,
+                  ttgiao: giaban * slgiao,
+                  ttnhan: giaban * slnhan,
+                  ttsauvat: (giaban * slnhan) * (1 + vat / 100)
+                }
+              });
+            }
+          }
+          
+          updatedCount++;
+        } catch (error) {
+          console.error(`Lỗi khi cập nhật đơn hàng ${donhangId}:`, error);
+        }
+      }
+
+      return {
+        status: 'success',
+        message: `Đồng bộ giá thành công cho ${updatedCount}/${listdonhang.length} đơn hàng`
+      };
+    });
+  }
+
 
 
   async phieuchuyen(params: any) {

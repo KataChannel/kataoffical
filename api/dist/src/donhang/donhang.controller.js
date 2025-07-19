@@ -36,6 +36,9 @@ let DonhangController = class DonhangController {
     async phieuchuyen(params) {
         return this.donhangService.phieuchuyen(params);
     }
+    async dongbogia(params) {
+        return this.donhangService.dongbogia(params);
+    }
     async getchogiao(params) {
         return this.donhangService.getchogiao(params);
     }
@@ -125,6 +128,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], DonhangController.prototype, "phieuchuyen", null);
+__decorate([
+    (0, common_1.Post)('dongbogia'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DonhangController.prototype, "dongbogia", null);
 __decorate([
     (0, common_1.Post)('getchogiao'),
     __param(0, (0, common_1.Body)()),

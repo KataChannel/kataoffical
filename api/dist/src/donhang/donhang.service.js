@@ -177,6 +177,67 @@ let DonhangService = class DonhangService {
             slchogiaott: parseFloat(value.sldat.toFixed(2)),
         }));
     }
+    async dongbogia(listdonhang) {
+        console.log('listdonhang', listdonhang);
+        return this.prisma.$transaction(async (prisma) => {
+            let updatedCount = 0;
+            for (const donhangId of listdonhang) {
+                try {
+                    const donhang = await prisma.donhang.findUnique({
+                        where: { id: donhangId },
+                        include: {
+                            khachhang: {
+                                include: {
+                                    banggia: {
+                                        include: {
+                                            sanpham: true
+                                        }
+                                    }
+                                }
+                            },
+                            sanpham: true
+                        }
+                    });
+                    if (!donhang) {
+                        console.warn(`Đơn hàng ${donhangId} không tồn tại`);
+                        continue;
+                    }
+                    if (!donhang.khachhang.banggia) {
+                        console.warn(`Khách hàng ${donhang.khachhang.name} không có bảng giá`);
+                        continue;
+                    }
+                    for (const donhangSanpham of donhang.sanpham) {
+                        const giaSanpham = donhang.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === donhangSanpham.idSP);
+                        if (giaSanpham) {
+                            const giaban = giaSanpham.giaban;
+                            const sldat = Number(donhangSanpham.sldat);
+                            const slgiao = Number(donhangSanpham.slgiao);
+                            const slnhan = Number(donhangSanpham.slnhan);
+                            const vat = Number(donhangSanpham.vat) || 0;
+                            await prisma.donhangsanpham.update({
+                                where: { id: donhangSanpham.id },
+                                data: {
+                                    giaban: giaban,
+                                    ttdat: giaban * sldat,
+                                    ttgiao: giaban * slgiao,
+                                    ttnhan: giaban * slnhan,
+                                    ttsauvat: (giaban * slnhan) * (1 + vat / 100)
+                                }
+                            });
+                        }
+                    }
+                    updatedCount++;
+                }
+                catch (error) {
+                    console.error(`Lỗi khi cập nhật đơn hàng ${donhangId}:`, error);
+                }
+            }
+            return {
+                status: 'success',
+                message: `Đồng bộ giá thành công cho ${updatedCount}/${listdonhang.length} đơn hàng`
+            };
+        });
+    }
     async phieuchuyen(params) {
         const { Batdau, Ketthuc, Type } = params;
         console.log('Batdau', moment(Batdau).startOf('day').toDate());

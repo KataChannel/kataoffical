@@ -251,7 +251,7 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
       .subscribe((result) => {
         if (result.matches) {
           this.drawer.mode = 'over';
-          this.paginator.hidePageSize = true;
+          // this.paginator.hidePageSize = true;
         } else {
           this.drawer.mode = 'side';
         }

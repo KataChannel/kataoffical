@@ -371,7 +371,7 @@ export class ListDonhangComponent {
       .subscribe((result) => {
         if (result.matches) {
           this.drawer.mode = 'over';
-          this.paginator.hidePageSize = true;
+          // this.paginator.hidePageSize = true;
         } else {
           this.drawer.mode = 'side';
         }
@@ -549,6 +549,40 @@ export class ListDonhangComponent {
   CheckItemInDonhang(item: any): boolean {
     return this.editDonhang.findIndex((v) => v.id === item.id) !== -1;
   }
+  async Dongbogia() {
+    try {
+      const result = await this._DonhangService.DongboGia(this.EditList);
+      
+      if (result.status === 'success') {
+        this._snackBar.open(result.message || 'Đồng bộ giá thành công', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+      } else {
+        this._snackBar.open(result.message || 'Đồng bộ giá thất bại', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
+      
+      // Reload data after sync
+      await this.LoadData();
+      this.EditList = [];
+    } catch (error) {
+      console.error('Error syncing prices:', error);
+      this._snackBar.open('Lỗi khi đồng bộ giá', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+  
   DeleteDonhang(): void {}
 
   ListImportExcel: any[] = [];

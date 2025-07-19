@@ -234,6 +234,7 @@ model Donhang {
 model Donhangsanpham {
   id        String   @id @default(uuid())
   idSP      String
+  giaban    Decimal @postgres.Decimal(20, 2) @default(0)
   sldat     Decimal @postgres.Decimal(20, 2) @default(0)
   slgiao    Decimal @postgres.Decimal(20, 2) @default(0)
   slnhan    Decimal @postgres.Decimal(20, 2) @default(0)
@@ -241,6 +242,8 @@ model Donhangsanpham {
   ttdat     Decimal @postgres.Decimal(20, 2) @default(0)
   ttgiao    Decimal @postgres.Decimal(20, 2) @default(0)
   ttnhan    Decimal @postgres.Decimal(20, 2) @default(0)
+  vat       Decimal @postgres.Decimal(20, 2) @default(0)
+  ttsauvat  Decimal @postgres.Decimal(20, 2) @default(0)
   ghichu    String?
   sanpham   Sanpham  @relation(fields: [idSP], references: [id])
   donhang   Donhang  @relation(fields: [donhangId], references: [id],onDelete: Cascade)
