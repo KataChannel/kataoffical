@@ -225,7 +225,7 @@ export class DonhangService {
               sanpham: true
             }
           });
-
+          
           if (!donhang) {
             console.warn(`Đơn hàng ${donhangId} không tồn tại`);
             continue;
@@ -238,12 +238,15 @@ export class DonhangService {
           }
 
           // 3. Cập nhật giá cho từng sản phẩm trong đơn hàng
+          console.log(`Cập nhật giá cho đơn hàng ${donhangId} của khách hàng ${donhang.sanpham}`);
+          
           for (const donhangSanpham of donhang.sanpham) {
-            // Tìm giá từ bảng giá của khách hàng
+            // Tìm giá từ bảng giá của khách hàng            
             const giaSanpham = donhang.khachhang.banggia.sanpham.find(
               (sp) => sp.sanphamId === donhangSanpham.idSP
             );
-
+            console.log('giaSanpham', giaSanpham);
+            
             if (giaSanpham) {
               const giaban = giaSanpham.giaban;
               const sldat = Number(donhangSanpham.sldat);

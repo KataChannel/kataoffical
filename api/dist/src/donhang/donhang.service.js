@@ -206,8 +206,10 @@ let DonhangService = class DonhangService {
                         console.warn(`Khách hàng ${donhang.khachhang.name} không có bảng giá`);
                         continue;
                     }
+                    console.log(`Cập nhật giá cho đơn hàng ${donhangId} của khách hàng ${donhang.sanpham}`);
                     for (const donhangSanpham of donhang.sanpham) {
                         const giaSanpham = donhang.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === donhangSanpham.idSP);
+                        console.log('giaSanpham', giaSanpham);
                         if (giaSanpham) {
                             const giaban = giaSanpham.giaban;
                             const sldat = Number(donhangSanpham.sldat);
