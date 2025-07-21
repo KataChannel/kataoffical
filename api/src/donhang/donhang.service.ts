@@ -65,8 +65,7 @@ export class DonhangService {
   }
 
   async search(params: any) {
-    const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, query } = params;
-
+    const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, query } = params;    
     const where: any = {
       ngaygiao: {
         gte: Batdau
@@ -105,8 +104,7 @@ export class DonhangService {
         skip: (Number(pageNumber) - 1) * Number(pageSize),
         take: Number(pageSize),
       }),
-    ]);
-
+    ]);    
     const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
       ...donhang,
       sanpham: sanpham.map((item: any) => {

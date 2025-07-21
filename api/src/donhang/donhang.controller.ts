@@ -23,6 +23,8 @@ export class DonhangController {
   }
   @Post('search')
   async search(@Body() params: any) {
+    console.log('search params', params);
+    
     return this.donhangService.search(params);
   }
   @Post('phieuchuyen')

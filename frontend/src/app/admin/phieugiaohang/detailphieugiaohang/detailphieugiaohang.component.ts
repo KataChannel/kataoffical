@@ -596,6 +596,9 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
           </html>
         `);
         newWindow.document.close();
+        if(this.DetailPhieugiaohang().status === 'dadat') {
+         this.Danhanhang();
+        }
       } else {
         console.error('Không thể mở cửa sổ in');
       }

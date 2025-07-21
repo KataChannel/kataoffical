@@ -88,7 +88,7 @@ export class ListcongnokhachhangComponent {
     'tongtiensauthue',
   ];
   ColumnName: any = {
-    ngay: 'Ngày',
+    ngay: 'Ngày Giao',
     makhachhang: 'Mã Khách Hàng',
     tenkhachhang: 'Tên Khách Hàng',
     madonhang: 'Mã Đơn Hàng',
@@ -253,8 +253,10 @@ doFilterKhachhang(event: Event){
     });
     
     this.ListCongno = this.Listdonhang().flatMap((v: any) =>
-      v.sanpham.map((v1: any) => ({
-        ngay: moment(v.ngay).format("DD/MM/YYYY"),
+      {
+      console.log(v);
+     return v.sanpham.map((v1: any) => ({
+        ngay: moment(v.ngaygiao).format("DD/MM/YYYY"),
         tenkhachhang: v.khachhang?.name,
         makhachhang: v.khachhang?.makh,
         madonhang: v.madonhang,
@@ -270,6 +272,7 @@ doFilterKhachhang(event: Event){
         ghichu: v1.ghichu,
         tongtiensauthue: customerTotals.get(v.khachhang?.makh) || 0,
       }))
+      }
     )
     this.dataSource = new MatTableDataSource(this.ListCongno);
     this.dataSource.paginator = this.paginator;
