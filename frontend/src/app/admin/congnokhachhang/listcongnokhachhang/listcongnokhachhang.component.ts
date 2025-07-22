@@ -70,6 +70,12 @@ import {MatAutocompleteModule, MatAutocompleteSelectedEvent} from '@angular/mate
 })
 export class ListcongnokhachhangComponent {
   Detail: any = {};
+  
+  // Loading states
+  isLoading = false;
+  isSearching = false;
+  isExporting = false;
+  
   displayedColumns: string[] = [
     'ngay',
     'makhachhang',
@@ -184,22 +190,25 @@ export class ListcongnokhachhangComponent {
     this.setupDrawer();
     this.loadData(this.SearchParams);
   }
-
-  doSearch(){
-    this.loadData(this.SearchParams); 
-    // Create a Map to track unique customers
-    const uniqueCustomers = new Map();
-    this.Listdonhang().forEach((v: any) => {
-      const makh = v.makhachhang;
-      const tenkh = v.tenkhachhang;
-      if (makh && !uniqueCustomers.has(makh)) {
-      uniqueCustomers.set(makh, tenkh);
-      }
-    });
-    // Convert Map to array
-    this.ListKhachhang = this.filterListKhachhang = Array.from(uniqueCustomers.values());
-    console.log('ListKhachhang', this.ListKhachhang);
-    
+  async doSearch(){
+    this.isSearching = true;
+    try {
+      await this.loadData(this.SearchParams); 
+      // Create a Map to track unique customers
+      const uniqueCustomers = new Map();
+      this.Listdonhang().forEach((v: any) => {
+        const makh = v.makhachhang;
+        const tenkh = v.tenkhachhang;
+        if (makh && !uniqueCustomers.has(makh)) {
+        uniqueCustomers.set(makh, tenkh);
+        }
+      });
+      // Convert Map to array
+      this.ListKhachhang = this.filterListKhachhang = Array.from(uniqueCustomers.values());
+      console.log('ListKhachhang', this.ListKhachhang);
+    } finally {
+      this.isSearching = false;
+    }
   }
 ListExport:any =[]
 onKhachhangChange(event: MatAutocompleteSelectedEvent){
@@ -231,25 +240,29 @@ doFilterKhachhang(event: Event){
    item.toLowerCase().includes(query) || removeVietnameseAccents(item).toLowerCase().includes(removeVietnameseAccents(query))
  );
 }
-
   async loadData(query:any): Promise<void> {
-    await this._DonhangService.searchCongno(query);
-    console.log(this.Listdonhang());
-    
-    this.CountItem = this.Listdonhang().length||0;
-    // Nhóm dữ liệu theo khách hàng để tính tổng tiền sau thuế
-    const customerTotals = new Map();
-    // Tính tổng tiền sau thuế cho từng khách hàng
-    this.ListCongno = this.Listdonhang()
-    this.dataSource = new MatTableDataSource(this.ListCongno);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.dataSource.filterPredicate = this.createFilter();
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    this.isLoading = true;
+    try {
+      await this._DonhangService.searchCongno(query);
+      console.log(this.Listdonhang());
+      
+      this.CountItem = this.Listdonhang().length||0;
+      // Nhóm dữ liệu theo khách hàng để tính tổng tiền sau thuế
+      const customerTotals = new Map();
+      // Tính tổng tiền sau thuế cho từng khách hàng
+      this.ListCongno = this.Listdonhang()
+      this.dataSource = new MatTableDataSource(this.ListCongno);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.dataSource.filterPredicate = this.createFilter();
+      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+      this.paginator._intl.previousPageLabel = 'Về Trước';
+      this.paginator._intl.firstPageLabel = 'Trang Đầu';
+      this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    } finally {
+      this.isLoading = false;
+    }
   }
 
 
@@ -555,30 +568,34 @@ doFilterKhachhang(event: Event){
   async ImporExcel(event: any) {
     const data = await readExcelFile(event);
     this.DoImportData(data);
-  }
-  ExportExcel(data: any, title: any) {
-    const columns = [
-      'Ngày',
-      'Mã Khách Hàng',
-      'Tên Khách Hàng',
-      'Mã Đơn Hàng',
-      'Mã Hàng',
-      'Tên Hàng',
-      'ĐVT',
-      'Số Lượng', 
-      'Đơn Giá',
-      'Thành Tiền Trước VAT',
-      'VAT',
-      'Đơn Giá VAT',
-      'Thành Tiền Sau VAT',
-      'Ghi Chú',  
-      'Tổng Tiền Sau Thuế',
-    ];
+  }  async ExportExcel(data: any, title: any) {
+    this.isExporting = true;
+    try {
+      const columns = [
+        'Ngày',
+        'Mã Khách Hàng',
+        'Tên Khách Hàng',
+        'Mã Đơn Hàng',
+        'Mã Hàng',
+        'Tên Hàng',
+        'ĐVT',
+        'Số Lượng', 
+        'Đơn Giá',
+        'Thành Tiền Trước VAT',
+        'VAT',
+        'Đơn Giá VAT',
+        'Thành Tiền Sau VAT',
+        'Ghi Chú',  
+        'Tổng Tiền Sau Thuế',
+      ];
 
-    // Nhóm dữ liệu theo mã khách hàng và tính tổng tiền sau thuế
-    const groupedData = this.groupDataByCustomer(data);
-    
-    this.writeExcelFileWithMergedCells(groupedData, title, columns);
+      // Nhóm dữ liệu theo mã khách hàng và tính tổng tiền sau thuế
+      const groupedData = this.groupDataByCustomer(data);
+      
+      this.writeExcelFileWithMergedCells(groupedData, title, columns);
+    } finally {
+      this.isExporting = false;
+    }
   }
 
   private groupDataByCustomer(data: any[]): any[] {

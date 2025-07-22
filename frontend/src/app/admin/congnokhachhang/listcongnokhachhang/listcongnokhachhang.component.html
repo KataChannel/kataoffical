@@ -1,8 +1,16 @@
 <mat-drawer-container class="w-full h-full" autosize>
+  <!-- Loading overlay cho toàn bộ component -->
+  <div *ngIf="isLoading" class="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+    <div class="flex flex-col items-center space-y-4">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <span class="text-lg text-gray-700">Đang tải dữ liệu...</span>
+    </div>
+  </div>
+
   <mat-drawer #drawer class="flex flex-col !w-full h-full" [position]="'end'" mode="over">
     <router-outlet></router-outlet>
   </mat-drawer>
-  <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
+  <div class="flex flex-col space-y-2 h-screen-12 w-full p-2" [class.opacity-50]="isLoading">
     <div class="w-full grid lg:grid-cols-2 gap-2 items-center">
     <div class="w-full flex flex-row space-x-2 items-center">
       <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
@@ -37,16 +45,30 @@
             <span class="text-sm">{{option}}</span>
           </mat-option>
           }
-        </mat-autocomplete>
-
-
-        <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(ListExport,'Congno')" color="primary"
-          mat-icon-button>
-          <mat-icon>file_download</mat-icon>
+        </mat-autocomplete>        <!-- Export button với loading -->
+        <button matTooltip="Tải file excel Mẫu" 
+                (click)="ExportExcel(ListExport,'Congno')" 
+                [disabled]="isExporting"
+                color="primary"
+                mat-icon-button
+                class="relative">
+          <div *ngIf="isExporting" class="absolute inset-0 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+          </div>
+          <mat-icon [class.opacity-0]="isExporting">file_download</mat-icon>
         </button>
         }
-        <button matTooltip="Tìm kiếm" (click)="doSearch()" color="primary" mat-icon-button>
-          <mat-icon>search</mat-icon>
+        <!-- Search button với loading -->
+        <button matTooltip="Tìm kiếm" 
+                (click)="doSearch()" 
+                [disabled]="isSearching"
+                color="primary" 
+                mat-icon-button
+                class="relative">
+          <div *ngIf="isSearching" class="absolute inset-0 flex items-center justify-center">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+          </div>
+          <mat-icon [class.opacity-0]="isSearching">search</mat-icon>
         </button>
               <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu"
         aria-label="Example icon-button with a menu">
@@ -70,9 +92,17 @@
         </div>
       </mat-menu>
       </div>
-    </div>
-
-    <div class="w-full overflow-auto">
+    </div>    <!-- Table với loading state -->
+    <div class="w-full overflow-auto relative">
+      <!-- Loading indicator cho table -->
+      <div *ngIf="isLoading && dataSource.data.length === 0" 
+           class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90 z-10">
+        <div class="flex flex-col items-center space-y-4">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <span class="text-gray-600">Đang tải dữ liệu...</span>
+        </div>
+      </div>
+      
       <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
         @for (column of displayedColumns; track column) {
         <ng-container [matColumnDef]="column">
@@ -204,9 +234,15 @@
         }
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="toggleDonhang(row)"
-          class="hover:bg-slate-100 {{CheckItemInDonhang(row)?'!bg-slate-200':''}}"></tr>
-        <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
+          class="hover:bg-slate-100 {{CheckItemInDonhang(row)?'!bg-slate-200':''}}"></tr>        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell p-4" [attr.colspan]="displayedColumns.length">
+            <div *ngIf="!isLoading" class="text-center py-8">
+              <div class="text-gray-500 mb-2">
+                <mat-icon class="text-4xl">search_off</mat-icon>
+              </div>
+              <span class="text-gray-500">Không tìm thấy dữ liệu</span>
+            </div>
+          </td>
         </tr>
       </table>
     </div>
