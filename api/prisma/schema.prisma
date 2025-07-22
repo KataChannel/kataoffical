@@ -185,18 +185,19 @@ enum StatusDonhang {
   hoanthanh   // Đã hoàn thành
 }
 model Sanpham {
-  id        String   @id @default(uuid())
-  title     String
+  id         String   @id @default(uuid())
+  title      String
   title2     String?
-  slug      String?   @unique
-  masp      String   @unique
-  subtitle  String? 
-  giagoc    Float @default(0)
-  giaban    Float @default(0)
-  dvt       String?
-  hinhanh   String?
-  loadpoint Float? @default(0)
-  soluong   Decimal? @postgres.Decimal(20, 2) @default(0)
+  slug       String?   @unique
+  masp        String   @unique
+  subtitle    String? 
+  giagoc      Float @default(0)
+  giaban     Float @default(0)
+  dvt         String?
+  hinhanh     String?
+  loadpoint   Float? @default(0)
+  vat        Decimal? @postgres.Decimal(20, 2) @default(0)
+  soluong    Decimal? @postgres.Decimal(20, 2) @default(0)
   soluongkho Decimal? @postgres.Decimal(20, 2) @default(0)
   haohut    Float @default(0)
   ghichu    String?

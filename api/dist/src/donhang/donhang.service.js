@@ -64,7 +64,7 @@ let DonhangService = class DonhangService {
         }
     }
     async search(params) {
-        const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, query } = params;
+        const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, query, } = params;
         const where = {
             ngaygiao: {
                 gte: Batdau
@@ -81,7 +81,7 @@ let DonhangService = class DonhangService {
         if (query) {
             where.OR = [
                 { madonhang: { contains: query, mode: 'insensitive' } },
-                { khachhang: { name: { contains: query, mode: 'insensitive' } } }
+                { khachhang: { name: { contains: query, mode: 'insensitive' } } },
             ];
         }
         const [total, donhangs] = await Promise.all([
@@ -105,7 +105,8 @@ let DonhangService = class DonhangService {
             ...donhang,
             sanpham: sanpham.map((item) => {
                 const priceFromBanggia = khachhang.banggia
-                    ? khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
+                    ? khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)
+                        ?.giaban
                     : 0;
                 const giaban = priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
                 return {
@@ -131,6 +132,77 @@ let DonhangService = class DonhangService {
             pageSize,
             totalPages: Math.ceil(total / pageSize),
         };
+    }
+    async congnokhachhang(params) {
+        const { Batdau, Ketthuc, query } = params;
+        const where = {
+            ngaygiao: {
+                gte: Batdau
+                    ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+                    : undefined,
+                lte: Ketthuc
+                    ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
+                    : undefined,
+            },
+            status: Array.isArray(params.Status)
+                ? { in: params.Status }
+                : params.Status,
+        };
+        if (query) {
+            where.OR = [
+                { madonhang: { contains: query, mode: 'insensitive' } },
+                { khachhang: { name: { contains: query, mode: 'insensitive' } } },
+            ];
+        }
+        const donhangs = await this.prisma.donhang.findMany({
+            where,
+            include: {
+                sanpham: {
+                    include: {
+                        sanpham: true,
+                    },
+                },
+                khachhang: { include: { banggia: { include: { sanpham: true } } } },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        const result = donhangs.flatMap((donhang) => {
+            const { khachhang, sanpham: donhangSanpham, ngaygiao, madonhang } = donhang;
+            const banggiaProducts = khachhang?.banggia?.sanpham || [];
+            const orderTotalWithVat = donhangSanpham.reduce((total, item) => {
+                const productPricing = banggiaProducts.find(sp => sp.sanphamId === item.idSP);
+                if (!productPricing)
+                    return total;
+                const { giaban = 0, vat = 0 } = productPricing;
+                return total + (item.slnhan * giaban * (1 + vat / 100));
+            }, 0);
+            return donhangSanpham.map((orderItem) => {
+                const productPricing = banggiaProducts.find(sp => sp.sanphamId === orderItem.idSP);
+                const { giaban: unitPrice = 0, vat: vatRate = 0, sanpham: productDetails } = productPricing || {};
+                const quantity = orderItem.slnhan || 0;
+                const subtotal = quantity * unitPrice;
+                const vatMultiplier = 1 + (vatRate / 100);
+                const totalWithVat = subtotal * vatMultiplier;
+                return {
+                    ngay: moment(ngaygiao).format('DD/MM/YYYY'),
+                    tenkhachhang: khachhang?.name,
+                    makhachhang: khachhang?.makh,
+                    madonhang,
+                    tenhang: productDetails?.title,
+                    mahang: productDetails?.masp,
+                    dvt: productDetails?.dvt,
+                    soluong: quantity,
+                    dongia: unitPrice,
+                    thanhtientruocvat: subtotal,
+                    vat: vatRate,
+                    dongiavathoadon: unitPrice * vatMultiplier,
+                    thanhtiensauvat: totalWithVat,
+                    tongtiensauvat: orderTotalWithVat,
+                    ghichu: orderItem.ghichu,
+                };
+            });
+        });
+        return result || [];
     }
     async getchogiao(params) {
         const { Batdau, Ketthuc, Type } = params;
@@ -190,13 +262,13 @@ let DonhangService = class DonhangService {
                                 include: {
                                     banggia: {
                                         include: {
-                                            sanpham: true
-                                        }
-                                    }
-                                }
+                                            sanpham: true,
+                                        },
+                                    },
+                                },
                             },
-                            sanpham: true
-                        }
+                            sanpham: true,
+                        },
                     });
                     if (!donhang) {
                         console.warn(`Đơn hàng ${donhangId} không tồn tại`);
@@ -223,8 +295,8 @@ let DonhangService = class DonhangService {
                                     ttdat: giaban * sldat,
                                     ttgiao: giaban * slgiao,
                                     ttnhan: giaban * slnhan,
-                                    ttsauvat: (giaban * slnhan) * (1 + vat / 100)
-                                }
+                                    ttsauvat: giaban * slnhan * (1 + vat / 100),
+                                },
                             });
                         }
                     }
@@ -236,7 +308,7 @@ let DonhangService = class DonhangService {
             }
             return {
                 status: 'success',
-                message: `Đồng bộ giá thành công cho ${updatedCount}/${listdonhang.length} đơn hàng`
+                message: `Đồng bộ giá thành công cho ${updatedCount}/${listdonhang.length} đơn hàng`,
             };
         });
     }
@@ -477,7 +549,7 @@ let DonhangService = class DonhangService {
                         return null;
                     }
                 }));
-                const validSanpham = mappedSanpham.filter(item => item !== null);
+                const validSanpham = mappedSanpham.filter((item) => item !== null);
                 if (validSanpham.length === 0) {
                     console.warn(`Đơn hàng ${v.tenkh} không có sản phẩm hợp lệ, bỏ qua`);
                     return null;
@@ -495,7 +567,7 @@ let DonhangService = class DonhangService {
                 return null;
             }
         }));
-        const validRawData = rawData.filter(item => item !== null);
+        const validRawData = rawData.filter((item) => item !== null);
         let success = 0;
         let fail = 0;
         let skip = 0;
@@ -696,14 +768,20 @@ let DonhangService = class DonhangService {
                 for (const sp of data.sanpham) {
                     const newSlgiao = parseFloat((sp.slgiao ?? 0).toFixed(2));
                     const oldItem = oldDonhang.sanpham.find((o) => o.idSP === sp.id);
-                    const oldSlgiao = oldItem ? parseFloat((oldItem.slgiao ?? 0).toFixed(2)) : 0;
+                    const oldSlgiao = oldItem
+                        ? parseFloat((oldItem.slgiao ?? 0).toFixed(2))
+                        : 0;
                     const difference = newSlgiao - oldSlgiao;
                     if (difference !== 0) {
                         await prisma.tonKho.update({
                             where: { sanphamId: sp.id },
                             data: {
-                                slchogiao: difference > 0 ? { decrement: difference } : { increment: -difference },
-                                slton: difference > 0 ? { decrement: difference } : { increment: -difference },
+                                slchogiao: difference > 0
+                                    ? { decrement: difference }
+                                    : { increment: -difference },
+                                slton: difference > 0
+                                    ? { decrement: difference }
+                                    : { increment: -difference },
                             },
                         });
                     }
@@ -721,7 +799,9 @@ let DonhangService = class DonhangService {
                             await prisma.tonKho.update({
                                 where: { sanphamId: sp.id },
                                 data: {
-                                    slchogiao: difference > 0 ? { increment: difference } : { decrement: Math.abs(difference) },
+                                    slchogiao: difference > 0
+                                        ? { increment: difference }
+                                        : { decrement: Math.abs(difference) },
                                 },
                             });
                         }
@@ -831,7 +911,7 @@ let DonhangService = class DonhangService {
                 }
                 else {
                     const uniqueSanpham = data.sanpham.reduce((acc, sp) => {
-                        const existing = acc.find(item => item.sanphamId === sp.id);
+                        const existing = acc.find((item) => item.sanphamId === sp.id);
                         if (existing) {
                             existing.soluong += parseFloat((sp.slgiao ?? 0).toFixed(2));
                         }
@@ -1659,7 +1739,7 @@ let DonhangService = class DonhangService {
                             });
                         }
                         const uniqueSanpham = oldDonhang.sanpham.reduce((acc, sp) => {
-                            const existing = acc.find(item => item.sanphamId === sp.idSP);
+                            const existing = acc.find((item) => item.sanphamId === sp.idSP);
                             if (existing) {
                                 existing.soluong += parseFloat((sp.sldat ?? 0).toFixed(2));
                             }
@@ -1674,7 +1754,9 @@ let DonhangService = class DonhangService {
                         }, []);
                         const maphieuNew = `PX-${oldDonhang.madonhang}-${moment().format('DDMMYYYY')}`;
                         const phieuPayload = {
-                            ngay: oldDonhang.ngaygiao ? new Date(oldDonhang.ngaygiao) : new Date(),
+                            ngay: oldDonhang.ngaygiao
+                                ? new Date(oldDonhang.ngaygiao)
+                                : new Date(),
                             type: 'xuat',
                             khoId: DEFAUL_KHO_ID,
                             ghichu: oldDonhang.ghichu || 'Xuất kho hàng loạt',
@@ -1784,14 +1866,22 @@ let DonhangService = class DonhangService {
                     }
                     const maphieuXuat = `PX-${donhang.madonhang}-${moment().format('DDMMYYYY')}`;
                     const maphieuNhap = `PN-${donhang.madonhang}-RET-${moment().format('DDMMYYYY')}`;
-                    const phieuXuat = await prisma.phieuKho.findUnique({ where: { maphieu: maphieuXuat } });
+                    const phieuXuat = await prisma.phieuKho.findUnique({
+                        where: { maphieu: maphieuXuat },
+                    });
                     if (phieuXuat) {
-                        await prisma.phieuKhoSanpham.deleteMany({ where: { phieuKhoId: phieuXuat.id } });
+                        await prisma.phieuKhoSanpham.deleteMany({
+                            where: { phieuKhoId: phieuXuat.id },
+                        });
                         await prisma.phieuKho.delete({ where: { maphieu: maphieuXuat } });
                     }
-                    const phieuNhap = await prisma.phieuKho.findUnique({ where: { maphieu: maphieuNhap } });
+                    const phieuNhap = await prisma.phieuKho.findUnique({
+                        where: { maphieu: maphieuNhap },
+                    });
                     if (phieuNhap) {
-                        await prisma.phieuKhoSanpham.deleteMany({ where: { phieuKhoId: phieuNhap.id } });
+                        await prisma.phieuKhoSanpham.deleteMany({
+                            where: { phieuKhoId: phieuNhap.id },
+                        });
                         await prisma.phieuKho.delete({ where: { maphieu: maphieuNhap } });
                     }
                     await prisma.donhang.delete({ where: { id } });
@@ -1826,7 +1916,7 @@ let DonhangService = class DonhangService {
         console.log(donhangs);
         return donhangs.map((donhang) => ({
             ...donhang,
-            sanpham: donhang.sanpham.find((item) => item.idSP === idSP)
+            sanpham: donhang.sanpham.find((item) => item.idSP === idSP),
         }));
     }
 };

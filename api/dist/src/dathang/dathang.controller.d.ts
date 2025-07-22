@@ -93,6 +93,7 @@ export declare class DathangController {
                     dvt: string | null;
                     hinhanh: string | null;
                     loadpoint: number | null;
+                    vat: import("@prisma/client/runtime/library").Decimal | null;
                     soluong: import("@prisma/client/runtime/library").Decimal | null;
                     soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                     haohut: number;
@@ -196,6 +197,7 @@ export declare class DathangController {
                 dvt: string | null;
                 hinhanh: string | null;
                 loadpoint: number | null;
+                vat: import("@prisma/client/runtime/library").Decimal | null;
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: number;
@@ -264,6 +266,7 @@ export declare class DathangController {
                     dvt: string | null;
                     hinhanh: string | null;
                     loadpoint: number | null;
+                    vat: import("@prisma/client/runtime/library").Decimal | null;
                     soluong: import("@prisma/client/runtime/library").Decimal | null;
                     soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                     haohut: number;
@@ -354,6 +357,7 @@ export declare class DathangController {
             dvt: string | null;
             hinhanh: string | null;
             loadpoint: number | null;
+            vat: import("@prisma/client/runtime/library").Decimal | null;
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: number;
@@ -404,6 +408,7 @@ export declare class DathangController {
                 dvt: string | null;
                 hinhanh: string | null;
                 loadpoint: number | null;
+                vat: import("@prisma/client/runtime/library").Decimal | null;
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: number;

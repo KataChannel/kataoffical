@@ -200,6 +200,31 @@ export class DonhangService {
       return console.error(error);
     }
   }
+  async searchCongno(SearchParams: any) {
+    const payload = {...SearchParams}
+    payload.Batdau = moment(payload.Batdau).utc()
+    payload.Ketthuc = moment(payload.Ketthuc).utc()
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer '+this._StorageService.getItem('token')
+        },
+        body: JSON.stringify(payload),
+      };
+      const response = await fetch(`${environment.APIURL}/donhang/congnokhachhang`, options);
+      if (!response.ok) {
+
+      }
+      const data = await response.json();                 
+      this.ListDonhang.set(data)
+      return data
+    } catch (error) {
+      return console.error(error);
+    }
+  }
+
   async Phieuchuyen(SearchParams: any) {
     const payload = {...SearchParams}
     payload.Batdau = moment(payload.Batdau).utc()

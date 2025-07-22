@@ -131,8 +131,6 @@ export class ListcongnokhachhangComponent {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
     Type: 'donsi',
-    pageSize: 1000,
-    pageNumber: 1,
     Status:['danhan','hoanthanh'],
   };
   ListDate: any[] = [
@@ -192,8 +190,8 @@ export class ListcongnokhachhangComponent {
     // Create a Map to track unique customers
     const uniqueCustomers = new Map();
     this.Listdonhang().forEach((v: any) => {
-      const makh = v.khachhang?.makh;
-      const tenkh = v.khachhang?.name;
+      const makh = v.makhachhang;
+      const tenkh = v.tenkhachhang;
       if (makh && !uniqueCustomers.has(makh)) {
       uniqueCustomers.set(makh, tenkh);
       }
@@ -235,47 +233,14 @@ doFilterKhachhang(event: Event){
 }
 
   async loadData(query:any): Promise<void> {
-    await this._DonhangService.searchDonhang(query);
-    this.CountItem = this.Listdonhang().length;
+    await this._DonhangService.searchCongno(query);
+    console.log(this.Listdonhang());
+    
+    this.CountItem = this.Listdonhang().length||0;
     // Nhóm dữ liệu theo khách hàng để tính tổng tiền sau thuế
     const customerTotals = new Map();
-    
     // Tính tổng tiền sau thuế cho từng khách hàng
-    this.Listdonhang().forEach((v: any) => {
-      const makh = v.khachhang?.makh;
-      if (makh) {
-        v.sanpham.forEach((v1: any) => {
-          const thanhtiensauvat = v1.slgiao * v1.giaban * 1.05;
-          if (!customerTotals.has(makh)) {
-            customerTotals.set(makh, 0);
-          }
-          customerTotals.set(makh, customerTotals.get(makh) + thanhtiensauvat);
-        });
-      }
-    });
-    
-    this.ListCongno = this.Listdonhang().flatMap((v: any) =>
-      {
-      console.log(v);
-     return v.sanpham.map((v1: any) => ({
-        ngay: moment(v.ngaygiao).format("DD/MM/YYYY"),
-        tenkhachhang: v.khachhang?.name,
-        makhachhang: v.khachhang?.makh,
-        madonhang: v.madonhang,
-        tenhang: v1.title,
-        mahang: v1.masp,
-        dvt: v1.dvt,
-        soluong: v1.slgiao,
-        dongia: v1.giaban,
-        thanhtientruocvat: v1.slgiao * v1.giaban,
-        vat: 5,
-        dongiavathoadon: v1.giaban * 1.05,
-        thanhtiensauvat: v1.slgiao * v1.giaban * 1.05,
-        ghichu: v1.ghichu,
-        tongtiensauthue: customerTotals.get(v.khachhang?.makh) || 0,
-      }))
-      }
-    )
+    this.ListCongno = this.Listdonhang()
     this.dataSource = new MatTableDataSource(this.ListCongno);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;

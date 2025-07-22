@@ -1,7 +1,7 @@
 npx bun add @nestjs/config @nestjs/jwt @nestjs/passport passport passport-jwt bcryptjs
 npx bun add @prisma/client
 npx bun add -d prisma
-npx bun prisma migrate dev --name capnhatlog
+npx bun prisma migrate dev --name vat
 npx prisma db push
 npx bun prisma generate
 npx ts-node prisma/exportData.ts

@@ -207,6 +207,7 @@ export declare class DonhangService {
             dvt: string | null;
             hinhanh: string | null;
             loadpoint: number | null;
+            vat: import("@prisma/client/runtime/library").Decimal | null;
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: number;
@@ -277,6 +278,7 @@ export declare class DonhangService {
             dvt: string | null;
             hinhanh: string | null;
             loadpoint: number | null;
+            vat: import("@prisma/client/runtime/library").Decimal | null;
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: number;
@@ -363,6 +365,7 @@ export declare class DonhangService {
         sanpham: {
             id: string;
             giaban: import("@prisma/client/runtime/library").Decimal;
+            vat: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             order: number | null;
             isActive: boolean | null;
@@ -374,7 +377,6 @@ export declare class DonhangService {
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
-            vat: import("@prisma/client/runtime/library").Decimal;
             ttsauvat: import("@prisma/client/runtime/library").Decimal;
             donhangId: string;
         }[];
@@ -412,6 +414,7 @@ export declare class DonhangService {
         sanpham: {
             id: string;
             giaban: import("@prisma/client/runtime/library").Decimal;
+            vat: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             order: number | null;
             isActive: boolean | null;
@@ -423,7 +426,6 @@ export declare class DonhangService {
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
-            vat: import("@prisma/client/runtime/library").Decimal;
             ttsauvat: import("@prisma/client/runtime/library").Decimal;
             donhangId: string;
         }[];

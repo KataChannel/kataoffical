@@ -17,6 +17,7 @@ export declare class PhieukhoController {
                 dvt: string | null;
                 hinhanh: string | null;
                 loadpoint: number | null;
+                vat: import("@prisma/client/runtime/library").Decimal | null;
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: number;

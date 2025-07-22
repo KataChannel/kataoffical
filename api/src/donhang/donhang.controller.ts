@@ -27,6 +27,10 @@ export class DonhangController {
     
     return this.donhangService.search(params);
   }
+  @Post('congnokhachhang')
+  async congnokhachhang(@Body() params: any) {
+    return this.donhangService.congnokhachhang(params);
+  }
   @Post('phieuchuyen')
   async phieuchuyen(@Body() params: any) {
     return this.donhangService.phieuchuyen(params);
