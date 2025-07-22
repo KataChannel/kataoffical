@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   computed,
   effect,
@@ -75,6 +76,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     SharepaginationComponent,
     MatProgressSpinnerModule,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListDonhangComponent {
   Detail: any = {};

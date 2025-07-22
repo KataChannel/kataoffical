@@ -59,6 +59,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
   // providers: [provideNativeDateAdapter()],
   templateUrl: './detailphieugiaohang.component.html',
   styleUrl: './detailphieugiaohang.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   _ListphieugiaohangComponent: ListPhieugiaohangComponent = inject(ListPhieugiaohangComponent);
@@ -93,10 +94,25 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
     ghichu: 'Ghi Chú'
   };
 
-  dataSource = new MatTableDataSource<any>([]);
+  dataSource:any = new MatTableDataSource([]);
   CountItem = computed(() => this.dataSource.data.length);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  DetailPhieugiaohang: any = this._PhieugiaohangService.DetailDonhang;
+  // ListKhachhang: any = this._KhachhangService.ListKhachhang;
+  isEdit = signal(true);
+  isDelete = signal(false);
+  filterKhachhang: any = [];
+  filterBanggia: any[] = [];
+  filterSanpham: any[] = [];
+  phieugiaohangId: any = this._PhieugiaohangService.donhangId;
+  ListSanpham: any = this._SanphamService.ListSanpham;
+  Trangthai: any = [
+    { value: 'dadat', title: 'Đã Đặt' },
+    { value: 'dagiao', title: 'Đã Giao' },
+    { value: 'danhan', title: 'Đã Nhận' },
+    { value: 'huy', title: 'Hủy' },
+  ];
   constructor() {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
@@ -131,7 +147,9 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
         }));
           // Initialize datasource with processed data
         this.dataSource.data = processedSanpham;
-        
+        setTimeout(() => {
+          this.dataSource.sort = this.sort;
+        }, 300);
         // Set up paginator and sort after view init
         this.setupDataSource();
         this._ListphieugiaohangComponent.drawer.open();
@@ -139,24 +157,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       }
     });
   }
-  DetailPhieugiaohang: any = this._PhieugiaohangService.DetailDonhang;
-  // ListKhachhang: any = this._KhachhangService.ListKhachhang;
-  isEdit = signal(true);
-  isDelete = signal(false);
-  filterKhachhang: any = [];
-  filterBanggia: any[] = [];
-  filterSanpham: any[] = [];
-  phieugiaohangId: any = this._PhieugiaohangService.donhangId;
-  ListSanpham: any = this._SanphamService.ListSanpham;
-  Trangthai: any = [
-    { value: 'dadat', title: 'Đã Đặt' },
-    { value: 'dagiao', title: 'Đã Giao' },
-    { value: 'danhan', title: 'Đã Nhận' },
-    { value: 'huy', title: 'Hủy' },
-  ];
   getTitle(item: any) {
     return this.Trangthai.find((v:any) => v.value === item)?.title;
-
   } 
  async ngOnInit() {
     const phieugiaohangId = this.phieugiaohangId();
@@ -192,7 +194,12 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       panelClass: ['snackbar-error']
       });
     }
-      this.updateDataSource();
+    this.dataSource = new MatTableDataSource(this.DetailPhieugiaohang().sanpham);
+    setTimeout(() => {
+      this.dataSource.sort = this.sort;
+    }, 300);
+
+    // this.setupDataSource();
   }
 
   ngAfterViewInit() {
@@ -201,18 +208,6 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   }
 
   private setupDataSource(): void {
-    if (this.paginator) {
-      this.dataSource.paginator = this.paginator;
-    }
-    if (this.sort) {
-      this.dataSource.sort = this.sort;
-    }
-  }
-
-  private updateDataSource(): void {
-    this.dataSource.data = this.DetailPhieugiaohang().sanpham || [];
-    
-    // Setup paginator và sort nếu đã khởi tạo
     if (this.paginator) {
       this.dataSource.paginator = this.paginator;
     }
@@ -533,7 +528,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       v.sanpham = []
       return v;
     })
-    this.updateDataSource();
+    // this.updateDataSource();
   }
 
   RemoveSanpham(item:any){
@@ -544,7 +539,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       this.reloadfilter();
       return v;
     })
-    this.updateDataSource();
+    // this.updateDataSource();
   }
   reloadfilter(){
     this.filterSanpham = this.ListSanpham().filter((v:any) => !this.DetailPhieugiaohang().sanpham.some((v2:any) => v2.id === v.id));

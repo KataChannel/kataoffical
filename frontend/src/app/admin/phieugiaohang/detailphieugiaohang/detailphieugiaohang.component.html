@@ -86,7 +86,7 @@
                 <span class="material-symbols-outlined text-gray-500">search</span>
               </div>
             </div>
-            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort #sort="matSort">
+            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
               @for (column of displayedColumns; track column) {
               <ng-container [matColumnDef]="column">
                 <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
