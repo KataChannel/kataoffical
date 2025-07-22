@@ -131,6 +131,8 @@ export class ListcongnokhachhangComponent {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
     Type: 'donsi',
+    pageSize: 1000,
+    pageNumber: 1,
     Status:['danhan','hoanthanh'],
   };
   ListDate: any[] = [
