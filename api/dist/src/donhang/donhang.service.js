@@ -166,41 +166,37 @@ let DonhangService = class DonhangService {
             },
             orderBy: { createdAt: 'desc' },
         });
-        const result = donhangs.flatMap((donhang) => {
-            const { khachhang, sanpham: donhangSanpham, ngaygiao, madonhang } = donhang;
-            const banggiaProducts = khachhang?.banggia?.sanpham || [];
-            const orderTotalWithVat = donhangSanpham.reduce((total, item) => {
-                const productPricing = banggiaProducts.find(sp => sp.sanphamId === item.idSP);
-                if (!productPricing)
-                    return total;
-                const { giaban = 0, vat = 0 } = productPricing;
-                return total + (item.slnhan * giaban * (1 + vat / 100));
-            }, 0);
-            return donhangSanpham.map((orderItem) => {
-                const productPricing = banggiaProducts.find(sp => sp.sanphamId === orderItem.idSP);
-                const { giaban: unitPrice = 0, vat: vatRate = 0, sanpham: productDetails } = productPricing || {};
-                const quantity = orderItem.slnhan || 0;
-                const subtotal = quantity * unitPrice;
-                const vatMultiplier = 1 + (vatRate / 100);
-                const totalWithVat = subtotal * vatMultiplier;
+        const Sanphams = await this.prisma.sanpham.findMany();
+        const result = donhangs.flatMap((v) => {
+            console.log(v);
+            const ListSP = v?.khachhang?.banggia?.sanpham || Sanphams;
+            const orderItems = v.sanpham.map((v1) => {
+                const product = ListSP.find((sp) => sp.id === v1.idSP);
+                const giaban = product?.giaban || 0;
+                const vat = product?.vat || 0;
+                const thanhtiensauvat = v1.slgiao * giaban * (1 + vat / 100);
                 return {
-                    ngay: moment(ngaygiao).format('DD/MM/YYYY'),
-                    tenkhachhang: khachhang?.name,
-                    makhachhang: khachhang?.makh,
-                    madonhang,
-                    tenhang: productDetails?.title,
-                    mahang: productDetails?.masp,
-                    dvt: productDetails?.dvt,
-                    soluong: quantity,
-                    dongia: unitPrice,
-                    thanhtientruocvat: subtotal,
-                    vat: vatRate,
-                    dongiavathoadon: unitPrice * vatMultiplier,
-                    thanhtiensauvat: totalWithVat,
-                    tongtiensauvat: orderTotalWithVat,
-                    ghichu: orderItem.ghichu,
+                    ngay: moment(v.ngaygiao).format('DD/MM/YYYY'),
+                    tenkhachhang: v.khachhang?.name,
+                    makhachhang: v.khachhang?.makh,
+                    madonhang: v.madonhang,
+                    tenhang: product?.title,
+                    mahang: product?.masp,
+                    dvt: product?.dvt,
+                    soluong: v1.slgiao,
+                    dongia: giaban,
+                    thanhtientruocvat: v1.slgiao * giaban,
+                    vat: vat,
+                    dongiavathoadon: giaban * (1 + vat / 100),
+                    thanhtiensauvat: thanhtiensauvat,
+                    ghichu: v1.ghichu,
                 };
             });
+            const tongtiensauvat = orderItems.reduce((sum, item) => sum + item.thanhtiensauvat, 0);
+            return orderItems.map(item => ({
+                ...item,
+                tongtiensauvat: tongtiensauvat
+            }));
         });
         return result || [];
     }
