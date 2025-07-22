@@ -9,6 +9,11 @@ import {
   ApexTitleSubtitle,
   ApexLegend,
   NgApexchartsModule,
+  ApexTooltip,
+  ApexFill,
+  ApexPlotOptions,
+  ApexNonAxisChartSeries,
+  ApexMarkers
 } from 'ng-apexcharts';
 import { CommonModule } from '@angular/common';
 import { Component, Input, SimpleChanges, ViewChild } from '@angular/core';
@@ -21,7 +26,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 
 export type ChartOptions = Partial<{
-  series: ApexAxisChartSeries;
+  series: ApexAxisChartSeries | ApexNonAxisChartSeries;
   chart: ApexChart;
   xaxis: ApexXAxis;
   stroke: ApexStroke;
@@ -29,9 +34,12 @@ export type ChartOptions = Partial<{
   dataLabels: ApexDataLabels;
   legend: ApexLegend;
   fill: ApexFill;
-  yaxis: ApexYAxis | ApexYAxis[]; // Có thể là một hoặc nhiều trục Y
+  yaxis: ApexYAxis | ApexYAxis[];
   plotOptions: ApexPlotOptions;
   title: ApexTitleSubtitle;
+  labels: string[];
+  colors: string[];
+  markers: ApexMarkers;
 }>;
 @Component({
   selector: 'app-revenuechart',

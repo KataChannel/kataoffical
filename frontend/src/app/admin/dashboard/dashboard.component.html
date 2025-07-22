@@ -1,126 +1,328 @@
-<div class="w-full flex flex-col space-y-2 py-4 items-center text-center">
+<div class="w-full flex flex-col space-y-6 py-4 items-center">
+    <!-- Header -->
     <div class="flex flex-row space-x-2 justify-center items-center">
-        <span class="font-bold text-xl">Dashboard</span>
-        <span class="material-symbols-outlined">wand_stars</span>
+        <span class="font-bold text-2xl text-gray-800">Dashboard Quản Lý Đơn Hàng</span>
+        <span class="material-symbols-outlined text-blue-600">dashboard</span>
     </div>
-    <div class="w-full lg:p-8 p-2 bg-gray-100 h-screen-16 overflow-auto">
-        <div class="w-full flex flex-col gap-4 mx-auto">
-            <div class="grid lg:grid-cols-3 gap-4">
-              <app-dashboardblock [title]="'Tổng Doanh Thu'" [value]="123456789" [type]="'value'"></app-dashboardblock>
-              <app-dashboardblock [title]="'Tổng Số Đơn Hàng'" [value]="1500" [type]="'percent'"></app-dashboardblock>
-              <app-dashboardblock [title]="'Khách Hàng Mới'" [value]="300" [type]="'percent'"></app-dashboardblock>
+    
+    <div class="w-full lg:px-8 px-4 bg-gray-50 min-h-screen">
+        <div class="w-full flex flex-col gap-6 mx-auto max-w-7xl">
+            
+            <!-- Date Range Filter -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex flex-col sm:flex-row gap-4 items-center">
+                    <div class="flex-1">
+                        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
+                            <mat-label>Ngày bắt đầu</mat-label>
+                            <input matInput [matDatepicker]="startPicker" [(ngModel)]="batdau" readonly>
+                            <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+                            <mat-datepicker #startPicker></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    
+                    <div class="flex-1">
+                        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
+                            <mat-label>Ngày kết thúc</mat-label>
+                            <input matInput [matDatepicker]="endPicker" [(ngModel)]="ketthuc" readonly>
+                            <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+                            <mat-datepicker #endPicker></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    
+                    <div class="flex gap-2 items-center justify-center">
+                        <button mat-raised-button color="primary" (click)="applyDateFilter()" [disabled]="isLoading">
+                            <mat-icon class="mr-2">search</mat-icon>
+                            Áp dụng
+                        </button>
+                        <button mat-raised-button (click)="loadDashboardData()" [disabled]="isLoading">
+                            <mat-icon class="mr-2">refresh</mat-icon>
+                            Làm mới
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Quick Date Filters -->
+                <div class="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-gray-200">
+                    <span class="text-sm text-gray-600 mr-2">Chọn nhanh:</span>
+                    <button mat-button class="text-sm" (click)="setDateRange('today')">
+                        Hôm nay
+                    </button>
+                    <button mat-button class="text-sm" (click)="setDateRange('yesterday')">
+                        Hôm qua
+                    </button>
+                    <button mat-button class="text-sm" (click)="setDateRange('last7days')">
+                        7 ngày qua
+                    </button>
+                    <button mat-button class="text-sm" (click)="setDateRange('last30days')">
+                        30 ngày qua
+                    </button>
+                    <button mat-button class="text-sm" (click)="setDateRange('thisMonth')">
+                        Tháng này
+                    </button>
+                    <button mat-button class="text-sm" (click)="setDateRange('lastMonth')">
+                        Tháng trước
+                    </button>
+                </div>
             </div>
-            <div class="grid lg:grid-cols-2 gap-4">
-                <app-revenuechart [title]="'Doanh Thu Tháng Này'" [chartOptions]="sampleAreaChartOptions2"></app-revenuechart>
-                <app-revenuechart [title]="'Trạng Thái Đơn hàng'" [chartOptions]="sampleAreaChartOptions2"></app-revenuechart>
+            
+            <!-- Loading State -->
+            <div *ngIf="isLoading" class="flex justify-center items-center py-12">
+                <div class="flex flex-col items-center gap-4">
+                    <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500"></div>
+                    <span class="text-gray-600 text-lg">Đang tải dữ liệu...</span>
+                </div>
             </div>
 
-<!-- 
-            <section class="mb-8">
-                <h2 class="text-lg font-semibold mb-2">II. THỐNG KÊ BÁN HÀNG</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Biểu Đồ Doanh Thu theo Thời Gian</h3>
-                        <div
-                            class="border border-gray-300 rounded-md h-48 bg-gray-100 flex items-center justify-center text-gray-500 italic">
-                            [Biểu đồ đường/cột]
+            <!-- Dashboard Content -->
+            <div *ngIf="!isLoading && dashboardData" class="space-y-6">
+                
+                <!-- Period Display -->
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-xl font-semibold">Thống Kê Từ {{batdau | date:'dd/MM/yyyy'}} đến {{ketthuc | date:'dd/MM/yyyy'}}</h2>
+                            <p class="text-blue-100 mt-1">Dữ liệu được cập nhật tự động</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-2xl font-bold">{{getDaysDifference()}} ngày</p>
+                            <p class="text-blue-100">Khoảng thời gian</p>
                         </div>
                     </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Biểu Đồ Phân Loại Doanh Thu</h3>
-                        <div
-                            class="border border-gray-300 rounded-md h-48 bg-gray-100 flex items-center justify-center text-gray-500 italic">
-                            [Biểu đồ tròn/cột]
-                        </div>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Biểu Đồ Phân Bố Đơn Hàng theo Trạng Thái</h3>
-                        <div
-                            class="border border-gray-300 rounded-md h-48 bg-gray-100 flex items-center justify-center text-gray-500 italic">
-                            [Biểu đồ tròn/cột]
-                        </div>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Top Sản Phẩm Bán Chạy Nhất</h3>
-                        <ol class="list-decimal pl-5">
-                            <li class="mb-1">[Tên SP] - [Số lượng] ([%])</li>
-                            <li class="mb-1">[Tên SP] - [Số lượng] ([%])</li>
-                            <li class="mb-1">...</li>
-                        </ol>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Top Khách Hàng Mua Nhiều Nhất</h3>
-                        <ol class="list-decimal pl-5">
-                            <li class="mb-1">[Tên KH] - [Tổng giá trị]</li>
-                            <li class="mb-1">[Tên KH] - [Tổng giá trị]</li>
-                            <li class="mb-1">...</li>
-                        </ol>
-                    </div>
-                    <div></div>
                 </div>
-            </section>
+                
+                <!-- Main Statistics Cards -->
+                <div class="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-6">
+                    <!-- Tổng Đơn Hàng -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Tổng Đơn Hàng</p>
+                                <p class="text-3xl font-bold text-gray-900">{{dashboardData.donhang?.total | number}}</p>
+                                <div class="flex items-center mt-2">
+                                    <span [class]="getChangeColor(getPercentageChange(dashboardData.donhang?.total, dashboardData.donhang?.previousTotal))"
+                                          class="text-sm font-medium flex items-center">
+                                        <mat-icon class="text-sm mr-1">{{getChangeIcon(getPercentageChange(dashboardData.donhang?.total, dashboardData.donhang?.previousTotal))}}</mat-icon>
+                                        {{getPercentageChange(dashboardData.donhang?.total, dashboardData.donhang?.previousTotal)}}%
+                                    </span>
+                                    <span class="text-sm text-gray-500 ml-2">vs kỳ trước</span>
+                                </div>
+                            </div>
+                            <div class="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <mat-icon class="text-blue-600">shopping_cart</mat-icon>
+                            </div>
+                        </div>
+                    </div>
 
-            <section class="mb-8">
-                <h2 class="text-lg font-semibold mb-2">III. QUẢN LÝ KHO HÀNG</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-1">Tổng SL Kho</h3>
-                        <p class="text-xl font-bold text-yellow-500">[Số lượng]</p>
+                    <!-- Sản Phẩm Đơn Hàng -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Loại Sản Phẩm</p>
+                                <p class="text-3xl font-bold text-gray-900">{{dashboardData.donhang?.sanphamCount | number}}</p>
+                                <p class="text-sm text-gray-500 mt-2">Trong đơn hàng</p>
+                            </div>
+                            <div class="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <mat-icon class="text-green-600">inventory_2</mat-icon>
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Giá Trị Kho (ƯT)</h3>
-                        <p class="text-xl font-bold text-yellow-500">[Số tiền]</p>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Danh Sách SP Sắp Hết Hàng</h3>
-                        <ul class="list-disc pl-5">
-                            <li class="mb-1">[Tên SP] - Còn: [SL] (Ngưỡng: [SL])</li>
-                            <li class="mb-1">[Tên SP] - Còn: [SL] (Ngưỡng: [SL])</li>
-                            <li class="mb-1">...</li>
-                        </ul>
-                    </div>
-                    <div class="bg-white shadow rounded-md p-4">
-                        <h3 class="text-md font-medium text-gray-700 mb-2">Danh Sách SP Hết/Sắp Hết Hạn</h3>
-                        <ul class="list-disc pl-5">
-                            <li class="mb-1">[Tên SP] - Hạn: [Ngày]</li>
-                            <li class="mb-1">[Tên SP] - Hạn: [Ngày]</li>
-                            <li class="mb-1">...</li>
-                        </ul>
-                    </div>
-                    <div class="md:col-span-2"></div>
-                </div>
-            </section>
 
-            <section class="mb-8">
-                <h2 class="text-lg font-semibold mb-2">IV. THÀNH PHẦN HỖ TRỢ KHÁC</h2>
-                <div class="bg-white shadow rounded-md p-4">
-                    <h3 class="text-md font-medium text-gray-700 mb-2">Thông Báo / Cảnh Báo</h3>
-                    <ul class="list-disc pl-5 text-sm text-gray-600">
-                        <li class="mb-1">[Thời gian] - [Nội dung thông báo 1]</li>
-                        <li class="mb-1">[Thời gian] - [Nội dung thông báo 2]</li>
-                        <li class="mb-1">...</li>
-                    </ul>
-                </div>
-                <div class="bg-white shadow rounded-md p-4 mt-4">
-                    <h3 class="text-md font-medium text-gray-700 mb-2">Truy Cập Nhanh</h3>
-                    <div class="space-x-2">
-                        <button
-                            class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm focus:outline-none focus:shadow-outline">Quản
-                            lý Đơn hàng</button>
-                        <button
-                            class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded-md text-sm focus:outline-none focus:shadow-outline">Quản
-                            lý Sản phẩm</button>
-                        <button
-                            class="bg-indigo-500 hover:bg-indigo-700 text-white py-2 px-4 rounded-md text-sm focus:outline-none focus:shadow-outline">Báo
-                            cáo Chi tiết</button>
+                    <!-- Đặt Hàng -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Đặt Hàng</p>
+                                <p class="text-3xl font-bold text-gray-900">{{dashboardData.dathang?.total | number}}</p>
+                                <div class="flex items-center mt-2">
+                                    <span [class]="getChangeColor(getPercentageChange(dashboardData.dathang?.total, dashboardData.dathang?.previousTotal))"
+                                          class="text-sm font-medium flex items-center">
+                                        <mat-icon class="text-sm mr-1">{{getChangeIcon(getPercentageChange(dashboardData.dathang?.total, dashboardData.dathang?.previousTotal))}}</mat-icon>
+                                        {{getPercentageChange(dashboardData.dathang?.total, dashboardData.dathang?.previousTotal)}}%
+                                    </span>
+                                    <span class="text-sm text-gray-500 ml-2">vs kỳ trước</span>
+                                </div>
+                            </div>
+                            <div class="h-12 w-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                <mat-icon class="text-yellow-600">assignment</mat-icon>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Doanh Thu -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Doanh Thu</p>
+                                <p class="text-2xl font-bold text-gray-900">{{formatCurrency(dashboardData.revenue?.donhang || 0)}}</p>
+                                <p class="text-sm text-gray-500 mt-2">Từ đơn hàng</p>
+                            </div>
+                            <div class="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <mat-icon class="text-purple-600">monetization_on</mat-icon>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="bg-white shadow rounded-md p-4 mt-4">
-                    <button
-                        class="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-md text-sm focus:outline-none focus:shadow-outline">Cá
-                        Nhân Hóa</button>
+
+                <!-- Charts Section -->
+                <div class="grid lg:grid-cols-2 gap-6">
+                    
+                    <!-- Top Sản Phẩm Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">Top Sản Phẩm Bán Chạy</h3>
+                            <mat-icon class="text-gray-400">bar_chart</mat-icon>
+                        </div>
+                        
+                        <div class="space-y-4" *ngIf="chartData.productChart.length > 0; else noProducts">
+                            <div *ngFor="let product of chartData.productChart; let i = index" 
+                                 class="flex items-center space-x-3">
+                                <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
+                                     [class]="getProductColor(i)">
+                                    {{i + 1}}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900 truncate" 
+                                       [title]="product.sanpham?.title">
+                                        {{truncateText(product.sanpham?.title || 'N/A', 25)}}
+                                    </p>
+                                    <div class="flex items-center mt-1">
+                                        <div class="flex-1 bg-gray-200 rounded-full h-2 mr-3">
+                                            <div [class]="getProductColor(i)" 
+                                                 class="h-2 rounded-full transition-all duration-300"
+                                                 [style.width]="getBarHeight(parseFloat(product.soluong), getMaxValue(chartData.productChart, 'soluong'))">
+                                            </div>
+                                        </div>
+                                        <span class="text-sm text-gray-600 font-medium">{{formatNumber(product.soluong)}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <ng-template #noProducts>
+                            <div class="text-center py-8">
+                                <mat-icon class="text-gray-400 text-4xl">inventory_2</mat-icon>
+                                <p class="text-gray-500 mt-2">Không có dữ liệu sản phẩm</p>
+                            </div>
+                        </ng-template>
+                    </div>
+
+                    <!-- So Sánh Chart -->
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900">So Sánh Hiện Tại vs Kỳ Trước</h3>
+                            <mat-icon class="text-gray-400">compare_arrows</mat-icon>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <div *ngFor="let item of chartData.comparisonChart" class="space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-medium text-gray-700">{{item.label}}</span>
+                                    <span class="text-sm text-gray-500">{{item.current}} / {{item.previous}}</span>
+                                </div>
+                                
+                                <div class="relative">
+                                    <div class="flex space-x-2 h-8">
+                                        <!-- Current Period Bar -->
+                                        <div class="flex-1 bg-gray-200 rounded-lg overflow-hidden">
+                                            <div [class]="item.color + ' h-full transition-all duration-500 rounded-lg flex items-center justify-end pr-2'"
+                                                 [style.width]="getBarHeight(item.current, mathMax(item.current, item.previous))">
+                                                <span class="text-white text-xs font-medium">{{item.current}}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Previous Period Bar -->
+                                        <div class="flex-1 bg-gray-200 rounded-lg overflow-hidden">
+                                            <div class="bg-gray-400 h-full transition-all duration-500 rounded-lg flex items-center justify-end pr-2"
+                                                 [style.width]="getBarHeight(item.previous, mathMax(item.current, item.previous))">
+                                                <span class="text-white text-xs font-medium">{{item.previous}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>Hiện tại</span>
+                                        <span>Kỳ trước</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <span [class]="getChangeColor(getPercentageChange(item.current, item.previous))"
+                                          class="text-sm font-medium flex items-center justify-center">
+                                        <mat-icon class="text-sm mr-1">{{getChangeIcon(getPercentageChange(item.current, item.previous))}}</mat-icon>
+                                        {{getPercentageChange(item.current, item.previous)}}%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </section> -->
+
+                <!-- Product Details Table -->
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900">Chi Tiết Sản Phẩm Trong Đơn Hàng</h3>
+                        <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+                            {{dashboardData.productQuantities?.donhang?.length || 0}} sản phẩm
+                        </span>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <div class="max-h-96 overflow-y-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50 sticky top-0">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sản Phẩm</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số Lượng</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    <tr *ngFor="let product of dashboardData.productQuantities?.donhang; let i = index"
+                                        class="hover:bg-gray-50 transition-colors">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{i + 1}}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">{{product.sanpham?.title || 'N/A'}}</div>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                {{formatNumber(product.soluong)}}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div *ngIf="!dashboardData.productQuantities?.donhang?.length" 
+                         class="text-center py-8">
+                        <mat-icon class="text-gray-400 text-4xl">inventory_2</mat-icon>
+                        <p class="text-gray-500 mt-2">Không có dữ liệu sản phẩm trong đơn hàng</p>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <!-- <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Thao Tác Nhanh</h3>
+                    <div class="grid md:grid-cols-4 grid-cols-2 gap-4">
+                        <button mat-raised-button color="primary" class="flex-1 h-12">
+                            <mat-icon class="mr-2">add</mat-icon>
+                            Tạo Đơn Hàng
+                        </button>
+                        <button mat-raised-button color="accent" class="flex-1 h-12">
+                            <mat-icon class="mr-2">list</mat-icon>
+                            Xem Đơn Hàng
+                        </button>
+                        <button mat-raised-button class="flex-1 h-12">
+                            <mat-icon class="mr-2">analytics</mat-icon>
+                            Báo Cáo
+                        </button>
+                        <button mat-raised-button class="flex-1 h-12">
+                            <mat-icon class="mr-2">settings</mat-icon>
+                            Cài Đặt
+                        </button>
+                    </div>
+                </div> -->
+
+            </div>
         </div>
-    </div>
-</div>

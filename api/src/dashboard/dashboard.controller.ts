@@ -38,5 +38,9 @@ export class DashboardController {
   getDoanhthu(@Query() query: SummaryQueryDto) {
       return this.dashboardService.getDoanhthu(query);
   }
+  @Get('donhang') // GET /dashboard/sales-trend?preset=month
+  getDonhang(@Query() query: any) {
+      return this.dashboardService.getDonhang(query);
+  }
 
 }

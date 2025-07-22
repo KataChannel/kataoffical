@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { SocketGateway } from 'src/socket.gateway';
-import { CreateDashboardDto, UpdateDashboardDto } from './dto/dashboard.dto';
 import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
 import { SummaryQueryDto } from './dto/summary-query.dto';
+import * as moment from 'moment-timezone';
 
 @Injectable()
 export class DashboardService {
@@ -31,4 +31,302 @@ export class DashboardService {
   getDoanhthu(data: any) {
     throw new Error('Method not implemented.');
   }
+
+  async getDonhang(data: any) {
+    const { Batdau, Ketthuc } = data;
+    // Prepare date filters
+    const startDate = Batdau
+      ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+      : moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
+
+    const endDate = Ketthuc
+      ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
+      : moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
+
+    // Calculate previous period
+    const duration = moment(endDate).diff(moment(startDate));
+    const previousStartDate = moment(startDate)
+      .subtract(duration, 'milliseconds')
+      .toDate();
+    const previousEndDate = moment(endDate)
+      .subtract(duration, 'milliseconds')
+      .toDate();
+
+    const dateFilter = {
+      ngaygiao: {
+        gte: startDate,
+        lte: endDate,
+      },
+    };
+
+    // 1. Số lượng đơn hàng
+    const [donhangCount, previousDonhangCount] = await Promise.all([
+      this.prisma.donhang.count({ where: dateFilter }),
+      this.prisma.donhang.count({
+        where: {
+          ngaygiao: {
+            gte: previousStartDate,
+            lte: previousEndDate,
+          },
+        },
+      }),
+    ]);
+
+    // 2. Số lượng đặt hàng
+    const dathangDateFilter = {
+      ngaynhan: {
+        gte: startDate,
+        lte: endDate,
+      },
+    };
+
+    const [dathangCount, previousDathangCount] = await Promise.all([
+      this.prisma.dathang.count({ where: dathangDateFilter }),
+      this.prisma.dathang.count({
+        where: {
+          ngaynhan: {
+            gte: previousStartDate,
+            lte: previousEndDate,
+          },
+        },
+      }),
+    ]);
+
+    // 3. Số sản phẩm đơn hàng, đặt hàng - FIX: Sử dụng Donhangsanpham và Dathangsanpham
+    const [sanphamDonhang, sanphamDathang] = await Promise.all([
+      this.prisma.donhangsanpham.groupBy({
+        by: ['idSP'],
+        where: {
+          donhang: dateFilter,
+        },
+        _count: true,
+      }),
+      this.prisma.dathangsanpham.groupBy({
+        by: ['idSP'],
+        where: {
+          dathang: dathangDateFilter,
+        },
+        _count: true,
+      }),
+    ]);
+
+    // 4. Số lượng từng sản phẩm - FIX: Sử dụng sldat thay vì soluong
+    const [productQuantitiesDonhang, productQuantitiesDathang] = await Promise.all([
+      this.prisma.donhangsanpham.groupBy({
+      by: ['idSP'],
+      where: {
+        donhang: dateFilter,
+      },
+      _sum: {
+        sldat: true,
+      },
+      }),
+      this.prisma.dathangsanpham.groupBy({
+      by: ['idSP'],
+      where: {
+        dathang: dathangDateFilter,
+      },
+      _sum: {
+        sldat: true,
+      },
+      }),
+    ]);
+
+    // Get product details
+    const productIds = [
+      ...new Set([
+      ...productQuantitiesDonhang.map((p) => p.idSP),
+      ...productQuantitiesDathang.map((p) => p.idSP),
+      ]),
+    ];
+
+    const products = await this.prisma.sanpham.findMany({
+      where: {
+      id: { in: productIds },
+      },
+      select: {
+      id: true,
+      title: true,
+      },
+    });
+
+    const productMap = new Map(products.map((p) => [p.id, p]));
+
+    // 5. Top số lượng đặt hàng nhiều nhất - FIX: Sử dụng Dathangsanpham
+    const topDathang = await this.prisma.dathangsanpham.groupBy({
+      by: ['idSP'],
+      where: {
+        dathang: dathangDateFilter,
+      },
+      _sum: {
+        sldat: true,
+      },
+      orderBy: {
+        _sum: {
+          sldat: 'desc',
+        },
+      },
+      take: 10,
+    });
+
+    const topProducts = topDathang.map((item) => ({
+      sanpham: productMap.get(item.idSP),
+      soluong: item._sum.sldat || 0,
+    }));
+
+    // 6. Tổng doanh thu dựa trên đơn hàng - FIX: Sử dụng ttdat
+    const donhangRevenue = await this.prisma.donhangsanpham.aggregate({
+      where: {
+        donhang: dateFilter,
+      },
+      _sum: {
+        ttdat: true,
+      },
+    });
+
+    // 7. Tổng phải trả dựa trên đặt hàng - FIX: Sử dụng ttdat
+    const dathangTotal = await this.prisma.dathangsanpham.aggregate({
+      where: {
+        dathang: dathangDateFilter,
+      },
+      _sum: {
+        ttdat: true,
+      },
+    });
+
+    // Calculate percentage changes
+    const donhangPercentageChange =
+      previousDonhangCount > 0
+        ? (
+            ((donhangCount - previousDonhangCount) / previousDonhangCount) *
+            100
+          ).toFixed(2)
+        : 0;
+
+    const dathangPercentageChange =
+      previousDathangCount > 0
+        ? (
+            ((dathangCount - previousDathangCount) / previousDathangCount) *
+            100
+          ).toFixed(2)
+        : 0;
+
+    return {
+      donhang: {
+        total: donhangCount,
+        previousTotal: previousDonhangCount,
+        percentageChange: Number(donhangPercentageChange),
+        sanphamCount: sanphamDonhang.length,
+      },
+      dathang: {
+        total: dathangCount,
+        previousTotal: previousDathangCount,
+        percentageChange: Number(dathangPercentageChange),
+        sanphamCount: sanphamDathang.length,
+      },
+      productQuantities: {
+        donhang: productQuantitiesDonhang.map((item) => ({
+          sanpham: productMap.get(item.idSP),
+          soluong: item._sum.sldat || 0,
+        })),
+        dathang: productQuantitiesDathang.map((item) => ({
+          sanpham: productMap.get(item.idSP),
+          soluong: item._sum.sldat || 0,
+        })),
+      },
+      topProducts,
+      revenue: {
+        donhang: donhangRevenue._sum.ttdat || 0,
+        dathang: dathangTotal._sum.ttdat || 0,
+      },
+      period: {
+        start: startDate,
+        end: endDate,
+      },
+    };
+  }
+  // async getDonhang(data: any) {
+  //   console.log(data);
+
+  //   const { Batdau, Ketthuc, query } = data;
+  //   const whereCondition: any = {};
+
+  //   // Prepare date filters
+  //   const startDate = Batdau
+  //     ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+  //     : moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
+
+  //   const endDate = Ketthuc
+  //     ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
+  //     : moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
+
+  //   // Calculate previous period
+  //   const duration = moment(endDate).diff(moment(startDate));
+  //   const previousStartDate = moment(startDate).subtract(duration, 'milliseconds').toDate();
+  //   const previousEndDate = moment(endDate).subtract(duration, 'milliseconds').toDate();
+
+  //   whereCondition.ngaygiao = {
+  //     gte: startDate,
+  //     lte: endDate,
+  //   };
+
+  //   if (query) {
+  //     whereCondition.OR = [
+  //       { id: { contains: query, mode: 'insensitive' } },
+  //       { khachhang: { ten: { contains: query, mode: 'insensitive' } } },
+  //       { status: { contains: query, mode: 'insensitive' } },
+  //     ];
+  //   }
+
+  //   // Get current period data
+  //   const [donhangs, totalCount, statusCounts] = await Promise.all([
+  //     this.prisma.donhang.findMany({
+  //       where: whereCondition,
+  //       include: {
+  //         khachhang: true,
+  //       },
+  //       orderBy: {
+  //         createdAt: 'desc',
+  //       },
+  //     }),
+  //     this.prisma.donhang.count({
+  //       where: whereCondition,
+  //     }),
+  //     this.prisma.donhang.groupBy({
+  //       by: ['status'],
+  //       where: whereCondition,
+  //       _count: {
+  //         status: true,
+  //       },
+  //     }),
+  //   ]);
+
+  //   // Get previous period count for comparison
+  //   const previousCount = await this.prisma.donhang.count({
+  //     where: {
+  //       ngaygiao: {
+  //         gte: previousStartDate,
+  //         lte: previousEndDate,
+  //       },
+  //     },
+  //   });
+
+  //   // Calculate percentage change
+  //   const percentageChange = previousCount > 0
+  //     ? ((totalCount - previousCount) / previousCount * 100).toFixed(2)
+  //     : 0;
+
+  //   return {
+  //     total:donhangs.length,
+  //     summary: {
+  //       totalCount,
+  //       previousCount,
+  //       percentageChange: Number(percentageChange),
+  //       statusCounts: statusCounts.map(item => ({
+  //         status: item.status,
+  //         count: item._count.status,
+  //       })),
+  //     },
+  //   };
+  // }
 }
