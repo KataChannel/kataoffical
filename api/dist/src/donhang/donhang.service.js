@@ -167,12 +167,11 @@ let DonhangService = class DonhangService {
             orderBy: { createdAt: 'desc' },
         });
         const Sanphams = await this.prisma.sanpham.findMany();
+        console.log('Sanphams', Sanphams[0]);
         const result = donhangs.flatMap((v) => {
-            console.log(v);
-            const ListSP = v?.khachhang?.banggia?.sanpham || Sanphams;
             const orderItems = v.sanpham.map((v1) => {
-                const product = ListSP.find((sp) => sp.id === v1.idSP);
-                const giaban = product?.giaban || 0;
+                const product = Sanphams.find((sp) => sp.id === v1.idSP);
+                const giaban = v?.khachhang?.banggia?.sanpham.find((sp) => sp.id === v1.idSP)?.giaban || product?.giaban || 0;
                 const vat = product?.vat || 0;
                 const thanhtiensauvat = v1.slgiao * giaban * (1 + vat / 100);
                 return {
@@ -180,9 +179,9 @@ let DonhangService = class DonhangService {
                     tenkhachhang: v.khachhang?.name,
                     makhachhang: v.khachhang?.makh,
                     madonhang: v.madonhang,
-                    tenhang: product?.title,
-                    mahang: product?.masp,
-                    dvt: product?.dvt,
+                    tenhang: product?.title || '',
+                    mahang: product?.masp || '',
+                    dvt: product?.dvt || '',
                     soluong: v1.slgiao,
                     dongia: giaban,
                     thanhtientruocvat: v1.slgiao * giaban,

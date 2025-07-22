@@ -185,23 +185,22 @@ export class DonhangService {
       orderBy: { createdAt: 'desc' },
     });
     const Sanphams = await this.prisma.sanpham.findMany();
-    const result = donhangs.flatMap((v: any) => {
-      console.log(v);
-      const ListSP = v?.khachhang?.banggia?.sanpham || Sanphams;  
+    console.log('Sanphams', Sanphams[0]);
+
+    const result = donhangs.flatMap((v: any) => {     
       const orderItems = v.sanpham.map((v1: any) => {
-        const product = ListSP.find((sp: any) => sp.id === v1.idSP);
-        const giaban = product?.giaban || 0;
-        const vat = product?.vat || 0;
-        const thanhtiensauvat = v1.slgiao * giaban * (1 + vat / 100);
-        
+        const product = Sanphams.find((sp: any) => sp.id === v1.idSP);
+        const giaban = v?.khachhang?.banggia?.sanpham.find((sp: any) => sp.id === v1.idSP)?.giaban || product?.giaban || 0;
+        const vat:any = product?.vat || 0;
+        const thanhtiensauvat = v1.slgiao * giaban * (1 + vat / 100);     
         return {
           ngay: moment(v.ngaygiao).format('DD/MM/YYYY'),
           tenkhachhang: v.khachhang?.name,
           makhachhang: v.khachhang?.makh,
           madonhang: v.madonhang,
-          tenhang: product?.title,
-          mahang: product?.masp,
-          dvt: product?.dvt,
+          tenhang: product?.title||'',
+          mahang: product?.masp||'',
+          dvt: product?.dvt||'',
           soluong: v1.slgiao,
           dongia: giaban,
           thanhtientruocvat: v1.slgiao * giaban,
