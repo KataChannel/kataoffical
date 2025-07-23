@@ -3,22 +3,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertData = convertData;
 exports.removeVietnameseAccents = removeVietnameseAccents;
 const client_1 = require("@prisma/client");
-const dulieu_1 = require("./migrations/dulieu");
+const fs = require('fs');
+const path = require('path');
 const prisma = new client_1.PrismaClient();
-const dulieus = dulieu_1.bangiakhachahng;
 async function main() {
-    const tonKhos = await prisma.tonKho.findMany({
-        select: { id: true, slton: true, slchonhap: true, slchogiao: true },
-    });
-    for (const tonKho of tonKhos) {
-        await prisma.tonKho.update({
-            where: { id: tonKho.id },
-            data: {
-                slchonhap: 0,
-                slton: 0,
-                slchogiao: 0,
-            },
-        });
+    try {
+        const dh18Data = JSON.parse(fs.readFileSync(path.join(__dirname, 'dh18.json'), 'utf-8'));
+        const dhsp = JSON.parse(fs.readFileSync(path.join(__dirname, 'dhsp.json'), 'utf-8'));
+        const dhspMap = new Map(dhsp.map(dh => [dh.donhangId, dh]));
+        const updatePromises = [];
+        for (const donhangId of dh18Data) {
+            const dh = dhspMap.get(donhangId);
+            if (!dh) {
+                console.warn(`⚠️ Không tìm thấy donhang với ID: ${donhangId}`);
+                continue;
+            }
+            updatePromises.push(prisma.donhangsanpham.update({
+                where: { id: dh.id },
+                data: {
+                    sldat: dh.slgiao,
+                    slgiao: dh.slgiao,
+                    slnhan: dh.slnhan,
+                }
+            }));
+        }
+        await prisma.$transaction(updatePromises);
+        console.log(`✅ Hoàn thành cập nhật ${updatePromises.length} bản ghi từ dh18.json`);
+    }
+    catch (error) {
+        console.error('❌ Lỗi khi cập nhật dữ liệu:', error);
+        throw error;
     }
 }
 main()

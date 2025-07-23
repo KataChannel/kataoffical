@@ -145,6 +145,9 @@
                     @case ('updatedAt') {
                     <span>{{item[column]|date:'dd/MM/yyyy'}}</span>
                     }
+                    @case ('ngaygiao') {
+                    <span>{{item[column]|date:'dd/MM/yyyy'}}</span>
+                    }
                     @case ('haohut') {
                     <span>{{item[column]}}%</span>
                     }
@@ -182,8 +185,8 @@
             </span>
             }
             @case ('ngaygiao') {
-            <span class="max-w-40 line-clamp-4 text-xs">
-              {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
+            <span class="max-w-40 line-clamp-4">
+              {{ row[column]|date:'dd/MM/yyyy'}}
             </span>
             }
             @case ('khachhang') {
@@ -191,9 +194,50 @@
               {{ row[column].name}}
             </span>
             }
+
             @case ('sanpham') {
             <span class="max-w-40 line-clamp-4">
               {{ row[column].length }}
+            </span>
+            }
+            @case ('dvt') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ row[column] }}
+            </span>
+            }
+            @case ('soluong') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ row[column] | number:'1.0-2' }}
+            </span>
+            }
+            @case ('dongia') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ row[column] | number:'1.0-2' }}
+            </span>
+            }
+            @case ('thanhtientruocvat') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ row[column] | number:'1.0-2' }}
+            </span>
+            }
+            @case ('vat') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ row[column] | number:'1.0-2' }}
+            </span>
+            }
+            @case ('dongiavathoadon') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ row[column] | number:'1.0-2' }}
+            </span>
+            }
+            @case ('thanhtiensauvat') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ row[column] | number:'1.0-2' }}
+            </span>
+            }
+            @case ('tongtiensauvat') {
+            <span class="max-w-40 line-clamp-4 text-end">
+              {{ row[column] | number:'1.0-2' }}
             </span>
             }
             @case ('isActive') {

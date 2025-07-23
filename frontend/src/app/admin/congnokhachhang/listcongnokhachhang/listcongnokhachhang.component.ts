@@ -77,7 +77,7 @@ export class ListcongnokhachhangComponent {
   isExporting = false;
   
   displayedColumns: string[] = [
-    'ngay',
+    'ngaygiao',
     'makhachhang',
     'tenkhachhang',
     'madonhang',
@@ -91,10 +91,10 @@ export class ListcongnokhachhangComponent {
     'dongiavathoadon',
     'thanhtiensauvat',
     'ghichu',
-    'tongtiensauthue',
+    'tongtiensauvat',
   ];
   ColumnName: any = {
-    ngay: 'Ngày Giao',
+    ngaygiao: 'Ngày Giao',
     makhachhang: 'Mã Khách Hàng',
     tenkhachhang: 'Tên Khách Hàng',
     madonhang: 'Mã Đơn Hàng',
@@ -108,7 +108,7 @@ export class ListcongnokhachhangComponent {
     dongiavathoadon: 'Đơn Giá VAT',
     thanhtiensauvat: 'Thành Tiền Sau VAT',
     ghichu: 'Ghi Chú',
-    tongtiensauthue: 'Tổng Tiền Sau Thuế',
+    tongtiensauvat: 'Tổng Tiền Sau Thuế',
   };
 
 

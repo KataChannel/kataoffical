@@ -1034,8 +1034,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72816, hash: '38fe06d8179330ba503df8fd4051a227f43e35cb79e6e4497d8cf8cbd4c3265f', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24107, hash: 'ae42786cc7218eaa37f81675dc1a48e0e117abb08d402515c999aa4c9bedc9f4', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 72816, hash: '964810632cfc2f8614fc6ec116d534ab40b485dedfdd6ee926c497f80a917a9a', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24107, hash: '5a50c82908df023858ebedc768e4214c89481eb59c2571f665d181778f1efbb7', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-MEELTE5P.css': {size: 149756, hash: 'FLRECYc0lcM', text: () => import('./assets-chunks/styles-MEELTE5P_css.mjs').then(m => m.default)}
   },
 };
