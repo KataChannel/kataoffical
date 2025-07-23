@@ -91,7 +91,7 @@
                 </div>
                 
                 <!-- Main Statistics Cards -->
-                <div class="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-6">
+                <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
                     <!-- Tổng Đơn Hàng -->
                     <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
                         <div class="flex items-center justify-between">
@@ -127,11 +127,28 @@
                         </div>
                     </div>
 
-                    <!-- Đặt Hàng -->
-                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
+                    <!-- Doanh Thu -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-gray-600">Đặt Hàng</p>
+                                <p class="text-sm font-medium text-gray-600">Doanh Thu</p>
+                                <p class="text-2xl font-bold text-gray-900">{{formatCurrency(dashboardData.revenue?.donhang || 0)}}</p>
+                                <p class="text-sm text-gray-500 mt-2">Từ đơn hàng</p>
+                            </div>
+                            <div class="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <mat-icon class="text-purple-600">monetization_on</mat-icon>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-6">
+                    <!-- Tổng Đơn Hàng -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Tổng Đặt Hàng</p>
                                 <p class="text-3xl font-bold text-gray-900">{{dashboardData.dathang?.total | number}}</p>
                                 <div class="flex items-center mt-2">
                                     <span [class]="getChangeColor(getPercentageChange(dashboardData.dathang?.total, dashboardData.dathang?.previousTotal))"
@@ -142,19 +159,34 @@
                                     <span class="text-sm text-gray-500 ml-2">vs kỳ trước</span>
                                 </div>
                             </div>
-                            <div class="h-12 w-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                                <mat-icon class="text-yellow-600">assignment</mat-icon>
+                            <div class="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <mat-icon class="text-blue-600">shopping_cart</mat-icon>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Sản Phẩm Đặt Hàng -->
+                    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Loại Sản Phẩm</p>
+                                <p class="text-3xl font-bold text-gray-900">{{dashboardData.dathang?.sanphamCount | number}}</p>
+                                <p class="text-sm text-gray-500 mt-2">Trong đặt hàng</p>
+                            </div>
+                            <div class="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <mat-icon class="text-green-600">inventory_2</mat-icon>
+                            </div>
+                        </div>
+                    </div>
+
 
                     <!-- Doanh Thu -->
                     <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm font-medium text-gray-600">Doanh Thu</p>
-                                <p class="text-2xl font-bold text-gray-900">{{formatCurrency(dashboardData.revenue?.donhang || 0)}}</p>
-                                <p class="text-sm text-gray-500 mt-2">Từ đơn hàng</p>
+                                <p class="text-sm font-medium text-gray-600">Phải Trả</p>
+                                <p class="text-2xl font-bold text-gray-900">{{formatCurrency(dashboardData.revenue?.dathang || 0)}}</p>
+                                <p class="text-sm text-gray-500 mt-2">Từ đặt hàng</p>
                             </div>
                             <div class="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
                                 <mat-icon class="text-purple-600">monetization_on</mat-icon>
