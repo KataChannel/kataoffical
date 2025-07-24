@@ -3,13 +3,6 @@ import { bangiakhachahng } from './migrations/dulieu';
 const fs = require('fs');
 const path = require('path');
 
-interface DonHangSanPham {
-  id: string | number;
-  donhangId: string | number;
-  slgiao: number;
-  slnhan: number;
-}
-
 const prisma = new PrismaClient();
 
 async function main() {
@@ -20,7 +13,7 @@ async function main() {
     );
     
     // Đọc dữ liệu từ file dhsp.json
-    const dhsp: DonHangSanPham[] = JSON.parse(
+    const dhsp: any[] = JSON.parse(
       fs.readFileSync(path.join(__dirname, 'dhsp.json'), 'utf-8')
     );
 
@@ -31,23 +24,27 @@ async function main() {
     const updatePromises:any[] = [];
 
     for (const donhangId of dh18Data) {
-      const dh: any = dhspMap.get(donhangId);
+      // Lọc tất cả các donhangsanpham có cùng donhangId
+      const dhspItems = dhsp.filter(item => item.donhangId === donhangId);
       
-      if (!dh) {
-        console.warn(`⚠️ Không tìm thấy donhang với ID: ${donhangId}`);
-        continue;
+      if (dhspItems.length === 0) {
+      console.warn(`⚠️ Không tìm thấy donhangsanpham với donhangId: ${donhangId}`);
+      continue;
       }
 
+      // Cập nhật từng donhangsanpham
+      for (const item of dhspItems) {
       updatePromises.push(
         prisma.donhangsanpham.update({
-          where: { id: dh.id },
+          where: { id: item.id },
           data: {
-            sldat: dh.slgiao,
-            slgiao: dh.slgiao,
-            slnhan: dh.slnhan,
+            sldat: item.slgiao,
+            slgiao: item.slgiao,
+            slnhan: item.slnhan,
           }
         })
       );
+      }
     }
 
     // Thực hiện batch update

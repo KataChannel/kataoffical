@@ -14,7 +14,6 @@ const common_1 = require("@nestjs/common");
 const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
-const xuatnhapton_utils_1 = require("../shared/utils/xuatnhapton.utils");
 let PhieukhoService = class PhieukhoService {
     constructor(prisma, _ImportdataService) {
         this.prisma = prisma;
@@ -84,7 +83,8 @@ let PhieukhoService = class PhieukhoService {
                 title: item.sanpham.title,
             })),
         }));
-        return (0, xuatnhapton_utils_1.convertXuatnhapton)(tranData);
+        console.log(tranData);
+        return tranData;
     }
     async findAll() {
         const phieuKhos = await this.prisma.phieuKho.findMany({

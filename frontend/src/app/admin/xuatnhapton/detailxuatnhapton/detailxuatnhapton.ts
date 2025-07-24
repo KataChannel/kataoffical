@@ -1,37 +1,37 @@
-import { AfterViewInit, Component, computed, effect, inject, TemplateRef, ViewChild } from '@angular/core';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort, MatSortModule } from '@angular/material/sort';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectChange, MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormsModule } from '@angular/forms';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import moment from 'moment';
-import { PhieukhoService } from '../phieukho/phieukho.service';
-import { KhoService } from '../kho/kho.service';
-import { removeVietnameseAccents } from '../../shared/utils/texttransfer.utils';
-import { SanphamService } from '../sanpham/sanpham.service';
-import { readExcelFile, readExcelFileNoWorker, writeExcelFileWithSheets, writeExcelMultiple } from '../../shared/utils/exceldrive.utils';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { memoize, Debounce } from '../../shared/utils/decorators';
-import { DathangService } from '../dathang/dathang.service';
-import { DonhangService } from '../donhang/donhang.service';
-import { TrangThaiDon } from '../../shared/utils/trangthai';
-import { DetailxuatnhaptonComponent } from './detailxuatnhapton/detailxuatnhapton';
+import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
+import { CommonModule } from "@angular/common";
+import { Component, ViewChild, inject, TemplateRef, EventEmitter, Output } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { MatButtonModule } from "@angular/material/button";
+import { MatDatepickerModule } from "@angular/material/datepicker";
+import { MatDialogModule, MatDialog } from "@angular/material/dialog";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatIconModule } from "@angular/material/icon";
+import { MatInputModule } from "@angular/material/input";
+import { MatMenuModule } from "@angular/material/menu";
+import { MatPaginatorModule, MatPaginator } from "@angular/material/paginator";
+import { MatSelectModule } from "@angular/material/select";
+import { MatSidenavModule, MatDrawer } from "@angular/material/sidenav";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatSortModule, MatSort } from "@angular/material/sort";
+import { MatTableModule, MatTableDataSource } from "@angular/material/table";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import { RouterOutlet } from "@angular/router";
+import moment from "moment";
+import { memoize, Debounce } from "../../../shared/utils/decorators";
+import { writeExcelMultiple, readExcelFileNoWorker } from "../../../shared/utils/exceldrive.utils";
+import { removeVietnameseAccents } from "../../../shared/utils/texttransfer.utils";
+import { TrangThaiDon } from "../../../shared/utils/trangthai";
+import { DathangService } from "../../dathang/dathang.service";
+import { DonhangService } from "../../donhang/donhang.service";
+import { KhoService } from "../../kho/kho.service";
+import { PhieukhoService } from "../../phieukho/phieukho.service";
+import { SanphamService } from "../../sanpham/sanpham.service";
+
 @Component({
-  selector: 'app-xuatnhapton',
-  templateUrl: './xuatnhapton.component.html',
-  styleUrls: ['./xuatnhapton.component.scss'],
+  selector: 'app-detailxuatnhapton',
+  templateUrl: './detailxuatnhapton.html',
+  styleUrls: ['./detailxuatnhapton.scss'],
   imports: [
     MatFormFieldModule,
     MatInputModule,
@@ -48,13 +48,12 @@ import { DetailxuatnhaptonComponent } from './detailxuatnhapton/detailxuatnhapto
     FormsModule,
     MatTooltipModule,
     MatDatepickerModule,
-    MatDialogModule,
-    DetailxuatnhaptonComponent
+    MatDialogModule
   ],
   // providers:[provideNativeDateAdapter()]
 })
-export class XuatnhaptonComponent {
-  isDexuat: boolean = false;
+export class DetailxuatnhaptonComponent {
+  @Output() DexuatEmit = new EventEmitter<any>();
   Detail: any = {};
   displayedColumns: string[] = [
     'title',
@@ -92,9 +91,7 @@ export class XuatnhaptonComponent {
   private _DonhangService: DonhangService = inject(DonhangService);
   private _KhoService: KhoService = inject(KhoService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
-  private _router: Router = inject(Router);
   Xuatnhapton:any = this._PhieukhoService.ListPhieukho;
-  ListPhieukho:any = this._PhieukhoService.ListPhieukho;
   dataSource = new MatTableDataSource([]);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
@@ -140,9 +137,6 @@ export class XuatnhaptonComponent {
 
   async LoadDondathang()
   {
-
-    await this._PhieukhoService.getxuatnhapton(this.SearchParams)
-    console.log(this.ListPhieukho());
     const ListSLChogiao = await this._DonhangService.getSLChogiao(this.SearchParams);
     const ListSLChonhap = await this._DathangService.getSLChonhap(this.SearchParams);
     this.dataSource.data.forEach((v: any) => {
@@ -165,12 +159,7 @@ export class XuatnhaptonComponent {
   
 
 
-  async ngOnInit(): Promise<void> {   
-       await this._PhieukhoService.getxuatnhapton(this.SearchParams)
-    console.log(this.ListPhieukho());
-    
-    
-    
+  async ngOnInit(): Promise<void> {    
     await this._SanphamService.getAllSanpham() 
     this._KhoService.getTonKho('1', '1000').then((res) => {
     this.Xuatnhapton.set(res.data);
@@ -445,6 +434,9 @@ export class XuatnhaptonComponent {
     return (
       items?.reduce((sum: any, item: any) => sum + (Number(item?.sanpham[fieldTong]) || 0), 0) || 0
     );
+  }
+  gotoDexuat(){
+    this.DexuatEmit.emit(false);
   }
 
 }

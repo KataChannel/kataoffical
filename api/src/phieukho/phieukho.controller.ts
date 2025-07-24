@@ -16,12 +16,13 @@ export class PhieukhoController {
   findAll() {
     return this.phieukhoService.findAll();
   }
+
   @Post('xuatnhapton')
   @Audit({entity: 'Xuat Nhap Ton', action: AuditAction.CREATE, includeResponse: true})
   xuatnhapton(@Body() query: any) {
     return this.phieukhoService.xuatnhapton(query);
   }
-
+  
   @Get('findid/:id')
   findOne(@Param('id') id: string) {
     return this.phieukhoService.findOne(id);

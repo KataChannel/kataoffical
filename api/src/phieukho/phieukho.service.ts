@@ -89,8 +89,14 @@ export class PhieukhoService {
         title: item.sanpham.title,
       })),
     }));
-    return convertXuatnhapton(tranData);
+
+    console.log(tranData);
+    // return convertXuatnhapton(tranData);
+    return tranData
   }
+
+
+
   async findAll() {
     const phieuKhos = await this.prisma.phieuKho.findMany({
       where: {},

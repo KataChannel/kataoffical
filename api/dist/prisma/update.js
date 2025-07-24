@@ -13,19 +13,21 @@ async function main() {
         const dhspMap = new Map(dhsp.map(dh => [dh.donhangId, dh]));
         const updatePromises = [];
         for (const donhangId of dh18Data) {
-            const dh = dhspMap.get(donhangId);
-            if (!dh) {
-                console.warn(`⚠️ Không tìm thấy donhang với ID: ${donhangId}`);
+            const dhspItems = dhsp.filter(item => item.donhangId === donhangId);
+            if (dhspItems.length === 0) {
+                console.warn(`⚠️ Không tìm thấy donhangsanpham với donhangId: ${donhangId}`);
                 continue;
             }
-            updatePromises.push(prisma.donhangsanpham.update({
-                where: { id: dh.id },
-                data: {
-                    sldat: dh.slgiao,
-                    slgiao: dh.slgiao,
-                    slnhan: dh.slnhan,
-                }
-            }));
+            for (const item of dhspItems) {
+                updatePromises.push(prisma.donhangsanpham.update({
+                    where: { id: item.id },
+                    data: {
+                        sldat: item.slgiao,
+                        slgiao: item.slgiao,
+                        slnhan: item.slnhan,
+                    }
+                }));
+            }
         }
         await prisma.$transaction(updatePromises);
         console.log(`✅ Hoàn thành cập nhật ${updatePromises.length} bản ghi từ dh18.json`);
