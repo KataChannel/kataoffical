@@ -2,18 +2,33 @@
     <mat-drawer #drawer class="flex flex-col !w-full h-full" [position]="'end'" mode="over">
         <router-outlet></router-outlet>
     </mat-drawer>
-    <div class="flex flex-col space-y-2 h-screen-14 w-full p-2">
-        <div class="flex flex-row space-x-2 items-center">      
+    
+    <!-- Full-page loading overlay -->
+    <div *ngIf="isLoading" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 shadow-xl flex flex-col items-center space-y-4">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <span class="text-gray-700 font-medium">Đang tải dữ liệu...</span>
+        </div>
+    </div>
+
+    <div class="flex flex-col space-y-2 h-screen-14 w-full p-2">        <div class="flex flex-row space-x-2 items-center">      
                 <div class="relative">
                     <input type="text" (keyup)="applyFilter($event)"
                         placeholder="Tìm Kiếm..."
-                        class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                        [disabled]="isSearching"
+                        class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40 disabled:opacity-50 disabled:cursor-not-allowed">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <span class="material-symbols-outlined text-gray-500">search</span>
+                        <div *ngIf="isSearching" class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        <span *ngIf="!isSearching" class="material-symbols-outlined text-gray-500">search</span>
                     </div>
                 </div>
-               <span (click)="gotoDexuat()" class="cursor-pointer p-2 rounded-lg border hover:bg-slate-50">Xuất Nhập Tôn Theo Ngày</span>                 
+               <span (click)="gotoDexuat()" 
+                     [ngClass]="{'opacity-50 cursor-not-allowed': isLoading, 'cursor-pointer': !isLoading}"
+                     class="p-2 rounded-lg border hover:bg-slate-50">
+                   Xuất Nhập Tôn Theo Ngày
+               </span>                 
                 <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu"
+                    [disabled]="isLoading"
                     aria-label="Example icon-button with a menu">
                     <mat-icon>tune</mat-icon>
                 </button>
@@ -34,8 +49,15 @@
                         }
                     </div>
                 </mat-menu>
+            </div>        <div class="w-full overflow-auto relative">
+            <!-- Table loading overlay -->
+            <div *ngIf="isSearching && !isLoading" class="absolute inset-0 bg-white bg-opacity-80 backdrop-blur-sm flex items-center justify-center z-10">
+                <div class="flex flex-col items-center space-y-2">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span class="text-sm text-gray-600">Đang tìm kiếm...</span>
+                </div>
             </div>
-        <div class="w-full overflow-auto">
+            
             <table class="excelstyle !border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
@@ -163,15 +185,21 @@
                         }
                     </td>
                 </ng-container>
-                }
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                }                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                 <tr class="mat-row" *matNoDataRow>
-                    <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
+                    <td class="mat-cell p-8 text-center" [attr.colspan]="displayedColumns.length">
+                        <div class="flex flex-col items-center space-y-3">
+                            <span class="material-symbols-outlined text-gray-400 text-4xl">search_off</span>
+                            <div class="text-gray-500">
+                                <div class="font-medium">Không tìm thấy dữ liệu</div>
+                                <div class="text-sm">Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm</div>
+                            </div>
+                        </div>
+                    </td>
                 </tr>
-            </table>
-        </div>
-        <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
+            </table>        </div>
+        <mat-paginator [pageSizeOptions]="[10, 25, 100]" [ngClass]="{'opacity-50': isLoading || isSearching}"></mat-paginator>
     </div>
 </mat-drawer-container>
 
@@ -218,15 +246,14 @@
                 </tr>
                 <tr class="bg-gray-100 font-bold">
                     <td class="border border-gray-300 px-4 py-2" colspan="5">Tổng cộng:</td>
-                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDathang, 'sldat')}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDathang, 'slnhan')}}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDathang, 'sldat')}}</td>                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDathang, 'slnhan')}}</td>
                     <td class="border border-gray-300 px-4 py-2"></td>
                 </tr>
             </tbody>
         </table>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-        <button mat-button mat-dialog-close>Đóng</button>
+        <button mat-button mat-dialog-close [disabled]="isLoading">Đóng</button>
     </mat-dialog-actions>
 
 </ng-template>
@@ -273,15 +300,14 @@
                 </tr>
                 <tr class="bg-gray-100 font-bold">
                     <td class="border border-gray-300 px-4 py-2" colspan="5">Tổng cộng:</td>
-                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDonhang, 'sldat')}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDonhang, 'slnhan')}}</td>
+                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDonhang, 'sldat')}}</td>                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDonhang, 'slnhan')}}</td>
                     <td class="border border-gray-300 px-4 py-2"></td>
                 </tr>
             </tbody>
         </table>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
-        <button mat-button mat-dialog-close>Đóng</button>
+        <button mat-button mat-dialog-close [disabled]="isLoading">Đóng</button>
     </mat-dialog-actions>
 
 </ng-template>

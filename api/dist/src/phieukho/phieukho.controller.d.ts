@@ -8,11 +8,6 @@ export declare class PhieukhoController {
             sanpham: {
                 id: string;
                 title: string;
-                ghichu: string | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                soluong: import("@prisma/client/runtime/library").Decimal | null;
                 title2: string | null;
                 slug: string | null;
                 masp: string;
@@ -23,16 +18,21 @@ export declare class PhieukhoController {
                 hinhanh: string | null;
                 loadpoint: number | null;
                 vat: import("@prisma/client/runtime/library").Decimal | null;
+                soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: number;
+                ghichu: string | null;
                 order: number | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
             };
             id: string;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
             sanphamId: string;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             phieuKhoId: string;
         }[];
         kho: {
@@ -42,24 +42,24 @@ export declare class PhieukhoController {
             createdAt: Date;
             updatedAt: Date;
             name: string;
-            makho: string | null;
             diachi: string | null;
             sdt: string | null;
+            makho: string | null;
             congtyId: string | null;
         } | null;
         id: string;
         title: string | null;
-        maphieu: string | null;
-        madonhang: string | null;
-        madncc: string | null;
-        madathang: string | null;
-        ngay: Date | null;
-        type: string | null;
-        khoId: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        type: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        maphieu: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        khoId: string | null;
     }[]>;
     xuatnhapton(query: any): Promise<{
         khoname: string;
@@ -73,6 +73,15 @@ export declare class PhieukhoController {
         }[];
     }[]>;
     findOne(id: string): Promise<{
+        sanpham: {
+            id: string;
+            soluong: import("@prisma/client/runtime/library").Decimal;
+            ghichu: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            sanphamId: string;
+            phieuKhoId: string;
+        }[];
         kho: {
             id: string;
             ghichu: string | null;
@@ -80,73 +89,64 @@ export declare class PhieukhoController {
             createdAt: Date;
             updatedAt: Date;
             name: string;
-            makho: string | null;
             diachi: string | null;
             sdt: string | null;
+            makho: string | null;
             congtyId: string | null;
         } | null;
-        sanpham: {
-            id: string;
-            ghichu: string | null;
-            createdAt: Date;
-            updatedAt: Date;
-            sanphamId: string;
-            soluong: import("@prisma/client/runtime/library").Decimal;
-            phieuKhoId: string;
-        }[];
     } & {
         id: string;
         title: string | null;
-        maphieu: string | null;
-        madonhang: string | null;
-        madncc: string | null;
-        madathang: string | null;
-        ngay: Date | null;
-        type: string | null;
-        khoId: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        type: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        maphieu: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        khoId: string | null;
     }>;
     update(id: string, updatePhieukhoDto: any): Promise<{
         sanpham: {
             id: string;
+            soluong: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             createdAt: Date;
             updatedAt: Date;
             sanphamId: string;
-            soluong: import("@prisma/client/runtime/library").Decimal;
             phieuKhoId: string;
         }[];
     } & {
         id: string;
         title: string | null;
-        maphieu: string | null;
-        madonhang: string | null;
-        madncc: string | null;
-        madathang: string | null;
-        ngay: Date | null;
-        type: string | null;
-        khoId: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        type: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        maphieu: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        khoId: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
         title: string | null;
-        maphieu: string | null;
-        madonhang: string | null;
-        madncc: string | null;
-        madathang: string | null;
-        ngay: Date | null;
-        type: string | null;
-        khoId: string | null;
         ghichu: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        type: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        maphieu: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        khoId: string | null;
     }>;
 }

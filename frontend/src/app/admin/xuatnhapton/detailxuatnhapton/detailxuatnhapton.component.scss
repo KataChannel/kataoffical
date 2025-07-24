@@ -1,0 +1,102 @@
+// Loading states and animations
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+// Loading overlay
+.loading-overlay {
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+}
+
+// Button loading states
+.loading-button {
+  position: relative;
+  color: transparent !important;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    color: white;
+  }
+}
+
+// Disabled states
+.disabled-state {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+// Table loading overlay
+.table-loading-overlay {
+  backdrop-filter: blur(2px);
+  z-index: 10;
+}
+
+// Enhanced empty state
+.empty-state {
+  color: #6b7280;
+  
+  .material-symbols-outlined {
+    font-size: 48px;
+    color: #d1d5db;
+  }
+}
+
+// Hover effects with loading consideration
+.hoverable:not(.disabled-state):hover {
+  background-color: #f8fafc;
+  transition: background-color 0.2s ease;
+}
+
+// Focus states for accessibility
+.focusable:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+// Pagination loading state
+.paginator-loading {
+  transition: opacity 0.3s ease;
+}
+
+// Loading spinner
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+// Search input loading state
+.search-input-loading {
+  background-color: #f9fafb;
+  
+  input {
+    background-color: transparent;
+  }
+}
+
+// Pulse animation for loading elements
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+// Smooth transitions
+.smooth-transition {
+  transition: all 0.3s ease;
+}

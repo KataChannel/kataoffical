@@ -105,10 +105,16 @@ export class DetailxuatnhaptonComponent {
     { id: 2, Title: '1 Tuần', value: 'week' },
     { id: 3, Title: '1 Tháng', value: 'month' },
     { id: 4, Title: '1 Năm', value: 'year' },
-  ];
-  Chonthoigian: any = 'day';
+  ];  Chonthoigian: any = 'day';
   isSearch: boolean = false;
   ListKho: any = [];
+  
+  // Loading states
+  isLoading: boolean = false;
+  isSearching: boolean = false;
+  isExporting: boolean = false;
+  isImporting: boolean = false;
+  
   constructor() {
     this.displayedColumns.forEach(column => {
       this.filterValues[column] = '';
@@ -134,47 +140,55 @@ export class DetailxuatnhaptonComponent {
       this.dataSource?.paginator?.firstPage();
     }
   }
-
   async LoadDondathang()
   {
-    const ListSLChogiao = await this._DonhangService.getSLChogiao(this.SearchParams);
-    const ListSLChonhap = await this._DathangService.getSLChonhap(this.SearchParams);
-    this.dataSource.data.forEach((v: any) => {
-      const SLChogiao = ListSLChogiao.find((v1: any) => v1.idSP === v.sanphamId);
-      if (SLChogiao) {
-        v.slchogiaott = SLChogiao.slchogiaott;
-      } else {
-        v.slchogiaott = 0;
-      }
-      const SLChonhap = ListSLChonhap.find((v1: any) => v1.idSP === v.sanphamId);
-      if (SLChonhap) {
-        v.slchonhaptt = SLChonhap.slchonhaptt;
-      } else {
-        v.slchonhaptt = 0;
-      }
-    });
-    this.dataSource.data = this.dataSource.data.filter((v: any) => v.slchogiaott > 0 || v.slchonhaptt > 0);
-    this.dataSource.sort = this.sort;
+    this.isSearching = true;
+    try {
+      const ListSLChogiao = await this._DonhangService.getSLChogiao(this.SearchParams);
+      const ListSLChonhap = await this._DathangService.getSLChonhap(this.SearchParams);
+      this.dataSource.data.forEach((v: any) => {
+        const SLChogiao = ListSLChogiao.find((v1: any) => v1.idSP === v.sanphamId);
+        if (SLChogiao) {
+          v.slchogiaott = SLChogiao.slchogiaott;
+        } else {
+          v.slchogiaott = 0;
+        }
+        const SLChonhap = ListSLChonhap.find((v1: any) => v1.idSP === v.sanphamId);
+        if (SLChonhap) {
+          v.slchonhaptt = SLChonhap.slchonhaptt;
+        } else {
+          v.slchonhaptt = 0;
+        }
+      });
+      this.dataSource.data = this.dataSource.data.filter((v: any) => v.slchogiaott > 0 || v.slchonhaptt > 0);
+      this.dataSource.sort = this.sort;
+    } finally {
+      this.isSearching = false;
+    }
   }
   
 
-
-  async ngOnInit(): Promise<void> {    
-    await this._SanphamService.getAllSanpham() 
-    this._KhoService.getTonKho('1', '1000').then((res) => {
-    this.Xuatnhapton.set(res.data);
-    this.dataSource.data = this.Xuatnhapton();
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.initializeColumns();
-    this.setupDrawer();
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
-    });
-    this.CountItem = this.Xuatnhapton().length;
+  async ngOnInit(): Promise<void> {
+    this.isLoading = true;
+    try {
+      await this._SanphamService.getAllSanpham() 
+      this._KhoService.getTonKho('1', '1000').then((res) => {
+        this.Xuatnhapton.set(res.data);
+        this.dataSource.data = this.Xuatnhapton();
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        this.initializeColumns();
+        this.setupDrawer();
+        this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+        this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+        this.paginator._intl.previousPageLabel = 'Về Trước';
+        this.paginator._intl.firstPageLabel = 'Trang Đầu';
+        this.paginator._intl.lastPageLabel = 'Trang Cuối';
+      });
+      this.CountItem = this.Xuatnhapton().length;
+    } finally {
+      this.isLoading = false;
+    }
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -304,97 +318,105 @@ export class DetailxuatnhaptonComponent {
     this.dataSource.sort = this.sort;    
     menu.closeMenu();
   }
-
   async ExportExcel(data: any, title: any) {
-   await this._SanphamService.getAllSanpham() 
-    const SP = this._SanphamService.ListSanpham().map((v: any) => ({
-      subtitle: v.subtitle,
-      masp: v.masp,
-      title: v.title,
-      dvt: v.dvt,
-    }));
-    const XNT = this.Xuatnhapton().map((v: any) => ({
-      masp: v.masp,
-      title: v.title,
-      dvt: v.dvt,
-      slton: v.slton,
-    }))
-    writeExcelMultiple({SP, XNT}, title);
+    this.isExporting = true;
+    try {
+      await this._SanphamService.getAllSanpham() 
+      const SP = this._SanphamService.ListSanpham().map((v: any) => ({
+        subtitle: v.subtitle,
+        masp: v.masp,
+        title: v.title,
+        dvt: v.dvt,
+      }));
+      const XNT = this.Xuatnhapton().map((v: any) => ({
+        masp: v.masp,
+        title: v.title,
+        dvt: v.dvt,
+        slton: v.slton,
+      }))
+      writeExcelMultiple({SP, XNT}, title);
+    } finally {
+      this.isExporting = false;
+    }
   }
-
   async ImporExcel(event: any) {
-    const files = Array.from(event.target.files) as File[];
-    const data = await readExcelFileNoWorker(files[0], 'XNT');
+    this.isImporting = true;
+    try {
+      const files = Array.from(event.target.files) as File[];
+      const data = await readExcelFileNoWorker(files[0], 'XNT');
 
-    const phieuNhapDetails: any[] = [];
-    const phieuXuatDetails: any[] = [];
+      const phieuNhapDetails: any[] = [];
+      const phieuXuatDetails: any[] = [];
 
-    data.forEach((v: any) => {
-      const exitItem = this.Xuatnhapton().find((item: any) => item.masp === v.masp);
-      if (exitItem) {
-        if (v.slton > exitItem.slton) {
-          // Tính chênh lệch cho phiếu nhập
-          phieuNhapDetails.push({
-          sanphamId:this._SanphamService.ListSanpham().find((item:any)=>item.masp===v.masp).id, 
-          soluong: v.slton - exitItem.slton,
-          // thêm các trường cần thiết
-          });
-        } else if (v.slton < exitItem.slton) {
-          // Tính chênh lệch cho phiếu xuất
-          phieuXuatDetails.push({
-          sanphamId:this._SanphamService.ListSanpham().find((item:any)=>item.masp===v.masp).id,
-          soluong: exitItem.slton - v.slton,
-          // thêm các trường cần thiết
-          });
+      data.forEach((v: any) => {
+        const exitItem = this.Xuatnhapton().find((item: any) => item.masp === v.masp);
+        if (exitItem) {
+          if (v.slton > exitItem.slton) {
+            // Tính chênh lệch cho phiếu nhập
+            phieuNhapDetails.push({
+            sanphamId:this._SanphamService.ListSanpham().find((item:any)=>item.masp===v.masp).id, 
+            soluong: v.slton - exitItem.slton,
+            // thêm các trường cần thiết
+            });
+          } else if (v.slton < exitItem.slton) {
+            // Tính chênh lệch cho phiếu xuất
+            phieuXuatDetails.push({
+            sanphamId:this._SanphamService.ListSanpham().find((item:any)=>item.masp===v.masp).id,
+            soluong: exitItem.slton - v.slton,
+            // thêm các trường cần thiết
+            });
+          }
         }
-      }
-    });
+      });
 
-    if (phieuNhapDetails.length > 0) {
-      // Tạo phiếu nhập một lần với danh sách chi tiết
-      this._PhieukhoService.CreatePhieukho(
-        {
-        title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
-        type:'nhap',
-        sanpham: phieuNhapDetails, 
-        ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
-        ngay: moment()
-      });
-    }
-    if (phieuXuatDetails.length > 0) {
-      // Tạo phiếu xuất một lần với danh sách chi tiết
-      this._PhieukhoService.CreatePhieukho(
-        {
-        title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
-        type:'xuat',
-        sanpham: phieuXuatDetails, 
-        ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
-        ngay: moment()
-      });
-    }
-    if (phieuNhapDetails.length > 0) {
-      this._snackBar.open(`Điều chỉnh nhập kho với ${phieuNhapDetails.length} sản phẩm`, '', {
-          duration: 1000,
-          horizontalPosition: "end",
-          verticalPosition: "top",
-          panelClass: ['snackbar-success'],
+      if (phieuNhapDetails.length > 0) {
+        // Tạo phiếu nhập một lần với danh sách chi tiết
+        this._PhieukhoService.CreatePhieukho(
+          {
+          title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
+          type:'nhap',
+          sanpham: phieuNhapDetails, 
+          ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
+          ngay: moment()
+        });
+      }
+      if (phieuXuatDetails.length > 0) {
+        // Tạo phiếu xuất một lần với danh sách chi tiết
+        this._PhieukhoService.CreatePhieukho(
+          {
+          title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
+          type:'xuat',
+          sanpham: phieuXuatDetails, 
+          ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
+          ngay: moment()
+        });
+      }
+      if (phieuNhapDetails.length > 0) {
+        this._snackBar.open(`Điều chỉnh nhập kho với ${phieuNhapDetails.length} sản phẩm`, '', {
+            duration: 1000,
+            horizontalPosition: "end",
+            verticalPosition: "top",
+            panelClass: ['snackbar-success'],
+            });
+      }
+      if (phieuXuatDetails.length > 0) {
+        this._snackBar.open(`Điều chỉnh xuất kho với ${phieuXuatDetails.length} sản phẩm`, '', {
+            duration: 1000,
+            horizontalPosition: "end",
+            verticalPosition: "top",
+            panelClass: ['snackbar-success'],
           });
-    }
-    if (phieuXuatDetails.length > 0) {
-      this._snackBar.open(`Điều chỉnh xuất kho với ${phieuXuatDetails.length} sản phẩm`, '', {
-          duration: 1000,
-          horizontalPosition: "end",
-          verticalPosition: "top",
-          panelClass: ['snackbar-success'],
-        });
-    }
-    if (phieuNhapDetails.length === 0 && phieuXuatDetails.length === 0) {
-            this._snackBar.open('Kho không thay đổi', '', {
-          duration: 1000,
-          horizontalPosition: "end",
-          verticalPosition: "top",
-          panelClass: ['snackbar-success'],
-        });
+      }
+      if (phieuNhapDetails.length === 0 && phieuXuatDetails.length === 0) {
+              this._snackBar.open('Kho không thay đổi', '', {
+            duration: 1000,
+            horizontalPosition: "end",
+            verticalPosition: "top",
+            panelClass: ['snackbar-success'],
+          });
+      }
+    } finally {
+      this.isImporting = false;
     }
   }
 
