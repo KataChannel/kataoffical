@@ -14,6 +14,8 @@ export declare class khoService {
             haohut: number;
             goiy: number;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             sanphamId: string;
         }[];
         meta: {

@@ -53,6 +53,8 @@ export declare class DathangService {
             ghichu: string | null;
             TonKho: {
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 sanphamId: string;
                 slton: import("@prisma/client/runtime/library").Decimal;
                 slchogiao: import("@prisma/client/runtime/library").Decimal;

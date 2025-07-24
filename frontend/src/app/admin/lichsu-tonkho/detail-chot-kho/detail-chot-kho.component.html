@@ -1,0 +1,318 @@
+<!-- Detail Chot Kho Component -->
+<div class="detail-container" [class.loading]="isLoading()">
+  <!-- Header Section -->
+  <div class="detail-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>{{ isCreate() ? 'add' : 'inventory' }}</mat-icon>
+        {{ isCreate() ? 'Tạo chốt kho mới' : 'Chi tiết chốt kho' }}
+      </h1>
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" (click)="goBack()">Quản lý chốt kho</span>
+        <mat-icon>chevron_right</mat-icon>
+        <span class="breadcrumb-current">
+          {{ isCreate() ? 'Tạo mới' : detail().tenChotKho }}
+        </span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button 
+        mat-button 
+        (click)="goBack()"
+        class="back-button">
+        <mat-icon>arrow_back</mat-icon>
+        Quay lại
+      </button>
+    </div>
+  </div>
+
+  <!-- Content Section -->
+  <div class="detail-content">
+    <!-- Basic Information Card -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>info</mat-icon>
+          Thông tin chốt kho
+        </mat-card-title>
+        <div class="status-chip" *ngIf="!isCreate() && chiTietChotKho() && chiTietChotKho()!.trangThai">
+          <mat-chip-listbox>
+            <mat-chip 
+              [color]="getTrangThaiInfo(chiTietChotKho()!.trangThai!)?.color || 'primary'"
+              selected>
+              <mat-icon matChipAvatar>{{ getTrangThaiInfo(chiTietChotKho()!.trangThai!)?.icon || 'help' }}</mat-icon>
+              {{ getTrangThaiInfo(chiTietChotKho()!.trangThai!)?.label || 'Không xác định' }}
+            </mat-chip>
+          </mat-chip-listbox>
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        <form class="detail-form" (ngSubmit)="saveData()">
+          <div class="form-grid">
+            <!-- Mã chốt kho -->
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Mã chốt kho</mat-label>
+              <input 
+                matInput 
+                [(ngModel)]="detail().maChotKho"
+                name="maChotKho"
+                readonly>
+              <mat-icon matSuffix>qr_code</mat-icon>
+            </mat-form-field>
+
+            <!-- Tên chốt kho -->
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Tên chốt kho</mat-label>
+              <input 
+                matInput 
+                [(ngModel)]="detail().tenChotKho"
+                name="tenChotKho"
+                [readonly]="!canEdit()"
+                placeholder="Nhập tên chốt kho"
+                required>
+              <mat-icon matSuffix>title</mat-icon>
+            </mat-form-field>
+
+            <!-- Từ ngày -->
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Từ ngày</mat-label>
+              <input 
+                matInput 
+                [matDatepicker]="fromDatePicker"
+                [(ngModel)]="detail().tuNgay"
+                name="tuNgay"
+                [readonly]="!canEdit()"
+                required>
+              <mat-datepicker-toggle matIconSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #fromDatePicker></mat-datepicker>
+            </mat-form-field>
+
+            <!-- Đến ngày -->
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Đến ngày</mat-label>
+              <input 
+                matInput 
+                [matDatepicker]="toDatePicker"
+                [(ngModel)]="detail().denNgay"
+                name="denNgay"
+                [readonly]="!canEdit()"
+                required>
+              <mat-datepicker-toggle matIconSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #toDatePicker></mat-datepicker>
+            </mat-form-field>
+
+            <!-- Duration display -->
+            <div class="duration-display" *ngIf="detail().tuNgay && detail().denNgay">
+              <mat-icon>schedule</mat-icon>
+              <span>Thời gian: {{ calculateDuration() }}</span>
+            </div>
+
+            <!-- Ghi chú -->
+            <mat-form-field appearance="outline" class="form-field-full">
+              <mat-label>Ghi chú</mat-label>
+              <textarea 
+                matInput 
+                rows="3"
+                [(ngModel)]="detail().ghichu"
+                name="ghichu"
+                [readonly]="!canEdit()"
+                placeholder="Nhập ghi chú cho đợt chốt kho..."></textarea>
+              <mat-icon matSuffix>notes</mat-icon>
+            </mat-form-field>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Statistics Card (if viewing existing) -->
+    <mat-card class="stats-section" *ngIf="chiTietChotKho() && inventoryData.data.length > 0">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>analytics</mat-icon>
+          Thống kê tồn kho
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-icon products">
+              <mat-icon>inventory_2</mat-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getTotalProducts() }}</div>
+              <div class="stat-label">Tổng sản phẩm</div>
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-icon quantity">
+              <mat-icon>straighten</mat-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ getTotalQuantity() }}</div>
+              <div class="stat-label">Tổng số lượng</div>
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-icon value">
+              <mat-icon>attach_money</mat-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ formatCurrency(getTotalInventoryValue()) }}</div>
+              <div class="stat-label">Tổng giá trị</div>
+            </div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-icon date">
+              <mat-icon>event</mat-icon>
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ formatDateOnly((chiTietChotKho()!.ngayThucHien || chiTietChotKho()!.createdAt) || '') }}</div>
+              <div class="stat-label">{{ chiTietChotKho()!.ngayThucHien ? 'Ngày thực hiện' : 'Ngày tạo' }}</div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Inventory Details Table (if viewing existing) -->
+    <mat-card class="inventory-section" *ngIf="chiTietChotKho() && inventoryData.data.length > 0">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>table_view</mat-icon>
+          Chi tiết tồn kho
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="table-container">
+          <table mat-table [dataSource]="inventoryData" class="inventory-table">
+            
+            <!-- Tồn kho hiện tại Column -->
+            <ng-container matColumnDef="tonKhoHienTai">
+              <th mat-header-cell *matHeaderCellDef class="header-cell">Tồn kho hiện tại</th>
+              <td mat-cell *matCellDef="let element" class="data-cell number-cell">
+                {{ element.tonKhoHienTai || 0 }}
+              </td>
+            </ng-container>
+
+            <!-- Số lượng điều chỉnh Column -->
+            <ng-container matColumnDef="soLuongDieuChinh">
+              <th mat-header-cell *matHeaderCellDef class="header-cell">Điều chỉnh</th>
+              <td mat-cell *matCellDef="let element" class="data-cell">
+                <span 
+                  class="adjustment-value"
+                  [class.positive]="element.soLuongDieuChinh > 0"
+                  [class.negative]="element.soLuongDieuChinh < 0"
+                  [class.neutral]="element.soLuongDieuChinh === 0">
+                  {{ element.soLuongDieuChinh > 0 ? '+' : '' }}{{ element.soLuongDieuChinh || 0 }}
+                </span>
+              </td>
+            </ng-container>
+
+            <!-- Tồn kho sau chốt Column -->
+            <ng-container matColumnDef="tonKhoSauChot">
+              <th mat-header-cell *matHeaderCellDef class="header-cell">Tồn kho sau chốt</th>
+              <td mat-cell *matCellDef="let element" class="data-cell number-cell final-stock">
+                {{ element.tonKhoSauChot || 0 }}
+              </td>
+            </ng-container>
+
+            <!-- Giá trị Column -->
+            <ng-container matColumnDef="giaTri">
+              <th mat-header-cell *matHeaderCellDef class="header-cell">Giá trị</th>
+              <td mat-cell *matCellDef="let element" class="data-cell money-cell">
+                {{ formatCurrency((element.tonKhoSauChot || 0) * (element.donGia || 0)) }}
+              </td>
+            </ng-container>
+
+            <!-- Ghi chú Column -->
+            <ng-container matColumnDef="ghichu">
+              <th mat-header-cell *matHeaderCellDef class="header-cell">Ghi chú</th>
+              <td mat-cell *matCellDef="let element" class="data-cell">
+                <span class="note-text">{{ element.ghichu || '-' }}</span>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Preview Section (for create mode) -->
+    <mat-card class="preview-section" *ngIf="isCreate() && detail().tenChotKho">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>preview</mat-icon>
+          Xem trước chốt kho
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="preview-grid">
+          <div class="preview-item">
+            <div class="preview-label">Mã chốt kho:</div>
+            <div class="preview-value code">{{ detail().maChotKho }}</div>
+          </div>
+          <div class="preview-item">
+            <div class="preview-label">Tên chốt kho:</div>
+            <div class="preview-value">{{ detail().tenChotKho }}</div>
+          </div>
+          <div class="preview-item">
+            <div class="preview-label">Thời gian:</div>
+            <div class="preview-value">
+              {{ formatDateOnly(detail().tuNgay) }} - {{ formatDateOnly(detail().denNgay) }}
+              <small>({{ calculateDuration() }})</small>
+            </div>
+          </div>
+          <div class="preview-item" *ngIf="detail().ghichu">
+            <div class="preview-label">Ghi chú:</div>
+            <div class="preview-value">{{ detail().ghichu }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="detail-actions">
+    <button 
+      mat-button 
+      (click)="goBack()"
+      class="cancel-button">
+      <mat-icon>cancel</mat-icon>
+      {{ isCreate() ? 'Hủy' : 'Đóng' }}
+    </button>
+
+    <button 
+      mat-raised-button 
+      color="primary"
+      (click)="saveData()"
+      [disabled]="isLoading() || !canEdit()"
+      class="save-button"
+      *ngIf="canEdit()">
+      <mat-icon>{{ isLoading() ? 'hourglass_empty' : 'save' }}</mat-icon>
+      {{ isLoading() ? 'Đang lưu...' : (isCreate() ? 'Tạo chốt kho' : 'Cập nhật') }}
+    </button>
+
+    <button 
+      mat-raised-button 
+      color="accent"
+      (click)="thucHienChotKho()"
+      [disabled]="isLoading() || !canExecute()"
+      class="execute-button"
+      *ngIf="canExecute()">
+      <mat-icon>{{ isLoading() ? 'hourglass_empty' : 'play_arrow' }}</mat-icon>
+      {{ isLoading() ? 'Đang xử lý...' : 'Thực hiện chốt kho' }}
+    </button>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <mat-icon class="spinning">hourglass_empty</mat-icon>
+    <p>Đang xử lý...</p>
+  </div>
+</div>

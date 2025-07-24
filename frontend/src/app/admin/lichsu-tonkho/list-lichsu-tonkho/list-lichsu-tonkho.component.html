@@ -1,0 +1,271 @@
+<div class="lichsu-tonkho-container">
+  <!-- Header with statistics -->
+  <div class="header-section">
+    <mat-card class="statistics-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>analytics</mat-icon>
+          Thống kê giao dịch tồn kho
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="statistics-grid">
+          <div class="stat-item" *ngFor="let stat of thongKeGiaoDich()">
+            <div class="stat-value">{{ stat.soGiaoDich }}</div>
+            <div class="stat-label">{{ getLoaiGiaoDichLabel(stat.loaiGiaoDich) }}</div>
+            <div class="stat-amount">{{ formatCurrency(stat.tongGiaTri) }}</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filter section -->
+  <mat-card class="filter-section">
+    <mat-card-header>
+      <mat-card-title>Bộ lọc</mat-card-title>
+      <div class="spacer"></div>
+      <button mat-icon-button (click)="clearFilters()" matTooltip="Xóa bộ lọc">
+        <mat-icon>clear_all</mat-icon>
+      </button>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="filter-grid">
+        <!-- Product filter -->
+        <mat-form-field appearance="outline">
+          <mat-label>Sản phẩm</mat-label>
+          <mat-select [value]="filterValues().sanphamId" 
+                     (selectionChange)="onFilterChange('sanphamId', $event.value)">
+            <mat-option value="">Tất cả</mat-option>
+            <mat-option *ngFor="let sp of filterSanpham" [value]="sp.id">
+              {{ sp.masp }} - {{ sp.title }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Transaction type filter -->
+        <mat-form-field appearance="outline">
+          <mat-label>Loại giao dịch</mat-label>
+          <mat-select [value]="filterValues().loaiGiaoDich"
+                     (selectionChange)="onFilterChange('loaiGiaoDich', $event.value)">
+            <mat-option value="">Tất cả</mat-option>
+            <mat-option *ngFor="let option of loaiGiaoDichOptions" [value]="option.value">
+              {{ option.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- User filter -->
+        <mat-form-field appearance="outline">
+          <mat-label>Người thực hiện</mat-label>
+          <mat-select [value]="filterValues().userId"
+                     (selectionChange)="onFilterChange('userId', $event.value)">
+            <mat-option value="">Tất cả</mat-option>
+            <mat-option *ngFor="let user of filterUsers" [value]="user.id">
+              {{ user.profile?.name || user.email }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- From date -->
+        <mat-form-field appearance="outline">
+          <mat-label>Từ ngày</mat-label>
+          <input matInput [matDatepicker]="fromDatePicker" 
+                 [value]="filterValues().tuNgay"
+                 (dateChange)="onFilterChange('tuNgay', $event.value)">
+          <mat-datepicker-toggle matIconSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <!-- To date -->
+        <mat-form-field appearance="outline">
+          <mat-label>Đến ngày</mat-label>
+          <input matInput [matDatepicker]="toDatePicker"
+                 [value]="filterValues().denNgay" 
+                 (dateChange)="onFilterChange('denNgay', $event.value)">
+          <mat-datepicker-toggle matIconSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #toDatePicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Table section -->
+  <mat-card class="table-section">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>history</mat-icon>
+        Lịch sử tồn kho ({{ countItem() }})
+      </mat-card-title>
+      <div class="spacer"></div>
+      <div class="header-actions">
+        <button mat-raised-button color="primary" (click)="exportToExcel()">
+          <mat-icon>download</mat-icon>
+          Xuất Excel
+        </button>
+        <button mat-raised-button color="accent" (click)="openCreateDialog()">
+          <mat-icon>add</mat-icon>
+          Thêm giao dịch
+        </button>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Loading spinner -->
+      <div *ngIf="isLoading()" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+
+      <!-- Data table -->
+      <div *ngIf="!isLoading()" class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort>
+          <!-- STT Column -->
+          <ng-container matColumnDef="stt">
+            <th mat-header-cell *matHeaderCellDef>{{ columnNames.stt }}</th>
+            <td mat-cell *matCellDef="let row; let i = index">{{ i + 1 }}</td>
+          </ng-container>
+
+          <!-- Product Column -->
+          <ng-container matColumnDef="sanpham">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames.sanpham }}</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="product-info">
+                <strong>{{ row.tonKho?.sanpham?.masp }}</strong>
+                <div>{{ row.tonKho?.sanpham?.title }}</div>
+                <small class="text-muted">{{ row.tonKho?.sanpham?.dvt }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Transaction Type Column -->
+          <ng-container matColumnDef="loaiGiaoDich">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames.loaiGiaoDich }}</th>
+            <td mat-cell *matCellDef="let row">
+              <mat-chip [color]="getLoaiGiaoDichColor(row.loaiGiaoDich)" selected>
+                {{ getLoaiGiaoDichLabel(row.loaiGiaoDich) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Quantity Before Column -->
+          <ng-container matColumnDef="soLuongTruoc">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames.soLuongTruoc }}</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="quantity">{{ row.soLuongTruoc | number:'1.2-2' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Quantity Change Column -->
+          <ng-container matColumnDef="soLuongThayDoi">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames.soLuongThayDoi }}</th>
+            <td mat-cell *matCellDef="let row">
+              <span [class]="row.soLuongSauQuay >= 0 ? 'quantity-positive' : 'quantity-negative'">
+                {{ row.soLuongSauQuay >= 0 ? '+' : '' }}{{ row.soLuongSauQuay | number:'1.2-2' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Quantity After Column -->
+          <ng-container matColumnDef="soLuongSau">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames.soLuongSau }}</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="quantity">{{ row.soLuongSau | number:'1.2-2' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Unit Price Column -->
+          <ng-container matColumnDef="donGia">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames.donGia }}</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="currency">{{ formatCurrency(row.donGia) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Total Amount Column -->
+          <ng-container matColumnDef="thanhTien">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames.thanhTien }}</th>
+            <td mat-cell *matCellDef="let row">
+              <span class="currency">{{ formatCurrency(row.thanhTien) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- User Column -->
+          <ng-container matColumnDef="nguoiThucHien">
+            <th mat-header-cell *matHeaderCellDef>{{ columnNames.nguoiThucHien }}</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="user-info">
+                <strong>{{ row.user?.profile?.name || row.user?.email || 'Hệ thống' }}</strong>
+                <small *ngIf="row.user?.email">{{ row.user.email }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Date Column -->
+          <ng-container matColumnDef="ngayGiaoDich">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnNames.ngayGiaoDich }}</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="date-info">
+                {{ formatDateTime(row.ngayGiaoDich) }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Reason Column -->
+          <ng-container matColumnDef="lyDo">
+            <th mat-header-cell *matHeaderCellDef>{{ columnNames.lyDo }}</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="reason-info">
+                <div *ngIf="row.lyDo">{{ row.lyDo }}</div>
+                <small *ngIf="row.ghichu" class="text-muted">{{ row.ghichu }}</small>
+                <small *ngIf="row.soChungTu" class="text-muted">CT: {{ row.soChungTu }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>{{ columnNames.actions }}</th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-icon-button [matMenuTriggerFor]="actionMenu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #actionMenu="matMenu">
+                <button mat-menu-item (click)="goToDetail(row)">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Xem chi tiết</span>
+                </button>
+                <button mat-menu-item *ngIf="row.phieuKho">
+                  <mat-icon>receipt</mat-icon>
+                  <span>Xem phiếu kho</span>
+                </button>
+                <button mat-menu-item *ngIf="row.donhang">
+                  <mat-icon>shopping_cart</mat-icon>
+                  <span>Xem đơn hàng</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+              class="table-row" (click)="goToDetail(row)"></tr>
+        </table>
+
+        <!-- Paginator -->
+        <mat-paginator 
+          [pageSizeOptions]="[5, 10, 25, 50, 100]"
+          showFirstLastButtons
+          (page)="onPageChange($event)">
+        </mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Sidebar for detail -->
+  <mat-drawer-container class="drawer-container">
+    <mat-drawer #drawer mode="over" position="end" class="detail-drawer">
+      <router-outlet></router-outlet>
+    </mat-drawer>
+  </mat-drawer-container>
+</div>

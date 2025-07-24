@@ -1,0 +1,342 @@
+<!-- Ton Kho Hien Tai Component -->
+<div class="inventory-container">
+  <!-- Header Section -->
+  <div class="inventory-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>inventory</mat-icon>
+        Tồn kho hiện tại
+      </h1>
+      <p class="page-description">
+        Theo dõi và quản lý tình trạng tồn kho của tất cả sản phẩm
+      </p>
+    </div>
+    <div class="header-actions">
+      <button 
+        mat-button 
+        (click)="refreshData()"
+        [disabled]="isLoading()"
+        class="refresh-button">
+        <mat-icon>refresh</mat-icon>
+        Làm mới
+      </button>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="_router.navigate(['/admin/lichsu-tonkho/chot-kho/0'])"
+        class="create-button">
+        <mat-icon>add</mat-icon>
+        Tạo chốt kho
+      </button>
+    </div>
+  </div>
+
+  <!-- Statistics Dashboard -->
+  <div class="stats-dashboard">
+    <mat-card class="stat-card total">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>inventory_2</mat-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value">{{ statistics().tongSanPham }}</div>
+            <div class="stat-label">Tổng sản phẩm</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card value">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>attach_money</mat-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value">{{ formatCurrency(statistics().tongGiaTriTonKho) }}</div>
+            <div class="stat-label">Tổng giá trị tồn kho</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card normal">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value">{{ statistics().sanPhamBinhThuong }}</div>
+            <div class="stat-label">Bình thường</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card warning">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>warning</mat-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value">{{ statistics().sanPhamSapHet }}</div>
+            <div class="stat-label">Sắp hết hàng</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card excess">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>trending_up</mat-icon>
+          </div>
+          <div class="stat-details">
+            <div class="stat-value">{{ statistics().sanPhamQuaMuc }}</div>
+            <div class="stat-label">Quá mức</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filters Section -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <!-- Search -->
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Tìm kiếm sản phẩm</mat-label>
+          <input 
+            matInput 
+            [value]="filterParams().search"
+            (input)="onSearchChange($event)"
+            placeholder="Tìm theo mã, tên sản phẩm...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- Trạng thái tồn kho -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Trạng thái tồn kho</mat-label>
+          <mat-select 
+            [value]="filterParams().trangThaiTonKho"
+            (selectionChange)="onTrangThaiChange($event.value)">
+            <mat-option *ngFor="let option of trangThaiTonKhoOptions" [value]="option.value">
+              <div class="status-option">
+                <mat-icon [color]="option.color" *ngIf="option.icon">{{ option.icon }}</mat-icon>
+                <span>{{ option.label }}</span>
+              </div>
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>filter_list</mat-icon>
+        </mat-form-field>
+
+        <!-- Danh mục -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Danh mục</mat-label>
+          <mat-select 
+            [value]="filterParams().danhMucId"
+            (selectionChange)="onDanhMucChange($event.value)">
+            <mat-option value="">Tất cả danh mục</mat-option>
+            <mat-option *ngFor="let danhmuc of danhMucOptions" [value]="danhmuc.id">
+              {{ danhmuc.title }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>category</mat-icon>
+        </mat-form-field>
+
+        <!-- Reset Button -->
+        <button 
+          mat-button 
+          (click)="resetFilters()"
+          class="reset-button">
+          <mat-icon>refresh</mat-icon>
+          Reset
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Data Table -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <!-- Loading Indicator -->
+      <div class="loading-container" *ngIf="isLoading()">
+        <mat-icon class="spinning">hourglass_empty</mat-icon>
+        <p>Đang tải dữ liệu tồn kho...</p>
+      </div>
+
+      <!-- Data Table -->
+      <div class="table-container" *ngIf="!isLoading()">
+        <table mat-table [dataSource]="dataSource" matSort class="inventory-table">
+          
+          <!-- Sản phẩm Column -->
+          <ng-container matColumnDef="sanpham">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              Sản phẩm
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell">
+              <div class="product-info">
+                <div class="product-image" *ngIf="element.images && element.images.length > 0">
+                  <img [src]="element.images[0]" [alt]="element.title" />
+                </div>
+                <div class="product-details">
+                  <span class="product-code">{{ element.masp }}</span>
+                  <span class="product-name">{{ element.title }}</span>
+                  <span class="product-category">{{ getDanhMucName(element.danhmucId) }}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Tồn kho hiện tại Column -->
+          <ng-container matColumnDef="tonKhoHienTai">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              Tồn kho
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell">
+              <div class="inventory-info">
+                <div class="inventory-value">
+                  {{ element.tonKhoHienTai }}
+                </div>
+                <div class="inventory-range">
+                  Min: {{ element.tonkhomin || 0 }} | Max: {{ element.tonkhomax || 0 }}
+                </div>
+                <mat-progress-bar 
+                  [mode]="'determinate'"
+                  [value]="getProgressValue(element.tonKhoHienTai, element.tonkhomin || 0, element.tonkhomax || 100)"
+                  [color]="getProgressColor(element.trangThaiTonKho)"
+                  class="inventory-progress">
+                </mat-progress-bar>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Giá trị tồn kho Column -->
+          <ng-container matColumnDef="giaTriTonKho">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              Giá trị tồn kho
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell money-cell">
+              <div class="money-info">
+                <div class="total-value">{{ formatCurrency(element.giaTriTonKho) }}</div>
+                <div class="unit-price">{{ formatCurrency(element.gianhap || element.giaban) }}/đơn vị</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Tồn kho min Column -->
+          <ng-container matColumnDef="tonKhoMin">
+            <th mat-header-cell *matHeaderCellDef class="header-cell">Mức tối thiểu</th>
+            <td mat-cell *matCellDef="let element" class="data-cell number-cell">
+              {{ element.tonkhomin || 0 }}
+            </td>
+          </ng-container>
+
+          <!-- Tồn kho max Column -->
+          <ng-container matColumnDef="tonKhoMax">
+            <th mat-header-cell *matHeaderCellDef class="header-cell">Mức tối đa</th>
+            <td mat-cell *matCellDef="let element" class="data-cell number-cell">
+              {{ element.tonkhomax || 0 }}
+            </td>
+          </ng-container>
+
+          <!-- Trạng thái tồn kho Column -->
+          <ng-container matColumnDef="trangThaiTonKho">
+            <th mat-header-cell *matHeaderCellDef class="header-cell">
+              Trạng thái
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell">
+              <mat-chip-listbox>
+                <mat-chip 
+                  [color]="getTrangThaiOption(element.trangThaiTonKho)?.color"
+                  selected>
+                  <mat-icon matChipAvatar>{{ getTrangThaiOption(element.trangThaiTonKho)?.icon }}</mat-icon>
+                  {{ getTrangThaiOption(element.trangThaiTonKho)?.label }}
+                </mat-chip>
+              </mat-chip-listbox>
+            </td>
+          </ng-container>
+
+          <!-- Ngày cập nhật cuối Column -->
+          <ng-container matColumnDef="ngayCapNhatCuoi">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              Cập nhật cuối
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell">
+              <div class="date-info">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ formatDate(element.ngayCapNhatCuoi) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="header-cell actions-header">
+              Thao tác
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell actions-cell">
+              <button 
+                mat-icon-button 
+                [matMenuTriggerFor]="actionMenu"
+                class="action-button">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              
+              <mat-menu #actionMenu="matMenu">
+                <button mat-menu-item (click)="viewLichSuTonKho(element.id)">
+                  <mat-icon>history</mat-icon>
+                  <span>Xem lịch sử tồn kho</span>
+                </button>
+                
+                <button mat-menu-item (click)="createGiaoDichTonKho(element.id)">
+                  <mat-icon>add_circle</mat-icon>
+                  <span>Tạo giao dịch tồn kho</span>
+                </button>
+                
+                <mat-divider></mat-divider>
+                
+                <button mat-menu-item (click)="_router.navigate(['/admin/sanpham', element.id])">
+                  <mat-icon>edit</mat-icon>
+                  <span>Chỉnh sửa sản phẩm</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+              [class.warning-row]="row.trangThaiTonKho === 'SAP_HET'"
+              [class.error-row]="row.trangThaiTonKho === 'HET_HANG'"></tr>
+        </table>
+
+        <!-- No Data State -->
+        <div class="no-data" *ngIf="dataSource.data.length === 0 && !isLoading()">
+          <mat-icon>inventory_2</mat-icon>
+          <h3>Không có dữ liệu</h3>
+          <p>Không tìm thấy sản phẩm nào phù hợp với bộ lọc</p>
+          <button mat-raised-button color="primary" (click)="resetFilters()">
+            <mat-icon>refresh</mat-icon>
+            Reset bộ lọc
+          </button>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator
+        [length]="totalItems()"
+        [pageSize]="filterParams().limit"
+        [pageIndex]="filterParams().page"
+        [pageSizeOptions]="[10, 25, 50, 100]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        class="pagination">
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

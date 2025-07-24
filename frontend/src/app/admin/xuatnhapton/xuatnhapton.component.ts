@@ -54,7 +54,7 @@ import { DetailxuatnhaptonComponent } from './detailxuatnhapton/detailxuatnhapto
   // providers:[provideNativeDateAdapter()]
 })
 export class XuatnhaptonComponent {
-  isDexuat: boolean = true;
+  isDexuat: boolean = false;
   Detail: any = {};
   displayedColumns: string[] = [
     'title',
@@ -147,8 +147,6 @@ export class XuatnhaptonComponent {
   {
     this.isSearching = true;
     try {
-      await this._PhieukhoService.getxuatnhapton(this.SearchParams)
-      console.log(this.ListPhieukho());
       const ListSLChogiao = await this._DonhangService.getSLChogiao(this.SearchParams);
       const ListSLChonhap = await this._DathangService.getSLChonhap(this.SearchParams);
       this.dataSource.data.forEach((v: any) => {
@@ -177,8 +175,12 @@ export class XuatnhaptonComponent {
     this.isLoading = true;
     try {
       await this._PhieukhoService.getxuatnhapton(this.SearchParams)
+      const ListSLChogiao = await this._DonhangService.getSLChogiao(this.SearchParams);
+      const ListSLChonhap = await this._DathangService.getSLChonhap(this.SearchParams);
       console.log(this.ListPhieukho());
-      
+      console.log(ListSLChogiao);
+      console.log(ListSLChonhap);
+
       await this._SanphamService.getAllSanpham() 
       this._KhoService.getTonKho('1', '1000').then((res) => {
         this.Xuatnhapton.set(res.data);

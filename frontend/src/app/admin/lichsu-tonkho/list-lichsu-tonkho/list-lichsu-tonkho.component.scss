@@ -1,0 +1,267 @@
+.lichsu-tonkho-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.header-section {
+  margin-bottom: 24px;
+}
+
+.statistics-card {
+  .statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    
+    .stat-item {
+      text-align: center;
+      padding: 16px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 8px;
+      color: white;
+      
+      .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 8px;
+      }
+      
+      .stat-label {
+        font-size: 0.9rem;
+        margin-bottom: 4px;
+        opacity: 0.9;
+      }
+      
+      .stat-amount {
+        font-size: 0.8rem;
+        font-weight: 500;
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+.filter-section {
+  margin-bottom: 24px;
+  
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    
+    .spacer {
+      flex: 1;
+    }
+  }
+  
+  .filter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+}
+
+.table-section {
+  mat-card-header {
+    display: flex;
+    align-items: center;
+    
+    .spacer {
+      flex: 1;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  
+  p {
+    margin-top: 16px;
+    color: #666;
+  }
+}
+
+.table-container {
+  .product-info {
+    strong {
+      color: #2196f3;
+      font-size: 0.9rem;
+    }
+    
+    div {
+      margin: 2px 0;
+      font-size: 0.9rem;
+    }
+    
+    .text-muted {
+      color: #666;
+      font-size: 0.8rem;
+    }
+  }
+  
+  .quantity {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+  }
+  
+  .quantity-positive {
+    color: #4caf50;
+    font-weight: bold;
+  }
+  
+  .quantity-negative {
+    color: #f44336;
+    font-weight: bold;
+  }
+  
+  .currency {
+    font-family: 'Roboto Mono', monospace;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .user-info {
+    strong {
+      font-size: 0.9rem;
+    }
+    
+    small {
+      display: block;
+      color: #666;
+      font-size: 0.8rem;
+    }
+  }
+  
+  .date-info {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.85rem;
+  }
+  
+  .reason-info {
+    div {
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+    
+    .text-muted {
+      color: #666;
+      font-size: 0.8rem;
+      display: block;
+      margin-bottom: 2px;
+    }
+  }
+  
+  .table-row {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: #f5f5f5;
+    }
+  }
+}
+
+.drawer-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.detail-drawer {
+  width: 600px;
+  pointer-events: auto;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .lichsu-tonkho-container {
+    padding: 16px;
+  }
+  
+  .statistics-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .filter-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .header-actions {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  
+  .detail-drawer {
+    width: 100vw !important;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+    
+    table {
+      min-width: 800px;
+    }
+  }
+}
+
+// Material Design overrides
+mat-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 1px solid #e0e0e0;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-chip {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.mat-mdc-table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mat-mdc-header-row {
+  background-color: #fafafa;
+}
+
+.mat-mdc-header-cell {
+  font-weight: 600;
+  color: #333;
+}
+
+// Animation
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lichsu-tonkho-container > * {
+  animation: fadeIn 0.3s ease-out;
+}

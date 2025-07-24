@@ -1,0 +1,389 @@
+<!-- List Chot Kho Component -->
+<div class="list-container">
+  <!-- Header Section -->
+  <div class="list-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>inventory</mat-icon>
+        Quản lý chốt kho
+      </h1>
+      <p class="page-subtitle">Theo dõi và quản lý các đợt chốt kho định kỳ</p>
+    </div>
+    <div class="header-actions">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="createChotKho()"
+        class="create-button">
+        <mat-icon>add</mat-icon>
+        Tạo chốt kho mới
+      </button>
+    </div>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <!-- Statistics Section -->
+  <div class="statistics-section">
+    <div class="statistics-grid">
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <mat-icon class="stat-icon primary">inventory</mat-icon>
+            <div class="stat-info">
+              <div class="stat-value">{{ ThongKeChotKho().tongSoChotKho }}</div>
+              <div class="stat-label">Tổng chốt kho</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <mat-icon class="stat-icon accent">lock_open</mat-icon>
+            <div class="stat-info">
+              <div class="stat-value">{{ ThongKeChotKho().soChotKhoDangMo }}</div>
+              <div class="stat-label">Đang mở</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <mat-icon class="stat-icon warn">lock</mat-icon>
+            <div class="stat-info">
+              <div class="stat-value">{{ ThongKeChotKho().soChotKhoDaChot }}</div>
+              <div class="stat-label">Đã chốt</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <mat-icon class="stat-icon success">store</mat-icon>
+            <div class="stat-info">
+              <div class="stat-value">{{ ThongKeChotKho().tongSanPham }}</div>
+              <div class="stat-label">Sản phẩm</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card">
+        <mat-card-content>
+          <div class="stat-content">
+            <mat-icon class="stat-icon primary">attach_money</mat-icon>
+            <div class="stat-info">
+              <div class="stat-value">{{ formatCurrency(ThongKeChotKho().tongGiaTri) }}</div>
+              <div class="stat-label">Tổng giá trị</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-grid">
+        <!-- Trạng thái filter -->
+        <mat-form-field appearance="outline">
+          <mat-label>Trạng thái</mat-label>
+          <mat-select 
+            [(ngModel)]="filters().trangThai"
+            (selectionChange)="onFilterChange()">
+            <mat-option *ngFor="let option of trangThaiOptions" [value]="option.value">
+              <div class="select-option">
+                <mat-icon [color]="option.color" *ngIf="option.icon">{{ option.icon }}</mat-icon>
+                <span>{{ option.label }}</span>
+              </div>
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>filter_list</mat-icon>
+        </mat-form-field>
+
+        <!-- Từ ngày filter -->
+        <mat-form-field appearance="outline">
+          <mat-label>Từ ngày</mat-label>
+          <input 
+            matInput 
+            type="date"
+            [(ngModel)]="filters().tuNgay"
+            (ngModelChange)="onFilterChange()">
+          <mat-icon matSuffix>date_range</mat-icon>
+        </mat-form-field>
+
+        <!-- Đến ngày filter -->
+        <mat-form-field appearance="outline">
+          <mat-label>Đến ngày</mat-label>
+          <input 
+            matInput 
+            type="date"
+            [(ngModel)]="filters().denNgay"
+            (ngModelChange)="onFilterChange()">
+          <mat-icon matSuffix>date_range</mat-icon>
+        </mat-form-field>
+
+        <!-- Search filter -->
+        <mat-form-field appearance="outline">
+          <mat-label>Tìm kiếm</mat-label>
+          <input 
+            matInput 
+            [(ngModel)]="filters().search"
+            (ngModelChange)="onFilterChange()"
+            placeholder="Mã chốt kho, tên chốt kho...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+      </div>
+
+      <div class="filters-actions">
+        <button 
+          mat-stroked-button 
+          (click)="clearFilters()"
+          class="clear-filters-button">
+          <mat-icon>clear_all</mat-icon>
+          Xóa bộ lọc
+        </button>
+        <button 
+          mat-button 
+          (click)="loadChotKho()"
+          [disabled]="isLoading() || serviceLoading()"
+          class="refresh-button">
+          <mat-icon>refresh</mat-icon>
+          Làm mới
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Data Table Section -->
+  <mat-card class="table-card">
+    <mat-card-content class="table-content">
+      <!-- Loading indicator -->
+      <div class="loading-container" *ngIf="isLoading() || serviceLoading()">
+        <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+
+      <!-- Data table -->
+      <div class="table-container" *ngIf="!isLoading() && !serviceLoading()">
+        <table mat-table [dataSource]="ListChotKho()" class="data-table">
+          <!-- Mã chốt kho column -->
+          <ng-container matColumnDef="maChotKho">
+            <th mat-header-cell *matHeaderCellDef>Mã chốt kho</th>
+            <td mat-cell *matCellDef="let chotKho">
+              <div class="ma-chotko">
+                <strong>{{ chotKho.maChotKho }}</strong>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Tên chốt kho column -->
+          <ng-container matColumnDef="tenChotKho">
+            <th mat-header-cell *matHeaderCellDef>Tên chốt kho</th>
+            <td mat-cell *matCellDef="let chotKho">
+              <div class="ten-chotko">
+                <strong>{{ chotKho.tenChotKho }}</strong>
+                <small *ngIf="chotKho.ghichu">{{ chotKho.ghichu }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Khoảng thời gian column -->
+          <ng-container matColumnDef="khoangThoiGian">
+            <th mat-header-cell *matHeaderCellDef>Khoảng thời gian</th>
+            <td mat-cell *matCellDef="let chotKho">
+              <div class="khoang-thoi-gian">
+                {{ formatDateRange(chotKho.tuNgay, chotKho.denNgay) }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Trạng thái column -->
+          <ng-container matColumnDef="trangThai">
+            <th mat-header-cell *matHeaderCellDef>Trạng thái</th>
+            <td mat-cell *matCellDef="let chotKho">
+              <mat-chip-listbox>
+                <mat-chip 
+                  [color]="getTrangThaiOption(chotKho.trangThai)?.color || 'basic'"
+                  selected>
+                  <mat-icon matChipAvatar>{{ getTrangThaiOption(chotKho.trangThai)?.icon }}</mat-icon>
+                  {{ getTrangThaiOption(chotKho.trangThai)?.label }}
+                </mat-chip>
+              </mat-chip-listbox>
+            </td>
+          </ng-container>
+
+          <!-- Người thực hiện column -->
+          <ng-container matColumnDef="nguoiThucHien">
+            <th mat-header-cell *matHeaderCellDef>Người thực hiện</th>
+            <td mat-cell *matCellDef="let chotKho">
+              <div class="nguoi-thuc-hien">
+                <mat-icon>person</mat-icon>
+                <span>{{ getUserName(chotKho.user) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Thống kê column -->
+          <ng-container matColumnDef="thongKe">
+            <th mat-header-cell *matHeaderCellDef>Thống kê</th>
+            <td mat-cell *matCellDef="let chotKho">
+              <div class="thong-ke">
+                {{ getThongKeText(chotKho) }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Ngày chốt column -->
+          <ng-container matColumnDef="ngayChot">
+            <th mat-header-cell *matHeaderCellDef>Ngày chốt</th>
+            <td mat-cell *matCellDef="let chotKho">
+              <div class="ngay-chot">
+                {{ chotKho.ngayChot ? formatDate(chotKho.ngayChot) : 'Chưa chốt' }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Actions column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Thao tác</th>
+            <td mat-cell *matCellDef="let chotKho">
+              <div class="actions">
+                <button 
+                  mat-icon-button 
+                  [matMenuTriggerFor]="actionMenu"
+                  matTooltip="Thao tác">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                
+                <mat-menu #actionMenu="matMenu">
+                  <button 
+                    mat-menu-item 
+                    (click)="viewChotKho(chotKho)">
+                    <mat-icon>visibility</mat-icon>
+                    <span>Xem chi tiết</span>
+                  </button>
+                  
+                  <button 
+                    mat-menu-item 
+                    (click)="viewChiTietChotKho(chotKho)"
+                    *ngIf="chotKho.trangThai === 'DA_CHOT'">
+                    <mat-icon>table_view</mat-icon>
+                    <span>Xem báo cáo</span>
+                  </button>
+                  
+                  <button 
+                    mat-menu-item 
+                    (click)="thucHienChotKho(chotKho)"
+                    *ngIf="canExecute(chotKho)">
+                    <mat-icon>play_arrow</mat-icon>
+                    <span>Thực hiện chốt</span>
+                  </button>
+                  
+                  <button 
+                    mat-menu-item 
+                    (click)="exportChotKho(chotKho)"
+                    *ngIf="canExport(chotKho)">
+                    <mat-icon>download</mat-icon>
+                    <span>Xuất Excel</span>
+                  </button>
+                  
+                  <mat-divider *ngIf="canDelete(chotKho)"></mat-divider>
+                  
+                  <button 
+                    mat-menu-item 
+                    (click)="xoaChotKho(chotKho)"
+                    *ngIf="canDelete(chotKho)"
+                    class="delete-action">
+                    <mat-icon>delete</mat-icon>
+                    <span>Xóa</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- Empty state -->
+        <div class="empty-state" *ngIf="ListChotKho().length === 0">
+          <mat-icon>inventory</mat-icon>
+          <h3>Chưa có dữ liệu chốt kho</h3>
+          <p>Không tìm thấy chốt kho nào phù hợp với bộ lọc hiện tại.</p>
+          <button mat-raised-button color="primary" (click)="createChotKho()">
+            <mat-icon>add</mat-icon>
+            Tạo chốt kho đầu tiên
+          </button>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator
+        [length]="totalElements()"
+        [pageSize]="pageSize()"
+        [pageIndex]="pageIndex()"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        class="data-paginator">
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Error display -->
+  <mat-card class="error-card" *ngIf="serviceError()">
+    <mat-card-content>
+      <div class="error-content">
+        <mat-icon color="warn">error</mat-icon>
+        <div class="error-text">
+          <h3>Có lỗi xảy ra</h3>
+          <p>{{ serviceError() }}</p>
+        </div>
+        <button mat-button color="primary" (click)="loadChotKho()">
+          <mat-icon>refresh</mat-icon>
+          Thử lại
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<!-- Side drawer for details -->
+<mat-drawer-container class="drawer-container" [hasBackdrop]="true">
+  <mat-drawer
+    #drawer
+    mode="over"
+    position="end"
+    [opened]="drawerOpened()"
+    (closed)="onDrawerClosed()"
+    class="detail-drawer">
+    
+    <app-detail-chotko
+      *ngIf="drawerMode() === 'create'"
+      [chotKho]="null"
+      [isEdit]="true"
+      (saved)="onChotKhoSaved()"
+      (cancelled)="drawer.close()">
+    </app-detail-chotko>
+    
+    <app-detail-chotko
+      *ngIf="drawerMode() === 'view' && selectedChotKho()"
+      [chotKho]="selectedChotKho()"
+      [isEdit]="false"
+      (cancelled)="drawer.close()">
+    </app-detail-chotko>
+  </mat-drawer>
+  
+  <mat-drawer-content>
+    <!-- Main content is above -->
+  </mat-drawer-content>
+</mat-drawer-container>

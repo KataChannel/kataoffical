@@ -466,14 +466,76 @@ export const routes: Routes = [
               ).then((c) => c.DetailPhieukhoComponent),
           },
         ],
-      },
-      {
+      },      {
         path: 'xuatnhapton',
         canActivate: [PermissionGuard],
         data: { permission: 'xuatnhapton.view' },
         loadComponent: () =>
           import('./admin/xuatnhapton/xuatnhapton.component').then(
             (c) => c.XuatnhaptonComponent
+          ),
+      },
+      
+      // Inventory Management Routes
+      {
+        path: 'lichsu-tonkho',
+        // canActivate: [PermissionGuard],
+        data: { permission: 'lichsu-tonkho.view' },
+        loadComponent: () =>
+          import('./admin/lichsu-tonkho/list-lichsu-tonkho/list-lichsu-tonkho.component').then(
+            (c) => c.ListLichSuTonKhoComponent
+          ),
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./admin/lichsu-tonkho/list-lichsu-tonkho/list-lichsu-tonkho.component').then(
+                (c) => c.ListLichSuTonKhoComponent
+              ),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./admin/lichsu-tonkho/detail-lichsu-tonkho/detail-lichsu-tonkho.component').then(
+                (c) => c.DetailLichSuTonKhoComponent
+              ),
+          },
+        ],
+      },
+      {
+        path: 'lichsu-tonkho/chot-kho',
+        // canActivate: [PermissionGuard],
+        data: { permission: 'lichsu-tonkho.view' },
+        loadComponent: () =>
+          import('./admin/lichsu-tonkho/list-chot-kho/list-chot-kho.component').then(
+            (c) => c.ListChotKhoComponent
+          ),
+      },
+      {
+        path: 'lichsu-tonkho/chot-kho/:id',
+        // canActivate: [PermissionGuard],
+        data: { permission: 'lichsu-tonkho.view' },
+        loadComponent: () =>
+          import('./admin/lichsu-tonkho/detail-chot-kho/detail-chot-kho.component').then(
+            (c) => c.DetailChotKhoComponent
+          ),
+      },
+      {
+        path: 'lichsu-tonkho/chot-kho/:id/:mode',
+        // canActivate: [PermissionGuard],
+        data: { permission: 'lichsu-tonkho.view' },
+        loadComponent: () =>
+          import('./admin/lichsu-tonkho/detail-chot-kho/detail-chot-kho.component').then(
+            (c) => c.DetailChotKhoComponent
+          ),
+      },
+      {
+        path: 'ton-kho-hien-tai',
+        // canActivate: [PermissionGuard],
+        data: { permission: 'lichsu-tonkho.view' },
+        loadComponent: () =>
+          import('./admin/lichsu-tonkho/ton-kho-hien-tai/ton-kho-hien-tai.component').then(
+            (c) => c.TonKhoHienTaiComponent
           ),
       },
       

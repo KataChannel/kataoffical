@@ -57,6 +57,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   AuditLog AuditLog[]
+  lichSuTonKho LichSuTonKho[] @relation("UserLichSuTonKho")
+  chotKho   ChotKho[] @relation("UserChotKho")
 }
 
 model Role {
@@ -184,6 +186,19 @@ enum StatusDonhang {
   huy     // Đã hủy
   hoanthanh   // Đã hoàn thành
 }
+enum LoaiGiaoDichKho {
+  NHAP        // Nhập kho
+  XUAT        // Xuất kho
+  KIEM_KE     // Kiểm kê
+  DIEU_CHINH  // Điều chỉnh
+  CHUYEN_KHO  // Chuyển kho
+  HUY_HANG    // Hủy hàng
+}
+enum TrangThaiChotKho {
+  DANG_MO     // Đang mở
+  DA_CHOT     // Đã chốt
+  TAM_KHOA    // Tạm khóa
+}
 model Sanpham {
   id         String   @id @default(uuid())
   title      String
@@ -212,6 +227,7 @@ model Sanpham {
   PhieuKhoSanpham PhieuKhoSanpham[]
   Nhacungcap Nhacungcap[] @relation("NhacungcapToSanpham")
   TonKho TonKho[]
+  chiTietChotKho ChiTietChotKho[]
 }
 model Donhang {
   id          String  @id @default(uuid())
@@ -230,6 +246,7 @@ model Donhang {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   PhieuKho PhieuKho[]
+  lichSuTonKho LichSuTonKho[]
 }
 
 model Donhangsanpham {
@@ -378,6 +395,7 @@ model PhieuKho {
   ghichu    String?
   isActive  Boolean @default(true)
   sanpham   PhieuKhoSanpham[]
+  lichSuTonKho LichSuTonKho[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -401,6 +419,89 @@ model TonKho {
   slton            Decimal @postgres.Decimal(20, 2) @default(0)
   slchogiao        Decimal @postgres.Decimal(20, 2) @default(0)
   slchonhap        Decimal @postgres.Decimal(20, 2) @default(0)
+  lichsuTonKho     LichSuTonKho[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
+}
+
+// Model lịch sử biến động tồn kho
+model LichSuTonKho {
+  id               String            @id @default(uuid())
+  tonKhoId         String
+  tonKho           TonKho           @relation(fields: [tonKhoId], references: [id], onDelete: Cascade)
+  loaiGiaoDich     LoaiGiaoDichKho  // Loại giao dịch
+  soLuongTruoc     Decimal          @postgres.Decimal(20, 2) @default(0) // Số lượng trước khi thay đổi
+  soLuongSauQuay   Decimal          @postgres.Decimal(20, 2) @default(0) // Số lượng thay đổi (+/-)
+  soLuongSau       Decimal          @postgres.Decimal(20, 2) @default(0) // Số lượng sau khi thay đổi
+  donGia           Decimal?         @postgres.Decimal(20, 2) @default(0) // Đơn giá tại thời điểm giao dịch
+  thanhTien        Decimal?         @postgres.Decimal(20, 2) @default(0) // Thành tiền
+  phieuKhoId       String?          // Liên kết với phiếu kho (nếu có)
+  phieuKho         PhieuKho?        @relation(fields: [phieuKhoId], references: [id])
+  donhangId        String?          // Liên kết với đơn hàng (nếu có)
+  donhang          Donhang?         @relation(fields: [donhangId], references: [id])
+  chotKhoId        String?          // Liên kết với phiên chốt kho
+  chotKho          ChotKho?         @relation(fields: [chotKhoId], references: [id])
+  userId           String?          // User thực hiện giao dịch
+  user             User?            @relation("UserLichSuTonKho", fields: [userId], references: [id])
+  lyDo             String?          // Lý do thay đổi
+  ghichu           String?          // Ghi chú
+  soChungTu        String?          // Số chứng từ
+  ngayGiaoDich     DateTime         @default(now()) // Ngày thực hiện giao dịch
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  
+  @@index([tonKhoId])
+  @@index([ngayGiaoDich])
+  @@index([loaiGiaoDich])
+  @@index([phieuKhoId])
+  @@index([donhangId])
+}
+
+// Model chốt kho định kỳ
+model ChotKho {
+  id               String            @id @default(uuid())
+  maChotKho        String            @unique // Mã chốt kho
+  tenChotKho       String            // Tên đợt chốt kho
+  tuNgay           DateTime          // Từ ngày
+  denNgay          DateTime          // Đến ngày
+  trangThai        TrangThaiChotKho  @default(DANG_MO)
+  userId           String?           // User thực hiện chốt
+  user             User?             @relation("UserChotKho", fields: [userId], references: [id])
+  ngayChot         DateTime?         // Ngày thực hiện chốt
+  ghichu           String?           // Ghi chú
+  tongSanPham      Int?              @default(0) // Tổng số sản phẩm
+  tongGiaTri       Decimal?          @postgres.Decimal(20, 2) @default(0) // Tổng giá trị tồn kho
+  lichSuTonKho     LichSuTonKho[]    // Lịch sử giao dịch trong kỳ chốt
+  chiTietChotKho   ChiTietChotKho[]  // Chi tiết tồn kho theo sản phẩm
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  
+  @@index([tuNgay, denNgay])
+  @@index([trangThai])
+  @@index([ngayChot])
+}
+
+// Model chi tiết tồn kho theo từng sản phẩm khi chốt
+model ChiTietChotKho {
+  id               String   @id @default(uuid())
+  chotKhoId        String
+  chotKho          ChotKho  @relation(fields: [chotKhoId], references: [id], onDelete: Cascade)
+  sanphamId        String
+  sanpham          Sanpham  @relation(fields: [sanphamId], references: [id])
+  slTonDauKy       Decimal  @postgres.Decimal(20, 2) @default(0) // Tồn đầu kỳ
+  slNhapTrongKy    Decimal  @postgres.Decimal(20, 2) @default(0) // Nhập trong kỳ
+  slXuatTrongKy    Decimal  @postgres.Decimal(20, 2) @default(0) // Xuất trong kỳ
+  slDieuChinhTrongKy Decimal @postgres.Decimal(20, 2) @default(0) // Điều chỉnh trong kỳ
+  slTonCuoiKy      Decimal  @postgres.Decimal(20, 2) @default(0) // Tồn cuối kỳ
+  donGiaTrungBinh  Decimal? @postgres.Decimal(20, 2) @default(0) // Đơn giá trung bình
+  giaTri           Decimal? @postgres.Decimal(20, 2) @default(0) // Giá trị tồn kho
+  ghichu           String?  // Ghi chú
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  @@unique([chotKhoId, sanphamId]) // Đảm bảo mỗi sản phẩm chỉ có 1 record trong 1 đợt chốt
+  @@index([chotKhoId])
+  @@index([sanphamId])
 }
 model ChatAIMessage {
   id        String  @id @default(uuid())

@@ -1,0 +1,295 @@
+<!-- Detail Lich Su Ton Kho Component -->
+<div class="detail-container">
+  <div class="detail-header">
+    <h2 class="detail-title">
+      <mat-icon>{{ isEdit() ? 'add' : 'visibility' }}</mat-icon>
+      {{ isEdit() ? 'Tạo giao dịch tồn kho' : 'Chi tiết lịch sử tồn kho' }}
+    </h2>
+    <button mat-icon-button (click)="closeDrawer()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div class="detail-content" [class.loading]="isLoading()">
+    <form class="detail-form" (ngSubmit)="saveData()">
+      
+      <!-- Basic Information Card -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>info</mat-icon>
+            Thông tin cơ bản
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <!-- Số chứng từ -->
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Số chứng từ</mat-label>
+              <input 
+                matInput 
+                [(ngModel)]="detail().soChungTu"
+                name="soChungTu"
+                readonly>
+              <mat-icon matSuffix>receipt</mat-icon>
+            </mat-form-field>
+
+            <!-- Loại giao dịch -->
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Loại giao dịch</mat-label>
+              <mat-select 
+                [(ngModel)]="detail().loaiGiaoDich"
+                name="loaiGiaoDich"
+                (selectionChange)="onLoaiGiaoDichChange($event.value)"
+                required>
+                <mat-option *ngFor="let option of loaiGiaoDichOptions" [value]="option.value">
+                  <div class="transaction-option">
+                    <mat-icon [color]="option.color">{{ option.icon }}</mat-icon>
+                    <span>{{ option.label }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix>swap_horiz</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <!-- Sản phẩm -->
+          <mat-form-field appearance="outline" class="form-field-full">
+            <mat-label>Sản phẩm</mat-label>
+            <mat-select 
+              [(ngModel)]="detail().sanphamId"
+              name="sanphamId"
+              (selectionChange)="onSanphamChange($event.value)"
+              required>
+              <mat-option *ngFor="let sanpham of filterSanpham" [value]="sanpham.id">
+                <div class="product-option">
+                  <span class="product-code">{{ sanpham.masp }}</span>
+                  <span class="product-name">{{ sanpham.title }}</span>
+                  <span class="product-price">{{ formatCurrency(sanpham.giaban) }}</span>
+                </div>
+              </mat-option>
+            </mat-select>
+            <mat-icon matSuffix>inventory_2</mat-icon>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Transaction Details Card -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>calculate</mat-icon>
+            Chi tiết giao dịch
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <!-- Số lượng thay đổi -->
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Số lượng thay đổi</mat-label>
+              <input 
+                matInput 
+                type="number"
+                [(ngModel)]="detail().soLuongThayDoi"
+                name="soLuongThayDoi"
+                (ngModelChange)="onSoLuongChange($event)"
+                required>
+              <mat-icon matSuffix>plus_minus</mat-icon>
+              <mat-hint>Số dương: tăng tồn kho, số âm: giảm tồn kho</mat-hint>
+            </mat-form-field>
+
+            <!-- Đơn giá -->
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Đơn giá</mat-label>
+              <input 
+                matInput 
+                type="number"
+                [(ngModel)]="detail().donGia"
+                name="donGia">
+              <mat-icon matSuffix>attach_money</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <!-- Thành tiền (calculated) -->
+          <div class="calculated-field">
+            <div class="calculated-label">
+              <mat-icon>calculate</mat-icon>
+              Thành tiền
+            </div>
+            <div class="calculated-value">
+              {{ formatCurrency(calculateThanhTien()) }}
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Related Documents Card -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>description</mat-icon>
+            Chứng từ liên quan
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="form-row">
+            <!-- Phiếu kho -->
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Phiếu kho</mat-label>
+              <mat-select 
+                [(ngModel)]="detail().phieuKhoId"
+                name="phieuKhoId">
+                <mat-option value="">-- Không chọn --</mat-option>
+                <mat-option *ngFor="let phieu of filterPhieuKho" [value]="phieu.id">
+                  {{ phieu.maphieu }} - {{ phieu.loaiphieu }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix>receipt_long</mat-icon>
+            </mat-form-field>
+
+            <!-- Đơn hàng -->
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Đơn hàng</mat-label>
+              <mat-select 
+                [(ngModel)]="detail().donhangId"
+                name="donhangId">
+                <mat-option value="">-- Không chọn --</mat-option>
+                <mat-option *ngFor="let donhang of filterDonhang" [value]="donhang.id">
+                  {{ donhang.madonhang }} - {{ formatCurrency(donhang.tongtien) }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matSuffix>shopping_cart</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <!-- Người thực hiện -->
+          <mat-form-field appearance="outline" class="form-field-full">
+            <mat-label>Người thực hiện</mat-label>
+            <mat-select 
+              [(ngModel)]="detail().userId"
+              name="userId">
+              <mat-option value="">-- Không chọn --</mat-option>
+              <mat-option *ngFor="let user of filterUsers" [value]="user.id">
+                {{ getUserName(user.id) }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matSuffix>person</mat-icon>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Additional Information Card -->
+      <mat-card class="form-section">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>note</mat-icon>
+            Thông tin bổ sung
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <!-- Lý do -->
+          <mat-form-field appearance="outline" class="form-field-full">
+            <mat-label>Lý do</mat-label>
+            <input 
+              matInput 
+              [(ngModel)]="detail().lyDo"
+              name="lyDo"
+              placeholder="Nhập lý do thực hiện giao dịch">
+            <mat-icon matSuffix>help</mat-icon>
+          </mat-form-field>
+
+          <!-- Ghi chú -->
+          <mat-form-field appearance="outline" class="form-field-full">
+            <mat-label>Ghi chú</mat-label>
+            <textarea 
+              matInput 
+              rows="3"
+              [(ngModel)]="detail().ghichu"
+              name="ghichu"
+              placeholder="Nhập ghi chú thêm..."></textarea>
+            <mat-icon matSuffix>notes</mat-icon>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Transaction Preview (if editing) -->
+      <mat-card class="form-section preview-section" *ngIf="isEdit() && detail().loaiGiaoDich">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>preview</mat-icon>
+            Xem trước giao dịch
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="preview-grid">
+            <div class="preview-item">
+              <div class="preview-label">Loại giao dịch:</div>
+              <div class="preview-value">
+                <mat-chip-listbox>
+                  <mat-chip 
+                    [color]="getLoaiGiaoDichOption(detail().loaiGiaoDich)?.color"
+                    selected>
+                    <mat-icon matChipAvatar>{{ getLoaiGiaoDichOption(detail().loaiGiaoDich)?.icon }}</mat-icon>
+                    {{ getLoaiGiaoDichOption(detail().loaiGiaoDich)?.label }}
+                  </mat-chip>
+                </mat-chip-listbox>
+              </div>
+            </div>
+
+            <div class="preview-item" *ngIf="detail().sanphamId">
+              <div class="preview-label">Sản phẩm:</div>
+              <div class="preview-value">{{ getSanphamName(detail().sanphamId) }}</div>
+            </div>
+
+            <div class="preview-item">
+              <div class="preview-label">Số lượng thay đổi:</div>
+              <div class="preview-value" 
+                   [class.positive]="detail().soLuongThayDoi > 0"
+                   [class.negative]="detail().soLuongThayDoi < 0">
+                {{ detail().soLuongThayDoi > 0 ? '+' : '' }}{{ detail().soLuongThayDoi }}
+              </div>
+            </div>
+
+            <div class="preview-item">
+              <div class="preview-label">Thành tiền:</div>
+              <div class="preview-value money">{{ formatCurrency(calculateThanhTien()) }}</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </form>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="detail-actions">
+    <button 
+      mat-button 
+      type="button" 
+      (click)="closeDrawer()"
+      class="cancel-button">
+      <mat-icon>cancel</mat-icon>
+      Hủy
+    </button>
+
+    <button 
+      mat-raised-button 
+      color="primary"
+      type="button"
+      (click)="saveData()"
+      [disabled]="isLoading() || !isEdit()"
+      class="save-button"
+      *ngIf="isEdit()">
+      <mat-icon>{{ isLoading() ? 'hourglass_empty' : 'save' }}</mat-icon>
+      {{ isLoading() ? 'Đang lưu...' : 'Lưu giao dịch' }}
+    </button>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <mat-icon class="spinning">hourglass_empty</mat-icon>
+    <p>Đang xử lý...</p>
+  </div>
+</div>

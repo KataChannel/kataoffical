@@ -1,0 +1,306 @@
+<!-- List Chot Kho Component -->
+<div class="list-container">
+  <!-- Header Section -->
+  <div class="list-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>inventory</mat-icon>
+        Quản lý chốt kho
+      </h1>
+      <p class="page-description">
+        Quản lý và theo dõi các đợt chốt kho hàng tồn
+      </p>
+    </div>
+    <div class="header-actions">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="createChotKho()"
+        class="create-button">
+        <mat-icon>add</mat-icon>
+        Tạo chốt kho mới
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-row">
+        <!-- Search -->
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Tìm kiếm</mat-label>
+          <input 
+            matInput 
+            [value]="filterParams().search"
+            (input)="onSearchChange($event)"
+            placeholder="Tìm theo mã, tên chốt kho...">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <!-- Trạng thái -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Trạng thái</mat-label>
+          <mat-select 
+            [value]="filterParams().trangThai"
+            (selectionChange)="onTrangThaiChange($event.value)">
+            <mat-option *ngFor="let option of trangThaiOptions" [value]="option.value">
+              <div class="status-option">
+                <mat-icon [color]="option.color" *ngIf="option.icon">{{ option.icon }}</mat-icon>
+                <span>{{ option.label }}</span>
+              </div>
+            </mat-option>
+          </mat-select>
+          <mat-icon matSuffix>filter_list</mat-icon>
+        </mat-form-field>
+
+        <!-- Từ ngày -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Từ ngày</mat-label>
+          <input 
+            matInput 
+            [matDatepicker]="fromDatePicker"
+            [value]="filterParams().tuNgay"
+            (dateChange)="onDateRangeChange($event.value, filterParams().denNgay)">
+          <mat-datepicker-toggle matIconSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #fromDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <!-- Đến ngày -->
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Đến ngày</mat-label>
+          <input 
+            matInput 
+            [matDatepicker]="toDatePicker"
+            [value]="filterParams().denNgay"
+            (dateChange)="onDateRangeChange(filterParams().tuNgay, $event.value)">
+          <mat-datepicker-toggle matIconSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #toDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <!-- Reset Button -->
+        <button 
+          mat-button 
+          (click)="resetFilters()"
+          class="reset-button">
+          <mat-icon>refresh</mat-icon>
+          Reset
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Data Table -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <!-- Loading Indicator -->
+      <div class="loading-container" *ngIf="isLoading()">
+        <mat-icon class="spinning">hourglass_empty</mat-icon>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+
+      <!-- Data Table -->
+      <div class="table-container" *ngIf="!isLoading()">
+        <table mat-table [dataSource]="dataSource" matSort class="data-table">
+          
+          <!-- Mã chốt kho Column -->
+          <ng-container matColumnDef="maChotKho">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              Mã chốt kho
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell">
+              <div class="code-cell">
+                <mat-icon>qr_code</mat-icon>
+                <span>{{ element.maChotKho }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Tên chốt kho Column -->
+          <ng-container matColumnDef="tenChotKho">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              Tên chốt kho
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell">
+              <div class="name-cell">
+                <span class="name">{{ element.tenChotKho }}</span>
+                <span class="description" *ngIf="element.ghichu">{{ element.ghichu }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Từ ngày Column -->
+          <ng-container matColumnDef="tuNgay">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              Từ ngày
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell">
+              <div class="date-cell">
+                <mat-icon>calendar_today</mat-icon>
+                <span>{{ formatDateOnly(element.tuNgay) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Đến ngày Column -->
+          <ng-container matColumnDef="denNgay">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              Đến ngày
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell">
+              <div class="date-cell">
+                <mat-icon>event</mat-icon>
+                <span>{{ formatDateOnly(element.denNgay) }}</span>
+                <small class="duration">{{ calculateDuration(element.tuNgay, element.denNgay) }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Trạng thái Column -->
+          <ng-container matColumnDef="trangThai">
+            <th mat-header-cell *matHeaderCellDef class="header-cell">
+              Trạng thái
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell">
+              <mat-chip-listbox>
+                <mat-chip 
+                  [color]="getTrangThaiColor(element.trangThai)"
+                  selected>
+                  <mat-icon matChipAvatar>{{ getTrangThaiOption(element.trangThai)?.icon }}</mat-icon>
+                  {{ getTrangThaiOption(element.trangThai)?.label }}
+                </mat-chip>
+              </mat-chip-listbox>
+            </td>
+          </ng-container>
+
+          <!-- Tổng sản phẩm Column -->
+          <ng-container matColumnDef="tongSanPham">
+            <th mat-header-cell *matHeaderCellDef class="header-cell">
+              Sản phẩm
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell">
+              <div class="number-cell">
+                <mat-icon>inventory_2</mat-icon>
+                <span>{{ element.tongSanPham || 0 }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Tổng giá trị Column -->
+          <ng-container matColumnDef="tongGiaTri">
+            <th mat-header-cell *matHeaderCellDef class="header-cell">
+              Tổng giá trị
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell">
+              <div class="money-cell">
+                <mat-icon>attach_money</mat-icon>
+                <span>{{ formatCurrency(element.tongGiaTri) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Người tạo Column -->
+          <ng-container matColumnDef="nguoiTao">
+            <th mat-header-cell *matHeaderCellDef class="header-cell">
+              Người tạo
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell">
+              <div class="user-cell">
+                <mat-icon>person</mat-icon>
+                <span>{{ element.nguoiTao?.profile?.name || element.nguoiTao?.email || 'N/A' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Ngày tạo Column -->
+          <ng-container matColumnDef="ngayTao">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="header-cell">
+              Ngày tạo
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell">
+              <div class="datetime-cell">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ formatDate(element.createdAt) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef class="header-cell actions-header">
+              Thao tác
+            </th>
+            <td mat-cell *matCellDef="let element" class="data-cell actions-cell">
+              <button 
+                mat-icon-button 
+                [matMenuTriggerFor]="actionMenu"
+                class="action-button">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              
+              <mat-menu #actionMenu="matMenu">
+                <button mat-menu-item (click)="viewChotKho(element.id)">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Xem chi tiết</span>
+                </button>
+                
+                <button 
+                  mat-menu-item 
+                  (click)="editChotKho(element.id)"
+                  [disabled]="!canEdit(element)">
+                  <mat-icon>edit</mat-icon>
+                  <span>Chỉnh sửa</span>
+                </button>
+                
+                <button 
+                  mat-menu-item 
+                  (click)="thucHienChotKho(element)"
+                  [disabled]="!canExecute(element)"
+                  class="execute-action">
+                  <mat-icon>play_arrow</mat-icon>
+                  <span>Thực hiện chốt kho</span>
+                </button>
+                
+                <mat-divider></mat-divider>
+                
+                <button 
+                  mat-menu-item 
+                  (click)="deleteChotKho(element)"
+                  [disabled]="!canDelete(element)"
+                  class="delete-action">
+                  <mat-icon>delete</mat-icon>
+                  <span>Xóa</span>
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- No Data State -->
+        <div class="no-data" *ngIf="dataSource.data.length === 0 && !isLoading()">
+          <mat-icon>inbox</mat-icon>
+          <h3>Không có dữ liệu</h3>
+          <p>Chưa có chốt kho nào được tạo</p>
+          <button mat-raised-button color="primary" (click)="createChotKho()">
+            <mat-icon>add</mat-icon>
+            Tạo chốt kho đầu tiên
+          </button>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator
+        [length]="totalItems()"
+        [pageSize]="filterParams().limit"
+        [pageIndex]="filterParams().page"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        class="pagination">
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

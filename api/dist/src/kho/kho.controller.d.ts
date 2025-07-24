@@ -26,6 +26,8 @@ export declare class khoController {
             haohut: number;
             goiy: number;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             sanphamId: string;
         }[];
         meta: {
