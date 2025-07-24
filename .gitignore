@@ -10,6 +10,7 @@ dulieu
 # Node
 /node_modules
 api/node_modules
+api/rausach_json
 frontend/node_modules
 npm-debug.log
 yarn-error.log
