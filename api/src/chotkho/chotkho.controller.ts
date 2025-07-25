@@ -196,4 +196,39 @@ export class ChotkhoController {
       throw new HttpException(error.message || 'Reorder failed', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @ApiOperation({ summary: 'Generate report for chotkho' })
+  @ApiBody({ type: Object })
+  @Post('report')
+  async generateReportPost(@Body() query: any) {
+    try {
+      return await this.chotkhoService.generateReport(query);
+    } catch (error) {
+      throw new HttpException(error.message || 'Generate report failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Bulk update status for chotkhos' })
+  @ApiBody({ type: Object })
+  @UseGuards(JwtAuthGuard)
+  @Patch('bulk-update-status')
+  async bulkUpdateStatus(@Body() data: { ids: string[], status: string }) {
+    try {
+      return await this.chotkhoService.bulkUpdateActive(data.ids, data.status === 'active');
+    } catch (error) {
+      throw new HttpException(error.message || 'Bulk update failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @ApiOperation({ summary: 'Get chotkho statistics' })
+  @Get('statistics')
+  async getStatistics() {
+    try {
+      return await this.chotkhoService.getStatistics();
+    } catch (error) {
+      throw new HttpException(error.message || 'Get statistics failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
 }

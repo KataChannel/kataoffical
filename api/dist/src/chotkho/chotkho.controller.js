@@ -125,6 +125,30 @@ let ChotkhoController = class ChotkhoController {
             throw new common_1.HttpException(error.message || 'Reorder failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async generateReportPost(query) {
+        try {
+            return await this.chotkhoService.generateReport(query);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Generate report failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async bulkUpdateStatus(data) {
+        try {
+            return await this.chotkhoService.bulkUpdateActive(data.ids, data.status === 'active');
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Bulk update failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async getStatistics() {
+        try {
+            return await this.chotkhoService.getStatistics();
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Get statistics failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 };
 exports.ChotkhoController = ChotkhoController;
 __decorate([
@@ -273,6 +297,33 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ChotkhoController.prototype, "reorder", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Generate report for chotkho' }),
+    (0, swagger_1.ApiBody)({ type: Object }),
+    (0, common_1.Post)('report'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "generateReportPost", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Bulk update status for chotkhos' }),
+    (0, swagger_1.ApiBody)({ type: Object }),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Patch)('bulk-update-status'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "bulkUpdateStatus", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Get chotkho statistics' }),
+    (0, common_1.Get)('statistics'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "getStatistics", null);
 exports.ChotkhoController = ChotkhoController = __decorate([
     (0, swagger_1.ApiTags)('chotkho'),
     (0, common_1.Controller)('chotkho'),

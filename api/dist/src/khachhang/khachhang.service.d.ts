@@ -32,6 +32,7 @@ export declare class KhachhangService {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
+        isshowvat: boolean;
         banggiaId: string | null;
     }>;
     import(data: any[]): Promise<{
@@ -93,6 +94,7 @@ export declare class KhachhangService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            isshowvat: boolean;
             banggiaId: string | null;
         })[];
         total: number;
@@ -140,6 +142,7 @@ export declare class KhachhangService {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
+        isshowvat: boolean;
         banggiaId: string | null;
     }) | {
         data: ({
@@ -182,6 +185,7 @@ export declare class KhachhangService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            isshowvat: boolean;
             banggiaId: string | null;
         })[];
         page: any;
@@ -229,6 +233,7 @@ export declare class KhachhangService {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
+        isshowvat: boolean;
         banggiaId: string | null;
     }>;
     searchfield(searchParams: Record<string, any>): Promise<{
@@ -271,6 +276,7 @@ export declare class KhachhangService {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
+        isshowvat: boolean;
         banggiaId: string | null;
     }>;
     update(id: string, data: any): Promise<{
@@ -313,6 +319,7 @@ export declare class KhachhangService {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
+        isshowvat: boolean;
         banggiaId: string | null;
     }>;
     remove(id: string): Promise<{
@@ -339,6 +346,7 @@ export declare class KhachhangService {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
+        isshowvat: boolean;
         banggiaId: string | null;
     }>;
 }

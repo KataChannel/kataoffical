@@ -259,6 +259,7 @@ async ExportExcel(title:any) {
           title2: item.title2,
           giaban: item.giaban,  
           giagoc: item.giagoc,
+          vat: item.vat,
           dvt: item.dvt,
           haohut: item.haohut,
           ghichu: item.ghichu,
@@ -270,6 +271,7 @@ async ExportExcel(title:any) {
           title2: '',
           giaban: '',
           giagoc: '',
+          vat: '',
           dvt: '',
           haohut: '',
           ghichu: '',
@@ -277,6 +279,7 @@ async ExportExcel(title:any) {
     const ListKH = Array.isArray(this.rawListKH) && this.rawListKH.length
       ? this.rawListKH.map((v: any) => ({
           name: v.name?.trim() || '',
+          tenfile: v.tenfile?.trim() || '',
           makh: v.makh?.trim() || '',
           namenn: v.namenn?.trim() || '',
           mabanggia: v.banggia?.mabanggia?.trim() || '',
@@ -291,6 +294,7 @@ async ExportExcel(title:any) {
           ghichu: v.ghichu?.toString().trim() || ''
         })) : [{
           name: '',
+          tenfile:'',
           makh: '',
           namenn: '',
           diachi: '',
@@ -307,6 +311,7 @@ async ExportExcel(title:any) {
     const ListNCC = Array.isArray(this.rawListNCC) && this.rawListNCC.length>0
       ? this.rawListNCC.map((v: any) => ({
           name: v.name?.trim() || '',
+          tenfile: v.tenfile?.trim() || '',
           mancc: v.mancc?.trim() || '',
           diachi: v.diachi?.trim() || '',
           email: v.email?.trim() || '',
@@ -316,6 +321,7 @@ async ExportExcel(title:any) {
       : [
           {
             name: '',
+            tenfile: '',
             mancc: '',
             diachi: '',
             email: '',
@@ -637,6 +643,7 @@ convertNCCSPToImport(data: any){
         title2: v.title2,
         giaban: Number(v.giaban)||Number(v.giagoc)||0,
         giagoc: Number(v.giagoc)||0,
+        vat: Number(v.vat)||0,
         dvt: v.dvt,
         haohut: Number(v.haohut)||0,
         ghichu: v.ghichu,
@@ -692,6 +699,7 @@ convertNCCSPToImport(data: any){
       const ListKH = (data.khachhang || []).map((v: any) => ({
         name: v.name.toString(),
         makh: v.makh,
+        tenfile: v.tenfile.toString(),
         subtitle: removeVietnameseAccents((v.name.toString() || "") + (v.namenn.toString() || "")),
         namenn: v.namenn.toString(),
         diachi: v.diachi,
@@ -754,6 +762,7 @@ convertNCCSPToImport(data: any){
     {
       const ListNCC = (data.nhacungcap || []).map((v: any) => ({
         name: v.name,
+        tenfile: v.tenfile.toString(),
         mancc: v.mancc,
         diachi: v.diachi,
         email: v.email,

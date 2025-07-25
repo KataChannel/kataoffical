@@ -33,6 +33,7 @@ export declare class DonhangService {
                 loaikh: string | null;
                 hiengia: boolean;
                 istitle2: boolean;
+                isshowvat: boolean;
                 banggiaId: string | null;
             };
             name: string | null;
@@ -113,6 +114,7 @@ export declare class DonhangService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            isshowvat: boolean;
             banggiaId: string | null;
         };
         id: string;
@@ -181,6 +183,7 @@ export declare class DonhangService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            isshowvat: boolean;
             banggiaId: string | null;
         };
         id: string;
@@ -251,6 +254,7 @@ export declare class DonhangService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            isshowvat: boolean;
             banggiaId: string | null;
         };
         id: string;
@@ -347,6 +351,7 @@ export declare class DonhangService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            isshowvat: boolean;
             banggiaId: string | null;
         };
         id: string;
@@ -568,6 +573,7 @@ export declare class DonhangService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            isshowvat: boolean;
             banggiaId: string | null;
         };
         id: string;

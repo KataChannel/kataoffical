@@ -1,10 +1,40 @@
+<!-- Enhanced Chotkho List Template with Advanced Features -->
 <mat-drawer-container class="w-full h-full" autosize>
   <mat-drawer #drawer class="flex flex-col lg:!w-2/3 !w-full h-full" [position]="'end'" mode="over">
     <router-outlet></router-outlet>
   </mat-drawer>
+  
   <div class="flex flex-col space-y-2 h-screen-16 w-full p-2">
+    
+    <!-- Performance Metrics Panel -->
+    <!-- <div *ngIf="performanceMetrics" class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+      <div class="flex flex-row items-center justify-between">
+        <div class="flex flex-row space-x-4 text-sm">
+          <span class="text-blue-700">
+            <mat-icon class="text-sm mr-1">speed</mat-icon>
+            Load: {{performanceMetrics().loadTime}}ms
+          </span>
+          <span class="text-blue-700">
+            <mat-icon class="text-sm mr-1">visibility</mat-icon>
+            Render: {{performanceMetrics().renderTime}}ms
+          </span>
+          <span class="text-green-700">
+            <mat-icon class="text-sm mr-1">update</mat-icon>
+            Last: {{lastUpdated() | date:'HH:mm:ss'}}
+          </span>
+        </div>
+        <button mat-icon-button color="primary" (click)="checkSystemHealth()" matTooltip="Check System Health">
+          <mat-icon>health_and_safety</mat-icon>
+        </button>
+      </div>
+    </div> -->
+
+    <!-- Loading States -->
+    <!-- Main Control Panel -->
     <div class="p-2 cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center bg-white rounded-lg">
-      <div class="w-full flex flex-col gap-2  lg:flex-row lg:items-center lg:justify-between">
+      <div class="w-full flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+        
+        <!-- Search and Basic Actions -->
         <div class="flex flex-row space-x-2 items-center">
           <div class="relative w-full">
             <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
@@ -13,26 +43,91 @@
               <span class="material-symbols-outlined text-gray-500">search</span>
             </div>
           </div>
+          
           <button class="flex flex-row items-center" color="primary" matTooltip="Thêm mới" (click)="create()"
             mat-flat-button>
             <mat-icon>add_circle</mat-icon>
             <span class="whitespace-nowrap">Tạo Mới</span>
           </button>
+          
           <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
             class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button>
             <mat-icon>delete</mat-icon>
             <span class="whitespace-nowrap">Xoá</span>
           </button>
-          </div>
+
+          <!-- Smart Refresh Button -->
+          <button class="flex flex-row items-center" color="accent" matTooltip="Smart Refresh" 
+            (click)="smartRefresh()" [disabled]="isRefreshing" mat-flat-button>
+            <mat-icon>refresh</mat-icon>
+            <span class="whitespace-nowrap">Refresh</span>
+          </button>
+        </div>
+
+        <!-- Advanced Actions Menu -->
+        <div class="flex flex-row space-x-2 items-center">
+          <button mat-flat-button color="primary" [matMenuTriggerFor]="advancedMenu">
+            <mat-icon>more_vert</mat-icon>
+            <span>Advanced</span>
+          </button>
+          
+          <mat-menu #advancedMenu="matMenu">
+            <!-- Import/Export Section -->
+            <div class="p-2 border-b">
+              <div class="text-sm font-semibold text-gray-600 mb-2">Import/Export</div>
+              <button mat-menu-item (click)="importFromExcel()">
+                <mat-icon>file_upload</mat-icon>
+                <span>Import Excel</span>
+              </button>
+              <button mat-menu-item (click)="exportToExcel()">
+                <mat-icon>file_download</mat-icon>
+                <span>Export Excel</span>
+              </button>
+            </div>
+            
+            <!-- Backup/Restore Section -->
+            <div class="p-2 border-b">
+              <div class="text-sm font-semibold text-gray-600 mb-2">Backup/Restore</div>
+              <button mat-menu-item (click)="createBackup()">
+                <mat-icon>backup</mat-icon>
+                <span>Create Backup</span>
+              </button>
+              <button mat-menu-item (click)="restoreFromBackup()">
+                <mat-icon>restore</mat-icon>
+                <span>Restore Data</span>
+              </button>
+            </div>
+            
+            <!-- System Tools Section -->
+            <div class="p-2">
+              <div class="text-sm font-semibold text-gray-600 mb-2">System Tools</div>
+              <button mat-menu-item (click)="optimizeSystem()">
+                <mat-icon>tune</mat-icon>
+                <span>Optimize System</span>
+              </button>
+              <button mat-menu-item (click)="checkSystemHealth()">
+                <mat-icon>health_and_safety</mat-icon>
+                <span>Health Check</span>
+              </button>
+              <button mat-menu-item (click)="clearAllCache()">
+                <mat-icon>clear_all</mat-icon>
+                <span>Clear Cache</span>
+              </button>
+            </div>
+          </mat-menu>
+        </div>
       </div>
+
+      <!-- Pagination Controls -->
       <div class="w-full flex flex-row space-x-4 justify-end items-center">
-        <div class="flex items-center text-center"><strong>{{ (page() - 1) * pageSize() + 1 }}</strong> -
+        <div class="flex items-center text-center">
+          <strong>{{ (page() - 1) * pageSize() + 1 }}</strong> -
           <strong>{{ page() * pageSize() > total() ? total() : page() * pageSize() }}</strong>
           / {{ total() }} mục
         </div>
         <div class="flex items-center justify-center">
-         <span>{{ page() }}/{{totalPages()}} </span> 
-         <span>Trang</span>
+          <span>{{ page() }}/{{totalPages()}} </span> 
+          <span>Trang</span>
         </div>
         <div class="flex flex-row space-x-2 justify-center items-center">
           <span class="font-bold text-blue-600" [matMenuTriggerFor]="menu1" #menuHienthi="matMenuTrigger">{{pageSize()}} mục</span>
@@ -58,42 +153,45 @@
           </div>
         </div>
       </div>
-
     </div>
+
+    <!-- Data Table -->
     <div class="w-full h-full overflow-auto">
       <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
         @for (column of displayedColumns; track column) {
         <ng-container [matColumnDef]="column">
           @if (column == 'stt') {
           <th class="flex !border !bg-slate-100 justify-center" mat-header-cell *matHeaderCellDef>     
-          <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
-            <mat-icon>tune</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <div class="flex flex-row space-x-2 items-center p-4">
-              <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-                <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput
-                  placeholder="Tìm Kiếm" />
-                <mat-icon matPrefix>search</mat-icon>
-              </mat-form-field>
-              <button (click)="updateDisplayedColumns()" mat-icon-button color="primary"><mat-icon>check_circle</mat-icon></button>
-            </div>
-            <div class="flex flex-col max-h-80 overflow-auto">
-              @for (item of FilterColumns; track item.key) {
-                @if(item.key == 'stt') {
-                  <button [disabled]="true" mat-menu-item (click)="toggleColumn(item);$event.stopPropagation()">
+            <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
+              <mat-icon>tune</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <div class="flex flex-row space-x-2 items-center p-4">
+                <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
+                  <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput
+                    placeholder="Tìm Kiếm" />
+                  <mat-icon matPrefix>search</mat-icon>
+                </mat-form-field>
+                <button (click)="updateDisplayedColumns()" mat-icon-button color="primary">
+                  <mat-icon>check_circle</mat-icon>
+                </button>
+              </div>
+              <div class="flex flex-col max-h-80 overflow-auto">
+                @for (item of FilterColumns; track item.key) {
+                  @if(item.key == 'stt') {
+                    <button [disabled]="true" mat-menu-item (click)="toggleColumn(item);$event.stopPropagation()">
                       <mat-icon>{{item.isShow ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
                       <span>{{item.value}}</span>
                     </button>
-                } @else {
-                <button mat-menu-item (click)="toggleColumn(item);$event.stopPropagation()">
-                  <mat-icon>{{item.isShow ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
-                  <span>{{item.value}}</span>
-                </button>
+                  } @else {
+                    <button mat-menu-item (click)="toggleColumn(item);$event.stopPropagation()">
+                      <mat-icon>{{item.isShow ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
+                      <span>{{item.value}}</span>
+                    </button>
+                  }
                 }
-              }
-            </div>
-          </mat-menu>
+              </div>
+            </mat-menu>
           </th>
           }
           @else {
@@ -159,6 +257,9 @@
   </div>
 </mat-drawer-container>
 
+<!-- Enhanced Dialog Templates -->
+
+<!-- Delete Confirmation Dialog -->
 <ng-template #DeleteDialog>
   <mat-dialog-content>
     <div class="flex flex-col space-y-8 items-center justify-center">
@@ -167,6 +268,163 @@
       <div class="flex flex-row space-x-2 items-center justify-center">
         <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
         <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
+      </div>
+    </div>
+  </mat-dialog-content>
+</ng-template>
+
+<!-- Import Progress Dialog -->
+<ng-template #ImportDialog>
+  <mat-dialog-content>
+    <div class="flex flex-col space-y-4 min-w-80">
+      <div class="font-bold text-center">Import Excel File</div>
+      
+      <div class="flex flex-col space-y-2">
+        <input type="file" accept=".xlsx,.xls" (change)="onFileSelected($event)" 
+          class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+      </div>
+      
+      <div *ngIf="importProgress > 0" class="flex flex-col space-y-2">
+        <mat-progress-bar mode="determinate" [value]="importProgress"></mat-progress-bar>
+        <div class="text-sm text-center">{{importProgress}}% Complete</div>
+      </div>
+      
+      <div class="flex flex-row space-x-2 justify-center">
+        <button mat-flat-button color="primary" (click)="startImport()" [disabled]="!selectedFile || importProgress > 0">
+          Start Import
+        </button>
+        <button mat-flat-button color="warn" mat-dialog-close>Cancel</button>
+      </div>
+    </div>
+  </mat-dialog-content>
+</ng-template>
+
+<!-- Export Progress Dialog -->
+<ng-template #ExportDialog>
+  <mat-dialog-content>
+    <div class="flex flex-col space-y-4 min-w-80">
+      <div class="font-bold text-center">Export to Excel</div>
+      
+      <div class="flex flex-col space-y-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Export Type</mat-label>
+          <mat-select [(value)]="exportType">
+            <mat-option value="all">All Data</mat-option>
+            <mat-option value="filtered">Filtered Data</mat-option>
+            <mat-option value="selected">Selected Items</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      
+      <div *ngIf="exportProgress > 0" class="flex flex-col space-y-2">
+        <mat-progress-bar mode="determinate" [value]="exportProgress"></mat-progress-bar>
+        <div class="text-sm text-center">{{exportProgress}}% Complete</div>
+      </div>
+      
+      <div class="flex flex-row space-x-2 justify-center">
+        <button mat-flat-button color="primary" (click)="startExport()" [disabled]="exportProgress > 0">
+          Start Export
+        </button>
+        <button mat-flat-button color="warn" mat-dialog-close>Cancel</button>
+      </div>
+    </div>
+  </mat-dialog-content>
+</ng-template>
+
+<!-- Backup Progress Dialog -->
+<ng-template #BackupDialog>
+  <mat-dialog-content>
+    <div class="flex flex-col space-y-4 min-w-80">
+      <div class="font-bold text-center">{{isRestoreMode ? 'Restore Data' : 'Create Backup'}}</div>
+      
+      <div *ngIf="!isRestoreMode" class="flex flex-col space-y-2">
+        <mat-form-field appearance="outline">
+          <mat-label>Backup Type</mat-label>
+          <mat-select [(value)]="backupType">
+            <mat-option value="full">Full Backup</mat-option>
+            <mat-option value="incremental">Incremental Backup</mat-option>
+          </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Backup Name</mat-label>
+          <input matInput [(ngModel)]="backupName" placeholder="Enter backup name">
+        </mat-form-field>
+      </div>
+      
+      <div *ngIf="isRestoreMode" class="flex flex-col space-y-2">
+        <input type="file" accept=".backup" (change)="onBackupFileSelected($event)" 
+          class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+      </div>
+      
+      <div *ngIf="backupProgress > 0" class="flex flex-col space-y-2">
+        <mat-progress-bar mode="determinate" [value]="backupProgress"></mat-progress-bar>
+        <div class="text-sm text-center">{{backupProgress}}% Complete</div>
+      </div>
+      
+      <div class="flex flex-row space-x-2 justify-center">
+        <button mat-flat-button color="primary" 
+          (click)="isRestoreMode ? startRestore() : startBackup()" 
+          [disabled]="backupProgress > 0 || (isRestoreMode && !selectedBackupFile) || (!isRestoreMode && !backupName)">
+          {{isRestoreMode ? 'Start Restore' : 'Start Backup'}}
+        </button>
+        <button mat-flat-button color="warn" mat-dialog-close>Cancel</button>
+      </div>
+    </div>
+  </mat-dialog-content>
+</ng-template>
+
+<!-- System Health Dialog -->
+<ng-template #HealthDialog>
+  <mat-dialog-content>
+    <div class="flex flex-col space-y-4 min-w-96">
+      <div class="font-bold text-center">System Health Status</div>
+      
+      <div *ngIf="healthCheck" class="flex flex-col space-y-3">
+        <div class="flex justify-between items-center p-2 rounded" 
+          [ngClass]="healthCheck.database.status === 'healthy' ? 'bg-green-50' : 'bg-red-50'">
+          <span class="font-medium">Database</span>
+          <div class="flex items-center space-x-2">
+            <mat-icon [ngClass]="healthCheck.database.status === 'healthy' ? 'text-green-500' : 'text-red-500'">
+              {{healthCheck.database.status === 'healthy' ? 'check_circle' : 'error'}}
+            </mat-icon>
+            <span class="text-sm">{{healthCheck.database.responseTime}}ms</span>
+          </div>
+        </div>
+        
+        <div class="flex justify-between items-center p-2 rounded" 
+          [ngClass]="healthCheck.api.status === 'healthy' ? 'bg-green-50' : 'bg-red-50'">
+          <span class="font-medium">API Server</span>
+          <div class="flex items-center space-x-2">
+            <mat-icon [ngClass]="healthCheck.api.status === 'healthy' ? 'text-green-500' : 'text-red-500'">
+              {{healthCheck.api.status === 'healthy' ? 'check_circle' : 'error'}}
+            </mat-icon>
+            <span class="text-sm">{{healthCheck.api.responseTime}}ms</span>
+          </div>
+        </div>
+        
+        <div class="flex justify-between items-center p-2 rounded" 
+          [ngClass]="healthCheck.memory.status === 'healthy' ? 'bg-green-50' : 'bg-yellow-50'">
+          <span class="font-medium">Memory Usage</span>
+          <div class="flex items-center space-x-2">
+            <mat-icon [ngClass]="healthCheck.memory.status === 'healthy' ? 'text-green-500' : 'text-yellow-500'">
+              {{healthCheck.memory.status === 'healthy' ? 'check_circle' : 'warning'}}
+            </mat-icon>
+            <span class="text-sm">{{healthCheck.memory.usage}}%</span>
+          </div>
+        </div>
+        
+        <div class="flex justify-between items-center p-2 rounded bg-blue-50">
+          <span class="font-medium">Last Check</span>
+          <span class="text-sm">{{healthCheck.timestamp | date:'dd/MM/yyyy HH:mm:ss'}}</span>
+        </div>
+      </div>
+      
+      <div class="flex flex-row space-x-2 justify-center">
+        <button mat-flat-button color="primary" (click)="checkSystemHealth()">
+          Refresh Status
+        </button>
+        <button mat-flat-button color="warn" mat-dialog-close>Close</button>
       </div>
     </div>
   </mat-dialog-content>

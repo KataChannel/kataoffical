@@ -7,8 +7,6 @@
         <div
             class="cursor-pointer w-full relative flex lg:flex-row lg:space-y-2 space-y-0 flex-col space-x-2 justify-between items-center p-2 bg-white rounded-lg">
             <div class="flex flex-row space-x-2 items-center">
-
-
                 <div class="relative w-full">
                     <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
                         class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
@@ -16,8 +14,6 @@
                         <span class="material-symbols-outlined text-gray-500">search</span>
                     </div>
                 </div>
-
-
                 <button class="flex flex-row items-center btn-primary" matTooltip="Thêm mới" (click)="create()"
                     mat-flat-button>
                     <mat-icon>add_circle</mat-icon>
@@ -96,17 +92,7 @@
             <button *ngIf="editDonhang.length>0" mat-flat-button color="primary" (click)="openCreateDialog(dialogCreateTemplate)">Phiếu Chia</button>
           </div> -->
         <div class="w-full overflow-auto relative">
-            <!-- Loading Overlay -->
-            @if (isLoading()) {
-            <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
-                <div class="flex flex-col items-center space-y-4">
-                    <mat-spinner diameter="40"></mat-spinner>
-                    <span class="text-sm text-gray-600">Đang tải dữ liệu...</span>
-                </div>
-            </div>
-            }
-
-            <!-- Table Content -->
+             <!-- Table Content -->
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
                 @for (column of displayedColumns; track column) {
                 <ng-container [matColumnDef]="column">
@@ -247,11 +233,12 @@
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
             </table>
+
+            <app-sharepagination [pageSize]="pageSize()" [page]="page()" [total]="total()" [pageCount]="pageCount()"
+                (emitChange)="onPageChange($event)">
+            </app-sharepagination>
         </div>
 
-        <app-sharepagination [pageSize]="pageSize()" [page]="page()" [total]="total()" [pageCount]="pageCount()"
-            (emitChange)="onPageChange($event)">
-        </app-sharepagination>
 
 
 

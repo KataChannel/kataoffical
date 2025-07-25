@@ -127,6 +127,7 @@ export declare class BanggiaService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            isshowvat: boolean;
             banggiaId: string | null;
         }[];
         id: string;

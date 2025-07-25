@@ -146,9 +146,9 @@ let ChotkhoService = class ChotkhoService {
     }
     async findAll(query) {
         try {
-            const { page = 1, limit = 20, search = '', trangThai = '', tuNgay = '', denNgay = '', ...filters } = query;
+            const { page = 1, pageSize = 20, search = '', trangThai = '', tuNgay = '', denNgay = '', ...filters } = query;
             const pageNum = parseInt(page.toString(), 10);
-            const limitNum = parseInt(limit.toString(), 10);
+            const limitNum = parseInt(pageSize.toString(), 10);
             const skip = (pageNum - 1) * limitNum;
             const where = { ...filters };
             if (search) {

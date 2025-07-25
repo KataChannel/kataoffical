@@ -34,6 +34,7 @@ export declare class NhomkhachhangController {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            isshowvat: boolean;
             banggiaId: string | null;
         }[];
     } & {
@@ -82,6 +83,7 @@ export declare class NhomkhachhangController {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
+            isshowvat: boolean;
             banggiaId: string | null;
         }[];
     } & {

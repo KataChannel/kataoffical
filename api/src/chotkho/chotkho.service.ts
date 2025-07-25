@@ -147,7 +147,7 @@ export class ChotkhoService {
     try {
       const {
         page = 1,
-        limit = 20,
+        pageSize = 20,
         search = '',
         trangThai = '',
         tuNgay = '',
@@ -156,7 +156,7 @@ export class ChotkhoService {
       } = query;
 
       const pageNum = parseInt(page.toString(), 10);
-      const limitNum = parseInt(limit.toString(), 10);
+      const limitNum = parseInt(pageSize.toString(), 10);
       const skip = (pageNum - 1) * limitNum;
 
       const where: any = { ...filters };
