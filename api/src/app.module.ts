@@ -28,6 +28,7 @@ import { AuditInterceptor } from './auditlog/audit.interceptor';
 import { AuditService } from './auditlog/auditlog.service';
 import { AuditLogModule } from './auditlog/auditlog.module';
 import { AuditMiddleware } from './auditlog/audit.middleware';
+import { ChotkhoModule } from './chotkho/chotkho.module';
 
 @Module({
   imports: [
@@ -52,7 +53,8 @@ import { AuditMiddleware } from './auditlog/audit.middleware';
     DashboardModule,
     UserguideModule,
     ImportdataModule,
-    AuditLogModule
+    AuditLogModule,
+    ChotkhoModule
   ],
   controllers: [AppController],
   providers: [

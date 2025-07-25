@@ -124,9 +124,11 @@ let PhieukhoService = class PhieukhoService {
                 try {
                     newPhieuKho = await prisma.phieuKho.create({
                         data: {
+                            title: data.title,
                             maphieu: maphieukho,
                             ngay: new Date(data.ngay),
                             type: data.type,
+                            isChotkho: data.isChotkho || false,
                             khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
                             ghichu: data.ghichu,
                             isActive: data.isActive ?? true,

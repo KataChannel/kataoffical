@@ -476,7 +476,13 @@ export const routes: Routes = [
             (c) => c.XuatnhaptonComponent
           ),
       },
-      
+       {
+            path: 'chotkho',
+            canActivate: [PermissionGuard],
+            data: { permission: 'chotkho.view' },
+            loadChildren: () =>
+              import('./admin/chotkho/chotkho.route').then(m => m.ChotkhoRoutingModule),
+      },
       {
         path: 'congnokhachhang',
         canActivate: [PermissionGuard],

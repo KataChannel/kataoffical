@@ -37,6 +37,7 @@ const audit_interceptor_1 = require("./auditlog/audit.interceptor");
 const auditlog_service_1 = require("./auditlog/auditlog.service");
 const auditlog_module_1 = require("./auditlog/auditlog.module");
 const audit_middleware_1 = require("./auditlog/audit.middleware");
+const chotkho_module_1 = require("./chotkho/chotkho.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(audit_middleware_1.AuditMiddleware).forRoutes('*');
@@ -67,7 +68,8 @@ exports.AppModule = AppModule = __decorate([
             dashboard_module_1.DashboardModule,
             userguide_module_1.UserguideModule,
             importdata_module_1.ImportdataModule,
-            auditlog_module_1.AuditLogModule
+            auditlog_module_1.AuditLogModule,
+            chotkho_module_1.ChotkhoModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [

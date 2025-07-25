@@ -11,7 +11,8 @@ async function getTables() {
 }
 async function restoreTableFromJson(table) {
     try {
-        const latestBackupDir = fs.readdirSync(BACKUP_ROOT_DIR).sort()[0];
+        const latestBackupDir = fs.readdirSync(BACKUP_ROOT_DIR).sort().reverse()[0];
+        console.log(`Đang khôi phục dữ liệu: ${latestBackupDir}`);
         if (!latestBackupDir) {
             console.error(`❌ Không tìm thấy thư mục backup.`);
             return;

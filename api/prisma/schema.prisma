@@ -57,6 +57,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   AuditLog AuditLog[]
+
+  Chotkho Chotkho[]
 }
 
 model Role {
@@ -212,6 +214,8 @@ model Sanpham {
   PhieuKhoSanpham PhieuKhoSanpham[]
   Nhacungcap Nhacungcap[] @relation("NhacungcapToSanpham")
   TonKho TonKho[]
+
+  Chotkho Chotkho[]
 }
 model Donhang {
   id          String  @id @default(uuid())
@@ -349,6 +353,8 @@ model Kho {
   isActive  Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Chotkho Chotkho[]
 }
 model SanphamKho {
   id        String @id @default(uuid())
@@ -373,6 +379,7 @@ model PhieuKho {
   madathang String?
   ngay      DateTime?
   type      String? // "nhap" | "xuat"
+  isChotkho Boolean @default(false)
   khoId     String?
   kho       Kho? @relation(fields: [khoId], references: [id])
   ghichu    String?
@@ -380,6 +387,7 @@ model PhieuKho {
   sanpham   PhieuKhoSanpham[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Chotkho Chotkho[]
 }
 
 model PhieuKhoSanpham {
@@ -401,7 +409,33 @@ model TonKho {
   slton            Decimal @postgres.Decimal(20, 2) @default(0)
   slchogiao        Decimal @postgres.Decimal(20, 2) @default(0)
   slchonhap        Decimal @postgres.Decimal(20, 2) @default(0)
+  Chotkho Chotkho[]
 }
+model Chotkho {
+  id          String    @id @default(uuid())
+  codeId      String?   @unique // Mã đề xuất duy nhất
+  title       String?
+  khoId       String?
+  kho         Kho?       @relation(fields: [khoId], references: [id])
+  sanphamId   String?
+  sanpham     Sanpham?   @relation(fields: [sanphamId], references: [id])
+  tonkhoId    String?
+  tonkho      TonKho?    @relation(fields: [tonkhoId], references: [id])
+  phieukhoId  String?
+  phieukho    PhieuKho? @relation(fields: [phieukhoId], references: [id])
+  userId      String?
+  user        User?      @relation(fields: [userId], references: [id])
+  ngay        DateTime  @default(now())
+  slthucte    Decimal   @postgres.Decimal(20, 2)
+  slhethong   Decimal   @postgres.Decimal(20, 2)
+  chenhlech   Decimal?  @postgres.Decimal(20, 2)
+  ghichu      String?
+  order      Int?      @default(1)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
 model ChatAIMessage {
   id        String  @id @default(uuid())
   userId    String

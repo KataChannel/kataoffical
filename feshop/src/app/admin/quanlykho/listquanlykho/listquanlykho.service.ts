@@ -34,22 +34,7 @@ export class QuanlykhosService {
         }
         const data = await response.json();
         if (!response.ok) {
-          if (response.status === 401) {
-            const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else if (response.status === 403) {
-            const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else if (response.status === 500) {
-            const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else {
-            const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          }
+
         }
         this.getAllQuanlykho()
         return data;
@@ -69,21 +54,7 @@ export class QuanlykhosService {
       };
       const response = await fetch(`${environment.APIURL}/quanlykho`, options);
       if (!response.ok) {
-        if (response.status === 401) {
-          const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          // this.Dangxuat()
-        } else if (response.status === 403) {
-          const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          // this.Dangxuat()
-        } else if (response.status === 500) {
-          const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-        } else {
-          const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-          this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-        }
+
       }
       const data = await response.json();     
       this.ListQuanlykho.set(data)
@@ -176,22 +147,7 @@ export class QuanlykhosService {
         }
         const data = await response.json();
         if (!response.ok) {
-          if (response.status === 401) {
-            const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else if (response.status === 403) {
-            const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else if (response.status === 500) {
-            const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            // this.Dangxuat()
-          } else {
-            const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-            this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-          }
+
         }
         this.getAllQuanlykho()
         return data;

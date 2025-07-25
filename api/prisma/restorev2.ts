@@ -12,11 +12,13 @@ async function getTables(): Promise<string[]> {
 
 async function restoreTableFromJson(table: string): Promise<void> {
   try {
-    const latestBackupDir = fs.readdirSync(BACKUP_ROOT_DIR).sort()[0];
+    const latestBackupDir = fs.readdirSync(BACKUP_ROOT_DIR).sort().reverse()[0];
+    console.log(`Đang khôi phục dữ liệu: ${latestBackupDir}`);
     if (!latestBackupDir) {
       console.error(`❌ Không tìm thấy thư mục backup.`);
       return;
     }
+    
     const filePath: string = path.join(
       BACKUP_ROOT_DIR,
       latestBackupDir,

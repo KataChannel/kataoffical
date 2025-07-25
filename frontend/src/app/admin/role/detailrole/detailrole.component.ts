@@ -65,7 +65,7 @@ export class DetailRoleComponent {
   isEdit = signal(false);
   isDelete = signal(false);
   async ngOnInit() {
-    await this._PermissionService.getAllPermission();
+    await this._PermissionService.getAllPermission(1000);
     this.ListPermission = this._PermissionService.ListPermission();
     if (!this.idRole) {
       this._router.navigate(['/admin/nhomuser']);

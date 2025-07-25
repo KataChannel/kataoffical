@@ -1,0 +1,4142 @@
+[
+  {
+    "id": "90b2356a-3f40-42e0-b848-d65845ab4c05",
+    "sanphamId": "9270dddb-c04b-4c14-a972-e6bd3a198dea",
+    "slton": "0",
+    "slchogiao": "1.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d5a120b3-1dc7-4b69-b01c-c98fb5c805c4",
+    "sanphamId": "edfb8db9-dca4-4907-81fe-fbb07b80a061",
+    "slton": "0",
+    "slchogiao": "5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "78d9c342-1cf4-4221-b3b5-691f3f735e25",
+    "sanphamId": "bbb99d89-7239-4f60-92d5-5a04f32f1b26",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f3c2e579-5502-4dfa-a818-17e1f4665b3c",
+    "sanphamId": "eae2d909-49d8-458f-86e4-0b2a2bed1903",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f090acd7-4eeb-45f7-80d7-d60bf3c4e037",
+    "sanphamId": "fda739f9-723f-4ca8-b8b2-24efa1d032fe",
+    "slton": "0",
+    "slchogiao": "2.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4821a6a4-8c6e-43ed-a517-f95919286bd4",
+    "sanphamId": "d0ccd7b2-54f8-4fab-888d-89b84d6dbd76",
+    "slton": "0",
+    "slchogiao": "8.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ffe0d0ff-facd-4c94-9c75-588dd72c5ccd",
+    "sanphamId": "b65ed770-2ae6-444b-b399-5ea873e9420a",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "119bebda-1e48-4b9e-8476-196aabb8c96c",
+    "sanphamId": "058576a8-f51f-4831-89fa-949695856353",
+    "slton": "0",
+    "slchogiao": "1.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "47a7c968-3290-41a0-80e8-91dfe67bad10",
+    "sanphamId": "cff91e0a-0432-432a-8dbf-d0d46f60914e",
+    "slton": "0",
+    "slchogiao": "15",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "0eeeddbe-acdd-4490-9e4c-b2a1681cb6b5",
+    "sanphamId": "d37ebbbd-9024-4615-b63f-e66d2a8305d0",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "73721a20-107b-435d-a39f-7707c15f4983",
+    "sanphamId": "189c5a79-3939-4a4c-aa66-f622030969c5",
+    "slton": "0",
+    "slchogiao": "1.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "638fbbe0-97f2-4c32-9d07-44a93550c9fe",
+    "sanphamId": "c1b0a163-6b75-497c-a88c-9b0dc9d730e5",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ffb64853-8406-4161-a817-42d045a2b0dd",
+    "sanphamId": "0fdac7a8-4306-413c-a734-f18b98404067",
+    "slton": "0",
+    "slchogiao": "4.4",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "beb836d7-d9e6-4fc2-a55c-ac414f73821a",
+    "sanphamId": "55669f9b-9ec8-468e-bf8f-5cd4d64c9509",
+    "slton": "0",
+    "slchogiao": "6",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "74691806-99cf-4c63-8794-322d9d04313d",
+    "sanphamId": "efe70a2d-0976-4292-97fb-b7d461b2be56",
+    "slton": "0",
+    "slchogiao": "0.8",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ba146eb7-dd88-4540-b422-dd040c2e580f",
+    "sanphamId": "778dc825-9c64-4169-ba2f-0eef417daba4",
+    "slton": "0",
+    "slchogiao": "0.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "bf39c47f-bcf7-4d02-8bae-e2393462891c",
+    "sanphamId": "f9b44237-4b36-4dc8-b20a-f5e00292a3e8",
+    "slton": "0",
+    "slchogiao": "1.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "49e30953-6ebc-482c-971d-e13ca25db5a0",
+    "sanphamId": "f78cac2e-2ce5-4bf6-8955-0fa389ed7215",
+    "slton": "1.1",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c2442dbd-8c39-4298-82c1-784592d1cf41",
+    "sanphamId": "f8db1952-4ad4-4b9e-832f-508ca403da09",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b1942ca6-4c89-4e0d-8490-1ad568071318",
+    "sanphamId": "4d82cb64-adc3-4ba4-87ae-db5ae184b60a",
+    "slton": "0.5",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4787da81-7a44-43c8-bb9f-b281fffe506d",
+    "sanphamId": "e0b2d221-f833-4ec2-b00f-55cb4ea4bfdf",
+    "slton": "0",
+    "slchogiao": "15",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e3391296-eed4-455e-9a9c-f1f7ec04bae5",
+    "sanphamId": "34691a4c-0c21-490a-bc1c-4513815d52b1",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "262bbad9-e7c2-40a9-b1a1-795a7d025f9a",
+    "sanphamId": "1dd293b1-53d6-4ac4-b132-4040726b5b6e",
+    "slton": "0",
+    "slchogiao": "8",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6a8d610e-1fd4-415c-b9ea-d124ec92dd14",
+    "sanphamId": "ec31bf71-6c80-4503-9d60-8d53bf7b9309",
+    "slton": "0",
+    "slchogiao": "0.1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "75bf92ee-436e-4c05-ac5d-02eba44d4285",
+    "sanphamId": "f0307fa1-bca8-4e96-b1c3-847f52759d80",
+    "slton": "0",
+    "slchogiao": "3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4baa9a42-9ae6-4311-a08e-38cb93227219",
+    "sanphamId": "4c3aec46-c33b-4ded-8580-bad43a29e31c",
+    "slton": "0",
+    "slchogiao": "1.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "37e110bd-3bbc-4987-b346-dfe81c402e5d",
+    "sanphamId": "d6a88fa1-4153-4ea8-b1aa-93b306368708",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "5",
+    "createdAt": "2025-07-24T08:01:15.648Z",
+    "updatedAt": "2025-07-24T08:01:15.648Z"
+  },
+  {
+    "id": "05111901-b470-411f-b90c-2422d06e57ce",
+    "sanphamId": "cd274a95-d7e2-4929-bc5f-eff54c11c4ce",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6becb72c-f091-4dc5-9225-0dcdbc32f4a7",
+    "sanphamId": "073f7715-48bc-4240-b913-9137678e5f7d",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "8fa45cb7-84be-47f5-9dbd-9ecefafad065",
+    "sanphamId": "4b4a5f19-3308-46f3-afab-5d0efe488cce",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b7968579-fdea-4bd7-88d8-76988d3a7955",
+    "sanphamId": "5178cecc-998f-41ba-99d8-5c1b32b660cc",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "8ef29e9c-7414-4531-8101-6c8dc66f6001",
+    "sanphamId": "255a6839-b399-47a0-a4ff-ae8e8dbbd311",
+    "slton": "30",
+    "slchogiao": "2",
+    "slchonhap": "60",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "bca63649-08a9-4171-8e34-8fb044c04382",
+    "sanphamId": "ed25b45d-d97a-4bd2-b7a2-45a8094504de",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "be310f5e-3d25-4cc0-8664-d431b48e7b7c",
+    "sanphamId": "e7d41a26-efde-43fa-89d6-2114a9660fbf",
+    "slton": "0",
+    "slchogiao": "33",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c03b0f45-331a-4939-9899-a23779d700b2",
+    "sanphamId": "fe976742-02e2-4039-b7d0-caa27d310f9b",
+    "slton": "0",
+    "slchogiao": "1.7",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "62f21c49-f76a-4a95-80a9-ae655ac0d61d",
+    "sanphamId": "2d8fc107-24e9-4c4c-96f7-e762cd8a0aa3",
+    "slton": "0",
+    "slchogiao": "2.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "41e2b7b2-7e55-4e9c-b451-d3fd37825b5e",
+    "sanphamId": "ba0260d3-51cd-47d6-ad89-28e6e1f55a5f",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "661f24d9-69bd-41b6-9efc-ce399c04ad50",
+    "sanphamId": "84d75ac0-a4ce-42c9-83a9-33a7af37a46d",
+    "slton": "0",
+    "slchogiao": "3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "cc2b813b-c1ec-465f-b87f-c7f899fef644",
+    "sanphamId": "f761ea76-3978-4b89-8a44-44ec7c560bad",
+    "slton": "0",
+    "slchogiao": "0.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4f51cad1-8d9a-4df3-a836-a61cd27eeff3",
+    "sanphamId": "070bf04e-95ca-4228-8ba8-08a18fc8907d",
+    "slton": "0",
+    "slchogiao": "1.6",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e532207b-cd1f-4a54-a22e-1b975b240dad",
+    "sanphamId": "8e0ca752-fe19-40cf-a652-fb68549b8cff",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "fce93877-2e7f-47a7-8095-e4213211edbf",
+    "sanphamId": "850c6221-1d8b-4f59-926c-8ac5c28aa7e9",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "96238153-22e4-4dcb-9f24-e68e59ad629a",
+    "sanphamId": "f98fea8b-020f-4934-aae5-9230f9101448",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2fd16757-d2b0-4678-a655-29f30778d504",
+    "sanphamId": "9375d4aa-80b1-429d-a56b-950739f63eaa",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "58ec32cf-89ed-4ffc-863e-475f48c08e35",
+    "sanphamId": "f8ee7507-8db9-45ea-bde8-f7cecc254f94",
+    "slton": "0",
+    "slchogiao": "4",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "9c3f3911-9be9-4052-b4e5-7d4517d07b4a",
+    "sanphamId": "44eb028d-d0ca-48b5-aec4-bfb785d98f1d",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f90156a0-3179-4547-b11c-3663f393d07a",
+    "sanphamId": "0ef862eb-6dcd-4586-9799-b9fda76625c5",
+    "slton": "0",
+    "slchogiao": "4.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "1036b76a-fd3d-4180-84f6-43dfacef53da",
+    "sanphamId": "66e7bd72-0344-4318-be31-f883fc6a5c1b",
+    "slton": "0",
+    "slchogiao": "4",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2126c415-dd32-4cf8-9e12-03ee4b24ee66",
+    "sanphamId": "59229314-e165-45d7-a4de-552619b71b9f",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "4",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5047b394-94a1-4ad5-930f-69efa6d87796",
+    "sanphamId": "263ea2df-7313-4d73-8ced-c379e27cde85",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "9d673b32-d4f2-4dc1-9968-574f95770a84",
+    "sanphamId": "9678f291-e04c-4bb3-892f-d5c41a44f82f",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4b90fd27-2127-4d43-9814-e3e4b3b63b69",
+    "sanphamId": "9f08ef00-1479-419f-97ae-661931c058e6",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d028f664-b5ed-455e-9f19-68c5ec8d30e6",
+    "sanphamId": "58f1caca-c775-4723-8192-9dbe3b7970a3",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ad7849d6-f992-4ec9-b4e3-fb6b735a8021",
+    "sanphamId": "122228ae-36a9-4050-948f-15f75aa45db0",
+    "slton": "0",
+    "slchogiao": "3.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "872bc136-8db6-4113-a51f-258e0b5f15ef",
+    "sanphamId": "96821ebb-9692-4381-b8a1-86984e8e0717",
+    "slton": "0",
+    "slchogiao": "20",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "0b44569e-6458-4cf5-81d3-28c305bb2e7a",
+    "sanphamId": "b5f0630a-10a2-4aa1-be34-5bcf670efc10",
+    "slton": "0",
+    "slchogiao": "3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "519cecde-645d-446b-bff8-47c114300c6c",
+    "sanphamId": "32d0ea47-44ab-411b-8c71-c03b7fff6099",
+    "slton": "0",
+    "slchogiao": "1.6",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6ed191de-0fa6-41c9-9b22-b98e819026aa",
+    "sanphamId": "c72077be-655f-4867-899f-5a97e12b001d",
+    "slton": "0",
+    "slchogiao": "12",
+    "slchonhap": "4",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "7a1e33ab-b089-4e78-9124-8c0e86947912",
+    "sanphamId": "2fa7db55-3ca4-4154-a62c-ad9151d0e61f",
+    "slton": "-3",
+    "slchogiao": "21",
+    "slchonhap": "2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "372f6bed-c855-491d-b8e2-5abcfd9636ad",
+    "sanphamId": "fd099e1e-4442-41f6-9d91-e200c8ed2f87",
+    "slton": "0",
+    "slchogiao": "6",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "618ff11b-2d5b-4277-a0ec-9fadbcdfb5dc",
+    "sanphamId": "00961465-ecb3-4b31-bab7-070bb57b04cd",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c75fa782-0b7f-46f1-948f-6412e54814b0",
+    "sanphamId": "88f9994a-68a7-44fe-84e9-c25240f4d771",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "267ac7e1-c2f1-4bd2-b819-214995471872",
+    "sanphamId": "925beaf9-f32e-4617-8d88-e117511cf0a5",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f34dfff9-f4e5-41cb-bb94-d6d120b3361d",
+    "sanphamId": "8b7b32b0-30f0-44f9-959d-cfc8ca1465ad",
+    "slton": "-4",
+    "slchogiao": "14",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ad5a6166-6eef-4f20-a439-0a28274d9701",
+    "sanphamId": "c44cc8d1-2199-4d83-8b6e-207d6d6726a4",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f2b50e82-1136-47a8-b2c7-b9f27744d612",
+    "sanphamId": "47e7de39-822c-4252-bd31-3f26378185f9",
+    "slton": "0",
+    "slchogiao": "3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "bcdbd9fe-95f4-4684-aee8-a8dcb46f2b4c",
+    "sanphamId": "b3ac2310-7a29-4445-8df3-75e9a9562a81",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "2",
+    "createdAt": "2025-07-24T08:01:16.091Z",
+    "updatedAt": "2025-07-24T08:01:16.091Z"
+  },
+  {
+    "id": "cf09bc19-8d91-40a5-8c0c-b2e53f80a601",
+    "sanphamId": "51df94e6-cecd-40b1-b7e1-ca21979759a5",
+    "slton": "2.9",
+    "slchogiao": "100.2",
+    "slchonhap": "40",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e4e87354-b1bb-407f-88d6-c0f4d80b40f8",
+    "sanphamId": "7860c6c9-7091-4734-a858-1181a3617058",
+    "slton": "0",
+    "slchogiao": "1.3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "14e70098-a9a5-4010-ae42-a26fb2f4fa1b",
+    "sanphamId": "c1048315-5e3c-45c3-984f-fe01db44876c",
+    "slton": "0",
+    "slchogiao": "3",
+    "slchonhap": "1.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "50d7c0c5-f0ca-4659-abc7-2b06556bb38b",
+    "sanphamId": "f4080d39-0912-4afe-ac7f-28e373fb0f5b",
+    "slton": "0",
+    "slchogiao": "11",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "18b1de7b-faac-4e58-9f16-b55fc354b1f0",
+    "sanphamId": "9e640adb-753e-4e9f-8396-f555a61a4be1",
+    "slton": "0",
+    "slchogiao": "5.3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "64ee177b-f233-401f-8bbc-ce7c79fca719",
+    "sanphamId": "98ee9b43-f4e9-4bca-8ffa-d52c0bab2244",
+    "slton": "5",
+    "slchogiao": "111.62",
+    "slchonhap": "40",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "420ec235-127e-4d08-8a8d-97cb5485b4c7",
+    "sanphamId": "881b49ab-a3f2-49d8-ad62-18c974a3f74b",
+    "slton": "0",
+    "slchogiao": "3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6df98c85-7827-4233-836e-7b1c0590cfa9",
+    "sanphamId": "91fc60ec-6f0a-47ca-886b-cc389edbb8c7",
+    "slton": "0",
+    "slchogiao": "2.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "fb071333-5195-4bdd-9d50-9fb9750592d3",
+    "sanphamId": "60db6e5d-3dd1-4388-8326-91497c95a5c4",
+    "slton": "60",
+    "slchogiao": "286.9",
+    "slchonhap": "60",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e354bd6c-d119-4780-a6f2-2c4f221110de",
+    "sanphamId": "77553c97-b8a5-4a9c-a237-a6f95e2fe16d",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a0d352b2-ec22-477d-b57d-1e88c41b025f",
+    "sanphamId": "bbbd0e96-3d68-4f77-b09c-9986a77ba4ab",
+    "slton": "0.5",
+    "slchogiao": "27.85",
+    "slchonhap": "9.1",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "db6b2fbe-8941-44bf-aed6-20fb571144ec",
+    "sanphamId": "ca480c91-0aeb-4a86-af9b-804df90b4ba9",
+    "slton": "0",
+    "slchogiao": "0.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e8ba0b24-92f2-4991-8648-bd2b489c1cda",
+    "sanphamId": "fe973150-150f-401d-89a6-19d320317fac",
+    "slton": "2",
+    "slchogiao": "37",
+    "slchonhap": "5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6979aff6-099c-4ae5-8652-60cd99ad4642",
+    "sanphamId": "704b37a6-8764-404f-9012-d72144b3e0b0",
+    "slton": "0",
+    "slchogiao": "2.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "606962d1-9fce-4b07-a822-c7e868994cc2",
+    "sanphamId": "a6b694e1-da77-476d-b54e-759353396645",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "8df3cf9f-2ca1-4326-9be1-82bbca6b2918",
+    "sanphamId": "e0e09139-5a6c-4f98-9786-708ca7caebb7",
+    "slton": "7",
+    "slchogiao": "364.58",
+    "slchonhap": "187",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5f930a54-8a85-4d9e-b50f-880f0fb52b5f",
+    "sanphamId": "68bfd028-00ff-4a9c-84e3-6b5cac5571ca",
+    "slton": "0",
+    "slchogiao": "35",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "1c4f5dc7-96af-4b3c-8c46-c96ec11012a3",
+    "sanphamId": "62a42474-6ba0-4c8a-aedf-6cd909083aa8",
+    "slton": "0",
+    "slchogiao": "0.5",
+    "slchonhap": "0.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2aff2e08-3ced-4dc8-8c46-8508bc42cc31",
+    "sanphamId": "d4a3daa9-eca9-4d82-a9d1-1b90fd4dec63",
+    "slton": "1",
+    "slchogiao": "29.9",
+    "slchonhap": "9",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "0c2cdb8c-9f50-4d32-b498-22f31b3280af",
+    "sanphamId": "61b10331-9872-4471-a5ff-ba057b1d181c",
+    "slton": "0",
+    "slchogiao": "1.9",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e97cb3bd-c6cd-4a47-a8d4-6c2b8373351a",
+    "sanphamId": "b69aaeb6-f337-4df8-a78a-fa0c84f6faa7",
+    "slton": "29",
+    "slchogiao": "1339.2",
+    "slchonhap": "389",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c94a3909-5d91-41ee-9d8d-d7b86679bb7f",
+    "sanphamId": "988ff2f7-63f8-425a-8443-5c206190cf26",
+    "slton": "12.7",
+    "slchogiao": "5.45",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2c2db3d1-a68b-4fd2-8201-53cf0231267a",
+    "sanphamId": "24930b3f-8a90-477e-aee0-a2356d451a6d",
+    "slton": "0",
+    "slchogiao": "4",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e398cc25-dd5d-4fda-8d41-3c6d68a65b66",
+    "sanphamId": "dbba0405-6563-431e-bc35-47cc539454ae",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "028cc4ae-b7b4-45b7-841b-f66724e643ec",
+    "sanphamId": "87b2359c-5747-4f0a-a731-6ed8a75e193b",
+    "slton": "0",
+    "slchogiao": "2.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "064c83a5-a884-4883-8aa0-a9629108fa92",
+    "sanphamId": "82cb1a4e-fab1-4757-9dc1-60799495673f",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5cf8e5e9-a6a6-4c8d-9376-3c07e7cb23e5",
+    "sanphamId": "1af2877e-e37e-40b3-9336-580aea15ce4b",
+    "slton": "0",
+    "slchogiao": "2.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2d50b245-49b4-4261-a32a-0895de2221e8",
+    "sanphamId": "11a896a2-da98-42d7-a390-85735bb80514",
+    "slton": "0",
+    "slchogiao": "4",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "66383185-03aa-4424-b90c-ffa622d483e6",
+    "sanphamId": "4ef731d9-4f67-4484-8926-86e88b9fe24b",
+    "slton": "0",
+    "slchogiao": "15",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "77862568-9ea1-492e-b159-a120787139bc",
+    "sanphamId": "b3073985-a6ed-4a81-8e77-7b608b45b9f7",
+    "slton": "2",
+    "slchogiao": "49.5",
+    "slchonhap": "16",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a6d3d6a0-fb71-4da6-a2d8-7fe4d445ba26",
+    "sanphamId": "17940d4b-2521-448a-9219-9405ed98073d",
+    "slton": "0",
+    "slchogiao": "32",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "bb7d682f-8685-4bf1-b9f6-16badfdf6392",
+    "sanphamId": "856ef8c7-9cf0-42ff-965a-1c5a9b38e32c",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4be34d75-b03a-4587-bff6-9e5c14bb8161",
+    "sanphamId": "d2e2b102-d5cc-44ff-a24b-1dbf9b872f85",
+    "slton": "0",
+    "slchogiao": "967.2",
+    "slchonhap": "460",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "06812797-f97c-42d2-80cc-596dbff51288",
+    "sanphamId": "0d70683f-a671-4b7e-adf8-9a4bcfeedcac",
+    "slton": "1.4",
+    "slchogiao": "34.7",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f0a39b71-60eb-4587-a3d9-7f96f309e479",
+    "sanphamId": "cd3dc7ab-7420-4b9b-a5c1-66f2d0f5ccca",
+    "slton": "0",
+    "slchogiao": "15",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "1289ea7e-9328-4f87-a34d-a632c7c1ac13",
+    "sanphamId": "f37b6839-8ecd-4846-ae1f-8c340dac7cda",
+    "slton": "1.5",
+    "slchogiao": "184.58",
+    "slchonhap": "85",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "1ef49d88-8f6d-4760-8d14-43aeccc59329",
+    "sanphamId": "41494b22-d73c-4344-a151-3e3b497c542c",
+    "slton": "1",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "7687c3b8-28ea-4b2d-85ef-1826c1c5bd59",
+    "sanphamId": "2b9db6e4-e672-4f27-914b-628ab16efea1",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "85b7cbea-cdeb-4153-8a1b-51d4c62db5c2",
+    "sanphamId": "a69529a7-088d-4dea-9dbf-d58a6d9766aa",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "321345c1-0f88-4a7a-93ab-9a3fecfbeee1",
+    "sanphamId": "a974eb65-d9c8-4649-a463-32de231b5145",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0.1",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2528493b-5543-4633-bf63-c73af0eaa882",
+    "sanphamId": "f6db69db-b846-46b9-9ffa-5da6f6855603",
+    "slton": "0",
+    "slchogiao": "584",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "7cd6e97f-9033-4c07-85b4-a9f2781a8518",
+    "sanphamId": "d062681c-fbcb-4d16-b2d9-f9ab8adc183a",
+    "slton": "0",
+    "slchogiao": "553.89",
+    "slchonhap": "240",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "47eabe92-6f5e-4f8f-a7e2-19cedac8b7d0",
+    "sanphamId": "501a5d59-2d1b-471c-ba83-26556281169b",
+    "slton": "2",
+    "slchogiao": "53.5",
+    "slchonhap": "13",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5082b558-35f5-4be5-a0ce-6a655de33852",
+    "sanphamId": "cbf6cf6c-85ca-4f04-8efe-6673e240f24a",
+    "slton": "2.5",
+    "slchogiao": "19.9",
+    "slchonhap": "4",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "62af7cc4-d850-4adf-a4b6-87250581fa50",
+    "sanphamId": "2151261e-5422-4d5a-89b6-b2fdec5eb910",
+    "slton": "2.3",
+    "slchogiao": "19",
+    "slchonhap": "6",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ee4fd864-3da4-4c46-867e-cbf57cbb582b",
+    "sanphamId": "b8865b30-532d-4d62-819c-fa070680db1d",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "911e7965-e7b0-44e4-9e7e-8205ec8ed1d3",
+    "sanphamId": "2b8168d7-a0b9-4b2b-8fa1-47259cf5d506",
+    "slton": "13",
+    "slchogiao": "10",
+    "slchonhap": "10",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "353d6236-6b8f-4f13-9345-fb6ffd89bd13",
+    "sanphamId": "52aa7dc6-2ed7-4a80-bf0b-1619a29a9cb6",
+    "slton": "1.5",
+    "slchogiao": "207.7",
+    "slchonhap": "60",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "28b8369d-f97c-4aa3-9aee-867c0d8d0c35",
+    "sanphamId": "009961c5-53bd-42e4-a35f-1dc6a5507d14",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2adab75f-9f04-4706-88bf-932ee8fe9059",
+    "sanphamId": "5db812bb-b386-440c-b8ea-27b7d8adb4d5",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "93162c88-0ac1-471f-ab81-7e59f26f55fe",
+    "sanphamId": "00452d49-fc7d-4ddd-a043-845825bcb8cc",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d1de7b21-1f9d-48f8-a203-19885741c292",
+    "sanphamId": "8f9c379e-18a7-4747-ad12-fe39ccf9464f",
+    "slton": "0",
+    "slchogiao": "7",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5781336b-45a6-43fc-b22b-3a8444053b01",
+    "sanphamId": "1eeffb19-2bf5-4621-8d24-b83fd6f058bb",
+    "slton": "23.5",
+    "slchogiao": "375.5",
+    "slchonhap": "129",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "41a9392f-2db0-4783-a7b1-a8d703c82294",
+    "sanphamId": "6e1610b4-2fb6-43fa-a513-2d69a074e613",
+    "slton": "2",
+    "slchogiao": "52.5",
+    "slchonhap": "10.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "8a7bfb24-f0bb-406b-b6b4-40864a28ce45",
+    "sanphamId": "64159dcd-c8a1-4d34-891e-815c2b57e7b7",
+    "slton": "9.5",
+    "slchogiao": "104.05",
+    "slchonhap": "50",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4eed5539-c4b6-402a-a8e7-29a16754345a",
+    "sanphamId": "eda0e3cc-ac3f-4f38-8eba-05093b340987",
+    "slton": "6",
+    "slchogiao": "550.5",
+    "slchonhap": "190",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "33bfe217-ae77-4764-9538-cc00d96cd406",
+    "sanphamId": "c15ecc71-ff31-4653-846e-b3ec8491487f",
+    "slton": "0",
+    "slchogiao": "48.7",
+    "slchonhap": "22",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "31d6472f-89b8-4a63-88f3-cdd334fc158f",
+    "sanphamId": "b4906a67-bada-461a-a0a2-bf3bc5b49d95",
+    "slton": "1",
+    "slchogiao": "58.4",
+    "slchonhap": "20.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c276aa3a-d803-4c77-8fd7-66a6d6e92cba",
+    "sanphamId": "1f4ce4b9-2ecb-4fc1-a7ba-810ae099b258",
+    "slton": "1",
+    "slchogiao": "17",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "24785fb8-545b-435c-9ca6-c842dc2a66fe",
+    "sanphamId": "fd2d2682-179b-48c2-aa15-6639b8294ba4",
+    "slton": "0.5",
+    "slchogiao": "7.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "81d5ed8b-63c0-4f9c-932f-5cd312e9e286",
+    "sanphamId": "5cb686bf-ace9-4816-b39b-d3fcc401fbd6",
+    "slton": "0",
+    "slchogiao": "7",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c84641bd-7b03-4c51-bcb0-0d18c6e2faa7",
+    "sanphamId": "701fe1e9-39c4-4f15-b274-b8cb8a201814",
+    "slton": "0",
+    "slchogiao": "114.2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2bcf5ed2-f564-41cd-a3ce-6125d7d0ad96",
+    "sanphamId": "e40bbc52-c34f-499b-8bc8-f774d6bf7216",
+    "slton": "1",
+    "slchogiao": "62.4",
+    "slchonhap": "20",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e6566f5c-87c4-4f35-8fa1-55783331a95c",
+    "sanphamId": "e4b8bfa0-8b89-46e3-818b-f05a03020d51",
+    "slton": "0",
+    "slchogiao": "139.47",
+    "slchonhap": "18",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "efbdf156-8858-4af4-98d4-222564bcbb90",
+    "sanphamId": "0c7075d8-6aaf-4e7b-b33a-2f9017c756d2",
+    "slton": "0",
+    "slchogiao": "124.5",
+    "slchonhap": "35",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6648edf2-c8ba-4a2c-8eb4-7f8cd97d2054",
+    "sanphamId": "48992443-b773-4d35-ba58-5c741499881d",
+    "slton": "0",
+    "slchogiao": "9",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b9b94dd7-6cbb-4f13-b382-048c45cf4d4b",
+    "sanphamId": "47144973-0efd-481c-9b33-70f39abbf925",
+    "slton": "0",
+    "slchogiao": "36.5",
+    "slchonhap": "11",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b7440717-20af-4f65-b6e6-cee3a1ae6e12",
+    "sanphamId": "868561b2-9f75-48bb-8b4e-fa6f82c71878",
+    "slton": "0",
+    "slchogiao": "0.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "3f0a6846-0c22-4098-b35d-f294929c9a26",
+    "sanphamId": "15b2fe2f-9df3-4045-81fb-a45d9b75d341",
+    "slton": "0",
+    "slchogiao": "1.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "878d2e0d-d510-43f0-97e2-2aa12d040b7e",
+    "sanphamId": "cebcf689-8e7f-4427-be06-c85f299678c6",
+    "slton": "5",
+    "slchogiao": "74.7",
+    "slchonhap": "43.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "0c8a75ab-3392-4434-8695-2135d3f944d9",
+    "sanphamId": "1d4dae1f-0ec7-4e58-b278-77bfc3dc4754",
+    "slton": "15",
+    "slchogiao": "842.25",
+    "slchonhap": "350",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "7f76ab90-cd43-4d20-b7a5-2d308ed28b88",
+    "sanphamId": "3b5283d2-538f-457d-b797-6cb945f31960",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "af429559-861d-4fd1-b892-de0cb3985477",
+    "sanphamId": "b05e81b9-fae3-4748-b82d-050e6a77774c",
+    "slton": "8",
+    "slchogiao": "46556.28",
+    "slchonhap": "327",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "126c7d32-37b8-454d-b520-f13e5e825110",
+    "sanphamId": "7cbb093a-8a4c-4b9b-ab95-dec17e65ad19",
+    "slton": "0",
+    "slchogiao": "463.5",
+    "slchonhap": "175.7",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4611fdf4-13cd-4c88-9ddb-3d2424c04d88",
+    "sanphamId": "0836fceb-b8a6-4570-a924-891f7d0e6768",
+    "slton": "800",
+    "slchogiao": "900.05",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f305da84-db86-4ce0-a559-22344b452b7d",
+    "sanphamId": "3953245c-a4f6-4b94-9546-3864e48ac58e",
+    "slton": "0",
+    "slchogiao": "8",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b0d97ce1-82ae-47e8-bbbc-ed410197ad1d",
+    "sanphamId": "8890989e-9aba-4250-9a6e-bf701a68ae63",
+    "slton": "3",
+    "slchogiao": "9.5",
+    "slchonhap": "2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4ef24d1d-d793-4454-b6fa-0afe7f8e1f78",
+    "sanphamId": "d3bd1d0c-57c3-4399-834a-d1dc309c3944",
+    "slton": "1",
+    "slchogiao": "6.2",
+    "slchonhap": "2.1",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6969234d-26b9-4db2-8507-9231553c74f1",
+    "sanphamId": "5c21f463-e505-41f5-ac74-4e48b62fbe00",
+    "slton": "4",
+    "slchogiao": "66.1",
+    "slchonhap": "29.3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d488e7e1-caa6-43c4-a3e0-ed2b3fca7c98",
+    "sanphamId": "a10780c6-a660-4aa9-82aa-2937453eb37e",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4f909298-6102-4341-af91-ebf95b66f42e",
+    "sanphamId": "e6615620-09b4-4456-8da9-3490f558a7f5",
+    "slton": "0",
+    "slchogiao": "1.5",
+    "slchonhap": "0.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5f56411d-abe6-4bf5-895d-4d7eba576558",
+    "sanphamId": "1eb01e7c-4d38-493e-b22b-612cd11694f9",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "556c2c54-d830-4162-a587-bb09cb827d9c",
+    "sanphamId": "55afa327-04ec-488f-b473-53ffa81551a1",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "28338759-f61d-421f-8cdd-8640afd862d0",
+    "sanphamId": "89b7f04b-b499-4f6f-9d75-d0e26e358217",
+    "slton": "0",
+    "slchogiao": "6",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "42c0297f-0315-4947-9a67-a466d02dbf0c",
+    "sanphamId": "9a62d6c4-2b1d-4e89-984d-148337489bf9",
+    "slton": "0",
+    "slchogiao": "26.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6339568c-7d7f-482c-aa5a-9fdf0ea778f2",
+    "sanphamId": "7b5f54ea-64ea-49ff-891d-778ccff3c3f3",
+    "slton": "2.5",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e65523ed-9788-449c-a0e0-5c0268da19e2",
+    "sanphamId": "1edb3bbe-e9df-4ee6-aa28-3eff1224a9cb",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a582f5be-6f1f-4a86-ae40-aa85c143abb6",
+    "sanphamId": "8436af9e-ca91-4558-8de9-e3c436233b3a",
+    "slton": "0",
+    "slchogiao": "8",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "fcff9aa5-51f2-494f-ba83-1a14be220e4d",
+    "sanphamId": "79d51c43-6826-48f9-962d-f23dfaf3e323",
+    "slton": "0",
+    "slchogiao": "0.3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f86c63e3-1cd3-4df1-a5e4-42f51a2230ff",
+    "sanphamId": "123df894-faca-476a-9b51-c8299d54f228",
+    "slton": "0",
+    "slchogiao": "43.5",
+    "slchonhap": "18",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "05997842-92ac-48b0-9cec-414ed757f455",
+    "sanphamId": "820c1d82-487f-4465-a4d4-2ebc0a65d865",
+    "slton": "0",
+    "slchogiao": "16",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "456634f3-a9c7-47b2-b3c2-3d42a85ca71e",
+    "sanphamId": "de684baf-0f01-40f2-88e1-e00a1192836d",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2b281c6c-4c37-47e3-ad14-790310a84f33",
+    "sanphamId": "e04dd45d-6a64-4467-95a2-2b6777a699f6",
+    "slton": "0",
+    "slchogiao": "0.6",
+    "slchonhap": "0.8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "65637eb2-ede8-4ad3-9b1c-f32748af2b48",
+    "sanphamId": "ac89702c-7a9c-48e4-b57a-f3b69c311b52",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "55e7e442-2fd5-47ca-8baa-8abbb039ac23",
+    "sanphamId": "7604ec05-9da6-4d29-a325-a220a3be5ed4",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2d39eabe-5c35-4477-a874-348ae6425b70",
+    "sanphamId": "c73ebd23-ba7f-4f9b-80e1-2058a54e642d",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "30ba9f41-5f32-4a45-89fe-a21369e9b151",
+    "sanphamId": "d40d729c-c905-4a43-b84f-0200531bdfa9",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "af4abd98-8815-48ae-a4f6-5f24c8a82022",
+    "sanphamId": "25732580-f267-4ae8-970d-98f551531ecc",
+    "slton": "4",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5cdd7a7b-211f-4e72-a3f2-5cc71c628941",
+    "sanphamId": "4759faf5-67d8-4f4e-beb4-b2d3c25a4f57",
+    "slton": "5.7",
+    "slchogiao": "31.2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "9cd9d639-8ac5-4435-b7cd-1878b0ea1b9f",
+    "sanphamId": "eba7f36f-ce92-432e-bcdd-56cb58ac2d15",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "180e0fea-6a88-4684-a6bf-6a6cf64006dc",
+    "sanphamId": "94d0fde5-6792-4a44-983a-98e66be77781",
+    "slton": "0",
+    "slchogiao": "3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5a541fa0-4329-49d9-8283-9f3ef811ef4b",
+    "sanphamId": "9ba27801-cceb-4077-9314-68d14b2c9fa4",
+    "slton": "0",
+    "slchogiao": "18",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d9b3557d-eeee-487f-a723-8e37d82d9336",
+    "sanphamId": "99b1b9ef-d2b5-4de1-bccd-3d9a370a9df7",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f49fda0f-a8f5-46a9-bba2-2134307f8c0b",
+    "sanphamId": "b5c1f715-e0a3-4df4-8a09-d25864f8aad4",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d949df9e-a29c-4e2e-9451-bd5bc4fdda0a",
+    "sanphamId": "dd4ba91f-619a-4742-8189-b4c924ed96fa",
+    "slton": "0",
+    "slchogiao": "4.1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6af2249d-6720-4ff5-8c1f-116d39f39b77",
+    "sanphamId": "4d76ddb7-8dff-426c-a137-521db73a4419",
+    "slton": "0",
+    "slchogiao": "10",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "14c273f9-b3f8-4709-8336-a45498cf3a27",
+    "sanphamId": "fa970c46-cdac-4377-b05a-a43d4f67ac12",
+    "slton": "0",
+    "slchogiao": "9",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "dcbe8ef8-e7de-483e-b1ac-5ccf6d10fdf4",
+    "sanphamId": "5b78ffec-ef05-4f5c-a052-7baa7a7f737e",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "254ae6bc-e06c-43ac-b6a8-191569853571",
+    "sanphamId": "7459fcd4-fa78-4bcc-bac0-8541779ef6e2",
+    "slton": "5",
+    "slchogiao": "48.3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "cdedb9e9-69d4-4698-a5c2-26721118f71b",
+    "sanphamId": "4c978b7e-aa79-4ad6-b0bc-340639b81ae4",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "abbdbbf4-3c57-4e14-9e8a-bfbeee925a7b",
+    "sanphamId": "13284861-0311-4a5a-b933-de6e5c0e0851",
+    "slton": "0",
+    "slchogiao": "3.2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "53fe8b5a-5f99-4f99-834e-1e49a033d168",
+    "sanphamId": "da44df73-6dc6-4ac9-a886-b5a5b87b9684",
+    "slton": "0",
+    "slchogiao": "1.5",
+    "slchonhap": "0.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "eabdc2dc-da20-4210-bbf0-29629eb45dd0",
+    "sanphamId": "3870ed4d-8b34-4c3b-ac4c-8a8511573f47",
+    "slton": "1.4",
+    "slchogiao": "45.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ebc4000b-50a9-4138-b1ed-893b07465a88",
+    "sanphamId": "8a3f03cb-fe1e-47e6-8a16-2cf87a7f6690",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d0249e0b-7b04-4e33-95ad-4c78980cd891",
+    "sanphamId": "75813616-0690-4e61-9fdc-5ce4f4142b8c",
+    "slton": "0",
+    "slchogiao": "84",
+    "slchonhap": "45",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b6666ac6-8030-466d-8eba-38c9f6fe75ff",
+    "sanphamId": "716f80ef-13e0-44fe-bf90-4d035f1a012b",
+    "slton": "0",
+    "slchogiao": "17.6",
+    "slchonhap": "6.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "121c9371-cf52-4bbe-8d10-0aa77c86ab40",
+    "sanphamId": "ce608a8c-36e9-4def-a8e8-812286d02e1d",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b261d29b-9729-4e9f-87c9-f826a7ad224b",
+    "sanphamId": "f09941d6-b999-4239-8e85-9ac6ebddcb1e",
+    "slton": "21",
+    "slchogiao": "113.5",
+    "slchonhap": "48",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6b62618b-71a2-4509-901e-59bb0aac203e",
+    "sanphamId": "17b56be7-85ad-44d3-81c1-019de02fbbc0",
+    "slton": "11",
+    "slchogiao": "6",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "989d689d-522e-44d4-a9a2-1bdb3dae28a8",
+    "sanphamId": "4f835fa4-6c24-46e6-b74b-6fd184a016e0",
+    "slton": "8",
+    "slchogiao": "20.5",
+    "slchonhap": "20",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2d015475-5877-4ee8-8eb9-9e49e8b868c7",
+    "sanphamId": "7762f9ff-d699-457a-a50a-4255f927c920",
+    "slton": "7",
+    "slchogiao": "5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "de02ac98-927a-4865-83f0-45690d4ab1f7",
+    "sanphamId": "02398c76-0469-4211-9a9a-2d1fae1153c8",
+    "slton": "48",
+    "slchogiao": "66",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "9fca29df-d6a7-48ab-be03-4d82f57a559f",
+    "sanphamId": "31b6bddc-e72c-4a4f-b5f3-b42b7acea0f4",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2548ad2d-4784-413f-baeb-db1702253ef4",
+    "sanphamId": "e3faee73-af2f-4c04-b5f2-ee93f80d5f14",
+    "slton": "0",
+    "slchogiao": "3.3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "fbb9a1d6-eb3a-4a8e-a81d-5d1c16ebe127",
+    "sanphamId": "7ab2028d-98f8-4d2f-a8fc-f5412ed18a99",
+    "slton": "12",
+    "slchogiao": "64",
+    "slchonhap": "50",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f4cf82fc-b7b3-4d78-b732-82c11745e72f",
+    "sanphamId": "0401acee-a7cc-4c2b-aaba-1a6e0c7165db",
+    "slton": "0.5",
+    "slchogiao": "3.3",
+    "slchonhap": "2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "8b07149b-8b52-4883-a158-c977e9abb089",
+    "sanphamId": "1b7460df-60f4-49d8-8d93-214a20de8fd0",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "14918e90-de2b-4e43-9095-a1fb627d20fa",
+    "sanphamId": "5740ae90-4976-4f52-a995-98228ddf8ecd",
+    "slton": "1.9",
+    "slchogiao": "1.75",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b2785313-ab3a-4882-9bde-695618465461",
+    "sanphamId": "1c78cbad-d07f-4dca-9d56-9de43cfef7dd",
+    "slton": "0",
+    "slchogiao": "72",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6160ae4c-aad7-4275-b713-c5afd502db0c",
+    "sanphamId": "8c13790a-6988-4c0e-aa7b-665649d7f038",
+    "slton": "0",
+    "slchogiao": "1.3",
+    "slchonhap": "0.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "46b78928-7fdd-49f2-afd6-1fc8c675b8f8",
+    "sanphamId": "5717fcc8-9ecc-4c5d-938f-82391f6c1862",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "1602e903-b975-446b-be4b-3876e743ad9a",
+    "sanphamId": "a5a5620b-3953-400f-b743-cc25de0ada90",
+    "slton": "10",
+    "slchogiao": "110",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "cc84338b-218a-4b79-8479-ddad5160003f",
+    "sanphamId": "0cd5867b-7434-440e-83a1-737e32cd1395",
+    "slton": "3.2",
+    "slchogiao": "41",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e7a1a4d5-92b3-4bc9-8f82-8e0539caf8e8",
+    "sanphamId": "c50377a1-c88d-4901-b968-48fa32d14700",
+    "slton": "0",
+    "slchogiao": "0.4",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "aded9b31-e094-4d4f-b36d-7353151b9e9b",
+    "sanphamId": "7ee47866-4a54-48b4-a665-a6c338ac9aad",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "86022ea6-0b57-467a-a3f4-b42309608df3",
+    "sanphamId": "a66afa52-314d-4040-9059-a09b519124ad",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d204ba20-8318-4147-bb09-02e97d0e2da0",
+    "sanphamId": "74eaf79d-9e3d-4053-9fa4-75bc6f5b2bfe",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "bf5801ca-b8cd-4f3d-8ccf-d021c7472b9a",
+    "sanphamId": "85fae53e-a550-4464-85bb-af105fe5304b",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "3018a3c4-19b1-4c9d-b907-0355766c8156",
+    "sanphamId": "c9dac713-f238-4784-b2be-c5c881680a1a",
+    "slton": "0",
+    "slchogiao": "17.4",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ce9b6b67-8d43-4942-aae3-690e0ddbad06",
+    "sanphamId": "1df6b995-f868-4601-9253-9405d5fd4533",
+    "slton": "0",
+    "slchogiao": "14",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d7ad3a78-5fc0-4b8a-8a56-505d22f026c0",
+    "sanphamId": "1a816055-d497-406f-8d11-bed05357407a",
+    "slton": "0",
+    "slchogiao": "6.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "edc072f9-9802-4e45-a030-5935698cec68",
+    "sanphamId": "fdebef28-d185-437e-ac82-7b402f78295c",
+    "slton": "0",
+    "slchogiao": "199",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4b7efd16-527f-4606-b0b6-8d3e83c66a1f",
+    "sanphamId": "6f3bc1c4-539d-4d87-b486-ff0d6e6e18c7",
+    "slton": "4.5",
+    "slchogiao": "61.5",
+    "slchonhap": "23",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6887fd14-63f6-4845-aed4-61c73861afc0",
+    "sanphamId": "16629abc-7445-4a3c-9154-e64d5c1a6812",
+    "slton": "300",
+    "slchogiao": "835",
+    "slchonhap": "400",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a4dadcc6-d16b-46b5-ac43-535edb8a5313",
+    "sanphamId": "e87ebfda-a65e-4695-bef5-e0f2ae8cdb03",
+    "slton": "9",
+    "slchogiao": "46",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c01e9e6e-a07f-47c7-94bd-888d69e19e35",
+    "sanphamId": "7896fe3a-64e9-4056-8a75-e3ed9dc6c5a5",
+    "slton": "2",
+    "slchogiao": "6",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5b3d579e-a12e-4a0a-9858-61f0bfe0f2d1",
+    "sanphamId": "a93f78ff-f2dd-473b-89e1-ceff759f4201",
+    "slton": "0",
+    "slchogiao": "11.1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4f31c359-88d0-4571-9364-ffd33d0ec8e6",
+    "sanphamId": "fed795ef-c508-4a88-9e6b-8acdf2f18c11",
+    "slton": "0",
+    "slchogiao": "44.6",
+    "slchonhap": "28.8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f02ca933-907d-44d7-a7e3-7dac12b1b5db",
+    "sanphamId": "efb2eb5c-30c5-4d92-aa0a-e59a31a3f66f",
+    "slton": "10",
+    "slchogiao": "29.7",
+    "slchonhap": "12",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "41f74a1e-96c7-4ad9-8a72-3c02cdb01fc0",
+    "sanphamId": "496be6e7-d012-4e3e-b195-733fe518a17c",
+    "slton": "3",
+    "slchogiao": "34.5",
+    "slchonhap": "30",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ef9380f7-e372-4475-9edc-c552a7c6ec29",
+    "sanphamId": "38c1e9df-c67b-4cc0-9df1-2c97f10f9325",
+    "slton": "0",
+    "slchogiao": "238",
+    "slchonhap": "146",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "60cf423c-86eb-4121-a67c-de297894e7aa",
+    "sanphamId": "955f0d67-f35e-47ca-8b0b-452071c43c7b",
+    "slton": "0",
+    "slchogiao": "0.3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "71b5bb7f-9071-440a-aee4-7a9cdd972d2a",
+    "sanphamId": "8a29064d-4147-43a6-940c-123d57df8561",
+    "slton": "0",
+    "slchogiao": "0.4",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "01c001f5-6a7a-4f5c-b452-89e95e37d330",
+    "sanphamId": "901532b6-7460-4e42-828b-3b52efe4a804",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a2a7acb2-d77a-49e2-97f7-407551d1ac1b",
+    "sanphamId": "e025707d-5715-4e97-a939-4054edf6c45e",
+    "slton": "3",
+    "slchogiao": "40.7",
+    "slchonhap": "5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "126cbb8f-d855-4a31-8f59-aeb1adf68157",
+    "sanphamId": "5af47ddc-d4a9-4894-9a71-e06ce1bb46be",
+    "slton": "0",
+    "slchogiao": "26.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a86ded0e-c0a4-4577-9740-ed7c29cf0667",
+    "sanphamId": "bdc290ad-c1f1-4b48-8ace-d92f299227e6",
+    "slton": "6",
+    "slchogiao": "1.9",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "9dbeed17-6a22-43e7-85ad-8c4a3759f738",
+    "sanphamId": "95f3f416-c2b2-4132-b77d-638b6ceb90b6",
+    "slton": "0",
+    "slchogiao": "1.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c4fe38a2-0572-4bf1-830b-504c45f29654",
+    "sanphamId": "208ebd6b-15fd-49ed-95af-402dca95c169",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "fbae32e1-a649-4217-aa03-e215722c89d2",
+    "sanphamId": "cacef408-2bfa-4a58-9428-82ba1db993a0",
+    "slton": "0.3",
+    "slchogiao": "11.9",
+    "slchonhap": "6.4",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "9df320b2-24a5-47a4-aecd-f79fb1e66521",
+    "sanphamId": "9b3377b9-bead-4fa7-b4ca-b77f1206043f",
+    "slton": "0.1",
+    "slchogiao": "4.7",
+    "slchonhap": "1.3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e1f83c3d-6522-493f-9dbe-8eaecc0c445a",
+    "sanphamId": "7e62cbfa-e8d8-47b1-8c2c-83afd910a2e3",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f27f4fa0-0c25-471d-8a51-2975392612f8",
+    "sanphamId": "90ec5c1d-a6db-4e83-8fbf-25059ed0cbc6",
+    "slton": "30.2",
+    "slchogiao": "202.3",
+    "slchonhap": "86",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b1b6346a-9c34-489e-9e38-f029a482a926",
+    "sanphamId": "146187a3-d978-4146-b78d-4ad0f600b886",
+    "slton": "0",
+    "slchogiao": "9.5",
+    "slchonhap": "4.3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ce93df7e-76f0-44a7-8198-5b266970f2e7",
+    "sanphamId": "18de8ce2-07f7-47b9-b05f-0a94df5524e6",
+    "slton": "0",
+    "slchogiao": "18.5",
+    "slchonhap": "7",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "3374e0a4-e574-4454-a57a-5932084fef74",
+    "sanphamId": "0cb4cc89-2f80-431f-948a-bcdb5f88a534",
+    "slton": "0",
+    "slchogiao": "15.9",
+    "slchonhap": "7.3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5ba5d1af-650a-4582-86f4-66913ede4f8a",
+    "sanphamId": "1e0dfa51-7842-411e-b8d4-21970b859b64",
+    "slton": "1",
+    "slchogiao": "13.5",
+    "slchonhap": "1.7",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "10451652-7d37-4310-baf6-445e9ed1880d",
+    "sanphamId": "609c986a-f3d5-483d-a678-0c664b6a4c86",
+    "slton": "0",
+    "slchogiao": "0.2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "bc3b9b1f-e1d0-409a-a1c0-1f4fbe8391c2",
+    "sanphamId": "cd5dfe50-eaa8-4656-98c6-a73b3462bdc4",
+    "slton": "0",
+    "slchogiao": "4",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e000254b-b82a-4ff3-acf8-f816e5533c74",
+    "sanphamId": "b72c02a9-cb75-4e75-9279-c482c2f923be",
+    "slton": "0",
+    "slchogiao": "3.4",
+    "slchonhap": "0.6",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "cc46a49f-9f5c-467d-84ce-926998c36966",
+    "sanphamId": "c48c8cda-dc7b-44d1-95f0-321bb92daa21",
+    "slton": "0",
+    "slchogiao": "14",
+    "slchonhap": "3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ddff923a-8bf1-4254-9d50-6d6cdab68049",
+    "sanphamId": "74f65035-bcb8-419e-ba2d-497de5ee7733",
+    "slton": "0",
+    "slchogiao": "8",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "85f5c561-a5e3-4040-a100-b26d03e5251f",
+    "sanphamId": "f82ad9ae-468b-45d4-82a8-06e8272f267e",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "61b71286-df5e-4c4d-9f48-4b687f4aebab",
+    "sanphamId": "e5f39be3-0fcd-4c2c-9246-a1a53723d1a6",
+    "slton": "0",
+    "slchogiao": "3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "7513a754-b6f6-4058-b6cf-0d9126b59ee5",
+    "sanphamId": "1c617b07-4e60-4d27-aa4b-1287bf424b79",
+    "slton": "0",
+    "slchogiao": "8",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4c9f9283-990e-4706-acbb-c1b220e676b2",
+    "sanphamId": "873569cb-4664-4372-9daf-4f0a9de170b2",
+    "slton": "13.5",
+    "slchogiao": "78.3",
+    "slchonhap": "40",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "129febbc-6979-4bc5-8bc0-c611e8395c9e",
+    "sanphamId": "637b16f3-70a5-42b6-a52a-3690cc30e74a",
+    "slton": "1",
+    "slchogiao": "14.2",
+    "slchonhap": "4.9",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6d0b7160-639f-4627-9549-9bf34759a13f",
+    "sanphamId": "3bc49ed6-f0f3-42ef-bd51-a80ffef9547e",
+    "slton": "0",
+    "slchogiao": "3.5",
+    "slchonhap": "0.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "9adeec61-73cd-479f-a2b3-e2a99523697a",
+    "sanphamId": "0710ddb5-be0b-495c-9474-5a51ccf171c0",
+    "slton": "2.5",
+    "slchogiao": "35.5",
+    "slchonhap": "14.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "0f5ce711-f103-4e39-948d-b4454d8eb97f",
+    "sanphamId": "98179dfd-315d-4a66-8fb6-1882ad68cadf",
+    "slton": "0.4",
+    "slchogiao": "7.8",
+    "slchonhap": "6.3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "94191460-f7ab-4e8e-956e-fd574efff0ad",
+    "sanphamId": "37fa79a6-411a-4b94-b0ae-800b311e0adb",
+    "slton": "0",
+    "slchogiao": "32.2",
+    "slchonhap": "15.1",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f10003f8-d9fc-40d2-b083-80bc6c3b5baf",
+    "sanphamId": "68697f9e-7cbb-4cb9-b7aa-f111bf3a40cd",
+    "slton": "2",
+    "slchogiao": "9.5",
+    "slchonhap": "7",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "33495715-8b02-43c7-bb5e-ebe8cbb2edb1",
+    "sanphamId": "24bb5c85-0a5b-4a53-8bbf-fbc4f60839d5",
+    "slton": "3",
+    "slchogiao": "4.3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "9513ce63-83dd-4a94-9e6c-ed6afed89064",
+    "sanphamId": "b6f8bb42-0455-4c74-a585-cbcb9eff51cd",
+    "slton": "2.5",
+    "slchogiao": "3",
+    "slchonhap": "11",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f1464bd5-c316-4953-9d0e-04f3c9f01335",
+    "sanphamId": "ab3f8c22-b2e9-4952-af84-6f77be9a2cdf",
+    "slton": "32",
+    "slchogiao": "54",
+    "slchonhap": "40",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "72f7863c-a778-4842-848f-b1068984ec61",
+    "sanphamId": "bd028fcc-09d5-40d9-9674-90ebb795c957",
+    "slton": "0",
+    "slchogiao": "14",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "06545020-926c-44f9-997b-657257022369",
+    "sanphamId": "395ddd63-de77-4245-b945-21d5238340a7",
+    "slton": "0",
+    "slchogiao": "8.7",
+    "slchonhap": "3.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2d4948a9-1691-431b-82fe-bd5119b1a68f",
+    "sanphamId": "57fe8f55-42f3-4299-8b91-bb80f861470a",
+    "slton": "18.4",
+    "slchogiao": "19.3",
+    "slchonhap": "10",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "bda255cf-b17a-47f3-89ee-9e397f8b5047",
+    "sanphamId": "1b99cf82-0844-4c46-bae1-e0622ac1ca98",
+    "slton": "0",
+    "slchogiao": "1.4",
+    "slchonhap": "0.8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "3752bdc5-d956-458d-bf74-eca1e390c579",
+    "sanphamId": "1b7bacfa-d0fe-41f3-b745-6b57a8b064ab",
+    "slton": "6",
+    "slchogiao": "48.4",
+    "slchonhap": "20",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "46cb035c-f3f9-4f2a-94d1-e09ea6a3e026",
+    "sanphamId": "82d7a2c7-64f7-4ad0-ab88-a3cc800a48cc",
+    "slton": "1",
+    "slchogiao": "14.3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "60eaf77b-b1d4-4c2f-83c9-8c2963313ecb",
+    "sanphamId": "f5c56f6d-1c38-4f4f-b62a-52ff16655d39",
+    "slton": "0",
+    "slchogiao": "12.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b763bb8e-d185-40b9-84a8-ea36544c1357",
+    "sanphamId": "53222e0e-8e27-4bb2-a063-5c3603f0e7a9",
+    "slton": "50",
+    "slchogiao": "12",
+    "slchonhap": "20",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "047f51a5-9bd8-46a5-b069-a756f9d1bdee",
+    "sanphamId": "90426c8c-d034-439b-89ee-033c2ffee423",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e3fcdf62-d22b-4c16-9802-8063f90a44bd",
+    "sanphamId": "a414ff77-39c3-458f-aa93-c907b9b7e96b",
+    "slton": "1.5",
+    "slchogiao": "37.2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "3994abd7-93d8-44a7-ac49-1a9343472da7",
+    "sanphamId": "b10f5e88-6d1c-4871-8fe4-0a546af93e31",
+    "slton": "0",
+    "slchogiao": "13.25",
+    "slchonhap": "3.8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d3edf739-94e9-4895-acac-0a5ca789c0d2",
+    "sanphamId": "77f71811-0303-4ae9-b216-67bd1a90d654",
+    "slton": "0",
+    "slchogiao": "0.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ecd0eb19-282e-4452-a643-86e2d67538e8",
+    "sanphamId": "d8bff456-4f1d-4a43-be17-6a3856aa3f09",
+    "slton": "0",
+    "slchogiao": "1.5",
+    "slchonhap": "0.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "552e593d-c66b-49d6-b8e0-2a02bf743eb7",
+    "sanphamId": "4fd47829-f085-421a-a631-ddc85617b0eb",
+    "slton": "0",
+    "slchogiao": "38.6",
+    "slchonhap": "14",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "efba7413-3a15-4e02-8c3a-73fc573bdde9",
+    "sanphamId": "ceee8be4-4bac-43ea-88dc-af3a3ee947c1",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f813985d-7723-4fed-a653-ced4c7fa1fbb",
+    "sanphamId": "4c26bc51-61b6-4416-9f76-1988e1954c38",
+    "slton": "0.3",
+    "slchogiao": "42.5",
+    "slchonhap": "18",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "bec0255f-1416-489d-8a7f-0026631814b6",
+    "sanphamId": "94b6e1c5-a911-4dc1-9a98-09f29fc45dcb",
+    "slton": "0",
+    "slchogiao": "21.3",
+    "slchonhap": "8.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "7d796d6a-7eec-46b0-8be3-5b8a0c98a3d6",
+    "sanphamId": "8bdb58a6-0048-4ab9-bbf9-45fbe92633b3",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d0009f1c-3f80-41f9-9b0d-f95845ef353f",
+    "sanphamId": "edd288a8-4e07-457e-8491-e738d17d221b",
+    "slton": "2",
+    "slchogiao": "38.5",
+    "slchonhap": "14",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b6967e47-6051-4611-9dde-2c2d8301f5bc",
+    "sanphamId": "d74e4200-0c62-4daf-9ed0-23be620dd6a3",
+    "slton": "3",
+    "slchogiao": "42.5",
+    "slchonhap": "2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4bb6540c-47f3-43d6-b7bc-13b273ed8bbf",
+    "sanphamId": "4cf853a0-0054-4e61-8b2a-68121ca7431f",
+    "slton": "0",
+    "slchogiao": "3.4",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "69ad85ce-26d3-4a73-80b9-111f6ac4de72",
+    "sanphamId": "440c473a-31c8-4a6a-b3a8-d2fb9e2b35c9",
+    "slton": "0.7",
+    "slchogiao": "12.8",
+    "slchonhap": "3.8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "715127e4-5e9b-4175-943a-d525c53fbcff",
+    "sanphamId": "a74fd7a2-72c8-43bb-ad51-54e90b296d72",
+    "slton": "27",
+    "slchogiao": "122",
+    "slchonhap": "80",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c5726988-c1e3-4843-b841-519a77a0dc3a",
+    "sanphamId": "7c78c1fa-a4eb-4799-b9fd-cbbbc4b95cf8",
+    "slton": "0",
+    "slchogiao": "5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "55281edd-f4b3-42d5-8020-63984d2d1c22",
+    "sanphamId": "a5c9cd28-c2b8-442e-9f4e-633fe06ddbd6",
+    "slton": "139",
+    "slchogiao": "157",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "9792217f-a915-467d-a2c6-7bb64aced7c0",
+    "sanphamId": "51dd925a-4cb8-4b26-9ea6-90a5a0bca617",
+    "slton": "20",
+    "slchogiao": "65",
+    "slchonhap": "31",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f6e4cb6b-9151-450c-9828-3f469cc847e1",
+    "sanphamId": "5ec7e35d-8ca1-4f2d-960a-5c1ade3b6911",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f183bf6e-f903-4b88-b16e-19ba79178fc0",
+    "sanphamId": "724b8dec-44bd-4515-9275-12ad77e1a9dc",
+    "slton": "0",
+    "slchogiao": "218.6",
+    "slchonhap": "104",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b128a683-d45b-47d5-9707-44a270c58a8b",
+    "sanphamId": "7dc2a85c-2f8a-4f4b-b3c7-9aff32d63686",
+    "slton": "0.5",
+    "slchogiao": "263.8",
+    "slchonhap": "139.2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f82dc788-1945-44b1-ae93-f66f61bf456a",
+    "sanphamId": "d2e3a071-991a-4861-b686-5d383831bfe0",
+    "slton": "0",
+    "slchogiao": "5.4",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "394301e3-a515-4516-9a50-a4feced0a097",
+    "sanphamId": "b4ef98b2-3043-4327-8ac7-cdd5a57971b2",
+    "slton": "18.5",
+    "slchogiao": "64.2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "8d262815-1ac3-482a-9602-a4442e0e5f36",
+    "sanphamId": "eb889276-de87-4108-96c1-1d631d6d02b7",
+    "slton": "9",
+    "slchogiao": "103.36",
+    "slchonhap": "19.6",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "1afe7250-c947-4967-81ce-1495caa1265d",
+    "sanphamId": "aa1fc0fa-fa3a-4855-9e35-1dbcbb0210db",
+    "slton": "1.5",
+    "slchogiao": "306.45",
+    "slchonhap": "154",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6df785f3-d68d-4403-ad4a-8ba150460031",
+    "sanphamId": "73f56400-74a4-42e3-839f-0a44d86e042e",
+    "slton": "0",
+    "slchogiao": "9.8",
+    "slchonhap": "4",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "488747b1-120d-4351-88fe-31f2f0d84376",
+    "sanphamId": "6f2bcbf4-53dc-41fc-b888-ff7e61717405",
+    "slton": "2.7",
+    "slchogiao": "39.4",
+    "slchonhap": "20",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "dedb2b4f-3f19-4784-9d1d-be6702136864",
+    "sanphamId": "a1c06589-7989-4137-8a65-d95e3d0f8d8b",
+    "slton": "0",
+    "slchogiao": "4.8",
+    "slchonhap": "2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "573f046c-241e-464d-99e4-380541d496e6",
+    "sanphamId": "1c6c71bc-4df9-4c76-b05d-24262626bdd1",
+    "slton": "0",
+    "slchogiao": "6",
+    "slchonhap": "10",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "838ff231-b8ae-4d42-b69e-f4f6560a42d3",
+    "sanphamId": "46de6fcb-5af9-4010-b97d-2163f4125f8f",
+    "slton": "0.5",
+    "slchogiao": "13.6",
+    "slchonhap": "4.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "02538995-a859-45ef-8aed-b2b050fd3549",
+    "sanphamId": "6799e966-aec7-4fd5-a417-131168e3b5be",
+    "slton": "0",
+    "slchogiao": "14.7",
+    "slchonhap": "1",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5de1eb4f-82d5-4556-93d6-77a0bfc6c17a",
+    "sanphamId": "1d7175e3-3c08-4a6c-ae1a-0df9e72622d2",
+    "slton": "10",
+    "slchogiao": "55.74",
+    "slchonhap": "35",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6879d622-4ee8-4798-a374-e8ac7c3528e3",
+    "sanphamId": "015a6430-fef8-4b78-b2a9-00410e3e4f18",
+    "slton": "0",
+    "slchogiao": "8",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ad74af8d-b64e-46ee-992f-aaa33e57134a",
+    "sanphamId": "3e8ade56-732c-4537-bf21-d58b4f89999c",
+    "slton": "6",
+    "slchogiao": "23.3",
+    "slchonhap": "11.2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "8d87564a-8db8-4e2f-949a-7ec7ae591173",
+    "sanphamId": "6f911ec5-4946-471e-9977-e2885f15142c",
+    "slton": "28",
+    "slchogiao": "185.8",
+    "slchonhap": "98",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2036e933-d49a-4de3-84bf-0927698c2f63",
+    "sanphamId": "362f832d-7347-4e52-b81f-293513d13aa7",
+    "slton": "0",
+    "slchogiao": "4.5",
+    "slchonhap": "2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "302d7c31-573f-4c2f-8f24-e345367e1173",
+    "sanphamId": "0dfcc33f-8772-4c74-ac8b-3b633a730a55",
+    "slton": "0",
+    "slchogiao": "60",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5c259ef9-73c7-4aa0-aa4e-03e4a8648486",
+    "sanphamId": "5471951c-18f1-4f2c-a2ef-21aacc98210d",
+    "slton": "0",
+    "slchogiao": "41.3",
+    "slchonhap": "14.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "3b513b7c-c44f-48b4-8ed4-fd24dbf0ecc9",
+    "sanphamId": "73287142-7059-4813-846e-8f7139fc2055",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "1",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "dedb6430-03e6-48b7-81f7-0e8ecc26bd65",
+    "sanphamId": "1913e828-9fbd-44b1-bdc0-22043a995dd1",
+    "slton": "0",
+    "slchogiao": "62",
+    "slchonhap": "18.2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c0aa4593-0c66-49aa-9346-d6d6b16a516f",
+    "sanphamId": "dcc22e5c-4891-4bdf-99ae-8cd4a5e4d3af",
+    "slton": "35",
+    "slchogiao": "8",
+    "slchonhap": "10",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "caec934e-f0de-497d-8b17-f226aa802cc8",
+    "sanphamId": "17d1aba3-16a4-415c-996f-c0c00fc70c8f",
+    "slton": "0",
+    "slchogiao": "43",
+    "slchonhap": "15",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b3fac385-f086-4c51-9323-977772785735",
+    "sanphamId": "3941fa8a-7eba-4402-8fee-d38071574b36",
+    "slton": "0",
+    "slchogiao": "15.5",
+    "slchonhap": "6",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b7a559c8-448c-4659-ab4a-5fd4f89a8af8",
+    "sanphamId": "316ea66e-6c86-4b20-8f67-aeba223a6129",
+    "slton": "0",
+    "slchogiao": "35.7",
+    "slchonhap": "14",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a8210fd0-4e98-43db-b2dd-ac72bcfff723",
+    "sanphamId": "cdf7833c-6a5f-438e-9c90-ff5ec3e0e22b",
+    "slton": "0",
+    "slchogiao": "61",
+    "slchonhap": "17",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a947e494-ea80-4147-af87-60a739c1f7b8",
+    "sanphamId": "ceecbc0e-5dbd-4cdb-b450-5dbb77ce97af",
+    "slton": "1.5",
+    "slchogiao": "23.2",
+    "slchonhap": "8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ea400e77-c8ca-43c0-99ff-c22d17d7065e",
+    "sanphamId": "47917e90-1107-4c0f-a185-ef3b942e8c91",
+    "slton": "0",
+    "slchogiao": "0.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ecbe6673-54be-4e82-8777-f984734ced46",
+    "sanphamId": "0e1b6cc3-b0a8-49d5-879a-b33d4f00b26b",
+    "slton": "0",
+    "slchogiao": "32.4",
+    "slchonhap": "17.7",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5f1f9f48-38d6-45ca-a382-827547dad4a2",
+    "sanphamId": "8c4cd54a-d526-4e4b-9bf3-cb0dff8383b1",
+    "slton": "0",
+    "slchogiao": "26.8",
+    "slchonhap": "8.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "120b262b-f83a-4f4d-b656-17ec41af01c7",
+    "sanphamId": "7978c3ff-5141-470c-aacd-bae39b65228a",
+    "slton": "9",
+    "slchogiao": "19.3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "637f0ac0-55c4-4f4b-bbdb-66237beeeb64",
+    "sanphamId": "e8e15392-89ad-448f-a193-5715bf4ffe37",
+    "slton": "0.3",
+    "slchogiao": "3.2",
+    "slchonhap": "3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "1129b5b6-8277-4681-8079-e838cd2dadcd",
+    "sanphamId": "a76ca704-1eb7-40c3-a260-38fb3c1a91c3",
+    "slton": "0",
+    "slchogiao": "18",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "147b0461-a2bf-47a8-9f36-b37e6d9fb674",
+    "sanphamId": "f0441dcb-7d58-4bde-8fd7-f1de67ef8835",
+    "slton": "0",
+    "slchogiao": "27",
+    "slchonhap": "14",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "575a0290-605b-4b94-8401-40e691888baa",
+    "sanphamId": "20b6d431-6f17-46bf-8713-6159a740b5c2",
+    "slton": "1.5",
+    "slchogiao": "37",
+    "slchonhap": "11.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b8818798-476c-4bf4-afef-1b73087a4b69",
+    "sanphamId": "fe01fe40-20e8-4cd4-b6d1-8833eb9b683c",
+    "slton": "1.5",
+    "slchogiao": "12.65",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "cde215d0-f9fa-4b6b-b7e1-e3bc34626bed",
+    "sanphamId": "49ab2132-5f87-4b64-9b9f-962ec7d39a9b",
+    "slton": "0",
+    "slchogiao": "142.9",
+    "slchonhap": "85.8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "61e09475-9798-4a97-b90c-d9e57c329617",
+    "sanphamId": "e2c93ce9-6e4e-4bf9-89f5-8f2e70fed92b",
+    "slton": "0.7",
+    "slchogiao": "8.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "09e9ab45-6ceb-41af-9124-67a99eba1ce3",
+    "sanphamId": "3279c32b-c21e-4e0d-a1de-890ab74681ff",
+    "slton": "0",
+    "slchogiao": "3",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "02fc5d36-b9cd-49c5-a3a0-bb8abb2174a9",
+    "sanphamId": "a0d75697-1eae-4714-8e42-bcbcafc6532b",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4d6c09c8-47c6-4c60-9bd4-89fc11ea556a",
+    "sanphamId": "f6893d30-99c6-4c5d-b6ba-e6c1a40ce194",
+    "slton": "24",
+    "slchogiao": "109.2",
+    "slchonhap": "159",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2188fd45-505b-4737-b266-a5e1c2743f83",
+    "sanphamId": "fef0852c-0320-461f-80d6-44016da010cf",
+    "slton": "0.3",
+    "slchogiao": "2.1",
+    "slchonhap": "0.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "066a0b52-6006-4419-a24b-0724bb7edbbd",
+    "sanphamId": "fa9acc76-dd87-4624-8203-c6fcfb563f3c",
+    "slton": "1",
+    "slchogiao": "55.4",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ee65c9f8-e3c5-45ca-8e63-90c88f1b9106",
+    "sanphamId": "3cc35971-e152-4384-8611-5c34334ef422",
+    "slton": "0",
+    "slchogiao": "19.1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5b8de3c8-b09e-442e-b815-60976f3f1b29",
+    "sanphamId": "e6bbb751-959a-4d57-a3a1-a263d2516008",
+    "slton": "0",
+    "slchogiao": "52.3",
+    "slchonhap": "10",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "62901ff5-006a-4b82-8bcc-23817d775180",
+    "sanphamId": "bfb75503-d2fc-4765-942e-3af4e85bbe15",
+    "slton": "0",
+    "slchogiao": "36.32",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b825f915-152b-48da-847c-7f3373e276cf",
+    "sanphamId": "ab34877f-74f1-43fe-a50d-d0ddde3df3b6",
+    "slton": "0",
+    "slchogiao": "39",
+    "slchonhap": "15.3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d68c5a13-ef40-436e-89fb-3190ad538bd3",
+    "sanphamId": "730eca03-1cb0-4f13-abe1-b38cf9b3a57c",
+    "slton": "0",
+    "slchogiao": "65.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "eb030aea-ab36-464a-8283-61f015146cbe",
+    "sanphamId": "9786a216-8fcd-4a4e-b73e-79f2735a9965",
+    "slton": "3",
+    "slchogiao": "90.3",
+    "slchonhap": "60",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "738a390b-0bc9-43fd-87ad-8874a26eb593",
+    "sanphamId": "69b321b0-41cd-4f7e-854b-41609be3dad4",
+    "slton": "0",
+    "slchogiao": "82",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e0c34fa3-212f-4127-8963-259bc7a738a2",
+    "sanphamId": "b4b63cf7-eb69-4676-a219-457f43c824ea",
+    "slton": "0",
+    "slchogiao": "5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "8ecc3505-0d35-4426-83fa-bda9bed5af6f",
+    "sanphamId": "bcdc4e55-a004-4e42-b92c-175c9c809e9e",
+    "slton": "27",
+    "slchogiao": "65.5",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c0c83c00-394c-427c-ab32-8e49d8672e45",
+    "sanphamId": "7d2daa4b-0c1f-4668-ae2f-b39dba4ab7d4",
+    "slton": "0.5",
+    "slchogiao": "0.82",
+    "slchonhap": "1",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "585c462f-d77a-4929-941f-13eb88336da1",
+    "sanphamId": "257e2398-86b2-4d54-9d0c-815f8a5e54bb",
+    "slton": "0",
+    "slchogiao": "7",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "23b7c30c-5393-4048-ae08-7fcfc219a325",
+    "sanphamId": "08d2466d-8c8e-4a2f-a935-7cd736a6a9bf",
+    "slton": "1.8",
+    "slchogiao": "1.8",
+    "slchonhap": "2.9",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "73faea2e-e8a9-430a-a49a-8d2c8e0bd778",
+    "sanphamId": "d3995f8b-49b2-4349-a3e2-bf47764d5f08",
+    "slton": "13.5",
+    "slchogiao": "3.2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d1e67b15-e6ce-42bc-9701-d8bfd67dc05c",
+    "sanphamId": "76226acf-3b93-4622-be9c-1fde78aa5f5c",
+    "slton": "0",
+    "slchogiao": "13.7",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ff7637e1-ad5a-4e9a-9ab4-dd059d001b3b",
+    "sanphamId": "b6dd6c2a-46dd-4d2e-8a89-0cef624d1f3c",
+    "slton": "0",
+    "slchogiao": "37",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "32b0898d-201e-497c-b6d3-09e4b4515504",
+    "sanphamId": "af2c1cfa-6354-4ed4-8e85-91505d03bf72",
+    "slton": "0",
+    "slchogiao": "12.5",
+    "slchonhap": "3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "92db39e6-e2fe-47d8-903e-224ab7ff1891",
+    "sanphamId": "d4c27945-53b3-4121-8dba-75ccae02fb41",
+    "slton": "0",
+    "slchogiao": "91.3",
+    "slchonhap": "40",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c316c423-cffe-4f36-8605-0f0e5bb9816d",
+    "sanphamId": "b863d1d8-ebea-4aa8-b5d3-8f3ab1c37c6f",
+    "slton": "0",
+    "slchogiao": "27.7",
+    "slchonhap": "10.8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b228b8fa-0b80-4b57-aa0d-7dda8b05f70c",
+    "sanphamId": "c38d73df-5fc4-4e06-8755-50a2b0a149a7",
+    "slton": "0",
+    "slchogiao": "21.3",
+    "slchonhap": "7.9",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c42e1cfa-9d40-4efb-a7d7-4a6deef98418",
+    "sanphamId": "859c6d7e-1e96-4229-9f5a-ee2dd129b12b",
+    "slton": "64",
+    "slchogiao": "163",
+    "slchonhap": "20",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a25a65ae-9de5-44ac-9b8a-9becd84f9bf7",
+    "sanphamId": "772abded-db30-4b4f-a248-f0dc663c64a0",
+    "slton": "9.6",
+    "slchogiao": "35.7",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ac97d5c8-0785-44ac-b1af-5e21f9ee9486",
+    "sanphamId": "63ee371c-0d3d-498c-88e9-7ff2ba2ec7cf",
+    "slton": "0",
+    "slchogiao": "170",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2f86cfb6-e261-45ad-a5d2-c1494d65d634",
+    "sanphamId": "5eeaa263-4220-435c-b800-562a29f9ff6d",
+    "slton": "3",
+    "slchogiao": "78.8",
+    "slchonhap": "36",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "eaba1c64-55df-4c01-85b9-1425cde54025",
+    "sanphamId": "a0c385af-3fa4-4873-a96c-3d5c7cddcf8a",
+    "slton": "0",
+    "slchogiao": "77.17",
+    "slchonhap": "60",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a3f3adc0-82f9-4396-83cb-7a4989119a1e",
+    "sanphamId": "d2def4e0-c353-4da5-9ac5-dce3f381be85",
+    "slton": "0",
+    "slchogiao": "237",
+    "slchonhap": "121.8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ac015f87-fd9e-4815-8f03-59c4c2bdadba",
+    "sanphamId": "9b0963b8-2c4f-4a61-9591-7d78d7d6243b",
+    "slton": "0",
+    "slchogiao": "40.5",
+    "slchonhap": "22",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "645f3c70-9eb8-4f90-b67f-b77ab70b6a2b",
+    "sanphamId": "3ccfd878-dc4f-4719-833b-10e416315782",
+    "slton": "0",
+    "slchogiao": "137",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f8d871ac-14fc-410c-a02e-d14dc1242d50",
+    "sanphamId": "f7e976ea-cd91-450f-bca6-dae4f56d22eb",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c9fb2be1-5f0e-458b-a7fe-fd8a52034dd1",
+    "sanphamId": "836c5bd0-f7ce-4fa1-a7d1-7acf50af3052",
+    "slton": "0",
+    "slchogiao": "67",
+    "slchonhap": "58",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ae4113e1-5e3a-428a-8227-0833765fdeb2",
+    "sanphamId": "6a8a8ec7-bffa-4043-95bd-d490bce3ec0d",
+    "slton": "5",
+    "slchogiao": "66",
+    "slchonhap": "21",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "cc1fed9f-601f-47dd-9df8-335f00712fc8",
+    "sanphamId": "586ebb6a-7818-4a0d-b793-c4ee8a1cfc02",
+    "slton": "0",
+    "slchogiao": "4.5",
+    "slchonhap": "2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "77899ffb-9a8b-44ae-8a4a-fa8225968665",
+    "sanphamId": "939d22fe-65ff-4b65-819e-2f83ae2f4d30",
+    "slton": "0",
+    "slchogiao": "11",
+    "slchonhap": "3.9",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b3e1476c-3146-416b-8bee-2397e215047b",
+    "sanphamId": "93026084-1729-4ecd-9e11-bb174f8d7369",
+    "slton": "8.5",
+    "slchogiao": "119.53",
+    "slchonhap": "60",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b1c6e464-97e4-4eeb-9a18-444bc2c37677",
+    "sanphamId": "23ef28d3-e238-4da3-8903-009c71769dc9",
+    "slton": "1.5",
+    "slchogiao": "11.2",
+    "slchonhap": "1.7",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "7258e176-bbfe-412c-8e98-df1472f4e8be",
+    "sanphamId": "a9881ce2-f714-45ff-9af8-242755ac1843",
+    "slton": "0",
+    "slchogiao": "125.4",
+    "slchonhap": "47.7",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4e658a84-68a6-4bd4-9d72-4fe30061983d",
+    "sanphamId": "204fb439-89af-4c35-82c0-e3e6adfb33ad",
+    "slton": "1.5",
+    "slchogiao": "9",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6c490a36-b599-4c6d-a777-e788c6ada540",
+    "sanphamId": "10722f81-2dfd-43cb-8ae6-452fc451688e",
+    "slton": "3",
+    "slchogiao": "24",
+    "slchonhap": "5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "725db006-00b2-4ee8-86df-584bde8097f5",
+    "sanphamId": "c82c3ea7-c7d3-4ac7-8844-8133a40e9f44",
+    "slton": "1",
+    "slchogiao": "10.5",
+    "slchonhap": "1",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5db47590-d1a5-4905-bf6c-b6a0c90beef6",
+    "sanphamId": "b16f12c6-8af4-49ca-93d3-699195feaacf",
+    "slton": "0",
+    "slchogiao": "23.1",
+    "slchonhap": "8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "0a464f6f-1dc6-4789-b9ec-0a058682213c",
+    "sanphamId": "818b909b-12e8-487f-8759-a75503181ab7",
+    "slton": "0",
+    "slchogiao": "10",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6082a2a8-db17-4894-9393-552580ac8b49",
+    "sanphamId": "e733d852-6e63-4f3b-9d13-5320c7e43fb1",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "3fd22f96-22a0-487a-a4b4-6b1904ee7cd5",
+    "sanphamId": "f2f4f9a0-209f-4dfc-8fd5-469f9a110fd8",
+    "slton": "2",
+    "slchogiao": "28",
+    "slchonhap": "3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "70f3aea0-ddc5-4fdf-98c6-b0dd66b8d97a",
+    "sanphamId": "94886c37-6879-4065-8594-822322e8a767",
+    "slton": "12.5",
+    "slchogiao": "256.4",
+    "slchonhap": "120",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "0000168d-6b72-45ee-a883-f854d1558583",
+    "sanphamId": "75bbf804-eac4-4c27-8113-82ec09fa0659",
+    "slton": "0",
+    "slchogiao": "306.4",
+    "slchonhap": "152",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "98e51f4e-498b-4ebd-a67c-7d82a1f67488",
+    "sanphamId": "8f7ba9ac-e3fe-47af-9bd6-d2143a47479e",
+    "slton": "0",
+    "slchogiao": "12",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "7ca087cb-6ef4-4e74-9132-7b0d82b953fe",
+    "sanphamId": "53dc8257-eb21-4d0a-89f9-94698f19ae33",
+    "slton": "0.3",
+    "slchogiao": "32.8",
+    "slchonhap": "10",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "444d06b2-ab41-4867-9681-3bc116e3ad2c",
+    "sanphamId": "95ce8a16-734a-4c14-a15e-da7e511aa443",
+    "slton": "61",
+    "slchogiao": "415",
+    "slchonhap": "100",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "10349e5c-087b-4430-b8bf-736b6e7866e3",
+    "sanphamId": "9e293616-9d2b-455f-89a9-191a44ece353",
+    "slton": "0",
+    "slchogiao": "0",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "51f5809c-7e9d-4d2e-9196-9759940e0c11",
+    "sanphamId": "ae2f5369-3a8a-4952-8d9c-3c9f4e6b8f0d",
+    "slton": "0",
+    "slchogiao": "28.4",
+    "slchonhap": "11.8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "3beb36ea-1b47-452e-bb39-30b2a1ce13d3",
+    "sanphamId": "f662da86-e942-4095-b93c-49e6f08999bd",
+    "slton": "0",
+    "slchogiao": "281.5",
+    "slchonhap": "230",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "dfa1548f-1001-467b-aca9-d332383fd7f8",
+    "sanphamId": "5c77222b-3f1b-4f31-830a-3f04111cf8f9",
+    "slton": "0",
+    "slchogiao": "49.9",
+    "slchonhap": "17.3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "3fbe23c8-453c-49f1-8eef-abf8839fae9d",
+    "sanphamId": "1ef011b3-a929-4a2f-bebd-9ab8031d0036",
+    "slton": "0",
+    "slchogiao": "29.4",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b6aec9bc-55b1-47af-9be5-eabc92d3e5df",
+    "sanphamId": "846eb71d-d39f-472e-b6b9-2ee3862e6e73",
+    "slton": "0",
+    "slchogiao": "13.5",
+    "slchonhap": "4",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "fc948c1f-de4d-425c-8ba1-b4d959c4cf02",
+    "sanphamId": "1846c8b3-1c3f-455c-8437-24110f768e0b",
+    "slton": "0",
+    "slchogiao": "12.3",
+    "slchonhap": "2.9",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "0bae3e6a-a05c-4be0-91c8-331a51248667",
+    "sanphamId": "df55ea11-f7e2-4336-8da4-9beb7f9b2e7d",
+    "slton": "0",
+    "slchogiao": "205.63",
+    "slchonhap": "75.2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "924ec237-4ddd-43e4-a729-424b5ad95d41",
+    "sanphamId": "3712ac1b-fd33-45f3-b46a-57f8a93358f4",
+    "slton": "31.5",
+    "slchogiao": "130.1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b3ef4864-d491-46d9-96ac-840fbff7df00",
+    "sanphamId": "6f8a58ee-d8ca-41c2-b842-7ac64fcdb64c",
+    "slton": "1",
+    "slchogiao": "44",
+    "slchonhap": "15.7",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "be6696df-c3da-4d0d-9a07-d18989d014bd",
+    "sanphamId": "7f6122d0-2821-49aa-85a9-ade688f7c2a3",
+    "slton": "0",
+    "slchogiao": "50.7",
+    "slchonhap": "15.2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "687789d0-ce30-49cf-9781-6bcc7a8f5831",
+    "sanphamId": "90459b30-c43f-4400-9002-6ec9152e605f",
+    "slton": "0",
+    "slchogiao": "180.3",
+    "slchonhap": "62",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4ce15089-c502-4389-befa-7bc83b814bf8",
+    "sanphamId": "98a6be9d-a29b-4874-bf70-55d2af053a67",
+    "slton": "0",
+    "slchogiao": "1.9",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "3fc8ccfe-a75e-43f2-a1e3-c27aa85defb1",
+    "sanphamId": "59b483e0-0ae7-43d1-83c3-fdf952ca6f59",
+    "slton": "0",
+    "slchogiao": "265",
+    "slchonhap": "90",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "fe4f3645-a9b8-4e47-b944-7b4c237b85ff",
+    "sanphamId": "e331a666-581b-4946-8941-b59f3e49d9df",
+    "slton": "0",
+    "slchogiao": "23.5",
+    "slchonhap": "4.1",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "25d901b5-065c-446b-9845-afa5a4d810bf",
+    "sanphamId": "3f5f57e8-de28-4d68-aa7b-a6923b9919a5",
+    "slton": "0",
+    "slchogiao": "13.2",
+    "slchonhap": "5.3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d9ce2ad0-4a11-4643-996f-bee4884efebc",
+    "sanphamId": "c93aee72-537b-40e4-92c1-6d032f411d63",
+    "slton": "0",
+    "slchogiao": "625",
+    "slchonhap": "178",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "703629f3-cd7d-412f-94d3-3fa2788cd70d",
+    "sanphamId": "22dee279-1b6d-4f40-a570-313149971586",
+    "slton": "0",
+    "slchogiao": "1",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "008b08a2-2b16-4370-aaa2-be4640028a5b",
+    "sanphamId": "0955974f-1c14-4351-9051-93a1a29f1d56",
+    "slton": "4.8",
+    "slchogiao": "31.4",
+    "slchonhap": "8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d1f0383d-7518-469a-9153-bda27bd96622",
+    "sanphamId": "8e407fb2-453d-4193-b7fa-2451cd74f9e7",
+    "slton": "20",
+    "slchogiao": "83",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "22d3cef5-b0f3-46d8-829d-1ac0d522be57",
+    "sanphamId": "1b1651fa-a03c-425c-af50-0e2faa378c80",
+    "slton": "5.5",
+    "slchogiao": "101.8",
+    "slchonhap": "60",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d4cff3de-356f-493c-bcaf-0314357b3ddc",
+    "sanphamId": "20075dd6-caa2-4db2-ac7d-8462ca2470a2",
+    "slton": "13",
+    "slchogiao": "55",
+    "slchonhap": "30",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "808ba59b-b9fa-463c-b93d-aaabe1975226",
+    "sanphamId": "6c3215ab-23b8-4925-8b85-b0f81bbdfb5a",
+    "slton": "6",
+    "slchogiao": "188.7",
+    "slchonhap": "60",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e1caedf6-ff59-4e2e-bf0b-1a96b4491291",
+    "sanphamId": "47108dd6-b741-4d00-a656-af4dc52c5925",
+    "slton": "0",
+    "slchogiao": "84.9",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "1cd10580-1dd2-440b-b903-0e115cb3d229",
+    "sanphamId": "713d9b70-8d13-4355-b21f-338257919734",
+    "slton": "0",
+    "slchogiao": "50.1",
+    "slchonhap": "14.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c782a290-a46f-4488-9105-47a1d5013392",
+    "sanphamId": "bcc11971-c914-4210-bf13-dce80478e8f3",
+    "slton": "0",
+    "slchogiao": "174",
+    "slchonhap": "65",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "eae399c5-c48d-42c0-851d-6ed8803713d8",
+    "sanphamId": "e480595a-e8eb-43cc-a12f-49b39303c3a5",
+    "slton": "1",
+    "slchogiao": "48",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d625c1a6-a0e7-4916-8625-dcfc1f6116d2",
+    "sanphamId": "653e266e-1fe5-4625-80b7-b6b10d76ff40",
+    "slton": "0",
+    "slchogiao": "88.6",
+    "slchonhap": "49.2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "db71517b-a0e7-42d6-b9f2-16b3a2a03046",
+    "sanphamId": "87514fa2-86c3-4cf4-8863-d682c0e1156d",
+    "slton": "29.5",
+    "slchogiao": "215",
+    "slchonhap": "84",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e7fe8ea5-9e96-483a-b16e-a290acaf0a8d",
+    "sanphamId": "13186ae3-b12d-42a3-9b94-97fc507dcd03",
+    "slton": "28",
+    "slchogiao": "289.9",
+    "slchonhap": "70",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "1dc92538-168a-4f63-8eef-efdd9c8ab863",
+    "sanphamId": "a3ce5dab-127a-48ba-84a1-1f24e1aaf164",
+    "slton": "0",
+    "slchogiao": "5.6",
+    "slchonhap": "1.8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "8e8af3b4-0989-4d58-9d08-c9865fcc1774",
+    "sanphamId": "15645c29-828d-4acc-997e-02675bf2a8d1",
+    "slton": "5",
+    "slchogiao": "134.4",
+    "slchonhap": "40",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "ec5f6c82-f457-49b8-9e9e-7ff81755212b",
+    "sanphamId": "28b35e97-88c8-423b-9302-6d585883b830",
+    "slton": "0",
+    "slchogiao": "24",
+    "slchonhap": "14",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "71b47376-8ff8-4cf0-9f54-4cd61c0ca280",
+    "sanphamId": "d0e89092-7cc1-4c24-b4a0-26896307470a",
+    "slton": "0",
+    "slchogiao": "4.7",
+    "slchonhap": "2.8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4ba31726-3876-46c2-a259-b5be7ed8c6cd",
+    "sanphamId": "8e3d2291-3dd7-4c50-96e0-95b5c639453e",
+    "slton": "15",
+    "slchogiao": "51.3",
+    "slchonhap": "20",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6a176e7d-9001-42a8-96c4-96c2cec41eda",
+    "sanphamId": "cc4bceb6-04e6-4c05-99cc-9882957ccc39",
+    "slton": "128",
+    "slchogiao": "175",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e8326fae-387d-4034-bf3a-bd41b3998ae4",
+    "sanphamId": "3d41818d-cd67-4dcb-9f04-6a811e732b3f",
+    "slton": "140",
+    "slchogiao": "392",
+    "slchonhap": "200",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "75bb66ce-8df5-47cc-9259-bfecc0462a25",
+    "sanphamId": "d4f03279-6f10-4f39-8139-357b627e0574",
+    "slton": "16",
+    "slchogiao": "214.1",
+    "slchonhap": "60",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f298d9aa-4037-4c1e-b0d6-4f5323f5defe",
+    "sanphamId": "5df0848f-e59a-431e-a279-6f255d4e9800",
+    "slton": "4",
+    "slchogiao": "169.1",
+    "slchonhap": "60",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5aed03c4-d6a4-4f8a-bce7-32d3ad0a61fe",
+    "sanphamId": "4c515976-30e4-48b3-b93e-04e584118204",
+    "slton": "10",
+    "slchogiao": "106.3",
+    "slchonhap": "40",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "26ef3eb3-8afb-4100-b252-a3008c6abd0a",
+    "sanphamId": "7ac9a13f-7082-4528-83e7-463281ba12a7",
+    "slton": "0",
+    "slchogiao": "23.4",
+    "slchonhap": "9.7",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "21583bfe-2b27-42de-90c7-757d859dbe83",
+    "sanphamId": "e7b0c28f-9343-4959-a785-ac0b1308f125",
+    "slton": "0",
+    "slchogiao": "133.2",
+    "slchonhap": "16",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "62b65932-95c3-41b4-b28f-d1b58c741ee5",
+    "sanphamId": "74414ab9-d7aa-4790-aa23-f39c4243bf88",
+    "slton": "0",
+    "slchogiao": "177",
+    "slchonhap": "25",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "bc0479c0-5a59-46dd-8a83-23c724a1c0a4",
+    "sanphamId": "55c2acf3-3d06-4c86-b583-f05d70e667b6",
+    "slton": "10",
+    "slchogiao": "247",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "84522dd4-bd82-43a3-ac42-d754751faea7",
+    "sanphamId": "5e96e7ac-a039-47ee-a8f6-9dbbdee7e6e9",
+    "slton": "6",
+    "slchogiao": "30.3",
+    "slchonhap": "10",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "73d4ef58-d933-4301-a3b2-34b9098a67c6",
+    "sanphamId": "e6f9745d-f819-4dbe-bed6-3afd7abb0b6a",
+    "slton": "4",
+    "slchogiao": "96.1",
+    "slchonhap": "20",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "049abdfc-a6b8-47d7-9774-6af7e59bb208",
+    "sanphamId": "fdd6e92c-cfd4-4711-9400-2fe038823c92",
+    "slton": "5",
+    "slchogiao": "26.3",
+    "slchonhap": "10",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e94d998f-763e-4833-af72-57204cbcc6b4",
+    "sanphamId": "9d6c4c57-433b-4a94-a6a9-4d11ba06c924",
+    "slton": "180",
+    "slchogiao": "44",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "92d842a7-b823-4520-a622-cef4f3d58deb",
+    "sanphamId": "77f5283e-fff5-4482-9aae-eb9b5e04fa12",
+    "slton": "13",
+    "slchogiao": "111.7",
+    "slchonhap": "51.8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "411b5506-a553-4127-94da-3b49262a7132",
+    "sanphamId": "fc52e4e4-57d1-40d9-970e-58b25c948fba",
+    "slton": "10",
+    "slchogiao": "173.9",
+    "slchonhap": "55",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "3aa1860a-5955-4b86-8336-0302b5d7ade0",
+    "sanphamId": "4e3d7f98-8fb0-40f4-a4cf-7659edd892e1",
+    "slton": "0",
+    "slchogiao": "3503",
+    "slchonhap": "986",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "abf15ab1-b8b3-4da3-a174-a82d432bda6a",
+    "sanphamId": "b0cd3d95-0433-4d71-8c0a-423a7266e68c",
+    "slton": "1.8",
+    "slchogiao": "60.1",
+    "slchonhap": "20.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "21585842-1a7b-4ede-ba51-b1c10b1e6550",
+    "sanphamId": "c284dd47-b1d5-41ad-8aa1-737da20205c6",
+    "slton": "0",
+    "slchogiao": "106",
+    "slchonhap": "45.6",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "84e98f7d-d849-48be-956d-38e87782b0c1",
+    "sanphamId": "74b7a568-0174-423d-a4ab-1719fcc961c9",
+    "slton": "7",
+    "slchogiao": "286.2",
+    "slchonhap": "130",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "6c840906-8adc-4486-94ab-11c1c921fbf1",
+    "sanphamId": "238e2f08-21f2-460b-8120-04baec51a3ea",
+    "slton": "10",
+    "slchogiao": "13",
+    "slchonhap": "10",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "789bc059-b8f9-4a8c-a291-79f32e6b832c",
+    "sanphamId": "fb876e1c-2c27-44c6-981b-6253847adce1",
+    "slton": "88",
+    "slchogiao": "234",
+    "slchonhap": "144",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a8ce9f9e-9141-4d86-b660-1e7f49eb01cf",
+    "sanphamId": "a9a4377a-fc07-45b7-9816-76a57fb53c5b",
+    "slton": "0",
+    "slchogiao": "2",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a1144357-cad3-4285-8a6e-b749bf9b2faf",
+    "sanphamId": "efdd3dd7-8e36-4ba7-ba0e-0f374c3e3971",
+    "slton": "0",
+    "slchogiao": "288.2",
+    "slchonhap": "112",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a634b036-c319-459c-80a7-b04b3b1dadea",
+    "sanphamId": "756d3aa1-606e-40c0-ba93-4b160dd17528",
+    "slton": "0",
+    "slchogiao": "179",
+    "slchonhap": "80",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "4942e13d-168e-4ded-9ec0-5342691ba24d",
+    "sanphamId": "6baecbf3-0b33-49ea-9315-1dedb3bf6f2c",
+    "slton": "0",
+    "slchogiao": "81.5",
+    "slchonhap": "24.4",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "d4e622d9-230c-4047-b157-86b445a05d29",
+    "sanphamId": "bf93ef1b-31d6-40ca-affe-1a98a55f07e0",
+    "slton": "1632",
+    "slchogiao": "1315",
+    "slchonhap": "1370",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a49ccad1-0527-4551-9f6a-eee75c285706",
+    "sanphamId": "b9526ade-de43-4ec7-aa50-3acaed3740e9",
+    "slton": "0",
+    "slchogiao": "86.6",
+    "slchonhap": "50",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5737fde3-a14c-4e27-8dd4-33cec5fb012b",
+    "sanphamId": "b1ba0b36-c81c-4524-b2b2-c7869e25baf3",
+    "slton": "0",
+    "slchogiao": "39.6",
+    "slchonhap": "5.2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "76f535c6-c4fa-49f0-96c5-cfcd334d3859",
+    "sanphamId": "7f15c8ca-5ffd-4474-8894-ef46319ee698",
+    "slton": "2.8",
+    "slchogiao": "38.3",
+    "slchonhap": "18",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2b1fef23-7403-4814-aba6-3c0cac7ea9d3",
+    "sanphamId": "f438bf1b-8987-47a2-9e1f-a7393c1d3334",
+    "slton": "157",
+    "slchogiao": "234",
+    "slchonhap": "144",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e9d1d6c5-cfb4-4b49-bf68-d1350310eac9",
+    "sanphamId": "4a187f9a-867a-4cdd-8aa7-069237fd9ff7",
+    "slton": "0",
+    "slchogiao": "22.9",
+    "slchonhap": "6.2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5afab27a-dba0-4d8a-a83f-7f04b927de7f",
+    "sanphamId": "0cc3b78b-4c67-4023-832d-15eaa6ebfeb6",
+    "slton": "0",
+    "slchogiao": "74",
+    "slchonhap": "22.3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a57a7f1c-377c-4b77-97c7-e35a6d9474c1",
+    "sanphamId": "1798c19e-f3c4-4208-9661-3df77172a5ad",
+    "slton": "0",
+    "slchogiao": "74",
+    "slchonhap": "28",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "fa419a71-1a1f-47c6-9472-66533d78f739",
+    "sanphamId": "e17e91e7-5e15-419e-9f6e-fce970437d37",
+    "slton": "0",
+    "slchogiao": "132.8",
+    "slchonhap": "24.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "173e2122-9f17-4226-b144-06297ea62434",
+    "sanphamId": "abb09465-ccbe-4d86-9ab4-9ce967b24ee1",
+    "slton": "0.5",
+    "slchogiao": "8.9",
+    "slchonhap": "2",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "230ad6cd-5fc6-4ec6-af4c-6ec4f9c08f4b",
+    "sanphamId": "355b7a25-92d6-4b05-98fe-760cd73fd6f1",
+    "slton": "2",
+    "slchogiao": "20.7",
+    "slchonhap": "5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "17f61c63-415f-4732-ab7a-45c263408fc6",
+    "sanphamId": "22e3939e-9702-45b0-a5ad-ab6b1d886db1",
+    "slton": "2",
+    "slchogiao": "67",
+    "slchonhap": "11",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "35be735f-645f-42c0-abf6-f58f6bdc2ccd",
+    "sanphamId": "5fbb89e6-58a3-4cd7-9d11-31a17a14b114",
+    "slton": "11.5",
+    "slchogiao": "132.2",
+    "slchonhap": "30",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a5bf9aad-335e-4cb7-b384-2acd4ac50ceb",
+    "sanphamId": "230ed35b-824e-4236-88fe-361f5a241b87",
+    "slton": "8.3",
+    "slchogiao": "42.3",
+    "slchonhap": "3.8",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f63e99b1-8737-47dc-a2c7-90268d47c688",
+    "sanphamId": "7db70dc8-a602-4c44-b458-4aa5d63dea75",
+    "slton": "0",
+    "slchogiao": "312.3",
+    "slchonhap": "100.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5911f1d3-b28d-4cd1-a5f5-bea12a6073aa",
+    "sanphamId": "3dd7ce1a-320c-4a64-92b3-91eef614a4a3",
+    "slton": "0.5",
+    "slchogiao": "21.2",
+    "slchonhap": "6.9",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "7dfabacc-8b16-4c8b-9903-c70e423e2e2a",
+    "sanphamId": "f16ada29-af2a-4f25-bb1b-94a9aa8d24f8",
+    "slton": "48",
+    "slchogiao": "329.3",
+    "slchonhap": "160",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "a478d67e-11ae-47da-924e-6fc580d47d7e",
+    "sanphamId": "77329cc4-a0c0-4d1c-9b96-815de68adbb9",
+    "slton": "0",
+    "slchogiao": "66",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "2081beaa-39c2-4738-9d69-fe5ceb111fbc",
+    "sanphamId": "69c36be0-e22a-41bb-a22c-49d5cc877e5d",
+    "slton": "0",
+    "slchogiao": "477.48",
+    "slchonhap": "248.5",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "b06c1db0-f537-4bdc-9f04-50357e1c0294",
+    "sanphamId": "ec90478e-0627-4846-88dc-a05832ed8acc",
+    "slton": "1",
+    "slchogiao": "118.4",
+    "slchonhap": "43.3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "9b36567d-c3d3-4e64-9640-dde8080829b8",
+    "sanphamId": "157ffcfd-2f34-4206-aef6-5d2635a12de4",
+    "slton": "0",
+    "slchogiao": "74.97",
+    "slchonhap": "32.6",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "c22a683e-dbeb-44b2-8358-350663336f3f",
+    "sanphamId": "0ac8471c-a37d-4ef3-8fa1-4d8bd5381169",
+    "slton": "0",
+    "slchogiao": "41.5",
+    "slchonhap": "22",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "5f5061fa-d84b-4143-a12a-fe8d66eeab5a",
+    "sanphamId": "b3ae911d-5fac-44e8-b708-35df70603c21",
+    "slton": "0",
+    "slchogiao": "60.65",
+    "slchonhap": "14.9",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "8abcfbf1-d47e-4510-aa57-094c127071fc",
+    "sanphamId": "c141a516-e5aa-4771-9431-f7f0ae25f26c",
+    "slton": "0",
+    "slchogiao": "525.2",
+    "slchonhap": "240",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "61bbf374-90e2-46fa-be6d-2d0580ca5d42",
+    "sanphamId": "3403c3ca-edfc-48da-a23f-f0aa791d6503",
+    "slton": "5.5",
+    "slchogiao": "20.4",
+    "slchonhap": "3",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "e585328f-739b-47ab-b5d3-27e6b455c2c2",
+    "sanphamId": "5b85c0ff-8ffe-4c5d-a21c-a7b48bd2bd9a",
+    "slton": "0.5",
+    "slchogiao": "28.4",
+    "slchonhap": "10",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "9b544b5b-a975-48c7-9489-aa0a88949905",
+    "sanphamId": "ae13e3fb-3d12-4bf8-adfe-d77e656d08b6",
+    "slton": "0",
+    "slchogiao": "111.9",
+    "slchonhap": "68",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "eb4ef719-f8cb-4618-abb7-ccf2fd4fcbb4",
+    "sanphamId": "e2d07386-3b1e-4ba8-bcb8-d2eb1aa56a71",
+    "slton": "5.5",
+    "slchogiao": "402.35",
+    "slchonhap": "130",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "8c493472-0f38-4d28-b258-272dd9a0e785",
+    "sanphamId": "7ec76e38-9b41-4086-b014-affa982d2d9a",
+    "slton": "0",
+    "slchogiao": "26.7",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "f73172c7-cc4d-4117-96ee-54c890cc2feb",
+    "sanphamId": "0d6b8ab4-6e60-4472-a9f2-7b209b888dc1",
+    "slton": "23",
+    "slchogiao": "253",
+    "slchonhap": "90",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  },
+  {
+    "id": "fec41176-bca6-4c27-83dc-be484faefb0e",
+    "sanphamId": "a150893f-da2a-42ce-af42-acf0879ed292",
+    "slton": "1.7",
+    "slchogiao": "6.65",
+    "slchonhap": "0",
+    "createdAt": "2025-07-24T07:34:56.798Z",
+    "updatedAt": "2025-07-24T07:34:56.798Z"
+  }
+]
