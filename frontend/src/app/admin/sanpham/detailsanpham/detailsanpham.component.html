@@ -75,6 +75,10 @@
           <mat-label>Hao Hụt %</mat-label>
           <input matInput type="number" [(ngModel)]="DetailSanpham().haohut" [disabled]="!isEdit()" placeholder="Vui lòng nhập haohut"/>
         </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Vat</mat-label>
+          <input matInput type="number" [(ngModel)]="DetailSanpham().vat" [disabled]="!isEdit()" placeholder="Vui lòng nhập vat"/>
+        </mat-form-field>
       </div>
       <div class="col-span-2 w-full flex flex-wrap gap-2">   
         <button [disabled]="!isEdit()" mat-flat-button color="primary" [matMenuTriggerFor]="menu" #menuTrigger="matMenuTrigger">

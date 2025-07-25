@@ -40,6 +40,10 @@
         <mat-label>Viết Tắt</mat-label>
         <input matInput [(ngModel)]="DetailKhachhang().subtitle" [disabled]="!isEdit()" placeholder="Vui lòng nhập Viết Tắt"/>
       </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Tên File</mat-label>
+        <input matInput [(ngModel)]="DetailKhachhang().tenfile" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên File"/>
+      </mat-form-field>
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Loại Khách Hàng</mat-label>
       <mat-select [(ngModel)]="DetailKhachhang().loaikh" [disabled]="!isEdit()">
@@ -94,6 +98,7 @@
 
       <mat-slide-toggle color="primary" [(ngModel)]="DetailKhachhang().hiengia" [disabled]="!isEdit()">Hiện Giá</mat-slide-toggle>
       <mat-slide-toggle color="primary" [(ngModel)]="DetailKhachhang().istitle2" [disabled]="!isEdit()">Hiện Tên Sản Phẩm 2</mat-slide-toggle>
+      <mat-slide-toggle color="primary" [(ngModel)]="DetailKhachhang().isshowvat" [disabled]="!isEdit()">Hiện VAT</mat-slide-toggle>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Ghi Chú</mat-label>
         <textarea matInput [(ngModel)]="DetailKhachhang().ghichu" [disabled]="!isEdit()" placeholder="Vui lòng nhập Ghi Chú"></textarea>

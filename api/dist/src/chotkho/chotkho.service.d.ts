@@ -14,6 +14,47 @@ export declare class ChotkhoService {
             } | null;
             email: string | null;
         } | null;
+        sanpham: {
+            id: string;
+            title: string;
+            title2: string | null;
+            slug: string | null;
+            masp: string;
+            subtitle: string | null;
+            giagoc: number;
+            giaban: number;
+            dvt: string | null;
+            hinhanh: string | null;
+            loadpoint: number | null;
+            vat: import("@prisma/client/runtime/library").Decimal | null;
+            soluong: import("@prisma/client/runtime/library").Decimal | null;
+            soluongkho: import("@prisma/client/runtime/library").Decimal | null;
+            haohut: number;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        } | null;
+        kho: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            diachi: string | null;
+            sdt: string | null;
+            makho: string | null;
+            congtyId: string | null;
+        } | null;
+        tonkho: {
+            id: string;
+            sanphamId: string;
+            slton: import("@prisma/client/runtime/library").Decimal;
+            slchogiao: import("@prisma/client/runtime/library").Decimal;
+            slchonhap: import("@prisma/client/runtime/library").Decimal;
+        } | null;
     } & {
         id: string;
         title: string | null;
@@ -456,6 +497,11 @@ export declare class ChotkhoService {
         status: string;
         message: string;
         count: number;
+    }>;
+    bulkCreateChotkho(dataList: any[]): Promise<{
+        status: string;
+        message: string;
+        data: any;
     }>;
     findBySanpham(sanphamId: string, page?: number, limit?: number): Promise<{
         data: ({

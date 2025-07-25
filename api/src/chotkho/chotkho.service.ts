@@ -49,33 +49,95 @@ export class ChotkhoService {
 
   async create(data: any) { 
     try {
-      const maxOrder = await this.prisma.chotkho.aggregate({
-        _max: { order: true },
-      });
-      const newOrder = (maxOrder._max?.order || 0) + 1;
-      const codeId = await this.generateCodeId();
-      
-      const created = await this.prisma.chotkho.create({
-        data: {
-          ...data,
-          order: newOrder,
-          codeId: codeId,
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              email: true,
-              profile: {
-                select: {
-                  name: true
+      return await this.prisma.$transaction(async (prisma) => {
+        const maxOrder = await prisma.chotkho.aggregate({
+          _max: { order: true },
+        });
+        const newOrder = (maxOrder._max?.order || 0) + 1;
+        const codeId = await this.generateCodeId();
+        
+        // Lấy số lượng từ TonKho để làm slhethong
+        let slhethong = 0;
+        if (data.sanphamId) {
+          const tonkho = await prisma.tonKho.findUnique({
+            where: { sanphamId: data.sanphamId }
+          });
+          slhethong = Number(tonkho?.slton || 0);
+        }
+
+        // Tính chênh lệch
+        const slthucte = Number(data.slthucte || 0);
+        const chenhlech = slthucte - slhethong;
+
+        const created = await prisma.chotkho.create({
+          data: {
+            ...data,
+            order: newOrder,
+            codeId: codeId,
+            slhethong: slhethong,
+            slthucte: slthucte,
+            chenhlech: chenhlech,
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                profile: {
+                  select: {
+                    name: true
+                  }
                 }
               }
-            }
+            },
+            kho: true,
+            sanpham: true,
+            tonkho: true
           }
+        });
+
+        // Nếu có chênh lệch, tạo PhieuKho và cập nhật TonKho
+        if (chenhlech !== 0 && data.sanphamId) {
+          const phieuKhoData = {
+            title: `Điều chỉnh tồn kho - ${created.codeId}`,
+            maphieu: `DC-${created.codeId}`,
+            ngay: new Date(data.ngay || new Date()),
+            type: chenhlech > 0 ? 'nhap' : 'xuat',
+            isChotkho: true,
+            khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+            ghichu: `Điều chỉnh theo chốt kho ${created.codeId}. Chênh lệch: ${chenhlech}`,
+            isActive: true,
+            sanpham: {
+              create: [{
+                sanphamId: data.sanphamId,
+                soluong: Math.abs(chenhlech),
+                ghichu: `Điều chỉnh chốt kho ${created.codeId}`
+              }]
+            }
+          };
+
+          const phieukho = await prisma.phieuKho.create({
+            data: phieuKhoData,
+            include: { sanpham: true }
+          });
+
+          // Cập nhật liên kết với PhieuKho
+          await prisma.chotkho.update({
+            where: { id: created.id },
+            data: { phieukhoId: phieukho.id }
+          });
+
+          // Cập nhật TonKho.slton
+          await prisma.tonKho.update({
+            where: { sanphamId: data.sanphamId },
+            data: {
+              slton: slthucte // Cập nhật số lượng tồn kho theo số thực tế
+            }
+          });
         }
+
+        return created;
       });
-      return created;
     } catch (error) {
       console.log('Error creating chotkho:', error);
       throw error;
@@ -538,6 +600,102 @@ export class ChotkhoService {
       };
     } catch (error) {
       console.log('Error bulk updating chotkho active status:', error);
+      throw error;
+    }
+  }
+
+  async bulkCreateChotkho(dataList: any[]) {
+    try {
+      return await this.prisma.$transaction(async (prisma) => {
+        const results:any = [];
+        
+        for (const data of dataList) {
+          // Lấy số lượng từ TonKho để làm slhethong
+          let slhethong = 0;
+          if (data.sanphamId) {
+            const tonkho = await prisma.tonKho.findUnique({
+              where: { sanphamId: data.sanphamId }
+            });
+            slhethong = Number(tonkho?.slton || 0);
+          }
+
+          // Tính chênh lệch
+          const slthucte = Number(data.slthucte || 0);
+          const chenhlech = slthucte - slhethong;
+
+          const maxOrder = await prisma.chotkho.aggregate({
+            _max: { order: true },
+          });
+          const newOrder = (maxOrder._max?.order || 0) + 1;
+          const codeId = await this.generateCodeId();
+
+          const created = await prisma.chotkho.create({
+            data: {
+              ...data,
+              order: newOrder,
+              codeId: codeId,
+              slhethong: slhethong,
+              slthucte: slthucte,
+              chenhlech: chenhlech,
+            },
+            include: {
+              kho: true,
+              sanpham: true,
+              tonkho: true
+            }
+          });
+
+          // Nếu có chênh lệch, tạo PhieuKho và cập nhật TonKho
+          if (chenhlech !== 0 && data.sanphamId) {
+            const phieuKhoData = {
+              title: `Điều chỉnh tồn kho - ${created.codeId}`,
+              maphieu: `DC-${created.codeId}`,
+              ngay: new Date(data.ngay || new Date()),
+              type: chenhlech > 0 ? 'nhap' : 'xuat',
+              isChotkho: true,
+              khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+              ghichu: `Điều chỉnh theo chốt kho ${created.codeId}. Chênh lệch: ${chenhlech}`,
+              isActive: true,
+              sanpham: {
+                create: [{
+                  sanphamId: data.sanphamId,
+                  soluong: Math.abs(chenhlech),
+                  ghichu: `Điều chỉnh chốt kho ${created.codeId}`
+                }]
+              }
+            };
+
+            const phieukho = await prisma.phieuKho.create({
+              data: phieuKhoData,
+              include: { sanpham: true }
+            });
+
+            // Cập nhật liên kết với PhieuKho
+            await prisma.chotkho.update({
+              where: { id: created.id },
+              data: { phieukhoId: phieukho.id }
+            });
+
+            // Cập nhật TonKho.slton
+            await prisma.tonKho.update({
+              where: { sanphamId: data.sanphamId },
+              data: {
+                slton: slthucte // Cập nhật số lượng tồn kho theo số thực tế
+              }
+            });
+          }
+
+          results.push(created);
+        }
+
+        return {
+          status: 'success',
+          message: `Created ${results.length} chotkho records`,
+          data: results
+        };
+      });
+    } catch (error) {
+      console.log('Error bulk creating chotkho:', error);
       throw error;
     }
   }

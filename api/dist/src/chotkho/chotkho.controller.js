@@ -141,6 +141,14 @@ let ChotkhoController = class ChotkhoController {
             throw new common_1.HttpException(error.message || 'Bulk update failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async bulkCreate(dataList) {
+        try {
+            return await this.chotkhoService.bulkCreateChotkho(dataList);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Bulk create failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async getStatistics() {
         try {
             return await this.chotkhoService.getStatistics();
@@ -317,6 +325,21 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ChotkhoController.prototype, "bulkUpdateStatus", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Bulk create chotkho records' }),
+    (0, swagger_1.ApiBody)({
+        type: [Object],
+        description: 'Array of chotkho data objects'
+    }),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('bulk-create'),
+    (0, audit_decorator_1.Audit)({ entity: 'Chotkho', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Array]),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "bulkCreate", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get chotkho statistics' }),
     (0, common_1.Get)('statistics'),

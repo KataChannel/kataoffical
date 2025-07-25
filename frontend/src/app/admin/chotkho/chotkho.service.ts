@@ -86,6 +86,51 @@ export class ChotkhoService {
     }
   }
 
+  // Tạo chốt kho hàng loạt cho nhiều sản phẩm
+  async bulkCreateChotkho(dataList: any[]) {
+    this.isLoading.set(true);
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        body: JSON.stringify(dataList),
+      };
+      
+      const response = await fetch(`${environment.APIURL}/chotkho/bulk-create`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
+        return null;
+      }
+      
+      const data = await response.json();
+      
+      // Tự động refresh danh sách
+      await this.getAllChotkho({}, true);
+      this.lastUpdated.set(new Date());
+      
+      this._snackBar.open(`Tạo thành công ${data?.data?.length || 0} bản ghi chốt kho`, '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      
+      return data;
+    } catch (error) {
+      console.error('Lỗi tạo chốt kho hàng loạt:', error);
+      this.handleError(500);
+      return null;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
   async getAllChotkho(queryParams: any = {}, forceRefresh: boolean = false) {
     // Set loading state
     if (forceRefresh) {

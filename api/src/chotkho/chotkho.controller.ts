@@ -221,6 +221,23 @@ export class ChotkhoController {
     }
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Bulk create chotkho records' })
+  @ApiBody({ 
+    type: [Object],
+    description: 'Array of chotkho data objects'
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post('bulk-create')
+  @Audit({ entity: 'Chotkho', action: AuditAction.CREATE, includeResponse: true })
+  async bulkCreate(@Body() dataList: any[]) {
+    try {
+      return await this.chotkhoService.bulkCreateChotkho(dataList);
+    } catch (error) {
+      throw new HttpException(error.message || 'Bulk create failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @ApiOperation({ summary: 'Get chotkho statistics' })
   @Get('statistics')
   async getStatistics() {
