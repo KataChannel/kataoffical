@@ -79,6 +79,22 @@ export class DetailXuatnhaptonComponent {
   xuatnhaptonId: any = this._ChotkhoService.chotkhoId
 
   async ngOnInit() {
+          const id = this._ChotkhoService.chotkhoId();
+      if (!id) {
+        this._router.navigate(['/admin/xuatnhapton']);
+        this._XuatnhaptonComponent.drawer.close();
+      }
+      if (id === 'new') {
+        this.DetailXuatnhapton.set({ title: "Chốt Kho Ngày " + new Date().toLocaleDateString() });
+        this._XuatnhaptonComponent.drawer.open();
+        this.isEdit.update(value => !value);
+        this._router.navigate(['/admin/xuatnhapton', "new"]);
+      }
+      else {
+        await this._ChotkhoService.getChotkhoBy({ ngay: id });
+        this._XuatnhaptonComponent.drawer.open();
+        this._router.navigate(['/admin/xuatnhapton', id]);
+      }
   }
 
   async handleXuatnhaptonAction() {
