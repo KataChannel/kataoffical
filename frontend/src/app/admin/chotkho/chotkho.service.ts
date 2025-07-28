@@ -16,7 +16,6 @@ export class ChotkhoService {
     private _sharedSocketService: SharedSocketService,
   ) {
     this.socket = this._sharedSocketService.getSocket();
-    this.listenChotkhoUpdates();
   }
 
   private _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -38,7 +37,31 @@ export class ChotkhoService {
   setChotkhoId(id: string | null) {
     this.chotkhoId.set(id);
   }
-
+  async getListSanphamTonKho(maspList: any) {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`,
+        },
+        body: JSON.stringify(maspList),
+      };
+      
+      const response = await fetch(`${environment.APIURL}/chotkho/tonkhobylist`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
+        return null;
+      }
+      
+      const data = await response.json();
+      return data || [];
+    } catch (error) {
+      console.error('Lỗi lấy danh sách sản phẩm tồn kho:', error);
+      this.handleError(500);
+      return [];
+    }
+  }
   async CreateChotkho(dulieu: any) {
     this.isLoading.set(true);
     try {
@@ -47,13 +70,8 @@ export class ChotkhoService {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
         },
-        body: JSON.stringify({
-          ...dulieu
-        }),
+        body: JSON.stringify(dulieu),
       };
       
       const response = await fetch(`${environment.APIURL}/chotkho/create`, options);
@@ -65,10 +83,8 @@ export class ChotkhoService {
       const data = await response.json();
       
       // Tự động refresh danh sách và set ID mới
-      await this.getAllChotkho({}, true);
-      this.chotkhoId.set(data.id);
-      this.lastUpdated.set(new Date());
-      
+      await this.getAllChotkho();
+      this.chotkhoId.set(data.id);      
       this._snackBar.open('Tạo chốt kho thành công', '', {
         duration: 2000,
         horizontalPosition: 'end',
@@ -95,9 +111,6 @@ export class ChotkhoService {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
         },
         body: JSON.stringify(dataList),
       };
@@ -111,9 +124,7 @@ export class ChotkhoService {
       const data = await response.json();
       
       // Tự động refresh danh sách
-      await this.getAllChotkho({}, true);
-      this.lastUpdated.set(new Date());
-      
+      await this.getAllChotkho();      
       this._snackBar.open(`Tạo thành công ${data?.data?.length || 0} bản ghi chốt kho`, '', {
         duration: 3000,
         horizontalPosition: 'end',
@@ -131,12 +142,56 @@ export class ChotkhoService {
     }
   }
 
-  async getAllChotkho(queryParams: any = {}, forceRefresh: boolean = false) {
-    // Set loading state
-    if (forceRefresh) {
-      this.isRefreshing.set(true);
+  async getChotkhoByDateRange(params: any) {
+    this.isLoading.set(true);
+    try {
+      const { startDate, endDate, page = 1, limit = this.pageSize() } = params;
+      
+      const query = new URLSearchParams({
+        startDate: startDate || '',
+        endDate: endDate || '',
+        page: page.toString(),
+        limit: limit.toString()
+      });
+
+      const options = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this._StorageService.getItem('token')}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+      };
+
+      const response = await fetch(`${environment.APIURL}/chotkho/bydate?${query}`, options);
+      if (!response.ok) {
+        this.handleError(response.status);
+        return null;
+      }
+
+      const data = await response.json();
+      
+      // Update state with the returned data
+      this.ListChotkho.set(data.data || []);
+      this.page.set(data.page || page);
+      this.totalPages.set(data.totalPages || 1);
+      this.total.set(data.total || 0);
+      this.pageSize.set(limit);
+      this.lastUpdated.set(new Date());
+      
+      return data;
+    } catch (error) {
+      console.error('Lỗi lấy chốt kho theo khoảng thời gian:', error);
+      this.handleError(500);
+      return null;
+    } finally {
+      this.isLoading.set(false);
     }
-    
+  }
+
+  async getAllChotkho(queryParams: any = {}) {
     try {
       const options = {
         method: 'GET',
@@ -212,14 +267,6 @@ export class ChotkhoService {
     }
   }
 
-  listenChotkhoUpdates() {
-    this.socket.off('chotkho-updated'); // đảm bảo không đăng ký nhiều lần
-    this.socket.on('chotkho-updated', async () => {
-      console.log('🔄 Dữ liệu chốt kho thay đổi, cập nhật lại...');
-      await this.getAllChotkho({}, true);
-    });
-  }
-
   async getChotkhoBy(param: any, pageSize: number = this.pageSize()) {
     this.pageSize.set(pageSize);
     try {
@@ -286,7 +333,7 @@ export class ChotkhoService {
       const data = await response.json();
       
       // Refresh cả danh sách và chi tiết
-      await this.getAllChotkho({}, true);
+      await this.getAllChotkho();
       if (data?.id) {
         await this.getChotkhoBy({ id: data.id, isOne: true });
       }
@@ -317,7 +364,7 @@ export class ChotkhoService {
       }
       
       // Refresh danh sách ngay lập tức
-      await this.getAllChotkho({}, true);
+      await this.getAllChotkho();
       return true;
     } catch (error) {
       console.error('Lỗi xóa chốt kho:', error);
@@ -365,7 +412,7 @@ export class ChotkhoService {
         this.handleError(response.status);
         return false;
       }
-      await this.getAllChotkho({}, true);
+      await this.getAllChotkho();
       return true;
     } catch (error) {
       console.error('Lỗi cập nhật hàng loạt:', error);
@@ -476,7 +523,7 @@ export class ChotkhoService {
   // Phương thức refresh dữ liệu nhanh
   async quickRefresh() {
     try {
-      await this.getAllChotkho({}, true);
+      await this.getAllChotkho();
       this._snackBar.open('Dữ liệu đã được cập nhật', '', {
         duration: 1000,
         horizontalPosition: 'end',
@@ -632,7 +679,7 @@ export class ChotkhoService {
       const result = await response.json();
       
       // Refresh data after import
-      await this.getAllChotkho({}, true);
+      await this.getAllChotkho();
       
       this._snackBar.open(`Import thành công ${result.successCount} mục`, '', {
         duration: 3000,
@@ -703,7 +750,7 @@ export class ChotkhoService {
       }
       
       // Refresh all data after restore
-      await this.getAllChotkho({}, true);
+      await this.getAllChotkho();
       
       this._snackBar.open('Phục hồi dữ liệu thành công', '', {
         duration: 3000,

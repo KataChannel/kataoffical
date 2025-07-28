@@ -20,7 +20,7 @@ let ChotkhoService = class ChotkhoService {
     async getLastUpdatedChotkho() {
         try {
             const item = await this.prisma.chotkho.findFirst({
-                orderBy: { updatedAt: 'desc' }
+                orderBy: { updatedAt: 'desc' },
             });
             return { updatedAt: item ? item.updatedAt.getTime() : 0 };
         }
@@ -30,141 +30,320 @@ let ChotkhoService = class ChotkhoService {
         }
     }
     async generateCodeId() {
-        const now = new Date();
-        const year = now.getFullYear().toString().slice(-2);
-        const month = (now.getMonth() + 1).toString().padStart(2, '0');
-        const day = now.getDate().toString().padStart(2, '0');
-        const prefix = `CK${year}${month}${day}`;
-        const lastItem = await this.prisma.chotkho.findFirst({
-            where: {
-                codeId: {
-                    startsWith: prefix
-                }
-            },
-            orderBy: {
-                codeId: 'desc'
-            }
-        });
-        let sequence = 1;
-        if (lastItem && lastItem.codeId) {
-            const lastSequence = parseInt(lastItem.codeId.slice(-3));
-            sequence = lastSequence + 1;
+        try {
+            const timestamp = moment().format('YYYYMMDDHHmmss');
+            const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+            return `CK-${timestamp}-${randomPart}`;
         }
-        return `${prefix}${sequence.toString().padStart(3, '0')}`;
+        catch (error) {
+            console.log('Error generating codeId:', error);
+            throw error;
+        }
     }
     async create(data) {
         try {
+            const dataArray = Array.isArray(data) ? data : [data];
             return await this.prisma.$transaction(async (prisma) => {
-                const maxOrder = await prisma.chotkho.aggregate({
-                    _max: { order: true },
-                });
-                const newOrder = (maxOrder._max?.order || 0) + 1;
-                const codeId = await this.generateCodeId();
-                let slhethong = 0;
-                if (data.sanphamId) {
-                    const tonkho = await prisma.tonKho.findUnique({
-                        where: { sanphamId: data.sanphamId }
+                const result = {
+                    status: 'success',
+                    created: 0,
+                    updated: 0,
+                    failed: 0,
+                    errors: [],
+                    data: [],
+                    summary: {
+                        totalProcessed: dataArray.length,
+                        phieukhoCreated: 0,
+                        tonkhoUpdated: 0,
+                    }
+                };
+                try {
+                    const sanphamIds = dataArray
+                        .filter(item => item.sanphamId)
+                        .map(item => item.sanphamId);
+                    const tonkhoMap = new Map();
+                    if (sanphamIds.length > 0) {
+                        const tonkhos = await prisma.tonKho.findMany({
+                            where: { sanphamId: { in: sanphamIds } },
+                            select: { sanphamId: true, slton: true }
+                        });
+                        tonkhos.forEach(tk => tonkhoMap.set(tk.sanphamId, tk.slton));
+                    }
+                    const maxOrder = await prisma.chotkho.aggregate({
+                        _max: { order: true },
                     });
-                    slhethong = Number(tonkho?.slton || 0);
-                }
-                const slthucte = Number(data.slthucte || 0);
-                const chenhlech = slthucte - slhethong;
-                const created = await prisma.chotkho.create({
-                    data: {
-                        ...data,
-                        order: newOrder,
-                        codeId: codeId,
-                        slhethong: slhethong,
-                        slthucte: slthucte,
-                        chenhlech: chenhlech,
-                    },
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                email: true,
-                                profile: {
-                                    select: {
-                                        name: true
+                    let currentOrder = (maxOrder._max?.order || 0);
+                    const codeIds = await Promise.all(dataArray.map(() => this.generateCodeId()));
+                    const existingRecordsMap = new Map();
+                    for (const item of dataArray) {
+                        if (item.sanphamId && item.ngay) {
+                            const startOfDay = moment(item.ngay).startOf('day').toDate();
+                            const endOfDay = moment(item.ngay).endOf('day').toDate();
+                            const existing = await prisma.chotkho.findFirst({
+                                where: {
+                                    sanphamId: item.sanphamId,
+                                    ngay: {
+                                        gte: startOfDay,
+                                        lte: endOfDay
                                     }
                                 }
+                            });
+                            if (existing) {
+                                existingRecordsMap.set(`${item.sanphamId}-${moment(item.ngay).format('YYYY-MM-DD')}`, existing);
                             }
-                        },
-                        kho: true,
-                        sanpham: true,
-                        tonkho: true
+                        }
                     }
-                });
-                if (chenhlech !== 0 && data.sanphamId) {
-                    const phieuKhoData = {
-                        title: `Điều chỉnh tồn kho - ${created.codeId}`,
-                        maphieu: `DC-${created.codeId}`,
-                        ngay: new Date(data.ngay || new Date()),
-                        type: chenhlech > 0 ? 'nhap' : 'xuat',
-                        isChotkho: true,
-                        khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
-                        ghichu: `Điều chỉnh theo chốt kho ${created.codeId}. Chênh lệch: ${chenhlech}`,
-                        isActive: true,
-                        sanpham: {
-                            create: [{
-                                    sanphamId: data.sanphamId,
-                                    soluong: Math.abs(chenhlech),
-                                    ghichu: `Điều chỉnh chốt kho ${created.codeId}`
-                                }]
+                    const chotkhoCreateData = [];
+                    const chotkhoUpdateData = [];
+                    const phieukhoCreateData = [];
+                    const tonkhoUpdates = [];
+                    for (let i = 0; i < dataArray.length; i++) {
+                        try {
+                            const item = dataArray[i];
+                            const { sanphamId, tonkhoId, phieukhoId, ngay, slthucte, slhethong, chenhlech, ghichu, title } = item;
+                            const dateKey = `${sanphamId}-${moment(ngay).format('YYYY-MM-DD')}`;
+                            const existingRecord = existingRecordsMap.get(dateKey);
+                            let finalSlhethong = slhethong !== undefined ? Number(slhethong) : 0;
+                            if (finalSlhethong === 0 && sanphamId) {
+                                finalSlhethong = Number(tonkhoMap.get(sanphamId) || 0);
+                            }
+                            const finalSlthucte = Number(slthucte || 0);
+                            const finalChenhlech = chenhlech !== undefined ? Number(chenhlech) : (finalSlthucte - finalSlhethong);
+                            if (existingRecord) {
+                                chotkhoUpdateData.push({
+                                    id: existingRecord.id,
+                                    data: {
+                                        slthucte: finalSlthucte,
+                                        slhethong: finalSlhethong,
+                                        chenhlech: finalChenhlech,
+                                        ghichu: ghichu || existingRecord.ghichu,
+                                        title: title || existingRecord.title,
+                                        updatedAt: new Date(),
+                                    }
+                                });
+                            }
+                            else {
+                                currentOrder++;
+                                const codeId = codeIds[i];
+                                const chotkhoData = {
+                                    sanphamId,
+                                    tonkhoId,
+                                    phieukhoId,
+                                    ngay: ngay ? moment(ngay).startOf('day').toDate() : moment().startOf('day').toDate(),
+                                    slthucte: finalSlthucte,
+                                    slhethong: finalSlhethong,
+                                    chenhlech: finalChenhlech,
+                                    ghichu,
+                                    title,
+                                    order: currentOrder,
+                                    codeId: codeId,
+                                    userId: item.userId,
+                                    khoId: item.khoId,
+                                    isActive: item.isActive !== undefined ? item.isActive : true,
+                                };
+                                chotkhoCreateData.push(chotkhoData);
+                            }
+                            if (finalChenhlech !== 0 && sanphamId) {
+                                const codeId = existingRecord ? existingRecord.codeId : codeIds[i];
+                                phieukhoCreateData.push({
+                                    chotkhoIndex: i,
+                                    isUpdate: !!existingRecord,
+                                    chotkhoId: existingRecord?.id,
+                                    data: {
+                                        title: `Điều chỉnh tồn kho - ${codeId}`,
+                                        maphieu: `DC-${codeId}`,
+                                        ngay: ngay ? moment(ngay).startOf('day').toDate() : moment().startOf('day').toDate(),
+                                        type: finalChenhlech > 0 ? 'nhap' : 'xuat',
+                                        isChotkho: true,
+                                        khoId: item.khoId || '4cc01811-61f5-4bdc-83de-a493764e9258',
+                                        ghichu: `Điều chỉnh theo chốt kho ${codeId}. Chênh lệch: ${finalChenhlech}`,
+                                        isActive: true,
+                                    },
+                                    sanphamData: {
+                                        sanphamId: sanphamId,
+                                        soluong: Math.abs(finalChenhlech),
+                                        ghichu: `Điều chỉnh chốt kho ${codeId}`,
+                                    }
+                                });
+                                tonkhoUpdates.push({
+                                    sanphamId,
+                                    newSlton: finalSlthucte
+                                });
+                            }
                         }
-                    };
-                    const phieukho = await prisma.phieuKho.create({
-                        data: phieuKhoData,
-                        include: { sanpham: true }
-                    });
-                    await prisma.chotkho.update({
-                        where: { id: created.id },
-                        data: { phieukhoId: phieukho.id }
-                    });
-                    await prisma.tonKho.update({
-                        where: { sanphamId: data.sanphamId },
-                        data: {
-                            slton: slthucte
+                        catch (itemError) {
+                            result.failed++;
+                            result.errors.push({
+                                index: i,
+                                item: dataArray[i],
+                                error: itemError.message || 'Unknown error processing item',
+                            });
                         }
+                    }
+                    if (chotkhoCreateData.length > 0) {
+                        try {
+                            await prisma.chotkho.createMany({
+                                data: chotkhoCreateData,
+                            });
+                            result.created = chotkhoCreateData.length;
+                        }
+                        catch (createError) {
+                            result.errors.push({
+                                operation: 'bulk create',
+                                error: createError.message || 'Failed to bulk create chotkho records',
+                            });
+                            result.failed += chotkhoCreateData.length;
+                        }
+                    }
+                    if (chotkhoUpdateData.length > 0) {
+                        try {
+                            const updatePromises = chotkhoUpdateData.map((update) => prisma.chotkho.update({
+                                where: { id: update.id },
+                                data: update.data,
+                            }));
+                            await Promise.all(updatePromises);
+                            result.updated = chotkhoUpdateData.length;
+                        }
+                        catch (updateError) {
+                            result.errors.push({
+                                operation: 'bulk update',
+                                error: updateError.message || 'Failed to bulk update chotkho records',
+                            });
+                            result.failed += chotkhoUpdateData.length;
+                        }
+                    }
+                    const allCodeIds = [...codeIds, ...Array.from(existingRecordsMap.values()).map(r => r.codeId)];
+                    const allRecords = await prisma.chotkho.findMany({
+                        where: {
+                            codeId: { in: allCodeIds }
+                        },
+                        include: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    email: true,
+                                    profile: {
+                                        select: {
+                                            name: true,
+                                        },
+                                    },
+                                },
+                            },
+                            kho: true,
+                            sanpham: true,
+                            tonkho: true,
+                        },
+                        orderBy: { order: 'asc' }
                     });
+                    result.data = allRecords;
+                    if (phieukhoCreateData.length > 0) {
+                        try {
+                            const phieukhoPromises = phieukhoCreateData.map(async (phieuData) => {
+                                const phieukho = await prisma.phieuKho.create({
+                                    data: {
+                                        ...phieuData.data,
+                                        sanpham: {
+                                            create: [phieuData.sanphamData],
+                                        },
+                                    },
+                                });
+                                return {
+                                    phieukho,
+                                    chotkhoIndex: phieuData.chotkhoIndex,
+                                    isUpdate: phieuData.isUpdate,
+                                    chotkhoId: phieuData.chotkhoId
+                                };
+                            });
+                            const phieukhoResults = await Promise.all(phieukhoPromises);
+                            result.summary.phieukhoCreated = phieukhoResults.length;
+                            const chotkhoUpdatePromises = phieukhoResults.map(({ phieukho, chotkhoIndex, isUpdate, chotkhoId }) => {
+                                if (isUpdate && chotkhoId) {
+                                    return prisma.chotkho.update({
+                                        where: { id: chotkhoId },
+                                        data: { phieukhoId: phieukho.id },
+                                    });
+                                }
+                                else {
+                                    const chotkhoRecord = allRecords.find(r => r.codeId === codeIds[chotkhoIndex]);
+                                    if (chotkhoRecord) {
+                                        return prisma.chotkho.update({
+                                            where: { id: chotkhoRecord.id },
+                                            data: { phieukhoId: phieukho.id },
+                                        });
+                                    }
+                                }
+                            }).filter(Boolean);
+                            await Promise.all(chotkhoUpdatePromises);
+                            await Promise.all(tonkhoUpdates.map((update) => prisma.tonKho.update({
+                                where: { sanphamId: update.sanphamId },
+                                data: { slton: update.newSlton },
+                            })));
+                            result.summary.tonkhoUpdated = tonkhoUpdates.length;
+                        }
+                        catch (phieukhoError) {
+                            result.errors.push({
+                                operation: 'phieukho/tonkho update',
+                                error: phieukhoError.message || 'Failed to create phieukho or update tonkho',
+                            });
+                        }
+                    }
+                    if (result.failed > 0) {
+                        result.status = 'partial';
+                    }
+                    if (result.created === 0 && result.updated === 0) {
+                        result.status = 'failed';
+                    }
+                    return result;
                 }
-                return created;
+                catch (transactionError) {
+                    result.status = 'failed';
+                    result.errors.push({
+                        operation: 'transaction',
+                        error: transactionError.message || 'Transaction failed',
+                    });
+                    return result;
+                }
+            }, {
+                maxWait: 20000,
+                timeout: 30000,
             });
         }
         catch (error) {
             console.log('Error creating chotkho:', error);
-            throw error;
+            return {
+                status: 'failed',
+                created: 0,
+                updated: 0,
+                failed: 0,
+                errors: [{
+                        operation: 'main',
+                        error: error.message || 'Unknown error',
+                    }],
+                data: [],
+                summary: {
+                    totalProcessed: 0,
+                    phieukhoCreated: 0,
+                    tonkhoUpdated: 0,
+                }
+            };
         }
     }
     async findBy(param) {
         try {
-            const { isOne, page = 1, limit = 20, ...where } = param;
-            if (isOne) {
-                const result = await this.prisma.chotkho.findFirst({
-                    where,
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                email: true,
-                                profile: {
-                                    select: {
-                                        name: true
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    orderBy: { order: 'asc' },
-                });
-                return result;
+            const { isOne, page = 1, limit = 20, ngay, ...restWhere } = param;
+            const where = { ...restWhere };
+            if (ngay) {
+                const dateStart = moment(ngay).startOf('day').toDate();
+                const dateEnd = moment(ngay).endOf('day').toDate();
+                where.ngay = {
+                    gte: dateStart,
+                    lte: dateEnd
+                };
             }
             const skip = (page - 1) * limit;
             const [data, total] = await Promise.all([
                 this.prisma.chotkho.findMany({
                     where,
-                    skip,
-                    take: limit,
                     include: {
                         user: {
                             select: {
@@ -172,25 +351,65 @@ let ChotkhoService = class ChotkhoService {
                                 email: true,
                                 profile: {
                                     select: {
-                                        name: true
-                                    }
-                                }
-                            }
-                        }
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
+                        sanpham: true,
+                        tonkho: true,
                     },
                     orderBy: { order: 'asc' },
                 }),
                 this.prisma.chotkho.count({ where }),
             ]);
+            const transformedData = data.map(item => ({
+                sanphamId: item.sanphamId,
+                masp: item.sanpham?.masp || '',
+                tonkhoId: item.tonkhoId,
+                phieukhoId: item.phieukhoId,
+                ngay: item.ngay,
+                slthucte: Number(item.slthucte),
+                slhethong: Number(item.slhethong),
+                chenhlech: Number(item.chenhlech),
+                ghichu: item.ghichu || '',
+                title: item.title || '',
+                dvt: item.sanpham?.dvt || '',
+                sanpham: item.sanpham ? {
+                    id: item.sanpham.id,
+                    masp: item.sanpham.masp,
+                    title: item.sanpham.title,
+                    dvt: item.sanpham.dvt
+                } : undefined
+            }));
             return {
-                data,
+                data: transformedData,
                 total,
                 page,
-                pageCount: Math.ceil(total / limit)
+                pageCount: Math.ceil(total / limit),
             };
         }
         catch (error) {
             console.log('Error finding chotkho by param:', error);
+            throw error;
+        }
+    }
+    async tonkhobylist(param) {
+        try {
+            const result = await this.prisma.tonKho.findMany({
+                where: {
+                    sanpham: {
+                        masp: { in: param },
+                    },
+                },
+                include: {
+                    sanpham: true,
+                },
+            });
+            return result;
+        }
+        catch (error) {
+            console.log('Error finding chotkho by maspList:', error);
             throw error;
         }
     }
@@ -206,7 +425,7 @@ let ChotkhoService = class ChotkhoService {
                     { maChotKho: { contains: search, mode: 'insensitive' } },
                     { tenChotKho: { contains: search, mode: 'insensitive' } },
                     { ghichu: { contains: search, mode: 'insensitive' } },
-                    { codeId: { contains: search, mode: 'insensitive' } }
+                    { codeId: { contains: search, mode: 'insensitive' } },
                 ];
             }
             if (trangThai) {
@@ -217,15 +436,15 @@ let ChotkhoService = class ChotkhoService {
                 if (tuNgay) {
                     where.AND.push({
                         tuNgay: {
-                            gte: moment(tuNgay).startOf('day').toDate()
-                        }
+                            gte: moment(tuNgay).startOf('day').toDate(),
+                        },
                     });
                 }
                 if (denNgay) {
                     where.AND.push({
                         denNgay: {
-                            lte: moment(denNgay).endOf('day').toDate()
-                        }
+                            lte: moment(denNgay).endOf('day').toDate(),
+                        },
                     });
                 }
             }
@@ -241,11 +460,11 @@ let ChotkhoService = class ChotkhoService {
                                 email: true,
                                 profile: {
                                     select: {
-                                        name: true
-                                    }
-                                }
-                            }
-                        }
+                                        name: true,
+                                    },
+                                },
+                            },
+                        },
                     },
                     orderBy: { createdAt: 'desc' },
                 }),
@@ -275,12 +494,12 @@ let ChotkhoService = class ChotkhoService {
                             email: true,
                             profile: {
                                 select: {
-                                    name: true
-                                }
-                            }
-                        }
-                    }
-                }
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                },
             });
             if (!item)
                 throw new common_1.NotFoundException('Chotkho not found');
@@ -306,12 +525,12 @@ let ChotkhoService = class ChotkhoService {
                             email: true,
                             profile: {
                                 select: {
-                                    name: true
-                                }
-                            }
-                        }
-                    }
-                }
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                },
             });
             return updated;
         }
@@ -330,74 +549,119 @@ let ChotkhoService = class ChotkhoService {
             throw error;
         }
     }
-    async findByDate(date, page = 1, limit = 20) {
+    async findByDateRange(startDate, endDate, page, limit) {
         try {
-            const skip = (page - 1) * limit;
-            const startDate = moment(date).startOf('day').toDate();
-            const endDate = moment(date).endOf('day').toDate();
+            const start = moment(startDate).startOf('day').toDate();
+            const end = endDate
+                ? moment(endDate).endOf('day').toDate()
+                : moment(startDate).endOf('day').toDate();
             const where = {
-                OR: [
-                    {
-                        tuNgay: { lte: endDate },
-                        denNgay: { gte: startDate }
-                    },
-                    {
-                        ngayChot: {
-                            gte: startDate,
-                            lte: endDate
-                        }
-                    },
-                    {
-                        createdAt: {
-                            gte: startDate,
-                            lte: endDate
-                        }
-                    }
-                ]
+                ngay: {
+                    gte: start,
+                    lte: end,
+                },
             };
-            const [data, total] = await Promise.all([
-                this.prisma.chotkho.findMany({
-                    where,
-                    skip,
-                    take: limit,
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                email: true,
-                                profile: {
-                                    select: {
-                                        name: true
-                                    }
-                                }
-                            }
-                        }
+            if (page && limit) {
+                const skip = (page - 1) * limit;
+                const [allRecords, total] = await Promise.all([
+                    this.prisma.chotkho.findMany({
+                        where,
+                        skip,
+                        take: limit,
+                        include: {
+                            user: {
+                                select: {
+                                    id: true,
+                                    email: true,
+                                    profile: {
+                                        select: {
+                                            name: true,
+                                        },
+                                    },
+                                },
+                            },
+                            kho: true,
+                            sanpham: true,
+                            tonkho: true,
+                            phieukho: true,
+                        },
+                        orderBy: { createdAt: 'desc' },
+                    }),
+                    this.prisma.chotkho.count({ where }),
+                ]);
+                const uniqueRecordsMap = new Map();
+                allRecords.forEach(record => {
+                    const dateKey = moment(record.ngay).format('YYYY-MM-DD');
+                    if (!uniqueRecordsMap.has(dateKey) ||
+                        record.updatedAt > uniqueRecordsMap.get(dateKey).updatedAt) {
+                        uniqueRecordsMap.set(dateKey, record);
+                    }
+                });
+                const data = Array.from(uniqueRecordsMap.values()).map(record => ({
+                    id: record.id,
+                    title: record.title || record.sanpham?.title || '',
+                    ngay: record.ngay,
+                }));
+                return {
+                    data,
+                    total: data.length,
+                    page,
+                    limit,
+                    pageCount: Math.ceil(data.length / limit),
+                    dateRange: {
+                        start,
+                        end,
                     },
-                    orderBy: { createdAt: 'desc' },
-                }),
-                this.prisma.chotkho.count({ where }),
-            ]);
+                };
+            }
+            const allRecords = await this.prisma.chotkho.findMany({
+                where,
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            email: true,
+                            profile: {
+                                select: {
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                    kho: true,
+                    sanpham: true,
+                    tonkho: true,
+                    phieukho: true,
+                },
+                orderBy: { createdAt: 'desc' },
+            });
+            const uniqueRecordsMap = new Map();
+            allRecords.forEach(record => {
+                const dateKey = moment(record.ngay).format('YYYY-MM-DD');
+                const key = `${dateKey}-${record.sanphamId}`;
+                if (!uniqueRecordsMap.has(key) ||
+                    record.updatedAt > uniqueRecordsMap.get(key).updatedAt) {
+                    uniqueRecordsMap.set(key, record);
+                }
+            });
+            const data = Array.from(uniqueRecordsMap.values());
             return {
                 data,
-                total,
-                page,
-                limit,
-                pageCount: Math.ceil(total / limit),
-                date,
+                total: data.length,
                 dateRange: {
-                    start: startDate,
-                    end: endDate
-                }
+                    start,
+                    end,
+                },
             };
         }
         catch (error) {
-            console.log('Error finding chotkho by date:', error);
+            console.log('Error finding chotkho by date range:', error);
             throw error;
         }
     }
     async generateReport(query) {
         try {
-            const { startDate, endDate, format = 'json', khoId = '', sanphamId = '' } = query;
+            const { startDate, endDate, format = 'json', khoId = '', sanphamId = '', } = query;
             const where = {};
             if (startDate || endDate) {
                 where.ngay = {};
@@ -423,17 +687,17 @@ let ChotkhoService = class ChotkhoService {
                             email: true,
                             profile: {
                                 select: {
-                                    name: true
-                                }
-                            }
-                        }
+                                    name: true,
+                                },
+                            },
+                        },
                     },
                     kho: true,
                     sanpham: true,
                     tonkho: true,
-                    phieukho: true
+                    phieukho: true,
                 },
-                orderBy: { createdAt: 'desc' }
+                orderBy: { createdAt: 'desc' },
             });
             const summary = {
                 totalRecords: chotkhoRecords.length,
@@ -442,12 +706,12 @@ let ChotkhoService = class ChotkhoService {
                 totalSlHeThong: chotkhoRecords.reduce((sum, ck) => sum + Number(ck.slhethong || 0), 0),
                 dateRange: {
                     start: startDate,
-                    end: endDate
+                    end: endDate,
                 },
                 filters: {
                     khoId,
-                    sanphamId
-                }
+                    sanphamId,
+                },
             };
             const khoStats = chotkhoRecords.reduce((acc, ck) => {
                 const khoName = ck.kho?.name || 'Unknown';
@@ -456,7 +720,7 @@ let ChotkhoService = class ChotkhoService {
                         count: 0,
                         totalChenhLech: 0,
                         totalSlThucTe: 0,
-                        totalSlHeThong: 0
+                        totalSlHeThong: 0,
                     };
                 }
                 acc[khoName].count += 1;
@@ -470,13 +734,13 @@ let ChotkhoService = class ChotkhoService {
                 khoStats,
                 records: chotkhoRecords,
                 generatedAt: new Date(),
-                generatedBy: 'system'
+                generatedBy: 'system',
             };
             if (format === 'excel') {
                 return {
                     ...reportData,
                     format: 'excel',
-                    downloadUrl: '/api/chotkho/report/download'
+                    downloadUrl: '/api/chotkho/report/download',
                 };
             }
             return reportData;
@@ -491,10 +755,13 @@ let ChotkhoService = class ChotkhoService {
             for (let i = 0; i < chotkhoIds.length; i++) {
                 await this.prisma.chotkho.update({
                     where: { id: chotkhoIds[i] },
-                    data: { order: i + 1 }
+                    data: { order: i + 1 },
                 });
             }
-            return { status: 'success', message: 'Chotkho records reordered successfully' };
+            return {
+                status: 'success',
+                message: 'Chotkho records reordered successfully',
+            };
         }
         catch (error) {
             console.log('Error reordering chotkho:', error);
@@ -506,16 +773,16 @@ let ChotkhoService = class ChotkhoService {
             const [total, activeCount, inactiveCount] = await Promise.all([
                 this.prisma.chotkho.count(),
                 this.prisma.chotkho.count({ where: { isActive: true } }),
-                this.prisma.chotkho.count({ where: { isActive: false } })
+                this.prisma.chotkho.count({ where: { isActive: false } }),
             ]);
             const avgChenhLech = await this.prisma.chotkho.aggregate({
-                _avg: { chenhlech: true }
+                _avg: { chenhlech: true },
             });
             return {
                 total,
                 active: activeCount,
                 inactive: inactiveCount,
-                averageChenhLech: avgChenhLech._avg.chenhlech || 0
+                averageChenhLech: avgChenhLech._avg.chenhlech || 0,
             };
         }
         catch (error) {
@@ -529,13 +796,13 @@ let ChotkhoService = class ChotkhoService {
                 where: { id: { in: ids } },
                 data: {
                     isActive,
-                    updatedAt: new Date()
-                }
+                    updatedAt: new Date(),
+                },
             });
             return {
                 status: 'success',
                 message: `Updated ${updated.count} chotkho records`,
-                count: updated.count
+                count: updated.count,
             };
         }
         catch (error) {
@@ -551,7 +818,7 @@ let ChotkhoService = class ChotkhoService {
                     let slhethong = 0;
                     if (data.sanphamId) {
                         const tonkho = await prisma.tonKho.findUnique({
-                            where: { sanphamId: data.sanphamId }
+                            where: { sanphamId: data.sanphamId },
                         });
                         slhethong = Number(tonkho?.slton || 0);
                     }
@@ -574,8 +841,8 @@ let ChotkhoService = class ChotkhoService {
                         include: {
                             kho: true,
                             sanpham: true,
-                            tonkho: true
-                        }
+                            tonkho: true,
+                        },
                     });
                     if (chenhlech !== 0 && data.sanphamId) {
                         const phieuKhoData = {
@@ -584,30 +851,32 @@ let ChotkhoService = class ChotkhoService {
                             ngay: new Date(data.ngay || new Date()),
                             type: chenhlech > 0 ? 'nhap' : 'xuat',
                             isChotkho: true,
-                            khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+                            khoId: data.khoId || '4cc01811-61f5-4bdc-83de-a493764e9258',
                             ghichu: `Điều chỉnh theo chốt kho ${created.codeId}. Chênh lệch: ${chenhlech}`,
                             isActive: true,
                             sanpham: {
-                                create: [{
+                                create: [
+                                    {
                                         sanphamId: data.sanphamId,
                                         soluong: Math.abs(chenhlech),
-                                        ghichu: `Điều chỉnh chốt kho ${created.codeId}`
-                                    }]
-                            }
+                                        ghichu: `Điều chỉnh chốt kho ${created.codeId}`,
+                                    },
+                                ],
+                            },
                         };
                         const phieukho = await prisma.phieuKho.create({
                             data: phieuKhoData,
-                            include: { sanpham: true }
+                            include: { sanpham: true },
                         });
                         await prisma.chotkho.update({
                             where: { id: created.id },
-                            data: { phieukhoId: phieukho.id }
+                            data: { phieukhoId: phieukho.id },
                         });
                         await prisma.tonKho.update({
                             where: { sanphamId: data.sanphamId },
                             data: {
-                                slton: slthucte
-                            }
+                                slton: slthucte,
+                            },
                         });
                     }
                     results.push(created);
@@ -615,7 +884,7 @@ let ChotkhoService = class ChotkhoService {
                 return {
                     status: 'success',
                     message: `Created ${results.length} chotkho records`,
-                    data: results
+                    data: results,
                 };
             });
         }
@@ -640,13 +909,13 @@ let ChotkhoService = class ChotkhoService {
                                 email: true,
                                 profile: {
                                     select: {
-                                        name: true
-                                    }
-                                }
-                            }
+                                        name: true,
+                                    },
+                                },
+                            },
                         },
                         kho: true,
-                        sanpham: true
+                        sanpham: true,
                     },
                     orderBy: { createdAt: 'desc' },
                 }),
@@ -658,7 +927,7 @@ let ChotkhoService = class ChotkhoService {
                 page,
                 limit,
                 pageCount: Math.ceil(total / limit),
-                sanphamId
+                sanphamId,
             };
         }
         catch (error) {
@@ -682,13 +951,13 @@ let ChotkhoService = class ChotkhoService {
                                 email: true,
                                 profile: {
                                     select: {
-                                        name: true
-                                    }
-                                }
-                            }
+                                        name: true,
+                                    },
+                                },
+                            },
                         },
                         kho: true,
-                        sanpham: true
+                        sanpham: true,
                     },
                     orderBy: { createdAt: 'desc' },
                 }),
@@ -700,7 +969,7 @@ let ChotkhoService = class ChotkhoService {
                 page,
                 limit,
                 pageCount: Math.ceil(total / limit),
-                khoId
+                khoId,
             };
         }
         catch (error) {

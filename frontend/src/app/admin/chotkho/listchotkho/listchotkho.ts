@@ -129,8 +129,6 @@ export class ListChotkhoComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     const startTime = performance.now();
-    
-    this._ChotkhoService.listenChotkhoUpdates();
     await this._ChotkhoService.getAllChotkho(this.searchParam);
     this.displayedColumns = Object.keys(this.ColumnName);
     this.dataSource = new MatTableDataSource(this.Listchotkho());
@@ -348,7 +346,7 @@ export class ListChotkhoComponent implements OnInit {
   // Phương thức tìm kiếm nâng cao
   async advancedSearch(criteria: any) {
     this.searchParam = { ...this.searchParam, ...criteria };
-    await this._ChotkhoService.getAllChotkho(this.searchParam, true);
+    await this._ChotkhoService.getAllChotkho(this.searchParam);
   }
 
   // Phương thức refresh dữ liệu
@@ -356,7 +354,7 @@ export class ListChotkhoComponent implements OnInit {
     this.isSearch.set(false);
     this.searchParam = {};
     this.EditList = [];
-    await this._ChotkhoService.getAllChotkho({}, true);
+    await this._ChotkhoService.getAllChotkho();
     
     this._snackBar.open('Dữ liệu đã được làm mới', '', {
       duration: 1000,
@@ -381,7 +379,7 @@ export class ListChotkhoComponent implements OnInit {
     });
 
     try {
-      await this._ChotkhoService.getAllChotkho({}, true);
+      await this._ChotkhoService.getAllChotkho();
       loadingSnackBar.dismiss();
       
       this._snackBar.open('Dữ liệu đã được cập nhật', '', {
@@ -683,7 +681,7 @@ export class ListChotkhoComponent implements OnInit {
     
     this._ChotkhoService.pageSize.set(finalSize);
     this._ChotkhoService.page.set(1);
-    this._ChotkhoService.getAllChotkho(this.searchParam, true);
+    this._ChotkhoService.getAllChotkho(this.searchParam);
     menuHienthi.closeMenu();
   }
   
@@ -691,14 +689,14 @@ export class ListChotkhoComponent implements OnInit {
   async onPreviousPage() {
     if (this.page() > 1) {
       this._ChotkhoService.page.set(this.page() - 1);
-      await this._ChotkhoService.getAllChotkho(this.searchParam, true);
+      await this._ChotkhoService.getAllChotkho(this.searchParam);
     }
   }
 
   async onNextPage() {
     if (this.page() < this.totalPages()) {
       this._ChotkhoService.page.set(this.page() + 1);
-      await this._ChotkhoService.getAllChotkho(this.searchParam, true);
+      await this._ChotkhoService.getAllChotkho(this.searchParam);
     }
   }
 

@@ -35,6 +35,41 @@ export class ChotkhoController {
     }
   }
 
+  
+  @ApiOperation({ summary: 'Get chotkho records by date range' })
+  @ApiQuery({ name: 'startDate', required: true, type: String, description: 'Start date in YYYY-MM-DD format' })
+  @ApiQuery({ name: 'endDate', required: true, type: String, description: 'End date in YYYY-MM-DD format' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
+  @ApiResponse({ status: 200, description: 'List of chotkho records for the specified date range' })
+  @Get('bydate')
+  async findByDateRange(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '20'
+  ) {
+    try {
+      const pageNum = parseInt(page, 10);
+      const limitNum = parseInt(limit, 10);
+      return await this.chotkhoService.findByDateRange(startDate, endDate, pageNum, limitNum);
+    } catch (error) {
+      throw new HttpException(error.message || 'Failed to fetch chotkho by date range', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+
+  @ApiOperation({ summary: 'Find chotkhos by parameters' })
+  @ApiBody({ type: Object }) 
+  @Post('tonkhobylist')
+  async tonkhobylist(@Body() param: any) {
+    try {
+      return await this.chotkhoService.tonkhobylist(param);
+    } catch (error) {
+      throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @ApiOperation({ summary: 'Get all chotkhos with pagination' })
   @ApiResponse({ status: 200, description: 'List of chotkhos with pagination info' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
@@ -139,26 +174,6 @@ export class ChotkhoController {
       return await this.chotkhoService.findBySanpham(sanphamId, pageNum, limitNum);
     } catch (error) {
       throw new HttpException(error.message || 'Failed to fetch chotkho by sanpham', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  @ApiOperation({ summary: 'Get chotkho records by date' })
-  @ApiParam({ name: 'date', type: String, description: 'Date in YYYY-MM-DD format' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
-  @ApiResponse({ status: 200, description: 'List of chotkho records for the specified date' })
-  @Get('bydate/:date')
-  async findByDate(
-    @Param('date') date: string,
-    @Query('page') page: string = '1',
-    @Query('limit') limit: string = '20'
-  ) {
-    try {
-      const pageNum = parseInt(page, 10);
-      const limitNum = parseInt(limit, 10);
-      return await this.chotkhoService.findByDate(date, pageNum, limitNum);
-    } catch (error) {
-      throw new HttpException(error.message || 'Failed to fetch chotkho by date', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

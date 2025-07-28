@@ -3,6 +3,13 @@
     "class-validator": "^0.14.1"
   },
   "scripts": {
-    "autorun": "./autorun.sh"
+    "autorun": "./autorun.sh",
+    "db:backup": "cd api && npx ts-node prisma/backup.ts",
+    "db:restore": "cd api && npx ts-node prisma/restorev2.ts",
+    "db:generate": "cd api && npx prisma generate",
+    "db:migrate": "cd api && npx bun prisma migrate dev --name tenfile",
+    "db:reset": "cd api && npx bun prisma migrate reset",
+    "db:push": "cd api && npx bun prisma db push",
+    "db:studio": "cd api && npx bun prisma studio"
   }
 }

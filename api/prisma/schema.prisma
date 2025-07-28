@@ -433,7 +433,7 @@ model Chotkho {
   slhethong   Decimal   @postgres.Decimal(20, 2)
   chenhlech   Decimal?  @postgres.Decimal(20, 2)
   ghichu      String?
-  order      Int?      @default(1)
+  order       Int?      @default(1)
   isActive    Boolean   @default(true)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

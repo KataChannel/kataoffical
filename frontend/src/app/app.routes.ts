@@ -475,14 +475,23 @@ export const routes: Routes = [
           import('./admin/xuatnhapton/xuatnhapton.component').then(
             (c) => c.XuatnhaptonComponent
           ),
+        children: [
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('./admin/xuatnhapton/detailxuatnhapton/detailxuatnhapton').then(
+                (c) => c.DetailXuatnhaptonComponent
+              ),
+          },
+        ],
       },
-       {
-            path: 'chotkho',
-            canActivate: [PermissionGuard],
-            data: { permission: 'chotkho.view' },
-            loadChildren: () =>
-              import('./admin/chotkho/chotkho.route').then(m => m.ChotkhoRoutingModule),
-      },
+      //  {
+      //       path: 'chotkho',
+      //       canActivate: [PermissionGuard],
+      //       data: { permission: 'chotkho.view' },
+      //       loadChildren: () =>
+      //         import('./admin/chotkho/chotkho.route').then(m => m.ChotkhoRoutingModule),
+      // },
       {
         path: 'congnokhachhang',
         canActivate: [PermissionGuard],

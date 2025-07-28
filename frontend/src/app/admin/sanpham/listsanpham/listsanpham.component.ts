@@ -53,10 +53,9 @@ export class ListSanphamComponent implements OnInit {
     giaban: 'Giá Bán',
     giagoc: 'Giá Gốc',
     dvt: 'Đơn Vị Tính',
+    vat: 'VAT',
     haohut: 'Hao Hụt',
-    subtitle: 'Gợi ý',
     ghichu: 'Ghi Chú',
-    createdAt: 'Ngày Tạo',
   };
   FilterColumns: any[] = JSON.parse(localStorage.getItem('SanphamColFilter') || '[]');
   Columns: any[] = [];

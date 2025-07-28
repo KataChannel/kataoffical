@@ -39,6 +39,24 @@ let ChotkhoController = class ChotkhoController {
             throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async findByDateRange(startDate, endDate, page = '1', limit = '20') {
+        try {
+            const pageNum = parseInt(page, 10);
+            const limitNum = parseInt(limit, 10);
+            return await this.chotkhoService.findByDateRange(startDate, endDate, pageNum, limitNum);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Failed to fetch chotkho by date range', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async tonkhobylist(param) {
+        try {
+            return await this.chotkhoService.tonkhobylist(param);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Find failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async findAll(query) {
         try {
             return await this.chotkhoService.findAll(query);
@@ -97,16 +115,6 @@ let ChotkhoController = class ChotkhoController {
         }
         catch (error) {
             throw new common_1.HttpException(error.message || 'Failed to fetch chotkho by sanpham', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    async findByDate(date, page = '1', limit = '20') {
-        try {
-            const pageNum = parseInt(page, 10);
-            const limitNum = parseInt(limit, 10);
-            return await this.chotkhoService.findByDate(date, pageNum, limitNum);
-        }
-        catch (error) {
-            throw new common_1.HttpException(error.message || 'Failed to fetch chotkho by date', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async generateReport(query) {
@@ -180,6 +188,31 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ChotkhoController.prototype, "findby", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Get chotkho records by date range' }),
+    (0, swagger_1.ApiQuery)({ name: 'startDate', required: true, type: String, description: 'Start date in YYYY-MM-DD format' }),
+    (0, swagger_1.ApiQuery)({ name: 'endDate', required: true, type: String, description: 'End date in YYYY-MM-DD format' }),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Items per page' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of chotkho records for the specified date range' }),
+    (0, common_1.Get)('bydate'),
+    __param(0, (0, common_1.Query)('startDate')),
+    __param(1, (0, common_1.Query)('endDate')),
+    __param(2, (0, common_1.Query)('page')),
+    __param(3, (0, common_1.Query)('limit')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String, String]),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "findByDateRange", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Find chotkhos by parameters' }),
+    (0, swagger_1.ApiBody)({ type: Object }),
+    (0, common_1.Post)('tonkhobylist'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "tonkhobylist", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get all chotkhos with pagination' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'List of chotkhos with pagination info' }),
@@ -260,20 +293,6 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], ChotkhoController.prototype, "findBySanpham", null);
-__decorate([
-    (0, swagger_1.ApiOperation)({ summary: 'Get chotkho records by date' }),
-    (0, swagger_1.ApiParam)({ name: 'date', type: String, description: 'Date in YYYY-MM-DD format' }),
-    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number' }),
-    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Items per page' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of chotkho records for the specified date' }),
-    (0, common_1.Get)('bydate/:date'),
-    __param(0, (0, common_1.Param)('date')),
-    __param(1, (0, common_1.Query)('page')),
-    __param(2, (0, common_1.Query)('limit')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
-    __metadata("design:returntype", Promise)
-], ChotkhoController.prototype, "findByDate", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Generate chotkho report' }),

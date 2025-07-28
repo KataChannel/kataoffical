@@ -1,287 +1,231 @@
-<mat-drawer-container class="w-full h-full" autosize>
-    <mat-drawer #drawer class="flex flex-col !w-full h-full" [position]="'end'" mode="over">
-        <router-outlet></router-outlet>
-    </mat-drawer>
-    <div class="flex flex-col space-y-2 h-screen-14 w-full p-2">
-        <div class="flex flex-row space-x-2 items-center">      
-                <div class="relative">
-                    <input type="text" (keyup)="applyFilter($event)"
-                        placeholder="Tìm Kiếm..."
-                        class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <span class="material-symbols-outlined text-gray-500">search</span>
-                    </div>
-                </div>
-               <span (click)="gotoDexuat()" class="cursor-pointer p-2 rounded-lg border hover:bg-slate-50">Xuất Nhập Tôn Theo Ngày</span>                 
-                <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu"
-                    aria-label="Example icon-button with a menu">
-                    <mat-icon>tune</mat-icon>
-                </button>
-                <mat-menu #menu="matMenu">
-                    <div class="p-4">
-                        <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
-                            <input (input)="doFilterColumns($event)" (click)="$event.stopPropagation()" matInput
-                                placeholder="Tìm Kiếm" />
-                            <mat-icon matPrefix>search</mat-icon>
-                        </mat-form-field>
-                    </div>
-                    <div class="flex flex-col max-h-80 overflow-auto">
-                        @for (item of FilterColumns; track item.key) {
-                        <button mat-menu-item (click)="toggleColumn(item);$event.stopPropagation()">
-                            <mat-icon>{{item.isShow ? 'check_box' : 'check_box_outline_blank'}}</mat-icon>
-                            <span>{{item.value}}</span>
-                        </button>
-                        }
-                    </div>
-                </mat-menu>
-            </div>
-        <div class="w-full overflow-auto">
-            <table class="excelstyle !border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
-                @for (column of displayedColumns; track column) {
-                <ng-container [matColumnDef]="column">
-                    <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
-                        <span class="max-w-40 line-clamp-4 me-4">
-                            {{ ColumnName[column] }}
-                        </span>
-                        <span class="z-10 material-symbols-outlined text-gray-500" [matMenuTriggerFor]="menu"
-                            #menuTrigger="matMenuTrigger">
-                            filter_alt
-                        </span>
-                        <mat-menu #menu="matMenu">
-                            <div (click)="$event.stopPropagation()" class="cursor-pointer flex flex-col space-y-4 p-3">
-                                <div class="relative w-full">
-                                    <input type="text" placeholder="Tìm Kiếm..."
-                                        (keyup)="doFilterHederColumn($event,column)"
-                                        class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <span class="material-symbols-outlined text-gray-500">search</span>
-                                    </div>
-                                </div>
-                                <div class="flex flex-row space-x-2 items-center justify-between">
-                                    <div class="flex flex-row space-x-2 items-center">
-                                        <span class="text-xs text-blue-600 underline"
-                                            (click)="ChosenAll(FilterHederColumn(dataSource.filteredData,column))">Chọn
-                                            Tất Cả
-                                            {{FilterHederColumn(dataSource.filteredData,column).length||0}}</span>
-                                        <span class="text-xs text-blue-600 underline" (click)="EmptyFiter()">Xoá</span>
-                                    </div>
+<div class="flex flex-row justify-between items-center space-x-2 p-2">
+  <button mat-icon-button color="primary" (click)="goBack()" [disabled]="isSaving() || isUploading()">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  <div class="font-bold">
+    @if(isEdit()){
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Tiêu Đề</mat-label>
+        <input matInput [(ngModel)]="DetailXuatnhapton().title" [disabled]="isSaving() || isUploading()" placeholder="Vui lòng nhập Tiêu Đề"/>
+      </mat-form-field>
+    }@else{
+      <div class="font-bold">
+        {{ DetailXuatnhapton()?.title || 'Không có dữ liệu' }}
+      </div>
+    }
+  </div>
+  <div class="flex flex-row space-x-2 items-center">
+    <!-- Excel Upload Button -->
+    <button mat-icon-button color="accent" 
+            (click)="fileInput.click()" 
+            [disabled]="isUploading() || isSaving()"
+            matTooltip="Upload Excel">
+      @if (isUploading()) {
+        <mat-icon class="animate-spin">sync</mat-icon>
+      } @else {
+        <mat-icon>upload_file</mat-icon>
+      }
+    </button>
+    <!-- Download Template Button -->
+    <button mat-icon-button color="accent" 
+            (click)="downloadTemplate()" 
+            [disabled]="isUploading() || isSaving()"
+            matTooltip="Tải mẫu Excel">
+      <mat-icon>download</mat-icon>
+    </button>
+    <!-- Save Button -->
+    <button mat-icon-button color="primary" 
+            *ngIf="isEdit()" 
+            (click)="handleXuatnhaptonAction()"
+            [disabled]="isSaving() || isUploading()">
+      @if (isSaving()) {
+        <mat-icon class="animate-spin">sync</mat-icon>
+      } @else {
+        <mat-icon>save</mat-icon>
+      }
+    </button>
+    <!-- Edit Button -->
+    <button mat-icon-button color="primary" 
+            *ngIf="!isEdit()" 
+            (click)="toggleEdit()"
+            [disabled]="isSaving() || isUploading()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <!-- Delete Button -->
+    <button mat-icon-button color="warn" 
+            *ngIf="!isEdit() && xuatnhaptonId() !== 'new'" 
+            (click)="toggleDelete()"
+            [disabled]="isSaving() || isUploading()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+</div>
 
-                                    <span class="text-xs text-blue-600 underline" (click)="ResetFilter()">Reset</span>
-                                </div>
-                                <div class="w-full flex flex-col space-y-2 max-h-44 overflow-auto">
-                                    <div *ngFor="let item of FilterHederColumn(dataSource.filteredData,column); trackBy:trackByFn"
-                                        (click)="ChosenItem(item,column)"
-                                        class="flex flex-row space-x-2 items-center p-2 rounded-lg hover:bg-slate-100">
-                                        <span *ngIf="CheckItem(item)"
-                                            class="material-symbols-outlined text-blue-600">check</span>
-                                        @switch (column) {
-                                        @case ('createdAt') {
-                                        <span>{{item[column]|date:'dd/MM/yyyy'}}</span>
-                                        }
-                                        @case ('updatedAt') {
-                                        <span>{{item[column]|date:'dd/MM/yyyy'}}</span>
-                                        }
-                                        @case ('haohut') {
-                                        <span>{{item[column]}}%</span>
-                                        }
-                                        @default {
-                                        <span> {{item[column]||'Trống'}}</span>
-                                        }
-                                        }
+<!-- Hidden File Input for Excel Upload -->
+<input #fileInput type="file" accept=".xlsx,.xls" 
+       (change)="onFileSelected($event)" 
+       [disabled]="isUploading() || isSaving()"
+       style="display: none;">
 
-
-                                    </div>
-                                </div>
-                                <div class="flex flex-row space-x-2 items-end justify-end">
-                                    <button mat-flat-button color="warn" (click)="menuTrigger.closeMenu()">Đóng</button>
-                                    <button mat-flat-button color="primary" (click)="ApplyFilterColum(menuTrigger)">Áp
-                                        Dụng</button>
-                                </div>
-                            </div>
-                        </mat-menu>
-                    </th>
-                    <td mat-cell *matCellDef="let row; let idx = index">
-                        @switch (column) {
-                        @case ('STT') {
-                        <span class="max-w-40 line-clamp-4">
-                            {{ idx + 1 }}
-                        </span>
-                        }
-                        @case ('slchonhap') {
-                        <span class="max-w-40 line-clamp-4 text-green-700 font-bold">
-
-
-                         <span class="flex items-center justify-between">                      
-                            @if(row[column]>0){
-                            <span (click)="XemDathang(row,DathangDialog)"> + {{ row[column]|number:'1.0-2'}} </span>
-                            }
-                            @else {
-                            {{ row[column]|number:'1.0-2'}}
-                            }
-                            <span class="text-xs text-gray-500">({{row?.slchonhaptt|number:'1.0-2'}})</span>
-                            </span>
-                        </span>
-                        }
-                        @case ('slchogiao') {
-                        <span class="max-w-40 line-clamp-4 text-red-700 font-bold">
-                           <span class="flex items-center justify-between">                      
-                            @if(row[column]>0){
-                            <span (click)="XemDonhang(row,DonhangDialog)">{{ row[column]|number:'1.0-2'}} </span>
-                            }
-                            @else {
-                            {{ row[column]|number:'1.0-2'}}
-                            }
-                            <span class="text-xs text-gray-500">({{row?.slchogiaott|number:'1.0-2'}})</span>
-                            </span>
-                        </span>
-                        }
-                        @case ('ngaygiao') {
-                        <span class="max-w-40 line-clamp-4 text-xs">
-                            {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
-                        </span>
-                        }
-                        @case ('isActive') {
-                        <span class="max-w-40 line-clamp-4">
-                            @if (row[column]) {
-                            <mat-icon class="text-green-500">check_circle</mat-icon>
-                            }
-                            @else {
-                            <mat-icon class="text-red-500">cancel</mat-icon>
-                            }
-                        </span>
-                        }
-                        @case ('updatedAt') {
-                        <span class="max-w-40 line-clamp-4 text-xs">
-                            {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
-                        </span>
-                        }
-                        @default {
-                        <span class="max-w-40 line-clamp-4">
-                            {{ row[column] }}
-                        </span>
-                        }
-                        }
-                    </td>
-                </ng-container>
-                }
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                <tr class="mat-row" *matNoDataRow>
-                    <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
-                </tr>
-            </table>
-        </div>
-        <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
+<div class="relative flex flex-col w-full p-4 overflow-auto">
+  <!-- Global Loading Overlay -->
+  @if (isSaving()) {
+    <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+      <div class="flex flex-col items-center space-y-2">
+        <mat-icon class="text-blue-600 animate-spin text-4xl">sync</mat-icon>
+        <span class="text-blue-800 font-medium">Đang lưu dữ liệu...</span>
+      </div>
     </div>
-</mat-drawer-container>
+  }
 
+  <!-- Excel Upload Progress -->
+  @if (isUploading()) {
+    <div class="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+      <div class="flex items-center space-x-2">
+        <mat-icon class="text-blue-600 animate-spin">hourglass_empty</mat-icon>
+        <span class="text-blue-800">Đang xử lý file Excel...</span>
+      </div>
+      <mat-progress-bar mode="indeterminate" class="mt-2"></mat-progress-bar>
+    </div>
+  }
 
-<ng-template #DathangDialog>
-    <h2 mat-dialog-title>Chi Tiết Đặt Hàng</h2>
-    <mat-dialog-content class="mat-typography">
-        <table class="w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="border border-gray-300 px-4 py-2 text-left">Tiêu đề</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Mã Đặt</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Trạng thái</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Nhà Cung Cấp</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Tên Sản Phẩm</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Số Lượng Đặt</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Số Lượng Nhận</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Ngày</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of ListDathang" class="hover:bg-gray-50">
-                    <td class="border border-gray-300 px-4 py-2">{{item.title}}</td>
-                    <td class="border  px-4 py-2 font-bold">
-                       <a target="_blank" class="text-blue-500" href="/admin/dathang/{{item.id}}"> {{item.madncc}} </a> 
-                    </td>
-                    <td class="border border-gray-300 px-4 py-2">
-                        <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
-                          'text-blue-500': item.status === 'dadat',
-                          'text-yellow-500': item.status === 'dagiao',
-                          'text-green-500': item.status === 'danhan',
-                          'text-purple-500': item.status === 'hoanthanh',
-                          'text-red-500': item.status === 'huy'
-                        }
-                        ">
-                            {{Trangthaidon[item.status]}}
-                        </span>
-                    </td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.nhacungcap.name}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.sanpham.sanpham.title}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.sanpham.sldat}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.sanpham.slnhan}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.createdAt |date:'dd/MM/yyyy'}}</td>
-                </tr>
-                <tr class="bg-gray-100 font-bold">
-                    <td class="border border-gray-300 px-4 py-2" colspan="5">Tổng cộng:</td>
-                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDathang, 'sldat')}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDathang, 'slnhan')}}</td>
-                    <td class="border border-gray-300 px-4 py-2"></td>
-                </tr>
-            </tbody>
-        </table>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-        <button mat-button mat-dialog-close>Đóng</button>
-    </mat-dialog-actions>
+  <!-- Excel Upload Success Message -->
+  @if (uploadResult() && uploadResult().success) {
+    <div class="mb-4 p-4 bg-green-50 rounded-lg border border-green-200">
+      <div class="flex items-center space-x-2">
+        <mat-icon class="text-green-600">check_circle</mat-icon>
+        <span class="text-green-800">Upload thành công: {{ uploadResult().message }}</span>
+      </div>
+      <div class="mt-2 text-sm text-green-600">
+        Đã import {{ uploadResult().importedCount || 0 }} dòng dữ liệu
+      </div>
+    </div>
+  }
 
-</ng-template>
+  <!-- Excel Upload Error Message -->
+  @if (uploadResult() && !uploadResult().success) {
+    <div class="mb-4 p-4 bg-red-50 rounded-lg border border-red-200">
+      <div class="flex items-center space-x-2">
+        <mat-icon class="text-red-600">error</mat-icon>
+        <span class="text-red-800">Lỗi upload: {{ uploadResult().message }}</span>
+      </div>
+      @if (uploadResult().errors && uploadResult().errors.length > 0) {
+        <div class="mt-2 text-sm text-red-600">
+          <div class="font-medium">Chi tiết lỗi:</div>
+          <ul class="list-disc list-inside mt-1">
+            <li *ngFor="let error of uploadResult().errors">{{ error }}</li>
+          </ul>
+        </div>
+      }
+    </div>
+  }
 
-<ng-template #DonhangDialog>
-    <h2 mat-dialog-title>Chi Tiết Đơn Hàng</h2>
-    <mat-dialog-content class="mat-typography">
-        <table class="w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="border border-gray-300 px-4 py-2 text-left">Tiêu đề</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Mã Đơn</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Trạng thái</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Nhà Cung Cấp</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Tên Sản Phẩm</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Số Lượng Đặt</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Số Lượng Nhận</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Ngày</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of ListDonhang" class="hover:bg-gray-50">
-                    <td class="border border-gray-300 px-4 py-2">{{item.title}}</td>
-                    <td class="border  px-4 py-2 font-bold">
-                       <a target="_blank" class="text-blue-500" href="/admin/donhang/{{item.id}}"> {{item.madonhang}} </a> 
-                    </td>
-                    <td class="border border-gray-300 px-4 py-2">
-                        <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
-                          'text-blue-500': item.status === 'dadat',
-                          'text-yellow-500': item.status === 'dagiao',
-                          'text-green-500': item.status === 'danhan',
-                          'text-purple-500': item.status === 'hoanthanh',
-                          'text-red-500': item.status === 'huy'
-                        }
-                        ">
-                            {{Trangthaidon[item.status]}}
-                        </span>
-                    </td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.khachhang.name}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.sanpham.sanpham.title}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.sanpham.sldat}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.sanpham.slnhan}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.createdAt |date:'dd/MM/yyyy'}}</td>
-                </tr>
-                <tr class="bg-gray-100 font-bold">
-                    <td class="border border-gray-300 px-4 py-2" colspan="5">Tổng cộng:</td>
-                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDonhang, 'sldat')}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDonhang, 'slnhan')}}</td>
-                    <td class="border border-gray-300 px-4 py-2"></td>
-                </tr>
-            </tbody>
-        </table>
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-        <button mat-button mat-dialog-close>Đóng</button>
-    </mat-dialog-actions>
+  <ng-container *ngIf="isDelete()">
+    <div class="flex flex-col space-y-4 items-center justify-center">
+      <div class="font-bold text-2xl">Bạn chắc chắn muốn xoá không?</div>
+      <div class="flex flex-row space-x-2 items-center justify-center">
+        <button mat-flat-button color="primary" 
+                (click)="DeleteData()" 
+                [disabled]="isSaving()">
+          @if (isSaving()) {
+            <ng-container>
+              <mat-icon class="animate-spin mr-2">sync</mat-icon>
+              Đang xóa...
+            </ng-container>
+          } @else {
+            Đồng Ý
+          }
+        </button>
+        <button mat-flat-button color="warn" 
+                (click)="toggleDelete()"
+                [disabled]="isSaving()">
+          Huỷ Bỏ
+        </button>
+      </div>
+    </div>
+  </ng-container>
 
-</ng-template>
+  <ng-container *ngIf="!isDelete()">
+    <div class="grid grid-cols-1 gap-4">
+      <!-- Excel Upload Instructions -->
+      <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+        <div class="flex items-center space-x-2 mb-2">
+          <mat-icon class="text-gray-600">info</mat-icon>
+          <span class="font-medium text-gray-800">Hướng dẫn upload Excel</span>
+        </div>
+        <div class="text-sm text-gray-600 space-y-1">
+          <p>• Tải file mẫu Excel bằng nút <mat-icon class="inline text-sm">download</mat-icon></p>
+          <p>• Điền dữ liệu theo định dạng trong file mẫu</p>
+          <p>• Chỉ hỗ trợ file .xlsx và .xls</p>
+          <p>• Tối đa 1000 dòng dữ liệu mỗi lần upload</p>
+        </div>
+      </div>
+
+      <!-- Data Preview Section (if data exists) -->
+      @if (DetailXuatnhapton() && DetailXuatnhapton().length > 0) {
+        <div class="mt-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-lg font-medium text-gray-900">Chi tiết chốt kho</h3>
+            <span class="text-sm text-gray-500">
+              {{ DetailXuatnhapton().length }} sản phẩm
+            </span>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Mã sản phẩm
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Tên sản phẩm
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    SL Hệ thống
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    SL Thực tế
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Chênh lệch
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr *ngFor="let item of DetailXuatnhapton(); trackBy: trackByFn">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ item.masp || 'N/A' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ item.title || 'N/A' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ formatNumber(item.slhethong || 0) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ formatNumber(item.slthucte || 0) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span [class]="getChenhLechClass(item.chenhlech || 0)">
+                      {{ (item.chenhlech || 0) > 0 ? '+' : '' }}{{ formatNumber(item.chenhlech || 0) }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+      <!-- Empty State when no data -->
+      @if (!DetailXuatnhapton() || DetailXuatnhapton().length === 0) {
+        <div class="mt-8 text-center py-12">
+          <mat-icon class="text-gray-400 text-6xl">inventory_2</mat-icon>
+          <h3 class="mt-4 text-lg font-medium text-gray-900">Chưa có dữ liệu chốt kho</h3>
+          <p class="mt-2 text-gray-500">Upload file Excel để bắt đầu chốt kho</p>
+        </div>
+      }
+    </div>
+  </ng-container>
+</div>

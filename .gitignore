@@ -6,7 +6,7 @@
 /out-tsc
 /bazel-out
 dulieu
-
+docs
 # Node
 /node_modules
 api/node_modules
