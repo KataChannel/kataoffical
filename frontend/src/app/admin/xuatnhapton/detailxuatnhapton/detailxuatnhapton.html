@@ -6,11 +6,11 @@
     @if(isEdit()){
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Tiêu Đề</mat-label>
-        <input matInput [(ngModel)]="DetailXuatnhapton().title" [disabled]="isSaving() || isUploading()" placeholder="Vui lòng nhập Tiêu Đề"/>
+        <input matInput [(ngModel)]="Title" [disabled]="isSaving() || isUploading()" placeholder="Vui lòng nhập Tiêu Đề"/>
       </mat-form-field>
     }@else{
       <div class="font-bold">
-        {{ DetailXuatnhapton()?.title || 'Không có dữ liệu' }}
+        {{ Title || 'Không có dữ liệu' }}
       </div>
     }
   </div>
@@ -148,7 +148,7 @@
   <ng-container *ngIf="!isDelete()">
     <div class="grid grid-cols-1 gap-4">
       <!-- Excel Upload Instructions -->
-      <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <!-- <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
         <div class="flex items-center space-x-2 mb-2">
           <mat-icon class="text-gray-600">info</mat-icon>
           <span class="font-medium text-gray-800">Hướng dẫn upload Excel</span>
@@ -159,15 +159,15 @@
           <p>• Chỉ hỗ trợ file .xlsx và .xls</p>
           <p>• Tối đa 1000 dòng dữ liệu mỗi lần upload</p>
         </div>
-      </div>
+      </div> -->
 
       <!-- Data Preview Section (if data exists) -->
-      @if (DetailXuatnhapton() && DetailXuatnhapton().length > 0) {
+      @if (ListChotkho() && ListChotkho().length > 0) {
         <div class="mt-4">
           <div class="flex items-center justify-between mb-3">
             <h3 class="text-lg font-medium text-gray-900">Chi tiết chốt kho</h3>
             <span class="text-sm text-gray-500">
-              {{ DetailXuatnhapton().length }} sản phẩm
+              {{ ListChotkho().length }} sản phẩm
             </span>
           </div>
           
@@ -193,12 +193,12 @@
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <tr *ngFor="let item of DetailXuatnhapton(); trackBy: trackByFn">
+                <tr *ngFor="let item of ListChotkho(); trackBy: trackByFn">
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {{ item.masp || 'N/A' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {{ item.title || 'N/A' }}
+                    {{ item?.sanpham?.title || 'N/A' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {{ formatNumber(item.slhethong || 0) }}
@@ -219,7 +219,7 @@
       }
 
       <!-- Empty State when no data -->
-      @if (!DetailXuatnhapton() || DetailXuatnhapton().length === 0) {
+      @if (!ListChotkho() || ListChotkho().length === 0) {
         <div class="mt-8 text-center py-12">
           <mat-icon class="text-gray-400 text-6xl">inventory_2</mat-icon>
           <h3 class="mt-4 text-lg font-medium text-gray-900">Chưa có dữ liệu chốt kho</h3>

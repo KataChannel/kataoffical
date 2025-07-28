@@ -47,6 +47,12 @@ export class DetailXuatnhaptonComponent {
   uploadResult = signal<any>(null);
   // Add loading state for save operation
   isSaving = signal(false);
+  ListChotkho: any = this._ChotkhoService.ListChotkho;
+  Title:any ='Chốt Kho Ngày ' + new Date().toLocaleDateString();
+  isEdit = signal(false);
+  isDelete = signal(false);
+  xuatnhaptonId: any = this._ChotkhoService.chotkhoId
+
 
   constructor() {
     this._route.paramMap.subscribe((params) => {
@@ -54,16 +60,16 @@ export class DetailXuatnhaptonComponent {
       this._ChotkhoService.chotkhoId.set(id);
     });
     effect(async () => {
-      const id = this._ChotkhoService.chotkhoId();
+      const id = this._ChotkhoService.chotkhoId();      
       if (!id) {
         this._router.navigate(['/admin/xuatnhapton']);
         this._XuatnhaptonComponent.drawer.close();
       }
       if (id === 'new') {
-        this.DetailXuatnhapton.set({ title: "Chốt Kho Ngày " + new Date().toLocaleDateString() });
+        console.log("Creating new chotkho");
         this._XuatnhaptonComponent.drawer.open();
         this.isEdit.update(value => !value);
-        this._router.navigate(['/admin/xuatnhapton', "new"]);
+           // this._router.navigate(['/admin/xuatnhapton', "new"]);
       }
       else {
         await this._ChotkhoService.getChotkhoBy({ ngay: id });
@@ -73,28 +79,23 @@ export class DetailXuatnhaptonComponent {
     });
   }
 
-  DetailXuatnhapton: any = this._ChotkhoService.ListChotkho;
-  isEdit = signal(false);
-  isDelete = signal(false);
-  xuatnhaptonId: any = this._ChotkhoService.chotkhoId
-
   async ngOnInit() {
-          const id = this._ChotkhoService.chotkhoId();
-      if (!id) {
-        this._router.navigate(['/admin/xuatnhapton']);
-        this._XuatnhaptonComponent.drawer.close();
-      }
-      if (id === 'new') {
-        this.DetailXuatnhapton.set({ title: "Chốt Kho Ngày " + new Date().toLocaleDateString() });
-        this._XuatnhaptonComponent.drawer.open();
-        this.isEdit.update(value => !value);
-        this._router.navigate(['/admin/xuatnhapton', "new"]);
-      }
-      else {
-        await this._ChotkhoService.getChotkhoBy({ ngay: id });
-        this._XuatnhaptonComponent.drawer.open();
-        this._router.navigate(['/admin/xuatnhapton', id]);
-      }
+    //  const id = this._ChotkhoService.chotkhoId();
+    //   if (!id) {
+    //     this._router.navigate(['/admin/xuatnhapton']);
+    //     this._XuatnhaptonComponent.drawer.close();
+    //   }
+    //   if (id === 'new') {
+    //     this.DetailXuatnhapton.set({ title: "Chốt Kho Ngày " + new Date().toLocaleDateString() });
+    //     this._XuatnhaptonComponent.drawer.open();
+    //     this.isEdit.update(value => !value);
+    //     this._router.navigate(['/admin/xuatnhapton', "new"]);
+    //   }
+    //   else {
+    //     await this._ChotkhoService.getChotkhoBy({ ngay: id });
+    //     this._XuatnhaptonComponent.drawer.open();
+    //     this._router.navigate(['/admin/xuatnhapton', id]);
+    //   }
   }
 
   async handleXuatnhaptonAction() {
@@ -109,7 +110,7 @@ export class DetailXuatnhaptonComponent {
   private async createXuatnhapton() {
     try {
       this.isSaving.set(true);
-      const result = await this._ChotkhoService.CreateChotkho(this.DetailXuatnhapton());
+      const result = await this._ChotkhoService.CreateChotkho(this.ListChotkho());
       
       // Check if result has the expected structure
       if (result && result.status === 'success') {
@@ -175,7 +176,7 @@ export class DetailXuatnhaptonComponent {
   private async updateXuatnhapton() {
     try {
       this.isSaving.set(true);
-      await this._ChotkhoService.updateChotkho(this.DetailXuatnhapton());
+      await this._ChotkhoService.updateChotkho(this.ListChotkho());
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,
         horizontalPosition: 'end',
@@ -199,7 +200,7 @@ export class DetailXuatnhaptonComponent {
   async DeleteData() {
     try {
       this.isSaving.set(true);
-      await this._ChotkhoService.DeleteChotkho(this.DetailXuatnhapton());
+      await this._ChotkhoService.DeleteChotkho(this.ListChotkho());
 
       this._snackBar.open('Xóa Thành Công', '', {
         duration: 1000,
@@ -237,13 +238,6 @@ export class DetailXuatnhaptonComponent {
 
   toggleDelete() {
     this.isDelete.update(value => !value);
-  }
-
-  FillSlug() {
-    this.DetailXuatnhapton.update((v: any) => {
-      v.slug = convertToSlug(v.title);
-      return v;
-    })
   }
 
   // Excel Upload Methods
@@ -318,7 +312,7 @@ export class DetailXuatnhaptonComponent {
           slhethong: slhethong,
           chenhlech: chenhlech,
           ghichu: item.ghichu || '',
-          title: this.DetailXuatnhapton().title || '',
+          title: this.Title || '',
           dvt: item.dvt || '',
           // Add product details for display
         sanpham: sanpham ? {
@@ -331,12 +325,12 @@ export class DetailXuatnhaptonComponent {
       }).filter((item:any) => item.slthucte !== 0);
 
       // Fix the update method - should update the array properly
-      this.DetailXuatnhapton.update((v: any) => {
+      this.ListChotkho.update((v: any) => {
         v = Chotkho
         return v
       });
-      
-      console.log('Chốt kho data:', this.DetailXuatnhapton());
+
+      console.log('Chốt kho data:', this.ListChotkho());
       
       this.uploadResult.set({
         success: true,
