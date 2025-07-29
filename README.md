@@ -150,7 +150,8 @@ sudo ufw allow 5555/tcp
 sudo ufw allow 4301/tcp
 sudo ufw allow 3331/tcp
 sudo ufw allow 4400/tcp
-sudo ufw allow 9001/tcp
+sudo ufw allow 9003/tcp
+sudo ufw allow 9093/tcp
 sudo ufw reload
 
 sudo crontab -e
