@@ -1,22 +1,69 @@
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+  <!-- Loading overlay -->
+  <div *ngIf="isLoadingValue || isImportingValue || isExportingValue" 
+       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center space-y-4">
+      <mat-progress-spinner diameter="50" mode="indeterminate"></mat-progress-spinner>
+      <span class="text-lg font-medium">{{ loadingMessageValue }}</span>
+    </div>
+  </div>
+
   <div class="flex flex-col space-y-2 p-8">
     <div class="flex flex-row space-x-2 items-center">
-      <button (click)="ExportExcel(TitleExport)" mat-flat-button color="primary">
-        Tải Xuống
-        <mat-icon class="ml-1">download</mat-icon>
+      <button (click)="ExportExcel(TitleExport)" 
+              mat-flat-button 
+              color="primary"
+              [disabled]="isLoadingValue || isImportingValue || isExportingValue">
+        <span *ngIf="!isExportingValue">Tải Xuống</span>
+        <span *ngIf="isExportingValue" class="flex items-center">
+          <mat-progress-spinner diameter="20" mode="indeterminate" class="mr-2"></mat-progress-spinner>
+          Đang xuất...
+        </span>
+        <mat-icon class="ml-1" *ngIf="!isExportingValue">download</mat-icon>
       </button>
-      <button mat-flat-button color="primary" (click)="uploadfile.click()">
-        Tải Lên
-        <mat-icon class="ml-1">upload</mat-icon>
+      
+      <button mat-flat-button 
+              color="primary" 
+              (click)="uploadfile.click()"
+              [disabled]="isLoadingValue || isImportingValue || isExportingValue">
+        <span *ngIf="!isImportingValue">Tải Lên</span>
+        <span *ngIf="isImportingValue" class="flex items-center">
+          <mat-progress-spinner diameter="20" mode="indeterminate" class="mr-2"></mat-progress-spinner>
+          Đang nhập...
+        </span>
+        <mat-icon class="ml-1" *ngIf="!isImportingValue">upload</mat-icon>
       </button>
-      <button mat-flat-button color="primary" (click)="toggleAll()">
+      
+      <button mat-flat-button 
+              color="primary" 
+              (click)="toggleAll()"
+              [disabled]="isLoadingValue || isImportingValue || isExportingValue">
         Chọn Tất Cả
       </button>
-      <input class="hidden" (change)="ImportExcel($event)" type="file" #uploadfile>
+      
+      <input class="hidden" 
+             (change)="ImportExcel($event)" 
+             type="file" 
+             #uploadfile
+             accept=".xlsx,.xls"
+             [disabled]="isLoadingValue || isImportingValue || isExportingValue">
     </div>
+    
+    <!-- Loading message for data types selection -->
+    <div *ngIf="isLoadingValue" class="w-full p-4 bg-blue-50 rounded-lg border border-blue-200">
+      <div class="flex items-center space-x-2">
+        <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+        <span class="text-blue-700">{{ loadingMessageValue }}</span>
+      </div>
+    </div>
+
     <div class="grid grid-cols-3 gap-4">
-      <span *ngFor="let item of ListImportType(); trackBy: trackByFn" (click)="toggleItem(item)"
-        class="{{item.status?'':'hidden'}} {{CheckItem(item) ? 'bg-blue-100' : ''}} cursor-pointer flex flex-row space-x-2 items-center p-4 rounded-lg border">
+      <span *ngFor="let item of ListImportTypeValue; trackBy: trackByFn" 
+            (click)="!isLoadingValue && !isImportingValue && !isExportingValue && item.status && toggleItem(item)"
+            class="{{!item.status ? 'hidden' : ''}} 
+                   {{CheckItem(item) ? 'bg-blue-100' : ''}} 
+                   {{isLoadingValue || isImportingValue || isExportingValue ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}} 
+                   flex flex-row space-x-2 items-center p-4 rounded-lg border transition-all duration-200">
         <mat-icon *ngIf="CheckItem(item)">check</mat-icon>
         <span>{{item.title}}</span>
       </span>
@@ -25,27 +72,46 @@
 
   <div class="w-full flex flex-col space-y-2 p-8">
     <div class="relative w-full">
-      <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
-        class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+      <input type="text" 
+             placeholder="Tìm Kiếm..." 
+             (keyup)="applyFilter($event)"
+             [disabled]="isLoadingValue || isImportingValue || isExportingValue"
+             class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg 
+                    focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40
+                    disabled:bg-gray-100 disabled:cursor-not-allowed">
       <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
         <span class="material-symbols-outlined text-gray-500">search</span>
       </div>
     </div>
 
-
-    <ng-container *ngIf="ListImportdata().length > 0; else noData">
-      <div class="w-full flex flex-row space-x-2 items-center border p-4 rounded-lg"
-        *ngFor="let item of ListImportdata(); let i = index">
-        <span class="rounded-lg p-2 bg-blue-100">{{ item.type }}</span>
-        <span>{{ item.title }}</span>
-        <span class="text-sm text-gray-600">{{ item.description }}</span>
+    <!-- Loading skeleton for data list -->
+    <ng-container *ngIf="isLoadingValue; else dataContent">
+      <div class="w-full flex flex-col space-y-2">
+        <div *ngFor="let i of [1,2,3,4,5]" 
+             class="w-full flex flex-row space-x-2 items-center border p-4 rounded-lg bg-gray-100 animate-pulse">
+          <div class="rounded-lg p-2 bg-gray-300 w-16 h-8"></div>
+          <div class="bg-gray-300 h-4 w-1/3 rounded"></div>
+          <div class="bg-gray-300 h-3 w-1/2 rounded"></div>
+        </div>
       </div>
     </ng-container>
-    <ng-template #noData>
-      <div class="w-full flex flex-row items-center justify-center border p-4 rounded-lg bg-gray-100">
-        <span class="text-gray-600">Không có dữ liệu</span>
-      </div>
-    </ng-template>
 
+    <ng-template #dataContent>
+      <ng-container *ngIf="ListImportdata().length > 0; else noData">
+        <div class="w-full flex flex-row space-x-2 items-center border p-4 rounded-lg
+                    {{isImportingValue || isExportingValue ? 'opacity-50' : ''}}"
+             *ngFor="let item of ListImportdata(); let i = index">
+          <span class="rounded-lg p-2 bg-blue-100">{{ item.type }}</span>
+          <span>{{ item.title }}</span>
+          <span class="text-sm text-gray-600">{{ item.description }}</span>
+        </div>
+      </ng-container>
+      
+      <ng-template #noData>
+        <div class="w-full flex flex-row items-center justify-center border p-4 rounded-lg bg-gray-100">
+          <span class="text-gray-600">Không có dữ liệu</span>
+        </div>
+      </ng-template>
+    </ng-template>
   </div>
 </div>

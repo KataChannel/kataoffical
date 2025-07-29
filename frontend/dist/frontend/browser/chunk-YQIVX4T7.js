@@ -1,0 +1,1 @@
+import{Eb as n,Fc as r,fc as o,gc as s}from"./chunk-JY44QJM2.js";import"./chunk-EU2KAMEK.js";import"./chunk-6DYNGEAS.js";var i=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=n({type:t,selectors:[["app-register"]],decls:2,vars:0,template:function(e,a){e&1&&(o(0,"p"),r(1,"register works!"),s())},encapsulation:2})};export{i as RegisterComponent};

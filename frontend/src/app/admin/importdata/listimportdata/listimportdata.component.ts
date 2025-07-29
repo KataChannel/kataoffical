@@ -27,6 +27,7 @@ import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ImportdataService } from '../importdata.service';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
   excelSerialDateToJSDate,
   readExcelFile,
@@ -143,6 +144,7 @@ class ImportDataValidationService {
     FormsModule,
     MatTooltipModule,
     MatDialogModule,
+    MatProgressSpinnerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -183,6 +185,20 @@ export class ListImportdataComponent implements OnInit {
   private _router: Router = inject(Router);
   private _dialog: MatDialog = inject(MatDialog);
   private _snackBar: MatSnackBar = inject(MatSnackBar);
+  
+  // Loading states
+  isLoading = signal<boolean>(false);
+  isImporting = signal<boolean>(false);
+  isExporting = signal<boolean>(false);
+  loadingMessage = signal<string>('');
+  
+  // Getter methods for template access
+  get isLoadingValue() { return this.isLoading(); }
+  get isImportingValue() { return this.isImporting(); }
+  get isExportingValue() { return this.isExporting(); }
+  get loadingMessageValue() { return this.loadingMessage(); }
+  get ListImportTypeValue() { return this.ListImportType(); }
+  
   ListImportType = signal<any[]>([
     { id: 1, title: 'Sản Phẩm', value: 'sanpham', status: true },
     { id: 2, title: 'Khách Hàng', value: 'khachhang', status: true },
@@ -222,36 +238,65 @@ export class ListImportdataComponent implements OnInit {
   rawListTonkho: any[] = [];
   constructor() {
     effect(async () => {
-      await this._ImportdataService.getAllImportdata(100, true);
-      await this._SanphamService.getAllSanpham({ pageSize: 9999 }, true);
-      this.rawListSP = this._SanphamService.ListSanpham();
-      await this._KhachhangService.getAllKhachhang({ pageSize: 9999 }, true);
-      this.rawListKH = this._KhachhangService.ListKhachhang();
-      await this._NhacungcapService.getAllNhacungcap();
-      this.rawListNCC = this._NhacungcapService.ListNhacungcap();
-      await this._BanggiaService.getAllBanggia();
-      this.rawListBG = this._BanggiaService.ListBanggia();
-      await this._DonhangService.getAllDonhang();
-      this.rawListDH = this._DonhangService.ListDonhang();
-      await this._DathangService.getAllDathang();
-      this.rawListDathang = this._DathangService.ListDathang();
-      await this._KhoService.getTonKho('1', '1000').then((res: any) => {
-        this.rawListTonkho = res.data;
-      });
-      await this._UserService.getProfile();
-      const permissions =
-        this._UserService
-          .profile()
-          ?.permissions?.map((item: any) => item.name) || [];
-      this.ListImportType.update((items) =>
-        items.map((item) => ({
-          ...item,
-          status: permissions.includes('importdata.' + item.value),
-        }))
-      );
-      console.log('ListImportType:', this.ListImportType());
-      console.log('permissions:', permissions);
-      console.log('this._UserService.profile():', this._UserService.profile());
+      this.isLoading.set(true);
+      this.loadingMessage.set('Đang tải dữ liệu...');
+      
+      try {
+        await this._ImportdataService.getAllImportdata(100, true);
+        
+        this.loadingMessage.set('Đang tải danh sách sản phẩm...');
+        await this._SanphamService.getAllSanpham({ pageSize: 9999 }, true);
+        this.rawListSP = this._SanphamService.ListSanpham();
+        
+        this.loadingMessage.set('Đang tải danh sách khách hàng...');
+        await this._KhachhangService.getAllKhachhang({ pageSize: 9999 }, true);
+        this.rawListKH = this._KhachhangService.ListKhachhang();
+        
+        this.loadingMessage.set('Đang tải danh sách nhà cung cấp...');
+        await this._NhacungcapService.getAllNhacungcap();
+        this.rawListNCC = this._NhacungcapService.ListNhacungcap();
+        
+        this.loadingMessage.set('Đang tải bảng giá...');
+        await this._BanggiaService.getAllBanggia();
+        this.rawListBG = this._BanggiaService.ListBanggia();
+        
+        this.loadingMessage.set('Đang tải đơn hàng...');
+        await this._DonhangService.getAllDonhang();
+        this.rawListDH = this._DonhangService.ListDonhang();
+        
+        this.loadingMessage.set('Đang tải đặt hàng...');
+        await this._DathangService.getAllDathang();
+        this.rawListDathang = this._DathangService.ListDathang();
+        
+        this.loadingMessage.set('Đang tải tồn kho...');
+        await this._KhoService.getTonKho('1', '1000').then((res: any) => {
+          this.rawListTonkho = res.data;
+        });
+        
+        this.loadingMessage.set('Đang kiểm tra quyền...');
+        await this._UserService.getProfile();
+        const permissions =
+          this._UserService
+            .profile()
+            ?.permissions?.map((item: any) => item.name) || [];
+        this.ListImportType.update((items) =>
+          items.map((item) => ({
+            ...item,
+            status: permissions.includes('importdata.' + item.value),
+          }))
+        );
+      } catch (error) {
+        console.error('Error loading data:', error);
+        this._snackBar.open('Có lỗi xảy ra khi tải dữ liệu', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      } finally {
+        this.isLoading.set(false);
+        this.loadingMessage.set('');
+      }
     });
   }
 
@@ -305,6 +350,12 @@ export class ListImportdataComponent implements OnInit {
     }
   }
   async ExportExcel(title: any) {
+    if (this.isExporting()) return;
+    
+    this.isExporting.set(true);
+    this.loadingMessage.set('Đang chuẩn bị dữ liệu xuất...');
+    
+    try {
     const ListSP =
       Array.isArray(this.rawListSP) && this.rawListSP.length
         ? this.rawListSP.map((item: any) => ({
@@ -564,11 +615,33 @@ export class ListImportdataComponent implements OnInit {
         duration: 1000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
+        panelClass: ['snackbar-warning'],
       });
       return;
     }
+    
+    this.loadingMessage.set('Đang tạo file Excel...');
     writeExcelFileSheets(Exportdata, title);
+    
+    this._snackBar.open('Xuất dữ liệu thành công!', '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+    
+    } catch (error) {
+      console.error('Error exporting Excel:', error);
+      this._snackBar.open('Có lỗi xảy ra khi xuất dữ liệu', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isExporting.set(false);
+      this.loadingMessage.set('');
+    }
   }
 
   convertBGSPToExport(listbanggia: any, listsp: any) {
@@ -664,8 +737,27 @@ export class ListImportdataComponent implements OnInit {
   }
 
   async ImportExcel(event: any) {
-    const data = await readExcelFileNoWorker(event);
-    this.DoImportData(data);
+    if (this.isImporting()) return;
+    
+    this.isImporting.set(true);
+    this.loadingMessage.set('Đang đọc file Excel...');
+    
+    try {
+      const data = await readExcelFileNoWorker(event);
+      this.loadingMessage.set('Đang xử lý dữ liệu...');
+      await this.DoImportData(data);
+    } catch (error) {
+      console.error('Error importing Excel:', error);
+      this._snackBar.open('Có lỗi xảy ra khi đọc file Excel', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isImporting.set(false);
+      this.loadingMessage.set('');
+    }
   }
 
   // Method để hiển thị dialog xác nhận import
@@ -702,7 +794,7 @@ export class ListImportdataComponent implements OnInit {
         duration: 1000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
+        panelClass: ['snackbar-warning'],
       });
       return;
     }
@@ -711,7 +803,7 @@ export class ListImportdataComponent implements OnInit {
         duration: 1000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
+        panelClass: ['snackbar-warning'],
       });
       return;
     }
@@ -1357,7 +1449,7 @@ export class ListImportdataComponent implements OnInit {
         .map((v: any) => ({
           ngaygiao: moment(excelSerialDateToJSDate(v.ngaygiao)).toDate(),
           makh: v.makh,
-          mabanggia: v.mabanggia,
+          mabanggia: v.mabangia,
           masp: v.masp,
           sldat: Number(v.sldat),
           slgiao: Number(v.slgiao),
