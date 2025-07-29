@@ -106,5 +106,3 @@ volumes:
   uploads_data:
     driver: local
   minio_rausach:
-    name: rausach-data
-    external: true
