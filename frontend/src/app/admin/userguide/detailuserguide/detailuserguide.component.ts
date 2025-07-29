@@ -73,6 +73,7 @@ export class DetailUserguideComponent {
     });
   }
   DetailUserguide: any = this._UserguideService.DetailUserguide;
+  ImageURL = environment.ImageURL;
   isEdit = signal(false);
   isDelete = signal(false);
   userguideId: any = this._UserguideService.userguideId;
@@ -215,10 +216,11 @@ export class DetailUserguideComponent {
       }
 
       const uploadResult = await this.uploadFileToMinio(file, 'userguide/images', blockIndex);
+      console.log('Upload result:', uploadResult);
       
       if (uploadResult) {
         this.DetailUserguide.update((v: any) => {
-          v.UserguidBlocks[blockIndex].imageUrl = uploadResult.filePath;
+          v.UserguidBlocks[blockIndex].imageUrl = uploadResult.imageUrl;
           v.UserguidBlocks[blockIndex].imageAlt = v.UserguidBlocks[blockIndex].imageAlt || file.name;
           return v;
         });
@@ -263,7 +265,7 @@ export class DetailUserguideComponent {
       
       if (uploadResult) {
         this.DetailUserguide.update((v: any) => {
-          v.UserguidBlocks[blockIndex].videoUrl = uploadResult.filePath;
+          v.UserguidBlocks[blockIndex].videoUrl = uploadResult.imageUrl;
           v.UserguidBlocks[blockIndex].videoType = file.type;
           return v;
         });

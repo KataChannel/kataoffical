@@ -7,11 +7,11 @@
             <p>{{ block.description }}</p>
         </div>
         <div *ngIf="block.type === 'image'">
-            <img [src]="block.imageUrl" alt="{{ block.imageAlt }}" />
+            <img [src]="ImageURL + block.imageUrl" alt="{{ block.imageAlt }}" class="object-cover"/>
         </div>
         <div *ngIf="block.type === 'video'">
             <video controls>
-                <source [src]="block.videoUrl" [type]="block.videoType" />
+                <source [src]="ImageURL + block.videoUrl" [type]="block.videoType" />
                 Your browser does not support video.
             </video>
         </div>    

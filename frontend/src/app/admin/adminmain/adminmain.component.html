@@ -105,45 +105,15 @@
 
   <mat-drawer #drawer1 class="!w-screen lg:!w-1/2" mode="over" position="end">
     <div class="relative h-full flex flex-col space-y-2 p-2">
-        <div class="flex flex-row space-x-2 items-center">
+      <div class="flex flex-row space-x-2 items-center">
           <button mat-icon-button (click)="drawer1.toggle()">
             <mat-icon>arrow_back</mat-icon>
           </button>
           <span class="font-bold">Quy Trình</span>
-        </div>
-      <!-- <app-conversation></app-conversation> -->
-      <app-commonuserguide [Detail]="DetailUserguide()"></app-commonuserguide>
-      <!-- <ul class="list-decimal rounded-lg p-8 space-y-3 border">
-        <li>
-          <strong>0h: Đặt Hàng Ngày 1</strong>
-          <ul class="list-disc px-4">
-            <li>Bộ Phận Order</li>
-            <li>Giao Hàng</li>
-            <li>Xác Nhận Giao Hàng</li>
-          </ul>
-        </li>
-        <li>
-          <strong>1h: Kiểm Kho</strong>
-          <ul class="list-disc px-4">
-            <li>Bộ Phận Kho</li>
-          </ul>
-        </li>
-        <li>
-          <strong>8H Nhập Kiểm Kho</strong>
-          <ul class="list-disc px-4">
-            <li>1. Nhập Kiểm Kho (Bộ Phận Kho)</li>
-            <li>2. Nhập hàng Hủy (Bộ Phận Kho)</li>
-            <li>3. Nhập Tồn Kho Tổng (Bộ Phận Kế Toán)</li>
-            <li>4. Anh Lãnh Đặt Hàng Trước 21h</li>
-          </ul>
-        </li>
-        <li>
-          <strong>21H Đặt Hàng Ngày 2</strong>
-          <ul class="list-disc px-4">
-            <li>Bộ Phận Order</li>
-          </ul>
-        </li>
-      </ul> -->
+       </div>
+       <div class="relative flex w-full overflow-auto">
+        <app-commonuserguide [Detail]="DetailUserguide()"></app-commonuserguide>
+       </div>
     </div>
   </mat-drawer>
 </mat-drawer-container>

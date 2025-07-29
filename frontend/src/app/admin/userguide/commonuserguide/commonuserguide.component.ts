@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { environment } from '../../../../environments/environment.development';
 @Component({
   selector: 'app-commonuserguide',
   imports: [
@@ -16,4 +17,5 @@ export class CommonuserguideComponent {
       //Add 'implements OnInit' to the class.
       console.log(this.Detail);
     }
+    ImageURL = environment.ImageURL;
 }
