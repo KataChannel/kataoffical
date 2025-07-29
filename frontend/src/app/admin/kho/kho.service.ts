@@ -93,8 +93,9 @@ export class KhoService {
       if (!response.ok) {
 
       }
-      const data = await response.json();           
+      const data = await response.json();         
       this.ListKho.set(data)
+      return data  
     } catch (error) {
       return console.error(error);
     }

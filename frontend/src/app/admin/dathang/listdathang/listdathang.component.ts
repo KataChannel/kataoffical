@@ -326,6 +326,7 @@ DoDanhan(){
 }
 dialog = inject(MatDialog);
 dialogCreateRef: any;
+
 openDeleteDialog(template: TemplateRef<any>, item?: any) {
      const dialogDeleteRef = this.dialog.open(template, {
        hasBackdrop: true,
@@ -341,6 +342,20 @@ openDeleteDialog(template: TemplateRef<any>, item?: any) {
        }
      });
  }
+
+openDathangDialog(template: TemplateRef<any>) {
+     const dialogDeleteRef = this.dialog.open(template, {
+       hasBackdrop: true,
+       disableClose: true,
+     });
+     dialogDeleteRef.afterClosed().subscribe(async (result) => {
+       if (result=="true") {
+
+       }
+     });
+ }
+
+
 DeleteListItem(): void {
   Promise.all(this.EditList.map((item: any) => this._DathangService.DeleteDathang(item)))
     .then(() => {

@@ -23,6 +23,8 @@ import { SanphamService } from '../../sanpham/sanpham.service';
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
 import { DathangService } from '../dathang.service';
 import { TablenhucaudathanhComponent } from './tablenhucaudathanh/tablenhucaudathanh.component';
+import moment from 'moment';
+import { KhoService } from '../../kho/kho.service';
 @Component({
   selector: 'app-nhucaudathang',
   templateUrl: './nhucaudathang.component.html',
@@ -88,11 +90,12 @@ export class NhucaudathangComponent {
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _NhacungcapService: NhacungcapService = inject(NhacungcapService);
   private _DathangService: DathangService = inject(DathangService);
+  private _KhoService: KhoService = inject(KhoService);
   private _router: Router = inject(Router);
   private _dialog: MatDialog = inject(MatDialog);
   Listsanpham:any = this._SanphamService.ListSanpham;
   EditList:any=[];
-  dataSource = new MatTableDataSource([]);
+  dataSource = new MatTableDataSource<any>();
   sanphamId:any = this._SanphamService.sanphamId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
@@ -447,19 +450,45 @@ export class NhucaudathangComponent {
   async ImporExcel(event: any) {
   const data = await readExcelFile(event)
   this.DoImportData(data);
-  }   
-  ExportExcel(data:any,title:any) {
+  } 
+    
+  async ExportExcel(data:any,title:any) {
+    const ListKho = await this._KhoService.getAllKho()
+    console.log(ListKho);
+    
     const dulieu = data.map((v: any) => ({
-      title: v.title,
+      ngaynhan: moment().format('YYYY-MM-DD'),
       masp: v.masp,
-      giagoc: v.giagoc,
+      title: v.title,
       dvt: v.dvt,
-      soluong: v.soluong,
-      soluongkho: v.soluongkho,
+      // giagoc: v.giagoc,
+      slchogiao: v.slchogiao,
+      goiy: v.goiy,
+      slchonhap: v.slchonhap,
+      slton: v.slton,
       haohut: v.haohut,
       ghichu: v.ghichu,
     }));
-    writeExcelFile(dulieu,title);
+
+  const mapping: any = {
+    ngaynhan: 'Ngày Nhận',
+    masp: 'Mã Sản Phẩm',
+    title: 'Tên Sản Phẩm',
+    dvt: 'Đơn Vị Tính',
+    // giagoc: 'Giá Gốc',
+    slchogiao: 'Chờ Giao',
+    goiy: 'Gợi Ý',
+    slchonhap: 'Chờ Nhập',
+    slton: 'Tồn Kho',
+    haohut: 'Hao Hụt',
+    ghichu: 'Ghi Chú'
+  };
+  ListKho.forEach((v: any) => {
+    mapping[`makho_${v.makho}`] = v.makho;
+  });
+  
+  console.log(dulieu,title,Object.keys(mapping),mapping);
+  writeExcelFile(dulieu,title,Object.values(mapping),mapping);
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier

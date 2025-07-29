@@ -31,7 +31,7 @@
           </div>
 
         <div class="flex flex-row space-x-2 items-center">
-          <button (click)="ExportExcel()" mat-icon-button color="primary">
+          <button (click)="openDathangDialog(DathangDialog)" mat-icon-button color="primary">
             <mat-icon>download</mat-icon>
           </button>
           <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
@@ -225,3 +225,20 @@
     </div>
   </mat-dialog-content>
 </ng-template>
+
+
+
+<ng-template #DathangDialog>
+  <mat-dialog-content>
+    <div class="flex flex-col space-y-8 items-center justify-center">
+      <div class="font-bold">Xác Nhận</div>
+      <div>Bạn chắc chắn muốn xoá không?</div>
+      <div class="flex flex-row space-x-2 items-center justify-center">
+        <button mat-flat-button color="primary" mat-dialog-close="true">Đồng Ý</button>
+        <button mat-flat-button color="warn" mat-dialog-close="false">Huỷ Bỏ</button>
+      </div>
+    </div>
+  </mat-dialog-content>
+</ng-template>
+
+
