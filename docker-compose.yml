@@ -91,7 +91,7 @@ services:
       MINIO_ROOT_USER: RC4hWSS4V6QIcfl
       MINIO_ROOT_PASSWORD: LEOZHZwjaasTTKk
     volumes:
-      - minio_rausach:/data_rausach
+      - minio_rausach:/rausach-data
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 5s
