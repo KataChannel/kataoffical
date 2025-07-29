@@ -60,6 +60,14 @@ import {
   ImportConfirmationDialogComponent,
   ImportConfirmationData,
 } from '../import-confirmation-dialog.component';
+import {
+  MatDatepickerModule, 
+  MatDateRangeInput, 
+  MatDateRangePicker,
+  MatDatepickerToggle,
+  MatDatepickerActions
+} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 // Service utility để kiểm tra trùng lặp
 class ImportDataValidationService {
@@ -127,6 +135,7 @@ class ImportDataValidationService {
 
 @Component({
   selector: 'app-listimportdata',
+  standalone: true,
   templateUrl: './listimportdata.component.html',
   styleUrls: ['./listimportdata.component.scss'],
   imports: [
@@ -145,6 +154,12 @@ class ImportDataValidationService {
     MatTooltipModule,
     MatDialogModule,
     MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatDateRangeInput,
+    MatDateRangePicker,
+    MatDatepickerToggle,
+    MatDatepickerActions,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -186,18 +201,15 @@ export class ListImportdataComponent implements OnInit {
   private _dialog: MatDialog = inject(MatDialog);
   private _snackBar: MatSnackBar = inject(MatSnackBar);
   
-  // Loading states
+  // Loading states using signals
   isLoading = signal<boolean>(false);
   isImporting = signal<boolean>(false);
   isExporting = signal<boolean>(false);
   loadingMessage = signal<string>('');
   
-  // Getter methods for template access
-  get isLoadingValue() { return this.isLoading(); }
-  get isImportingValue() { return this.isImporting(); }
-  get isExportingValue() { return this.isExporting(); }
-  get loadingMessageValue() { return this.loadingMessage(); }
-  get ListImportTypeValue() { return this.ListImportType(); }
+  // Date range properties
+  batdau: Date = new Date();
+  ketthuc: Date = new Date();
   
   ListImportType = signal<any[]>([
     { id: 1, title: 'Sản Phẩm', value: 'sanpham', status: true },
@@ -236,7 +248,13 @@ export class ListImportdataComponent implements OnInit {
   rawListDH: any[] = [];
   rawListDathang: any[] = [];
   rawListTonkho: any[] = [];
+  
   constructor() {
+    // Initialize date range (current date as default)
+    const today = new Date();
+    this.ketthuc = new Date(today);
+    this.batdau = new Date(today);
+    
     effect(async () => {
       this.isLoading.set(true);
       this.loadingMessage.set('Đang tải dữ liệu...');
@@ -244,34 +262,8 @@ export class ListImportdataComponent implements OnInit {
       try {
         await this._ImportdataService.getAllImportdata(100, true);
         
-        this.loadingMessage.set('Đang tải danh sách sản phẩm...');
-        await this._SanphamService.getAllSanpham({ pageSize: 9999 }, true);
-        this.rawListSP = this._SanphamService.ListSanpham();
-        
-        this.loadingMessage.set('Đang tải danh sách khách hàng...');
-        await this._KhachhangService.getAllKhachhang({ pageSize: 9999 }, true);
-        this.rawListKH = this._KhachhangService.ListKhachhang();
-        
-        this.loadingMessage.set('Đang tải danh sách nhà cung cấp...');
-        await this._NhacungcapService.getAllNhacungcap();
-        this.rawListNCC = this._NhacungcapService.ListNhacungcap();
-        
-        this.loadingMessage.set('Đang tải bảng giá...');
-        await this._BanggiaService.getAllBanggia();
-        this.rawListBG = this._BanggiaService.ListBanggia();
-        
-        this.loadingMessage.set('Đang tải đơn hàng...');
-        await this._DonhangService.getAllDonhang();
-        this.rawListDH = this._DonhangService.ListDonhang();
-        
-        this.loadingMessage.set('Đang tải đặt hàng...');
-        await this._DathangService.getAllDathang();
-        this.rawListDathang = this._DathangService.ListDathang();
-        
-        this.loadingMessage.set('Đang tải tồn kho...');
-        await this._KhoService.getTonKho('1', '1000').then((res: any) => {
-          this.rawListTonkho = res.data;
-        });
+        // Load data with date parameters
+        await this.loadDataWithDateRange();
         
         this.loadingMessage.set('Đang kiểm tra quyền...');
         await this._UserService.getProfile();
@@ -298,6 +290,124 @@ export class ListImportdataComponent implements OnInit {
         this.loadingMessage.set('');
       }
     });
+  }
+
+  // Date filtering methods
+  async loadDataWithDateRange() {
+    try {
+      // Create date parameters object for services that support it
+      const dateParams = {
+        Batdau: this.batdau,
+        Ketthuc: this.ketthuc,
+        pageSize: 9999
+      };
+      
+      this.loadingMessage.set('Đang tải danh sách sản phẩm...');
+      await this._SanphamService.getAllSanpham({ pageSize: 9999 }, true);
+      this.rawListSP = this._SanphamService.ListSanpham();
+      
+      this.loadingMessage.set('Đang tải danh sách khách hàng...');
+      await this._KhachhangService.getAllKhachhang({ pageSize: 9999 }, true);
+      this.rawListKH = this._KhachhangService.ListKhachhang();
+      
+      this.loadingMessage.set('Đang tải danh sách nhà cung cấp...');
+      await this._NhacungcapService.getAllNhacungcap();
+      this.rawListNCC = this._NhacungcapService.ListNhacungcap();
+      
+      this.loadingMessage.set('Đang tải bảng giá...');
+      await this._BanggiaService.getAllBanggia();
+      this.rawListBG = this._BanggiaService.ListBanggia();
+      
+      this.loadingMessage.set('Đang tải đơn hàng...');
+      await this._DonhangService.searchDonhang({batdau: this.batdau, ketthuc: this.ketthuc});
+      this.rawListDH = this._DonhangService.ListDonhang();
+      
+      this.loadingMessage.set('Đang tải đặt hàng...');
+      await this._DathangService.getAllDathang();
+      this.rawListDathang = this._DathangService.ListDathang();
+      
+      this.loadingMessage.set('Đang tải tồn kho...');
+      await this._KhoService.getTonKho('1', '1000').then((res: any) => {
+        this.rawListTonkho = res.data;
+      });
+      
+    } catch (error) {
+      console.error('Error loading data with date range:', error);
+      throw error;
+    }
+  }
+  
+  // Date change handler
+  async onDateChange() {
+    if (!this.isLoading()) {
+      this.isLoading.set(true);
+      this.loadingMessage.set('Đang cập nhật dữ liệu theo ngày...');
+      
+      try {
+        await this.loadDataWithDateRange();
+      } catch (error) {
+        console.error('Error updating data with new date range:', error);
+        this._snackBar.open('Có lỗi xảy ra khi cập nhật dữ liệu', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      } finally {
+        this.isLoading.set(false);
+        this.loadingMessage.set('');
+      }
+    }
+  }
+  
+  // Apply date filter
+  async applyDateFilter() {
+    await this.onDateChange();
+  }
+  
+  // Quick date range methods
+  async setDateRange(range: string) {
+    const today = new Date();
+    
+    switch (range) {
+      case 'today':
+        this.batdau = new Date(today);
+        this.ketthuc = new Date(today);
+        break;
+      case 'yesterday':
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        this.batdau = new Date(yesterday);
+        this.ketthuc = new Date(yesterday);
+        break;
+      case 'last7days':
+        this.ketthuc = new Date(today);
+        this.batdau = new Date(today);
+        this.batdau.setDate(this.batdau.getDate() - 6);
+        break;
+      case 'last30days':
+        this.ketthuc = new Date(today);
+        this.batdau = new Date(today);
+        this.batdau.setDate(this.batdau.getDate() - 29);
+        break;
+      case 'thisMonth':
+        this.batdau = new Date(today.getFullYear(), today.getMonth(), 1);
+        this.ketthuc = new Date(today);
+        break;
+      case 'lastMonth':
+        const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        this.batdau = new Date(lastMonth);
+        this.ketthuc = new Date(today.getFullYear(), today.getMonth(), 0);
+        break;
+      case 'thisWeek':
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay());
+        this.batdau = new Date(startOfWeek);
+        this.ketthuc = new Date(today);
+        break;
+    }
+    
+    await this.applyDateFilter();
   }
 
   async ngOnInit(): Promise<void> {
@@ -353,12 +463,15 @@ export class ListImportdataComponent implements OnInit {
     if (this.isExporting()) return;
     
     this.isExporting.set(true);
-    this.loadingMessage.set('Đang chuẩn bị dữ liệu xuất...');
+    this.loadingMessage.set('Đang chuẩn bị dữ liệu xuất theo khoảng thời gian...');
     
     try {
+    // Get filtered data based on date range
+    const filteredData = this.getFilteredExportData();
+    
     const ListSP =
-      Array.isArray(this.rawListSP) && this.rawListSP.length
-        ? this.rawListSP.map((item: any) => ({
+      Array.isArray(filteredData.ListSP) && filteredData.ListSP.length
+        ? filteredData.ListSP.map((item: any) => ({
             masp: item.masp,
             subtitle: item.subtitle,
             title: item.title,
@@ -385,8 +498,8 @@ export class ListImportdataComponent implements OnInit {
             },
           ];
     const ListKH =
-      Array.isArray(this.rawListKH) && this.rawListKH.length
-        ? this.rawListKH.map((v: any) => ({
+      Array.isArray(filteredData.ListKH) && filteredData.ListKH.length
+        ? filteredData.ListKH.map((v: any) => ({
             name: v.name?.trim() || '',
             tenfile: v.tenfile?.trim() || '',
             makh: v.makh?.trim() || '',
@@ -421,8 +534,8 @@ export class ListImportdataComponent implements OnInit {
           ];
 
     const ListNCC =
-      Array.isArray(this.rawListNCC) && this.rawListNCC.length > 0
-        ? this.rawListNCC.map((v: any) => ({
+      Array.isArray(filteredData.ListNCC) && filteredData.ListNCC.length > 0
+        ? filteredData.ListNCC.map((v: any) => ({
             name: v.name?.trim() || '',
             tenfile: v.tenfile?.trim() || '',
             mancc: v.mancc?.trim() || '',
@@ -444,8 +557,8 @@ export class ListImportdataComponent implements OnInit {
           ];
 
     const ListBG =
-      Array.isArray(this.rawListBG) && this.rawListBG.length > 0
-        ? this.rawListBG.map((v: any) => ({
+      Array.isArray(filteredData.ListBG) && filteredData.ListBG.length > 0
+        ? filteredData.ListBG.map((v: any) => ({
             title: v.title?.trim() || '',
             mabanggia: v.mabanggia?.trim() || '',
             type: v.type?.trim() || '',
@@ -466,10 +579,10 @@ export class ListImportdataComponent implements OnInit {
             },
           ];
 
-    // Flatten donhang items from nested 'sanpham'
+    // Flatten donhang items from nested 'sanpham' with date filtering applied
     const ListDH =
-      Array.isArray(this.rawListDH) && this.rawListDH.length > 0
-        ? this.rawListDH.flatMap((record: any) => {
+      Array.isArray(filteredData.ListDH) && filteredData.ListDH.length > 0
+        ? filteredData.ListDH.flatMap((record: any) => {
             if (!Array.isArray(record.sanpham)) return [];
             return record.sanpham.map((sp: any) => ({
               ngaygiao: moment(record.ngaygiao).format('DD/MM/YYYY'),
@@ -498,8 +611,8 @@ export class ListImportdataComponent implements OnInit {
             },
           ];
     const ListDathang =
-      Array.isArray(this.rawListDathang) && this.rawListDathang.length > 0
-        ? this.rawListDathang.flatMap((record: any) => {
+      Array.isArray(filteredData.ListDathang) && filteredData.ListDathang.length > 0
+        ? filteredData.ListDathang.flatMap((record: any) => {
             if (!Array.isArray(record.sanpham)) return [];
             return record.sanpham.map((sp: any) => ({
               ngaynhan: moment(record.ngaynhan).format('DD/MM/YYYY'),
@@ -529,9 +642,9 @@ export class ListImportdataComponent implements OnInit {
             },
           ];
 
-    const ListBGSP = this.convertBGSPToExport(this.rawListBG, this.rawListSP);
+    const ListBGSP = this.convertBGSPToExport(filteredData.ListBG, filteredData.ListSP);
 
-    const ListBGKH: any[] = this.rawListKH.map((v: any) => {
+    const ListBGKH: any[] = filteredData.ListKH.map((v: any) => {
       const result: any = {
         makh: v.makh || '',
         name: v.name || '',
@@ -540,7 +653,7 @@ export class ListImportdataComponent implements OnInit {
       return result;
     });
 
-    const dynamicKeys = this.rawListSP.reduce(
+    const dynamicKeys = filteredData.ListSP.reduce(
       (acc: Record<string, string>, v: any) => {
         if (v && v.masp) {
           acc[v.masp] = '';
@@ -549,8 +662,8 @@ export class ListImportdataComponent implements OnInit {
       },
       {}
     );
-    // Build ListNCCSP dynamically using rawListNCC and up to 5 product codes from dynamicKeys.
-    const ListNCCSP: any[] = this.rawListNCC.map((supplier: any) => {
+    // Build ListNCCSP dynamically using filtered NCC data and up to 5 product codes from dynamicKeys.
+    const ListNCCSP: any[] = filteredData.ListNCC.map((supplier: any) => {
       const result: any = {
         mancc: supplier.mancc || '',
         name: supplier.name || '',
@@ -568,7 +681,7 @@ export class ListImportdataComponent implements OnInit {
       return result;
     });
 
-    const ListTonkho = this.rawListTonkho.map((v: any) => ({
+    const ListTonkho = filteredData.ListTonkho.map((v: any) => ({
       masp: v.masp,
       title: v.title,
       dvt: v.dvt,
@@ -621,7 +734,12 @@ export class ListImportdataComponent implements OnInit {
     }
     
     this.loadingMessage.set('Đang tạo file Excel...');
-    writeExcelFileSheets(Exportdata, title);
+    
+    // Include date range in filename
+    const dateRangeStr = `${this.batdau.toLocaleDateString('vi-VN').replace(/\//g, '-')}_${this.ketthuc.toLocaleDateString('vi-VN').replace(/\//g, '-')}`;
+    const exportFileName = `${title}_${dateRangeStr}`;
+    
+    writeExcelFileSheets(Exportdata, exportFileName);
     
     this._snackBar.open('Xuất dữ liệu thành công!', '', {
       duration: 2000,
@@ -1475,7 +1593,54 @@ export class ListImportdataComponent implements OnInit {
       });
     }
   }
+  // TrackBy function for performance optimization
   trackByFn(index: number, item: any): any {
-    return item.id;
+    return item.id || index;
+  }
+  
+  // Filter data based on selected date range
+  filterDataByDateRange(data: any[], dateField: string = 'createdAt'): any[] {
+    if (!data || !Array.isArray(data)) return [];
+    
+    const startDate = new Date(this.batdau);
+    startDate.setHours(0, 0, 0, 0);
+    
+    const endDate = new Date(this.ketthuc);
+    endDate.setHours(23, 59, 59, 999);
+    
+    return data.filter(item => {
+      if (!item[dateField]) return true; // Include items without date
+      
+      let itemDate: Date;
+      if (typeof item[dateField] === 'string') {
+        itemDate = new Date(item[dateField]);
+      } else if (item[dateField] instanceof Date) {
+        itemDate = item[dateField];
+      } else {
+        return true; // Include items with invalid date format
+      }
+      
+      return itemDate >= startDate && itemDate <= endDate;
+    });
+  }
+  
+  // Get filtered export data with date range applied
+  getFilteredExportData() {
+    const dateInfo = {
+      batdau: this.batdau,
+      ketthuc: this.ketthuc,
+      dateRange: `${this.batdau.toLocaleDateString('vi-VN')} - ${this.ketthuc.toLocaleDateString('vi-VN')}`
+    };
+    
+    return {
+      ListSP: this.rawListSP, // Products usually don't have date filtering
+      ListKH: this.rawListKH, // Customers usually don't have date filtering  
+      ListNCC: this.rawListNCC, // Suppliers usually don't have date filtering
+      ListBG: this.rawListBG, // Price lists usually don't have date filtering
+      ListDH: this.filterDataByDateRange(this.rawListDH, 'ngaygiao'), // Orders filtered by delivery date
+      ListDathang: this.filterDataByDateRange(this.rawListDathang, 'ngaynhan'), // Purchase orders filtered by receive date
+      ListTonkho: this.filterDataByDateRange(this.rawListTonkho, 'createdAt'), // Inventory filtered by creation date
+      dateInfo
+    };
   }
 }

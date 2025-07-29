@@ -98,7 +98,6 @@ export class ListNhacungcapComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this._NhacungcapService.listenNhacungcapUpdates();
     await this._NhacungcapService.getAllNhacungcap(this.searchParam);
     console.log(this.Listnhacungcap());
 

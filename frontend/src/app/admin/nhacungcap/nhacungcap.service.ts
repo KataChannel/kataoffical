@@ -14,7 +14,6 @@ export class NhacungcapService {
     private _sharedSocketService: SharedSocketService,
   ) {
     this.socket = this._sharedSocketService.getSocket();
-    this.listenNhacungcapUpdates();
   }
 
   private _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -26,29 +25,6 @@ export class NhacungcapService {
   pageSize = signal<number>(50); // Mặc định 50 mục mỗi trang
   nhacungcapId = signal<string | null>(null);
 
-  // Khởi tạo IndexedDB
-  private async initDB() {
-    return await openDB('NhacungcapDB', 4, {
-      upgrade(db, oldVersion) {
-        if (oldVersion < 1) {
-          db.createObjectStore('nhacungcaps', { keyPath: 'id' });
-        }
-        if (oldVersion < 3) {
-          if (db.objectStoreNames.contains('nhacungcaps')) {
-            db.deleteObjectStore('nhacungcaps');
-          }
-          if (db.objectStoreNames.contains('pagination')) {
-            db.deleteObjectStore('pagination');
-          }
-          db.createObjectStore('nhacungcaps', { keyPath: 'id' });
-        }
-        if (oldVersion < 4) {
-          // Không cần xóa store, vì cấu trúc vẫn tương thích
-          // Chỉ cần đảm bảo pagination có thêm pageSize
-        }
-      },
-    });
-  }
 
   setNhacungcapId(id: string | null) {
     this.nhacungcapId.set(id);
@@ -158,13 +134,6 @@ export class NhacungcapService {
       // Lưu dữ liệu mới vào cache
       const data = await response.json();
       // Cập nhật thời gian cache: với forceRefresh, sử dụng thời gian hiện tại
-      if (forceRefresh) {
-        this._StorageService.setItem('nhacungcaps_updatedAt', new Date().toISOString());
-      } else {
-        const lastUpdatedResponse = await fetch(`${environment.APIURL}/nhacungcap/lastupdated`, options);
-        const { updatedAt: updatedAtServer } = await lastUpdatedResponse.json();
-        this._StorageService.setItem('nhacungcaps_updatedAt', updatedAtServer);
-      }
       this.ListNhacungcap.set(data.data);
       this.page.set(data.page || 1);
       this.totalPages.set(data.totalPages || 1);
@@ -198,15 +167,6 @@ export class NhacungcapService {
     }
   }
 
-  listenNhacungcapUpdates() {
-    this.socket.off('nhacungcap-updated'); // đảm bảo không đăng ký nhiều lần
-    this.socket.on('nhacungcap-updated', async () => {
-      console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-      this._StorageService.removeItem('nhacungcaps_updatedAt');
-      await this.getAllNhacungcap();
-    });
-  }
-
   async getNhacungcapBy(param: any, pageSize: number = this.pageSize()) {
     this.pageSize.set(pageSize); // Cập nhật pageSize
     try {
@@ -226,7 +186,6 @@ export class NhacungcapService {
       if (param.isOne === true) {
         this.DetailNhacungcap.set(data);
       } else {
-        this._StorageService.setItem('nhacungcaps_updatedAt', new Date().toISOString());
         this.ListNhacungcap.set(data.data);
         this.page.set(data.page || 1);
         this.totalPages.set(data.totalPages || 1);
