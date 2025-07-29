@@ -29,6 +29,8 @@ import { AuditService } from './auditlog/auditlog.service';
 import { AuditLogModule } from './auditlog/auditlog.module';
 import { AuditMiddleware } from './auditlog/audit.middleware';
 import { ChotkhoModule } from './chotkho/chotkho.module';
+// import { UploadModule } from './upload/upload.module';
+import { MinioModule } from './minio/minio.module';
 
 @Module({
   imports: [
@@ -54,7 +56,9 @@ import { ChotkhoModule } from './chotkho/chotkho.module';
     UserguideModule,
     ImportdataModule,
     AuditLogModule,
-    ChotkhoModule
+    ChotkhoModule,
+    // UploadModule,
+    MinioModule
   ],
   controllers: [AppController],
   providers: [

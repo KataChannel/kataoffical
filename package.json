@@ -3,6 +3,7 @@
     "class-validator": "^0.14.1"
   },
   "scripts": {
+    "build": "cd api && npx bun run build && cd ../frontend && bun run build",
     "autorun": "./autorun.sh",
     "db:backup": "cd api && npx ts-node prisma/backup.ts",
     "db:restore": "cd api && npx ts-node prisma/restorev2.ts",

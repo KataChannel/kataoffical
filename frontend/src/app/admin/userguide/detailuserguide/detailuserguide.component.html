@@ -48,27 +48,119 @@
 
       <ng-container [ngSwitch]="DetailUserguide().UserguidBlocks[i].type">
         <ng-container *ngSwitchCase="'image'">
-          <mat-form-field appearance="outline">
-            <mat-label>Image URL</mat-label>
-            <input matInput [(ngModel)]="DetailUserguide().UserguidBlocks[i].imageUrl" [disabled]="!isEdit()" placeholder="Vui lòng nhập URL hình ảnh" />
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Image Alt</mat-label>
-            <input matInput [(ngModel)]="DetailUserguide().UserguidBlocks[i].imageAlt" [disabled]="!isEdit()" placeholder="Vui lòng nhập mô tả hình ảnh" />
-          </mat-form-field>
+          <!-- Image Upload Section -->
+          <div class="lg:col-span-2 space-y-4">
+            <!-- Upload Button and Current Image -->
+            <div class="flex flex-col space-y-2">
+              <div class="flex items-center space-x-2">
+                <input #imageInput type="file" 
+                       accept="image/*" 
+                       (change)="onImageSelected($event, i)" 
+                       style="display: none;">
+                <button mat-raised-button color="primary" 
+                        *ngIf="isEdit()" 
+                        (click)="imageInput.click()"
+                        [disabled]="uploadProgress[i]">
+                  <mat-icon>cloud_upload</mat-icon>
+                  Chọn Hình Ảnh
+                </button>
+                <button mat-icon-button color="warn" 
+                        *ngIf="isEdit() && DetailUserguide().UserguidBlocks[i].imageUrl" 
+                        (click)="removeMedia(i, 'image')"
+                        [disabled]="uploadProgress[i]">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+              
+              <!-- Upload Progress -->
+              <div *ngIf="uploadProgress[i]" class="w-full">
+                <mat-progress-bar mode="determinate" [value]="uploadProgress[i]"></mat-progress-bar>
+                <div class="text-sm text-gray-600 mt-1">Đang tải lên... {{uploadProgress[i]}}%</div>
+              </div>
+              
+              <!-- Image Preview -->
+              <div *ngIf="DetailUserguide().UserguidBlocks[i].imageUrl && !uploadProgress[i]" 
+                   class="mt-2 p-2 border border-gray-200 rounded-lg">
+                <img [src]="getMediaUrl(DetailUserguide().UserguidBlocks[i].imageUrl)" 
+                     [alt]="DetailUserguide().UserguidBlocks[i].imageAlt || 'Preview'"
+                     class="max-w-full h-48 object-contain rounded">
+                <div class="text-sm text-gray-500 mt-1 break-all">
+                  {{ DetailUserguide().UserguidBlocks[i].imageUrl }}
+                </div>
+              </div>
+            </div>
+            
+            <!-- Image Alt Text -->
+            <mat-form-field appearance="outline">
+              <mat-label>Mô tả hình ảnh</mat-label>
+              <input matInput [(ngModel)]="DetailUserguide().UserguidBlocks[i].imageAlt" 
+                     [disabled]="!isEdit()" 
+                     placeholder="Vui lòng nhập mô tả hình ảnh">
+            </mat-form-field>
+          </div>
         </ng-container>
         <ng-container *ngSwitchCase="'video'">
-          <mat-form-field appearance="outline">
-            <mat-label>Video URL</mat-label>
-            <input matInput [(ngModel)]="DetailUserguide().UserguidBlocks[i].videoUrl" [disabled]="!isEdit()" placeholder="Vui lòng nhập URL video" />
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Video Type</mat-label>
-            <input matInput [(ngModel)]="DetailUserguide().UserguidBlocks[i].videoType" [disabled]="!isEdit()" placeholder="Vui lòng nhập loại video" />
-          </mat-form-field>
+          <!-- Video Upload Section -->
+          <div class="lg:col-span-2 space-y-4">
+                  <!-- <app-uploadresource [uploadUrl]="uploadUrl" [category]="category" 
+      (filesSelectedEvent)="filesSelectedEvent($event)"
+      (uploadSuccessEvent)="uploadSuccessEvent($event)"
+      (uploadErrorEvent)="uploadErrorEvent($event)"
+      [group]="group" [category]="category"></app-uploadresource>   -->
+
+            <!-- Upload Button and Current Video -->
+            <div class="flex flex-col space-y-2">
+              <div class="flex items-center space-x-2">
+                <input #videoInput type="file" 
+                       accept="video/*" 
+                       (change)="onVideoSelected($event, i)" 
+                       style="display: none;">
+                <button mat-raised-button color="primary" 
+                        *ngIf="isEdit()" 
+                        (click)="videoInput.click()"
+                        [disabled]="uploadProgress[i]">
+                  <mat-icon>videocam</mat-icon>
+                  Chọn Video
+                </button>
+                <button mat-icon-button color="warn" 
+                        *ngIf="isEdit() && DetailUserguide().UserguidBlocks[i].videoUrl" 
+                        (click)="removeMedia(i, 'video')"
+                        [disabled]="uploadProgress[i]">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+              
+              <!-- Upload Progress -->
+              <div *ngIf="uploadProgress[i]" class="w-full">
+                <mat-progress-bar mode="determinate" [value]="uploadProgress[i]"></mat-progress-bar>
+                <div class="text-sm text-gray-600 mt-1">Đang tải lên... {{uploadProgress[i]}}%</div>
+              </div>
+              
+              <!-- Video Preview -->
+              <div *ngIf="DetailUserguide().UserguidBlocks[i].videoUrl && !uploadProgress[i]" 
+                   class="mt-2 p-2 border border-gray-200 rounded-lg">
+                <video [src]="getMediaUrl(DetailUserguide().UserguidBlocks[i].videoUrl)" 
+                       controls 
+                       class="max-w-full h-48 rounded">
+                  Trình duyệt không hỗ trợ video.
+                </video>
+                <div class="text-sm text-gray-500 mt-1 break-all">
+                  {{ DetailUserguide().UserguidBlocks[i].videoUrl }}
+                </div>
+              </div>
+            </div>
+            
+            <!-- Video Type (Auto-detected) -->
+            <mat-form-field appearance="outline">
+              <mat-label>Loại Video</mat-label>
+              <input matInput [(ngModel)]="DetailUserguide().UserguidBlocks[i].videoType" 
+                     [disabled]="true" 
+                     placeholder="Tự động phát hiện">
+            </mat-form-field>
+          </div>
         </ng-container>
         <ng-container *ngSwitchDefault>
-          <!-- Các loại không xác định -->
+          <!-- Text content - no media upload needed -->
         </ng-container> 
       </ng-container>
         <mat-form-field appearance="outline">

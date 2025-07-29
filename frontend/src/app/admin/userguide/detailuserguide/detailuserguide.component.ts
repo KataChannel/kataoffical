@@ -9,9 +9,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { HttpClient, HttpEventType } from '@angular/common/http';
+import { environment } from '../../../../environments/environment.development';
 import { ListUserguideComponent } from '../listuserguide/listuserguide.component';
 import { UserguideService } from '../userguide.service';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 @Component({
   selector: 'app-detailuserguide',
@@ -25,6 +28,7 @@ import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
     MatDialogModule,
     CommonModule,
     MatSlideToggleModule,
+    MatProgressBarModule,
   ],
   templateUrl: './detailuserguide.component.html',
   styleUrl: './detailuserguide.component.scss',
@@ -37,6 +41,13 @@ export class DetailUserguideComponent {
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
+  _http: HttpClient = inject(HttpClient);
+  
+  // Upload progress tracking
+  uploadProgress: { [key: number]: number } = {};
+  
+  // MinIO configuration
+  private readonly minioApiUrl = environment.APIURL + '/minio/upload';
   constructor() {
     this._route.paramMap.subscribe((params) => {
       const id = params.get('id');
@@ -151,6 +162,7 @@ export class DetailUserguideComponent {
       return v;
     });
   }
+
   removeBlock(item: any) {
     this.DetailUserguide.update((v: any) => {
       if (v.UserguidBlocks && v.UserguidBlocks.length > 0) {
@@ -161,5 +173,175 @@ export class DetailUserguideComponent {
       }
       return v;
     });
+  }
+
+  // Media Upload Methods
+  onImageSelected(event: any, blockIndex: number) {
+    const file = event.target.files[0];
+    if (file) {
+      this.uploadImageToMinio(file, blockIndex);
+    }
+    // Reset input
+    event.target.value = '';
+  }
+
+  onVideoSelected(event: any, blockIndex: number) {
+    const file = event.target.files[0];
+    if (file) {
+      this.uploadVideoToMinio(file, blockIndex);
+    }
+    // Reset input
+    event.target.value = '';
+  }
+
+  private async uploadImageToMinio(file: File, blockIndex: number) {
+    try {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        this._snackBar.open('Chỉ được upload file hình ảnh', '', {
+          duration: 3000,
+          panelClass: ['snackbar-error'],
+        });
+        return;
+      }
+
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        this._snackBar.open('File quá lớn. Tối đa 10MB', '', {
+          duration: 3000,
+          panelClass: ['snackbar-error'],
+        });
+        return;
+      }
+
+      const uploadResult = await this.uploadFileToMinio(file, 'userguide/images', blockIndex);
+      
+      if (uploadResult) {
+        this.DetailUserguide.update((v: any) => {
+          v.UserguidBlocks[blockIndex].imageUrl = uploadResult.filePath;
+          v.UserguidBlocks[blockIndex].imageAlt = v.UserguidBlocks[blockIndex].imageAlt || file.name;
+          return v;
+        });
+
+        this._snackBar.open('Upload hình ảnh thành công', '', {
+          duration: 2000,
+          panelClass: ['snackbar-success'],
+        });
+      }
+    } catch (error: any) {
+      console.error('Error uploading image:', error);
+      this._snackBar.open('Lỗi upload hình ảnh: ' + (error.message || 'Unknown error'), '', {
+        duration: 5000,
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      delete this.uploadProgress[blockIndex];
+    }
+  }
+
+  private async uploadVideoToMinio(file: File, blockIndex: number) {
+    try {
+      // Validate file type
+      if (!file.type.startsWith('video/')) {
+        this._snackBar.open('Chỉ được upload file video', '', {
+          duration: 3000,
+          panelClass: ['snackbar-error'],
+        });
+        return;
+      }
+
+      // Validate file size (max 100MB for videos)
+      if (file.size > 100 * 1024 * 1024) {
+        this._snackBar.open('File quá lớn. Tối đa 100MB', '', {
+          duration: 3000,
+          panelClass: ['snackbar-error'],
+        });
+        return;
+      }
+
+      const uploadResult = await this.uploadFileToMinio(file, 'userguide/videos', blockIndex);
+      
+      if (uploadResult) {
+        this.DetailUserguide.update((v: any) => {
+          v.UserguidBlocks[blockIndex].videoUrl = uploadResult.filePath;
+          v.UserguidBlocks[blockIndex].videoType = file.type;
+          return v;
+        });
+
+        this._snackBar.open('Upload video thành công', '', {
+          duration: 2000,
+          panelClass: ['snackbar-success'],
+        });
+      }
+    } catch (error: any) {
+      console.error('Error uploading video:', error);
+      this._snackBar.open('Lỗi upload video: ' + (error.message || 'Unknown error'), '', {
+        duration: 5000,
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      delete this.uploadProgress[blockIndex];
+    }
+  }
+
+  private uploadFileToMinio(file: File, folder: string, blockIndex: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', folder);
+      formData.append('originalName', file.name);
+
+      // Initialize progress
+      this.uploadProgress[blockIndex] = 0;
+
+      this._http.post(this.minioApiUrl, formData, {
+        observe: 'events',
+        reportProgress: true
+      }).subscribe({
+        next: (event) => {
+          if (event.type === HttpEventType.UploadProgress) {
+            if (event.total) {
+              this.uploadProgress[blockIndex] = Math.round(100 * event.loaded / event.total);
+            }
+          } else if (event.type === HttpEventType.Response) {
+            resolve(event.body);
+          }
+        },
+        error: (error) => {
+          console.error('Upload error:', error);
+          reject(error);
+        }
+      });
+    });
+  }
+
+  removeMedia(blockIndex: number, mediaType: 'image' | 'video') {
+    this.DetailUserguide.update((v: any) => {
+      if (mediaType === 'image') {
+        v.UserguidBlocks[blockIndex].imageUrl = '';
+        v.UserguidBlocks[blockIndex].imageAlt = '';
+      } else if (mediaType === 'video') {
+        v.UserguidBlocks[blockIndex].videoUrl = '';
+        v.UserguidBlocks[blockIndex].videoType = '';
+      }
+      return v;
+    });
+
+    this._snackBar.open(`Đã xóa ${mediaType === 'image' ? 'hình ảnh' : 'video'}`, '', {
+      duration: 2000,
+      panelClass: ['snackbar-success'],
+    });
+  }
+
+  getMediaUrl(filePath: string): string {
+    if (!filePath) return '';
+    
+    // If it's already a full URL, return as is
+    if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+      return filePath;
+    }
+    
+    // Construct MinIO URL
+    return `${environment.APIURL}/files/${filePath}`;
   }
 }

@@ -439,6 +439,22 @@ model Chotkho {
   updatedAt   DateTime  @updatedAt
 }
 
+model FileManager {
+  id          String   @id @default(uuid())
+  codeId      String?  @unique
+  title       String?
+  url         String?
+  description String?
+  fileType    String?
+  fileSize    Int?
+  metaData    Json?
+  category    String?
+  group       String?
+  order       Int?     @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model ChatAIMessage {
   id        String  @id @default(uuid())
   userId    String
