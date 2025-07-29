@@ -85,13 +85,13 @@ services:
     container_name: minio_rausach
     command: server /data --console-address ":9091"
     ports:
-      - "9001:9001"
-      - "9091:9091"
+      - "9001:9000"
+      - "9091:9090"
     environment:
       MINIO_ROOT_USER: RC4hWSS4V6QIcfl
       MINIO_ROOT_PASSWORD: LEOZHZwjaasTTKk
     volumes:
-      - minio_data1:/data1
+      - minio_rausach:/data_rausach
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 5s
@@ -105,4 +105,6 @@ volumes:
   redis_data:
   uploads_data:
     driver: local
-  minio_data1:
+  minio_rausach:
+    name: rausach-data
+    external: true
