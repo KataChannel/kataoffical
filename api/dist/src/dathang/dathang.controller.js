@@ -27,6 +27,9 @@ let DathangController = class DathangController {
     import(data) {
         return this.dathangService.import(data);
     }
+    importcu(data) {
+        return this.dathangService.importcu(data);
+    }
     createbynhucau(data) {
         return this.dathangService.createbynhucau(data);
     }
@@ -57,6 +60,9 @@ let DathangController = class DathangController {
     reorder(body) {
         return this.dathangService.reorderDathangs(body.dathangIds);
     }
+    deletebulk(data) {
+        return this.dathangService.deletebulk(data);
+    }
 };
 exports.DathangController = DathangController;
 __decorate([
@@ -75,6 +81,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DathangController.prototype, "import", null);
+__decorate([
+    (0, common_1.Post)('importcu'),
+    (0, audit_decorator_1.Audit)({ entity: 'Import Dathang Cu', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], DathangController.prototype, "importcu", null);
 __decorate([
     (0, common_1.Post)('bynhucau'),
     (0, audit_decorator_1.Audit)({ entity: 'Create Dathang by nhu cau', action: client_1.AuditAction.CREATE, includeResponse: true }),
@@ -148,6 +162,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DathangController.prototype, "reorder", null);
+__decorate([
+    (0, common_1.Post)('deletebulk'),
+    (0, audit_decorator_1.Audit)({ entity: 'Delete Bulk Dathang', action: client_1.AuditAction.DELETE, includeResponse: true }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], DathangController.prototype, "deletebulk", null);
 exports.DathangController = DathangController = __decorate([
     (0, common_1.Controller)('dathang'),
     __metadata("design:paramtypes", [dathang_service_1.DathangService])

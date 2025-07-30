@@ -176,7 +176,7 @@ export class NhacungcapService {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this._StorageService.getItem('token')}`
         },
-        body: JSON.stringify({ ...param, page: this.page(), limit: pageSize }),
+        body: JSON.stringify({ ...param, page: this.page()}),
       };
       const response = await fetch(`${environment.APIURL}/nhacungcap/findby`, options);
       if (!response.ok) {

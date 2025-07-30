@@ -18,6 +18,10 @@
             <mat-icon>add_circle</mat-icon>
             <span class="whitespace-nowrap">Tạo Mới</span>
           </button>
+             <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
+                    <mat-icon>file_upload</mat-icon>
+                </button>
+          <input multiple class="hidden" (change)="ImporExcel($event)" type="file" #uploadfile>
           @if(EditList.length > 0){
           <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
             class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button>

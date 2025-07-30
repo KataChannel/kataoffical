@@ -1086,5 +1086,199 @@ async findByProductId(idSP: string) {
   }));
 }
 
+async importcu(data: any) {
+  try {
+    // Group data by supplier (mancc) similar to the existing import method
+    const acc: Record<string, any> = {};
+    const itemErrors: any[] = [];
+    
+    for (const curr of data) {
+      try {
+        // Validate required fields
+        if (!curr.mancc || !curr.masp) {
+          itemErrors.push({
+            item: curr,
+            error: 'Missing required fields: mancc or masp'
+          });
+          continue;
+        }
+
+        // Group by supplier
+        if (!acc[curr.mancc]) {
+          const nhacungcap = await this.prisma.nhacungcap.findFirst({ 
+            where: { mancc: curr.mancc } 
+          });
+          
+          if (!nhacungcap) {
+            itemErrors.push({
+              item: curr,
+              error: `Supplier with mancc ${curr.mancc} not found`
+            });
+            continue;
+          }
+
+          acc[curr.mancc] = {
+            title: `Import Cu ${moment().format('DD/MM/YYYY')}`,
+            ngaynhan: curr.ngaynhan || new Date(),
+            mancc: curr.mancc,
+            name: nhacungcap?.name,
+            mabanggia: curr.mabanggia,
+            sanpham: [],
+            nhacungcap: {
+              mancc: curr.mancc,
+            }
+          };
+        }
+
+        // Check if product exists
+        const sanphamRecord = await this.prisma.sanpham.findFirst({ 
+          where: { masp: curr.masp } 
+        });
+        
+        if (!sanphamRecord) {
+          itemErrors.push({
+            item: curr,
+            error: `Product with masp ${curr.masp} not found`
+          });
+          continue;
+        }
+
+        // Check if product already exists in the group
+        const existingSanphamIndex = acc[curr.mancc].sanpham.findIndex(
+          (item: any) => item.masp === curr.masp
+        );
+        
+        if (existingSanphamIndex !== -1) {
+          // Update existing product quantities
+          acc[curr.mancc].sanpham[existingSanphamIndex].sldat += Number(curr.sldat) || 0;
+          acc[curr.mancc].sanpham[existingSanphamIndex].slgiao += Number(curr.slgiao) || 0;
+          acc[curr.mancc].sanpham[existingSanphamIndex].slnhan += Number(curr.slnhan) || 0;
+          acc[curr.mancc].sanpham[existingSanphamIndex].ttdat += Number(curr.ttdat) || 0;
+          acc[curr.mancc].sanpham[existingSanphamIndex].ttgiao += Number(curr.ttgiao) || 0;
+          acc[curr.mancc].sanpham[existingSanphamIndex].ttnhan += Number(curr.ttnhan) || 0;
+        } else {
+          // Add new product to the group
+          acc[curr.mancc].sanpham.push({
+            masp: curr.masp,
+            id: sanphamRecord.id,
+            sldat: Number(curr.sldat) || 0,
+            slgiao: Number(curr.slgiao) || 0,
+            slnhan: Number(curr.slnhan) || 0,
+            ttdat: Number(curr.ttdat) || 0,
+            ttgiao: Number(curr.ttgiao) || 0,
+            ttnhan: Number(curr.ttnhan) || 0,
+            ghichu: curr.ghichu || '',
+          });
+        }
+
+      } catch (error: any) {
+        console.error('Error processing item:', error);
+        itemErrors.push({
+          item: curr,
+          error: error.message
+        });
+      }
+    }
+
+    // Create dathang records using the existing create method
+    const convertData: any = Object.values(acc);
+    let success = 0;
+    let fail = 0;
+    const createErrors: any[] = [];
+
+    for (const element of convertData) {
+      try {
+        await this.create(element);
+        success += 1;
+      } catch (error: any) {
+        fail += 1;
+        console.error('Error creating dathang:', error);
+        createErrors.push({
+          supplier: element.mancc,
+          error: error.message
+        });
+        
+        // Log to import data service for tracking
+        await this._ImportdataService.create({
+          caseDetail: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+            additionalInfo: 'Error during importcu process',
+            supplier: element.mancc
+          },
+          order: 1,
+          createdBy: 'system',
+          title: `Import Dathang Cu ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+          type: 'dathang',
+        });
+      }
+    }
+
+    return {
+      success,
+      fail,
+      totalProcessed: data.length,
+      itemErrors,
+      createErrors,
+      message: `Processed ${data.length} items. ${success} suppliers created successfully, ${fail} failed.`
+    };
+
+  } catch (error: any) {
+    console.error('Error in importcu:', error);
+    throw error;
+  }
+}
+
+async deletebulk(data: any) {
+  try {
+    const { ids } = data;
+    
+    if (!Array.isArray(ids) || ids.length === 0) {
+      throw new Error('Invalid or empty ids array');
+    }
+
+    const results: any[] = [];
+    const errors: any[] = [];
+
+    for (const id of ids) {
+      try {
+        await this.remove(id);
+        results.push({ id, status: 'deleted' });
+      } catch (error: any) {
+        console.error(`Error deleting dathang ${id}:`, error);
+        errors.push({ 
+          id, 
+          error: error.message,
+          status: 'failed'
+        });
+        
+        // Log error
+        await this._ImportdataService.create({
+          caseDetail: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+            additionalInfo: `Error deleting dathang with id: ${id}`,
+          },
+          order: 1,
+          createdBy: 'system',
+          title: `Delete Bulk Dathang Error ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+          type: 'dathang',
+        });
+      }
+    }
+
+    return {
+      total: ids.length,
+      success: results.length,
+      failed: errors.length,
+      results,
+      errors,
+      message: `Processed ${ids.length} deletions. ${results.length} successful, ${errors.length} failed.`
+    };
+
+  } catch (error: any) {
+    console.error('Error in deletebulk:', error);    throw error;
+  }
+}
 
 }

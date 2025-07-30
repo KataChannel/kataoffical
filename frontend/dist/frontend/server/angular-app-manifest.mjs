@@ -1050,8 +1050,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72816, hash: 'b92251d3c9715e0de0594dc7ca3aebc7b3ffa77027e095c0adefab311d948d18', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24107, hash: 'e75ea05c994a0c15b50d9d64f241ae209f7c1e54a33dda6bbfeaf5c58af8369c', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 72816, hash: '81d543e30097446bd3d6e114a56d2b8916ef8b61ac66ef87dd3d1c3c8e69ebcc', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24107, hash: '6cb436e3c4d9ba9aa05c5535c3994ffaf257371a813d4251eb37da3b660aaa35', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-RP43OREP.css': {size: 153434, hash: '94TqagaWSTY', text: () => import('./assets-chunks/styles-RP43OREP_css.mjs').then(m => m.default)}
   },
 };

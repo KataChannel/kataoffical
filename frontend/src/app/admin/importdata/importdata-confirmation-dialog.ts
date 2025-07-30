@@ -128,48 +128,4 @@ export class ImportConfirmationDialogComponent {
   }
 }
 
-// Service utility để kiểm tra trùng lặp
-export class ImportDataValidationService {
-  
-  static checkDuplicates(newData: any[], existingData: any[], keyField: string): any[] {
-    const existingKeys = new Set(existingData.map(item => item[keyField]));
-    return newData.filter(item => existingKeys.has(item[keyField]));
-  }
-
-  static prepareSanphamData(data: any[], existingData: any[], overwrite: boolean) {
-    if (overwrite) {
-      return data; // Trả về tất cả dữ liệu để ghi đè
-    } else {
-      // Chỉ trả về dữ liệu mới (không trùng lặp)
-      const existingCodes = new Set(existingData.map(item => item.masp));
-      return data.filter(item => !existingCodes.has(item.masp));
-    }
-  }
-
-  static prepareKhachhangData(data: any[], existingData: any[], overwrite: boolean) {
-    if (overwrite) {
-      return data;
-    } else {
-      const existingCodes = new Set(existingData.map(item => item.makh));
-      return data.filter(item => !existingCodes.has(item.makh));
-    }
-  }
-
-  static prepareNhacungcapData(data: any[], existingData: any[], overwrite: boolean) {
-    if (overwrite) {
-      return data;
-    } else {
-      const existingCodes = new Set(existingData.map(item => item.mancc));
-      return data.filter(item => !existingCodes.has(item.mancc));
-    }
-  }
-
-  static prepareBanggiaData(data: any[], existingData: any[], overwrite: boolean) {
-    if (overwrite) {
-      return data;
-    } else {
-      const existingCodes = new Set(existingData.map(item => item.mabanggia));
-      return data.filter(item => !existingCodes.has(item.mabanggia));
-    }
-  }
-}
+// Note: ImportDataValidationService is now centralized in ../../../shared/services/import-data-validation.service.ts

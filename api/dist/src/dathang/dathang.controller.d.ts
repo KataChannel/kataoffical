@@ -39,6 +39,14 @@ export declare class DathangController {
         success: number;
         fail: number;
     }>;
+    importcu(data: any): Promise<{
+        success: number;
+        fail: number;
+        totalProcessed: any;
+        itemErrors: any[];
+        createErrors: any[];
+        message: string;
+    }>;
     createbynhucau(data: any): Promise<{
         sanpham: {
             id: string;
@@ -509,4 +517,12 @@ export declare class DathangController {
     reorder(body: {
         dathangIds: string[];
     }): Promise<void>;
+    deletebulk(data: any): Promise<{
+        total: number;
+        success: number;
+        failed: number;
+        results: any[];
+        errors: any[];
+        message: string;
+    }>;
 }

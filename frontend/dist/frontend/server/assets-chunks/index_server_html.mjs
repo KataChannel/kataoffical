@@ -18,6 +18,6 @@ export default `<!doctype html>
 </script>
   <app-root></app-root>
   <noscript>Please enable JavaScript to continue using this application.</noscript>
-<link rel="modulepreload" href="chunk-KXP4UOCM.js"><link rel="modulepreload" href="chunk-FSCSPFQQ.js"><link rel="modulepreload" href="chunk-4ZVJO4SQ.js"><link rel="modulepreload" href="chunk-PNEVDSGX.js"><link rel="modulepreload" href="chunk-GO3VGP6S.js"><link rel="modulepreload" href="chunk-TV5MBD5E.js"><link rel="modulepreload" href="chunk-GPFJ4UO3.js"><link rel="modulepreload" href="chunk-WXPHRDED.js"><link rel="modulepreload" href="chunk-LGSPPKE4.js"><link rel="modulepreload" href="chunk-2PPFUFFT.js"><script src="polyfills-FFHMD2TL.js" type="module"></script><script src="main-3ZNZBVAE.js" type="module"></script></body>
+<link rel="modulepreload" href="chunk-KXP4UOCM.js"><link rel="modulepreload" href="chunk-FSCSPFQQ.js"><link rel="modulepreload" href="chunk-4ZVJO4SQ.js"><link rel="modulepreload" href="chunk-PNEVDSGX.js"><link rel="modulepreload" href="chunk-GO3VGP6S.js"><link rel="modulepreload" href="chunk-TV5MBD5E.js"><link rel="modulepreload" href="chunk-GPFJ4UO3.js"><link rel="modulepreload" href="chunk-WXPHRDED.js"><link rel="modulepreload" href="chunk-LGSPPKE4.js"><link rel="modulepreload" href="chunk-2PPFUFFT.js"><script src="polyfills-FFHMD2TL.js" type="module"></script><script src="main-PSS2QSJW.js" type="module"></script></body>
 </html>
 `;

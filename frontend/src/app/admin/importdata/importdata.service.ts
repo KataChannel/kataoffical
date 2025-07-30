@@ -27,32 +27,10 @@ export class ImportdataService {
   page = signal<number>(1);
   pageCount = signal<number>(1);
   total = signal<number>(0);
-  pageSize = signal<number>(10); // Mặc định 10 mục mỗi trang
+  pageSize = signal<number>(9999); // Mặc định 10 mục mỗi trang
   importdataId = signal<string | null>(null);
 
   // Khởi tạo IndexedDB
-  private async initDB() {
-    return await openDB('ImportdataDB', 4, {
-      upgrade(db, oldVersion) {
-        if (oldVersion < 1) {
-          db.createObjectStore('importdatas', { keyPath: 'id' });
-        }
-        if (oldVersion < 3) {
-          if (db.objectStoreNames.contains('importdatas')) {
-            db.deleteObjectStore('importdatas');
-          }
-          if (db.objectStoreNames.contains('pagination')) {
-            db.deleteObjectStore('pagination');
-          }
-          db.createObjectStore('importdatas', { keyPath: 'id' });
-        }
-        if (oldVersion < 4) {
-          // Không cần xóa store, vì cấu trúc vẫn tương thích
-          // Chỉ cần đảm bảo pagination có thêm pageSize
-        }
-      },
-    });
-  }
 
   setImportdataId(id: string | null) {
     this.importdataId.set(id);
@@ -83,7 +61,6 @@ export class ImportdataService {
 
   async getAllImportdata(pageSize: number = this.pageSize(), forceRefresh: boolean = false) {
     this.pageSize.set(pageSize);
-    const updatedAtCache = this._StorageService.getItem('importdatas_updatedAt') || '0';    
   try {
       const options = {
         method: 'GET',
@@ -102,9 +79,7 @@ export class ImportdataService {
       if (!response.ok) {
         this.handleError(response.status);
       }
-
       const data = await response.json();
-
       this.ListImportdata.set(data.data);
       this.page.set(data.page || 1);
       this.pageCount.set(data.pageCount || 1);

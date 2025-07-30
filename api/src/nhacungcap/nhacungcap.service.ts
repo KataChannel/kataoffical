@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
@@ -9,12 +14,16 @@ export class NhacungcapService {
     private readonly prisma: PrismaService,
     private _ImportdataService: ImportdataService,
   ) {}
-  async getLastUpdatedNhacungcap(): Promise<{ updatedAt: number }> { 
+  async getLastUpdatedNhacungcap(): Promise<{ updatedAt: number }> {
     try {
       const lastUpdated = await this.prisma.nhacungcap.aggregate({
         _max: { updatedAt: true },
       });
-      return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
+      return {
+        updatedAt: lastUpdated._max.updatedAt
+          ? new Date(lastUpdated._max.updatedAt).getTime()
+          : 0,
+      };
     } catch (error) {
       throw error;
     }
@@ -55,7 +64,9 @@ export class NhacungcapService {
       }
 
       if (!isUnique) {
-        throw new InternalServerErrorException('Không thể tạo mã nhà cung cấp duy nhất');
+        throw new InternalServerErrorException(
+          'Không thể tạo mã nhà cung cấp duy nhất',
+        );
       }
 
       return mancc;
@@ -73,7 +84,7 @@ export class NhacungcapService {
         });
         if (existing) {
           console.log(`Mã nhà cung cấp ${data.mancc} đã tồn tại`);
-          
+
           throw new BadRequestException('Mã nhà cung cấp đã tồn tại');
         }
       }
@@ -81,8 +92,8 @@ export class NhacungcapService {
         data.mancc && data.mancc.trim() !== ''
           ? data.mancc
           : await this.generateMancc();
-  console.log(`Generated mancc: ${mancc}`);
-  
+      console.log(`Generated mancc: ${mancc}`);
+
       const { Sanpham, ...rest } = data;
 
       const result = await this.prisma.nhacungcap.create({
@@ -97,9 +108,9 @@ export class NhacungcapService {
       this.getLastUpdatedNhacungcap();
       return result;
     } catch (error) {
-      if (error instanceof BadRequestException) throw error; 
+      if (error instanceof BadRequestException) throw error;
       console.log('Error creating nhacungcap:', error);
-      
+
       throw new InternalServerErrorException('Lỗi khi tạo nhà cung cấp');
     }
   }
@@ -126,97 +137,109 @@ export class NhacungcapService {
           }
         }
       }
-         this.getLastUpdatedNhacungcap();
+      this.getLastUpdatedNhacungcap();
       return { message: 'Import completed' };
     } catch (error) {
       await this._ImportdataService.create({
-          caseDetail: {
-            errorMessage: error.message,
-            errorStack: error.stack,
-            additionalInfo: 'Error during import process',
-          },
-          order: 1, // cập nhật nếu cần theo thứ tự của bạn
-          createdBy: 'system', // thay bằng ID người dùng thực nếu có
-          title: `Import Nhà Cung Cấp ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
-          type: 'nhacungcap',
-        });
-        
+        caseDetail: {
+          errorMessage: error.message,
+          errorStack: error.stack,
+          additionalInfo: 'Error during import process',
+        },
+        order: 1, // cập nhật nếu cần theo thứ tự của bạn
+        createdBy: 'system', // thay bằng ID người dùng thực nếu có
+        title: `Import Nhà Cung Cấp ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+        type: 'nhacungcap',
+      });
+
       throw new InternalServerErrorException('Lỗi khi nhập khẩu nhà cung cấp');
     }
   }
 
-
-async findAll(query: any) {
-  console.log('findAllNhacungcap query:', query);
-  try {
-    const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
-    const numericPage = Number(page);
-    const numericPageSize = Number(pageSize);
-    const skip = (numericPage - 1) * numericPageSize;
-    const take = numericPageSize;
-    const where: any = {};
-    if (search) {
-      where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } }
-      ];
-    }
-    if (category) {
-      where.category = { equals: category, mode: 'insensitive' };
-    }
-    if (priceMin || priceMax) {
-      where.price = {};
-      if (priceMin) {
-        where.price.gte = priceMin;
+  async findAll(query: any) {
+    console.log('findAllNhacungcap query:', query);
+    try {
+      const {
+        page,
+        pageSize,
+        sortBy,
+        sortOrder,
+        search,
+        priceMin,
+        priceMax,
+        category,
+      } = query;
+      const numericPage = Number(page);
+      const numericPageSize = Number(pageSize);
+      const skip = (numericPage - 1) * numericPageSize;
+      const take = numericPageSize;
+      const where: any = {};
+      if (search) {
+        where.OR = [
+          { title: { contains: search, mode: 'insensitive' } },
+          { description: { contains: search, mode: 'insensitive' } },
+        ];
       }
-      if (priceMax) {
-        where.price.lte = priceMax;
+      if (category) {
+        where.category = { equals: category, mode: 'insensitive' };
       }
+      if (priceMin || priceMax) {
+        where.price = {};
+        if (priceMin) {
+          where.price.gte = priceMin;
+        }
+        if (priceMax) {
+          where.price.lte = priceMax;
+        }
+      }
+      const orderBy: any = {};
+      if (sortBy && sortOrder) {
+        orderBy[sortBy] = sortOrder;
+      } else {
+        orderBy.createdAt = 'desc';
+      }
+      const [nhacungcaps, total] = await this.prisma.$transaction([
+        this.prisma.nhacungcap.findMany({
+          where,
+          skip,
+          take,
+          orderBy,
+        }),
+        this.prisma.nhacungcap.count({ where }),
+      ]);
+      return {
+        data: nhacungcaps,
+        total: Number(total),
+        page: numericPage,
+        pageSize: numericPageSize,
+        totalPages: Math.ceil(Number(total) / numericPageSize),
+      };
+    } catch (error) {
+      console.log('Error in findAllNhacungcap:', error);
+      throw error;
     }
-    const orderBy: any = {};
-    if (sortBy && sortOrder) {
-      orderBy[sortBy] = sortOrder;
-    } else {
-      orderBy.createdAt = 'desc'; 
-    }
-    const [nhacungcaps, total] = await this.prisma.$transaction([
-      this.prisma.nhacungcap.findMany({
-        where,
-        skip,
-        take,
-        orderBy,
-      }),
-      this.prisma.nhacungcap.count({ where }),
-    ]);
-    return {
-      data: nhacungcaps,
-      total: Number(total),
-      page: numericPage,
-      pageSize: numericPageSize,
-      totalPages: Math.ceil(Number(total) / numericPageSize),
-    };
-  } catch (error) {
-    console.log('Error in findAllNhacungcap:', error);
-    throw error;
   }
-}
   async findBy(param: any) {
     try {
-      const { isOne, page = 1, limit = 20, ...where } = param;
-  const whereClause: any = {};
-  if (where.id || where.subtitle || where.name) {
-    whereClause.OR = [];
-    
-    if (where.id) {
-      whereClause.OR.push({ id: where.id });
-    }
-    if (where.subtitle) {
-      whereClause.OR.push({ subtitle: { contains: where.subtitle, mode: 'insensitive' } });
-    }
-    if (where.name) {
-      whereClause.OR.push({ name: { contains: where.name, mode: 'insensitive' } });
-    }
-  }
+      const { isOne, page = 1, pageSize = 20, ...where } = param;
+      const whereClause: any = {};
+      if (where.id || where.subtitle || where.name) {
+        whereClause.OR = [];
+
+        if (where.id) {
+          whereClause.OR.push({ id: where.id });
+        }
+        if (where.subtitle) {
+          whereClause.OR.push({
+            subtitle: { contains: where.subtitle, mode: 'insensitive' },
+          });
+        }
+        if (where.name) {
+          whereClause.OR.push({
+            name: { contains: where.name, mode: 'insensitive' },
+          });
+        }
+      }
       if (isOne) {
         const result = await this.prisma.nhacungcap.findFirst({
           where,
@@ -224,12 +247,12 @@ async findAll(query: any) {
         });
         return result;
       }
-      const skip = (page - 1) * limit;
+      const skip = (page - 1) * pageSize;
       const [data, total] = await Promise.all([
         this.prisma.nhacungcap.findMany({
           where,
           skip,
-          take: limit,
+          take: pageSize,
           orderBy: { createdAt: 'desc' },
         }),
         this.prisma.nhacungcap.count({ where }),
@@ -238,7 +261,7 @@ async findAll(query: any) {
         data,
         total,
         page,
-        pageCount: Math.ceil(total / limit)
+        pageCount: Math.ceil(total / pageSize),
       };
     } catch (error) {
       throw error;
@@ -272,7 +295,7 @@ async findAll(query: any) {
           },
         },
       });
-         this.getLastUpdatedNhacungcap();
+      this.getLastUpdatedNhacungcap();
       return updatedNhacc;
     } catch (error) {
       throw new InternalServerErrorException('Lỗi khi cập nhật nhà cung cấp');
@@ -298,9 +321,9 @@ async findAll(query: any) {
         where: {
           Sanpham: {
             some: {
-              id: { in: productIds }
-            }
-          }
+              id: { in: productIds },
+            },
+          },
         },
         include: {
           Sanpham: true,
@@ -308,7 +331,9 @@ async findAll(query: any) {
       });
       return suppliers;
     } catch (error) {
-      throw new InternalServerErrorException('Lỗi khi tìm nhà cung cấp theo sản phẩm');
+      throw new InternalServerErrorException(
+        'Lỗi khi tìm nhà cung cấp theo sản phẩm',
+      );
     }
   }
 }

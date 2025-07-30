@@ -17,6 +17,11 @@ export class DathangController {
   import(@Body() data: any) {
     return this.dathangService.import(data);
   }
+  @Post('importcu')
+  @Audit({entity: 'Import Dathang Cu', action: AuditAction.CREATE, includeResponse: true})
+  importcu(@Body() data: any) {
+    return this.dathangService.importcu(data);
+  }
   @Post('bynhucau')
   @Audit({entity: 'Create Dathang by nhu cau', action: AuditAction.CREATE, includeResponse: true})
   createbynhucau(@Body() data: any) {
@@ -60,5 +65,10 @@ export class DathangController {
   @Post('reorder')
   reorder(@Body() body: { dathangIds: string[] }) {
     return this.dathangService.reorderDathangs(body.dathangIds);
+  }
+  @Post('deletebulk')
+  @Audit({entity: 'Delete Bulk Dathang', action: AuditAction.DELETE, includeResponse: true})
+  deletebulk(@Body() data: any) {
+    return this.dathangService.deletebulk(data);
   }
 }

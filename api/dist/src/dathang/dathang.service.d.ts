@@ -512,4 +512,20 @@ export declare class DathangService {
         ngaynhan: Date | null;
         nhacungcapId: string;
     }[]>;
+    importcu(data: any): Promise<{
+        success: number;
+        fail: number;
+        totalProcessed: any;
+        itemErrors: any[];
+        createErrors: any[];
+        message: string;
+    }>;
+    deletebulk(data: any): Promise<{
+        total: number;
+        success: number;
+        failed: number;
+        results: any[];
+        errors: any[];
+        message: string;
+    }>;
 }

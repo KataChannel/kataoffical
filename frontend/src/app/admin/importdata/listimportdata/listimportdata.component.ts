@@ -68,71 +68,7 @@ import {
   MatDatepickerActions
 } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-
-// Service utility để kiểm tra trùng lặp
-class ImportDataValidationService {
-  static checkDuplicates(
-    newData: any[],
-    existingData: any[],
-    keyField: string
-  ): any[] {
-    const existingKeys = new Set(existingData.map((item) => item[keyField]));
-    return newData.filter((item) => existingKeys.has(item[keyField]));
-  }
-
-  static prepareSanphamData(
-    data: any[],
-    existingData: any[],
-    overwrite: boolean
-  ) {
-    if (overwrite) {
-      return data;
-    } else {
-      const existingCodes = new Set(existingData.map((item) => item.masp));
-      return data.filter((item) => !existingCodes.has(item.masp));
-    }
-  }
-
-  static prepareKhachhangData(
-    data: any[],
-    existingData: any[],
-    overwrite: boolean
-  ) {
-    if (overwrite) {
-      return data;
-    } else {
-      const existingCodes = new Set(existingData.map((item) => item.makh));
-      return data.filter((item) => !existingCodes.has(item.makh));
-    }
-  }
-
-  static prepareNhacungcapData(
-    data: any[],
-    existingData: any[],
-    overwrite: boolean
-  ) {
-    if (overwrite) {
-      return data;
-    } else {
-      const existingCodes = new Set(existingData.map((item) => item.mancc));
-      return data.filter((item) => !existingCodes.has(item.mancc));
-    }
-  }
-
-  static prepareBanggiaData(
-    data: any[],
-    existingData: any[],
-    overwrite: boolean
-  ) {
-    if (overwrite) {
-      return data;
-    } else {
-      const existingCodes = new Set(existingData.map((item) => item.mabanggia));
-      return data.filter((item) => !existingCodes.has(item.mabanggia));
-    }
-  }
-}
-
+import { ImportDataValidationService } from '../../../shared/services/import-data-validation.service';
 @Component({
   selector: 'app-listimportdata',
   standalone: true,
@@ -195,9 +131,6 @@ export class ListImportdataComponent implements OnInit {
   private _UserService: UserService = inject(UserService);
   private _KhoService: KhoService = inject(KhoService);
   private _ImportdataService: ImportdataService = inject(ImportdataService);
-  private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
-  private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
-  private _router: Router = inject(Router);
   private _dialog: MatDialog = inject(MatDialog);
   private _snackBar: MatSnackBar = inject(MatSnackBar);
   
@@ -237,6 +170,7 @@ export class ListImportdataComponent implements OnInit {
       status: true,
     },
     { id: 10, title: 'Xuất Nhập Tồn', value: 'xuatnhapton', status: true },
+    { id: 11, title: 'Kho', value: 'kho', status: true },
   ]);
   ListEdit = signal<any[]>([]);
   ListImportdata: any = this._ImportdataService.ListImportdata;
@@ -248,7 +182,8 @@ export class ListImportdataComponent implements OnInit {
   rawListDH: any[] = [];
   rawListDathang: any[] = [];
   rawListTonkho: any[] = [];
-  
+  rawListKho: any[] = [];
+
   constructor() {
     // Initialize date range (current date as default)
     const today = new Date();
@@ -303,15 +238,15 @@ export class ListImportdataComponent implements OnInit {
       };
       
       this.loadingMessage.set('Đang tải danh sách sản phẩm...');
-      await this._SanphamService.getAllSanpham({ pageSize: 9999 }, true);
+      await this._SanphamService.getSanphamBy({pageSize: 99999});
       this.rawListSP = this._SanphamService.ListSanpham();
       
       this.loadingMessage.set('Đang tải danh sách khách hàng...');
-      await this._KhachhangService.getAllKhachhang({ pageSize: 9999 }, true);
+      await this._KhachhangService.getKhachhangBy({pageSize: 99999});
       this.rawListKH = this._KhachhangService.ListKhachhang();
       
       this.loadingMessage.set('Đang tải danh sách nhà cung cấp...');
-      await this._NhacungcapService.getAllNhacungcap();
+      await this._NhacungcapService.getNhacungcapBy({pageSize: 99999});
       this.rawListNCC = this._NhacungcapService.ListNhacungcap();
       
       this.loadingMessage.set('Đang tải bảng giá...');
@@ -319,17 +254,21 @@ export class ListImportdataComponent implements OnInit {
       this.rawListBG = this._BanggiaService.ListBanggia();
       
       this.loadingMessage.set('Đang tải đơn hàng...');
-      await this._DonhangService.searchDonhang({batdau: this.batdau, ketthuc: this.ketthuc});
+      await this._DonhangService.searchDonhang(dateParams);
       this.rawListDH = this._DonhangService.ListDonhang();
       
       this.loadingMessage.set('Đang tải đặt hàng...');
-      await this._DathangService.getAllDathang();
+      await this._DathangService.searchDathang(dateParams);
       this.rawListDathang = this._DathangService.ListDathang();
       
       this.loadingMessage.set('Đang tải tồn kho...');
       await this._KhoService.getTonKho('1', '1000').then((res: any) => {
         this.rawListTonkho = res.data;
       });
+      
+      this.loadingMessage.set('Đang tải danh sách kho...');
+      await this._KhoService.getAllKho();
+      this.rawListKho = this._KhoService.ListKho();
       
     } catch (error) {
       console.error('Error loading data with date range:', error);
@@ -411,22 +350,7 @@ export class ListImportdataComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    await this._ImportdataService.getAllImportdata(100, true);
-    await this._SanphamService.getAllSanpham();
-    this.rawListSP = this._SanphamService.ListSanpham();
-    await this._KhachhangService.getAllKhachhang();
-    this.rawListKH = this._KhachhangService.ListKhachhang();
-    await this._NhacungcapService.getAllNhacungcap();
-    this.rawListNCC = this._NhacungcapService.ListNhacungcap();
-    await this._BanggiaService.getAllBanggia();
-    this.rawListBG = this._BanggiaService.ListBanggia();
-    await this._DonhangService.getAllDonhang();
-    this.rawListDH = this._DonhangService.ListDonhang();
-    await this._DathangService.getAllDathang();
-    this.rawListDathang = this._DathangService.ListDathang();
-    await this._KhoService.getTonKho('1', '1000').then((res: any) => {
-      this.rawListTonkho = res.data;
-    });
+      this.loadDataWithDateRange();
   }
 
   applyFilter(event: Event) {}
@@ -466,11 +390,11 @@ export class ListImportdataComponent implements OnInit {
     this.loadingMessage.set('Đang chuẩn bị dữ liệu xuất theo khoảng thời gian...');
     
     try {
-    // Get filtered data based on date range
-    const filteredData = this.getFilteredExportData();
-    
-    const ListSP =
-      Array.isArray(filteredData.ListSP) && filteredData.ListSP.length
+      // Get filtered data based on date range
+      const filteredData = this.getFilteredExportData();
+      
+      const ListSP =
+        Array.isArray(filteredData.ListSP) && filteredData.ListSP.length
         ? filteredData.ListSP.map((item: any) => ({
             masp: item.masp,
             subtitle: item.subtitle,
@@ -688,6 +612,25 @@ export class ListImportdataComponent implements OnInit {
       slton: v.slton,
     }));
 
+    const ListKho =
+      Array.isArray(filteredData.ListKho) && filteredData.ListKho.length
+        ? filteredData.ListKho.map((item: any) => ({
+            makho: item.makho || '',
+            tenkho: item.tenkho || '',
+            diachi: item.diachi || '',
+            ghichu: item.ghichu || '',
+            status: item.status || 'active',
+          }))
+        : [
+            {
+              makho: '',
+              tenkho: '',
+              diachi: '',
+              ghichu: '',
+              status: 'active',
+            },
+          ];
+
     const Exportdata: any = {};
     if (this.ListEdit().some((item: any) => item.value === 'sanpham')) {
       Exportdata['sanpham'] = { data: ListSP };
@@ -722,6 +665,9 @@ export class ListImportdataComponent implements OnInit {
     }
     if (this.ListEdit().some((item: any) => item.value === 'xuatnhapton')) {
       Exportdata['xuatnhapton'] = { data: ListTonkho };
+    }
+    if (this.ListEdit().some((item: any) => item.value === 'kho')) {
+      Exportdata['kho'] = { data: ListKho };
     }
     if (Object.keys(Exportdata).length === 0) {
       this._snackBar.open('Không có dữ liệu để xuất', '', {
@@ -932,40 +878,34 @@ export class ListImportdataComponent implements OnInit {
       data.sanpham.length > 0 &&
       this.ListEdit().some((item: any) => item.value === 'sanpham')
     ) {
-      const ListSP = (data.sanpham || [])
-        .map((v: any) => ({
-          masp: v.masp,
-          subtitle: removeVietnameseAccents((v.title || '') + (v.title2 || '')),
-          title: v.title,
-          title2: v.title2,
-          giaban: Number(v.giaban) || Number(v.giagoc) || 0,
-          giagoc: Number(v.giagoc) || 0,
-          vat: Number(v.vat) || 0,
-          dvt: v.dvt,
-          haohut: Number(v.haohut) || 0,
-          ghichu: v.ghichu,
-        }))
-        .filter(
-          (v: any) => v.masp !== undefined && v.masp !== null && v.masp !== ''
-        );
+      // Transform and validate data
+      const transformedData = ImportDataValidationService.transformDataForImport(
+        data.sanpham,
+        'sanpham'
+      );
+      
+      const validData = ImportDataValidationService.filterValidData(
+        transformedData,
+        ImportDataValidationService.getRequiredFields('sanpham')
+      );
 
       // Kiểm tra trùng lặp
       const duplicates = ImportDataValidationService.checkDuplicates(
-        ListSP,
+        validData,
         this.rawListSP,
-        'masp'
+        ImportDataValidationService.getUniqueField('sanpham')
       );
       const result = await this.showImportConfirmDialog(
         'Sản Phẩm',
         this.rawListSP.length,
-        ListSP.length,
+        validData.length,
         duplicates
       );
 
       if (!result.confirmed) return;
 
       const finalData = ImportDataValidationService.prepareSanphamData(
-        ListSP,
+        validData,
         this.rawListSP,
         result.overwrite
       );
@@ -1022,49 +962,34 @@ export class ListImportdataComponent implements OnInit {
       data.khachhang.length > 0 &&
       this.ListEdit().some((item: any) => item.value === 'khachhang')
     ) {
-      const ListKH = (data.khachhang || [])
-        .map((v: any) => ({
-          name: v.name.toString(),
-          makh: v.makh,
-          tenfile: removeVietnameseAccents(
-            v.tenfile.toString() || v.name.toString() || ''
-          ),
-          subtitle: removeVietnameseAccents(
-            (v.name.toString() || '') + (v.namenn.toString() || '')
-          ),
-          namenn: v.namenn.toString(),
-          diachi: v.diachi,
-          quan: v.quan,
-          email: v.email,
-          sdt: v.sdt.toString(),
-          mst: v.mst.toString(),
-          gionhanhang: v.gionhanhang.toString(),
-          loaikh: v.loaikh,
-          ghichu: v.ghichu,
-          hiengia: v.hiengia,
-          mabanggia: v.mabanggia,
-        }))
-        .filter(
-          (v: any) => v.makh !== undefined && v.makh !== null && v.makh !== ''
-        );
+      // Transform and validate data
+      const transformedData = ImportDataValidationService.transformDataForImport(
+        data.khachhang,
+        'khachhang'
+      );
+      
+      const validData = ImportDataValidationService.filterValidData(
+        transformedData,
+        ImportDataValidationService.getRequiredFields('khachhang')
+      );
 
       // Kiểm tra trùng lặp
       const duplicates = ImportDataValidationService.checkDuplicates(
-        ListKH,
+        validData,
         this.rawListKH,
-        'makh'
+        ImportDataValidationService.getUniqueField('khachhang')
       );
       const result = await this.showImportConfirmDialog(
         'Khách Hàng',
         this.rawListKH.length,
-        ListKH.length,
+        validData.length,
         duplicates
       );
 
       if (!result.confirmed) return;
 
       const finalData = ImportDataValidationService.prepareKhachhangData(
-        ListKH,
+        validData,
         this.rawListKH,
         result.overwrite
       );
@@ -1284,6 +1209,106 @@ export class ListImportdataComponent implements OnInit {
       } catch (error) {
         importSnackbar.dismiss();
         this._snackBar.open('Có lỗi xảy ra khi import bảng giá', '', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
+    }
+
+    // Import Kho với xác nhận
+    if (
+      data.kho &&
+      data.kho.length > 0 &&
+      this.ListEdit().some((item: any) => item.value === 'kho')
+    ) {
+      const ListKho = (data.kho || [])
+        .map((v: any) => ({
+          makho: v.makho?.toString().trim() || '',
+          tenkho: v.tenkho?.toString().trim() || '',
+          diachi: v.diachi?.toString().trim() || '',
+          ghichu: v.ghichu?.toString().trim() || '',
+          status: v.status?.toString().trim() || 'active',
+        }))
+        .filter(
+          (v: any) => v.makho !== undefined && v.makho !== null && v.makho !== ''
+        );
+
+      // Kiểm tra trùng lặp
+      const duplicates = ImportDataValidationService.checkDuplicates(
+        ListKho,
+        this.rawListKho,
+        'makho'
+      );
+      const result = await this.showImportConfirmDialog(
+        'Kho',
+        this.rawListKho.length,
+        ListKho.length,
+        duplicates
+      );
+
+      if (!result.confirmed) return;
+
+      const finalData = ImportDataValidationService.prepareKhoData(
+        ListKho,
+        this.rawListKho,
+        result.overwrite
+      );
+      if (finalData.length === 0) {
+        this._snackBar.open('Không có dữ liệu mới để import', '', {
+          duration: 1000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning'],
+        });
+        return;
+      }
+
+      const importSnackbar = this._snackBar.open(
+        `Đang import ${finalData.length} kho...`,
+        '',
+        {
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning'],
+        }
+      );
+
+      try {
+        // Process warehouse data using individual create/update operations
+        const createUpdatePromises = finalData.map(async (v: any) => {
+          const existingItem = this.rawListKho.find((v1: any) => v1.makho === v.makho);
+          if (existingItem) {
+            const updatedItem = { ...existingItem, ...v };
+            await this._KhoService.updateKho(updatedItem);
+          } else {
+            await this._KhoService.CreateKho(v);
+          }
+        });
+        
+        await Promise.all(createUpdatePromises);
+        
+        // Refresh the warehouse list
+        await this._KhoService.getAllKho();
+        this.rawListKho = this._KhoService.ListKho();
+        
+        importSnackbar.dismiss();
+        this._snackBar.open(
+          `Import thành công ${finalData.length} kho${
+            duplicates.length > 0 ? ` (${duplicates.length} trùng lặp)` : ''
+          }!`,
+          '',
+          {
+            duration: 2000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-success'],
+          }
+        );
+      } catch (error) {
+        importSnackbar.dismiss();
+        this._snackBar.open('Có lỗi xảy ra khi import kho', '', {
           duration: 2000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
@@ -1633,13 +1658,14 @@ export class ListImportdataComponent implements OnInit {
     };
     
     return {
-      ListSP: this.rawListSP, // Products usually don't have date filtering
-      ListKH: this.rawListKH, // Customers usually don't have date filtering  
-      ListNCC: this.rawListNCC, // Suppliers usually don't have date filtering
-      ListBG: this.rawListBG, // Price lists usually don't have date filtering
-      ListDH: this.filterDataByDateRange(this.rawListDH, 'ngaygiao'), // Orders filtered by delivery date
-      ListDathang: this.filterDataByDateRange(this.rawListDathang, 'ngaynhan'), // Purchase orders filtered by receive date
-      ListTonkho: this.filterDataByDateRange(this.rawListTonkho, 'createdAt'), // Inventory filtered by creation date
+      ListSP: this.rawListSP,
+      ListKH: this.rawListKH,
+      ListNCC: this.rawListNCC,
+      ListBG: this.rawListBG,
+      ListDH: this.filterDataByDateRange(this.rawListDH, 'ngaygiao'),
+      ListDathang: this.filterDataByDateRange(this.rawListDathang, 'ngaynhan'),
+      ListTonkho: this.filterDataByDateRange(this.rawListTonkho, 'createdAt'),
+      ListKho: this.filterDataByDateRange(this.rawListKho, 'createdAt'),
       dateInfo
     };
   }

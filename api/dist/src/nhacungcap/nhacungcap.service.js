@@ -24,7 +24,11 @@ let NhacungcapService = class NhacungcapService {
             const lastUpdated = await this.prisma.nhacungcap.aggregate({
                 _max: { updatedAt: true },
             });
-            return { updatedAt: lastUpdated._max.updatedAt ? new Date(lastUpdated._max.updatedAt).getTime() : 0 };
+            return {
+                updatedAt: lastUpdated._max.updatedAt
+                    ? new Date(lastUpdated._max.updatedAt).getTime()
+                    : 0,
+            };
         }
         catch (error) {
             throw error;
@@ -143,7 +147,7 @@ let NhacungcapService = class NhacungcapService {
     async findAll(query) {
         console.log('findAllNhacungcap query:', query);
         try {
-            const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category } = query;
+            const { page, pageSize, sortBy, sortOrder, search, priceMin, priceMax, category, } = query;
             const numericPage = Number(page);
             const numericPageSize = Number(pageSize);
             const skip = (numericPage - 1) * numericPageSize;
@@ -152,7 +156,7 @@ let NhacungcapService = class NhacungcapService {
             if (search) {
                 where.OR = [
                     { title: { contains: search, mode: 'insensitive' } },
-                    { description: { contains: search, mode: 'insensitive' } }
+                    { description: { contains: search, mode: 'insensitive' } },
                 ];
             }
             if (category) {
@@ -198,7 +202,7 @@ let NhacungcapService = class NhacungcapService {
     }
     async findBy(param) {
         try {
-            const { isOne, page = 1, limit = 20, ...where } = param;
+            const { isOne, page = 1, pageSize = 20, ...where } = param;
             const whereClause = {};
             if (where.id || where.subtitle || where.name) {
                 whereClause.OR = [];
@@ -206,10 +210,14 @@ let NhacungcapService = class NhacungcapService {
                     whereClause.OR.push({ id: where.id });
                 }
                 if (where.subtitle) {
-                    whereClause.OR.push({ subtitle: { contains: where.subtitle, mode: 'insensitive' } });
+                    whereClause.OR.push({
+                        subtitle: { contains: where.subtitle, mode: 'insensitive' },
+                    });
                 }
                 if (where.name) {
-                    whereClause.OR.push({ name: { contains: where.name, mode: 'insensitive' } });
+                    whereClause.OR.push({
+                        name: { contains: where.name, mode: 'insensitive' },
+                    });
                 }
             }
             if (isOne) {
@@ -219,12 +227,12 @@ let NhacungcapService = class NhacungcapService {
                 });
                 return result;
             }
-            const skip = (page - 1) * limit;
+            const skip = (page - 1) * pageSize;
             const [data, total] = await Promise.all([
                 this.prisma.nhacungcap.findMany({
                     where,
                     skip,
-                    take: limit,
+                    take: pageSize,
                     orderBy: { createdAt: 'desc' },
                 }),
                 this.prisma.nhacungcap.count({ where }),
@@ -233,7 +241,7 @@ let NhacungcapService = class NhacungcapService {
                 data,
                 total,
                 page,
-                pageCount: Math.ceil(total / limit)
+                pageCount: Math.ceil(total / pageSize),
             };
         }
         catch (error) {
@@ -296,9 +304,9 @@ let NhacungcapService = class NhacungcapService {
                 where: {
                     Sanpham: {
                         some: {
-                            id: { in: productIds }
-                        }
-                    }
+                            id: { in: productIds },
+                        },
+                    },
                 },
                 include: {
                     Sanpham: true,

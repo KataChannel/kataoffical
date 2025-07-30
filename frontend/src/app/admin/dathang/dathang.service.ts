@@ -318,4 +318,72 @@ export class DathangService {
         break;
     }
   }
+
+  async ImportDathangCu(listImportData: any) {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+        body: JSON.stringify(listImportData),
+      };
+      const response = await fetch(`${environment.APIURL}/dathang/importcu`, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      this.getAllDathang();
+      return data;
+    } catch (error) {
+      console.error('Error importing dathang:', error);
+      throw error;
+    }
+  }
+
+  async DeleteBulkDathang(ids: string[]) {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+        body: JSON.stringify({ ids }),
+      };
+      const response = await fetch(`${environment.APIURL}/dathang/deletebulk`, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      this.getAllDathang();
+      return data;
+    } catch (error) {
+      console.error('Error deleting bulk dathang:', error);
+      throw error;
+    }
+  }
+
+  async getNhacungcapBy(params: any) {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+        },
+        body: JSON.stringify(params),
+      };
+      const response = await fetch(`${environment.APIURL}/nhacungcap/findby`, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error finding nhacungcap:', error);
+      throw error;
+    }
+  }
 }
