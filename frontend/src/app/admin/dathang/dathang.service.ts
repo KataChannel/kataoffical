@@ -40,14 +40,14 @@ export class DathangService {
         const response = await fetch(`${environment.APIURL}/dathang/import`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        }        const data = await response.json();
         if (!response.ok) {
             console.log(response.status);     
-        }
-        this.getAllDathang()
+        }        this.getAllDathang()
+        return data;
     } catch (error) {
-        return console.error(error);
+        console.error(error);
+        throw error;
     }
   }
   async CreateDathang(dulieu: any) {

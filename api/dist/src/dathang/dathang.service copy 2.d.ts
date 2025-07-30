@@ -24,7 +24,7 @@ export declare class DathangService {
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;
-        };
+        } | null;
         id: string;
         title: string | null;
         subtitle: string | null;
@@ -38,7 +38,8 @@ export declare class DathangService {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }[]>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -94,7 +95,7 @@ export declare class DathangService {
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;
-        };
+        } | null;
         id: string;
         title: string | null;
         subtitle: string | null;
@@ -108,7 +109,8 @@ export declare class DathangService {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }>;
     import(data: any): Promise<{
         success: number;
@@ -169,7 +171,7 @@ export declare class DathangService {
                 isshowvat: boolean;
                 mancc: string;
                 manccold: string | null;
-            };
+            } | null;
         } & {
             id: string;
             title: string | null;
@@ -184,7 +186,8 @@ export declare class DathangService {
             printCount: number | null;
             madncc: string | null;
             ngaynhan: Date | null;
-            nhacungcapId: string;
+            nhacungcapId: string | null;
+            khoId: string | null;
         })[];
         total: number;
         pageNumber: any;
@@ -251,7 +254,7 @@ export declare class DathangService {
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;
-        };
+        } | null;
     } & {
         id: string;
         title: string | null;
@@ -266,7 +269,8 @@ export declare class DathangService {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }) | {
         data: ({
             sanpham: ({
@@ -322,7 +326,7 @@ export declare class DathangService {
                 isshowvat: boolean;
                 mancc: string;
                 manccold: string | null;
-            };
+            } | null;
         } & {
             id: string;
             title: string | null;
@@ -337,7 +341,8 @@ export declare class DathangService {
             printCount: number | null;
             madncc: string | null;
             ngaynhan: Date | null;
-            nhacungcapId: string;
+            nhacungcapId: string | null;
+            khoId: string | null;
         })[];
         page: any;
         pageSize: any;
@@ -375,7 +380,8 @@ export declare class DathangService {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }>;
     createbynhucau(dto: any): Promise<{
         sanpham: {
@@ -408,7 +414,8 @@ export declare class DathangService {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -424,7 +431,8 @@ export declare class DathangService {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -440,7 +448,8 @@ export declare class DathangService {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }>;
     findByProductId(idSP: string): Promise<{
         sanpham: ({
@@ -496,7 +505,7 @@ export declare class DathangService {
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;
-        };
+        } | null;
         id: string;
         title: string | null;
         subtitle: string | null;
@@ -510,6 +519,7 @@ export declare class DathangService {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }[]>;
 }

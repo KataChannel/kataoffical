@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
-const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258'; // Kho mặc định, cần thay đổi theo yêu cầu thực tế
+
 @Injectable()
 export class DathangService {
   constructor(
@@ -23,6 +23,7 @@ export class DathangService {
     }
     return nextCode;
   }
+
   private incrementOrderCode(orderCode: string): string {
     const prefix = 'TGNCC-';
     const letters = orderCode.slice(6, 8); // Lấy AA → ZZ
@@ -64,6 +65,7 @@ export class DathangService {
       });
     }
   }
+
   async findAll() {
     const dathangs = await this.prisma.dathang.findMany({
       include: {
@@ -73,6 +75,7 @@ export class DathangService {
           },
         },
         nhacungcap: true,
+        kho: true, // Include kho information
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -93,7 +96,6 @@ export class DathangService {
   }
 
   async findOne(id: string) {
-    // const dathang = await this.prisma.dathang.findUnique({ where: { id } });
     const dathang = await this.prisma.dathang.findUnique({
       where: { id },
       include: {
@@ -107,6 +109,7 @@ export class DathangService {
           },
         },
         nhacungcap: true,
+        kho: true, // Include kho information
       },
     });
     if (!dathang) throw new NotFoundException('Dathang not found');
@@ -137,10 +140,6 @@ export class DathangService {
     };
   }
 
-
-
-  
-
   async import(data: any) {    
     const acc: Record<string, any> = {};
     for (const curr of data) {
@@ -152,6 +151,7 @@ export class DathangService {
           mancc: curr.mancc,
           name: nhacungcap?.name,
           mabanggia: curr.mabanggia,
+          khoId: curr.khoId, // Add khoId from import data
           sanpham: [],
           nhacungcap: {
             mancc: curr.mancc,
@@ -175,8 +175,6 @@ export class DathangService {
           ghichu: curr.ghichu,
         });
       }
-
-
     }
     const convertData: any = Object.values(acc);
     let success = 0;
@@ -206,23 +204,32 @@ export class DathangService {
     };
   }
 
-
   async search(params: any) {
-    const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1 } = params;
-    const where = {
-      ngaynhan: {
-        gte: Batdau
-          ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-          : undefined,
-        lte: Ketthuc
-          ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-          : undefined,
-      },
-      // type: Type,
-      status: Array.isArray(params.Status)
+    const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, khoId } = params;
+    const where: any = {};
+
+    // Date filter
+    if (Batdau || Ketthuc) {
+      where.ngaynhan = {};
+      if (Batdau) {
+        where.ngaynhan.gte = moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
+      }
+      if (Ketthuc) {
+        where.ngaynhan.lte = moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
+      }
+    }
+
+    // Kho filter
+    if (khoId) {
+      where.khoId = khoId;
+    }
+
+    // Status filter
+    if (params.Status) {
+      where.status = Array.isArray(params.Status)
         ? { in: params.Status }
-        : params.Status,
-    };
+        : params.Status;
+    }
 
     const [total, dathangs] = await Promise.all([
       this.prisma.dathang.count({ where }),
@@ -235,6 +242,7 @@ export class DathangService {
             },
           },
           nhacungcap: true,
+          kho: true, // Include kho information
         },
         orderBy: { createdAt: 'desc' },
         skip: (Number(pageNumber) - 1) * Number(pageSize),
@@ -250,35 +258,38 @@ export class DathangService {
     };
   }
 
-  /**
-   * Tổng hợp số lượng sản phẩm chờ giao trong các đơn hàng theo điều kiện lọc.
-   * Trả về danh sách sản phẩm với tổng số lượng đặt (sldat) theo từng mã sản phẩm.
-   */
   async getchonhap(params: any) {
-    const { Batdau, Ketthuc, Type } = params;
+    const { Batdau, Ketthuc, Type, khoId } = params;
+
+    const where: any = {};
+
+    // Date filter
+    if (Batdau || Ketthuc) {
+      where.ngaynhan = {};
+      if (Batdau) {
+        where.ngaynhan.gte = moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
+      }
+      if (Ketthuc) {
+        where.ngaynhan.lte = moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
+      }
+    }
+
+    // Kho filter
+    if (khoId) {
+      where.khoId = khoId;
+    }
 
     // Lấy danh sách đơn hàng theo điều kiện lọc
     const dathangs = await this.prisma.dathang.findMany({
-      where: {
-        ngaynhan: {
-          gte: Batdau
-            ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-            : undefined,
-          lte: Ketthuc
-            ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-            : undefined,
-        },
-        // type: Type,
-        // Có thể bổ sung điều kiện status nếu cần
-      },
+      where,
       include: {
         sanpham: {
           include: { sanpham: true },
         },
+        kho: true, // Include kho information
       },
       orderBy: { createdAt: 'desc' },
     });
-    console.log(dathangs);
     
     // Gộp số lượng đặt theo từng sản phẩm
     const productMap = new Map<string, { title: string; masp: string; sldat: number }>();
@@ -308,88 +319,90 @@ export class DathangService {
     }));
   }
 
+  async findby(param: any) {
+    const { page = 1, pageSize = 50, isOne, khoId, ...where } = param;
+    const whereClause: any = {};     
 
+    // Filter by title if provided
+    if (where.subtitle) {
+      whereClause.OR = [];
 
-
-    async findby(param: any) {
-      const { page = 1, pageSize = 50, isOne, ...where } = param;
-      const whereClause: any = {};     
-      // Filter by title if provided
       if (where.subtitle) {
-        whereClause.OR = [];
-
-        if (where.subtitle) {
-          whereClause.OR.push({ subtitle: { contains: where.subtitle, mode: 'insensitive' } });
-          whereClause.OR.push({ madncc: { contains: where.subtitle, mode: 'insensitive' } });
-          whereClause.OR.push({ title: { contains: where.subtitle, mode: 'insensitive' } });
-         whereClause.OR.push({
-              nhacungcap: { name: { contains: where.subtitle, mode: 'insensitive' } }
-          });
-         whereClause.OR.push({
-              nhacungcap: { sdt: { contains: where.subtitle, mode: 'insensitive' } }
-          });
-        }
-      }
-      console.log('whereClause:', whereClause);
-      
-      // Filter by ngaynhan (order receive date)
-      if (where.Batdau || where.Ketthuc) {
-        whereClause.ngaynhan = {};
-        if (where.Batdau) {
-          whereClause.ngaynhan.gte = moment(where.Batdau)
-        .tz('Asia/Ho_Chi_Minh')
-        .startOf('day')
-        .toDate();
-        }
-        if (where.Ketthuc) {
-          whereClause.ngaynhan.lte = moment(where.Ketthuc)
-        .tz('Asia/Ho_Chi_Minh')
-        .endOf('day')
-        .toDate();
-        }
-      }
-      if (isOne) {
-        const oneResult = await this.prisma.dathang.findFirst({
-          where: whereClause,
-          include: {
-            sanpham: {
-              include: { sanpham: true },
-            },
-            nhacungcap: true,
-          },
-          orderBy: { createdAt: 'desc' },
+        whereClause.OR.push({ subtitle: { contains: where.subtitle, mode: 'insensitive' } });
+        whereClause.OR.push({ madncc: { contains: where.subtitle, mode: 'insensitive' } });
+        whereClause.OR.push({ title: { contains: where.subtitle, mode: 'insensitive' } });
+       whereClause.OR.push({
+            nhacungcap: { name: { contains: where.subtitle, mode: 'insensitive' } }
         });
-        return oneResult;
+       whereClause.OR.push({
+            nhacungcap: { sdt: { contains: where.subtitle, mode: 'insensitive' } }
+        });
       }
-
-      const skip = (page - 1) * pageSize;
-      const [dathangs, total] = await Promise.all([
-        this.prisma.dathang.findMany({
-          where: whereClause,
-          include: {
-            sanpham: {
-              include: { sanpham: true },
-            },
-            nhacungcap: true,
-          },
-          skip,
-          take: pageSize,
-          orderBy: { createdAt: 'desc' },
-        }),
-        this.prisma.dathang.count({ where: whereClause }),
-      ]);
-
-      return {
-        data: dathangs,
-        page,
-        pageSize,
-        total,
-        pageCount: Math.ceil(total / pageSize),
-      };
     }
 
+    // Filter by ngaynhan (order receive date)
+    if (where.Batdau || where.Ketthuc) {
+      whereClause.ngaynhan = {};
+      if (where.Batdau) {
+        whereClause.ngaynhan.gte = moment(where.Batdau)
+      .tz('Asia/Ho_Chi_Minh')
+      .startOf('day')
+      .toDate();
+      }
+      if (where.Ketthuc) {
+        whereClause.ngaynhan.lte = moment(where.Ketthuc)
+      .tz('Asia/Ho_Chi_Minh')
+      .endOf('day')
+      .toDate();
+      }
+    }
 
+    // Filter by kho
+    if (khoId) {
+      whereClause.khoId = khoId;
+    }
 
+    if (isOne) {
+      const oneResult = await this.prisma.dathang.findFirst({
+        where: whereClause,
+        include: {
+          sanpham: {
+            include: { sanpham: true },
+          },
+          nhacungcap: true,
+          kho: true, // Include kho information
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+      return oneResult;
+    }
+
+    const skip = (page - 1) * pageSize;
+    const [dathangs, total] = await Promise.all([
+      this.prisma.dathang.findMany({
+        where: whereClause,
+        include: {
+          sanpham: {
+            include: { sanpham: true },
+          },
+          nhacungcap: true,
+          kho: true, // Include kho information
+        },
+        skip,
+        take: pageSize,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.dathang.count({ where: whereClause }),
+    ]);
+
+    return {
+      data: dathangs,
+      page,
+      pageSize,
+      total,
+      pageCount: Math.ceil(total / pageSize),
+    };
+  }
 
   async create(dto: any) {
     const madathang = await this.generateNextOrderCode();
@@ -402,6 +415,16 @@ export class DathangService {
       if (!nhacungcap)
         throw new NotFoundException('Nhà cung cấp không tồn tại');
 
+      // Validate kho if provided
+      if (dto.khoId) {
+        const kho = await prisma.kho.findUnique({
+          where: { id: dto.khoId },
+        });
+        if (!kho) {
+          throw new NotFoundException('Kho không tồn tại');
+        }
+      }
+
       // Create the new order (đặt hàng) using the generated order code
       const newDathang = await prisma.dathang.create({
         data: {
@@ -410,6 +433,7 @@ export class DathangService {
           madncc: madathang,
           ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
           nhacungcapId: nhacungcap.id,
+          khoId: dto.khoId, // Add khoId
           isActive: dto.isActive !== undefined ? dto.isActive : true,
           order: dto.order,
           ghichu: dto.ghichu,
@@ -458,6 +482,16 @@ export class DathangService {
       if (!nhacungcap)
         throw new NotFoundException('Nhà cung cấp không tồn tại');
 
+      // Validate kho if provided
+      if (dto.khoId) {
+        const kho = await prisma.kho.findUnique({
+          where: { id: dto.khoId },
+        });
+        if (!kho) {
+          throw new NotFoundException('Kho không tồn tại');
+        }
+      }
+
       // Create the new order (đặt hàng) using the generated order code
       const newDathang = await prisma.dathang.create({
         data: {
@@ -466,6 +500,7 @@ export class DathangService {
           madncc: madathang,
           ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
           nhacungcapId: nhacungcap.id,
+          khoId: dto.khoId, // Add khoId
           isActive: dto.isActive !== undefined ? dto.isActive : true,
           order: dto.order,
           ghichu: dto.ghichu,
@@ -509,11 +544,24 @@ export class DathangService {
       // 1. Lấy đơn đặt hàng cũ kèm chi tiết sản phẩm
       const oldDathang = await prisma.dathang.findUnique({
         where: { id },
-        include: { sanpham: true },
+        include: { sanpham: true, kho: true },
       });
       if (!oldDathang) {
         throw new NotFoundException('Đơn đặt hàng không tồn tại');
       }
+
+      // Validate kho if changed
+      if (data.khoId && data.khoId !== oldDathang.khoId) {
+        const kho = await prisma.kho.findUnique({
+          where: { id: data.khoId },
+        });
+        if (!kho) {
+          throw new NotFoundException('Kho không tồn tại');
+        }
+      }
+
+      // Use the khoId from data or fallback to existing khoId
+      const khoId = data.khoId || oldDathang.khoId;
 
       // 2. Rollback từ 'dagiao' về 'dadat'
       if (oldDathang.status === 'dagiao' && data.status === 'dadat') {
@@ -550,6 +598,7 @@ export class DathangService {
             type: data.type,
             ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
             nhacungcapId: data.nhacungcapId,
+            khoId: khoId, // Update khoId
             isActive: data.isActive,
             order: data.order,
             ghichu: data.ghichu,
@@ -625,6 +674,7 @@ export class DathangService {
             type: data.type,
             ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
             nhacungcapId: data.nhacungcapId,
+            khoId: khoId, // Update khoId
             isActive: data.isActive,
             order: data.order,
             ghichu: data.ghichu,
@@ -653,8 +703,6 @@ export class DathangService {
       if (data.status === 'dagiao') {
         // 4.1. Giảm slchonhap
         for (const sp of data.sanpham) {
-          console.log(sp);
-          
           const decValue = parseFloat((Number(sp.slgiao) ?? 0).toFixed(2));
           await prisma.tonKho.update({
             where: { sanphamId: sp.idSP },
@@ -669,7 +717,7 @@ export class DathangService {
         const phieuPayload = {
           ngay: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
           type: 'xuat',
-          khoId: DEFAUL_KHO_ID,
+          khoId: khoId, // Use the khoId from dathang
           madncc: data.madncc,
           ghichu: data.ghichu,
           isActive: data.isActive ?? true,
@@ -682,9 +730,6 @@ export class DathangService {
           },
         };
 
-        console.log('Phieu kho payload:', phieuPayload);
-        console.log('maphieuNew:', maphieuNew);
-        
         try {
           const { sanpham, ...phieuPayloadWithoutSanpham } = phieuPayload;
           await prisma.phieuKho.upsert({
@@ -702,6 +747,7 @@ export class DathangService {
           where: { id },
           data: {
             status: 'dagiao',
+            khoId: khoId, // Update khoId
             sanpham: {
               updateMany: data.sanpham.map((sp: any) => ({
                 where: { idSP: sp.idSP },
@@ -764,7 +810,7 @@ export class DathangService {
         maphieu: maphieuNhap,
         ngay: new Date(data.ngaynhan), // Ngày nhập có thể sử dụng ngày giao hoặc hiện tại
         type: 'xuat', // Loại phiếu xuất
-        khoId: DEFAUL_KHO_ID,
+        khoId: khoId, // Use the khoId from dathang
         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
         isActive: data.isActive ?? true,
         sanpham: {
@@ -786,6 +832,7 @@ export class DathangService {
           where: { id },
           data: {
         status: 'danhan',
+        khoId: khoId, // Update khoId
         sanpham: {
           updateMany: data.sanpham.map((item: any) => {
             const delivered = parseFloat((Number(item.slgiao) ?? 0).toFixed(2));
@@ -843,6 +890,7 @@ export class DathangService {
           where: { id },
           data: {
             status: 'huy',
+            khoId: khoId, // Update khoId
             ghichu: data.ghichu || 'Đơn đặt hàng đã hủy',
             sanpham: {
               updateMany: oldDathang.sanpham.map((sp: any) => ({
@@ -914,6 +962,7 @@ export class DathangService {
           type: data.type,
           ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
           nhacungcapId: data.nhacungcapId,
+          khoId: khoId, // Update khoId
           isActive: data.isActive,
           order: data.order,
           ghichu: data.ghichu,
@@ -936,7 +985,6 @@ export class DathangService {
 
       return updatedDathang;
     }
-      // Nếu không khớp với bất kỳ trạng thái nào trên, throw lỗi
 
     // 8. Từ 'dadat' chuyển sang 'danhan' (bỏ qua 'dagiao' nhưng vẫn xử lý tồn kho và phiếu kho)
     if (oldDathang.status === 'dadat' && data.status === 'danhan') {
@@ -978,7 +1026,7 @@ export class DathangService {
         maphieu: maphieuNhap,
         ngay: new Date(data.ngaynhan),
         type: 'xuat',
-        khoId: DEFAUL_KHO_ID,
+        khoId: khoId, // Use the khoId from dathang
         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
         isActive: data.isActive ?? true,
         sanpham: {
@@ -997,6 +1045,7 @@ export class DathangService {
       where: { id },
       data: {
         status: 'danhan',
+        khoId: khoId, // Update khoId
         sanpham: {
         updateMany: data.sanpham.map((item: any) => {
           const sldat = parseFloat((Number(item.sldat) ?? 0).toFixed(2));
@@ -1060,7 +1109,6 @@ export class DathangService {
     });
   }
 
-
 async findByProductId(idSP: string) {
   const dathangs = await this.prisma.dathang.findMany({
     where: {
@@ -1076,6 +1124,7 @@ async findByProductId(idSP: string) {
         },
       },
       nhacungcap: true,
+      kho: true, // Include kho information
     },
     orderBy: { createdAt: 'desc' },
   });
@@ -1123,6 +1172,7 @@ async importcu(data: any) {
             mancc: curr.mancc,
             name: nhacungcap?.name,
             mabanggia: curr.mabanggia,
+            khoId: curr.khoId, // Add khoId from import data
             sanpham: [],
             nhacungcap: {
               mancc: curr.mancc,
@@ -1277,7 +1327,8 @@ async deletebulk(data: any) {
     };
 
   } catch (error: any) {
-    console.error('Error in deletebulk:', error);    throw error;
+    console.error('Error in deletebulk:', error);
+    throw error;
   }
 }
 

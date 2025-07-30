@@ -80,6 +80,27 @@ export class KhoService {
     }
   }
 
+    async getKhoBy(param: any) {
+      try {
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+          },
+          body: JSON.stringify({ ...param}),
+        };
+        const response = await fetch(`${environment.APIURL}/kho/findby`, options);
+        if (!response.ok) {
+          
+        }
+        const data = await response.json();
+        this.ListKho.set(data.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
   async getAllKho() {
     try {
       const options = {

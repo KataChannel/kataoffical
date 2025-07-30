@@ -298,16 +298,18 @@ model Dathang {
   madncc      String?     @unique
   ngaynhan    DateTime?
   ghichu      String?
-  nhacungcapId String
-  nhacungcap   Nhacungcap @relation(fields: [nhacungcapId], references: [id])
+  nhacungcapId String?
+  nhacungcap  Nhacungcap? @relation(fields: [nhacungcapId], references: [id])
+  khoId       String?
+  kho         Kho? @relation(fields: [khoId], references: [id])
   order       Int?
   isActive    Boolean  @default(false)
-  sanpham     Dathangsanpham[]
+  sanpham      Dathangsanpham[]
   status      StatusDonhang @default(dadat) // Dùng Enum
   printCount  Int? @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime? @updatedAt  
-  PhieuKho PhieuKho[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime? @updatedAt  
+  PhieuKho    PhieuKho[]
 }
 
 model Dathangsanpham {
@@ -356,9 +358,10 @@ model Kho {
   isActive  Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  Chotkho Chotkho[]
+  Chotkho   Chotkho[]
+  Dathang   Dathang[]
 }
+
 model SanphamKho {
   id        String @id @default(uuid())
   khoId     String
@@ -390,7 +393,7 @@ model PhieuKho {
   sanpham   PhieuKhoSanpham[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  Chotkho Chotkho[]
+  Chotkho   Chotkho[]
 }
 
 model PhieuKhoSanpham {

@@ -1,41 +1,30 @@
 <mat-drawer-container class="w-full h-full" autosize>
-    <mat-drawer #drawer class="flex flex-col !w-full h-full" [position]="'end'" mode="over">
-        <router-outlet></router-outlet>
-    </mat-drawer>
-    <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
-      <div class="w-full flex flex-col gap-2  lg:flex-row lg:items-center lg:justify-between">
+  <mat-drawer #drawer class="flex flex-col !w-full h-full" [position]="'end'" mode="over">
+    <router-outlet></router-outlet>
+  </mat-drawer>
+  <div class="flex flex-col space-y-2 h-screen-12 w-full p-2">
+    <div class="w-full flex flex-col gap-2  lg:flex-row lg:items-center lg:justify-between">
+
+      <div class="flex flex-row space-x-2 items-center">
+        <div class="relative w-full">
+          <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
+            class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <span class="material-symbols-outlined text-gray-500">search</span>
+          </div>
+        </div>
+        <button class="flex flex-row items-center" color="primary" matTooltip="Thêm mới" (click)="create()"
+          mat-flat-button>
+          <mat-icon>add_circle</mat-icon>
+          <span class="whitespace-nowrap">Tạo Mới</span>
+        </button>
 
         <div class="flex flex-row space-x-2 items-center">
-          <div class="relative w-full">
-            <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
-              class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <span class="material-symbols-outlined text-gray-500">search</span>
-            </div>
-          </div>
-          <button class="flex flex-row items-center" color="primary" matTooltip="Thêm mới" (click)="create()"
-            mat-flat-button>
-            <mat-icon>add_circle</mat-icon>
-            <span class="whitespace-nowrap">Tạo Mới</span>
+          <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
+            <mat-icon>file_upload</mat-icon>
           </button>
-             <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
-                    <mat-icon>file_upload</mat-icon>
-                </button>
           <input multiple class="hidden" (change)="ImporExcel($event)" type="file" #uploadfile>
-          @if(EditList.length > 0){
-          <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
-            class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button>
-            <mat-icon>delete</mat-icon>
-            <span class="whitespace-nowrap">Xoá</span>
-          </button>
-          <button mat-flat-button *ngIf="EditList.length > 0" (click)="DoDanhan()" color="primary" matTooltip="Đã Nhận">
-            <span class="whitespace-nowrap">Đã Nhận</span>
-          </button>
-          }
-          </div>
-
-        <div class="flex flex-row space-x-2 items-center">
-          <button (click)="openDathangDialog(DathangDialog)" mat-icon-button color="primary">
+          <button (click)="ExportExcel()" mat-icon-button color="primary">
             <mat-icon>download</mat-icon>
           </button>
           <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu">
@@ -61,71 +50,88 @@
         </div>
 
 
-      </div>
-        <div class="flex flex-row space-x-2 items-center">
-            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-                <mat-label>Bắt Đầu</mat-label>
-                <input matInput [matDatepicker]="pickerBatdau"
-                    [(ngModel)]="searchParam.Batdau" [ngModelOptions]="{standalone: true}">
-                <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau"></mat-datepicker-toggle>
-                <mat-datepicker #pickerBatdau></mat-datepicker>
-            </mat-form-field>
 
-            <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
-                <mat-label>Kết Thúc</mat-label>
-                <input matInput [matDatepicker]="pickerKetthuc"
-                    [(ngModel)]="searchParam.Ketthuc" [ngModelOptions]="{standalone: true}">
-                <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
-                <mat-datepicker #pickerKetthuc></mat-datepicker>
-            </mat-form-field>
-            
-            <button mat-icon-button color="primary" (click)="onDateChange()">
-                <mat-icon>search</mat-icon>
-            </button>
-        </div>
-        <div class="w-full overflow-auto">
-            <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
-                @for (column of displayedColumns; track column) {
-                <ng-container [matColumnDef]="column">
-                    <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
-                        <span class="max-w-40 line-clamp-4 me-4">
-                            {{ ColumnName[column] }}
-                        </span>
-                    </th>
-                    <td mat-cell *matCellDef="let row; let idx = index">
-                        @switch (column) {
-                        @case ('STT') {
-                        <span class="max-w-40 line-clamp-4">
-                            {{ idx + 1 }}
-                        </span>
-                        }
-                        @case ('madncc') {
-                        <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
-                            {{ row[column] }}
-                        </span>
-                        }
-                        @case ('sanpham') {
-                        <span class="max-w-40 line-clamp-4">
-                            {{row[column].length}}
-                        </span>
-                        }
-                        @case ('nhacungcap') {
-                        <span class="max-w-40 line-clamp-4">
-                            ({{row[column].mancc}}) {{row[column].name}}
-                        </span>
-                        }
-                        @case ('ngaynhan') {
-                        <span class="max-w-40 line-clamp-4 text-xs">
-                            {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
-                        </span>
-                        }
-                        @case ('createdAt') {
-                        <span class="max-w-40 line-clamp-4 text-xs">
-                            {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
-                        </span>
-                        }
-                        @case ('status') {
-                        <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
+
+        @if(EditList.length > 0){
+        <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)" class="flex flex-row items-center"
+          color="warn" matTooltip="Xoá" mat-flat-button>
+          <mat-icon>delete</mat-icon>
+          <span class="whitespace-nowrap">Xoá</span>
+        </button>
+        <button mat-flat-button *ngIf="EditList.length > 0" (click)="DoDanhan()" color="primary" matTooltip="Đã Nhận">
+          <span class="whitespace-nowrap">Đã Nhận</span>
+        </button>
+        }
+      </div>
+
+
+
+
+    </div>
+    <div class="flex flex-row space-x-2 items-center">
+      <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+        <mat-label>Bắt Đầu</mat-label>
+        <input matInput [matDatepicker]="pickerBatdau" [(ngModel)]="searchParam.Batdau"
+          [ngModelOptions]="{standalone: true}">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerBatdau"></mat-datepicker-toggle>
+        <mat-datepicker #pickerBatdau></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field [appearance]="'outline'" [subscriptSizing]="'dynamic'">
+        <mat-label>Kết Thúc</mat-label>
+        <input matInput [matDatepicker]="pickerKetthuc" [(ngModel)]="searchParam.Ketthuc"
+          [ngModelOptions]="{standalone: true}">
+        <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
+        <mat-datepicker #pickerKetthuc></mat-datepicker>
+      </mat-form-field>
+
+      <button mat-icon-button color="primary" (click)="onDateChange()">
+        <mat-icon>search</mat-icon>
+      </button>
+    </div>
+    <div class="w-full overflow-auto">
+      <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
+        @for (column of displayedColumns; track column) {
+        <ng-container [matColumnDef]="column">
+          <th class="whitespace-nowrap" mat-header-cell *matHeaderCellDef mat-sort-header>
+            <span class="max-w-40 line-clamp-4 me-4">
+              {{ ColumnName[column] }}
+            </span>
+          </th>
+          <td mat-cell *matCellDef="let row; let idx = index">
+            @switch (column) {
+            @case ('STT') {
+            <span class="max-w-40 line-clamp-4">
+              {{ idx + 1 }}
+            </span>
+            }
+            @case ('madncc') {
+            <span (click)="goToDetail(row);" class="max-w-40 line-clamp-4 font-bold text-blue-600">
+              {{ row[column] }}
+            </span>
+            }
+            @case ('sanpham') {
+            <span class="max-w-40 line-clamp-4">
+              {{row[column].length}}
+            </span>
+            }
+            @case ('nhacungcap') {
+            <span class="max-w-40 line-clamp-4">
+              ({{row[column].mancc}}) {{row[column].name}}
+            </span>
+            }
+            @case ('ngaynhan') {
+            <span class="max-w-40 line-clamp-4 text-xs">
+              {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
+            </span>
+            }
+            @case ('createdAt') {
+            <span class="max-w-40 line-clamp-4 text-xs">
+              {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
+            </span>
+            }
+            @case ('status') {
+            <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
                           'text-blue-500': row[column] === 'dadat',
                           'text-yellow-500': row[column] === 'dagiao',
                           'text-green-500': row[column] === 'danhan',
@@ -133,53 +139,52 @@
                           'text-red-500': row[column] === 'huy'
                         }
                         ">
-                            {{Trangthaidon[row[column]]}}
-                        </span>
-                        }
-                        @case ('isActive') {
-                        <span class="max-w-40 line-clamp-4">
-                            @if (row[column]) {
-                            <mat-icon class="text-green-500">check_circle</mat-icon>
-                            }
-                            @else {
-                            <mat-icon class="text-red-500">cancel</mat-icon>
-                            }
-                        </span>
-                        }
-                        @case ('updatedAt') {
-                        <span class="max-w-40 line-clamp-4 text-xs">
-                            {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
-                        </span>
-                        }
-                        @case ('action') {
-                        <span class="max-w-40 line-clamp-4">
-                            <!-- <button *ngIf="row.status==='dadat'"  mat-flat-button color="primary" (click)="UpdateDathang(row)">
+              {{Trangthaidon[row[column]]}}
+            </span>
+            }
+            @case ('isActive') {
+            <span class="max-w-40 line-clamp-4">
+              @if (row[column]) {
+              <mat-icon class="text-green-500">check_circle</mat-icon>
+              }
+              @else {
+              <mat-icon class="text-red-500">cancel</mat-icon>
+              }
+            </span>
+            }
+            @case ('updatedAt') {
+            <span class="max-w-40 line-clamp-4 text-xs">
+              {{ row[column]|date:'HH:mm:ss dd/MM/yyyy'}}
+            </span>
+            }
+            @case ('action') {
+            <span class="max-w-40 line-clamp-4">
+              <!-- <button *ngIf="row.status==='dadat'"  mat-flat-button color="primary" (click)="UpdateDathang(row)">
                                 <span>Đã Giao</span>
                             </button> -->
-                            <!-- <button mat-icon-button color="warn" (click)="openDeleteDialog(DeleteDialog,row)">
+              <!-- <button mat-icon-button color="warn" (click)="openDeleteDialog(DeleteDialog,row)">
                                 <mat-icon>delete</mat-icon>
                             </button> -->
-                        </span>
-                        }
-                        @default {
-                        <span class="max-w-40 line-clamp-4">
-                            {{ row[column] }}
-                        </span>
-                        }
-                        }
-                    </td>
-                </ng-container>
-                }
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                    (click)="AddToEdit(row)"
-                    class="hover:bg-slate-100 {{CheckItemInEdit(row)?'!bg-slate-200':''}}">
-                </tr>
-                <tr class="mat-row" *matNoDataRow>
-                    <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
-                </tr>
-            </table>
-        </div>
+            </span>
+            }
+            @default {
+            <span class="max-w-40 line-clamp-4">
+              {{ row[column] }}
+            </span>
+            }
+            }
+          </td>
+        </ng-container>
+        }
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="AddToEdit(row)"
+          class="hover:bg-slate-100 {{CheckItemInEdit(row)?'!bg-slate-200':''}}">
+        </tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
+        </tr>
+      </table>
+    </div>
     <div class="cursor-pointer border rounded-lg px-3 p-1 flex flex-row space-x-2 items-center justify-between">
       <div
         class="w-full flex lg:p-0 p-2 lg:flex-row lg:space-x-2 lg:items-center lg:justify-between flex-col justify-center">
@@ -212,7 +217,7 @@
         </div>
       </div>
     </div>
-    </div>
+  </div>
 </mat-drawer-container>
 
 
@@ -246,3 +251,279 @@
 </ng-template>
 
 
+
+
+
+<ng-template #dialogImportExcelCu>
+    <h2 mat-dialog-title>Import Đặt Hàng</h2>
+    <mat-dialog-content class="mat-typography">
+        <div class="w-full">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 shadow-md rounded-lg">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th
+                                class="w-16 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                #
+                            </th>                            <th
+                                class="min-w-[350px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Nhà Cung Cấp
+                            </th>                            <th
+                                class="w-48 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Ngày Nhận
+                                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                    <mat-label>Ngày Nhận All </mat-label>
+                                    <input (dateChange)="DoChonNgaynhan($event,'All')" matInput
+                                        [matDatepicker]="picker">
+                                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker></mat-datepicker>
+                                </mat-form-field>
+                            </th>
+                            <th
+                                class="w-40 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                File Name</th>
+                            <th
+                                class="w-40 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tên Không Dấu</th>
+                            <th
+                                class="w-24 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status</th>
+                            <th
+                                class="w-32 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Message</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr *ngFor="let detail of statusDetails;let i = index">
+                            <td class="w-16 px-4 py-4 whitespace-nowrap text-gray-900 items-center">
+                                @if(detail.status === 'Processed'){
+                                {{i+1}}
+                                <button mat-icon-button color="warn"
+                                    (click)="removeItemImport(detail)"><mat-icon>delete</mat-icon></button>
+                                }
+                            </td>
+                            <td class="min-w-[350px] px-6 py-4 whitespace-nowrap text-gray-900">
+                                @if(detail.status === 'Processed'){                                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
+                                    <mat-label>Nhà Cung Cấp</mat-label>
+                                    <mat-select (selectionChange)="SelectNhacungcap(detail,$event)">
+                                        <div class="w-full flex flex-col">
+                                            <mat-form-field appearance="outline" class="w-full p-2"
+                                                subscriptSizing="dynamic">
+                                                <input matInput (input)="DoFindNhacungcap($event,i)"
+                                                    placeholder="Tìm Kiếm" />
+                                            </mat-form-field>
+                                            <div class="overflow-y-auto max-h-44">
+                                                @for (item of FilterNhacungcap[i]; track item.id) {
+                                                <mat-option [value]="item.id"
+                                                    class="!whitespace-normal !h-auto !py-2">{{item.name}}</mat-option>
+                                                }
+                                            </div>
+                                        </div>
+                                    </mat-select>
+                                </mat-form-field>
+                                }
+
+                            </td>
+                            <td class="w-48 px-4 py-4 whitespace-nowrap text-gray-900">
+                                @if(detail.status === 'Processed'){                                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
+                                    <mat-label>Ngày Nhận </mat-label>
+                                    <input [ngModel]="statusDetails[i]?.ngaynhan"
+                                        (dateChange)="DoChonNgaynhan($event,detail)" matInput [matDatepicker]="picker">
+                                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-datepicker #picker></mat-datepicker>
+                                </mat-form-field>
+                                }
+                            </td>
+                            <td class="w-40 px-4 py-4 whitespace-nowrap text-sm text-gray-900 truncate">{{
+                                detail.fileName }}</td>
+                            <td class="w-40 px-4 py-4 whitespace-nowrap text-sm text-gray-900 truncate">{{
+                                detail.tenkhongdau }}</td>
+                            <td class="w-24 px-4 py-4 whitespace-nowrap text-sm">
+                                <span [ngClass]="{
+                                        'text-green-600 font-semibold': detail.status === 'Processed' || detail.status === 'Success',
+                                        'text-yellow-600 font-semibold': detail.status === 'Skipped'
+                                    }">
+                                    {{ detail.status }}
+                                </span>
+                            </td>
+                            <td class="w-32 px-4 py-4 whitespace-nowrap text-sm text-gray-500 truncate">{{
+                                detail.message }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </mat-dialog-content>    <mat-dialog-actions align="end">
+        <button mat-flat-button color="warn" mat-dialog-close>Đóng</button>
+        <button mat-flat-button color="primary" (click)="DoImportNhacungcapCu()">Cập Nhật</button>
+    </mat-dialog-actions>
+
+</ng-template>
+
+<ng-template #dialogImportExcel>
+    <h2 mat-dialog-title class="flex items-center justify-between">
+        <span>Import Đặt Hàng từ Excel</span>
+        <span class="text-sm font-normal text-gray-600">
+            {{ ListImportExcel.length }} đơn hàng - {{ getConfirmedOrdersCount() }} đã xác nhận
+        </span>
+    </h2>
+    
+    <mat-dialog-content class="!max-h-[90vh] h-[90vh] !p-0">
+        <div class="h-full flex flex-col">
+            
+            <!-- Global Controls -->
+            <div class="border-b p-4 bg-gray-50">
+                <div class="flex flex-wrap gap-4 items-center">
+                    <!-- Global Date Control -->
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="min-w-[200px]">
+                        <mat-label>Ngày nhận (Tất cả)</mat-label>
+                        <input matInput 
+                               [matDatepicker]="globalDatePicker" 
+                               [(ngModel)]="ImportConfig.selectedDate"
+                               (dateChange)="updateAllOrdersDate($event.value)">
+                        <mat-datepicker-toggle matIconSuffix [for]="globalDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker #globalDatePicker></mat-datepicker>
+                    </mat-form-field>
+
+                    <!-- Global Kho Control -->
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="min-w-[200px]">
+                        <mat-label>Mã kho (Tất cả)</mat-label>
+                        <input matInput 
+                               [(ngModel)]="ImportConfig.selectedKho"
+                               (ngModelChange)="updateAllOrdersKho($event)"
+                               placeholder="VD: TG-LA">
+                    </mat-form-field>
+
+                    <!-- Global Confirmation Toggle -->
+                    <button mat-flat-button 
+                            color="primary" 
+                            (click)="toggleAllOrdersConfirmation()">
+                        <mat-icon>{{ getConfirmedOrdersCount() === ListImportExcel.length ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+                        {{ getConfirmedOrdersCount() === ListImportExcel.length ? 'Bỏ chọn tất cả' : 'Chọn tất cả' }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Orders List -->
+            <div class="flex-1 overflow-auto p-4">
+                <div class="grid gap-4">
+                    @for (order of ListImportExcel; track order.id; let i = $index) {
+                    <div class="border rounded-lg p-4" [ngClass]="order.configOptions?.confirmed ? 'border-green-500 bg-green-50' : 'border-gray-300'">
+                        
+                        <!-- Order Header -->
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <mat-checkbox 
+                                    [(ngModel)]="order.configOptions.confirmed"
+                                    (change)="toggleOrderConfirmation(order)">
+                                </mat-checkbox>
+                                <div>
+                                    <h3 class="font-semibold text-lg">{{ order.summary?.supplierName || order.nhacungcap?.name || 'N/A' }}</h3>
+                                    <p class="text-sm text-gray-600">
+                                        Mã NCC: {{ order.summary?.supplierCode || order.nhacungcap?.mancc || 'N/A' }} | 
+                                        {{ order.summary?.totalProducts || order.sanpham?.length || 0 }} sản phẩm | 
+                                        Tổng SL: {{ order.summary?.totalQuantity || getTotalQuantity(order) }}
+                                    </p>
+                                </div>
+                            </div>
+                            <button mat-icon-button 
+                                    color="warn" 
+                                    (click)="removeOrderFromImport(order)"
+                                    matTooltip="Xóa đơn hàng này">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+
+                        <!-- Order Controls -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <!-- Order Date -->
+                            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                <mat-label>Ngày nhận</mat-label>
+                                <input matInput 
+                                       [matDatepicker]="orderDatePicker"
+                                       [(ngModel)]="order.configOptions.selectedDate"
+                                       (dateChange)="updateOrderDate(order, $event.value)">
+                                <mat-datepicker-toggle matIconSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
+                                <mat-datepicker #orderDatePicker></mat-datepicker>
+                            </mat-form-field>
+
+                            <!-- Order Kho -->
+                            <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                <mat-label>Mã kho</mat-label>
+                                <input matInput 
+                                       [(ngModel)]="order.configOptions.selectedKho"
+                                       (ngModelChange)="updateOrderKho(order, $event)"
+                                       placeholder="VD: TG-LA">
+                            </mat-form-field>
+
+                            <!-- Order Code (Read-only) -->
+                        </div>
+
+                        <!-- Products Table -->
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full border border-gray-200 text-sm">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-700">STT</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-700">Mã SP</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-700">Tên sản phẩm</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-700">ĐVT</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-700">SL Đặt</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-700">SL Giao</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-700">SL Nhận</th>
+                                        <th class="px-3 py-2 text-left font-medium text-gray-700">Ghi chú</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    @for (sp of order.sanpham; track sp.sanpham?.id || $index; let j = $index) {
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-3 py-2">{{ j + 1 }}</td>
+                                        <td class="px-3 py-2 font-mono">{{ sp.sanpham?.masp || sp.masp || 'N/A' }}</td>
+                                        <td class="px-3 py-2">{{ sp.sanpham?.title || sp.title || 'N/A' }}</td>
+                                        <td class="px-3 py-2">{{ sp.sanpham?.dvt || sp.dvt || '' }}</td>
+                                        <td class="px-3 py-2 font-semibold text-blue-600">{{ sp.sldat || 0 }}</td>
+                                        <td class="px-3 py-2">{{ sp.slgiao || 0 }}</td>
+                                        <td class="px-3 py-2">{{ sp.slnhan || 0 }}</td>
+                                        <td class="px-3 py-2 text-gray-600">{{ sp.ghichu || '' }}</td>
+                                    </tr>
+                                    }
+                                    @empty {
+                                    <tr>
+                                        <td colspan="8" class="px-3 py-4 text-center text-gray-500">Không có sản phẩm</td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    }
+                </div>
+
+                <!-- Empty State -->
+                @if (ListImportExcel.length === 0) {
+                <div class="text-center py-8">
+                    <div class="text-gray-500 text-lg mb-2">Không có dữ liệu để import</div>
+                    <div class="text-gray-400">Vui lòng chọn file Excel hợp lệ</div>
+                </div>
+                }
+            </div>
+        </div>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions class="border-t p-4" [align]="'end'">
+        <div class="flex items-center justify-between w-full">
+            <div class="text-sm text-gray-600">
+                Đã chọn {{ getConfirmedOrdersCount() }} / {{ ListImportExcel.length }} đơn hàng
+            </div>
+            <div class="flex gap-2">
+                <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
+                <button mat-flat-button 
+                        color="primary" 
+                        [disabled]="getConfirmedOrdersCount() === 0"
+                        (click)="ImportConfirmedDathang()">
+                    Import {{ getConfirmedOrdersCount() }} đơn hàng
+                </button>
+            </div>
+        </div>
+    </mat-dialog-actions>
+</ng-template>

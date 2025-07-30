@@ -42,9 +42,15 @@
     <ng-container *ngIf="!isDelete()">
   <div id="printContent" class="min-w-[800px] flex flex-col space-y-6 items-center p-2 border rounded-lg">
     <div class="w-full flex flex-col space-y-4 items-center justify-center"> 
-        <div class="font-bold text-[18px] uppercase">Đặt Hàng Nhà Cung Cấp</div>
-      <div class="font-bold text-[18px] uppercase {{DetailDathang()?.nhacungcapId?'':'text-red-700 italic'}}">{{getName(DetailDathang()?.nhacungcapId)?.name||"Chưa Chọn Khách Hàng"}}</div>
-      <div *ngIf="isEdit() && DetailDathang()?.nhacungcap?.ghichu" class="p-2 rounded-lg border text-red-600" [innerHTML]="DetailDathang().nhacungcap.ghichu"></div>
+      <div class="font-bold uppercase">Đặt Hàng Nhà Cung Cấp</div>
+      <div class="font-bold uppercase {{DetailDathang()?.khoId?'':'text-red-700 italic'}}">
+        {{DetailDathang()?.kho?.name||"Chưa Chọn Kho"}}
+      </div>
+      <div class="font-bold uppercase {{DetailDathang()?.nhacungcapId?'':'text-red-700 italic'}}">
+        {{DetailDathang()?.nhacungcap?.name||"Chưa Chọn Khách Hàng"}}
+      </div>
+
+      <div *ngIf="isEdit() && DetailDathang()?.nhacungcap?.ghichu" class="p-2 rounded-lg border text-red-600" [innerHTML]="DetailDathang()?.nhacungcap?.ghichu"></div>
       <div *ngIf="isEdit()" class="grid lg:grid-cols-3 grid-cols-1 gap-4">
  
   
@@ -108,24 +114,23 @@
                   </div>
                 </mat-select>
               </mat-form-field>
-                <!-- <mat-form-field class="w-full" appearance="outline" subscriptSizing="dynamic">
-                  <mat-label>Sản Phẩm</mat-label>
-                  <mat-select (selectionChange)="SelectSanpham($event)">
-                    <div class="w-full flex flex-col">
-                      <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
-                        <input matInput (input)="DoFindSanpham($event)" placeholder="Tìm Kiếm" />
-                      </mat-form-field>
-                      <div class="overflow-y-auto max-h-44">
-                        @for (item of filterSanpham; track item.id) {
-                        <mat-option [value]="item.id">{{item.title}}</mat-option>
-                        }
-                        @empty {
-                        <mat-option disabled>Không có dữ liệu</mat-option>
-                        }
-                      </div>
+
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Kho</mat-label>
+                <mat-select [(ngModel)]="DetailDathang().khoId" [ngModelOptions]="{ standalone: true }"
+                  (selectionChange)="SelectKho($event)">
+                  <div class="w-full flex flex-col">
+                    <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
+                      <input matInput (input)="DoFindKho($event)" placeholder="Tìm Kiếm" />
+                    </mat-form-field>
+                    <div class="overflow-y-auto max-h-44">
+                      @for (item of filterKho; track item.id) {
+                      <mat-option [value]="item.id">{{item.name}}</mat-option>
+                      }
                     </div>
-                  </mat-select>
-                </mat-form-field> -->
+                  </div>
+                </mat-select>
+              </mat-form-field>
 
                 <mat-form-field appearance="outline" subscriptSizing="dynamic">
                     <mat-label>Tìm Kiếm</mat-label>

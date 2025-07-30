@@ -25,6 +25,7 @@ let PermissionController = class PermissionController {
     }
     async create(data) {
         try {
+            console.log(data);
             return await this.permissionService.create(data);
         }
         catch (error) {

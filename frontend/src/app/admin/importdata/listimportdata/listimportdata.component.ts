@@ -549,6 +549,7 @@ export class ListImportdataComponent implements OnInit {
               slgiao: Number(sp.slgiao) || 0,
               slnhan: Number(sp.slnhan) || 0,
               ghichu: sp.ghichu,
+              makho: record?.kho?.makho || '',
             }));
           })
         : [
@@ -563,6 +564,7 @@ export class ListImportdataComponent implements OnInit {
               slgiao: 0,
               slnhan: 0,
               ghichu: '',
+              makho: '',
             },
           ];
 

@@ -14,7 +14,6 @@ const common_1 = require("@nestjs/common");
 const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
-const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 let DathangService = class DathangService {
     constructor(prisma, _ImportdataService) {
         this.prisma = prisma;
@@ -73,6 +72,7 @@ let DathangService = class DathangService {
                     },
                 },
                 nhacungcap: true,
+                kho: true,
             },
             orderBy: { createdAt: 'desc' },
         });
@@ -105,6 +105,7 @@ let DathangService = class DathangService {
                     },
                 },
                 nhacungcap: true,
+                kho: true,
             },
         });
         if (!dathang)
@@ -146,6 +147,7 @@ let DathangService = class DathangService {
                     mancc: curr.mancc,
                     name: nhacungcap?.name,
                     mabanggia: curr.mabanggia,
+                    khoId: curr.khoId,
                     sanpham: [],
                     nhacungcap: {
                         mancc: curr.mancc,
@@ -199,20 +201,25 @@ let DathangService = class DathangService {
         };
     }
     async search(params) {
-        const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1 } = params;
-        const where = {
-            ngaynhan: {
-                gte: Batdau
-                    ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-                    : undefined,
-                lte: Ketthuc
-                    ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-                    : undefined,
-            },
-            status: Array.isArray(params.Status)
+        const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, khoId } = params;
+        const where = {};
+        if (Batdau || Ketthuc) {
+            where.ngaynhan = {};
+            if (Batdau) {
+                where.ngaynhan.gte = moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
+            }
+            if (Ketthuc) {
+                where.ngaynhan.lte = moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
+            }
+        }
+        if (khoId) {
+            where.khoId = khoId;
+        }
+        if (params.Status) {
+            where.status = Array.isArray(params.Status)
                 ? { in: params.Status }
-                : params.Status,
-        };
+                : params.Status;
+        }
         const [total, dathangs] = await Promise.all([
             this.prisma.dathang.count({ where }),
             this.prisma.dathang.findMany({
@@ -224,6 +231,7 @@ let DathangService = class DathangService {
                         },
                     },
                     nhacungcap: true,
+                    kho: true,
                 },
                 orderBy: { createdAt: 'desc' },
                 skip: (Number(pageNumber) - 1) * Number(pageSize),
@@ -239,26 +247,30 @@ let DathangService = class DathangService {
         };
     }
     async getchonhap(params) {
-        const { Batdau, Ketthuc, Type } = params;
+        const { Batdau, Ketthuc, Type, khoId } = params;
+        const where = {};
+        if (Batdau || Ketthuc) {
+            where.ngaynhan = {};
+            if (Batdau) {
+                where.ngaynhan.gte = moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
+            }
+            if (Ketthuc) {
+                where.ngaynhan.lte = moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
+            }
+        }
+        if (khoId) {
+            where.khoId = khoId;
+        }
         const dathangs = await this.prisma.dathang.findMany({
-            where: {
-                ngaynhan: {
-                    gte: Batdau
-                        ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-                        : undefined,
-                    lte: Ketthuc
-                        ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-                        : undefined,
-                },
-            },
+            where,
             include: {
                 sanpham: {
                     include: { sanpham: true },
                 },
+                kho: true,
             },
             orderBy: { createdAt: 'desc' },
         });
-        console.log(dathangs);
         const productMap = new Map();
         for (const dh of dathangs) {
             for (const sp of dh.sanpham) {
@@ -285,7 +297,7 @@ let DathangService = class DathangService {
         }));
     }
     async findby(param) {
-        const { page = 1, pageSize = 50, isOne, ...where } = param;
+        const { page = 1, pageSize = 50, isOne, khoId, ...where } = param;
         const whereClause = {};
         if (where.subtitle) {
             whereClause.OR = [];
@@ -301,7 +313,6 @@ let DathangService = class DathangService {
                 });
             }
         }
-        console.log('whereClause:', whereClause);
         if (where.Batdau || where.Ketthuc) {
             whereClause.ngaynhan = {};
             if (where.Batdau) {
@@ -317,6 +328,9 @@ let DathangService = class DathangService {
                     .toDate();
             }
         }
+        if (khoId) {
+            whereClause.khoId = khoId;
+        }
         if (isOne) {
             const oneResult = await this.prisma.dathang.findFirst({
                 where: whereClause,
@@ -325,6 +339,7 @@ let DathangService = class DathangService {
                         include: { sanpham: true },
                     },
                     nhacungcap: true,
+                    kho: true,
                 },
                 orderBy: { createdAt: 'desc' },
             });
@@ -339,6 +354,7 @@ let DathangService = class DathangService {
                         include: { sanpham: true },
                     },
                     nhacungcap: true,
+                    kho: true,
                 },
                 skip,
                 take: pageSize,
@@ -364,6 +380,14 @@ let DathangService = class DathangService {
             });
             if (!nhacungcap)
                 throw new common_1.NotFoundException('Nhà cung cấp không tồn tại');
+            if (dto.khoId) {
+                const kho = await prisma.kho.findUnique({
+                    where: { id: dto.khoId },
+                });
+                if (!kho) {
+                    throw new common_1.NotFoundException('Kho không tồn tại');
+                }
+            }
             const newDathang = await prisma.dathang.create({
                 data: {
                     title: dto.title,
@@ -371,6 +395,7 @@ let DathangService = class DathangService {
                     madncc: madathang,
                     ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
                     nhacungcapId: nhacungcap.id,
+                    khoId: dto.khoId,
                     isActive: dto.isActive !== undefined ? dto.isActive : true,
                     order: dto.order,
                     ghichu: dto.ghichu,
@@ -414,6 +439,14 @@ let DathangService = class DathangService {
             });
             if (!nhacungcap)
                 throw new common_1.NotFoundException('Nhà cung cấp không tồn tại');
+            if (dto.khoId) {
+                const kho = await prisma.kho.findUnique({
+                    where: { id: dto.khoId },
+                });
+                if (!kho) {
+                    throw new common_1.NotFoundException('Kho không tồn tại');
+                }
+            }
             const newDathang = await prisma.dathang.create({
                 data: {
                     title: dto.title,
@@ -421,6 +454,7 @@ let DathangService = class DathangService {
                     madncc: madathang,
                     ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
                     nhacungcapId: nhacungcap.id,
+                    khoId: dto.khoId,
                     isActive: dto.isActive !== undefined ? dto.isActive : true,
                     order: dto.order,
                     ghichu: dto.ghichu,
@@ -460,11 +494,20 @@ let DathangService = class DathangService {
         return this.prisma.$transaction(async (prisma) => {
             const oldDathang = await prisma.dathang.findUnique({
                 where: { id },
-                include: { sanpham: true },
+                include: { sanpham: true, kho: true },
             });
             if (!oldDathang) {
                 throw new common_1.NotFoundException('Đơn đặt hàng không tồn tại');
             }
+            if (data.khoId && data.khoId !== oldDathang.khoId) {
+                const kho = await prisma.kho.findUnique({
+                    where: { id: data.khoId },
+                });
+                if (!kho) {
+                    throw new common_1.NotFoundException('Kho không tồn tại');
+                }
+            }
+            const khoId = data.khoId || oldDathang.khoId;
             if (oldDathang.status === 'dagiao' && data.status === 'dadat') {
                 for (const sp of oldDathang.sanpham) {
                     const incValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
@@ -494,6 +537,7 @@ let DathangService = class DathangService {
                         type: data.type,
                         ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
                         nhacungcapId: data.nhacungcapId,
+                        khoId: khoId,
                         isActive: data.isActive,
                         order: data.order,
                         ghichu: data.ghichu,
@@ -560,6 +604,7 @@ let DathangService = class DathangService {
                         type: data.type,
                         ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
                         nhacungcapId: data.nhacungcapId,
+                        khoId: khoId,
                         isActive: data.isActive,
                         order: data.order,
                         ghichu: data.ghichu,
@@ -585,7 +630,6 @@ let DathangService = class DathangService {
             }
             if (data.status === 'dagiao') {
                 for (const sp of data.sanpham) {
-                    console.log(sp);
                     const decValue = parseFloat((Number(sp.slgiao) ?? 0).toFixed(2));
                     await prisma.tonKho.update({
                         where: { sanphamId: sp.idSP },
@@ -598,7 +642,7 @@ let DathangService = class DathangService {
                 const phieuPayload = {
                     ngay: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
                     type: 'xuat',
-                    khoId: DEFAUL_KHO_ID,
+                    khoId: khoId,
                     madncc: data.madncc,
                     ghichu: data.ghichu,
                     isActive: data.isActive ?? true,
@@ -610,8 +654,6 @@ let DathangService = class DathangService {
                         })),
                     },
                 };
-                console.log('Phieu kho payload:', phieuPayload);
-                console.log('maphieuNew:', maphieuNew);
                 try {
                     const { sanpham, ...phieuPayloadWithoutSanpham } = phieuPayload;
                     await prisma.phieuKho.upsert({
@@ -628,6 +670,7 @@ let DathangService = class DathangService {
                     where: { id },
                     data: {
                         status: 'dagiao',
+                        khoId: khoId,
                         sanpham: {
                             updateMany: data.sanpham.map((sp) => ({
                                 where: { idSP: sp.idSP },
@@ -677,7 +720,7 @@ let DathangService = class DathangService {
                         maphieu: maphieuNhap,
                         ngay: new Date(data.ngaynhan),
                         type: 'xuat',
-                        khoId: DEFAUL_KHO_ID,
+                        khoId: khoId,
                         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
                         isActive: data.isActive ?? true,
                         sanpham: {
@@ -696,6 +739,7 @@ let DathangService = class DathangService {
                     where: { id },
                     data: {
                         status: 'danhan',
+                        khoId: khoId,
                         sanpham: {
                             updateMany: data.sanpham.map((item) => {
                                 const delivered = parseFloat((Number(item.slgiao) ?? 0).toFixed(2));
@@ -745,6 +789,7 @@ let DathangService = class DathangService {
                     where: { id },
                     data: {
                         status: 'huy',
+                        khoId: khoId,
                         ghichu: data.ghichu || 'Đơn đặt hàng đã hủy',
                         sanpham: {
                             updateMany: oldDathang.sanpham.map((sp) => ({
@@ -807,6 +852,7 @@ let DathangService = class DathangService {
                         type: data.type,
                         ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
                         nhacungcapId: data.nhacungcapId,
+                        khoId: khoId,
                         isActive: data.isActive,
                         order: data.order,
                         ghichu: data.ghichu,
@@ -860,7 +906,7 @@ let DathangService = class DathangService {
                         maphieu: maphieuNhap,
                         ngay: new Date(data.ngaynhan),
                         type: 'xuat',
-                        khoId: DEFAUL_KHO_ID,
+                        khoId: khoId,
                         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
                         isActive: data.isActive ?? true,
                         sanpham: {
@@ -877,6 +923,7 @@ let DathangService = class DathangService {
                     where: { id },
                     data: {
                         status: 'danhan',
+                        khoId: khoId,
                         sanpham: {
                             updateMany: data.sanpham.map((item) => {
                                 const sldat = parseFloat((Number(item.sldat) ?? 0).toFixed(2));
@@ -943,6 +990,7 @@ let DathangService = class DathangService {
                     },
                 },
                 nhacungcap: true,
+                kho: true,
             },
             orderBy: { createdAt: 'desc' },
         });
@@ -981,6 +1029,7 @@ let DathangService = class DathangService {
                             mancc: curr.mancc,
                             name: nhacungcap?.name,
                             mabanggia: curr.mabanggia,
+                            khoId: curr.khoId,
                             sanpham: [],
                             nhacungcap: {
                                 mancc: curr.mancc,

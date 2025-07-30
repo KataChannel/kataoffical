@@ -91,7 +91,6 @@ let PermissionService = class PermissionService {
             return created;
         }
         catch (error) {
-            this._ErrorlogService.logError('createPermission', error);
             throw error;
         }
     }

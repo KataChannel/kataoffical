@@ -114,8 +114,8 @@ export declare class ChotkhoController {
             userId: string | null;
             codeId: string | null;
             sanphamId: string | null;
-            ngay: Date;
             khoId: string | null;
+            ngay: Date;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -149,8 +149,8 @@ export declare class ChotkhoController {
         userId: string | null;
         codeId: string | null;
         sanphamId: string | null;
-        ngay: Date;
         khoId: string | null;
+        ngay: Date;
         tonkhoId: string | null;
         phieukhoId: string | null;
         slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -176,8 +176,8 @@ export declare class ChotkhoController {
         userId: string | null;
         codeId: string | null;
         sanphamId: string | null;
-        ngay: Date;
         khoId: string | null;
+        ngay: Date;
         tonkhoId: string | null;
         phieukhoId: string | null;
         slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -195,8 +195,8 @@ export declare class ChotkhoController {
         userId: string | null;
         codeId: string | null;
         sanphamId: string | null;
-        ngay: Date;
         khoId: string | null;
+        ngay: Date;
         tonkhoId: string | null;
         phieukhoId: string | null;
         slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -257,8 +257,8 @@ export declare class ChotkhoController {
             userId: string | null;
             codeId: string | null;
             sanphamId: string | null;
-            ngay: Date;
             khoId: string | null;
+            ngay: Date;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -325,8 +325,8 @@ export declare class ChotkhoController {
             userId: string | null;
             codeId: string | null;
             sanphamId: string | null;
-            ngay: Date;
             khoId: string | null;
+            ngay: Date;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -407,11 +407,11 @@ export declare class ChotkhoController {
                 type: string | null;
                 madonhang: string | null;
                 madncc: string | null;
+                khoId: string | null;
                 maphieu: string | null;
                 madathang: string | null;
                 ngay: Date | null;
                 isChotkho: boolean;
-                khoId: string | null;
             } | null;
             tonkho: {
                 id: string;
@@ -431,8 +431,8 @@ export declare class ChotkhoController {
             userId: string | null;
             codeId: string | null;
             sanphamId: string | null;
-            ngay: Date;
             khoId: string | null;
+            ngay: Date;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -511,11 +511,11 @@ export declare class ChotkhoController {
                 type: string | null;
                 madonhang: string | null;
                 madncc: string | null;
+                khoId: string | null;
                 maphieu: string | null;
                 madathang: string | null;
                 ngay: Date | null;
                 isChotkho: boolean;
-                khoId: string | null;
             } | null;
             tonkho: {
                 id: string;
@@ -535,8 +535,8 @@ export declare class ChotkhoController {
             userId: string | null;
             codeId: string | null;
             sanphamId: string | null;
-            ngay: Date;
             khoId: string | null;
+            ngay: Date;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -620,11 +620,11 @@ export declare class ChotkhoController {
                 type: string | null;
                 madonhang: string | null;
                 madncc: string | null;
+                khoId: string | null;
                 maphieu: string | null;
                 madathang: string | null;
                 ngay: Date | null;
                 isChotkho: boolean;
-                khoId: string | null;
             } | null;
             tonkho: {
                 id: string;
@@ -644,8 +644,8 @@ export declare class ChotkhoController {
             userId: string | null;
             codeId: string | null;
             sanphamId: string | null;
-            ngay: Date;
             khoId: string | null;
+            ngay: Date;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -724,11 +724,11 @@ export declare class ChotkhoController {
                 type: string | null;
                 madonhang: string | null;
                 madncc: string | null;
+                khoId: string | null;
                 maphieu: string | null;
                 madathang: string | null;
                 ngay: Date | null;
                 isChotkho: boolean;
-                khoId: string | null;
             } | null;
             tonkho: {
                 id: string;
@@ -748,8 +748,8 @@ export declare class ChotkhoController {
             userId: string | null;
             codeId: string | null;
             sanphamId: string | null;
-            ngay: Date;
             khoId: string | null;
+            ngay: Date;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;

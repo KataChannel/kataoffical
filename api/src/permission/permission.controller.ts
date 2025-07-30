@@ -21,6 +21,8 @@ export class PermissionController {
   })
   async create(@Body() data: any) {
     try {
+      console.log(data);
+      
       return await this.permissionService.create(data);
     } catch (error) {
       throw new HttpException(error.message || 'Create failed', HttpStatus.INTERNAL_SERVER_ERROR);

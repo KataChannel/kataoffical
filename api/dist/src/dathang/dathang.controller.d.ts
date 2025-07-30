@@ -33,7 +33,8 @@ export declare class DathangController {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }>;
     import(data: any): Promise<{
         success: number;
@@ -78,7 +79,8 @@ export declare class DathangController {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }>;
     getchonhap(params: any): Promise<{
         idSP: string;
@@ -141,7 +143,19 @@ export declare class DathangController {
                 isshowvat: boolean;
                 mancc: string;
                 manccold: string | null;
-            };
+            } | null;
+            kho: {
+                id: string;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                diachi: string | null;
+                sdt: string | null;
+                makho: string | null;
+                congtyId: string | null;
+            } | null;
         } & {
             id: string;
             title: string | null;
@@ -156,7 +170,8 @@ export declare class DathangController {
             printCount: number | null;
             madncc: string | null;
             ngaynhan: Date | null;
-            nhacungcapId: string;
+            nhacungcapId: string | null;
+            khoId: string | null;
         })[];
         total: number;
         pageNumber: any;
@@ -179,7 +194,19 @@ export declare class DathangController {
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;
-        };
+        } | null;
+        kho: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            diachi: string | null;
+            sdt: string | null;
+            makho: string | null;
+            congtyId: string | null;
+        } | null;
         id: string;
         title: string | null;
         subtitle: string | null;
@@ -193,7 +220,8 @@ export declare class DathangController {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }[]>;
     findby(param: any): Promise<({
         sanpham: ({
@@ -249,7 +277,19 @@ export declare class DathangController {
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;
-        };
+        } | null;
+        kho: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            diachi: string | null;
+            sdt: string | null;
+            makho: string | null;
+            congtyId: string | null;
+        } | null;
     } & {
         id: string;
         title: string | null;
@@ -264,7 +304,8 @@ export declare class DathangController {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }) | {
         data: ({
             sanpham: ({
@@ -320,7 +361,19 @@ export declare class DathangController {
                 isshowvat: boolean;
                 mancc: string;
                 manccold: string | null;
-            };
+            } | null;
+            kho: {
+                id: string;
+                ghichu: string | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                diachi: string | null;
+                sdt: string | null;
+                makho: string | null;
+                congtyId: string | null;
+            } | null;
         } & {
             id: string;
             title: string | null;
@@ -335,7 +388,8 @@ export declare class DathangController {
             printCount: number | null;
             madncc: string | null;
             ngaynhan: Date | null;
-            nhacungcapId: string;
+            nhacungcapId: string | null;
+            khoId: string | null;
         })[];
         page: any;
         pageSize: any;
@@ -396,7 +450,19 @@ export declare class DathangController {
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;
-        };
+        } | null;
+        kho: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            diachi: string | null;
+            sdt: string | null;
+            makho: string | null;
+            congtyId: string | null;
+        } | null;
         id: string;
         title: string | null;
         subtitle: string | null;
@@ -410,7 +476,8 @@ export declare class DathangController {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }>;
     findByProductId(id: string): Promise<{
         sanpham: ({
@@ -466,7 +533,19 @@ export declare class DathangController {
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;
-        };
+        } | null;
+        kho: {
+            id: string;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            diachi: string | null;
+            sdt: string | null;
+            makho: string | null;
+            congtyId: string | null;
+        } | null;
         id: string;
         title: string | null;
         subtitle: string | null;
@@ -480,7 +559,8 @@ export declare class DathangController {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }[]>;
     update(id: string, updateDathangDto: any): Promise<{
         id: string;
@@ -496,7 +576,8 @@ export declare class DathangController {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -512,7 +593,8 @@ export declare class DathangController {
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
-        nhacungcapId: string;
+        nhacungcapId: string | null;
+        khoId: string | null;
     }>;
     reorder(body: {
         dathangIds: string[];

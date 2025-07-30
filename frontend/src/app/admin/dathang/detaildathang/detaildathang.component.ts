@@ -38,6 +38,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import html2canvas from 'html2canvas';
 import { Debounce } from '../../../shared/utils/decorators';
+import { KhoService } from '../../kho/kho.service';
 @Component({
   selector: 'app-detaildathang',
   imports: [
@@ -66,6 +67,7 @@ export class DetailDathangComponent {
   _NhacungcapService: NhacungcapService = inject(NhacungcapService);
   _BanggiaService: BanggiaService = inject(BanggiaService);
   _SanphamService: SanphamService = inject(SanphamService);
+  _KhoService: KhoService = inject(KhoService);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -77,6 +79,8 @@ export class DetailDathangComponent {
       this.filterNhacungcap = this.ListNhacungcap().filter(
         (v: any) => v.isActive
       );
+      await this._KhoService.getAllKho();
+      this.filterKho = this.ListKho()
       await this._BanggiaService.getAllBanggia();
       this.filterBanggia = this._BanggiaService.ListBanggia();
       await this._SanphamService.getAllSanpham();
@@ -111,9 +115,11 @@ export class DetailDathangComponent {
   }
   DetailDathang: any = this._DathangService.DetailDathang;
   ListNhacungcap: any = this._NhacungcapService.ListNhacungcap;
+  ListKho: any = this._KhoService.ListKho;
   isEdit = signal(false);
   isDelete = signal(false);
   filterNhacungcap: any = [];
+  filterKho: any = [];
   filterBanggia: any[] = [];
   filterSanpham: any[] = [];
   dathangId: any = this._DathangService.dathangId;
@@ -290,7 +296,37 @@ export class DetailDathangComponent {
     //   return v;
     // });
   }
-  @Debounce(500)
+  async DoFindKho(event: any) {
+    const value = event.target.value.trim().toLowerCase();
+    if( !value) {
+      this.filterKho = this.ListKho()
+      return;
+    }
+    this.filterKho = this.ListKho().filter((v: any) => v.name.toLowerCase().includes(value));
+  }
+  SelectKho(event: any) {
+    const selectedKho = this.ListKho().find(
+      (v: any) => v.id === event.value
+    );
+    console.log(selectedKho);
+    if (selectedKho) {
+      this.DetailDathang.update((v: any) => {
+        const kho = {
+          name: selectedKho.name,
+          diachi: selectedKho.diachi,
+          sdt: selectedKho.sdt,
+          ghichu: selectedKho.ghichu,
+        };
+        v.khoId = selectedKho.id;
+        v.kho = kho;
+        return v;
+      });
+    }
+    console.log(this.DetailDathang());
+  }
+
+
+  @Debounce(100)
   async DoFindNhacungcap(event: any) {
     const value = event.target.value.trim().toLowerCase();
     if( !value) {
@@ -300,7 +336,6 @@ export class DetailDathangComponent {
     }
     await this._NhacungcapService.getNhacungcapBy({name:value})
     this.filterNhacungcap = this.ListNhacungcap()
-
   }
   DoFindBanggia(event: any) {
     const query = event.target.value.toLowerCase();

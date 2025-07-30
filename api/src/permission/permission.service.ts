@@ -81,7 +81,6 @@ export class PermissionService {
       this._SocketGateway.sendPermissionUpdate();
       return created;
     } catch (error) {
-      this._ErrorlogService.logError('createPermission', error);
       throw error;
     }
   }
