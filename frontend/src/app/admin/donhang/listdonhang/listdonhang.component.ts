@@ -52,6 +52,7 @@ import { SanphamService } from '../../sanpham/sanpham.service';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import { SharepaginationComponent } from '../../../shared/common/sharepagination/sharepagination.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 @Component({
   selector: 'app-listdonhang',
   templateUrl: './listdonhang.component.html',
@@ -75,6 +76,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatTabsModule,
     SharepaginationComponent,
     MatProgressSpinnerModule,
+    MatCheckboxModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -1099,6 +1101,109 @@ export class ListDonhangComponent {
     } else {
       this.EditList = [...this.Listdonhang().data];
     }
+  }
+
+  /**
+   * Get confirmed orders count for display
+   */
+  getConfirmedOrdersCount(): number {
+    return this.statusDetails.filter(detail => 
+      detail.status === 'Processed' && detail.configOptions?.confirmed
+    ).length;
+  }
+
+  /**
+   * Toggle confirmation for individual order
+   */
+  toggleOrderConfirmation(index: number): void {
+    const detail = this.statusDetails[index];
+    if (detail && detail.status === 'Processed') {
+      if (!detail.configOptions) {
+        detail.configOptions = { confirmed: false };
+      }
+      detail.configOptions.confirmed = !detail.configOptions.confirmed;
+    }
+  }
+
+  /**
+   * Toggle confirmation for all orders
+   */
+  toggleAllOrderConfirmation(): void {
+    const processedDetails = this.statusDetails.filter(d => d.status === 'Processed');
+    const allConfirmed = processedDetails.every(detail => detail.configOptions?.confirmed);
+    
+    processedDetails.forEach(detail => {
+      if (!detail.configOptions) {
+        detail.configOptions = { confirmed: false };
+      }
+      detail.configOptions.confirmed = !allConfirmed;
+    });
+  }
+
+  /**
+   * Import only confirmed orders
+   */
+  async ImportConfirmedDonhang(): Promise<void> {
+    try {
+      const confirmedDetails = this.statusDetails.filter(detail => 
+        detail.status === 'Processed' && detail.configOptions?.confirmed
+      );
+
+      if (confirmedDetails.length === 0) {
+        this._snackBar.open('Vui lòng chọn ít nhất một đơn hàng để import', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning']
+        });
+        return;
+      }
+
+      // Filter corresponding import data
+      const confirmedImportData = this.ListImportData.filter(importItem =>
+        confirmedDetails.some(detail => detail.tenkhongdau === importItem.tenkh)
+      );
+
+      if (confirmedImportData.length === 0) {
+        this._snackBar.open('Không có dữ liệu để import', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning']
+        });
+        return;
+      }
+
+      // Call existing import method with filtered data
+      await this.ImportDonhang(confirmedImportData);
+      
+      this._snackBar.open(`Import thành công ${confirmedImportData.length} đơn hàng`, '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+
+      // Close dialog and refresh data
+      this.dialog.closeAll();
+      await this.LoadData();
+
+    } catch (error: any) {
+      console.error('Error importing confirmed orders:', error);
+      this._snackBar.open('Lỗi khi import đơn hàng: ' + (error.message || 'Unknown error'), '', {
+        duration: 5000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+    }
+  }
+
+  /**
+   * Get count of processed orders
+   */
+  getProcessedOrdersCount(): number {
+    return this.statusDetails.filter(d => d.status === 'Processed').length;
   }
 }
 function memoize() {

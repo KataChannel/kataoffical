@@ -372,114 +372,144 @@
 </ng-template>
 
 <ng-template #dialogImportExcelCu>
-    <h2 mat-dialog-title>Import Đơn Hàng</h2>
-    <mat-dialog-content class="mat-typography">
-        <div class="w-full">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 shadow-md rounded-lg">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th
-                                class="w-16 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                #
-                            </th>
-                            <th
-                                class="min-w-[350px] px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Khách hàng
-                            </th>
-                            <th
-                                class="w-48 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Ngày Giao
+    <h2 mat-dialog-title class="flex items-center justify-between">
+        <span>Import Đơn Hàng từ Excel</span>
+        <span class="text-sm font-normal text-gray-600">
+            {{ statusDetails.length }} đơn hàng - {{ getConfirmedOrdersCount() }} đã xác nhận
+        </span>
+    </h2>
+    
+    <mat-dialog-content class="!max-h-[90vh] h-[90vh] w-[90vh] !p-0">
+        <div class="h-full flex flex-col">
+            
+            <!-- Global Controls -->
+            <div class="border-b p-4 bg-gray-50">
+                <div class="flex flex-wrap gap-4 items-center">
+                    <!-- Global Date Control -->
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="min-w-[200px]">
+                        <mat-label>Ngày giao (Tất cả)</mat-label>
+                        <input matInput 
+                               [matDatepicker]="globalDatePicker"
+                               (dateChange)="DoChonNgaygiao($event,'All')">
+                        <mat-datepicker-toggle matIconSuffix [for]="globalDatePicker"></mat-datepicker-toggle>
+                        <mat-datepicker #globalDatePicker></mat-datepicker>
+                    </mat-form-field>
+
+                    <!-- Global Confirmation Toggle -->
+                    <button mat-flat-button 
+                            color="primary" 
+                            (click)="toggleAllOrderConfirmation()">
+                        <mat-icon>{{ getConfirmedOrdersCount() === getProcessedOrdersCount() ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+                        {{ getConfirmedOrdersCount() === getProcessedOrdersCount() ? 'Bỏ chọn tất cả' : 'Chọn tất cả' }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Orders List -->
+            <div class="flex-1 overflow-auto p-4">
+                <div class="grid gap-4">
+                    @for (detail of statusDetails; track detail.fileName; let i = $index) {
+                        @if (detail.status === 'Processed') {
+                        <div class="border rounded-lg p-4" [ngClass]="detail.configOptions?.confirmed ? 'border-green-500 bg-green-50' : 'border-gray-300'">
+                            
+                            <!-- Order Header -->
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <mat-checkbox 
+                                        [checked]="detail.configOptions?.confirmed || false"
+                                        (change)="toggleOrderConfirmation(i)">
+                                    </mat-checkbox>
+                                    <div>
+                                        <h3 class="font-semibold text-lg">{{ detail.tenkhongdau || 'Khách hàng chưa xác định' }}</h3>
+                                        <p class="text-sm text-gray-600">
+                                            File: {{ detail.fileName }} | 
+                                            Trạng thái: <span class="text-green-600 font-semibold">{{ detail.status }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <button mat-icon-button 
+                                        color="warn" 
+                                        (click)="removeItemImport(detail)"
+                                        matTooltip="Xóa đơn hàng này">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+
+                            <!-- Order Controls -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <!-- Customer Selection -->
                                 <mat-form-field appearance="outline" subscriptSizing="dynamic">
-                                    <mat-label>Ngày Giao All </mat-label>
-                                    <input (dateChange)="DoChonNgaygiao($event,'All')" matInput
-                                        [matDatepicker]="picker">
-                                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                                    <mat-datepicker #picker></mat-datepicker>
-                                </mat-form-field>
-                            </th>
-                            <th
-                                class="w-40 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                File Name</th>
-                            <th
-                                class="w-40 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Tên Không Dấu</th>
-                            <th
-                                class="w-24 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status</th>
-                            <th
-                                class="w-32 px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Message</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <tr *ngFor="let detail of statusDetails;let i = index">
-                            <td class="w-16 px-4 py-4 whitespace-nowrap text-gray-900 items-center">
-                                @if(detail.status === 'Processed'){
-                                {{i+1}}
-                                <button mat-icon-button color="warn"
-                                    (click)="removeItemImport(detail)"><mat-icon>delete</mat-icon></button>
-                                }
-                            </td>
-                            <td class="min-w-[350px] px-6 py-4 whitespace-nowrap text-gray-900">
-                                @if(detail.status === 'Processed'){
-                                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
-                                    <mat-label>Khách Hàng</mat-label>
+                                    <mat-label>Khách hàng</mat-label>
                                     <mat-select (selectionChange)="SelectKhachhang(detail,$event)">
                                         <div class="w-full flex flex-col">
-                                            <mat-form-field appearance="outline" class="w-full p-2"
-                                                subscriptSizing="dynamic">
-                                                <input matInput (input)="DoFindKhachhang($event,i)"
-                                                    placeholder="Tìm Kiếm" />
+                                            <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
+                                                <input matInput (input)="DoFindKhachhang($event,i)" placeholder="Tìm kiếm khách hàng" />
                                             </mat-form-field>
                                             <div class="overflow-y-auto max-h-44">
                                                 @for (item of FilterKhachhang[i]; track item.id) {
-                                                <mat-option [value]="item.id"
-                                                    class="!whitespace-normal !h-auto !py-2">{{item.name}}</mat-option>
+                                                <mat-option [value]="item.id" class="!whitespace-normal !h-auto !py-2">
+                                                    <div class="flex flex-col">
+                                                        <span class="font-medium">{{ item.name }}</span>
+                                                        <span class="text-sm text-gray-500">Mã: {{ item.makh }}</span>
+                                                    </div>
+                                                </mat-option>
                                                 }
                                             </div>
                                         </div>
                                     </mat-select>
                                 </mat-form-field>
-                                }
 
-                            </td>
-                            <td class="w-48 px-4 py-4 whitespace-nowrap text-gray-900">
-                                @if(detail.status === 'Processed'){
-                                <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
-                                    <mat-label>Ngày Giao </mat-label>
-                                    <input [ngModel]="statusDetails[i]?.ngaygiao"
-                                        (dateChange)="DoChonNgaygiao($event,detail)" matInput [matDatepicker]="picker">
-                                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                                    <mat-datepicker #picker></mat-datepicker>
+                                <!-- Delivery Date -->
+                                <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                    <mat-label>Ngày giao</mat-label>
+                                    <input matInput 
+                                           [matDatepicker]="orderDatePicker"
+                                           [ngModel]="detail.ngaygiao"
+                                           (dateChange)="DoChonNgaygiao($event,detail)">
+                                    <mat-datepicker-toggle matIconSuffix [for]="orderDatePicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #orderDatePicker></mat-datepicker>
                                 </mat-form-field>
-                                }
-                            </td>
-                            <td class="w-40 px-4 py-4 whitespace-nowrap text-sm text-gray-900 truncate">{{
-                                detail.fileName }}</td>
-                            <td class="w-40 px-4 py-4 whitespace-nowrap text-sm text-gray-900 truncate">{{
-                                detail.tenkhongdau }}</td>
-                            <td class="w-24 px-4 py-4 whitespace-nowrap text-sm">
-                                <span [ngClass]="{
-                                        'text-green-600 font-semibold': detail.status === 'Processed' || detail.status === 'Success',
-                                        'text-yellow-600 font-semibold': detail.status === 'Skipped'
-                                    }">
-                                    {{ detail.status }}
-                                </span>
-                            </td>
-                            <td class="w-32 px-4 py-4 whitespace-nowrap text-sm text-gray-500 truncate">{{
-                                detail.message }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                            </div>
+
+                            <!-- Order Summary -->
+                            <div class="bg-gray-50 rounded p-3">
+                                <div class="text-sm text-gray-600">
+                                    <strong>File:</strong> {{ detail.fileName }}<br>
+                                    <strong>Thông báo:</strong> {{ detail.message || 'Sẵn sàng import' }}
+                                </div>
+                            </div>
+                        </div>
+                        }
+                    }
+                </div>
+
+                <!-- Empty State -->
+                @if (getProcessedOrdersCount() === 0) {
+                <div class="text-center py-8">
+                    <div class="text-gray-500 text-lg mb-2">Không có đơn hàng để import</div>
+                    <div class="text-gray-400">Vui lòng chọn file Excel hợp lệ</div>
+                </div>
+                }
             </div>
         </div>
     </mat-dialog-content>
-    <mat-dialog-actions align="end">
-        <button mat-flat-button color="warn" mat-dialog-close>Đóng</button>
-        <button mat-flat-button color="primary" (click)="DoImportKhachhangCu()">Cập Nhật</button>
+    
+    <mat-dialog-actions class="border-t p-4" [align]="'end'">
+        <div class="flex items-center justify-between w-full">
+            <div class="text-sm text-gray-600">
+                Đã chọn {{ getConfirmedOrdersCount() }} / {{ getProcessedOrdersCount() }} đơn hàng
+            </div>
+            <div class="flex gap-2">
+                <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
+                <button mat-flat-button 
+                        color="primary" 
+                        [disabled]="getConfirmedOrdersCount() === 0"
+                        (click)="ImportConfirmedDonhang()">
+                    Import {{ getConfirmedOrdersCount() }} đơn hàng
+                </button>
+            </div>
+        </div>
     </mat-dialog-actions>
-
 </ng-template>
 
 
