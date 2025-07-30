@@ -13,12 +13,9 @@ RUN bun install --no-cache
 # Copy the entire source code into the container
 COPY . .
 
-# # Build the application
-# RUN bun run build
-
-# # Install Prisma globally and run migrations
+# Install Prisma globally and use db push instead of migrate
 RUN bun install -g prisma
-RUN bun prisma migrate dev --name rau0707
+RUN bun prisma db push
 RUN bun prisma generate
 
 # Use a smaller runtime image
@@ -32,7 +29,6 @@ COPY --from=builder /app /app
 
 # Copy only necessary files
 COPY --from=builder /app/dist /app/dist
-# COPY .env .env
 
 # Expose the ports used by the NestJS application (e.g., 3000)
 EXPOSE 3331
