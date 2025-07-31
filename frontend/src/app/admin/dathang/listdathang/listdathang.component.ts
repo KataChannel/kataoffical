@@ -1,4 +1,12 @@
-import { AfterViewInit, Component, computed, effect, inject, TemplateRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  computed,
+  effect,
+  inject,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -30,15 +38,16 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Debounce, memoize } from '../../../shared/utils/decorators';
 import { ChangeDetectionStrategy } from '@angular/core';
-import { 
+import {
   readExcelFile,
   readExcelFileNoWorker,
-  writeExcelFile, 
+  writeExcelFile,
 } from '../../../shared/utils/exceldrive.utils';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { KhachhangService } from '../../khachhang/khachhang.service';
 import { GenId } from '../../../shared/utils/shared.utils';
 import * as XLSX from 'xlsx';
+import { KhoService } from '../../kho/kho.service';
 @Component({
   selector: 'app-listdathang',
   templateUrl: './listdathang.component.html',
@@ -56,27 +65,27 @@ import * as XLSX from 'xlsx';
     MatButtonModule,
     MatSelectModule,
     CommonModule,
-    FormsModule,   
+    FormsModule,
     MatTooltipModule,
     MatCheckboxModule,
     MatDatepickerModule,
     MatNativeDateModule,
     MatDialogModule,
     MatTabsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListDathangComponent {
   Detail: any = {};
   displayedColumns: string[] = [
     'STT',
-   // 'title',
+    // 'title',
     'madncc',
     'nhacungcap',
     'sanpham',
     'ngaynhan',
-    'status', 
+    'status',
     'ghichu',
     'createdAt',
     'updatedAt',
@@ -85,38 +94,39 @@ export class ListDathangComponent {
 
   ColumnName: any = {
     STT: 'STT',
-  //  title: 'Tiêu Đề',
+    //  title: 'Tiêu Đề',
     madncc: 'Mã Đơn Nhập',
     nhacungcap: 'Nhà Cung Cấp',
     sanpham: 'Sản Phẩm',
     ngaynhan: 'Ngày Nhận',
     status: 'Trạng Thái',
     ghichu: 'Ghi Chú',
-    createdAt:'Ngày Tạo',
-    updatedAt:'Ngày Cập Nhật',
+    createdAt: 'Ngày Tạo',
+    updatedAt: 'Ngày Cập Nhật',
     // action: 'Hành Động'
   };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('DathangColFilter') || '[]'
-  );  Columns: any[] = [];
+  );
+  Columns: any[] = [];
   isFilter: boolean = false;
-  Trangthaidon:any = TrangThaiDon;
-  
+  Trangthaidon: any = TrangThaiDon;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   @ViewChild('dialogImportExcel') dialogImportExcel!: TemplateRef<any>;
   @ViewChild('dialogImportExcelCu') dialogImportExcelCu!: TemplateRef<any>;
-  
+
   filterValues: { [key: string]: string } = {};
   private _DathangService: DathangService = inject(DathangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
-  private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);  
   private _NhacungcapService: NhacungcapService = inject(NhacungcapService);
   private _SanphamService: SanphamService = inject(SanphamService);
   private _BanggiaService: BanggiaService = inject(BanggiaService);
-  private _KhachhangService: KhachhangService = inject(KhachhangService);  private _router: Router = inject(Router);
-  Listdathang:any = this._DathangService.ListDathang;
+  private _KhoService: KhoService = inject(KhoService);
+  private _router: Router = inject(Router);
+  Listdathang: any = this._DathangService.ListDathang;
   page = this._DathangService.page;
   pageCount = this._DathangService.pageCount;
   total = this._DathangService.total;
@@ -128,12 +138,12 @@ export class ListDathangComponent {
   suppliers: any[] = []; // List of suppliers for import
   dialog: MatDialog = inject(MatDialog);
   ListImportExcel: any[] = []; // Import data from Excel
-  searchParam:any={
+  searchParam: any = {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
     page: this.page(),
     pageSize: this.pageSize(),
-  }
+  };
   totalItems: number = 0;
   constructor() {
     effect(async () => {
@@ -143,17 +153,20 @@ export class ListDathangComponent {
         this.paginator.pageIndex = this.page() - 1;
         this.paginator.pageSize = this.pageSize();
         this.paginator.length = this.total();
-      }  
+      }
     });
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
       const filterObject = JSON.parse(filter);
       let isMatch = true;
-      this.displayedColumns.forEach(column => {
+      this.displayedColumns.forEach((column) => {
         if (filterObject[column]) {
-          const value = data[column] ? data[column].toString().toLowerCase() : '';
-          isMatch = isMatch && value.includes(filterObject[column].toLowerCase());
+          const value = data[column]
+            ? data[column].toString().toLowerCase()
+            : '';
+          isMatch =
+            isMatch && value.includes(filterObject[column].toLowerCase());
         }
       });
       return isMatch;
@@ -174,7 +187,7 @@ export class ListDathangComponent {
     this._DathangService.getDathangBy(this.searchParam);
     menuHienthi.closeMenu();
   }
-  onPreviousPage(){
+  onPreviousPage() {
     if (this.page() > 1) {
       this._DathangService.page.set(this.page() - 1);
       this.searchParam.page = this.page();
@@ -182,7 +195,7 @@ export class ListDathangComponent {
     }
   }
 
-  onNextPage(){
+  onNextPage() {
     if (this.page() < this.pageCount()) {
       this._DathangService.page.set(this.page() + 1);
       this.searchParam.page = this.page();
@@ -190,28 +203,44 @@ export class ListDathangComponent {
     }
   }
 
-
   onDateChange(): void {
     this.ngOnInit();
-  }  async ngOnInit(): Promise<void> {
+  }
+  async ngOnInit(): Promise<void> {
     await this._DathangService.getDathangBy(this.searchParam);
     this.displayedColumns = Object.keys(this.ColumnName);
     this.dataSource = new MatTableDataSource(this.Listdathang());
     this.dataSource.sort = this.sort;
     this.initializeColumns();
     this.setupDrawer();
-    
+
     // Initialize FilterNhacungcap for import dialog
     await this._NhacungcapService.getAllNhacungcap();
-    this.FilterNhacungcap = Array(20).fill(null).map(() => this._NhacungcapService.ListNhacungcap());
+    this.FilterNhacungcap = Array(20)
+      .fill(null)
+      .map(() => this._NhacungcapService.ListNhacungcap());
   }
   private initializeColumns(): void {
-    this.Columns = Object.entries(this.ColumnName).map(([key, value]) => ({ key, value, isShow: true }));
-    this.FilterColumns = this.FilterColumns.length ? this.FilterColumns : this.Columns;
-    localStorage.setItem('DathangColFilter', JSON.stringify(this.FilterColumns));
-    this.displayedColumns = this.FilterColumns.filter(col => col.isShow).map(col => col.key);
-    this.ColumnName = this.FilterColumns.reduce((acc, { key, value, isShow }) => 
-      isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
+    this.Columns = Object.entries(this.ColumnName).map(([key, value]) => ({
+      key,
+      value,
+      isShow: true,
+    }));
+    this.FilterColumns = this.FilterColumns.length
+      ? this.FilterColumns
+      : this.Columns;
+    localStorage.setItem(
+      'DathangColFilter',
+      JSON.stringify(this.FilterColumns)
+    );
+    this.displayedColumns = this.FilterColumns.filter((col) => col.isShow).map(
+      (col) => col.key
+    );
+    this.ColumnName = this.FilterColumns.reduce(
+      (acc, { key, value, isShow }) =>
+        isShow ? { ...acc, [key]: value } : acc,
+      {} as Record<string, string>
+    );
   }
   @Debounce(500)
   applyFilter(event: Event) {
@@ -250,15 +279,16 @@ export class ListDathangComponent {
 
   @memoize()
   FilterHederColumn(list: any, column: any) {
-    const uniqueList = list.filter((obj: any, index: number, self: any) => 
-      index === self.findIndex((t: any) => t[column] === obj[column])
+    const uniqueList = list.filter(
+      (obj: any, index: number, self: any) =>
+        index === self.findIndex((t: any) => t[column] === obj[column])
     );
     return uniqueList;
   }
 
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listdathang().filter((v: any) => 
+    this.dataSource.filteredData = this.Listdathang().filter((v: any) =>
       v[column].toLowerCase().includes(event.target.value.toLowerCase())
     );
   }
@@ -270,7 +300,9 @@ export class ListDathangComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('DathangColFilter',JSON.stringify(this.FilterColumns)
+    localStorage.setItem(
+      'DathangColFilter',
+      JSON.stringify(this.FilterColumns)
     );
   }
   doFilterColumns(event: any): void {
@@ -284,11 +316,11 @@ export class ListDathangComponent {
     this._router.navigate(['admin/dathang', 'new']);
   }
   goToDetail(item: any): void {
-     this._DathangService.setDathangId(item.id);
+    this._DathangService.setDathangId(item.id);
     this.drawer.open();
     this._router.navigate(['admin/dathang', item.id]);
   }
-  UpdateDathang(item:any){
+  UpdateDathang(item: any) {
     item.status = 'dagiao';
     this._DathangService.updateDathang(item).then(() => {
       this._snackBar.open('Cập Nhật Thành Công', '', {
@@ -300,15 +332,14 @@ export class ListDathangComponent {
       // window.location.reload();
     });
   }
- async ExportExcel() {
+  async ExportExcel() {
     // Use existing data if no specific data provided
     const exportData = this.Listdathang();
     const exportTitle = `Danh Sách Đặt Hàng ${moment().format('DD-MM-YYYY')}`;
-    
+
     await this._NhacungcapService.getAllNhacungcap();
     await this._SanphamService.getAllSanpham();
     await this._BanggiaService.getAllBanggia();
-    
 
     const ListDathang =
       Array.isArray(exportData) && exportData.length > 0
@@ -324,7 +355,7 @@ export class ListDathangComponent {
               slgiao: Number(sp?.slgiao) || 0,
               slnhan: Number(sp?.slnhan) || 0,
               ghichu: sp?.ghichu,
-              makho: record?.kho?.makho
+              makho: record?.kho?.makho,
             }));
           })
         : [
@@ -338,15 +369,10 @@ export class ListDathangComponent {
               slgiao: 0,
               slnhan: 0,
               ghichu: '',
-              makho: ''
+              makho: '',
             },
           ];
     console.log(ListDathang);
-    
-
-
-
-
 
     // const NCC = this._NhacungcapService.ListNhacungcap().map((v: any) => ({
     //   mancc: v.mancc,
@@ -365,7 +391,7 @@ export class ListDathangComponent {
     //   mabanggia: v.mabanggia,
     //   title: v.title,
     // }));
-    
+
     // let index = 1;
     // const dataExport = exportData.flatMap((item: any) =>
     //   item.sanpham.map((sanpham: any) => {
@@ -379,29 +405,29 @@ export class ListDathangComponent {
     //     };
     //   })
     // );
-    
-  writeExcelFile(ListDathang, exportTitle);
+
+    writeExcelFile(ListDathang, exportTitle);
   }
 
-EditList: any[] = [];
-AddToEdit(item: any): void {
-  const existingItem = this.EditList.find((v: any) => v.id === item.id);
-  if (existingItem) {
-    this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
-  } else {
-    this.EditList.push(item);
+  EditList: any[] = [];
+  AddToEdit(item: any): void {
+    const existingItem = this.EditList.find((v: any) => v.id === item.id);
+    if (existingItem) {
+      this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
+    } else {
+      this.EditList.push(item);
+    }
   }
-}
-CheckItemInEdit(item: any): boolean {
-  return this.EditList.some((v: any) => v.id === item.id);
-}
-DoDanhan(){
-    Promise.all(this.EditList.map((item: any) => 
-      {
+  CheckItemInEdit(item: any): boolean {
+    return this.EditList.some((v: any) => v.id === item.id);
+  }
+  DoDanhan() {
+    Promise.all(
+      this.EditList.map((item: any) => {
         item.status = 'danhan';
         return this._DathangService.updateDathang(item);
-      }))
-    .then(() => {
+      })
+    ).then(() => {
       this.EditList = [];
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,
@@ -410,37 +436,35 @@ DoDanhan(){
         panelClass: ['snackbar-success'],
       });
     });
-}
-dialogCreateRef: any;
+  }
+  dialogCreateRef: any;
 
-openDeleteDialog(template: TemplateRef<any>, item?: any) {
-     const dialogDeleteRef = this.dialog.open(template, {
-       hasBackdrop: true,
-       disableClose: true,
-     });
-     dialogDeleteRef.afterClosed().subscribe(async (result) => {
-       if (result=="true") {
-        if(item){
-         await this._DathangService.DeleteDathang(item)
-         return;
+  openDeleteDialog(template: TemplateRef<any>, item?: any) {
+    const dialogDeleteRef = this.dialog.open(template, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+    dialogDeleteRef.afterClosed().subscribe(async (result) => {
+      if (result == 'true') {
+        if (item) {
+          await this._DathangService.DeleteDathang(item);
+          return;
         }
-         this.DeleteListItem();
-       }
-     });
- }
+        this.DeleteListItem();
+      }
+    });
+  }
 
-openDathangDialog(template: TemplateRef<any>) {
-     const dialogDeleteRef = this.dialog.open(template, {
-       hasBackdrop: true,
-       disableClose: true,
-     });
-     dialogDeleteRef.afterClosed().subscribe(async (result) => {
-       if (result=="true") {
-
-       }
-     });
- }
-
+  openDathangDialog(template: TemplateRef<any>) {
+    const dialogDeleteRef = this.dialog.open(template, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+    dialogDeleteRef.afterClosed().subscribe(async (result) => {
+      if (result == 'true') {
+      }
+    });
+  }
 
   async DeleteListItem(): Promise<void> {
     if (!this.EditList?.length) {
@@ -454,13 +478,19 @@ openDathangDialog(template: TemplateRef<any>) {
     }
 
     try {
-      const result: any = await this._DathangService.DeleteBulkDathang(this.EditList.map((v: any) => v.id));
-      this._snackBar.open(`Xóa thành công ${result.success} đặt hàng ${result.fail} lỗi`, '', {
-        duration: 2000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
+      const result: any = await this._DathangService.DeleteBulkDathang(
+        this.EditList.map((v: any) => v.id)
+      );
+      this._snackBar.open(
+        `Xóa thành công ${result.success} đặt hàng ${result.fail} lỗi`,
+        '',
+        {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        }
+      );
     } catch (error: any) {
       console.error('Lỗi khi xóa đặt hàng:', error);
       this._snackBar.open('Có lỗi xảy ra khi xóa đặt hàng', '', {
@@ -478,11 +508,11 @@ openDathangDialog(template: TemplateRef<any>) {
   // Excel Import functionality for Dathang - similar to Donhang
   statusDetails: any[] = [];
   ListImportData: any[] = [];
-  FilterNhacungcap: any = [];  
+  FilterNhacungcap: any = [];
   ImportConfig = {
     selectedDate: new Date(),
     selectedKho: '',
-    ListKho: [] as any[]
+    ListKho: [] as any[],
   };
 
   async ImporExcel(event: any) {
@@ -497,8 +527,10 @@ openDathangDialog(template: TemplateRef<any>) {
     this.ListImportExcel = [];
 
     // Get suppliers and products for processing
-    await this._NhacungcapService.getAllNhacungcap({pageSize:99999});
-    await this._SanphamService.getAllSanpham({pageSize:99999});
+    await this._NhacungcapService.getAllNhacungcap({ pageSize: 99999 });
+    await this._SanphamService.getAllSanpham({ pageSize: 99999 });
+    await this._KhoService.getAllKho();
+
 
     // Process files sequentially
     for (let i = 0; i < files.length; i++) {
@@ -506,11 +538,10 @@ openDathangDialog(template: TemplateRef<any>) {
       try {
         const data = await readExcelFileNoWorker(file);
         console.log('Excel data:', data);
-        
+
         if (data && data.Sheet1 && data.Sheet1.length > 0) {
           const processedData = this.processImportData(data.Sheet1, file.name);
-          console.log('Processed data:', processedData);
-          
+
           if (processedData.length > 0) {
             this.ListImportExcel.push(...processedData);
             processedCount++;
@@ -522,7 +553,7 @@ openDathangDialog(template: TemplateRef<any>) {
           this.statusDetails.push({
             fileName: file.name,
             status: 'Skipped',
-            message: 'No valid data found'
+            message: 'No valid data found',
           });
         }
       } catch (error: any) {
@@ -531,7 +562,7 @@ openDathangDialog(template: TemplateRef<any>) {
         this.statusDetails.push({
           fileName: file.name,
           status: 'Error',
-          message: error.message
+          message: error.message,
         });
       }
     }
@@ -540,19 +571,19 @@ openDathangDialog(template: TemplateRef<any>) {
     if (this.ListImportExcel.length > 0) {
       // Set default date to today
       this.ImportConfig.selectedDate = new Date();
-      
+
       this.dialog.open(this.dialogImportExcel, {
         width: '95vw',
         maxWidth: '1400px',
         height: '95vh',
-        disableClose: true
+        disableClose: true,
       });
     } else {
       // Show status dialog for errors/skipped files
       this.dialog.open(this.dialogImportExcelCu, {
         width: '90vw',
         maxWidth: '1200px',
-        height: '90vh'
+        height: '90vh',
       });
     }
 
@@ -576,8 +607,6 @@ openDathangDialog(template: TemplateRef<any>) {
     const suppliers: any[] = this._NhacungcapService.ListNhacungcap();
     const products: any[] = this._SanphamService.ListSanpham();
     const processedOrders: any[] = [];
-    console.log('data:', data);
-
     try {
       // Group data by mancc (unique supplier codes)
       const groupedBySupplier: Record<string, any[]> = {};
@@ -593,15 +622,13 @@ openDathangDialog(template: TemplateRef<any>) {
       // Process each supplier group
       for (const [mancc, rows] of Object.entries(groupedBySupplier)) {
         // Find supplier
-        const supplier = suppliers.find(s => s.mancc === mancc);
-        console.log(`Processing supplier: ${mancc}`, supplier);
-        
+        const supplier = suppliers.find((s) => s.mancc === mancc);
         if (!supplier) {
           this.statusDetails.push({
             fileName,
             status: 'Error',
             message: `Không tìm thấy nhà cung cấp: ${mancc}`,
-            mancc: mancc
+            mancc: mancc,
           });
           continue;
         }
@@ -612,15 +639,15 @@ openDathangDialog(template: TemplateRef<any>) {
 
         for (const row of rows) {
           // Find product
-          const product = products.find(p => p.masp === row.masp);
-          
+          const product = products.find((p) => p.masp === row.masp);
+
           if (!product) {
             this.statusDetails.push({
               fileName,
               status: 'Error',
               message: `Không tìm thấy sản phẩm: ${row.masp}`,
               mancc: mancc,
-              masp: row.masp
+              masp: row.masp,
             });
             hasErrors = true;
             continue;
@@ -631,14 +658,14 @@ openDathangDialog(template: TemplateRef<any>) {
               id: product.id,
               masp: product.masp,
               title: product.title,
-              dvt: product.dvt || ''
+              dvt: product.dvt || '',
             },
             sldat: Number(row.sldat) || 0,
             slgiao: Number(row.slgiao) || 0,
             slnhan: Number(row.slnhan) || 0,
             ghichu: row.ghichu || '',
             // Preserve original row data for reference
-            originalData: row
+            originalData: row,
           });
 
           this.statusDetails.push({
@@ -646,7 +673,7 @@ openDathangDialog(template: TemplateRef<any>) {
             status: 'Processed',
             message: `Đã xử lý: ${product.title} - SL: ${row.sldat}`,
             mancc: mancc,
-            masp: row.masp
+            masp: row.masp,
           });
         }
 
@@ -655,25 +682,33 @@ openDathangDialog(template: TemplateRef<any>) {
           // Get ngaynhan from first row (should be same for all rows of same supplier)
           const firstRow = rows[0];
           let ngaynhan = new Date();
-          
+
           if (firstRow.ngaynhan) {
             try {
               // Parse date from DD/MM/YYYY format
               const [day, month, year] = firstRow.ngaynhan.split('/');
-              ngaynhan = moment(`${year}-${month}-${day}`, 'YYYY-MM-DD').toDate();
+              ngaynhan = moment(
+                `${year}-${month}-${day}`,
+                'YYYY-MM-DD'
+              ).toDate();
             } catch (dateError) {
-              console.warn('Error parsing date, using current date:', dateError);
+              console.warn(
+                'Error parsing date, using current date:',
+                dateError
+              );
             }
           }
 
           const dathangOrder = {
             id: `temp_${mancc}_${Date.now()}`, // Temporary ID for tracking
-            title: `Đơn hàng ${firstRow.ngaynhan || moment().format('DD/MM/YYYY')} - ${supplier.name}`,
+            title: `Đơn hàng ${
+              firstRow.ngaynhan || moment().format('DD/MM/YYYY')
+            } - ${supplier.name}`,
             ngaynhan: ngaynhan,
             nhacungcapId: supplier.id,
             nhacungcap: supplier,
             makho: firstRow.makho || '', // Get makho from data
-            status: 'dathang',
+            status: 'dadat',
             sanpham: validProducts,
             ghichu: '',
             fileName: fileName,
@@ -683,28 +718,25 @@ openDathangDialog(template: TemplateRef<any>) {
               canChangeKho: true,
               selectedDate: ngaynhan,
               selectedKho: firstRow.makho || '',
-              confirmed: false
+              confirmed: false,
             },
             // Summary info
             summary: {
               totalProducts: validProducts.length,
               totalQuantity: validProducts.reduce((sum, p) => sum + p.sldat, 0),
               supplierCode: mancc,
-              supplierName: supplier.name
-            }
-          };          
+              supplierName: supplier.name,
+            },
+          };
           processedOrders.push(dathangOrder);
-        }        
+        }
       }
-
-      console.log('Processed orders:', processedOrders);
-      
     } catch (error: any) {
       console.error('Error processing import data:', error);
       this.statusDetails.push({
         fileName,
         status: 'Error',
-        message: error.message
+        message: error.message,
       });
     }
 
@@ -714,7 +746,9 @@ openDathangDialog(template: TemplateRef<any>) {
   // Generate order code
   private generateOrderCode(mancc: string): string {
     const today = moment().format('YYYYMMDD');
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    const random = Math.floor(Math.random() * 1000)
+      .toString()
+      .padStart(3, '0');
     return `DH${mancc}-${today}-${random}`;
   }
 
@@ -722,7 +756,9 @@ openDathangDialog(template: TemplateRef<any>) {
   updateOrderDate(order: any, newDate: Date) {
     order.ngaynhan = newDate;
     order.configOptions.selectedDate = newDate;
-    order.title = `Đơn hàng ${moment(newDate).format('DD/MM/YYYY')} - ${order.nhacungcap.name}`;
+    order.title = `Đơn hàng ${moment(newDate).format('DD/MM/YYYY')} - ${
+      order.nhacungcap.name
+    }`;
   }
 
   // Update makho for specific order
@@ -734,7 +770,7 @@ openDathangDialog(template: TemplateRef<any>) {
   // Update global date for all orders
   updateAllOrdersDate(newDate: Date) {
     this.ImportConfig.selectedDate = newDate;
-    this.ListImportExcel.forEach(order => {
+    this.ListImportExcel.forEach((order) => {
       this.updateOrderDate(order, newDate);
     });
   }
@@ -742,7 +778,7 @@ openDathangDialog(template: TemplateRef<any>) {
   // Update global kho for all orders
   updateAllOrdersKho(newKho: string) {
     this.ImportConfig.selectedKho = newKho;
-    this.ListImportExcel.forEach(order => {
+    this.ListImportExcel.forEach((order) => {
       this.updateOrderKho(order, newKho);
     });
   }
@@ -754,21 +790,26 @@ openDathangDialog(template: TemplateRef<any>) {
 
   // Toggle confirmation for all orders
   toggleAllOrdersConfirmation() {
-    const allConfirmed = this.ListImportExcel.every(order => order.configOptions.confirmed);
-    this.ListImportExcel.forEach(order => {
+    const allConfirmed = this.ListImportExcel.every(
+      (order) => order.configOptions.confirmed
+    );
+    this.ListImportExcel.forEach((order) => {
       order.configOptions.confirmed = !allConfirmed;
     });
   }
 
   // Get confirmed orders count
   getConfirmedOrdersCount(): number {
-    return this.ListImportExcel.filter(order => order.configOptions.confirmed).length;
+    return this.ListImportExcel.filter((order) => order.configOptions.confirmed)
+      .length;
   }
 
   // Import only confirmed orders
   async ImportConfirmedDathang(): Promise<void> {
-    const confirmedOrders = this.ListImportExcel.filter(order => order.configOptions.confirmed);
-    
+    const confirmedOrders = this.ListImportExcel.filter(
+      (order) => order.configOptions.confirmed
+    );
+
     if (confirmedOrders.length === 0) {
       this._snackBar.open('Vui lòng xác nhận ít nhất một đơn hàng', '', {
         duration: 3000,
@@ -778,27 +819,35 @@ openDathangDialog(template: TemplateRef<any>) {
       });
       return;
     }
+    await this._KhoService.getAllKho();
 
     try {
       // Prepare data for import (remove temporary fields)
-      const ordersToImport = confirmedOrders.map(order => ({
-        title: order.title,
-        ngaynhan: order.ngaynhan,
-        nhacungcapId: order.nhacungcapId,
-        makho: order.makho,
-        status: order.status,
-        sanpham: order.sanpham.map((sp:any) => ({
-          sanpham: sp.sanpham,
-          sldat: sp.sldat,
-          slgiao: sp.slgiao,
-          slnhan: sp.slnhan,
-          ghichu: sp.ghichu
-        })),
-        ghichu: order.ghichu
-      }));
-
-      const result = await this._DathangService.ImportDathang(ordersToImport);
+      const ordersToImport = confirmedOrders.map((order) => {
+        const Kho = this._KhoService.ListKho().find(
+          (k) => k.makho === order.makho);
+        return {
+          ngaynhan: order.ngaynhan,
+          mancc: order?.nhacungcap.mancc,
+          makho: order.makho,
+          khoId: Kho?.id,
+          status: order.status,
+          sanpham: order.sanpham.map((sp: any) => ({
+            masp: sp.sanpham.masp,
+            sldat: Number(sp.sldat),
+            slgiao: Number(sp.slgiao),
+            slnhan: Number(sp.slnhan),
+            ghichu: sp.ghichu,
+          })),
+          ghichu: order.ghichu,
+        };
+      });
       
+      console.log('Confirmed orders:', confirmedOrders);
+      console.log('Confirmed Import:', ordersToImport);
+                      
+      const result = await this._DathangService.ImportDathang(ordersToImport);
+
       this._snackBar.open(
         `Import thành công: ${result.success} đơn hàng, ${result.fail} lỗi`,
         '',
@@ -809,9 +858,9 @@ openDathangDialog(template: TemplateRef<any>) {
           panelClass: ['snackbar-success'],
         }
       );
-      
+
       this.dialog.closeAll();
-      
+
       // Refresh data
       await this.ngOnInit();
     } catch (error: any) {
@@ -827,8 +876,10 @@ openDathangDialog(template: TemplateRef<any>) {
 
   // Remove order from import list
   removeOrderFromImport(order: any) {
-    this.ListImportExcel = this.ListImportExcel.filter(o => o.id !== order.id);
-    
+    this.ListImportExcel = this.ListImportExcel.filter(
+      (o) => o.id !== order.id
+    );
+
     if (this.ListImportExcel.length === 0) {
       this.dialog.closeAll();
     }
@@ -841,7 +892,7 @@ openDathangDialog(template: TemplateRef<any>) {
       detail.ngaynhan = moment(selectedDate).format('YYYY-MM-DD');
     } else {
       // Apply to all items
-      this.ListImportExcel.forEach(item => {
+      this.ListImportExcel.forEach((item) => {
         item.details?.forEach((d: any) => {
           d.ngaynhan = moment(selectedDate).format('YYYY-MM-DD');
         });
@@ -851,14 +902,14 @@ openDathangDialog(template: TemplateRef<any>) {
 
   // Remove item from import list
   removeItemImport(detail: any) {
-    this.ListImportExcel.forEach(order => {
+    this.ListImportExcel.forEach((order) => {
       if (order.details) {
         order.details = order.details.filter((d: any) => d !== detail);
       }
     });
     // Remove empty orders
-    this.ListImportExcel = this.ListImportExcel.filter(order => 
-      order.details && order.details.length > 0
+    this.ListImportExcel = this.ListImportExcel.filter(
+      (order) => order.details && order.details.length > 0
     );
   }
 
@@ -866,16 +917,18 @@ openDathangDialog(template: TemplateRef<any>) {
   SelectNhacungcap(detail: any, event: any) {
     const selectedSupplier = event.value;
     detail.nhacungcap = selectedSupplier;
-    detail.manhacungcap = selectedSupplier?.id || selectedSupplier?.manhacungcap;
+    detail.manhacungcap =
+      selectedSupplier?.id || selectedSupplier?.manhacungcap;
   }
 
   // Find supplier by typing
   DoFindNhacungcap(event: any, index: number) {
     const searchTerm = event.target.value.toLowerCase();
     // Filter suppliers based on search term
-    this.suppliers = this.suppliers.filter(supplier => 
-      supplier.name?.toLowerCase().includes(searchTerm) ||
-      supplier.manhacungcap?.toLowerCase().includes(searchTerm)
+    this.suppliers = this.suppliers.filter(
+      (supplier) =>
+        supplier.name?.toLowerCase().includes(searchTerm) ||
+        supplier.manhacungcap?.toLowerCase().includes(searchTerm)
     );
   }
 

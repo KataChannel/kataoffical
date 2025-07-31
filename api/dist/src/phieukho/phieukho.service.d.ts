@@ -72,9 +72,9 @@ export declare class PhieukhoService {
         madonhang: string | null;
         madncc: string | null;
         khoId: string | null;
+        ngay: Date | null;
         maphieu: string | null;
         madathang: string | null;
-        ngay: Date | null;
         isChotkho: boolean;
     }[]>;
     findOne(id: string): Promise<{
@@ -110,9 +110,9 @@ export declare class PhieukhoService {
         madonhang: string | null;
         madncc: string | null;
         khoId: string | null;
+        ngay: Date | null;
         maphieu: string | null;
         madathang: string | null;
-        ngay: Date | null;
         isChotkho: boolean;
     }>;
     create(data: any): Promise<any>;
@@ -137,9 +137,9 @@ export declare class PhieukhoService {
         madonhang: string | null;
         madncc: string | null;
         khoId: string | null;
+        ngay: Date | null;
         maphieu: string | null;
         madathang: string | null;
-        ngay: Date | null;
         isChotkho: boolean;
     }>;
     remove(id: string): Promise<{
@@ -153,9 +153,9 @@ export declare class PhieukhoService {
         madonhang: string | null;
         madncc: string | null;
         khoId: string | null;
+        ngay: Date | null;
         maphieu: string | null;
         madathang: string | null;
-        ngay: Date | null;
         isChotkho: boolean;
     }>;
 }

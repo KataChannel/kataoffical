@@ -40,10 +40,11 @@ export class DathangService {
         const response = await fetch(`${environment.APIURL}/dathang/import`, options);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
-        }        const data = await response.json();
+        }       
+      const data = await response.json();
         if (!response.ok) {
             console.log(response.status);     
-        }        this.getAllDathang()
+        }        
         return data;
     } catch (error) {
         console.error(error);
@@ -251,19 +252,6 @@ export class DathangService {
           };
           const response = await fetch(`${environment.APIURL}/dathang/${item.id}`, options);
           if (!response.ok) {
-            if (response.status === 401) {
-              const result  = JSON.stringify({ code:response.status,title:'Vui lòng đăng nhập lại' })
-              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            } else if (response.status === 403) {
-              const result  = JSON.stringify({ code:response.status,title:'Bạn không có quyền truy cập' })
-              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            } else if (response.status === 500) {
-              const result  = JSON.stringify({ code:response.status,title:'Lỗi máy chủ, vui lòng thử lại sau' })
-              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            } else {
-              const result  = JSON.stringify({ code:response.status,title:'Lỗi không xác định' })
-              this.router.navigate(['/errorserver'], { queryParams: {data:result}});
-            }
           }
           this.getAllDathang()
       } catch (error) {

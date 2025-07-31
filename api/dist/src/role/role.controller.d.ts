@@ -51,8 +51,8 @@ export declare class RoleController {
                 updatedAt: Date;
                 name: string;
                 codeId: string | null;
-                group: string | null;
                 description: string | null;
+                group: string | null;
             };
         } & {
             id: string;

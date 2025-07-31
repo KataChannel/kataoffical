@@ -14,8 +14,8 @@ export declare class DathangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            tenfile: string | null;
             name: string | null;
+            tenfile: string | null;
             diachi: string | null;
             sdt: string | null;
             email: string | null;
@@ -75,8 +75,8 @@ export declare class DathangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            tenfile: string | null;
             name: string | null;
+            tenfile: string | null;
             diachi: string | null;
             sdt: string | null;
             email: string | null;

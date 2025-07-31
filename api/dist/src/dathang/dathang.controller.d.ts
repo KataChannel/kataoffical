@@ -40,14 +40,7 @@ export declare class DathangController {
         success: number;
         fail: number;
     }>;
-    importcu(data: any): Promise<{
-        success: number;
-        fail: number;
-        totalProcessed: any;
-        itemErrors: any[];
-        createErrors: any[];
-        message: string;
-    }>;
+    importcu(data: any): any;
     createbynhucau(data: any): Promise<{
         sanpham: {
             id: string;
@@ -135,8 +128,8 @@ export declare class DathangController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                tenfile: string | null;
                 name: string | null;
+                tenfile: string | null;
                 diachi: string | null;
                 sdt: string | null;
                 email: string | null;
@@ -186,8 +179,8 @@ export declare class DathangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            tenfile: string | null;
             name: string | null;
+            tenfile: string | null;
             diachi: string | null;
             sdt: string | null;
             email: string | null;
@@ -269,8 +262,8 @@ export declare class DathangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            tenfile: string | null;
             name: string | null;
+            tenfile: string | null;
             diachi: string | null;
             sdt: string | null;
             email: string | null;
@@ -353,8 +346,8 @@ export declare class DathangController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                tenfile: string | null;
                 name: string | null;
+                tenfile: string | null;
                 diachi: string | null;
                 sdt: string | null;
                 email: string | null;
@@ -442,8 +435,8 @@ export declare class DathangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            tenfile: string | null;
             name: string | null;
+            tenfile: string | null;
             diachi: string | null;
             sdt: string | null;
             email: string | null;
@@ -525,8 +518,8 @@ export declare class DathangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            tenfile: string | null;
             name: string | null;
+            tenfile: string | null;
             diachi: string | null;
             sdt: string | null;
             email: string | null;

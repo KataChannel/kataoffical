@@ -9,8 +9,8 @@ export declare class UserguideController {
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
-        description: string | null;
         time: string | null;
+        description: string | null;
     }>;
     findby(param: any): Promise<{
         data: ({
@@ -38,8 +38,8 @@ export declare class UserguideController {
             createdAt: Date;
             updatedAt: Date;
             codeId: string | null;
-            description: string | null;
             time: string | null;
+            description: string | null;
         })[];
         total: number;
         page: any;
@@ -71,8 +71,8 @@ export declare class UserguideController {
             createdAt: Date;
             updatedAt: Date;
             codeId: string | null;
-            description: string | null;
             time: string | null;
+            description: string | null;
         })[];
         total: number;
         page: number;
@@ -88,8 +88,8 @@ export declare class UserguideController {
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
-        description: string | null;
         time: string | null;
+        description: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -98,8 +98,8 @@ export declare class UserguideController {
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
-        description: string | null;
         time: string | null;
+        description: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -108,8 +108,8 @@ export declare class UserguideController {
         createdAt: Date;
         updatedAt: Date;
         codeId: string | null;
-        description: string | null;
         time: string | null;
+        description: string | null;
     }>;
     reorder(body: {
         userguideIds: string[];

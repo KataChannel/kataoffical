@@ -1565,7 +1565,6 @@ export class ListImportdataComponent implements OnInit {
           slnhan: Number(v.sldat),
           ghichu: v.ghichu,
         }));
-      console.log(ListDH);
 
       const importSnackbar = this._snackBar.open(
         'Đang import Đặt hàng...',

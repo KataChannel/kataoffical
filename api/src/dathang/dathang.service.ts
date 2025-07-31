@@ -140,43 +140,44 @@ export class DathangService {
     };
   }
 
-  async import(data: any) {    
-    const acc: Record<string, any> = {};
-    for (const curr of data) {
-      if (!acc[curr.mancc]) {
-        const nhacungcap = await this.prisma.nhacungcap.findFirst({ where: { mancc: curr.mancc } });
-        acc[curr.mancc] = {
-          title: `Import ${moment().format('DDMMYYYY')}`,
-          ngaynhan: curr.ngaynhan,
-          mancc: curr.mancc,
-          name: nhacungcap?.name,
-          mabanggia: curr.mabanggia,
-          khoId: curr.khoId, // Add khoId from import data
-          sanpham: [],
-          nhacungcap: {
-            mancc: curr.mancc,
-          }
-        };
-      }
+  async import(data: any) {      
+    // const acc: Record<string, any> = {};
+    // for (const curr of data) {
+    //   if (!acc[curr.mancc]) {
+    //     const nhacungcap = await this.prisma.nhacungcap.findFirst({ where: { mancc: curr.mancc } });
+    //     acc[curr.mancc] = {
+    //       title: `Import ${moment().format('DDMMYYYY')}`,
+    //       ngaynhan: curr.ngaynhan,
+    //       mancc: curr.mancc,
+    //       name: nhacungcap?.name,
+    //       khoId: curr.khoId, // Add khoId from import data
+    //       sanpham: [],
+    //       nhacungcap: {
+    //         mancc: curr.mancc,
+    //       }
+    //     };
+    //   }
 
-      const existingSanphamIndex = acc[curr.mancc].sanpham.findIndex(item => item.masp === curr.masp);
-      if (existingSanphamIndex !== -1) {
-        acc[curr.mancc].sanpham[existingSanphamIndex].sldat += Number(curr.sldat);
-        acc[curr.mancc].sanpham[existingSanphamIndex].slgiao += Number(curr.slgiao);
-        acc[curr.mancc].sanpham[existingSanphamIndex].slnhan += Number(curr.slnhan);
-      } else {
-        const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: curr.masp } });
-        acc[curr.mancc].sanpham.push({
-          masp: curr.masp,
-          id: sanphamRecord?.id,
-          sldat: Number(curr.sldat),
-          slgiao: Number(curr.slgiao),
-          slnhan: Number(curr.slnhan),
-          ghichu: curr.ghichu,
-        });
-      }
-    }
-    const convertData: any = Object.values(acc);
+    //   const existingSanphamIndex = acc[curr.mancc].sanpham.findIndex(item => item.masp === curr.masp);
+    //   if (existingSanphamIndex !== -1) {
+    //     acc[curr.mancc].sanpham[existingSanphamIndex].sldat += Number(curr.sldat);
+    //     acc[curr.mancc].sanpham[existingSanphamIndex].slgiao += Number(curr.slgiao);
+    //     acc[curr.mancc].sanpham[existingSanphamIndex].slnhan += Number(curr.slnhan);
+    //   } else {
+    //     const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: curr.masp } });
+    //     acc[curr.mancc].sanpham.push({
+    //       masp: curr.masp,
+    //       id: sanphamRecord?.id,
+    //       sldat: Number(curr.sldat),
+    //       slgiao: Number(curr.slgiao),
+    //       slnhan: Number(curr.slnhan),
+    //       ghichu: curr.ghichu,
+    //     });
+    //   }
+    // }
+    // const convertData: any = Object.values(acc);
+    // console.log('Converted import data:', convertData[0]);
+    const convertData = await this.convertDathangImportToTransfer(data);
     let success = 0;
     let fail = 0;  
     for (const element of convertData) {
@@ -203,6 +204,107 @@ export class DathangService {
       fail,
     };
   }
+
+async convertDathangImportToTransfer(
+  dathangimport: any[],
+): Promise<any[]> {
+  const dathangimporttranfer: any[] = [];
+
+  for (const importItem of dathangimport) {
+    try {
+      // Tìm nhà cung cấp theo mã
+      const nhacungcap = await this.prisma.nhacungcap.findFirst({
+        where: { mancc: importItem.mancc }
+      });
+
+      if (!nhacungcap) {
+        console.warn(`Không tìm thấy nhà cung cấp với mã: ${importItem.mancc}`);
+        continue;
+      }
+
+      // Tìm kho theo makho (nếu có) hoặc lấy kho mặc định
+      let kho:any = null;
+      if (importItem.makho) {
+        kho = await this.prisma.kho.findFirst({
+          where: { 
+            OR: [
+              { makho: importItem.makho },
+              { name: { contains: importItem.makho, mode: 'insensitive' } }
+            ]
+          }
+        });
+      }
+      
+      // Nếu không tìm thấy kho, lấy kho mặc định
+      if (!kho) {
+        kho = await this.prisma.kho.findFirst({
+          where: { isActive: true },
+          orderBy: { createdAt: 'asc' }
+        });
+      }
+
+      // Xử lý danh sách sản phẩm
+      const sanphamList: any[] = [];
+      
+      for (const sp of importItem.sanpham) {
+        // Tìm sản phẩm theo mã
+        const sanpham = await this.prisma.sanpham.findFirst({
+          where: { masp: sp.masp }
+        });
+
+        if (!sanpham) {
+          console.warn(`Không tìm thấy sản phẩm với mã: ${sp.masp}`);
+          continue;
+        }
+
+        // Map sản phẩm theo format mới
+        sanphamList.push({
+          id: sanpham.id,
+          masp: sanpham.masp,
+          slnhan: Number(sp.slnhan) || 0,
+          slgiao: Number(sp.slgiao) || 0,
+          sldat: Number(sp.sldat) || 0,
+        });
+      }
+
+      // Tạo object theo format đích
+      const transferItem = {
+        title: `Import ${moment().format('DDMMYYYY')}`,
+        type: "dathang",
+        ngaynhan: moment(importItem.ngaynhan).format('YYYY-MM-DD'),
+        nhacungcapId: nhacungcap.id,
+        nhacungcap: {
+          name: nhacungcap.name,
+          mancc: nhacungcap.mancc,
+          diachi: nhacungcap.diachi,
+          sdt: nhacungcap.sdt,
+          ghichu: nhacungcap.ghichu
+        },
+        khoId: kho?.id || null,
+        kho: kho ? {
+          name: kho.name,
+          diachi: kho.diachi || "",
+          sdt: kho.sdt || "",
+          ghichu: kho.ghichu || ""
+        } : null,
+        sanpham: sanphamList,
+        status: importItem.status || "dadat",
+        ghichu: importItem.ghichu || ""
+      };
+
+      dathangimporttranfer.push(transferItem);
+
+    } catch (error) {
+      console.error(`Lỗi khi convert item với mancc ${importItem.mancc}:`, error);
+    }
+  }
+
+  return dathangimporttranfer;
+}
+
+
+
+
 
   async search(params: any) {
     const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, khoId } = params;
@@ -404,7 +506,8 @@ export class DathangService {
     };
   }
 
-  async create(dto: any) {
+  async create(dto: any) {   
+     
     const madathang = await this.generateNextOrderCode();
     return this.prisma.$transaction(async (prisma) => {      
       const nhacungcap = await prisma.nhacungcap.findFirst({
@@ -417,14 +520,13 @@ export class DathangService {
 
       // Validate kho if provided
       if (dto.khoId) {
-        const kho = await prisma.kho.findUnique({
+        const kho = await prisma.kho.findFirst({
           where: { id: dto.khoId },
         });
         if (!kho) {
           throw new NotFoundException('Kho không tồn tại');
         }
-      }
-
+      } 
       // Create the new order (đặt hàng) using the generated order code
       const newDathang = await prisma.dathang.create({
         data: {
@@ -1135,149 +1237,149 @@ async findByProductId(idSP: string) {
   }));
 }
 
-async importcu(data: any) {
-  try {
-    // Group data by supplier (mancc) similar to the existing import method
-    const acc: Record<string, any> = {};
-    const itemErrors: any[] = [];
+// async importcu(data: any) {
+//   try {
+//     // Group data by supplier (mancc) similar to the existing import method
+//     const acc: Record<string, any> = {};
+//     const itemErrors: any[] = [];
     
-    for (const curr of data) {
-      try {
-        // Validate required fields
-        if (!curr.mancc || !curr.masp) {
-          itemErrors.push({
-            item: curr,
-            error: 'Missing required fields: mancc or masp'
-          });
-          continue;
-        }
+//     for (const curr of data) {
+//       try {
+//         // Validate required fields
+//         if (!curr.mancc || !curr.masp) {
+//           itemErrors.push({
+//             item: curr,
+//             error: 'Missing required fields: mancc or masp'
+//           });
+//           continue;
+//         }
 
-        // Group by supplier
-        if (!acc[curr.mancc]) {
-          const nhacungcap = await this.prisma.nhacungcap.findFirst({ 
-            where: { mancc: curr.mancc } 
-          });
+//         // Group by supplier
+//         if (!acc[curr.mancc]) {
+//           const nhacungcap = await this.prisma.nhacungcap.findFirst({ 
+//             where: { mancc: curr.mancc } 
+//           });
           
-          if (!nhacungcap) {
-            itemErrors.push({
-              item: curr,
-              error: `Supplier with mancc ${curr.mancc} not found`
-            });
-            continue;
-          }
+//           if (!nhacungcap) {
+//             itemErrors.push({
+//               item: curr,
+//               error: `Supplier with mancc ${curr.mancc} not found`
+//             });
+//             continue;
+//           }
+          
+//           acc[curr.mancc] = {
+//             title: `Import Cu ${moment().format('DD/MM/YYYY')}`,
+//             ngaynhan: curr.ngaynhan || new Date(),
+//             mancc: curr.mancc,
+//             name: nhacungcap?.name,
+//             mabanggia: curr.mabanggia,
+//             khoId: curr.khoId, // Add khoId from import data
+//             sanpham: [],
+//             nhacungcap: {
+//               mancc: curr.mancc,
+//             }
+//           };
+//         }
 
-          acc[curr.mancc] = {
-            title: `Import Cu ${moment().format('DD/MM/YYYY')}`,
-            ngaynhan: curr.ngaynhan || new Date(),
-            mancc: curr.mancc,
-            name: nhacungcap?.name,
-            mabanggia: curr.mabanggia,
-            khoId: curr.khoId, // Add khoId from import data
-            sanpham: [],
-            nhacungcap: {
-              mancc: curr.mancc,
-            }
-          };
-        }
-
-        // Check if product exists
-        const sanphamRecord = await this.prisma.sanpham.findFirst({ 
-          where: { masp: curr.masp } 
-        });
+//         // Check if product exists
+//         const sanphamRecord = await this.prisma.sanpham.findFirst({ 
+//           where: { masp: curr.masp } 
+//         });
         
-        if (!sanphamRecord) {
-          itemErrors.push({
-            item: curr,
-            error: `Product with masp ${curr.masp} not found`
-          });
-          continue;
-        }
+//         if (!sanphamRecord) {
+//           itemErrors.push({
+//             item: curr,
+//             error: `Product with masp ${curr.masp} not found`
+//           });
+//           continue;
+//         }
 
-        // Check if product already exists in the group
-        const existingSanphamIndex = acc[curr.mancc].sanpham.findIndex(
-          (item: any) => item.masp === curr.masp
-        );
+//         // Check if product already exists in the group
+//         const existingSanphamIndex = acc[curr.mancc].sanpham.findIndex(
+//           (item: any) => item.masp === curr.masp
+//         );
         
-        if (existingSanphamIndex !== -1) {
-          // Update existing product quantities
-          acc[curr.mancc].sanpham[existingSanphamIndex].sldat += Number(curr.sldat) || 0;
-          acc[curr.mancc].sanpham[existingSanphamIndex].slgiao += Number(curr.slgiao) || 0;
-          acc[curr.mancc].sanpham[existingSanphamIndex].slnhan += Number(curr.slnhan) || 0;
-          acc[curr.mancc].sanpham[existingSanphamIndex].ttdat += Number(curr.ttdat) || 0;
-          acc[curr.mancc].sanpham[existingSanphamIndex].ttgiao += Number(curr.ttgiao) || 0;
-          acc[curr.mancc].sanpham[existingSanphamIndex].ttnhan += Number(curr.ttnhan) || 0;
-        } else {
-          // Add new product to the group
-          acc[curr.mancc].sanpham.push({
-            masp: curr.masp,
-            id: sanphamRecord.id,
-            sldat: Number(curr.sldat) || 0,
-            slgiao: Number(curr.slgiao) || 0,
-            slnhan: Number(curr.slnhan) || 0,
-            ttdat: Number(curr.ttdat) || 0,
-            ttgiao: Number(curr.ttgiao) || 0,
-            ttnhan: Number(curr.ttnhan) || 0,
-            ghichu: curr.ghichu || '',
-          });
-        }
+//         if (existingSanphamIndex !== -1) {
+//           // Update existing product quantities
+//           acc[curr.mancc].sanpham[existingSanphamIndex].sldat += Number(curr.sldat) || 0;
+//           acc[curr.mancc].sanpham[existingSanphamIndex].slgiao += Number(curr.slgiao) || 0;
+//           acc[curr.mancc].sanpham[existingSanphamIndex].slnhan += Number(curr.slnhan) || 0;
+//           acc[curr.mancc].sanpham[existingSanphamIndex].ttdat += Number(curr.ttdat) || 0;
+//           acc[curr.mancc].sanpham[existingSanphamIndex].ttgiao += Number(curr.ttgiao) || 0;
+//           acc[curr.mancc].sanpham[existingSanphamIndex].ttnhan += Number(curr.ttnhan) || 0;
+//         } else {
+//           // Add new product to the group
+//           acc[curr.mancc].sanpham.push({
+//             masp: curr.masp,
+//             id: sanphamRecord.id,
+//             sldat: Number(curr.sldat) || 0,
+//             slgiao: Number(curr.slgiao) || 0,
+//             slnhan: Number(curr.slnhan) || 0,
+//             ttdat: Number(curr.ttdat) || 0,
+//             ttgiao: Number(curr.ttgiao) || 0,
+//             ttnhan: Number(curr.ttnhan) || 0,
+//             ghichu: curr.ghichu || '',
+//           });
+//         }
 
-      } catch (error: any) {
-        console.error('Error processing item:', error);
-        itemErrors.push({
-          item: curr,
-          error: error.message
-        });
-      }
-    }
+//       } catch (error: any) {
+//         console.error('Error processing item:', error);
+//         itemErrors.push({
+//           item: curr,
+//           error: error.message
+//         });
+//       }
+//     }
 
-    // Create dathang records using the existing create method
-    const convertData: any = Object.values(acc);
-    let success = 0;
-    let fail = 0;
-    const createErrors: any[] = [];
+//     // Create dathang records using the existing create method
+//     const convertData: any = Object.values(acc);
+//     let success = 0;
+//     let fail = 0;
+//     const createErrors: any[] = [];
 
-    for (const element of convertData) {
-      try {
-        await this.create(element);
-        success += 1;
-      } catch (error: any) {
-        fail += 1;
-        console.error('Error creating dathang:', error);
-        createErrors.push({
-          supplier: element.mancc,
-          error: error.message
-        });
+//     for (const element of convertData) {
+//       try {
+//         await this.create(element);
+//         success += 1;
+//       } catch (error: any) {
+//         fail += 1;
+//         console.error('Error creating dathang:', error);
+//         createErrors.push({
+//           supplier: element.mancc,
+//           error: error.message
+//         });
         
-        // Log to import data service for tracking
-        await this._ImportdataService.create({
-          caseDetail: {
-            errorMessage: error.message,
-            errorStack: error.stack,
-            additionalInfo: 'Error during importcu process',
-            supplier: element.mancc
-          },
-          order: 1,
-          createdBy: 'system',
-          title: `Import Dathang Cu ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
-          type: 'dathang',
-        });
-      }
-    }
+//         // Log to import data service for tracking
+//         await this._ImportdataService.create({
+//           caseDetail: {
+//             errorMessage: error.message,
+//             errorStack: error.stack,
+//             additionalInfo: 'Error during importcu process',
+//             supplier: element.mancc
+//           },
+//           order: 1,
+//           createdBy: 'system',
+//           title: `Import Dathang Cu ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+//           type: 'dathang',
+//         });
+//       }
+//     }
 
-    return {
-      success,
-      fail,
-      totalProcessed: data.length,
-      itemErrors,
-      createErrors,
-      message: `Processed ${data.length} items. ${success} suppliers created successfully, ${fail} failed.`
-    };
+//     return {
+//       success,
+//       fail,
+//       totalProcessed: data.length,
+//       itemErrors,
+//       createErrors,
+//       message: `Processed ${data.length} items. ${success} suppliers created successfully, ${fail} failed.`
+//     };
 
-  } catch (error: any) {
-    console.error('Error in importcu:', error);
-    throw error;
-  }
-}
+//   } catch (error: any) {
+//     console.error('Error in importcu:', error);
+//     throw error;
+//   }
+// }
 
 async deletebulk(data: any) {
   try {
