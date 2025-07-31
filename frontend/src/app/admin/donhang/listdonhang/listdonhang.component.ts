@@ -598,7 +598,9 @@ export class ListDonhangComponent {
       }
     }
     await this._SanphamService.getAllSanpham({pageSize:99999});
-    this.dialog.open(this.dialogImportExcelCu, {});
+    this.dialog.open(this.dialogImportExcelCu, {
+      disableClose: true,
+    });
     this.statusDetails.forEach((v: any, k: any) => {
       this.FilterKhachhang[k] = this._KhachhangService.ListKhachhang();
     });
@@ -645,18 +647,18 @@ export class ListDonhangComponent {
         );
         return;
       }
-      // const result = await this._DonhangService.ImportDonhangCu(ListImportData);
-      // this.dialog.closeAll();
-      // this._snackBar.open(
-      //   `Nhập đơn hàng : Thành công ${result.success}, Thất bại ${result.fail}, Bỏ qua ${result.skip}. Reload Lại sau 3s`,
-      //   '',
-      //   {
-      //     duration: 5000,
-      //     horizontalPosition: 'end',
-      //     verticalPosition: 'top',
-      //     panelClass: ['snackbar-success'],
-      //   }
-      // );
+      const result = await this._DonhangService.ImportDonhangCu(ListImportData);
+      this.dialog.closeAll();
+      this._snackBar.open(
+        `Nhập đơn hàng : Thành công ${result.success}, Thất bại ${result.fail}, Bỏ qua ${result.skip}. Reload Lại sau 3s`,
+        '',
+        {
+          duration: 5000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        }
+      );
     } catch (importError: any) {
       console.error('Lỗi khi nhập đơn hàng:', importError);
       this._snackBar.open(`Lỗi khi nhập đơn hàng: ${importError.message}`, '', {
@@ -665,15 +667,10 @@ export class ListDonhangComponent {
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
       });
-      this.statusDetails.push({
-        fileName: 'Overall',
-        status: 'Error',
-        message: importError.message,
-      });
       return;
     }
     setTimeout(() => {
-      // window.location.reload();
+      window.location.reload();
     }, 3000);
   }
 
@@ -937,7 +934,7 @@ export class ListDonhangComponent {
       }
       if (skippedCount > 0) {
         if (message) message += `, `;
-        message += `bỏ qua ${skippedCount} file`;
+        message += `${skippedCount} File Chưa Có Khách Hàng`;
       }
 
       this._snackBar.open(message, '', {
@@ -1045,8 +1042,30 @@ export class ListDonhangComponent {
    * Get products for an order
    */
   getOrderProducts(detail: any): any[] {
-    const importData = this.ListImportData.find(v => v.tenkh === detail.tenkhongdau);
-    return importData?.sanpham || [];
+    const orderData = this.ListImportData.filter(item => item.tenkh === detail.tenkhongdau);
+    const transformedData = orderData.map((v:any) => {
+      const sanphamList = v.sanpham.map((item: any) => {
+        const sanpham = this._SanphamService.ListSanpham().find(sp => sp.masp === item.ItemCode);
+        if (sanpham) {
+          return {
+            id: sanpham.id,
+            title: sanpham.title,
+            masp: sanpham.masp,
+            dvt: sanpham.dvt,
+            sldat: Number(item.Quantity),
+            slgiao: Number(item.Quantity),
+            slnhan: Number(item.Quantity),
+          };
+        } else {
+          return null;
+        }
+      }).filter((item:any) => item !== null);
+      return {
+        ...v,
+        sanpham: sanphamList
+      };
+    });
+    return transformedData.flatMap(item => item.sanpham) || [];
   }
 
   /**
@@ -1054,7 +1073,7 @@ export class ListDonhangComponent {
    */
   getTotalQuantity(detail: any): number {
     const products = this.getOrderProducts(detail);
-    return products.reduce((total, product) => total + (product.Quantity || 0), 0);
+    return products.reduce((total, product) => Number(total) + (Number(product.sldat) || 0), 0);
   }
 
   /**
