@@ -15,9 +15,9 @@ export declare class KhachhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        name: string | null;
         tenfile: string | null;
         tenkh: string | null;
+        name: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -42,8 +42,6 @@ export declare class KhachhangService {
     findAllForSelect(): Promise<{
         data: {
             id: string;
-            name: string | null;
-            makh: string;
             banggia: {
                 id: string;
                 title: string | null;
@@ -51,6 +49,8 @@ export declare class KhachhangService {
                 batdau: Date | null;
                 ketthuc: Date | null;
             } | null;
+            name: string | null;
+            makh: string;
         }[];
     }>;
     findAll(query: any): Promise<{
@@ -77,9 +77,9 @@ export declare class KhachhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
             tenfile: string | null;
             tenkh: string | null;
+            name: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -125,9 +125,9 @@ export declare class KhachhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        name: string | null;
         tenfile: string | null;
         tenkh: string | null;
+        name: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -168,9 +168,9 @@ export declare class KhachhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
             tenfile: string | null;
             tenkh: string | null;
+            name: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -216,9 +216,9 @@ export declare class KhachhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        name: string | null;
         tenfile: string | null;
         tenkh: string | null;
+        name: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -259,9 +259,9 @@ export declare class KhachhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        name: string | null;
         tenfile: string | null;
         tenkh: string | null;
+        name: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -302,9 +302,9 @@ export declare class KhachhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        name: string | null;
         tenfile: string | null;
         tenkh: string | null;
+        name: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -329,9 +329,9 @@ export declare class KhachhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        name: string | null;
         tenfile: string | null;
         tenkh: string | null;
+        name: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;

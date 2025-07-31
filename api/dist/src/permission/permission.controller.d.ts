@@ -9,8 +9,8 @@ export declare class PermissionController {
         updatedAt: Date;
         name: string;
         codeId: string | null;
-        description: string | null;
         group: string | null;
+        description: string | null;
     }>;
     findby(param: any): Promise<{
         id: string;
@@ -19,8 +19,8 @@ export declare class PermissionController {
         updatedAt: Date;
         name: string;
         codeId: string | null;
-        description: string | null;
         group: string | null;
+        description: string | null;
     } | {
         data: {
             id: string;
@@ -29,8 +29,8 @@ export declare class PermissionController {
             updatedAt: Date;
             name: string;
             codeId: string | null;
-            description: string | null;
             group: string | null;
+            description: string | null;
         }[];
         total: number;
         page: any;
@@ -44,8 +44,8 @@ export declare class PermissionController {
             updatedAt: Date;
             name: string;
             codeId: string | null;
-            description: string | null;
             group: string | null;
+            description: string | null;
         }[];
         total: number;
         page: number;
@@ -61,8 +61,8 @@ export declare class PermissionController {
         updatedAt: Date;
         name: string;
         codeId: string | null;
-        description: string | null;
         group: string | null;
+        description: string | null;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
@@ -72,8 +72,8 @@ export declare class PermissionController {
         updatedAt: Date;
         name: string;
         codeId: string | null;
-        description: string | null;
         group: string | null;
+        description: string | null;
     }>;
     reorder(body: {
         permissionIds: string[];

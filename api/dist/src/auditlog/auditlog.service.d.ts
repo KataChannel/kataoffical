@@ -29,8 +29,8 @@ export declare class AuditService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
         userId: string | null;
+        status: string;
         entityName: string | null;
         entityId: string | null;
         action: import(".prisma/client").$Enums.AuditAction;
@@ -53,8 +53,8 @@ export declare class AuditService {
             id: string;
             createdAt: Date;
             updatedAt: Date;
-            status: string;
             userId: string | null;
+            status: string;
             entityName: string | null;
             entityId: string | null;
             action: import(".prisma/client").$Enums.AuditAction;

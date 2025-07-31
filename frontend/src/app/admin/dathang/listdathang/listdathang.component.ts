@@ -36,6 +36,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
 import { Debounce, memoize } from '../../../shared/utils/decorators';
 import { ChangeDetectionStrategy } from '@angular/core';
 import {
@@ -51,8 +52,7 @@ import { KhoService } from '../../kho/kho.service';
 @Component({
   selector: 'app-listdathang',
   templateUrl: './listdathang.component.html',
-  styleUrls: ['./listdathang.component.scss'],
-  imports: [
+  styleUrls: ['./listdathang.component.scss'],  imports: [
     MatFormFieldModule,
     MatInputModule,
     MatTableModule,
@@ -73,6 +73,7 @@ import { KhoService } from '../../kho/kho.service';
     MatDialogModule,
     MatTabsModule,
     MatProgressSpinnerModule,
+    MatChipsModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -212,13 +213,18 @@ export class ListDathangComponent {
     this.dataSource = new MatTableDataSource(this.Listdathang());
     this.dataSource.sort = this.sort;
     this.initializeColumns();
-    this.setupDrawer();
-
-    // Initialize FilterNhacungcap for import dialog
+    this.setupDrawer();    // Initialize FilterNhacungcap for import dialog
     await this._NhacungcapService.getAllNhacungcap();
     this.FilterNhacungcap = Array(20)
       .fill(null)
       .map(() => this._NhacungcapService.ListNhacungcap());
+    
+    // Initialize Kho data for import dialog
+    await this._KhoService.getAllKho();
+    this.ImportConfig.ListKho = this._KhoService.ListKho();
+    this.FilterKho = Array(20)
+      .fill(null)
+      .map(() => this._KhoService.ListKho());
   }
   private initializeColumns(): void {
     this.Columns = Object.entries(this.ColumnName).map(([key, value]) => ({
@@ -504,11 +510,11 @@ export class ListDathangComponent {
       await this.ngOnInit();
     }
   }
-
   // Excel Import functionality for Dathang - similar to Donhang
   statusDetails: any[] = [];
   ListImportData: any[] = [];
   FilterNhacungcap: any = [];
+  FilterKho: any[] = []; // For kho filtering in dialog
   ImportConfig = {
     selectedDate: new Date(),
     selectedKho: '',
@@ -565,12 +571,13 @@ export class ListDathangComponent {
           message: error.message,
         });
       }
-    }
-
-    // Show import dialog if we have processed data
+    }    // Show import dialog if we have processed data
     if (this.ListImportExcel.length > 0) {
       // Set default date to today
       this.ImportConfig.selectedDate = new Date();
+      
+      // Set default kho for orders without specific kho
+      this.setDefaultKhoForOrders();
 
       this.dialog.open(this.dialogImportExcel, {
         width: '95vw',
@@ -601,11 +608,11 @@ export class ListDathangComponent {
     // Reset file input
     event.target.value = '';
   }
-
   // Method mới để xử lý dữ liệu import theo format mới
   private processImportData(data: any[], fileName: string): any[] {
     const suppliers: any[] = this._NhacungcapService.ListNhacungcap();
     const products: any[] = this._SanphamService.ListSanpham();
+    const khoList: any[] = this._KhoService.ListKho();
     const processedOrders: any[] = [];
     try {
       // Group data by mancc (unique supplier codes)
@@ -697,9 +704,7 @@ export class ListDathangComponent {
                 dateError
               );
             }
-          }
-
-          const dathangOrder = {
+          }          const dathangOrder = {
             id: `temp_${mancc}_${Date.now()}`, // Temporary ID for tracking
             title: `Đơn hàng ${
               firstRow.ngaynhan || moment().format('DD/MM/YYYY')
@@ -707,7 +712,9 @@ export class ListDathangComponent {
             ngaynhan: ngaynhan,
             nhacungcapId: supplier.id,
             nhacungcap: supplier,
-            makho: firstRow.makho || '', // Get makho from data
+            makho: this.autoSelectKho(firstRow.makho, khoList), // Auto-select kho
+            khoSelected: this.getKhoByMakho(firstRow.makho, khoList), // Selected kho object
+            originalMakho: firstRow.makho || '', // Preserve original makho from Excel
             status: 'dadat',
             sanpham: validProducts,
             ghichu: '',
@@ -717,8 +724,9 @@ export class ListDathangComponent {
               canChangeDate: true,
               canChangeKho: true,
               selectedDate: ngaynhan,
-              selectedKho: firstRow.makho || '',
+              selectedKho: this.autoSelectKho(firstRow.makho, khoList),
               confirmed: false,
+              khoMatchStatus: this.getKhoMatchStatus(firstRow.makho, khoList),
             },
             // Summary info
             summary: {
@@ -767,6 +775,14 @@ export class ListDathangComponent {
     order.configOptions.selectedKho = newKho;
   }
 
+  // Method to update kho selection for order
+  updateOrderKhoSelection(order: any, newKho: any) {
+    order.makho = newKho.makho;
+    order.khoSelected = newKho;
+    order.configOptions.selectedKho = newKho.makho;
+    order.configOptions.khoMatchStatus = 'manual'; // Mark as manually selected
+  }
+
   // Update global date for all orders
   updateAllOrdersDate(newDate: Date) {
     this.ImportConfig.selectedDate = newDate;
@@ -774,12 +790,15 @@ export class ListDathangComponent {
       this.updateOrderDate(order, newDate);
     });
   }
-
   // Update global kho for all orders
-  updateAllOrdersKho(newKho: string) {
-    this.ImportConfig.selectedKho = newKho;
+  updateAllOrdersKho(newKhoMakho: string) {
+    this.ImportConfig.selectedKho = newKhoMakho;
+    const selectedKho = this.ImportConfig.ListKho.find(k => k.makho === newKhoMakho);
+    
     this.ListImportExcel.forEach((order) => {
-      this.updateOrderKho(order, newKho);
+      if (selectedKho) {
+        this.updateOrderKhoSelection(order, selectedKho);
+      }
     });
   }
 
@@ -802,6 +821,29 @@ export class ListDathangComponent {
   getConfirmedOrdersCount(): number {
     return this.ListImportExcel.filter((order) => order.configOptions.confirmed)
       .length;
+  }
+
+  // Method to get kho match status display text
+  getKhoMatchStatusText(status: string): string {
+    switch (status) {
+      case 'exact': return 'Khớp chính xác';
+      case 'partial': return 'Khớp một phần';
+      case 'name': return 'Khớp theo tên';
+      case 'default': return 'Mặc định';
+      case 'manual': return 'Đã chỉnh sửa';
+      default: return 'Không tìm thấy';
+    }
+  }
+
+  // Method to get kho match status color
+  getKhoMatchStatusColor(status: string): string {
+    switch (status) {
+      case 'exact': return 'success';
+      case 'partial': return 'warn';
+      case 'name': return 'accent';
+      case 'manual': return 'primary';
+      default: return 'warn';
+    }
   }
 
   // Import only confirmed orders
@@ -946,5 +988,108 @@ export class ListDathangComponent {
     return order.details.reduce((total: number, detail: any) => {
       return total + (parseFloat(detail.soluong || '0') || 0);
     }, 0);
+  }
+
+  // Helper methods for kho auto-selection
+  private autoSelectKho(makho: string, khoList: any[]): string {
+    if (!makho || !khoList?.length) {
+      return khoList?.[0]?.makho || ''; // Default to first kho if available
+    }
+
+    // 1. Exact match
+    const exactMatch = khoList.find(k => k.makho === makho);
+    if (exactMatch) {
+      return exactMatch.makho;
+    }
+
+    // 2. Partial match (case insensitive)
+    const partialMatch = khoList.find(k => 
+      k.makho?.toLowerCase().includes(makho.toLowerCase()) ||
+      makho.toLowerCase().includes(k.makho?.toLowerCase())
+    );
+    if (partialMatch) {
+      return partialMatch.makho;
+    }
+
+    // 3. Match by name (warehouse name)
+    const nameMatch = khoList.find(k => 
+      k.name?.toLowerCase().includes(makho.toLowerCase()) ||
+      makho.toLowerCase().includes(k.name?.toLowerCase())
+    );
+    if (nameMatch) {
+      return nameMatch.makho;
+    }
+
+    // 4. Default to first kho if no match
+    return khoList[0]?.makho || '';
+  }
+
+  private getKhoByMakho(makho: string, khoList: any[]): any {
+    const selectedMakho = this.autoSelectKho(makho, khoList);
+    return khoList.find(k => k.makho === selectedMakho) || khoList[0] || null;
+  }
+
+  private getKhoMatchStatus(makho: string, khoList: any[]): 'exact' | 'partial' | 'name' | 'default' | 'none' {
+    if (!makho || !khoList?.length) {
+      return khoList?.length ? 'default' : 'none';
+    }
+
+    // Exact match
+    if (khoList.find(k => k.makho === makho)) {
+      return 'exact';
+    }
+
+    // Partial match
+    if (khoList.find(k => 
+      k.makho?.toLowerCase().includes(makho.toLowerCase()) ||
+      makho.toLowerCase().includes(k.makho?.toLowerCase())
+    )) {
+      return 'partial';
+    }
+
+    // Name match
+    if (khoList.find(k => 
+      k.name?.toLowerCase().includes(makho.toLowerCase()) ||
+      makho.toLowerCase().includes(k.name?.toLowerCase())
+    )) {
+      return 'name';
+    }
+
+    return 'default';
+  }
+
+  // Set default kho for orders that don't have kho selection
+  private setDefaultKhoForOrders() {
+    const defaultKho = this.ImportConfig.ListKho?.[0];
+    if (!defaultKho) return;
+
+    this.ListImportExcel.forEach((order) => {
+      if (!order.khoSelected && order.configOptions.khoMatchStatus === 'default') {
+        order.khoSelected = defaultKho;
+        order.makho = defaultKho.makho;
+        order.configOptions.selectedKho = defaultKho.makho;
+      }
+    });
+  }
+
+  // Get orders statistics
+  getOrdersStatistics() {
+    const total = this.ListImportExcel.length;
+    const confirmed = this.getConfirmedOrdersCount();
+    const exactMatch = this.ListImportExcel.filter(o => o.configOptions?.khoMatchStatus === 'exact').length;
+    const partialMatch = this.ListImportExcel.filter(o => o.configOptions?.khoMatchStatus === 'partial').length;
+    const nameMatch = this.ListImportExcel.filter(o => o.configOptions?.khoMatchStatus === 'name').length;
+    const defaultMatch = this.ListImportExcel.filter(o => o.configOptions?.khoMatchStatus === 'default').length;
+    const manualMatch = this.ListImportExcel.filter(o => o.configOptions?.khoMatchStatus === 'manual').length;
+
+    return {
+      total,
+      confirmed,
+      exactMatch,
+      partialMatch,
+      nameMatch,
+      defaultMatch,
+      manualMatch,
+    };
   }
 }

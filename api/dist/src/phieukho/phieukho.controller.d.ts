@@ -57,9 +57,9 @@ export declare class PhieukhoController {
         madonhang: string | null;
         madncc: string | null;
         khoId: string | null;
-        ngay: Date | null;
         maphieu: string | null;
         madathang: string | null;
+        ngay: Date | null;
         isChotkho: boolean;
     }[]>;
     xuatnhapton(query: any): Promise<{
@@ -106,9 +106,9 @@ export declare class PhieukhoController {
         madonhang: string | null;
         madncc: string | null;
         khoId: string | null;
-        ngay: Date | null;
         maphieu: string | null;
         madathang: string | null;
+        ngay: Date | null;
         isChotkho: boolean;
     }>;
     update(id: string, updatePhieukhoDto: any): Promise<{
@@ -132,9 +132,9 @@ export declare class PhieukhoController {
         madonhang: string | null;
         madncc: string | null;
         khoId: string | null;
-        ngay: Date | null;
         maphieu: string | null;
         madathang: string | null;
+        ngay: Date | null;
         isChotkho: boolean;
     }>;
     remove(id: string): Promise<{
@@ -148,9 +148,9 @@ export declare class PhieukhoController {
         madonhang: string | null;
         madncc: string | null;
         khoId: string | null;
-        ngay: Date | null;
         maphieu: string | null;
         madathang: string | null;
+        ngay: Date | null;
         isChotkho: boolean;
     }>;
 }

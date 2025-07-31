@@ -141,42 +141,6 @@ export class DathangService {
   }
 
   async import(data: any) {      
-    // const acc: Record<string, any> = {};
-    // for (const curr of data) {
-    //   if (!acc[curr.mancc]) {
-    //     const nhacungcap = await this.prisma.nhacungcap.findFirst({ where: { mancc: curr.mancc } });
-    //     acc[curr.mancc] = {
-    //       title: `Import ${moment().format('DDMMYYYY')}`,
-    //       ngaynhan: curr.ngaynhan,
-    //       mancc: curr.mancc,
-    //       name: nhacungcap?.name,
-    //       khoId: curr.khoId, // Add khoId from import data
-    //       sanpham: [],
-    //       nhacungcap: {
-    //         mancc: curr.mancc,
-    //       }
-    //     };
-    //   }
-
-    //   const existingSanphamIndex = acc[curr.mancc].sanpham.findIndex(item => item.masp === curr.masp);
-    //   if (existingSanphamIndex !== -1) {
-    //     acc[curr.mancc].sanpham[existingSanphamIndex].sldat += Number(curr.sldat);
-    //     acc[curr.mancc].sanpham[existingSanphamIndex].slgiao += Number(curr.slgiao);
-    //     acc[curr.mancc].sanpham[existingSanphamIndex].slnhan += Number(curr.slnhan);
-    //   } else {
-    //     const sanphamRecord = await this.prisma.sanpham.findFirst({ where: { masp: curr.masp } });
-    //     acc[curr.mancc].sanpham.push({
-    //       masp: curr.masp,
-    //       id: sanphamRecord?.id,
-    //       sldat: Number(curr.sldat),
-    //       slgiao: Number(curr.slgiao),
-    //       slnhan: Number(curr.slnhan),
-    //       ghichu: curr.ghichu,
-    //     });
-    //   }
-    // }
-    // const convertData: any = Object.values(acc);
-    // console.log('Converted import data:', convertData[0]);
     const convertData = await this.convertDathangImportToTransfer(data);
     let success = 0;
     let fail = 0;  
@@ -204,7 +168,9 @@ export class DathangService {
       fail,
     };
   }
-
+async importcu(data:any){
+  return {}
+}
 async convertDathangImportToTransfer(
   dathangimport: any[],
 ): Promise<any[]> {

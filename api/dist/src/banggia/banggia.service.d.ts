@@ -110,9 +110,9 @@ export declare class BanggiaService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
             tenfile: string | null;
             tenkh: string | null;
+            name: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;

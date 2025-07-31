@@ -20,960 +20,960 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/auditlog"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/auditlog/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/dashboard"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/lienheadmin"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/menu"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/menu/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/hotro"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/hotro/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/nhomuser"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/nhomuser/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/permission"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/permission/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/importdata"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/importdata/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/danhmuc"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/danhmuc/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/baiviet"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/baiviet/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/goooglesheets"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/sanpham"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/sanpham/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/banggia"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/banggia/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/khachhang"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/khachhang/dashboard"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/khachhang/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/nhomkhachhang"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/nhomkhachhang/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/nhacungcap"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/nhacungcap/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/dathang"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/dathang/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/nhucaudathang"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/donhang"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/donhang/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/vandon"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/phieuchuyen"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/kho"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/kho/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/phieugiaohang"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/phieugiaohang/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/phieuchiahang"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/phieuchiahang/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/phieukho"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/phieukho/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/xuatnhapton"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/xuatnhapton/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/congnokhachhang"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/congnokhachhang/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/userguide"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/userguide/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/congnoncc"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/user"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/user/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/quanlyfile"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/quanlyfile/*"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/profile"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/profile/socialpage"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "redirectTo": "/admin/account/general",
     "route": "/admin/account"
@@ -981,44 +981,44 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/account/password"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-N3CYRROU.js",
-      "chunk-EVDVWTI7.js",
-      "chunk-HCHTLXDU.js",
-      "chunk-XG6MBH2B.js",
+      "chunk-JH737R7H.js",
+      "chunk-CZOT3QTN.js",
+      "chunk-H6OXYBQK.js",
+      "chunk-NRB3VJFL.js",
       "chunk-3UE3AWN6.js",
-      "chunk-5P7QWTR6.js",
-      "chunk-J47B25LX.js",
+      "chunk-NTZ35MHO.js",
+      "chunk-HX6IHFHE.js",
       "chunk-SUUFLDBI.js",
       "chunk-ZW44ZSN2.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/admin/account/general"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-HL5KMW4B.js",
+      "chunk-M4HDIBNT.js",
       "chunk-LSO2ECJT.js",
       "chunk-GKWBOOXC.js",
-      "chunk-S7WZRBBT.js",
-      "chunk-VDT6LLUL.js",
-      "chunk-2YNYHIDJ.js",
+      "chunk-CF7DZBCV.js",
+      "chunk-TQZJPPHT.js",
+      "chunk-627BQ4TO.js",
       "chunk-DMBE3M7H.js",
       "chunk-SGXWTGL5.js"
     ],
@@ -1034,24 +1034,24 @@ export default {
   {
     "renderMode": 1,
     "preload": [
-      "chunk-QMIXBK67.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-42BHOM7G.js",
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/lien-he"
   },
   {
     "renderMode": 1,
     "preload": [
-      "chunk-QMIXBK67.js",
-      "chunk-6DMN2Y4X.js"
+      "chunk-42BHOM7G.js",
+      "chunk-TUUIXDG3.js"
     ],
     "route": "/*"
   }
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72816, hash: '11baa5a752c8b310309f2e33e05bca81fe758e84b6f5be24f70693d6230e3bdc', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24107, hash: '78ce7608e3c4af3a3889f75da1d9b5eb378b45adf249258e9eb2fca8490e0dd0', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
-    'styles-4DCG2JDJ.css': {size: 153810, hash: '7GkB1a5QgiE', text: () => import('./assets-chunks/styles-4DCG2JDJ_css.mjs').then(m => m.default)}
+    'index.csr.html': {size: 72816, hash: '4f0db5565651584299a4e456d2bd44d28dc1c37fd59cfef0ef732b08351e41f0', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24107, hash: 'dbe4d94b667924f646f9e9b3c87f27f25b678a963d9a3374376b01cf1b17c8dc', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'styles-3AT4MPYG.css': {size: 154078, hash: '6nIvntmCSho', text: () => import('./assets-chunks/styles-3AT4MPYG_css.mjs').then(m => m.default)}
   },
 };

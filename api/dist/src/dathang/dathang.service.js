@@ -165,6 +165,9 @@ let DathangService = class DathangService {
             fail,
         };
     }
+    async importcu(data) {
+        return {};
+    }
     async convertDathangImportToTransfer(dathangimport) {
         const dathangimporttranfer = [];
         for (const importItem of dathangimport) {

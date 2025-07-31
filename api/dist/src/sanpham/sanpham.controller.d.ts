@@ -183,8 +183,8 @@ export declare class SanphamController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
             tenfile: string | null;
+            name: string | null;
             diachi: string | null;
             sdt: string | null;
             email: string | null;

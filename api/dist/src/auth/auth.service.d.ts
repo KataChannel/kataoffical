@@ -57,8 +57,8 @@ export declare class AuthService {
                     updatedAt: Date;
                     name: string;
                     codeId: string | null;
-                    description: string | null;
                     group: string | null;
+                    description: string | null;
                 };
             } & {
                 id: string;

@@ -16,8 +16,8 @@ export declare class DathangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
             tenfile: string | null;
+            name: string | null;
             diachi: string | null;
             sdt: string | null;
             email: string | null;
@@ -99,8 +99,8 @@ export declare class DathangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
             tenfile: string | null;
+            name: string | null;
             diachi: string | null;
             sdt: string | null;
             email: string | null;
@@ -140,6 +140,7 @@ export declare class DathangService {
         success: number;
         fail: number;
     }>;
+    importcu(data: any): Promise<{}>;
     convertDathangImportToTransfer(dathangimport: any[]): Promise<any[]>;
     search(params: any): Promise<{
         data: ({
@@ -188,8 +189,8 @@ export declare class DathangService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string | null;
                 tenfile: string | null;
+                name: string | null;
                 diachi: string | null;
                 sdt: string | null;
                 email: string | null;
@@ -283,8 +284,8 @@ export declare class DathangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
             tenfile: string | null;
+            name: string | null;
             diachi: string | null;
             sdt: string | null;
             email: string | null;
@@ -367,8 +368,8 @@ export declare class DathangService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                name: string | null;
                 tenfile: string | null;
+                name: string | null;
                 diachi: string | null;
                 sdt: string | null;
                 email: string | null;
@@ -558,8 +559,8 @@ export declare class DathangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            name: string | null;
             tenfile: string | null;
+            name: string | null;
             diachi: string | null;
             sdt: string | null;
             email: string | null;

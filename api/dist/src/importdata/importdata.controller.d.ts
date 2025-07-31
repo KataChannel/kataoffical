@@ -9,11 +9,11 @@ export declare class ImportdataController {
         createdAt: Date;
         updatedAt: Date;
         type: string | null;
-        status: string | null;
         codeId: string | null;
-        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         importTime: Date;
+        status: string | null;
         createdBy: string | null;
+        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     findby(param: any): Promise<{
         id: string;
@@ -22,11 +22,11 @@ export declare class ImportdataController {
         createdAt: Date;
         updatedAt: Date;
         type: string | null;
-        status: string | null;
         codeId: string | null;
-        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         importTime: Date;
+        status: string | null;
         createdBy: string | null;
+        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
     } | {
         data: {
             id: string;
@@ -35,11 +35,11 @@ export declare class ImportdataController {
             createdAt: Date;
             updatedAt: Date;
             type: string | null;
-            status: string | null;
             codeId: string | null;
-            caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
             importTime: Date;
+            status: string | null;
             createdBy: string | null;
+            caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
         total: number;
         page: any;
@@ -53,11 +53,11 @@ export declare class ImportdataController {
             createdAt: Date;
             updatedAt: Date;
             type: string | null;
-            status: string | null;
             codeId: string | null;
-            caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
             importTime: Date;
+            status: string | null;
             createdBy: string | null;
+            caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
         total: number;
         page: number;
@@ -73,11 +73,11 @@ export declare class ImportdataController {
         createdAt: Date;
         updatedAt: Date;
         type: string | null;
-        status: string | null;
         codeId: string | null;
-        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         importTime: Date;
+        status: string | null;
         createdBy: string | null;
+        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
@@ -87,11 +87,11 @@ export declare class ImportdataController {
         createdAt: Date;
         updatedAt: Date;
         type: string | null;
-        status: string | null;
         codeId: string | null;
-        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         importTime: Date;
+        status: string | null;
         createdBy: string | null;
+        caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
     reorder(body: {
         importdataIds: string[];
