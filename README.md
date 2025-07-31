@@ -187,4 +187,5 @@ docker cp credentials.json rausach-berausach-1:/app/dist
 
 cd /etc/nginx/sites-available
 sudo certbot --nginx -d sandboxapi2.rausachtrangia.com -d sandbox2.rausachtrangia.com
+sudo certbot --nginx -d storage.rausachtrangia.com 
 sudo certbot renew --dry-run

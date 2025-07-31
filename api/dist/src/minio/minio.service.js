@@ -19,7 +19,7 @@ let MinioService = class MinioService {
         this.prisma = prisma;
         this.bucketName = process.env.MINIO_BUCKET?.trim() || 'uploads';
         this.options = {
-            endPoint: process.env.MINIO_ENDPOINT?.trim() || '116.118.49.243',
+            endPoint: process.env.MINIO_ENDPOINT?.trim() || 'storage.rausachtrangia.com',
             port: parseInt(process.env.MINIO_PORT?.trim() || '9000', 10),
             useSSL: process.env.MINIO_USE_SSL?.trim() === 'true',
             accessKey: process.env.MINIO_ROOT_USER?.trim() || 'admin',

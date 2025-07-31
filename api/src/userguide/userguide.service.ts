@@ -98,6 +98,7 @@ export class UserguideService {
           skip,
           take: limit,
           orderBy: { order: 'asc' },
+          include: { UserguidBlocks: true },
         }),
         this.prisma.userguidStep.count(),
       ]);
@@ -126,7 +127,6 @@ export class UserguideService {
 
   async update(id: string, data: any) {
     console.log('update data', data);
-    
     try {
       const { UserguidBlocks, ...rest } = data;
       // First, update the base userguide data without UserguidBlocks
@@ -139,28 +139,48 @@ export class UserguideService {
 
       // Then, update or create each UserguidBlock as needed
       if (UserguidBlocks && Array.isArray(UserguidBlocks)) {
-        await Promise.all(
-          UserguidBlocks.map(async (block: any) => {
-        if (block.id) {
-          // Nếu có id, cập nhật các thông tin của block hiện có
-          await this.prisma.userguidBlock.update({
-            where: { id: block.id },
-            data: block,
-          });
-        } else {
-          // Nếu chưa có id, tạo mới block và liên kết với userguide hiện tại
-          await this.prisma.userguidBlock.create({
-            data: { ...block, stepId: id },
+        // Get existing blocks
+        const existingBlocks = await this.prisma.userguidBlock.findMany({
+          where: { stepId: id },
+          select: { id: true }
+        });
+        
+        const incomingBlockIds = UserguidBlocks.filter(block => block.id).map(block => block.id);
+        const blocksToDelete = existingBlocks.filter(existing => !incomingBlockIds.includes(existing.id));
+        
+        // Delete removed blocks
+        if (blocksToDelete.length > 0) {
+          await this.prisma.userguidBlock.deleteMany({
+            where: {
+              id: { in: blocksToDelete.map(block => block.id) }
+            }
           });
         }
+
+        // Update or create blocks
+        await Promise.all(
+          UserguidBlocks.map(async (block: any) => {
+            if (block.id) {
+              // Nếu có id, cập nhật các thông tin của block hiện có
+              await this.prisma.userguidBlock.update({
+                where: { id: block.id },
+                data: block,
+              });
+            } else {
+              // Nếu chưa có id, tạo mới block và liên kết với userguide hiện tại
+              await this.prisma.userguidBlock.create({
+                data: { ...block, stepId: id },
+              });
+            }
           })
         );
       }
+      
       this._SocketGateway.sendUserguideUpdate();
       return updatedUserguide;
     } catch (error) {
       console.log('Error updating userguide:', error);
-      
+      this._ErrorlogService.logError('updateUserguide', error);
       throw new InternalServerErrorException('Lỗi khi cập nhật userguide', { cause: error });
     }
   }

@@ -107,6 +107,7 @@ let UserguideService = class UserguideService {
                     skip,
                     take: limit,
                     orderBy: { order: 'asc' },
+                    include: { UserguidBlocks: true },
                 }),
                 this.prisma.userguidStep.count(),
             ]);
@@ -145,6 +146,19 @@ let UserguideService = class UserguideService {
                 },
             });
             if (UserguidBlocks && Array.isArray(UserguidBlocks)) {
+                const existingBlocks = await this.prisma.userguidBlock.findMany({
+                    where: { stepId: id },
+                    select: { id: true }
+                });
+                const incomingBlockIds = UserguidBlocks.filter(block => block.id).map(block => block.id);
+                const blocksToDelete = existingBlocks.filter(existing => !incomingBlockIds.includes(existing.id));
+                if (blocksToDelete.length > 0) {
+                    await this.prisma.userguidBlock.deleteMany({
+                        where: {
+                            id: { in: blocksToDelete.map(block => block.id) }
+                        }
+                    });
+                }
                 await Promise.all(UserguidBlocks.map(async (block) => {
                     if (block.id) {
                         await this.prisma.userguidBlock.update({
@@ -164,6 +178,7 @@ let UserguideService = class UserguideService {
         }
         catch (error) {
             console.log('Error updating userguide:', error);
+            this._ErrorlogService.logError('updateUserguide', error);
             throw new common_1.InternalServerErrorException('Lỗi khi cập nhật userguide', { cause: error });
         }
     }

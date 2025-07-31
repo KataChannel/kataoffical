@@ -54,7 +54,25 @@ export declare class UserguideService {
         pageCount: number;
     }>;
     findAll(page?: number, limit?: number): Promise<{
-        data: {
+        data: ({
+            UserguidBlocks: {
+                id: string;
+                title: string | null;
+                order: number | null;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+                type: string;
+                codeId: string | null;
+                description: string | null;
+                listItems: string | null;
+                imageUrl: string | null;
+                imageAlt: string | null;
+                videoUrl: string | null;
+                videoType: string | null;
+                stepId: string | null;
+            }[];
+        } & {
             id: string;
             title: string | null;
             order: number | null;
@@ -63,7 +81,7 @@ export declare class UserguideService {
             codeId: string | null;
             description: string | null;
             time: string | null;
-        }[];
+        })[];
         total: number;
         page: number;
         pageCount: number;
