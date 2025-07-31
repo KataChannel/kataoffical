@@ -454,10 +454,12 @@ export class NhucaudathangComponent {
     
   async ExportExcel(data:any,title:any) {
     const ListKho = await this._KhoService.getAllKho()
-    console.log(ListKho);
+    console.log(data);
     
     const dulieu = data.map((v: any) => ({
       ngaynhan: moment().format('YYYY-MM-DD'),
+      mancc: v.mancc || '',
+      nhacungcap: v.nhacungcap || '',
       masp: v.masp,
       title: v.title,
       dvt: v.dvt,
@@ -472,6 +474,8 @@ export class NhucaudathangComponent {
 
   const mapping: any = {
     ngaynhan: 'Ngày Nhận',
+    mancc: 'Mã Nhà Cung Cấp',
+    nhacungcap: 'Nhà Cung Cấp',
     masp: 'Mã Sản Phẩm',
     title: 'Tên Sản Phẩm',
     dvt: 'Đơn Vị Tính',
@@ -486,8 +490,7 @@ export class NhucaudathangComponent {
   ListKho.forEach((v: any) => {
     mapping[`makho_${v.makho}`] = v.makho;
   });
-  
-  console.log(dulieu,title,Object.keys(mapping),mapping);
+
   writeExcelFile(dulieu,title,Object.values(mapping),mapping);
   }
   trackByFn(index: number, item: any): any {

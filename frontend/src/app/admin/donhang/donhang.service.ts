@@ -38,8 +38,7 @@ export class DonhangService {
         if (!response.ok) {
 
         }
-        this.getAllDonhang()
-        this.donhangId.set(data.id)
+        // this.getAllDonhang()
         return data;
     } catch (error) {
         return console.error(error);
@@ -187,9 +186,7 @@ export class DonhangService {
       if (!response.ok) {
 
       }
-      const data = await response.json();   
-      console.log('search data', data);
-              
+      const data = await response.json();                 
       this.ListDonhang.set(data.data)
       this.page.set(data.pageNumber);
       this.pageCount.set(data.totalPages);

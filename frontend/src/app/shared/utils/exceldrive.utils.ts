@@ -67,9 +67,7 @@ export function writeExcelFile(
       newItem[headerKey] = dataKey ? item[dataKey] || null : null;
     });
     return newItem;
-  });
-  console.log('Transformed Data:', transfer);
-  
+  });  
   const transformedData = headers.length > 0 && Object.keys(mapping).length > 0 ? transfer: data;
   const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(transformedData);
   const workbook: XLSX.WorkBook = {

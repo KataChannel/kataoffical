@@ -1,14 +1,10 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  computed,
-  effect,
   inject,
   signal,
   TemplateRef,
   ViewChild,
-  ViewEncapsulation,
 } from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -17,7 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
@@ -28,24 +24,14 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { DonhangService } from '../donhang.service';
 import { MatMenuModule } from '@angular/material/menu';
 import {
-  readExcelFile,
   readExcelFileNoWorker,
-  writeExcelFile,
   writeExcelFileWithSheets,
 } from '../../../shared/utils/exceldrive.utils';
-import {
-  ConvertDriveData,
-  convertToSlug,
-  GenId,
-} from '../../../shared/utils/shared.utils';
-import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
+import { GenId } from '../../../shared/utils/shared.utils';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { provideNativeDateAdapter } from '@angular/material/core';
 import moment from 'moment';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import html2canvas from 'html2canvas';
-import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
-import { MatTabsModule } from '@angular/material/tabs';
 import { KhachhangService } from '../../khachhang/khachhang.service';
 import { BanggiaService } from '../../banggia/banggia.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
@@ -73,7 +59,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatTooltipModule,
     MatDatepickerModule,
     MatDialogModule,
-    MatTabsModule,
     SharepaginationComponent,
     MatProgressSpinnerModule,
     MatCheckboxModule,
@@ -81,7 +66,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListDonhangComponent {
-  Detail: any = {};
   displayedColumns: string[] = [
     'madonhang',
     'name',
@@ -105,31 +89,22 @@ export class ListDonhangComponent {
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('DonhangColFilter') || '[]'
   );
-  totalItems = 0;
-  currentPage = 1;
-  totalPages = 1;
   Columns: any[] = [];
-  isFilter: boolean = false;
   isLoading = signal<boolean>(false);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
-  @ViewChild('dialogImportExcel') dialogImportExcel!: TemplateRef<any>;
   @ViewChild('dialogImportExcelCu') dialogImportExcelCu!: TemplateRef<any>;
   filterValues: { [key: string]: string } = {};
   private _DonhangService: DonhangService = inject(DonhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
-  private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _KhachhangService: KhachhangService = inject(KhachhangService);
   private _BanggiaService: BanggiaService = inject(BanggiaService);
   private _SanphamService: SanphamService = inject(SanphamService);
   private _router: Router = inject(Router);
   Listdonhang: any = signal<any>({});
   dataSource = new MatTableDataSource([]);
-  donhangId: any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
-  CountItem: any = 0;
-  pageIndex: any = 1;
   Trangthaidon: any = TrangThaiDon;
   SearchParams: any = {
     Batdau: moment().toDate(),
@@ -138,19 +113,11 @@ export class ListDonhangComponent {
     pageSize: 10,
     pageNumber: 1,
   };
-  ListDate: any[] = [
-    { id: 1, Title: '1 Ngày', value: 'day' },
-    { id: 2, Title: '1 Tuần', value: 'week' },
-    { id: 3, Title: '1 Tháng', value: 'month' },
-    { id: 4, Title: '1 Năm', value: 'year' },
-  ];
-  Chonthoigian: any = 'day';
-  isSearch: boolean = false;
   pageSize = signal<number>(10);
   page = signal<number>(1);
   total = signal<number>(0);
   pageCount = signal<number>(0);
-  FilterKhachhang: any[] = [];  constructor() {
+  FilterKhachhang: any[] = [];constructor() {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
@@ -268,7 +235,8 @@ export class ListDonhangComponent {
         panelClass: ['snackbar-error'],
       });
     }
-  }  onDateChange(event: any): void {
+  }  
+  onDateChange(event: any): void {
     // Show loading indicator during date change
     this.isLoading.set(true);
     
@@ -485,74 +453,12 @@ export class ListDonhangComponent {
   create(): void {
     this.drawer.open();
     this._router.navigate(['admin/donhang', 'new']);
-  }
-  goToDetail(item: any): void {
+  }  goToDetail(item: any): void {
     this._DonhangService.setDonhangId(item.id);
     this.drawer.open();
     this._router.navigate(['admin/donhang', item.id]);
   }
-  editDonhang: any[] = [];
-  toggleDonhang(item: any): void {
-    const index = this.editDonhang.findIndex((v) => v.id === item.id);
-    if (index !== -1) {
-      this.editDonhang.splice(index, 1);
-    } else {
-      this.editDonhang.push(item);
-    }
-  }
 
-  dialog = inject(MatDialog);
-  dialogCreateRef: any;
-  Phieuchia: any[] = [];
-
-  openCreateDialog(teamplate: TemplateRef<any>) {
-    console.log(this.editDonhang);
-    this.Phieuchia = this.editDonhang.map((v: any) => ({
-      makh: v.khachhang?.makh,
-      name: v.khachhang?.name,
-      sanpham: v.sanpham.map((v1: any) => ({
-        title: v1.title,
-        dvt: v1.dvt,
-        slgiao: v1.slgiao,
-      })),
-    }));
-    console.log(this.Phieuchia);
-    this.dialogCreateRef = this.dialog.open(teamplate, {
-      hasBackdrop: true,
-      disableClose: true,
-    });
-  }
-
-  getUniqueProducts(): string[] {
-    const products = new Set<string>();
-    this.Phieuchia.forEach((kh) =>
-      kh.sanpham.forEach((sp: any) => products.add(sp.title))
-    );
-    return Array.from(products);
-  }
-
-  getProductQuantity(product: string, makh: string): number | string {
-    const customer = this.Phieuchia.find((kh) => kh.makh === makh);
-    const item = customer?.sanpham.find((sp: any) => sp.title === product);
-    return item ? item.slgiao : '';
-  }
-  getDvtForProduct(product: string) {
-    const uniqueProducts = Array.from(
-      new Map(
-        this.Phieuchia.flatMap((c) =>
-          c.sanpham.map((sp: any) => ({ ...sp, makh: c.makh, name: c.name }))
-        ).map((p) => [p.title, p])
-      ).values()
-    );
-    console.log(uniqueProducts);
-
-    const item = uniqueProducts.find((sp: any) => sp.title === product);
-    return item ? item.dvt : '';
-  }
-
-  CheckItemInDonhang(item: any): boolean {
-    return this.editDonhang.findIndex((v) => v.id === item.id) !== -1;
-  }
   async Dongbogia() {
     try {
       const result = await this._DonhangService.DongboGia(this.EditList);
@@ -586,12 +492,11 @@ export class ListDonhangComponent {
       });
     }
   }
-  
-  DeleteDonhang(): void {}
 
-  ListImportExcel: any[] = [];
+  dialog = inject(MatDialog);
   statusDetails: any[] = [];
   ListImportData: any[] = [];
+  EditList: any[] = [];
 
   async ImporExcel(event: any) {
     const files = Array.from(event.target.files) as File[];
@@ -650,7 +555,7 @@ export class ListDonhangComponent {
             Quantity: Number(item.Quantity) ?? 0,
           }));
         const itemEdit = {
-          tenfile: file.name.replace('.xlsx', ''),
+          tenfile: removeVietnameseAccents(file.name.replace('.xlsx', '')),
           tenkh: TenKH,
           sanpham: editdata,
           ngaygiao: moment().format('YYYY-MM-DD'),
@@ -691,24 +596,8 @@ export class ListDonhangComponent {
         });
         continue;
       }
-      console.log(this.ListImportData);
     }
-    // this._snackBar.open(
-    //     `Nhập đơn hàng thành công. Files xử lý: ${processedCount}, Bỏ qua: ${skippedCount}, Lỗi: ${errorCount}`,
-    //     '',
-    //     {
-    //       duration: 5000,
-    //       horizontalPosition: 'end',
-    //       verticalPosition: 'top',
-    //       panelClass: ['snackbar-success']
-    //     }
-    //   );
-    this.statusDetails.push({
-      fileName: `Overall Đang Xử Lý: ${processedCount}, Bỏ Qua: ${skippedCount}, Lỗi: ${errorCount}`,
-      status: 'Success',
-      message: ``,
-    });
-    // After all files have been processed, perform the import
+    await this._SanphamService.getAllSanpham({pageSize:99999});
     this.dialog.open(this.dialogImportExcelCu, {});
     this.statusDetails.forEach((v: any, k: any) => {
       this.FilterKhachhang[k] = this._KhachhangService.ListKhachhang();
@@ -719,16 +608,23 @@ export class ListDonhangComponent {
       if (a.status !== 'Processed' && b.status === 'Processed') return 1;
       return 0;
     });
+
+    // Auto-select customers based on filename matching
+    this.autoSelectCustomersFromFilename();
+
+    console.log('Status Details:', this.statusDetails);
+    console.log('List Import Data:', this.ListImportData);
+
   }
   removeItemImport(item: any) {
     this.statusDetails = this.statusDetails.filter((v) => v.tenkhongdau !== item.tenkhongdau);
     this.ListImportData = this.ListImportData.filter((v) => v.tenkh !== item.tenkhongdau);
   }
 
-  async DoImportKhachhangCu() {
+  async DoImportKhachhangCu(ListImportData:any[]) {
     try {
-      console.log('ListImportData', this.ListImportData);
-      const invalidItems = this.ListImportData.filter(
+      console.log('ListImportData', ListImportData);
+      const invalidItems = ListImportData.filter(
         (item) => !item.khachhangId || !item.ngaygiao
       );
       console.log('invalidItems', invalidItems);
@@ -749,22 +645,18 @@ export class ListDonhangComponent {
         );
         return;
       }
-      console.log('ListImportData', this.ListImportData);
-
-      const result = await this._DonhangService.ImportDonhangCu(
-        this.ListImportData
-      );
-      this.dialog.closeAll();
-      this._snackBar.open(
-        `Nhập đơn hàng : Thành công ${result.success}, Thất bại ${result.fail}, Bỏ qua ${result.skip}. Reload Lại sau 3s`,
-        '',
-        {
-          duration: 5000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        }
-      );
+      // const result = await this._DonhangService.ImportDonhangCu(ListImportData);
+      // this.dialog.closeAll();
+      // this._snackBar.open(
+      //   `Nhập đơn hàng : Thành công ${result.success}, Thất bại ${result.fail}, Bỏ qua ${result.skip}. Reload Lại sau 3s`,
+      //   '',
+      //   {
+      //     duration: 5000,
+      //     horizontalPosition: 'end',
+      //     verticalPosition: 'top',
+      //     panelClass: ['snackbar-success'],
+      //   }
+      // );
     } catch (importError: any) {
       console.error('Lỗi khi nhập đơn hàng:', importError);
       this._snackBar.open(`Lỗi khi nhập đơn hàng: ${importError.message}`, '', {
@@ -781,11 +673,11 @@ export class ListDonhangComponent {
       return;
     }
     setTimeout(() => {
-      window.location.reload();
+      // window.location.reload();
     }, 3000);
   }
 
-  async ImportDonhang(items: any[]): Promise<void> {
+  async ImportDonhang(items: any[]){
     // items = items.slice(1); // Remove the first row (header)
     if (!items || !items.length) {
       this._snackBar.open('Không có dữ liệu để nhập', '', {
@@ -796,7 +688,8 @@ export class ListDonhangComponent {
       });
       return;
     }
-
+    console.log('Importing items:', items);
+    
     try {
       // Validate required field in first item
       const firstItem = items[0];
@@ -844,7 +737,7 @@ export class ListDonhangComponent {
         khachhangId: khachhang.id,
         khachhang: khachhang,
         sanpham: sanpham,
-        status: 'new',
+        status: 'dadat',
         createdAt: new Date(),
       };
 
@@ -857,8 +750,6 @@ export class ListDonhangComponent {
         verticalPosition: 'top',
         panelClass: ['snackbar-success'],
       });
-
-      // Refresh data
       this.ngOnInit();
     } catch (error: any) {
       console.error('Error importing order:', error);
@@ -874,7 +765,6 @@ export class ListDonhangComponent {
       );
     }
   }
-
   async ExportExcel(data: any, title: any) {
     await this._KhachhangService.getAllKhachhang();
     await this._SanphamService.getAllSanpham();
@@ -897,37 +787,7 @@ export class ListDonhangComponent {
     }));
     writeExcelFileWithSheets({ SP, KH, BG }, title);
   }
-  printContent() {
-    const element = document.getElementById('printContent');
-    if (!element) return;
-
-    html2canvas(element, { scale: 2 }).then((canvas) => {
-      const imageData = canvas.toDataURL('image/png');
-
-      // Mở cửa sổ mới và in ảnh
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) return;
-
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Phiếu Chia Hàng ${moment().format('DD/MM/YYYY')}</title>
-          </head>
-          <body style="text-align: center;">
-            <img src="${imageData}" style="max-width: 100%;"/>
-            <script>
-              window.onload = function() {
-                window.print();
-                window.onafterprint = function() { window.close(); };
-              };
-            </script>
-          </body>
-        </html>
-      `);
-
-      printWindow.document.close();
-    });
-  }
+  
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
@@ -964,6 +824,367 @@ export class ListDonhangComponent {
     );
   }
 
+  /**
+   * Auto-select customers based on filename matching
+   * Matches filename (tenkhongdau) with customer data fields like name, subtitle, makh
+   */
+  autoSelectCustomersFromFilename(): void {
+    if (!this.statusDetails?.length || !this._KhachhangService.ListKhachhang()?.length) {
+      return;
+    }
+
+    const customers = this._KhachhangService.ListKhachhang();
+    let matchedCount = 0;
+    let skippedCount = 0;
+
+    this.statusDetails.forEach((detail: any, index: number) => {
+      if (detail.status !== 'Processed' || !detail.tenkhongdau) {
+        return;
+      }
+
+      // Check if customer is already selected for this detail
+      const existingImportData = this.ListImportData.find(v => v.tenkh === detail.tenkhongdau);
+      if (existingImportData?.khachhangId) {
+        skippedCount++;
+        return;
+      }
+
+      const filename = detail.tenkhongdau.toLowerCase();
+      
+      // Try to match with customer data using multiple strategies
+      let matchedCustomer = null;
+
+      // Strategy 1: Exact match with customer name (without accents)
+      matchedCustomer = customers.find((customer: any) => {
+        const customerNameNoAccent = removeVietnameseAccents(customer.name || '').toLowerCase();
+        return customerNameNoAccent === filename;
+      });
+
+      // Strategy 2: Exact match with customer subtitle (without accents)
+      if (!matchedCustomer) {
+        matchedCustomer = customers.find((customer: any) => {
+          const customerSubtitleNoAccent = removeVietnameseAccents(customer.subtitle || '').toLowerCase();
+          return customerSubtitleNoAccent === filename;
+        });
+      }
+
+      // Strategy 3: Exact match with customer code (makh)
+      if (!matchedCustomer) {
+        matchedCustomer = customers.find((customer: any) => {
+          const customerCode = (customer.makh || '').toLowerCase();
+          return customerCode === filename;
+        });
+      }
+
+      // Strategy 4: Partial match - filename contains customer name
+      if (!matchedCustomer) {
+        matchedCustomer = customers.find((customer: any) => {
+          const customerNameNoAccent = removeVietnameseAccents(customer.name || '').toLowerCase();
+          return customerNameNoAccent && filename.includes(customerNameNoAccent);
+        });
+      }
+
+      // Strategy 5: Partial match - customer name contains filename
+      if (!matchedCustomer) {
+        matchedCustomer = customers.find((customer: any) => {
+          const customerNameNoAccent = removeVietnameseAccents(customer.name || '').toLowerCase();
+          return customerNameNoAccent && customerNameNoAccent.includes(filename);
+        });
+      }
+
+      // Strategy 6: Partial match with subtitle
+      if (!matchedCustomer) {
+        matchedCustomer = customers.find((customer: any) => {
+          const customerSubtitleNoAccent = removeVietnameseAccents(customer.subtitle || '').toLowerCase();
+          return customerSubtitleNoAccent && (
+            filename.includes(customerSubtitleNoAccent) || 
+            customerSubtitleNoAccent.includes(filename)
+          );
+        });
+      }
+
+      // If we found a match, auto-select it
+      if (matchedCustomer) {
+        // Check if this customer is already selected for another import
+        const existingSelection = this.ListImportData.find(
+          (v: any) => v.khachhangId === matchedCustomer.id
+        );
+        
+        if (existingSelection) {
+          console.warn(`Customer ${matchedCustomer.name} is already selected for another import`);
+          skippedCount++;
+          return;
+        }        // Auto-select the customer
+        this.ListImportData.filter((v) => v.tenkh === detail.tenkhongdau).forEach(
+          (v1: any) => {
+            v1.khachhangId = matchedCustomer.id;
+          }
+        );
+
+        // Mark as auto-selected for visual indication
+        detail.autoSelected = true;
+
+        matchedCount++;
+        console.log(`Auto-selected customer "${matchedCustomer.name}" for file "${detail.fileName}"`);
+      }
+    });
+
+    // Show notification about auto-selection results
+    if (matchedCount > 0 || skippedCount > 0) {
+      let message = '';
+      if (matchedCount > 0) {
+        message += `Đã tự động chọn ${matchedCount} khách hàng`;
+      }
+      if (skippedCount > 0) {
+        if (message) message += `, `;
+        message += `bỏ qua ${skippedCount} file`;
+      }
+
+      this._snackBar.open(message, '', {
+        duration: 4000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    }
+  }
+
+  /**
+   * Get selected customer for a specific order detail
+   */
+  getSelectedCustomer(detail: any): any {
+    const importData = this.ListImportData.find(v => v.tenkh === detail.tenkhongdau);
+    if (!importData?.khachhangId) {
+      return null;
+    }
+    
+    return this._KhachhangService.ListKhachhang().find(
+      (customer: any) => customer.id === importData.khachhangId
+    );
+  }
+
+  /**
+   * Check if customer was auto-selected (for visual indication)
+   */
+  isCustomerAutoSelected(detail: any): boolean {
+    const selectedCustomer = this.getSelectedCustomer(detail);
+    return selectedCustomer && detail.autoSelected === true;
+  }
+
+  /**
+   * Toggle confirmation for all orders
+   */
+  toggleAllOrderConfirmation(): void {
+    const processedOrders = this.statusDetails.filter(detail => detail.status === 'Processed');
+    const allConfirmed = processedOrders.every(detail => detail.configOptions?.confirmed);
+    
+    processedOrders.forEach(detail => {
+      if (!detail.configOptions) {
+        detail.configOptions = {};
+      }
+      detail.configOptions.confirmed = !allConfirmed;
+    });
+  }
+
+  /**
+   * Toggle confirmation for a specific order
+   */
+  toggleOrderConfirmation(index: number): void {
+    const detail = this.statusDetails[index];
+    if (!detail.configOptions) {
+      detail.configOptions = {};
+    }
+    detail.configOptions.confirmed = !detail.configOptions.confirmed;
+  }
+
+  /**
+   * Get count of confirmed orders
+   */
+  getConfirmedOrdersCount(): number {
+    return this.statusDetails.filter(detail => 
+      detail.status === 'Processed' && detail.configOptions?.confirmed
+    ).length;
+  }
+
+  /**
+   * Get count of processed orders
+   */
+  getProcessedOrdersCount(): number {
+    return this.statusDetails.filter(detail => detail.status === 'Processed').length;
+  }
+
+  /**
+   * Toggle expansion for all orders
+   */
+  toggleAllOrdersExpansion(): void {
+    const allExpanded = this.allOrdersExpanded();
+    this.statusDetails.forEach(detail => {
+      if (detail.status === 'Processed') {
+        detail.expanded = !allExpanded;
+      }
+    });
+  }
+
+  /**
+   * Check if all orders are expanded
+   */
+  allOrdersExpanded(): boolean {
+    const processedOrders = this.statusDetails.filter(detail => detail.status === 'Processed');
+    return processedOrders.length > 0 && processedOrders.every(detail => detail.expanded);
+  }
+
+  /**
+   * Toggle expansion for a specific order
+   */
+  toggleOrderExpansion(index: number): void {
+    const detail = this.statusDetails[index];
+    detail.expanded = !detail.expanded;
+  }
+
+  /**
+   * Get products for an order
+   */
+  getOrderProducts(detail: any): any[] {
+    const importData = this.ListImportData.find(v => v.tenkh === detail.tenkhongdau);
+    return importData?.sanpham || [];
+  }
+
+  /**
+   * Get total quantity for an order
+   */
+  getTotalQuantity(detail: any): number {
+    const products = this.getOrderProducts(detail);
+    return products.reduce((total, product) => total + (product.Quantity || 0), 0);
+  }
+
+  /**
+   * Toggle all items selection
+   */
+  ToggleAll(): void {
+    if (this.EditList.length === this.dataSource.filteredData.length) {
+      this.EditList = [];
+    } else {
+      this.EditList = [...this.dataSource.filteredData];
+    }
+  }
+
+  /**
+   * Add item to edit list
+   */
+  AddToEdit(item: any): void {
+    const existingItem = this.EditList.find((v: any) => v.id === item.id);
+    if (existingItem) {
+      this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
+    } else {
+      this.EditList.push(item);
+    }
+  }
+
+  /**
+   * Check if item is in edit list
+   */
+  CheckItemInEdit(item: any): boolean {
+    return this.EditList.some((v: any) => v.id === item.id);
+  }
+
+  /**
+   * Open delete confirmation dialog
+   */
+  openDeleteDialog(template: TemplateRef<any>) {
+    const dialogDeleteRef = this.dialog.open(template, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+    dialogDeleteRef.afterClosed().subscribe((result) => {
+      if (result == 'true') {
+        this.DeleteListItem();
+      }
+    });
+  }
+
+  /**
+   * Delete selected items
+   */
+  async DeleteListItem(): Promise<void> {
+    if (!this.EditList?.length) {
+      this._snackBar.open('Không có mục nào được chọn để xóa', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    try {
+      const result: any = await this._DonhangService.DeleteBulkDonhang(this.EditList.map((v: any) => v.id));
+      this._snackBar.open(`Xóa thành công ${result.success} đơn hàng ${result.fail} lỗi`, '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+      this.EditList = [];
+      await this.LoadData();
+    } catch (error: any) {
+      console.error('Error deleting items:', error);
+      this._snackBar.open(`Lỗi khi xóa: ${error.message}`, '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+  /**
+   * Get total products count
+   */
+  getTotalProducts(): number {
+    return this.statusDetails
+      .filter(detail => detail.status === 'Processed' && detail.configOptions?.confirmed)
+      .reduce((total, detail) => total + this.getOrderProducts(detail).length, 0);
+  }
+
+  /**
+   * Get total amount (placeholder - needs implementation based on pricing logic)
+   */
+  getTotalAmount(): number {
+    // This would need to be implemented based on your pricing calculation logic
+    return 0;
+  }
+
+  /**
+   * Format currency
+   */
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(amount);
+  }
+
+  /**
+   * Import confirmed orders
+   */
+  async ImportConfirmedDonhang(): Promise<void> {
+    const confirmedOrders = this.ListImportData.filter((_, index) => 
+      this.statusDetails[index]?.configOptions?.confirmed
+    );
+
+    if (confirmedOrders.length === 0) {
+      this._snackBar.open('Không có đơn hàng nào được xác nhận để nhập', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    await this.DoImportKhachhangCu(confirmedOrders);
+  }
+
   @Debounce(500)
   async DoFindKhachhang(event: any, index: any) {
     const value = event.target.value;
@@ -998,212 +1219,6 @@ export class ListDonhangComponent {
         v1.ngaygiao = value;
       }
     );
-  }
-
-  EditList: any = [];
-  AddToEdit(item: any): void {
-    const existingItem = this.EditList.find((v: any) => v.id === item.id);
-    if (existingItem) {
-      this.EditList = this.EditList.filter((v: any) => v.id !== item.id);
-    } else {
-      this.EditList.push(item);
-    }
-  }
-  CheckItemInEdit(item: any): boolean {
-    return this.EditList.some((v: any) => v.id === item.id);
-  }
-  openDeleteDialog(template: TemplateRef<any>) {
-    const dialogDeleteRef = this.dialog.open(template, {
-      hasBackdrop: true,
-      disableClose: true,
-    });
-    dialogDeleteRef.afterClosed().subscribe((result) => {
-      if (result == 'true') {
-        this.DeleteListItem();
-      }
-    });
-  }
-  async DeleteListItem(): Promise<void> {
-    if (!this.EditList?.length) {
-      this._snackBar.open('Không có mục nào được chọn để xóa', '', {
-        duration: 2000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-warning'],
-      });
-      return;
-    }
-
-    try {
-     const result:any = await this._DonhangService.DeleteBulkDonhang(this.EditList.map((v: any) => v.id));
-      this._snackBar.open(`Xóa thành công ${result.success} đơn hàng ${result.fail} lỗi`, '', {
-      duration: 2000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-success'],
-      });
-    } catch (error: any) {
-      console.error('Lỗi khi xóa đơn hàng:', error);
-      this._snackBar.open('Có lỗi xảy ra khi xóa đơn hàng', '', {
-      duration: 3000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-error'],
-      });
-    } finally {
-      this.EditList = [];
-      await this.LoadData();
-    }
-
-
-
-    // try {
-    //   const deletionPromises = this.EditList.map(async (item: any) =>
-    //     await this._DonhangService.DeleteDonhang(item)
-    //   );
-      
-    //   const results = await Promise.allSettled(deletionPromises);
-      
-    //   const successful = results.filter(result => result.status === 'fulfilled').length;
-    //   const failed = results.filter(result => result.status === 'rejected').length;
-      
-    //   if (failed === 0) {
-    //     this._snackBar.open(`Xóa thành công ${successful} đơn hàng`, '', {
-    //       duration: 2000,
-    //       horizontalPosition: 'end',
-    //       verticalPosition: 'top',
-    //       panelClass: ['snackbar-success'],
-    //     });
-    //   } else {
-    //     this._snackBar.open(`Xóa thành công ${successful}, thất bại ${failed} đơn hàng`, '', {
-    //       duration: 3000,
-    //       horizontalPosition: 'end',
-    //       verticalPosition: 'top',
-    //       panelClass: ['snackbar-warning'],
-    //     });
-    //   }
-    // } catch (error: any) {
-    //   console.error('Batch deletion error:', error);
-    //   this._snackBar.open('Có lỗi xảy ra khi xóa đơn hàng', '', {
-    //     duration: 3000,
-    //     horizontalPosition: 'end',
-    //     verticalPosition: 'top',
-    //     panelClass: ['snackbar-error'],
-    //   });
-    // } finally {
-    //   this.EditList = [];
-    //   await this.LoadData();
-    // }
-  }
-  ToggleAll() {
-    if (this.EditList.length === this.Listdonhang().data.length) {
-      this.EditList = [];
-    } else {
-      this.EditList = [...this.Listdonhang().data];
-    }
-  }
-
-  /**
-   * Get confirmed orders count for display
-   */
-  getConfirmedOrdersCount(): number {
-    return this.statusDetails.filter(detail => 
-      detail.status === 'Processed' && detail.configOptions?.confirmed
-    ).length;
-  }
-
-  /**
-   * Toggle confirmation for individual order
-   */
-  toggleOrderConfirmation(index: number): void {
-    const detail = this.statusDetails[index];
-    if (detail && detail.status === 'Processed') {
-      if (!detail.configOptions) {
-        detail.configOptions = { confirmed: false };
-      }
-      detail.configOptions.confirmed = !detail.configOptions.confirmed;
-    }
-  }
-
-  /**
-   * Toggle confirmation for all orders
-   */
-  toggleAllOrderConfirmation(): void {
-    const processedDetails = this.statusDetails.filter(d => d.status === 'Processed');
-    const allConfirmed = processedDetails.every(detail => detail.configOptions?.confirmed);
-    
-    processedDetails.forEach(detail => {
-      if (!detail.configOptions) {
-        detail.configOptions = { confirmed: false };
-      }
-      detail.configOptions.confirmed = !allConfirmed;
-    });
-  }
-
-  /**
-   * Import only confirmed orders
-   */
-  async ImportConfirmedDonhang(): Promise<void> {
-    try {
-      const confirmedDetails = this.statusDetails.filter(detail => 
-        detail.status === 'Processed' && detail.configOptions?.confirmed
-      );
-
-      if (confirmedDetails.length === 0) {
-        this._snackBar.open('Vui lòng chọn ít nhất một đơn hàng để import', '', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-warning']
-        });
-        return;
-      }
-
-      // Filter corresponding import data
-      const confirmedImportData = this.ListImportData.filter(importItem =>
-        confirmedDetails.some(detail => detail.tenkhongdau === importItem.tenkh)
-      );
-
-      if (confirmedImportData.length === 0) {
-        this._snackBar.open('Không có dữ liệu để import', '', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-warning']
-        });
-        return;
-      }
-
-      // Call existing import method with filtered data
-      await this.ImportDonhang(confirmedImportData);
-      
-      this._snackBar.open(`Import thành công ${confirmedImportData.length} đơn hàng`, '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success']
-      });
-
-      // Close dialog and refresh data
-      this.dialog.closeAll();
-      await this.LoadData();
-
-    } catch (error: any) {
-      console.error('Error importing confirmed orders:', error);
-      this._snackBar.open('Lỗi khi import đơn hàng: ' + (error.message || 'Unknown error'), '', {
-        duration: 5000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-error']
-      });
-    }
-  }
-
-  /**
-   * Get count of processed orders
-   */
-  getProcessedOrdersCount(): number {
-    return this.statusDetails.filter(d => d.status === 'Processed').length;
   }
 }
 function memoize() {

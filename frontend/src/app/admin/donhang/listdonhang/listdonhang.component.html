@@ -158,11 +158,9 @@
                         </mat-menu>
                     </th>
                     <td mat-cell *matCellDef="let row; let idx = index">
-                        @switch (column) {
-                        @case ('STT') {
-                        <span class="max-w-40 line-clamp-4 flex items-center" (click)="toggleDonhang(row)">
+                        @switch (column) {                        @case ('STT') {
+                        <span class="max-w-40 line-clamp-4 flex items-center">
                             {{ idx + 1 }}
-                            <span *ngIf="CheckItemInDonhang(row)" class="material-symbols-outlined">check_box</span>
                         </span>
                         }
                         @case ('madonhang') {
@@ -280,97 +278,6 @@
     </div>
 </mat-drawer-container>
 
-
-
-<ng-template #dialogCreateTemplate>
-    <h2 mat-dialog-title>Phiếu Chia Hàng
-        <button mat-icon-button color="primary" (click)="printContent()">
-            <mat-icon>print</mat-icon>
-        </button>
-    </h2>
-    <mat-dialog-content>
-        <div class="lg:min-w-[400px] w-full h-full flex flex-col space-y-8 items-center p-4">
-            <div class="relative overflow-x-auto sm:rounded-lg">
-                <table id="printContent"
-                    class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    <thead class="border text-xs text-gray-700 uppercase dark:text-gray-400">
-                        <tr>
-                            <th scope="col" class="border px-6 py-3 bg-gray-50 dark:bg-gray-800">
-                                Mô tả
-                            </th>
-                            <th scope="col" class="border px-6 py-3">
-                                Đơn vị
-                            </th>
-                            <th *ngFor="let kh of Phieuchia" scope="col"
-                                class="border px-6 py-3 bg-gray-50 dark:bg-gray-800">
-                                {{ kh.name }}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let product of getUniqueProducts()"
-                            class="border border-gray-200 dark:border-gray-700">
-                            <th scope="row"
-                                class="border px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800">
-                                {{ product }}
-                            </th>
-                            <td class="border px-6 py-4">
-                                {{ getDvtForProduct(product) }}
-                            </td>
-                            <td class="border px-6 py-4 bg-gray-50 dark:bg-gray-800" *ngFor="let kh of Phieuchia">
-                                {{ getProductQuantity(product, kh.makh)||0 }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </mat-dialog-content>
-    <mat-dialog-actions [align]="'end'">
-        <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
-        <button mat-flat-button color="primary" (click)="create()">Tạo</button>
-    </mat-dialog-actions>
-</ng-template>
-
-<ng-template #dialogImportExcel>
-    <mat-dialog-content class="!max-h-[90vh] h-[90vh]">
-        <div class="h-full flex flex-col items-center lg:p-4">
-            {{ ListImportExcel.length }} Đơn Hàng
-            <mat-tab-group>
-                @for (item of ListImportExcel; track item) {
-                <mat-tab [label]="item.title">
-                    {{item.data.length}} Sản phẩm
-                    <div class="relative overflow-x-auto sm:rounded-lg mt-2">
-                        <table class="text-sm text-left rtl:text-right text-gray-500">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="p-2">Mã Sản Phẩm</th>
-                                    <th scope="col" class="p-2">SL Đặt</th>
-                                    <th scope="col" class="p-2">SL Giao</th>
-                                    <th scope="col" class="p-2">SL Nhận</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let product of item.data" class="bg-white border-b hover:bg-gray-50">
-                                    <td class="p-2">{{ product.masp }}</td>
-                                    <td class="p-2 text-end">{{ product.sldat }}</td>
-                                    <td class="p-2 text-end">{{ product.slgiao }}</td>
-                                    <td class="p-2 text-end">{{ product.slnhan }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </mat-tab>
-                }
-            </mat-tab-group>
-        </div>
-    </mat-dialog-content>
-    <mat-dialog-actions [align]="'end'">
-        <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
-        <button mat-flat-button color="primary" (click)="create()">Tạo</button>
-    </mat-dialog-actions>
-</ng-template>
-
 <ng-template #dialogImportExcelCu>
     <h2 mat-dialog-title class="flex items-center justify-between">
         <span>Import Đơn Hàng từ Excel</span>
@@ -379,8 +286,8 @@
         </span>
     </h2>
     
-    <mat-dialog-content class="!max-h-[90vh] h-[90vh] w-[90vh] !p-0">
-        <div class="h-full flex flex-col">
+    <mat-dialog-content class="mat-typography">
+        <div class="w-[90vw] h-full flex flex-col">
             
             <!-- Global Controls -->
             <div class="border-b p-4 bg-gray-50">
@@ -401,6 +308,21 @@
                             (click)="toggleAllOrderConfirmation()">
                         <mat-icon>{{ getConfirmedOrdersCount() === getProcessedOrdersCount() ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
                         {{ getConfirmedOrdersCount() === getProcessedOrdersCount() ? 'Bỏ chọn tất cả' : 'Chọn tất cả' }}
+                    </button>                    <!-- Expand All Toggle -->
+                    <button mat-stroked-button 
+                            color="accent" 
+                            (click)="toggleAllOrdersExpansion()">
+                        <mat-icon>{{ allOrdersExpanded() ? 'unfold_less' : 'unfold_more' }}</mat-icon>
+                        {{ allOrdersExpanded() ? 'Thu gọn tất cả' : 'Mở rộng tất cả' }}
+                    </button>
+
+                    <!-- Auto-select Customers Button -->
+                    <button mat-flat-button 
+                            color="accent" 
+                            (click)="autoSelectCustomersFromFilename()"
+                            matTooltip="Tự động chọn khách hàng dựa trên tên file">
+                        <mat-icon>auto_fix_high</mat-icon>
+                        Tự động chọn KH
                     </button>
                 </div>
             </div>
@@ -425,22 +347,36 @@
                                             File: {{ detail.fileName }} | 
                                             Trạng thái: <span class="text-green-600 font-semibold">{{ detail.status }}</span>
                                         </p>
+                                        @if (getOrderProducts(detail).length > 0) {
+                                        <p class="text-xs text-blue-600 mt-1">
+                                            {{ getOrderProducts(detail).length }} sản phẩm | 
+                                            Tổng SL: {{ getTotalQuantity(detail) }}
+                                        </p>
+                                        }
                                     </div>
                                 </div>
-                                <button mat-icon-button 
-                                        color="warn" 
-                                        (click)="removeItemImport(detail)"
-                                        matTooltip="Xóa đơn hàng này">
-                                    <mat-icon>delete</mat-icon>
-                                </button>
+                                <div class="flex items-center gap-2">
+                                    <!-- Expand/Collapse button -->
+                                    <button mat-icon-button 
+                                            (click)="toggleOrderExpansion(i)"
+                                            matTooltip="Xem chi tiết sản phẩm">
+                                        <mat-icon>{{ detail.expanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+                                    </button>
+                                    <button mat-icon-button 
+                                            color="warn" 
+                                            (click)="removeItemImport(detail)"
+                                            matTooltip="Xóa đơn hàng này">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Order Controls -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <!-- Customer Selection -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">                                <!-- Customer Selection -->
                                 <mat-form-field appearance="outline" subscriptSizing="dynamic">
                                     <mat-label>Khách hàng</mat-label>
-                                    <mat-select (selectionChange)="SelectKhachhang(detail,$event)">
+                                    <mat-select (selectionChange)="SelectKhachhang(detail,$event)" 
+                                               [value]="getSelectedCustomer(detail)?.id">
                                         <div class="w-full flex flex-col">
                                             <mat-form-field appearance="outline" class="w-full p-2" subscriptSizing="dynamic">
                                                 <input matInput (input)="DoFindKhachhang($event,i)" placeholder="Tìm kiếm khách hàng" />
@@ -457,6 +393,15 @@
                                             </div>
                                         </div>
                                     </mat-select>
+                                    @if (getSelectedCustomer(detail)) {
+                                    <mat-hint class="flex items-center gap-1">
+                                        @if (detail.autoSelected) {
+                                        <mat-icon class="text-green-600 !text-sm">auto_fix_high</mat-icon>
+                                        <span class="text-green-600 text-xs">Tự động: </span>
+                                        }
+                                        <span class="text-xs">{{ getSelectedCustomer(detail).name }}</span>
+                                    </mat-hint>
+                                    }
                                 </mat-form-field>
 
                                 <!-- Delivery Date -->
@@ -471,12 +416,70 @@
                                 </mat-form-field>
                             </div>
 
-                            <!-- Order Summary -->
-                            <div class="bg-gray-50 rounded p-3">
-                                <div class="text-sm text-gray-600">
-                                    <strong>File:</strong> {{ detail.fileName }}<br>
-                                    <strong>Thông báo:</strong> {{ detail.message || 'Sẵn sàng import' }}
+                            <!-- Products Details (Expandable) -->
+                            @if (detail.expanded) {
+                            <div class="mt-4 border-t pt-4">
+                                <h4 class="font-medium text-gray-800 mb-3">Chi tiết sản phẩm</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full text-sm">
+                                        <thead class="bg-gray-100">
+                                            <tr>
+                                                <th class="px-3 py-2 text-left font-medium text-gray-700">STT</th>
+                                                <th class="px-3 py-2 text-left font-medium text-gray-700">Mã SP</th>
+                                                <th class="px-3 py-2 text-left font-medium text-gray-700">Tên sản phẩm</th>
+                                                <th class="px-3 py-2 text-left font-medium text-gray-700">ĐVT</th>
+                                                <th class="px-3 py-2 text-left font-medium text-gray-700">SL Giao</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200">
+                                            @for (product of getOrderProducts(detail); track $index; let j = $index) {
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="px-3 py-2">{{ j + 1 }}</td>
+                                                <td class="px-3 py-2 font-mono text-xs">{{ product.masp || 'N/A' }}</td>
+                                                <td class="px-3 py-2">{{ product.title || product.name || 'N/A' }}</td>
+                                                <td class="px-3 py-2">{{ product.dvt || '' }}</td>
+                                                <td class="px-3 py-2 font-semibold text-blue-600">{{ product.slgiao || product.soluong || 0 }}</td>
+                                            </tr>
+                                            }
+                                            @empty {
+                                            <tr>
+                                                <td colspan="7" class="px-3 py-4 text-center text-gray-500">Không có sản phẩm</td>
+                                            </tr>
+                                            }
+                                        </tbody>
+                                        <tfoot class="bg-gray-50">
+                                            <tr class="font-semibold">
+                                                <td colspan="4" class="px-3 py-2 text-right">Tổng cộng:</td>
+                                                <td class="px-3 py-2 text-blue-600">{{ getTotalQuantity(detail) }}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
                                 </div>
+                            </div>
+                            }
+
+                            <!-- Order Summary -->
+                            <div class="bg-gray-50 rounded p-3 mt-4">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                    <div>
+                                        <span class="text-gray-600">File:</span>
+                                        <div class="font-medium">{{ detail.fileName }}</div>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-600">Sản phẩm:</span>
+                                        <div class="font-medium text-blue-600">{{ getOrderProducts(detail).length }}</div>
+                                    </div>
+                                    <div>
+                                        <span class="text-gray-600">Tổng SL:</span>
+                                        <div class="font-medium text-green-600">{{ getTotalQuantity(detail) }}</div>
+                                    </div>
+                                </div>
+                                @if (detail.message) {
+                                <div class="mt-2 pt-2 border-t border-gray-200">
+                                    <span class="text-gray-600">Ghi chú:</span>
+                                    <div class="text-sm">{{ detail.message }}</div>
+                                </div>
+                                }
                             </div>
                         </div>
                         }
@@ -495,21 +498,46 @@
     </mat-dialog-content>
     
     <mat-dialog-actions class="border-t p-4" [align]="'end'">
-        <div class="flex items-center justify-between w-full">
-            <div class="text-sm text-gray-600">
-                Đã chọn {{ getConfirmedOrdersCount() }} / {{ getProcessedOrdersCount() }} đơn hàng
+        <div class="flex flex-col w-full gap-3">
+            <!-- Summary Statistics -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div class="text-center p-2 bg-blue-50 rounded">
+                    <div class="font-semibold text-blue-600">{{ getProcessedOrdersCount() }}</div>
+                    <div class="text-gray-600">Tổng đơn hàng</div>
+                </div>
+                <div class="text-center p-2 bg-green-50 rounded">
+                    <div class="font-semibold text-green-600">{{ getConfirmedOrdersCount() }}</div>
+                    <div class="text-gray-600">Đã chọn</div>
+                </div>
+                <div class="text-center p-2 bg-purple-50 rounded">
+                    <div class="font-semibold text-purple-600">{{ getTotalProducts() }}</div>
+                    <div class="text-gray-600">Tổng SP</div>
+                </div>
+                <div class="text-center p-2 bg-yellow-50 rounded">
+                    <div class="font-semibold text-yellow-600">{{ formatCurrency(getTotalAmount()) }}</div>
+                    <div class="text-gray-600">Tổng tiền</div>
+                </div>
             </div>
-            <div class="flex gap-2">
-                <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
-                <button mat-flat-button 
-                        color="primary" 
-                        [disabled]="getConfirmedOrdersCount() === 0"
-                        (click)="ImportConfirmedDonhang()">
-                    Import {{ getConfirmedOrdersCount() }} đơn hàng
-                </button>
+            
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-between">
+                <div class="text-sm text-gray-600">
+                    Đã chọn {{ getConfirmedOrdersCount() }} / {{ getProcessedOrdersCount() }} đơn hàng
+                </div>
+                <div class="flex gap-2">
+                    <button mat-flat-button color="warn" mat-dialog-close="false">Đóng</button>
+                    <button mat-flat-button 
+                            color="primary" 
+                            [disabled]="getConfirmedOrdersCount() === 0"
+                            (click)="ImportConfirmedDonhang()">
+                        Import {{ getConfirmedOrdersCount() }} đơn hàng
+                    </button>
+                </div>
             </div>
         </div>
     </mat-dialog-actions>
+
+
 </ng-template>
 
 
