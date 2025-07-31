@@ -1,8 +1,6 @@
 import { inject, Injectable, signal, Signal } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
-import { io } from 'socket.io-client';
-import { openDB } from 'idb';
 import { ErrorLogService } from '../../shared/services/errorlog.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
   @Injectable({

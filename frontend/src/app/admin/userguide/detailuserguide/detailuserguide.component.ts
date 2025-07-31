@@ -73,7 +73,7 @@ export class DetailUserguideComponent {
     });
   }
   DetailUserguide: any = this._UserguideService.DetailUserguide;
-  ImageURL = environment.ImageURL;
+  ImageURL = environment.ImageURL?.replace('http://', 'https://') || '';
   isEdit = signal(false);
   isDelete = signal(false);
   userguideId: any = this._UserguideService.userguideId;
@@ -338,12 +338,13 @@ export class DetailUserguideComponent {
   getMediaUrl(filePath: string): string {
     if (!filePath) return '';
     
-    // If it's already a full URL, return as is
+    // If it's already a full URL, convert HTTP to HTTPS
     if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
-      return filePath;
+      // Force HTTPS for security
+      return filePath.replace('http://', 'https://');
     }
     
-    // Construct MinIO URL
-    return `${environment.APIURL}/files/${filePath}`;
+    // Construct HTTPS MinIO URL
+    return `https://${environment.APIURL.replace('http://', '').replace('https://', '')}/files/${filePath}`;
   }
 }
