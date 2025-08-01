@@ -545,8 +545,11 @@ export class ListDathangComponent {
         const data = await readExcelFileNoWorker(file);
         console.log('Excel data:', data);
 
-        if (data && data.Sheet1 && data.Sheet1.length > 0) {
-          const processedData = this.processImportData(data.Sheet1, file.name);
+        // Check for either Sheet1 or dathang sheet
+        const sheetData = data.Sheet1 || data.dathang;
+        
+        if (sheetData && sheetData.length > 0) {
+          const processedData = this.processImportData(sheetData, file.name);
 
           if (processedData.length > 0) {
             this.ListImportExcel.push(...processedData);
@@ -559,7 +562,7 @@ export class ListDathangComponent {
           this.statusDetails.push({
             fileName: file.name,
             status: 'Skipped',
-            message: 'No valid data found',
+            message: 'No valid data found in Sheet1 or dathang sheet',
           });
         }
       } catch (error: any) {
