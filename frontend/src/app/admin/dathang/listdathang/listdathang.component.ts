@@ -872,7 +872,7 @@ export class ListDathangComponent {
         const Kho = this._KhoService.ListKho().find(
           (k) => k.makho === order.makho);
         return {
-          ngaynhan: order.ngaynhan,
+          ngaynhan: new Date(order.ngaynhan),
           mancc: order?.nhacungcap.mancc,
           makho: order.makho,
           khoId: Kho?.id,
