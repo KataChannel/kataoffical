@@ -1,4 +1,13 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, signal, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -15,11 +24,15 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
-import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
-import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
+import {
+  readExcelFile,
+  writeExcelFile,
+} from '../../../shared/utils/exceldrive.utils';
+import {
+  ConvertDriveData,
+} from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { DonhangService } from '../../donhang/donhang.service';
-import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import moment from 'moment';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
@@ -29,7 +42,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @Component({
   selector: 'app-listphieugiaohang',
   templateUrl: './listphieugiaohang.component.html',
-  styleUrls: ['./listphieugiaohang.component.scss'],  imports: [
+  styleUrls: ['./listphieugiaohang.component.scss'],
+  imports: [
     MatFormFieldModule,
     MatInputModule,
     MatTableModule,
@@ -48,10 +62,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     SharepaginationComponent,
     MatProgressSpinnerModule,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
   // providers: [provideNativeDateAdapter()],
 })
-export class ListPhieugiaohangComponent {  Detail: any = {};
+export class ListPhieugiaohangComponent {
+  Detail: any = {};
   displayedColumns: string[] = [
     'STT',
     'madonhang',
@@ -71,9 +86,10 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
     ngaygiao: 'Ngày Giao',
     status: 'Trạng Thái',
     ghichu: 'Ghi Chú',
-    createdAt:'Ngày Tạo',
-    updatedAt:'Ngày Cập Nhật'
-  };FilterColumns: any[] = JSON.parse(
+    createdAt: 'Ngày Tạo',
+    updatedAt: 'Ngày Cập Nhật',
+  };
+  FilterColumns: any[] = JSON.parse(
     localStorage.getItem('PhieugiaohangColFilter') || '[]'
   );
   Columns: any[] = [];
@@ -88,9 +104,9 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
-  Listphieugiaohang:any = signal<any>({});
+  Listphieugiaohang: any = signal<any>({});
   dataSource = new MatTableDataSource([]);
-  donhangId:any = this._DonhangService.donhangId;
+  donhangId: any = this._DonhangService.donhangId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   isSearch: boolean = false;
   CountItem: any = 0;
@@ -98,40 +114,44 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
   pageCount = signal<number>(1);
   total = signal<number>(0);
   pageSize = signal<number>(10);
-  Trangthaidon:any = TrangThaiDon 
+  Trangthaidon: any = TrangThaiDon;
   SearchParams: any = {
-      Batdau: moment().toDate(),
-      Ketthuc: moment().toDate(),
-      Type: 'donsi',
-      Status:['dadat','dagiao'],
-      pageSize: 10,
-      pageNumber: 1
-    };
-    ListDate: any[] = [
-      { id: 1, Title: '1 Ngày', value: 'day' },
-      { id: 2, Title: '1 Tuần', value: 'week' },
-      { id: 3, Title: '1 Tháng', value: 'month' },
-      { id: 4, Title: '1 Năm', value: 'year' },
-    ];
-    Chonthoigian: any = 'day';
-    constructor() {
-      this.displayedColumns.forEach((column) => {
-        this.filterValues[column] = '';
-      });
-    }
+    Batdau: moment().toDate(),
+    Ketthuc: moment().toDate(),
+    Type: 'donsi',
+    Status: ['dadat', 'dagiao','danhan','hoanthanh'],
+    pageSize: 10,
+    pageNumber: 1,
+  };
+  ListDate: any[] = [
+    { id: 1, Title: '1 Ngày', value: 'day' },
+    { id: 2, Title: '1 Tuần', value: 'week' },
+    { id: 3, Title: '1 Tháng', value: 'month' },
+    { id: 4, Title: '1 Năm', value: 'year' },
+  ];
+  Chonthoigian: any = 'day';
+  constructor() {
+    this.displayedColumns.forEach((column) => {
+      this.filterValues[column] = '';
+    });
+  }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
       const filterObject = JSON.parse(filter);
       let isMatch = true;
-      this.displayedColumns.forEach(column => {
+      this.displayedColumns.forEach((column) => {
         if (filterObject[column]) {
-          const value = data[column] ? data[column].toString().toLowerCase() : '';
-          isMatch = isMatch && value.includes(filterObject[column].toLowerCase());
+          const value = data[column]
+            ? data[column].toString().toLowerCase()
+            : '';
+          isMatch =
+            isMatch && value.includes(filterObject[column].toLowerCase());
         }
       });
       return isMatch;
     };
-  }  async ngOnInit(): Promise<void> {    
+  }
+  async ngOnInit(): Promise<void> {
     await this.LoadData();
     this.initializeColumns();
     this.setupDrawer();
@@ -146,10 +166,10 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
 
   async onPageChange(event: any): Promise<void> {
     console.log('Page change event:', event);
-    
+
     // Show loading indicator during page change
     this.isLoading.set(true);
-    
+
     try {
       this.SearchParams.pageSize = event.pageSize;
       this.SearchParams.pageNumber = event.page;
@@ -171,13 +191,13 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
       // Fetch paginated data from server
       const data = await this._DonhangService.searchDonhang(this.SearchParams);
       this.Listphieugiaohang.set(data);
-      
+
       if (data && data.data) {
         this.total.set(Number(data.total || 0));
         this.pageSize.set(Number(data.pageSize || 10));
         this.page.set(Number(data.pageNumber || 1));
         this.pageCount.set(Number(data.totalPages || 1));
-        
+
         // Set data to table without client-side pagination since we're using server-side
         this.dataSource = new MatTableDataSource(data.data);
         // Disable client-side pagination/sorting since we're using server-side
@@ -199,7 +219,7 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
       });
-      
+
       // Set empty state on error
       this.total.set(0);
       this.pageSize.set(10);
@@ -217,14 +237,15 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
     // Reset to first page when filtering
     this.SearchParams.pageNumber = 1;
     await this.LoadData();
-  }    onSelectionChange(event: MatSelectChange): void {
-      this.SearchParams.pageNumber = 1; // Reset to first page
-      this.LoadData();
-    }
-    onDateChange(event: any): void {
-      this.SearchParams.pageNumber = 1; // Reset to first page
-      this.LoadData();
-    }
+  }
+  onSelectionChange(event: MatSelectChange): void {
+    this.SearchParams.pageNumber = 1; // Reset to first page
+    this.LoadData();
+  }
+  onDateChange(event: any): void {
+    this.SearchParams.pageNumber = 1; // Reset to first page
+    this.LoadData();
+  }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
       key,
@@ -234,7 +255,9 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('PhieugiaohangColFilter',JSON.stringify(this.FilterColumns)
+      localStorage.setItem(
+        'PhieugiaohangColFilter',
+        JSON.stringify(this.FilterColumns)
       );
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -264,14 +287,15 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
       column.isShow = !column.isShow;
       this.updateDisplayedColumns();
     }
-  }  FilterHederColumn(list:any,column:any)
-  {
+  }
+  FilterHederColumn(list: any, column: any) {
     // Use the current data source data instead of the full list for filtering
     const dataToFilter = this.dataSource.data || [];
-    const uniqueList = dataToFilter.filter((obj: any, index: number, self: any) => 
-      index === self.findIndex((t: any) => t[column] === obj[column])
+    const uniqueList = dataToFilter.filter(
+      (obj: any, index: number, self: any) =>
+        index === self.findIndex((t: any) => t[column] === obj[column])
     );
-    return uniqueList
+    return uniqueList;
   }
   doFilterHederColumn(event: any, column: any): void {
     // Since we're using server-side pagination, this should filter within current page data
@@ -279,52 +303,46 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
     const filteredData = this.dataSource.data.filter((v: any) => {
       const value = v[column];
       if (value) {
-        return removeVietnameseAccents(value.toString()).toLowerCase().includes(query) ||
-               value.toString().toLowerCase().includes(query);
+        return (
+          removeVietnameseAccents(value.toString())
+            .toLowerCase()
+            .includes(query) || value.toString().toLowerCase().includes(query)
+        );
       }
       return false;
     });
-    
+
     // Update the displayed data temporarily for the filter menu
     this.dataSource.filteredData = filteredData;
-    console.log(query, column, filteredData);   
+    console.log(query, column, filteredData);
   }
-  ListFilter:any[] =[]
-  ChosenItem(item:any)
-  {
-    if(this.ListFilter.includes(item.id))
-    {
+  ListFilter: any[] = [];
+  ChosenItem(item: any) {
+    if (this.ListFilter.includes(item.id)) {
       this.ListFilter = this.ListFilter.filter((v) => v !== item.id);
-    }
-    else{
+    } else {
       this.ListFilter.push(item.id);
     }
     console.log(this.ListFilter);
-    
   }
-  ChosenAll(list:any)
-  {
-    list.forEach((v:any) => {
-      if(this.ListFilter.includes(v.id))
-        {
-          this.ListFilter = this.ListFilter.filter((v) => v !== v.id);
-        }
-        else{
-          this.ListFilter.push(v.id);
-        }
+  ChosenAll(list: any) {
+    list.forEach((v: any) => {
+      if (this.ListFilter.includes(v.id)) {
+        this.ListFilter = this.ListFilter.filter((v) => v !== v.id);
+      } else {
+        this.ListFilter.push(v.id);
+      }
     });
-  }  ResetFilter()
-  {
-    this.ListFilter = this.dataSource.data.map((v:any) => v.id);
+  }
+  ResetFilter() {
+    this.ListFilter = this.dataSource.data.map((v: any) => v.id);
     // Reset the filtered data to show all current page data
     this.dataSource.filteredData = this.dataSource.data;
   }
-  EmptyFiter()
-  {
+  EmptyFiter() {
     this.ListFilter = [];
   }
-  CheckItem(item:any)
-  {
+  CheckItem(item: any) {
     return this.ListFilter.includes(item.id);
   }
 
@@ -337,9 +355,12 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
     } else {
       this.EditList.push(item);
     }
-    console.log(this.EditList); 
-  }  ToggleAll(): void {
-      this.EditList.length == this.dataSource.data.length? this.EditList = [] : this.EditList = [...this.dataSource.data];
+    console.log(this.EditList);
+  }
+  ToggleAll(): void {
+    this.EditList.length == this.dataSource.data.length
+      ? (this.EditList = [])
+      : (this.EditList = [...this.dataSource.data]);
   }
 
   togglePhieugiaohang(row: any): void {
@@ -353,9 +374,8 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
     return item.id || index;
   }
 
-
-  async UpdateBulk(){
-   if (!this.EditList?.length) {
+  async UpdateBulk() {
+    if (!this.EditList?.length) {
       this._snackBar.open('Không có mục nào được chọn để xóa', '', {
         duration: 2000,
         horizontalPosition: 'end',
@@ -366,31 +386,40 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
     }
 
     try {
-      const result:any = await this._DonhangService.UpdateBulkDonhang(this.EditList.map((v: any) => v.id));
-      this._snackBar.open(`Cập nhật thành công ${result.success} đơn hàng ${result.fail} lỗi`, '', {
-      duration: 2000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-success'],
-      });
+      const result: any = await this._DonhangService.UpdateBulkDonhang(
+        this.EditList.map((v: any) => v.id)
+      );
+      this._snackBar.open(
+        `Cập nhật thành công ${result.success} đơn hàng ${result.fail} lỗi`,
+        '',
+        {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        }
+      );
     } catch (error: any) {
       console.error('Lỗi khi xóa đơn hàng:', error);
       this._snackBar.open('Có lỗi xảy ra khi xóa đơn hàng', '', {
-      duration: 3000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-error'],
-      });    } finally {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
       this.EditList = [];
       await this.LoadData();
     }
   }
   CheckItemInEdit(item: any): boolean {
     return this.EditList.some((v: any) => v.id === item.id);
-  }  ApplyFilterColum(menu:any)
-  {    
+  }
+  ApplyFilterColum(menu: any) {
     // Apply the filter to current page data only since we're using server-side pagination
-    this.dataSource.filteredData = this.dataSource.data.filter((v: any) => this.ListFilter.includes(v.id));
+    this.dataSource.filteredData = this.dataSource.data.filter((v: any) =>
+      this.ListFilter.includes(v.id)
+    );
     console.log(this.dataSource.filteredData);
     menu.closeMenu();
   }
@@ -402,7 +431,9 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('PhieugiaohangColFilter',JSON.stringify(this.FilterColumns)
+    localStorage.setItem(
+      'PhieugiaohangColFilter',
+      JSON.stringify(this.FilterColumns)
     );
   }
   doFilterColumns(event: any): void {
@@ -416,10 +447,15 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
     this._router.navigate(['admin/phieugiaohang', 0]);
   }
   goToDetail(item: any): void {
-     this._DonhangService.setDonhangId(item.id);
+    this._DonhangService.setDonhangId(item.id);
     // this.drawer.open();
     // this._router.navigate(['admin/phieugiaohang', item.id], { queryParams: { openInNewTab: true } });
-    window.open(this._router.serializeUrl(this._router.createUrlTree(['admin/phieugiaohang', item.id])), '_blank');
+    window.open(
+      this._router.serializeUrl(
+        this._router.createUrlTree(['admin/phieugiaohang', item.id])
+      ),
+      '_blank'
+    );
   }
   async LoadDrive() {
     const DriveInfo = {
@@ -427,10 +463,10 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
       SheetName: 'PGHImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
-   const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
-   const data = ConvertDriveData(result.values);
-   console.log(data);
-   this.DoImportData(data);
+    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
+    const data = ConvertDriveData(result.values);
+    console.log(data);
+    this.DoImportData(data);
     // const updatePromises = data.map(async (v: any) => {
     //   const item = this._KhachhangsService
     //     .ListKhachhang()
@@ -452,15 +488,12 @@ export class ListPhieugiaohangComponent {  Detail: any = {};
     //   //  window.location.reload();
     // });
   }
-  DoImportData(data:any)
-  {
-
-  }
+  DoImportData(data: any) {}
   async ImporExcel(event: any) {
-  const data = await readExcelFile(event)
-  this.DoImportData(data);
-  }   
-  ExportExcel(data:any,title:any) {
-    writeExcelFile(data,title);
+    const data = await readExcelFile(event);
+    this.DoImportData(data);
+  }
+  ExportExcel(data: any, title: any) {
+    writeExcelFile(data, title);
   }
 }

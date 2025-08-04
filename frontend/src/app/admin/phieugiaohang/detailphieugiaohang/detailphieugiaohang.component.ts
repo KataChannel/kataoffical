@@ -671,7 +671,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
         newWindow.document.write(`
           <html>
           <head>
-            <title></title>
+            <title>${this.DetailPhieugiaohang()?.madonhang}</title>
              ${tailwindCSS}
             <style>
               body { font-size: 12px; 'Times New Roman', Times, serif !important; }

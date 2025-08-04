@@ -3,10 +3,7 @@
     <mat-icon>arrow_back</mat-icon>
   </button>
   <!-- Cập nhật input title ở header -->
-  <div [contentEditable]="true" 
-       (focus)="onInputFocus($event)"
-       (blur)="updateBlurValue($event,null,DetailPhieugiaohang(), 'title','string')"
-       class="p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200">
+  <div class="p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200">
     {{ DetailPhieugiaohang()?.madonhang || 'Không có dữ liệu' }}
   </div>
   <div class="flex flex-row space-x-2 items-center">
@@ -16,9 +13,9 @@
       Đã Nhận
     </button>
 
-    <button mat-icon-button color="primary" (click)="CoppyDon()">
+    <!-- <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>
-    </button>
+    </button> -->
     <button *ngIf="!isEdit()" mat-icon-button color="primary" (click)="printContent()">
       <mat-icon>print</mat-icon>
     </button>
