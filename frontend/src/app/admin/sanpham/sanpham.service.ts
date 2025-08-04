@@ -101,6 +101,31 @@ export class SanphamService {
         return console.error(error);
     }
   }
+
+   async getSanphamforselect() {
+      try {
+        const options = {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this._StorageService.getItem('token')}`
+          },
+        };
+  
+        const response = await fetch(`${environment.APIURL}/sanpham/forselect`, options);
+        if (!response.ok) {
+          this.handleError(response.status);
+          return [];
+        }
+        const data = await response.json();
+        this.ListSanpham.set(data.data);
+        return data.data;
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    }
+
   async getNhucau() {
     try {
       const options = {

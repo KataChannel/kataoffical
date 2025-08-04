@@ -42,6 +42,14 @@ let SanphamController = class SanphamController {
             throw new common_1.HttpException(error.message || 'Failed to fetch khachhangs', error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async findAllForSelect() {
+        try {
+            return await this.sanphamService.findAllForSelect();
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Failed to fetch sanphams', error.status || common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     nhucaudathang() {
         return this.sanphamService.nhucaudathang();
     }
@@ -105,6 +113,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], SanphamController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)('forselect'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SanphamController.prototype, "findAllForSelect", null);
 __decorate([
     (0, common_1.Get)('nhucaudathang'),
     __metadata("design:type", Function),

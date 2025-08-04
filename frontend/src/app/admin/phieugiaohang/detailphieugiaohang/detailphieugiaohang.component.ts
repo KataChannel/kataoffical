@@ -261,10 +261,52 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   goBack() {
     this._router.navigate(['/admin/phieugiaohang']);
     this._ListphieugiaohangComponent.drawer.close();
-  }
-  trackByFn(index: number, item: any): any {
+  }  trackByFn(index: number, item: any): any {
     return item.id;
   }
+  
+  // Method để auto-select text khi focus vào input
+  onInputFocus(event: FocusEvent) {
+    const target = event.target as HTMLElement;
+    if (target && target.isContentEditable) {
+      // Delay để đảm bảo focus đã hoàn tất
+      setTimeout(() => {
+        if (document.createRange && window.getSelection) {
+          const range = document.createRange();
+          range.selectNodeContents(target);
+          const selection = window.getSelection();
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+        }
+      }, 10);
+    }
+  }
+
+  // Method để xử lý input từ numpad và format số
+  private handleNumericInput(event: KeyboardEvent, target: HTMLElement): void {
+    // Handle numpad decimal point
+    if (event.code === 'NumpadDecimal' || event.key === '.' || event.key === ',') {
+      const currentText = target.innerText;
+      // Prevent multiple decimal points
+      if (currentText.includes('.') || currentText.includes(',')) {
+        event.preventDefault();
+        return;
+      }
+    }
+    
+    // Handle numpad numbers - let them through normally
+    if (event.code && event.code.startsWith('Numpad') && /Numpad[0-9]/.test(event.code)) {
+      // These will be handled normally by the browser
+      return;
+    }
+  }
+
+  // Method để format số hiển thị
+  private formatNumberDisplay(value: number): string {
+    if (isNaN(value) || value === 0) return '0';
+    return value.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
+
   toggleEdit() {
     this.isEdit.update((value) => !value);
   }
@@ -316,7 +358,6 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       return v;
     });
   }
-
   updateValue(
     event: Event,
     index: number | null,
@@ -324,100 +365,122 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
     field: keyof any,
     type: 'number' | 'string'
   ) {
-    const newValue =
-      type === 'number'
-        ? Number((event.target as HTMLElement).innerText.trim()) || 0
-        : (event.target as HTMLElement).innerText.trim();
-        const keyboardEvent = event as KeyboardEvent;
-        if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
-          event.preventDefault();
-        }
-        if (type === "number") {
-          const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
-          
-          // Chặn nếu không phải số và không thuộc danh sách phím cho phép
-          if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
-            event.preventDefault();
-          }
-        }        this.DetailPhieugiaohang.update((v: any) => {
-      if (index !== null) {
-        if (field === 'sldat') {
-          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
-        }   
-        else if (field === 'ghichu') {
-          console.log(index,field,newValue);
-          
-          v.sanpham[index]['ghichu'] = newValue;
-          const inputs = document.querySelectorAll('.ghichu-input')as NodeListOf<HTMLInputElement>;
-              if (index < this.dataSource.filteredData.length - 1) {
-                const nextInput = inputs[index + 1]as HTMLInputElement
-                if (nextInput) {
-                  if (nextInput instanceof HTMLInputElement) {
-                    nextInput.focus();
-                    nextInput.select();
-                  }
-                  // Then select text using a different method that works on more element types
-                  setTimeout(() => {
-                    if (document.createRange && window.getSelection) {
-                      const range = document.createRange();
-                      range.selectNodeContents(nextInput);
-                      const selection = window.getSelection();
-                      selection?.removeAllRanges();
-                      selection?.addRange(range);
-                    }
-                  }, 10);
-                }
-           }
-        } 
-        
-        else if (field === 'slgiao') {
-          const newGiao = newValue
-          // if (newGiao < v.sanpham[index]['sldat']) {
-          //   // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
-          //   v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
-          //   this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
-          //     duration: 1000,
-          //     horizontalPosition: "end",
-          //     verticalPosition: "top",
-          //     panelClass: ['snackbar-error'],
-          //   });
-          // } else {
-            v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newGiao;
-            v.sanpham[index]['ttgiao']=v.sanpham[index]['slgiao']*v.sanpham[index]['giaban']
-            const inputs = document.querySelectorAll('.slgiao-input')as NodeListOf<HTMLInputElement>;
-            if (index < this.dataSource.filteredData.length - 1) {
-              const nextInput = inputs[index + 1]as HTMLInputElement
-              if (nextInput) {
-                if (nextInput instanceof HTMLInputElement) {
-                  nextInput.focus();
-                  nextInput.select();
-                }
-                // Then select text using a different method that works on more element types
-                setTimeout(() => {
-                  if (document.createRange && window.getSelection) {
-                    const range = document.createRange();
-                    range.selectNodeContents(nextInput);
-                    const selection = window.getSelection();
-                    selection?.removeAllRanges();
-                    selection?.addRange(range);
-                  }
-                }, 10);
-              }
-            }
-          // }
-        } else {
-          v.sanpham[index][field] = newValue;
-        }
-      } else {
-        v[field] = newValue;
-      }      
-      return v;
-    });
+    const target = event.target as HTMLElement;
+    let newValue: any;
     
-    // Cập nhật dataSource sau khi thay đổi dữ liệu
-    this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
-  }
+    if (type === 'number') {
+      // Clean the text content and convert to number
+      const textContent = target.innerText.trim().replace(/,/g, '.'); // Replace comma with dot for decimal
+      newValue = Number(textContent) || 0;
+    } else {
+      newValue = target.innerText.trim();
+    }
 
+    const keyboardEvent = event as KeyboardEvent;
+      // Handle Enter key
+    if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
+      event.preventDefault();
+      
+      // Focus next input for specific fields - Fix: use correct filtered data length
+      if (index !== null) {
+        const inputs = document.querySelectorAll(
+          field === 'ghichu' ? '.ghichu-input' : '.slgiao-input'
+        ) as NodeListOf<HTMLElement>;
+        
+        if (index < this.dataSource.filteredData.length - 1) {
+          const nextInput = inputs[index + 1];
+          if (nextInput) {
+            nextInput.focus();
+            // Select text for better UX - Same style as detaildonhang
+            setTimeout(() => {
+              if (document.createRange && window.getSelection) {
+                const range = document.createRange();
+                range.selectNodeContents(nextInput);
+                const selection = window.getSelection();
+                selection?.removeAllRanges();
+                selection?.addRange(range);
+              }
+            }, 10);
+          }
+        }
+      }
+    }// Validate number input
+    if (type === "number") {
+      const allowedKeys = [
+        "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Enter",
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", // Regular number keys
+        ".", ",", // Decimal separators
+        "Home", "End", "PageUp", "PageDown" // Navigation keys
+      ];
+      
+      // Allow regular digits, numpad digits, and control keys
+      const isDigit = /^[0-9]$/.test(keyboardEvent.key);
+      const isNumpadDigit = keyboardEvent.code && keyboardEvent.code.startsWith('Numpad') && /Numpad[0-9]/.test(keyboardEvent.code);
+      const isDecimal = keyboardEvent.key === '.' || keyboardEvent.key === ',';
+      const isControlKey = allowedKeys.includes(keyboardEvent.key);
+      
+      if (!isDigit && !isNumpadDigit && !isDecimal && !isControlKey) {
+        event.preventDefault();
+        return;
+      }
+      
+      // Handle numeric input processing
+      this.handleNumericInput(keyboardEvent, target);
+    }
+
+    // Fix: Find correct item index in original data using element.id
+    if (index !== null && element?.id) {
+      const actualIndex = this.DetailPhieugiaohang().sanpham.findIndex((item: any) => item.id === element.id);
+      
+      if (actualIndex === -1) {
+        console.warn('Item not found in original data:', element.id);
+        return;
+      }      // Update data using actual index
+      this.DetailPhieugiaohang.update((v: any) => {
+        // Handle specific field logic
+        switch (field) {
+          case 'sldat':
+            // Sync sldat with slgiao and slnhan
+            v.sanpham[actualIndex]['sldat'] = newValue;
+            v.sanpham[actualIndex]['slgiao'] = newValue;
+            v.sanpham[actualIndex]['slnhan'] = newValue;
+            v.sanpham[actualIndex]['ttgiao'] = Number(newValue) * (v.sanpham[actualIndex]['giaban'] || 0);
+            break;
+          case 'slgiao':
+            // Update slgiao and sync with slnhan, calculate ttgiao
+            v.sanpham[actualIndex]['slgiao'] = newValue;
+            v.sanpham[actualIndex]['slnhan'] = newValue;
+            v.sanpham[actualIndex]['ttgiao'] = Number(newValue) * (v.sanpham[actualIndex]['giaban'] || 0);
+            break;
+          case 'slnhan':
+            // Update only slnhan
+            v.sanpham[actualIndex]['slnhan'] = newValue;
+            break;
+          case 'giaban':
+            // Update giaban and recalculate ttgiao
+            v.sanpham[actualIndex]['giaban'] = newValue;
+            v.sanpham[actualIndex]['ttgiao'] = (v.sanpham[actualIndex]['slgiao'] || 0) * Number(newValue);
+            break;
+          case 'ghichu':
+            // Update ghichu
+            v.sanpham[actualIndex]['ghichu'] = newValue;
+            break;
+          default:
+            v.sanpham[actualIndex][field] = newValue;
+        }
+        return v;
+      });
+      
+      // Update dataSource
+      this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
+    } else if (index === null) {
+      // Update main phieu field
+      this.DetailPhieugiaohang.update((v: any) => {
+        v[field] = newValue;
+        return v;
+      });
+    }
+  }
   updateBlurValue(
     event: FocusEvent,
     index: number | null,
@@ -426,30 +489,70 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
     type: 'number' | 'string'
   ) {
     const target = event.target as HTMLElement;
-    const newValue =
-      type === 'number'
-        ? Number(target.innerText.trim()) || 0
-        : target.innerText.trim();    // Cập nhật giá trị sau khi input mất focus (blur)
-    this.DetailPhieugiaohang.update((v: any) => {
-      if (index !== null) {
-        if (field === 'sldat') {
-          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
-        } else if (field === 'ghichu') {
-          v.sanpham[index]['ghichu'] = newValue;
-        } else if (field === 'slgiao') {
-          v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
-          v.sanpham[index]['ttgiao'] = v.sanpham[index]['slgiao'] * v.sanpham[index]['giaban'];
-        } else {
-          v.sanpham[index][field] = newValue;
-        }
-      } else {
-        v[field] = newValue;
-      }
-      return v;
-    });
+    let newValue: any;
     
-    // Cập nhật dataSource sau khi thay đổi dữ liệu
-    this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
+    if (type === 'number') {
+      // Clean the text content and convert to number
+      const textContent = target.innerText.trim().replace(/,/g, '.'); // Replace comma with dot for decimal
+      newValue = Number(textContent) || 0;
+    } else {
+      newValue = target.innerText.trim();
+    }
+
+    // Fix: Find correct item index in original data using element.id
+    if (index !== null && element?.id) {
+      const actualIndex = this.DetailPhieugiaohang().sanpham.findIndex((item: any) => item.id === element.id);
+      
+      if (actualIndex === -1) {
+        console.warn('Item not found in original data:', element.id);
+        return;
+      }
+
+      // Update data using actual index
+      this.DetailPhieugiaohang.update((v: any) => {
+        // Handle specific field logic
+        switch (field) {
+          case 'sldat':
+            // Sync sldat with slgiao and slnhan
+            v.sanpham[actualIndex]['sldat'] = newValue;
+            v.sanpham[actualIndex]['slgiao'] = newValue;
+            v.sanpham[actualIndex]['slnhan'] = newValue;
+            v.sanpham[actualIndex]['ttgiao'] = Number(newValue) * (v.sanpham[actualIndex]['giaban'] || 0);
+            break;
+          case 'slgiao':
+            // Update slgiao and sync with slnhan, calculate ttgiao
+            v.sanpham[actualIndex]['slgiao'] = newValue;
+            v.sanpham[actualIndex]['slnhan'] = newValue;
+            v.sanpham[actualIndex]['ttgiao'] = Number(newValue) * (v.sanpham[actualIndex]['giaban'] || 0);
+            break;
+          case 'slnhan':
+            // Update only slnhan
+            v.sanpham[actualIndex]['slnhan'] = newValue;
+            break;
+          case 'giaban':
+            // Update giaban and recalculate ttgiao
+            v.sanpham[actualIndex]['giaban'] = newValue;
+            v.sanpham[actualIndex]['ttgiao'] = (v.sanpham[actualIndex]['slgiao'] || 0) * Number(newValue);
+            break;
+          case 'ghichu':
+            // Update ghichu
+            v.sanpham[actualIndex]['ghichu'] = newValue;
+            break;
+          default:
+            v.sanpham[actualIndex][field] = newValue;
+        }
+        return v;  
+      });
+      
+      // Update dataSource
+      this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
+    } else if (index === null) {
+      // Update main phieu field
+      this.DetailPhieugiaohang.update((v: any) => {
+        v[field] = newValue;
+        return v;
+      });
+    }
   }
 
 

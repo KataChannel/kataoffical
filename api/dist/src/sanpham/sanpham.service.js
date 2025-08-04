@@ -23,6 +23,23 @@ let SanphamService = class SanphamService {
         this._ErrorlogsService = _ErrorlogsService;
         this._ImportdataService = _ImportdataService;
     }
+    async findAllForSelect() {
+        try {
+            const sanphams = await this.prisma.sanpham.findMany({
+                select: {
+                    id: true,
+                    masp: true,
+                    title: true,
+                },
+                orderBy: { createdAt: 'desc' },
+            });
+            return { data: sanphams };
+        }
+        catch (error) {
+            console.log('Error in findAllSanpham:', error);
+            throw error;
+        }
+    }
     async getLastUpdated() {
         try {
             const lastUpdated = await this.prisma.sanpham.aggregate({

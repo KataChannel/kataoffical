@@ -8,6 +8,13 @@ export declare class SanphamService {
     private _ErrorlogsService;
     private _ImportdataService;
     constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogsService: ErrorlogsService, _ImportdataService: ImportdataService);
+    findAllForSelect(): Promise<{
+        data: {
+            id: string;
+            title: string;
+            masp: string;
+        }[];
+    }>;
     getLastUpdated(): Promise<{
         updatedAt: number;
     }>;

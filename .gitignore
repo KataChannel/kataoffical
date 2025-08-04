@@ -12,6 +12,7 @@ docs
 api/node_modules
 api/rausach_json
 frontend/node_modules
+notupload
 npm-debug.log
 yarn-error.log
 

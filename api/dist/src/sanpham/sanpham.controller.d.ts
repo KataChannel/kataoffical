@@ -133,6 +133,13 @@ export declare class SanphamController {
         pageSize: number;
         totalPages: number;
     }>;
+    findAllForSelect(): Promise<{
+        data: {
+            id: string;
+            title: string;
+            masp: string;
+        }[];
+    }>;
     nhucaudathang(): Promise<{
         slton: number;
         slchogiao: number;

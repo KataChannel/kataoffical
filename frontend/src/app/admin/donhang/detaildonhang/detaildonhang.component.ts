@@ -46,6 +46,7 @@ import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { UserService } from '../../user/user.service';
 import { Debounce } from '../../../shared/utils/decorators';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @Component({
   selector: 'app-detaildonhang',
   imports: [
@@ -63,6 +64,7 @@ import { Debounce } from '../../../shared/utils/decorators';
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
+    MatProgressSpinnerModule
   ],
   // providers: [provideNativeDateAdapter()],
   templateUrl: './detaildonhang.component.html',
@@ -85,13 +87,12 @@ export class DetailDonhangComponent {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
       this._DonhangService.setDonhangId(id);
-      await this._BanggiaService.getAllBanggia();
-      this.filterBanggia = this._BanggiaService.ListBanggia();
-      await this._SanphamService.getAllSanpham();
-      this.filterSanpham = this._SanphamService.ListSanpham();
-      this.dataSource().data = this.DetailDonhang().sanpham;
-      this.dataSource().data.sort((a, b) => a.order - b.order);
-      
+      // await this._BanggiaService.getAllBanggia();
+      // this.filterBanggia = this._BanggiaService.ListBanggia();
+      // await this._SanphamService.getAllSanpham();
+      // this.filterSanpham = this._SanphamService.ListSanpham();
+      // this.dataSource().data = this.DetailDonhang().sanpham;
+      // this.dataSource().data.sort((a, b) => a.order - b.order);
     });
 
     effect(async () => {
@@ -121,7 +122,7 @@ export class DetailDonhangComponent {
       }
       await this._KhachhangService.getKhachhangforselect();
       this.filterKhachhang = this.ListKhachhang()
-      await this._SanphamService.getAllSanpham({},true);
+      await this._SanphamService.getSanphamforselect();
       this.filterSanpham = this.ListSanpham()
     });
   }
@@ -141,13 +142,75 @@ export class DetailDonhangComponent {
      await this._BanggiaService.getAllBanggia();
      this.filterBanggia = this._BanggiaService.ListBanggia();
   }
+
+
   async handleDonhangAction() {
+    // Validate dữ liệu trước khi xử lý
+    const validationError = this.validateDonhang();
+    if (validationError) {
+      this._snackBar.open(validationError, '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+      return;
+    }
+
     if (this.donhangId() === 'new') {
       await this.createDonhang();
     } else {
       await this.updateDonhang();
     }
   }
+
+  private validateDonhang(): string | null {
+    const donhang = this.DetailDonhang();
+    
+    // Validate thông tin cơ bản
+    if (!donhang.title || donhang.title.trim() === '') {
+      return 'Vui lòng nhập tiêu đề đơn hàng';
+    }
+
+    if (!donhang.ngaygiao) {
+      return 'Vui lòng chọn ngày giao';
+    }
+
+    // Validate khách hàng
+    if (!donhang.khachhangId) {
+      return 'Vui lòng chọn khách hàng';
+    }
+
+    // Validate sản phẩm
+    if (!donhang.sanpham || donhang.sanpham.length === 0) {
+      return 'Vui lòng thêm ít nhất một sản phẩm';
+    }
+
+    // Validate số lượng sản phẩm
+    for (const sp of donhang.sanpham) {
+      if (!sp.sldat || sp.sldat <= 0) {
+        return `Số lượng đặt của sản phẩm "${sp.title}" phải lớn hơn 0`;
+      }
+      
+      if (sp.slgiao < sp.sldat) {
+        return `Số lượng giao của sản phẩm "${sp.title}" không được nhỏ hơn số lượng đặt`;
+      }
+    }
+
+    // Validate ngày giao không được trong quá khứ cho đơn hàng mới
+    if (this.donhangId() === 'new') {
+      const ngayGiao = moment(donhang.ngaygiao);
+      const today = moment().startOf('day');
+      if (ngayGiao.isBefore(today)) {
+        return 'Ngày giao không được trong quá khứ';
+      }
+    }
+
+    return null; // Không có lỗi
+  }
+
+
+
   private async createDonhang() {
     try {
       this.DetailDonhang.update((v: any) => ({
@@ -218,6 +281,24 @@ export class DetailDonhangComponent {
   trackByFn(index: number, item: any): any {
     return item.id;
   }
+  
+  // Method để auto-select text khi focus vào input - Same as detailphieugiaohang
+  onInputFocus(event: FocusEvent) {
+    const target = event.target as HTMLElement;
+    if (target && target.isContentEditable) {
+      // Delay để đảm bảo focus đã hoàn tất
+      setTimeout(() => {
+        if (document.createRange && window.getSelection) {
+          const range = document.createRange();
+          range.selectNodeContents(target);
+          const selection = window.getSelection();
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+        }
+      }, 10);
+    }
+  }
+  
   toggleEdit() {
     this.isEdit.update((value) => !value);
   }
@@ -232,12 +313,37 @@ export class DetailDonhangComponent {
     });
   }
   searchInput$ = new Subject<string>();
-  @Debounce(500)
+  isLoadingKhachhang = signal(false);
   async DoFindKhachhang(event: any) {
     const value = event.target.value.trim().toLowerCase();
-    await this._KhachhangService.getKhachhangBy({subtitle: value})
-    this.filterKhachhang = this.ListKhachhang()
+   try {
+      this.isLoadingKhachhang.set(true);
+      
+    if(value.length < 2) {
+      this.filterKhachhang = this.ListKhachhang();
+      return;
+    }
+    this.filterKhachhang = this.ListKhachhang().filter((v: any) =>
+      v.makh.toLowerCase().includes(value) ||
+      v.name.toLowerCase().includes(value) ||
+      removeVietnameseAccents(v.makh.toLowerCase()).includes(value) ||
+      removeVietnameseAccents(v.name.toLowerCase()).includes(value)
+    );
+
+    } catch (error) {
+      console.error('Lỗi khi tìm kiếm khách hàng:', error);
+      this._snackBar.open('Lỗi khi tìm kiếm khách hàng', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoadingKhachhang.set(false);
+    }
   }
+
+
   DoFindBanggia(event: any) {
     const query = event.target.value.toLowerCase();
     //  this.FilterBanggia = this.ListBanggia.filter(v => v.Title.toLowerCase().includes(query));
@@ -276,24 +382,41 @@ export class DetailDonhangComponent {
       return v;
     });
   }
-
   updateValue(event: Event,index: number | null,element: any,field: keyof any,type: 'number' | 'string') {
-    const newValue =
-      type === 'number'
-        ? Number((event.target as HTMLElement).innerText.trim()) || 0
-        : (event.target as HTMLElement).innerText.trim();
-        const keyboardEvent = event as KeyboardEvent;
-        if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
-          event.preventDefault();
-        }
-        if (type === "number") {
-          const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
-          
-          // Chặn nếu không phải số và không thuộc danh sách phím cho phép
-          if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
-            event.preventDefault();
-          }
-        } 
+    const target = event.target as HTMLElement;
+    let newValue: any;
+    
+    if (type === 'number') {
+      // Clean the text content and convert to number
+      const textContent = target.innerText.trim().replace(/,/g, '.'); // Replace comma with dot for decimal
+      newValue = Number(textContent) || 0;
+    } else {
+      newValue = target.innerText.trim();
+    }
+    
+    const keyboardEvent = event as KeyboardEvent;
+    if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
+      event.preventDefault();
+    }
+    if (type === "number") {
+      const allowedKeys = [
+        "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Enter",
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", // Regular number keys
+        ".", ",", // Decimal separators
+        "Home", "End", "PageUp", "PageDown" // Navigation keys
+      ];
+      
+      // Allow regular digits, numpad digits, and control keys
+      const isDigit = /^[0-9]$/.test(keyboardEvent.key);
+      const isNumpadDigit = keyboardEvent.code && keyboardEvent.code.startsWith('Numpad') && /Numpad[0-9]/.test(keyboardEvent.code);
+      const isDecimal = keyboardEvent.key === '.' || keyboardEvent.key === ',';
+      const isControlKey = allowedKeys.includes(keyboardEvent.key);
+      
+      if (!isDigit && !isNumpadDigit && !isDecimal && !isControlKey) {
+        event.preventDefault();
+        return;
+      }
+    }
     this.DetailDonhang.update((v: any) => {
       if (index !== null) {
         const itemIndex = v.sanpham.findIndex((v1: any) => v1.id === element.id);
@@ -370,9 +493,7 @@ export class DetailDonhangComponent {
       return v;
     });
   }
-
-
-  updateBlurValue(
+    updateBlurValue(
     event: Event,
     index: number | null,
     element: any,
@@ -380,8 +501,15 @@ export class DetailDonhangComponent {
     type: 'number' | 'string'
   ) {
     const target = event.target as HTMLElement;
-    const newValue =
-      type === 'number' ? Number(target.innerText.trim()) || 0 : target.innerText.trim();
+    let newValue: any;
+    
+    if (type === 'number') {
+      // Clean the text content and convert to number
+      const textContent = target.innerText.trim().replace(/,/g, '.'); // Replace comma with dot for decimal
+      newValue = Number(textContent) || 0;
+    } else {
+      newValue = target.innerText.trim();
+    }
 
     this.DetailDonhang.update((v: any) => {
       if (index !== null) {
@@ -404,7 +532,6 @@ export class DetailDonhangComponent {
             });
           } else {
             v.sanpham[itemIndex]['slgiao'] = newValue;
-            // v.sanpham[index]['slnhan'] = newValue;
           }
         } else {
           v.sanpham[itemIndex][field] = newValue;
@@ -415,6 +542,12 @@ export class DetailDonhangComponent {
         v[field] = newValue;
       }
       return v;
+    });
+
+    // Update dataSource to reflect changes
+    this.dataSource.update(ds => {
+      ds.data = [...this.DetailDonhang().sanpham];
+      return ds;
     });
   }
 
@@ -587,11 +720,6 @@ export class DetailDonhangComponent {
   //   
   //   this.dataSource().sort = this.sort;
   // }
-  async DoFindSanpham(event:any){
-    const value = event.target.value.trim().toLowerCase();
-    await this._SanphamService.getAllSanpham({subtitle: value},true)
-    this.filterSanpham = this.ListSanpham()
-  }
 
   // SelectSanpham(event:any){
   //   const value = event.value;
@@ -721,14 +849,40 @@ export class DetailDonhangComponent {
   GetGoiy(item:any){
    return parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
   }
+
   async doFilterSanpham(event: any): Promise<void> {
     const value = event.target.value.trim().toLowerCase();
-    await this._SanphamService.getAllSanpham({subtitle: value},true)
-    this.filterSanpham = this.ListSanpham().sort((a:any, b:any) => {
+
+    if (value.length < 2) {
+      this.filterSanpham = [...this.ListSanpham()];
+      return;
+    }
+
+    const normalizedValue = removeVietnameseAccents(value);
+    
+    this.filterSanpham = this.ListSanpham()
+      .filter((product: any) => {
+      const normalizedTitle = removeVietnameseAccents(product.title?.toLowerCase() || '');
+      const normalizedMasp = removeVietnameseAccents(product.masp?.toLowerCase() || '');
+      
+      return normalizedTitle.includes(normalizedValue) || 
+           normalizedMasp.includes(normalizedValue) ||
+           product.title?.toLowerCase().includes(value) ||
+           product.masp?.toLowerCase().includes(value);
+      })
+      .sort((a: any, b: any) => {
+      // Prioritize exact matches
+      const aExactMatch = a.masp?.toLowerCase() === value || a.title?.toLowerCase() === value;
+      const bExactMatch = b.masp?.toLowerCase() === value || b.title?.toLowerCase() === value;
+      
+      if (aExactMatch && !bExactMatch) return -1;
+      if (!aExactMatch && bExactMatch) return 1;
+      
+      // Then sort alphabetically by title
       const titleA = removeVietnameseAccents(a.title || '').toLowerCase();
       const titleB = removeVietnameseAccents(b.title || '').toLowerCase();
       return titleA.localeCompare(titleB);
-    });
+      });
 
     if (event.key === 'Enter') {
       if (this.filterSanpham.length > 0) {
@@ -736,6 +890,8 @@ export class DetailDonhangComponent {
         // this.filterSanpham = [...this._SanphamService.ListSanpham()];
       }
     }
+
+
   }
   ChosenItem(item:any)
   {

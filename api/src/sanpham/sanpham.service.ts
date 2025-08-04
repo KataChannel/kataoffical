@@ -17,6 +17,26 @@ export class SanphamService {
   // async create(data: any) {
   //   return this.prisma.sanpham.create({ data });
   // }
+
+
+  async findAllForSelect() {    
+    try {
+      const sanphams = await this.prisma.sanpham.findMany({
+        select: {
+          id: true,
+          masp: true,
+          title: true,
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+      return { data: sanphams };
+    } catch (error) {
+      console.log('Error in findAllSanpham:', error);
+      throw error;
+    }
+  }
+
+
   async getLastUpdated(): Promise<{ updatedAt: number }> {
     try {
       const lastUpdated = await this.prisma.sanpham.aggregate({
@@ -31,6 +51,7 @@ export class SanphamService {
       throw error;
     }
   }
+  
   async generateMaSP(): Promise<string> {
     // Lấy NCC mới nhất
     const latest = await this.prisma.sanpham.findFirst({

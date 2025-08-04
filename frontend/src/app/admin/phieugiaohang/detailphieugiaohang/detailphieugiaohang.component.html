@@ -2,8 +2,11 @@
   <button mat-icon-button color="primary" (click)="goBack()">
     <mat-icon>arrow_back</mat-icon>
   </button>
-  <div [contentEditable]="true" (blur)="updateValue($event,null,DetailPhieugiaohang(), 'title','string')"
-    class="p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
+  <!-- Cập nhật input title ở header -->
+  <div [contentEditable]="true" 
+       (focus)="onInputFocus($event)"
+       (blur)="updateBlurValue($event,null,DetailPhieugiaohang(), 'title','string')"
+       class="p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200">
     {{ DetailPhieugiaohang()?.madonhang || 'Không có dữ liệu' }}
   </div>
   <div class="flex flex-row space-x-2 items-center">
@@ -120,9 +123,13 @@
                   }
                   @case ('slgiao') {
                   @if(DetailPhieugiaohang().status!='dagiao') {
-                  <div [contentEditable]="true" (blur)="updateBlurValue($event,idx, row, 'slgiao','number')"
-                    (keydown.enter)="updateValue($event,idx, row, 'slgiao','number')"
-                    class="slgiao-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
+                  <div [contentEditable]="true" 
+                       (focus)="onInputFocus($event)"
+                       (blur)="updateBlurValue($event,idx, row, 'slgiao','number')"
+                       (keydown)="updateValue($event,idx, row, 'slgiao','number')"
+                       class="slgiao-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
+                       [attr.data-index]="idx"
+                       [attr.data-id]="row.id">
                     {{ row[column]||0|number:'1.0-2' }}
                   </div>
                   }
@@ -133,16 +140,24 @@
                   }
                   }
                   @case ('slnhan') {
-                  <div [contentEditable]="true" (blur)="updateBlurValue($event,idx, row, 'slnhan','number')"
-                    (keydown.enter)="updateValue($event,idx, row, 'slnhan','number')"
-                    class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
+                  <div [contentEditable]="true" 
+                       (focus)="onInputFocus($event)"
+                       (blur)="updateBlurValue($event,idx, row, 'slnhan','number')"
+                       (keydown)="updateValue($event,idx, row, 'slnhan','number')"
+                       class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
+                       [attr.data-index]="idx"
+                       [attr.data-id]="row.id">
                     {{ row[column]||0|number:'1.0-2' }}
                   </div>
                   }
                   @case ('ghichu') {
-                  <div [contentEditable]="true" (blur)="updateBlurValue($event,idx, row, 'ghichu','string')"
-                    (keydown.enter)="updateValue($event,idx, row, 'ghichu','string')"
-                    class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
+                  <div [contentEditable]="true" 
+                       (focus)="onInputFocus($event)"
+                       (blur)="updateBlurValue($event,idx, row, 'ghichu','string')"
+                       (keydown)="updateValue($event,idx, row, 'ghichu','string')"
+                       class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
+                       [attr.data-index]="idx"
+                       [attr.data-id]="row.id">
                     {{ row[column]||'' }}
                   </div>
                   }
@@ -214,7 +229,6 @@
         <div class="w-full flex justify-between items-center text-center mt-6 p-2">
           <p><strong>Người vận chuyển</strong></p>
           <p><strong>Người nhận hàng</strong></p>
-          <p><strong>Thủ kho</strong></p>
           <p><strong>Người lập</strong></p>
         </div>
         <!-- <div class="w-full flex justify-between items-center text-center !mt-20 p-2">

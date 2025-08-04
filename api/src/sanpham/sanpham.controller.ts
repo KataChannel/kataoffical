@@ -38,6 +38,17 @@ export class SanphamController {
         );
       } 
     }
+    @Get('forselect')
+    async findAllForSelect() {
+      try {
+        return await this.sanphamService.findAllForSelect();
+      } catch (error) {
+        throw new HttpException(
+          error.message || 'Failed to fetch sanphams',
+          error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      } 
+    }  
   @Get('nhucaudathang')
   nhucaudathang() {
     return this.sanphamService.nhucaudathang();
