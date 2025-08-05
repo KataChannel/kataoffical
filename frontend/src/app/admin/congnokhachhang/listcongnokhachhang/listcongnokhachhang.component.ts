@@ -568,7 +568,9 @@ doFilterKhachhang(event: Event){
   async ImporExcel(event: any) {
     const data = await readExcelFile(event);
     this.DoImportData(data);
-  }  async ExportExcel(data: any, title: any) {
+  }  
+  async ExportExcel(data: any, title: any) {
+
     this.isExporting = true;
     try {
       const columns = [
@@ -590,8 +592,13 @@ doFilterKhachhang(event: Event){
       ];
 
       // Nhóm dữ liệu theo mã khách hàng và tính tổng tiền sau thuế
-      const groupedData = this.groupDataByCustomer(data);
-      
+      let groupedData: any[] = [];
+      if(data.length>0){
+        groupedData = this.groupDataByCustomer(data);
+      }
+      else {
+        groupedData = this.groupDataByCustomer(this.Listdonhang());
+      }
       this.writeExcelFileWithMergedCells(groupedData, title, columns);
     } finally {
       this.isExporting = false;
