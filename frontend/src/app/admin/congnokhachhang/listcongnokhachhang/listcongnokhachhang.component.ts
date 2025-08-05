@@ -517,7 +517,6 @@ doFilterKhachhang(event: Event){
   }
   DoImportData(data: any) {
     console.log(data);
-
     const transformedData = data.map((v: any) => ({
       title: v.title?.trim() || '',
       masp: v.masp?.trim() || '',
@@ -639,7 +638,7 @@ doFilterKhachhang(event: Event){
   private writeExcelFileWithMergedCells(data: any[], title: string, columns: string[]): void {    
     // Tạo dữ liệu cho worksheet
     const worksheetData = data.map(item => ({
-      'Ngày': item.ngay,
+      'Ngày': moment(item.ngaygiao).format('DD/MM/YYYY'),
       'Mã Khách Hàng': item.makhachhang,
       'Tên Khách Hàng': item.tenkhachhang,
       'Mã Đơn Hàng': item.madonhang,
