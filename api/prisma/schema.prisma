@@ -225,6 +225,7 @@ model Donhang {
   madonhang   String  @unique
   ngaygiao    DateTime?
   ghichu      String?
+  isshowvat   Boolean @default(false)
   status      StatusDonhang @default(dadat) // Dùng Enum
   khachhangId String
   khachhang   Khachhang @relation(fields: [khachhangId], references: [id])
@@ -235,6 +236,8 @@ model Donhang {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   PhieuKho PhieuKho[]
+  tongvat    Decimal @postgres.Decimal(20, 2) @default(0)
+  tongtien   Decimal @postgres.Decimal(20, 2) @default(0)
 }
 
 model Donhangsanpham {
@@ -257,6 +260,8 @@ model Donhangsanpham {
   order     Int?
   isActive  Boolean?  @default(false)
 }
+
+
 
 model Banggiasanpham {
   id        String   @id @default(uuid())

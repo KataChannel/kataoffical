@@ -17,7 +17,7 @@ export class DonhangService {
     if (lastOrder) {
       nextCode = this.incrementOrderCode(lastOrder.madonhang);
     }
-    console.log('nextCode', nextCode);
+    // console.log('nextCode', nextCode);
 
     return nextCode;
   }
@@ -187,8 +187,6 @@ export class DonhangService {
     const Sanphams = await this.prisma.sanpham.findMany();
     const result = donhangs.flatMap((v: any) => {     
       const orderItems = v.sanpham.map((v1: any) => {
-        console.log(v1);
-        
         const product = Sanphams.find((sp: any) => sp.id === v1.idSP);
         const giaban = v?.khachhang?.banggia?.sanpham.find((sp: any) => sp.id === v1.idSP)?.giaban || product?.giaban || 0;
         const vat:any = product?.vat || 0;
@@ -286,7 +284,7 @@ export class DonhangService {
   }
 
   async dongbogia(listdonhang: any) {
-    console.log('listdonhang', listdonhang);
+    // console.log('listdonhang', listdonhang);
 
     return this.prisma.$transaction(async (prisma) => {
       let updatedCount = 0;
@@ -333,7 +331,7 @@ export class DonhangService {
             const giaSanpham = donhang.khachhang.banggia.sanpham.find(
               (sp) => sp.sanphamId === donhangSanpham.idSP,
             );
-            console.log('giaSanpham', giaSanpham);
+            // console.log('giaSanpham', giaSanpham);
 
             if (giaSanpham) {
               const giaban = giaSanpham.giaban;
@@ -371,8 +369,6 @@ export class DonhangService {
 
   async phieuchuyen(params: any) {
     const { Batdau, Ketthuc, Type } = params;
-    console.log('Batdau', moment(Batdau).startOf('day').toDate());
-    console.log('Ketthuc', moment(Ketthuc).endOf('day').toDate());
     const result = await this.prisma.donhang.findMany({
       where: {
         ngaygiao: {
@@ -431,8 +427,7 @@ export class DonhangService {
     return {
       ...result,
       sanpham: result.sanpham.map((item: any) => {
-        const priceFromBanggia = result.khachhang.banggia
-          ? result.khachhang.banggia.sanpham.find(
+        const priceFromBanggia = result.khachhang.banggia ? result.khachhang.banggia.sanpham.find(
               (sp) => sp.sanphamId === item.idSP,
             )?.giaban
           : 0;
@@ -448,6 +443,8 @@ export class DonhangService {
           ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
           ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
           ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
+          vat: parseFloat((item.vat ?? 0).toFixed(2)),
+          ttsauvat: parseFloat((item.ttnhan * (1 + (item.vat || 0) / 100)).toFixed(2)),
           ghichu: item.ghichu,
         };
       }),
@@ -742,7 +739,7 @@ export class DonhangService {
         await this.create(element);
         success += 1;
       } catch (error) {
-        console.log('error', error);
+        // console.log('error', error);
 
         await this.prisma.importHistory.create({
           data: {
@@ -791,6 +788,7 @@ export class DonhangService {
               ttdat: parseFloat((sp.ttdat ?? 0).toFixed(2)),
               ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
               ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
+              vat: parseFloat((sp.vat ?? 0).toFixed(2)),
             })),
           },
         },
@@ -1895,7 +1893,7 @@ export class DonhangService {
 
   async updatePhieugiao(id: string, data: any) {
     try {
-      console.log(data);
+      // console.log(data);
 
       return await this.prisma.$transaction(async (prisma) => {
         const updatedDonhang = await prisma.donhang.update({
@@ -1911,14 +1909,20 @@ export class DonhangService {
             order: data.order,
             ghichu: data.ghichu,
             printCount: data.printCount,
+            isshowvat: data.isshowvat,
             sanpham: {
               deleteMany: {},
               create: data.sanpham.map((sp: any) => ({
                 idSP: sp.id,
                 ghichu: sp.ghichu,
+                sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
                 slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
                 slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
+                ttdat: parseFloat((sp.ttdat ?? 0).toFixed(2)),
                 ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
+                ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
+                vat: parseFloat((sp.vat ?? 0).toFixed(2)),
+                ttsauvat: parseFloat((sp.ttsauvat ?? 0).toFixed(2)),
               })),
             },
           },
@@ -2182,8 +2186,6 @@ export class DonhangService {
   }
 
   async findByProductId(idSP: string) {
-    console.log(idSP);
-
     const donhangs = await this.prisma.donhang.findMany({
       where: {
         sanpham: {
@@ -2201,7 +2203,7 @@ export class DonhangService {
       },
       orderBy: { createdAt: 'desc' },
     });
-    console.log(donhangs);
+    // console.log(donhangs);
 
     return donhangs.map((donhang) => ({
       ...donhang,

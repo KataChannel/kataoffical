@@ -29,12 +29,15 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
+        tongvat: import("@prisma/client/runtime/library").Decimal;
+        tongtien: import("@prisma/client/runtime/library").Decimal;
     }>;
     ImportDonhangOld(data: any): Promise<{
         success: number;
@@ -83,12 +86,15 @@ export declare class DonhangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            isshowvat: boolean;
             type: string | null;
             status: import(".prisma/client").$Enums.StatusDonhang;
             madonhang: string;
             ngaygiao: Date | null;
             khachhangId: string;
             printCount: number | null;
+            tongvat: import("@prisma/client/runtime/library").Decimal;
+            tongtien: import("@prisma/client/runtime/library").Decimal;
         }[];
         total: number;
         pageNumber: any;
@@ -110,12 +116,15 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
+        tongvat: import("@prisma/client/runtime/library").Decimal;
+        tongtien: import("@prisma/client/runtime/library").Decimal;
     }[]>;
     dongbogia(params: any): Promise<{
         status: string;
@@ -163,12 +172,15 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
+        tongvat: import("@prisma/client/runtime/library").Decimal;
+        tongtien: import("@prisma/client/runtime/library").Decimal;
     }>;
     searchfield(searchParams: Record<string, any>): Promise<{
         sanpham: {
@@ -234,12 +246,15 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
+        tongvat: import("@prisma/client/runtime/library").Decimal;
+        tongtien: import("@prisma/client/runtime/library").Decimal;
     }>;
     findAll(): Promise<{
         sanpham: any[];
@@ -303,12 +318,15 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
+        tongvat: import("@prisma/client/runtime/library").Decimal;
+        tongtien: import("@prisma/client/runtime/library").Decimal;
     }[]>;
     findByProductId(id: string): Promise<{
         sanpham: ({
@@ -386,12 +404,15 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
+        tongvat: import("@prisma/client/runtime/library").Decimal;
+        tongtien: import("@prisma/client/runtime/library").Decimal;
     }[]>;
     findOne(id: string): Promise<{
         sanpham: {
@@ -483,12 +504,15 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
+        tongvat: import("@prisma/client/runtime/library").Decimal;
+        tongtien: import("@prisma/client/runtime/library").Decimal;
     }>;
     updatePhieugiao(id: string, updateDonhangDto: any): Promise<{
         sanpham: {
@@ -517,12 +541,15 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
+        tongvat: import("@prisma/client/runtime/library").Decimal;
+        tongtien: import("@prisma/client/runtime/library").Decimal;
     }>;
     updateBulk(data: any[]): Promise<{
         success: number;
@@ -536,12 +563,15 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
+        tongvat: import("@prisma/client/runtime/library").Decimal;
+        tongtien: import("@prisma/client/runtime/library").Decimal;
     }>;
     removeBulk(ids: any[]): Promise<{
         success: number;
@@ -566,12 +596,15 @@ export declare class DonhangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            isshowvat: boolean;
             type: string | null;
             status: import(".prisma/client").$Enums.StatusDonhang;
             madonhang: string;
             ngaygiao: Date | null;
             khachhangId: string;
             printCount: number | null;
+            tongvat: import("@prisma/client/runtime/library").Decimal;
+            tongtien: import("@prisma/client/runtime/library").Decimal;
         };
     }>;
     danhan(id: string, data: any): Promise<{
@@ -582,11 +615,14 @@ export declare class DonhangController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
+        isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         madonhang: string;
         ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
+        tongvat: import("@prisma/client/runtime/library").Decimal;
+        tongtien: import("@prisma/client/runtime/library").Decimal;
     } | undefined>;
 }

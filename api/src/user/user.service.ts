@@ -101,7 +101,7 @@ export class UserService {
     ); 
     return {
       ...userWithoutPassword,
-      roles: formattedRoles,
+      roles: formattedRoles.map((role)=>role.name),
       permissions,
     };
   }

@@ -42,12 +42,7 @@ export declare class UserController {
         providerId: string | null;
     }[]>;
     getProfile(req: any): Promise<{
-        roles: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-        }[];
+        roles: string[];
         permissions: {
             id: string;
             order: number | null;
@@ -78,12 +73,7 @@ export declare class UserController {
         roleId: string;
     }>;
     findOne(id: string): Promise<{
-        roles: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-        }[];
+        roles: string[];
         permissions: {
             id: string;
             order: number | null;

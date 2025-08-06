@@ -99,7 +99,7 @@ let UserService = class UserService {
         const permissions = Array.from(new Set(roles.flatMap(({ role }) => role.permissions.map(({ permission }) => permission))));
         return {
             ...userWithoutPassword,
-            roles: formattedRoles,
+            roles: formattedRoles.map((role) => role.name),
             permissions,
         };
     }

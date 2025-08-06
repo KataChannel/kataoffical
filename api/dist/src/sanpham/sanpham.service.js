@@ -284,6 +284,7 @@ let SanphamService = class SanphamService {
                     goiy: Math.abs(Number(tonkho.goiy)),
                 };
             });
+            console.log('nhucaudathang combined:', combined);
             return combined;
         }
         catch (error) {

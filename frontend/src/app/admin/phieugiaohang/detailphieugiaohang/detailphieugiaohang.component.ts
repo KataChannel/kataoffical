@@ -38,6 +38,7 @@ import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { DonhangService } from '../../donhang/donhang.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
+import { UserService } from '../../user/user.service';
 @Component({
   selector: 'app-detailphieugiaohang',
   imports: [
@@ -65,6 +66,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   _ListphieugiaohangComponent: ListPhieugiaohangComponent = inject(ListPhieugiaohangComponent);
   _PhieugiaohangService: DonhangService = inject(DonhangService);
   _SanphamService: SanphamService = inject(SanphamService);
+  _UserService: UserService = inject(UserService);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -99,6 +101,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   DetailPhieugiaohang: any = this._PhieugiaohangService.DetailDonhang;
+  profile: any = this._UserService.profile;
   // ListKhachhang: any = this._KhachhangService.ListKhachhang;
   isEdit = signal(true);
   isDelete = signal(false);
@@ -122,6 +125,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
     });
 
     effect(async () => {
+      await this._UserService.getProfile();
       const id = this._PhieugiaohangService.donhangId();
       if (!id || id === '0') {
         this._router.navigate(['/admin/phieugiaohang']);
@@ -161,6 +165,9 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
     return this.Trangthai.find((v:any) => v.value === item)?.title;
   } 
  async ngOnInit() {
+   await this._UserService.getProfile();
+  console.log(this.profile());
+  
     const phieugiaohangId = this.phieugiaohangId();
     if (!phieugiaohangId) return;
 
@@ -207,6 +214,14 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
     this.setupDataSource();
   }
 
+  onChangeVat() {
+    this.DetailPhieugiaohang.update((v: any) => {
+      v.isshowvat = !v.isshowvat;
+      return v;
+    });
+    console.log('VAT changed:', this.DetailPhieugiaohang().isshowvat);
+    
+  }
   private setupDataSource(): void {
     if (this.paginator) {
       this.dataSource.paginator = this.paginator;
@@ -241,8 +256,6 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
         v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
         return {id:v.id,ttgiao:v.ttgiao,slgiao:v.slgiao,slnhan:v.slnhan,ghichu:v.ghichu};
       })
-      console.log(this.DetailPhieugiaohang());
-
       await this._PhieugiaohangService.updatePhieugiao(this.DetailPhieugiaohang());
       this._snackBar.open('Cập Nhật Thành Công', '', {
         duration: 1000,

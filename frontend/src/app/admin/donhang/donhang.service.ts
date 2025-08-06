@@ -379,7 +379,7 @@ export class DonhangService {
         if (!response.ok) {
           
         }
-        this.getAllDonhang()
+        // this.getAllDonhang()
         this.Phieugiaohang({id:dulieu.id})
     } catch (error) {
         return console.error(error);

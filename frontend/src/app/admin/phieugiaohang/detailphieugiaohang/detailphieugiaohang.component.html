@@ -3,7 +3,8 @@
     <mat-icon>arrow_back</mat-icon>
   </button>
   <!-- Cập nhật input title ở header -->
-  <div class="p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200">
+  <div
+    class="p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200">
     {{ DetailPhieugiaohang()?.madonhang || 'Không có dữ liệu' }}
   </div>
   <div class="flex flex-row space-x-2 items-center">
@@ -22,7 +23,7 @@
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handlePhieugiaohangAction()">
       <mat-icon>save</mat-icon>
     </button>
-    @if(this.DetailPhieugiaohang().status !=='danhan'){
+    @if(this.DetailPhieugiaohang().status !=='danhan' || this.profile().roles.includes('Admin')){
     <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
@@ -79,12 +80,19 @@
           @defer () {
           <div class="w-full overflow-auto">
             <!-- Filter input -->
-            <div class="relative w-full py-2">
-              <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
-                class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
-              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <span class="material-symbols-outlined text-gray-500">search</span>
+            <div class="flex flex-row space-x-2 items-center">
+                <mat-slide-toggle [(ngModel)]="DetailPhieugiaohang().isshowvat" [ngModelOptions]="{standalone: true}" (toggleChange)="onChangeVat()">
+                <span class="font-medium">VAT</span>
+                </mat-slide-toggle>
+              
+              <div class="relative w-full py-2">
+                <input type="text" placeholder="Tìm Kiếm..." (keyup)="applyFilter($event)"
+                  class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <span class="material-symbols-outlined text-gray-500">search</span>
+                </div>
               </div>
+
             </div>
             <table class="!border w-full cursor-pointer" mat-table [dataSource]="dataSource" matSort>
               @for (column of displayedColumns; track column) {
@@ -120,13 +128,11 @@
                   }
                   @case ('slgiao') {
                   @if(DetailPhieugiaohang().status!='dagiao') {
-                  <div [contentEditable]="true" 
-                       (focus)="onInputFocus($event)"
-                       (blur)="updateBlurValue($event,idx, row, 'slgiao','number')"
-                       (keydown)="updateValue($event,idx, row, 'slgiao','number')"
-                       class="slgiao-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
-                       [attr.data-index]="idx"
-                       [attr.data-id]="row.id">
+                  <div [contentEditable]="true" (focus)="onInputFocus($event)"
+                    (blur)="updateBlurValue($event,idx, row, 'slgiao','number')"
+                    (keydown)="updateValue($event,idx, row, 'slgiao','number')"
+                    class="slgiao-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
+                    [attr.data-index]="idx" [attr.data-id]="row.id">
                     {{ row[column]||0|number:'1.0-2' }}
                   </div>
                   }
@@ -137,24 +143,20 @@
                   }
                   }
                   @case ('slnhan') {
-                  <div [contentEditable]="true" 
-                       (focus)="onInputFocus($event)"
-                       (blur)="updateBlurValue($event,idx, row, 'slnhan','number')"
-                       (keydown)="updateValue($event,idx, row, 'slnhan','number')"
-                       class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
-                       [attr.data-index]="idx"
-                       [attr.data-id]="row.id">
+                  <div [contentEditable]="true" (focus)="onInputFocus($event)"
+                    (blur)="updateBlurValue($event,idx, row, 'slnhan','number')"
+                    (keydown)="updateValue($event,idx, row, 'slnhan','number')"
+                    class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
+                    [attr.data-index]="idx" [attr.data-id]="row.id">
                     {{ row[column]||0|number:'1.0-2' }}
                   </div>
                   }
                   @case ('ghichu') {
-                  <div [contentEditable]="true" 
-                       (focus)="onInputFocus($event)"
-                       (blur)="updateBlurValue($event,idx, row, 'ghichu','string')"
-                       (keydown)="updateValue($event,idx, row, 'ghichu','string')"
-                       class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
-                       [attr.data-index]="idx"
-                       [attr.data-id]="row.id">
+                  <div [contentEditable]="true" (focus)="onInputFocus($event)"
+                    (blur)="updateBlurValue($event,idx, row, 'ghichu','string')"
+                    (keydown)="updateValue($event,idx, row, 'ghichu','string')"
+                    class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
+                    [attr.data-index]="idx" [attr.data-id]="row.id">
                     {{ row[column]||'' }}
                   </div>
                   }
@@ -220,6 +222,19 @@
                 (TinhTong(DetailPhieugiaohang().sanpham,'slnhan')|number:'1.0-2'):''}}</td>
               <td class="border px-2 text-end"></td>
             </tr>
+           @if(DetailPhieugiaohang().isshowvat){
+            <tr class="border">
+              <td colspan="5" class="border px-2 text-start">Vat:</td>
+              <td class="border px-2 text-end font-bold">{{DetailPhieugiaohang()?.tongvat|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end"></td>
+              <td class="border px-2 text-end"></td>
+            </tr>
+           <tr class="border">
+              <td colspan="5" class="border px-2 text-start">Tổng Tiền:</td>
+              <td class="border px-2 text-end font-bold">{{DetailPhieugiaohang()?.tongtien|number:'1.0-2'}}</td>
+              <td class="border px-2 text-end"></td>
+            </tr>
+            }
           </tbody>
         </table>
         <!-- <div class="w-full text-end font-bold p-2">Ngày In:</div> -->

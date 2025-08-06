@@ -347,6 +347,9 @@ export class SanphamService {
           goiy: Math.abs(Number(tonkho.goiy)),
         };
       });
+      console.log('nhucaudathang combined:', combined);
+      
+
       return combined;
     } catch (error) {
       this._ErrorlogsService.logError('Lỗi lấy tất cả sản phẩm', {

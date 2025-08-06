@@ -68,12 +68,7 @@ export declare class UserService {
         providerId: string | null;
     }[]>;
     findOne(id: string): Promise<{
-        roles: {
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-        }[];
+        roles: string[];
         permissions: {
             id: string;
             order: number | null;

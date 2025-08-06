@@ -1,0 +1,193 @@
+<script>
+      const serverapi="https://apiaffiliate.tazagroup.vn"
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('8acv49xg');
+      const submitButton = form.querySelector('button[type="submit"]');
+      const buttonLoader = form.querySelector('.button-loader');
+
+      // Simple phone number validation (Vietnamese format: starts with 0, followed by 9 digits)
+        const validatePhoneNumber = (phone) => {
+        const phoneRegex = /^0[0-9]{9}$/;
+        return phoneRegex.test(phone);
+        };
+
+        // Simple name validation (non-empty and only letters/spaces)
+        const validateName = (name) => {
+        const nameRegex = /[^\p{L}\p{N}\s]/gu; // Tìm tất cả ký tự không phải chữ cái, số hoặc khoảng trắng
+        return name.trim().replace(nameRegex, '');
+        };
+
+        // CreateTracking function
+        const CreateTracking = async (trackingData) => {
+        try {
+          const response = await fetch(`${serverapi}/trackingevent`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(trackingData)
+          });
+          
+          if (response.ok) {
+          console.log('Tracking event recorded successfully');
+          } else {
+          console.error('Failed to record tracking event');
+          }
+        } catch (error) {
+          console.error('Error recording tracking event:', error);
+        }
+        };
+
+        const CreateHoahong = async (hoahongData) => {
+        try {
+          const response = await fetch(`${serverapi}/hoahong`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(hoahongData)
+          });
+          
+          if (response.ok) {
+          console.log('Hoahong event recorded successfully');
+          } else {
+          console.error('Failed to record hoahong event');
+          }
+        } catch (error) {
+          console.error('Error recording hoahong event:', error);
+        }
+        };
+
+        form.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Prevent default form submission behavior
+
+        // Show loading state
+        buttonLoader.style.display = 'block';
+        const urlParams = new URLSearchParams(window.location.search);
+        const refCode = urlParams.get('ref') || null;
+
+        // Collect form data
+        const formData = new FormData(form);
+        const data = {
+          name: formData.get('full_name')?.trim(),
+          phone: formData.get('phone_number')?.trim(),
+          address: formData.get('address')?.trim(),
+          ghichu: formData.get('question_1')?.trim(),
+          affiliateCode: refCode,
+          khoahoc: formData.get('select_1')
+        };
+
+        // Validate required fields
+        if (!data.name || !validateName(data.name)) {
+          alert('Vui lòng nhập họ và tên hợp lệ.');
+          buttonLoader.style.display = 'none';
+          return;
+        }
+
+        if (!data.phone || !validatePhoneNumber(data.phone)) {
+          alert('Vui lòng nhập số điện thoại hợp lệ (10 chữ số, bắt đầu bằng 0).');
+          buttonLoader.style.display = 'none';
+          return;
+        }
+
+        if (!data.khoahoc) {
+          alert('Vui lòng chọn khóa học quan tâm.');
+          buttonLoader.style.display = 'none';
+          return;
+        }
+
+        try {
+          // Replace with your actual API endpoint
+          const response = await fetch(`${serverapi}/auth/register`, {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+          });
+
+          if (!response.ok) {
+            throw new Error('Đăng ký thất bại. Vui lòng thử lại.');
+          }
+
+          const result = await response.json();
+          alert('Đăng ký thành công! Chuyển trang sau 5 giây...');
+          form.reset(); // Reset form after successful submission
+
+          // Call CreateTracking after successful registration
+          await CreateTracking({
+            eventType: 'register',
+            pageUrl: window.location.href,
+            pageType: 'DangkyHV',
+            pageIdentifier: '',
+            refCode: refCode || data.name,
+            referrer: document.referrer || null,
+          });
+
+          await CreateHoahong({
+            userId: result.id,
+            refphone: result.phone,
+            tienhoahong: 10000,
+            type: 'register',
+            description: 'Registration bonus commission',
+          });
+
+          // Redirect to timona.edu.vn after 5 seconds
+          setTimeout(() => {
+            window.location.href = 'https://timona.edu.vn';
+          }, 5000);
+
+        } catch (error) {
+          alert(error.message || 'Đã có lỗi xảy ra. Vui lòng thử lại.');
+        } finally {
+          buttonLoader.style.display = 'none';
+        }
+        });
+      });
+
+    (function trackPageView() {
+      // Define any variables as needed; adjust slug and affiliateLinkId if necessary.
+      const slug = 'unique-page-slug'; // Replace with your page identifier if available
+      const affiliateLinkId = null; // Replace with actual affiliateLinkId if available
+
+      const urlParams = new URLSearchParams(window.location.search);
+      console.log('URL Parameters:', Object.fromEntries(urlParams.entries()));
+      
+      
+      const payload = {
+      eventType: 'page_view',
+      pageUrl: window.location.href,
+      pageType: 'LadiCTV',
+      pageIdentifier: slug,
+      codeId: urlParams.get('codeId') || null,
+      sharePlatform: urlParams.get('sharePlatform') || null,
+      refCode: (typeof this !== 'undefined' && urlParams.get('ref')) || null,
+      referrer: (typeof this !== 'undefined' && urlParams.get('referrer')) || null,
+      affiliateLinkId: affiliateLinkId || null
+      };
+
+      // Convert payload to a query string
+      const qs = new URLSearchParams(payload).toString();
+      const trackingUrl = `${serverapi}/trackingevent?${qs}`;
+
+      // Send the POST request to record the page view
+      fetch(trackingUrl, {
+       method:'POST',
+       headers: {
+       'Content-Type': 'application/json',
+       },
+       body: JSON.stringify(payload),
+
+      })
+      .then(response => {
+      if (response.ok) {
+        console.log('Page view tracked successfully');
+      } else {
+        console.error('Failed to track page view');
+      }
+      })
+      .catch(err => {
+      console.error('Error tracking page view:', err);
+      });
+    })();
+</script>
