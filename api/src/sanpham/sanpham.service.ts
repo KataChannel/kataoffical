@@ -252,8 +252,6 @@ export class SanphamService {
   //   }
   // }
   async findAll(query: any) {
-    console.log('findAllSanpham query:', query);
-
     try {
       const {
         page,
@@ -271,8 +269,6 @@ export class SanphamService {
       const skip = (numericPage - 1) * numericPageSize;
       const take = numericPageSize;
       const where: any = {};
-      console.log(subtitle);
-
       // Xử lý lọc theo trường cụ thể
       if (subtitle) {
         where.subtitle = { contains: subtitle, mode: 'insensitive' };
@@ -347,10 +343,7 @@ export class SanphamService {
           goiy: Math.abs(Number(tonkho.goiy)),
         };
       });
-      console.log('nhucaudathang combined:', combined);
-      
-
-      return combined;
+    return combined;
     } catch (error) {
       this._ErrorlogsService.logError('Lỗi lấy tất cả sản phẩm', {
         error: error.message,

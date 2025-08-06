@@ -204,7 +204,6 @@ let SanphamService = class SanphamService {
         }
     }
     async findAll(query) {
-        console.log('findAllSanpham query:', query);
         try {
             const { page, pageSize, sortBy, sortOrder, search, subtitle, priceMin, priceMax, category, } = query;
             const numericPage = Number(page || 1);
@@ -212,7 +211,6 @@ let SanphamService = class SanphamService {
             const skip = (numericPage - 1) * numericPageSize;
             const take = numericPageSize;
             const where = {};
-            console.log(subtitle);
             if (subtitle) {
                 where.subtitle = { contains: subtitle, mode: 'insensitive' };
             }
@@ -284,7 +282,6 @@ let SanphamService = class SanphamService {
                     goiy: Math.abs(Number(tonkho.goiy)),
                 };
             });
-            console.log('nhucaudathang combined:', combined);
             return combined;
         }
         catch (error) {

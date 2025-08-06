@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
+const graphql_1 = require("@nestjs/graphql");
+const apollo_1 = require("@nestjs/apollo");
+const path_1 = require("path");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const auth_module_1 = require("./auth/auth.module");
@@ -39,6 +42,7 @@ const auditlog_module_1 = require("./auditlog/auditlog.module");
 const audit_middleware_1 = require("./auditlog/audit.middleware");
 const chotkho_module_1 = require("./chotkho/chotkho.module");
 const minio_module_1 = require("./minio/minio.module");
+const graphql_module_1 = require("./graphql/graphql.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(audit_middleware_1.AuditMiddleware).forRoutes('*');
@@ -48,6 +52,14 @@ exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            graphql_1.GraphQLModule.forRoot({
+                driver: apollo_1.ApolloDriver,
+                autoSchemaFile: (0, path_1.join)(process.cwd(), 'src/schema.gql'),
+                sortSchema: true,
+                playground: true,
+                introspection: true,
+                context: ({ req }) => ({ req }),
+            }),
             auth_module_1.AuthModule,
             user_module_1.UserModule,
             prisma_module_1.PrismaModule,
@@ -68,10 +80,10 @@ exports.AppModule = AppModule = __decorate([
             callback_module_1.CallbackModule,
             dashboard_module_1.DashboardModule,
             userguide_module_1.UserguideModule,
-            importdata_module_1.ImportdataModule,
-            auditlog_module_1.AuditLogModule,
+            importdata_module_1.ImportdataModule, auditlog_module_1.AuditLogModule,
             chotkho_module_1.ChotkhoModule,
-            minio_module_1.MinioModule
+            minio_module_1.MinioModule,
+            graphql_module_1.GraphQLUniversalModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [
