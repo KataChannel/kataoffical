@@ -1,6 +1,6 @@
 import { ObjectType, Field, ID, InputType, Int, Float } from '@nestjs/graphql';
 import { PaginationInfo } from './common.types';
-import { Banggia } from './sanpham.types';
+import { Banggia } from './banggia.types';
 
 @ObjectType()
 export class Nhomkhachhang {

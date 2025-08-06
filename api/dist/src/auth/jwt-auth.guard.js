@@ -12,21 +12,41 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.JwtAuthGuard = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
+const graphql_1 = require("@nestjs/graphql");
 let JwtAuthGuard = class JwtAuthGuard {
     constructor(jwtService) {
         this.jwtService = jwtService;
     }
     canActivate(context) {
-        const request = context.switchToHttp().getRequest();
-        const token = request.headers.authorization?.split(' ')[1];
-        if (!token)
+        let request;
+        if (context.getType() === 'graphql') {
+            const gqlContext = graphql_1.GqlExecutionContext.create(context);
+            request = gqlContext.getContext().req;
+        }
+        else {
+            request = context.switchToHttp().getRequest();
+        }
+        if (!request) {
+            console.warn('Request is undefined in JwtAuthGuard');
             return false;
+        }
+        const authHeader = request.headers?.authorization;
+        if (!authHeader) {
+            console.warn('No authorization header found');
+            return false;
+        }
+        const token = authHeader.split(' ')[1];
+        if (!token) {
+            console.warn('No token found in authorization header');
+            return false;
+        }
         try {
             const user = this.jwtService.verify(token);
             request.user = user;
             return true;
         }
-        catch (e) {
+        catch (error) {
+            console.warn('JWT verification failed:', error.message);
             return false;
         }
     }

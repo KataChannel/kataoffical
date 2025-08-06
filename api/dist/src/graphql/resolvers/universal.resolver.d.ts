@@ -1,13 +1,20 @@
 import { UniversalGraphQLService } from '../services/universal.service';
-import { PaginationInput, SortInput } from '../types/common.types';
-import { User, UserPaginated, CreateUserInput, UpdateUserInput, UserFilterInput } from '../types/user.types';
-import { Sanpham, SanphamPaginated, CreateSanphamInput, UpdateSanphamInput, SanphamFilterInput } from '../types/sanpham.types';
-import { Khachhang, KhachhangPaginated, CreateKhachhangInput, UpdateKhachhangInput, KhachhangFilterInput } from '../types/khachhang.types';
-import { Donhang, DonhangPaginated, CreateDonhangInput, UpdateDonhangInput, DonhangFilterInput } from '../types/donhang.types';
-import { Kho, KhoPaginated, PhieuKho, PhieuKhoPaginated, TonKho, TonKhoPaginated, CreateKhoInput, UpdateKhoInput, CreatePhieuKhoInput, UpdatePhieuKhoInput, KhoFilterInput, PhieuKhoFilterInput, TonKhoFilterInput } from '../types/kho.types';
+import { PaginationInput, SortInput, User, UserPaginated, CreateUserInput, UpdateUserInput, UserFilterInput, Sanpham, SanphamPaginated, CreateSanphamInput, UpdateSanphamInput, SanphamFilterInput, Khachhang, KhachhangPaginated, CreateKhachhangInput, UpdateKhachhangInput, KhachhangFilterInput, Donhang, DonhangPaginated, CreateDonhangInput, UpdateDonhangInput, DonhangFilterInput, Kho, KhoPaginated, CreateKhoInput, UpdateKhoInput, KhoFilterInput, PhieuKho, PhieuKhoPaginated, CreatePhieuKhoInput, UpdatePhieuKhoInput, PhieuKhoFilterInput, TonKho, TonKhoPaginated, TonKhoFilterInput } from '../types';
 export declare class UniversalResolver {
     private readonly universalService;
     constructor(universalService: UniversalGraphQLService);
+    getAvailableModels(): Promise<string[]>;
+    findMany(modelName: string, where?: any, orderBy?: any, skip?: number, take?: number, include?: any): Promise<{
+        data: any;
+        pagination: {
+            total: any;
+            page: number;
+            pageSize: number;
+            totalPages: number;
+            hasNextPage: boolean;
+            hasPreviousPage: boolean;
+        };
+    }>;
     users(pagination?: PaginationInput, filter?: UserFilterInput, sort?: SortInput): Promise<UserPaginated>;
     user(id: string): Promise<User>;
     createUser(input: CreateUserInput): Promise<User>;

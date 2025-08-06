@@ -14,18 +14,26 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UniversalResolver = void 0;
 const graphql_1 = require("@nestjs/graphql");
-const common_1 = require("@nestjs/common");
-const jwt_auth_guard_1 = require("../../auth/jwt-auth.guard");
 const universal_service_1 = require("../services/universal.service");
-const common_types_1 = require("../types/common.types");
-const user_types_1 = require("../types/user.types");
-const sanpham_types_1 = require("../types/sanpham.types");
-const khachhang_types_1 = require("../types/khachhang.types");
-const donhang_types_1 = require("../types/donhang.types");
-const kho_types_1 = require("../types/kho.types");
+const graphql_type_json_1 = require("graphql-type-json");
+const types_1 = require("../types");
 let UniversalResolver = class UniversalResolver {
     constructor(universalService) {
         this.universalService = universalService;
+    }
+    async getAvailableModels() {
+        return this.universalService.getAvailableModels();
+    }
+    async findMany(modelName, where, orderBy, skip, take, include) {
+        const safeSkip = skip ?? 0;
+        const safeTake = take ?? 10;
+        const page = Math.floor(safeSkip / safeTake) + 1;
+        const pagination = { page, pageSize: safeTake };
+        const sort = orderBy ? {
+            field: Object.keys(orderBy)[0],
+            direction: (Object.values(orderBy)[0] === 'desc' ? 'desc' : 'asc')
+        } : undefined;
+        return await this.universalService.findAll(modelName, pagination, where, sort, include);
     }
     async users(pagination, filter, sort) {
         const include = {
@@ -363,35 +371,77 @@ let UniversalResolver = class UniversalResolver {
 };
 exports.UniversalResolver = UniversalResolver;
 __decorate([
-    (0, graphql_1.Query)(() => user_types_1.UserPaginated),
+    (0, graphql_1.Query)(() => [String], {
+        description: 'Lấy danh sách tất cả models có sẵn trong hệ thống'
+    }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UniversalResolver.prototype, "getAvailableModels", null);
+__decorate([
+    (0, graphql_1.Query)(() => graphql_type_json_1.GraphQLJSON, {
+        description: 'Lấy danh sách records của bất kỳ model nào với pagination và filtering'
+    }),
+    __param(0, (0, graphql_1.Args)('modelName', { description: 'Tên model (ví dụ: user, sanpham, donhang...)' })),
+    __param(1, (0, graphql_1.Args)('where', {
+        type: () => graphql_type_json_1.GraphQLJSON,
+        nullable: true,
+        description: 'Điều kiện lọc (JSON format)'
+    })),
+    __param(2, (0, graphql_1.Args)('orderBy', {
+        type: () => graphql_type_json_1.GraphQLJSON,
+        nullable: true,
+        description: 'Sắp xếp (JSON format)'
+    })),
+    __param(3, (0, graphql_1.Args)('skip', {
+        nullable: true,
+        defaultValue: 0,
+        description: 'Số records bỏ qua (pagination)'
+    })),
+    __param(4, (0, graphql_1.Args)('take', {
+        nullable: true,
+        defaultValue: 10,
+        description: 'Số records lấy ra (pagination)'
+    })),
+    __param(5, (0, graphql_1.Args)('include', {
+        type: () => graphql_type_json_1.GraphQLJSON,
+        nullable: true,
+        description: 'Include relations (JSON format)'
+    })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object, Number, Number, Object]),
+    __metadata("design:returntype", Promise)
+], UniversalResolver.prototype, "findMany", null);
+__decorate([
+    (0, graphql_1.Query)(() => types_1.UserPaginated),
     __param(0, (0, graphql_1.Args)('pagination', { nullable: true })),
     __param(1, (0, graphql_1.Args)('filter', { nullable: true })),
     __param(2, (0, graphql_1.Args)('sort', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [common_types_1.PaginationInput,
-        user_types_1.UserFilterInput,
-        common_types_1.SortInput]),
+    __metadata("design:paramtypes", [types_1.PaginationInput,
+        types_1.UserFilterInput,
+        types_1.SortInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "users", null);
 __decorate([
-    (0, graphql_1.Query)(() => user_types_1.User),
+    (0, graphql_1.Query)(() => types_1.User),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "user", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => user_types_1.User),
+    (0, graphql_1.Mutation)(() => types_1.User),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_types_1.CreateUserInput]),
+    __metadata("design:paramtypes", [types_1.CreateUserInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "createUser", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => user_types_1.User),
+    (0, graphql_1.Mutation)(() => types_1.User),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [user_types_1.UpdateUserInput]),
+    __metadata("design:paramtypes", [types_1.UpdateUserInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "updateUser", null);
 __decorate([
@@ -402,35 +452,35 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "deleteUser", null);
 __decorate([
-    (0, graphql_1.Query)(() => sanpham_types_1.SanphamPaginated),
+    (0, graphql_1.Query)(() => types_1.SanphamPaginated),
     __param(0, (0, graphql_1.Args)('pagination', { nullable: true })),
     __param(1, (0, graphql_1.Args)('filter', { nullable: true })),
     __param(2, (0, graphql_1.Args)('sort', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [common_types_1.PaginationInput,
-        sanpham_types_1.SanphamFilterInput,
-        common_types_1.SortInput]),
+    __metadata("design:paramtypes", [types_1.PaginationInput,
+        types_1.SanphamFilterInput,
+        types_1.SortInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "sanphams", null);
 __decorate([
-    (0, graphql_1.Query)(() => sanpham_types_1.Sanpham),
+    (0, graphql_1.Query)(() => types_1.Sanpham),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "sanpham", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => sanpham_types_1.Sanpham),
+    (0, graphql_1.Mutation)(() => types_1.Sanpham),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [sanpham_types_1.CreateSanphamInput]),
+    __metadata("design:paramtypes", [types_1.CreateSanphamInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "createSanpham", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => sanpham_types_1.Sanpham),
+    (0, graphql_1.Mutation)(() => types_1.Sanpham),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [sanpham_types_1.UpdateSanphamInput]),
+    __metadata("design:paramtypes", [types_1.UpdateSanphamInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "updateSanpham", null);
 __decorate([
@@ -441,35 +491,35 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "deleteSanpham", null);
 __decorate([
-    (0, graphql_1.Query)(() => khachhang_types_1.KhachhangPaginated),
+    (0, graphql_1.Query)(() => types_1.KhachhangPaginated),
     __param(0, (0, graphql_1.Args)('pagination', { nullable: true })),
     __param(1, (0, graphql_1.Args)('filter', { nullable: true })),
     __param(2, (0, graphql_1.Args)('sort', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [common_types_1.PaginationInput,
-        khachhang_types_1.KhachhangFilterInput,
-        common_types_1.SortInput]),
+    __metadata("design:paramtypes", [types_1.PaginationInput,
+        types_1.KhachhangFilterInput,
+        types_1.SortInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "khachhangs", null);
 __decorate([
-    (0, graphql_1.Query)(() => khachhang_types_1.Khachhang),
+    (0, graphql_1.Query)(() => types_1.Khachhang),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "khachhang", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => khachhang_types_1.Khachhang),
+    (0, graphql_1.Mutation)(() => types_1.Khachhang),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [khachhang_types_1.CreateKhachhangInput]),
+    __metadata("design:paramtypes", [types_1.CreateKhachhangInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "createKhachhang", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => khachhang_types_1.Khachhang),
+    (0, graphql_1.Mutation)(() => types_1.Khachhang),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [khachhang_types_1.UpdateKhachhangInput]),
+    __metadata("design:paramtypes", [types_1.UpdateKhachhangInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "updateKhachhang", null);
 __decorate([
@@ -480,35 +530,35 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "deleteKhachhang", null);
 __decorate([
-    (0, graphql_1.Query)(() => donhang_types_1.DonhangPaginated),
+    (0, graphql_1.Query)(() => types_1.DonhangPaginated),
     __param(0, (0, graphql_1.Args)('pagination', { nullable: true })),
     __param(1, (0, graphql_1.Args)('filter', { nullable: true })),
     __param(2, (0, graphql_1.Args)('sort', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [common_types_1.PaginationInput,
-        donhang_types_1.DonhangFilterInput,
-        common_types_1.SortInput]),
+    __metadata("design:paramtypes", [types_1.PaginationInput,
+        types_1.DonhangFilterInput,
+        types_1.SortInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "donhangs", null);
 __decorate([
-    (0, graphql_1.Query)(() => donhang_types_1.Donhang),
+    (0, graphql_1.Query)(() => types_1.Donhang),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "donhang", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => donhang_types_1.Donhang),
+    (0, graphql_1.Mutation)(() => types_1.Donhang),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [donhang_types_1.CreateDonhangInput]),
+    __metadata("design:paramtypes", [types_1.CreateDonhangInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "createDonhang", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => donhang_types_1.Donhang),
+    (0, graphql_1.Mutation)(() => types_1.Donhang),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [donhang_types_1.UpdateDonhangInput]),
+    __metadata("design:paramtypes", [types_1.UpdateDonhangInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "updateDonhang", null);
 __decorate([
@@ -519,35 +569,35 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "deleteDonhang", null);
 __decorate([
-    (0, graphql_1.Query)(() => kho_types_1.KhoPaginated),
+    (0, graphql_1.Query)(() => types_1.KhoPaginated),
     __param(0, (0, graphql_1.Args)('pagination', { nullable: true })),
     __param(1, (0, graphql_1.Args)('filter', { nullable: true })),
     __param(2, (0, graphql_1.Args)('sort', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [common_types_1.PaginationInput,
-        kho_types_1.KhoFilterInput,
-        common_types_1.SortInput]),
+    __metadata("design:paramtypes", [types_1.PaginationInput,
+        types_1.KhoFilterInput,
+        types_1.SortInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "khos", null);
 __decorate([
-    (0, graphql_1.Query)(() => kho_types_1.Kho),
+    (0, graphql_1.Query)(() => types_1.Kho),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "kho", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => kho_types_1.Kho),
+    (0, graphql_1.Mutation)(() => types_1.Kho),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [kho_types_1.CreateKhoInput]),
+    __metadata("design:paramtypes", [types_1.CreateKhoInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "createKho", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => kho_types_1.Kho),
+    (0, graphql_1.Mutation)(() => types_1.Kho),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [kho_types_1.UpdateKhoInput]),
+    __metadata("design:paramtypes", [types_1.UpdateKhoInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "updateKho", null);
 __decorate([
@@ -558,35 +608,35 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "deleteKho", null);
 __decorate([
-    (0, graphql_1.Query)(() => kho_types_1.PhieuKhoPaginated),
+    (0, graphql_1.Query)(() => types_1.PhieuKhoPaginated),
     __param(0, (0, graphql_1.Args)('pagination', { nullable: true })),
     __param(1, (0, graphql_1.Args)('filter', { nullable: true })),
     __param(2, (0, graphql_1.Args)('sort', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [common_types_1.PaginationInput,
-        kho_types_1.PhieuKhoFilterInput,
-        common_types_1.SortInput]),
+    __metadata("design:paramtypes", [types_1.PaginationInput,
+        types_1.PhieuKhoFilterInput,
+        types_1.SortInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "phieukhos", null);
 __decorate([
-    (0, graphql_1.Query)(() => kho_types_1.PhieuKho),
+    (0, graphql_1.Query)(() => types_1.PhieuKho),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "phieukho", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => kho_types_1.PhieuKho),
+    (0, graphql_1.Mutation)(() => types_1.PhieuKho),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [kho_types_1.CreatePhieuKhoInput]),
+    __metadata("design:paramtypes", [types_1.CreatePhieuKhoInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "createPhieuKho", null);
 __decorate([
-    (0, graphql_1.Mutation)(() => kho_types_1.PhieuKho),
+    (0, graphql_1.Mutation)(() => types_1.PhieuKho),
     __param(0, (0, graphql_1.Args)('input')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [kho_types_1.UpdatePhieuKhoInput]),
+    __metadata("design:paramtypes", [types_1.UpdatePhieuKhoInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "updatePhieuKho", null);
 __decorate([
@@ -597,18 +647,18 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "deletePhieuKho", null);
 __decorate([
-    (0, graphql_1.Query)(() => kho_types_1.TonKhoPaginated),
+    (0, graphql_1.Query)(() => types_1.TonKhoPaginated),
     __param(0, (0, graphql_1.Args)('pagination', { nullable: true })),
     __param(1, (0, graphql_1.Args)('filter', { nullable: true })),
     __param(2, (0, graphql_1.Args)('sort', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [common_types_1.PaginationInput,
-        kho_types_1.TonKhoFilterInput,
-        common_types_1.SortInput]),
+    __metadata("design:paramtypes", [types_1.PaginationInput,
+        types_1.TonKhoFilterInput,
+        types_1.SortInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "tonkhos", null);
 __decorate([
-    (0, graphql_1.Query)(() => kho_types_1.TonKho),
+    (0, graphql_1.Query)(() => types_1.TonKho),
     __param(0, (0, graphql_1.Args)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -621,7 +671,7 @@ __decorate([
     __param(2, (0, graphql_1.Args)('searchFields', { type: () => [String] })),
     __param(3, (0, graphql_1.Args)('pagination', { nullable: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Array, common_types_1.PaginationInput]),
+    __metadata("design:paramtypes", [String, String, Array, types_1.PaginationInput]),
     __metadata("design:returntype", Promise)
 ], UniversalResolver.prototype, "universalSearch", null);
 __decorate([
@@ -649,7 +699,6 @@ __decorate([
 ], UniversalResolver.prototype, "bulkDelete", null);
 exports.UniversalResolver = UniversalResolver = __decorate([
     (0, graphql_1.Resolver)(),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [universal_service_1.UniversalGraphQLService])
 ], UniversalResolver);
 //# sourceMappingURL=universal.resolver.js.map

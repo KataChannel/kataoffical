@@ -1,5 +1,6 @@
 import { ObjectType, Field, ID, Float, Int, InputType } from '@nestjs/graphql';
 import { PaginationInfo } from './common.types';
+import { Banggia } from './banggia.types';
 
 @ObjectType()
 export class Sanpham {
@@ -96,51 +97,6 @@ export class Banggiasanpham {
 
   @Field(() => Banggia)
   banggia: Banggia;
-}
-
-@ObjectType()
-export class Banggia {
-  @Field(() => ID)
-  id: string;
-
-  @Field({ nullable: true })
-  title?: string;
-
-  @Field({ nullable: true })
-  mabanggia?: string;
-
-  @Field({ nullable: true })
-  type?: string;
-
-  @Field(() => Date, { nullable: true })
-  batdau?: Date;
-
-  @Field(() => Date, { nullable: true })
-  ketthuc?: Date;
-
-  @Field(() => Int, { nullable: true })
-  order?: number;
-
-  @Field({ nullable: true })
-  ghichu?: string;
-
-  @Field({ nullable: true })
-  status?: string;
-
-  @Field()
-  isActive: boolean;
-
-  @Field()
-  isDefault: boolean;
-
-  @Field(() => Date)
-  createdAt: Date;
-
-  @Field(() => Date)
-  updatedAt: Date;
-
-  @Field(() => [Banggiasanpham])
-  sanpham: Banggiasanpham[];
 }
 
 @ObjectType()

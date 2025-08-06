@@ -1,5 +1,5 @@
-import { PrismaService } from '../../../prisma/prisma.service';
 import { PaginationInput, SortInput, FilterInput } from '../types/common.types';
+import { PrismaService } from 'prisma/prisma.service';
 export declare class UniversalGraphQLService {
     private readonly prisma;
     constructor(prisma: PrismaService);
@@ -42,5 +42,6 @@ export declare class UniversalGraphQLService {
         createdToday: any;
         createdThisWeek: any;
     }>;
+    getAvailableModels(): string[];
     private buildWhereClause;
 }

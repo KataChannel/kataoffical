@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.KhachhangFilterInput = exports.UpdateKhachhangInput = exports.CreateKhachhangInput = exports.KhachhangPaginated = exports.Khachhang = exports.Nhomkhachhang = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const common_types_1 = require("./common.types");
-const sanpham_types_1 = require("./sanpham.types");
+const banggia_types_1 = require("./banggia.types");
 let Nhomkhachhang = class Nhomkhachhang {
 };
 exports.Nhomkhachhang = Nhomkhachhang;
@@ -147,8 +147,8 @@ __decorate([
     __metadata("design:type", Date)
 ], Khachhang.prototype, "updatedAt", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => sanpham_types_1.Banggia, { nullable: true }),
-    __metadata("design:type", sanpham_types_1.Banggia)
+    (0, graphql_1.Field)(() => banggia_types_1.Banggia, { nullable: true }),
+    __metadata("design:type", banggia_types_1.Banggia)
 ], Khachhang.prototype, "banggia", void 0);
 __decorate([
     (0, graphql_1.Field)(() => [Nhomkhachhang]),

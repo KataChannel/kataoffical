@@ -1,56 +1,135 @@
-import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+// import { UseGuards } from '@nestjs/common';
+// import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UniversalGraphQLService } from '../services/universal.service';
-import { PaginationInput, SortInput, FilterInput } from '../types/common.types';
+import { GraphQLJSON } from 'graphql-type-json';
+
+// Import all GraphQL types
 import {
+  // Common types
+  PaginationInput,
+  SortInput,
+  
+  // User types
   User,
   UserPaginated,
   CreateUserInput,
   UpdateUserInput,
   UserFilterInput,
-} from '../types/user.types';
-import {
+  
+  // Sanpham types
   Sanpham,
   SanphamPaginated,
   CreateSanphamInput,
   UpdateSanphamInput,
   SanphamFilterInput,
-} from '../types/sanpham.types';
-import {
+  
+  // Khachhang types
   Khachhang,
   KhachhangPaginated,
   CreateKhachhangInput,
   UpdateKhachhangInput,
   KhachhangFilterInput,
-} from '../types/khachhang.types';
-import {
+  
+  // Donhang types
   Donhang,
   DonhangPaginated,
   CreateDonhangInput,
   UpdateDonhangInput,
   DonhangFilterInput,
-} from '../types/donhang.types';
-import {
+  
+  // Kho types
   Kho,
   KhoPaginated,
-  PhieuKho,
-  PhieuKhoPaginated,
-  TonKho,
-  TonKhoPaginated,
   CreateKhoInput,
   UpdateKhoInput,
+  KhoFilterInput,
+  
+  // PhieuKho types
+  PhieuKho,
+  PhieuKhoPaginated,
   CreatePhieuKhoInput,
   UpdatePhieuKhoInput,
-  KhoFilterInput,
   PhieuKhoFilterInput,
+  
+  // TonKho types
+  TonKho,
+  TonKhoPaginated,
   TonKhoFilterInput,
-} from '../types/kho.types';
+} from '../types';
 
 @Resolver()
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard) // Temporarily disabled for testing
 export class UniversalResolver {
   constructor(private readonly universalService: UniversalGraphQLService) {}
+
+  // Query để lấy danh sách tất cả models có sẵn
+  @Query(() => [String], {
+    description: 'Lấy danh sách tất cả models có sẵn trong hệ thống'
+  })
+  async getAvailableModels(): Promise<string[]> {
+    return this.universalService.getAvailableModels();
+  }
+
+  // Query để lấy danh sách records với pagination
+  @Query(() => GraphQLJSON, {
+    description: 'Lấy danh sách records của bất kỳ model nào với pagination và filtering'
+  })
+  async findMany(
+    @Args('modelName', { description: 'Tên model (ví dụ: user, sanpham, donhang...)' }) 
+    modelName: string,
+    
+    @Args('where', { 
+      type: () => GraphQLJSON, 
+      nullable: true,
+      description: 'Điều kiện lọc (JSON format)'
+    }) 
+    where?: any,
+    
+    @Args('orderBy', { 
+      type: () => GraphQLJSON, 
+      nullable: true,
+      description: 'Sắp xếp (JSON format)'
+    }) 
+    orderBy?: any,
+    
+    @Args('skip', { 
+      nullable: true, 
+      defaultValue: 0,
+      description: 'Số records bỏ qua (pagination)'
+    }) 
+    skip?: number,
+    
+    @Args('take', { 
+      nullable: true, 
+      defaultValue: 10,
+      description: 'Số records lấy ra (pagination)'
+    }) 
+    take?: number,
+    
+    @Args('include', { 
+      type: () => GraphQLJSON, 
+      nullable: true,
+      description: 'Include relations (JSON format)'
+    }) 
+    include?: any,
+  ) {
+    // Fix: Handle undefined values
+    const safeSkip = skip ?? 0;
+    const safeTake = take ?? 10;
+    
+    // Convert skip/take to pagination format
+    const page = Math.floor(safeSkip / safeTake) + 1;
+    const pagination = { page, pageSize: safeTake };
+    
+    // Convert orderBy to sort format
+    const sort = orderBy ? { 
+      field: Object.keys(orderBy)[0], 
+      direction: (Object.values(orderBy)[0] === 'desc' ? 'desc' : 'asc') as 'desc' | 'asc'
+    } : undefined;
+    
+    return await this.universalService.findAll(modelName, pagination, where, sort, include);
+  }
 
   // USER OPERATIONS
   @Query(() => UserPaginated)

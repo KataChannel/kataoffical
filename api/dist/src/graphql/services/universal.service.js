@@ -225,6 +225,34 @@ let UniversalGraphQLService = class UniversalGraphQLService {
             throw new common_1.BadRequestException(`Error getting stats for ${model}: ${error.message}`);
         }
     }
+    getAvailableModels() {
+        return [
+            'user',
+            'role',
+            'userRole',
+            'permission',
+            'rolePermission',
+            'menu',
+            'profile',
+            'banggia',
+            'khachhang',
+            'nhomkhachhang',
+            'sanpham',
+            'donhang',
+            'donhangsanpham',
+            'banggiasanpham',
+            'nhacungcap',
+            'dathang',
+            'dathangsanpham',
+            'kho',
+            'sanphamKho',
+            'phieuKho',
+            'phieuKhoSanpham',
+            'tonKho',
+            'chotkho',
+            'auditLog',
+        ];
+    }
     buildWhereClause(filter) {
         if (!filter)
             return {};

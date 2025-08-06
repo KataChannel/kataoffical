@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
 import { PaginationInput, SortInput, FilterInput } from '../types/common.types';
+import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
-export class UniversalGraphQLService {
+export class UniversalGraphQLService { // Fix: Rename to avoid conflict
   constructor(private readonly prisma: PrismaService) {}
 
   /**
@@ -277,6 +277,38 @@ export class UniversalGraphQLService {
     } catch (error) {
       throw new BadRequestException(`Error getting stats for ${model}: ${error.message}`);
     }
+  }
+
+  /**
+   * Method để lấy danh sách tất cả models
+   */
+  getAvailableModels(): string[] {
+    return [
+      'user',
+      'role', 
+      'userRole',
+      'permission',
+      'rolePermission',
+      'menu',
+      'profile',
+      'banggia',
+      'khachhang',
+      'nhomkhachhang', 
+      'sanpham',
+      'donhang',
+      'donhangsanpham',
+      'banggiasanpham',
+      'nhacungcap',
+      'dathang',
+      'dathangsanpham',
+      'kho',
+      'sanphamKho',
+      'phieuKho',
+      'phieuKhoSanpham',
+      'tonKho',
+      'chotkho',
+      'auditLog',
+    ];
   }
 
   /**

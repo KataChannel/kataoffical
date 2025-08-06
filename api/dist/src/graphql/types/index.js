@@ -15,10 +15,11 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./common.types"), exports);
+__exportStar(require("./banggia.types"), exports);
 __exportStar(require("./user.types"), exports);
-__exportStar(require("./sanpham.types"), exports);
 __exportStar(require("./khachhang.types"), exports);
-__exportStar(require("./donhang.types"), exports);
 __exportStar(require("./kho.types"), exports);
+__exportStar(require("./sanpham.types"), exports);
+__exportStar(require("./donhang.types"), exports);
 __exportStar(require("../enums"), exports);
 //# sourceMappingURL=index.js.map

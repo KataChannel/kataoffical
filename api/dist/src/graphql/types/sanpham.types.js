@@ -9,9 +9,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SanphamFilterInput = exports.UpdateSanphamInput = exports.CreateSanphamInput = exports.SanphamPaginated = exports.Nhacungcap = exports.Banggia = exports.Banggiasanpham = exports.Sanpham = void 0;
+exports.SanphamFilterInput = exports.UpdateSanphamInput = exports.CreateSanphamInput = exports.SanphamPaginated = exports.Nhacungcap = exports.Banggiasanpham = exports.Sanpham = void 0;
 const graphql_1 = require("@nestjs/graphql");
 const common_types_1 = require("./common.types");
+const banggia_types_1 = require("./banggia.types");
 let Sanpham = class Sanpham {
 };
 exports.Sanpham = Sanpham;
@@ -138,74 +139,12 @@ __decorate([
     __metadata("design:type", Sanpham)
 ], Banggiasanpham.prototype, "sanpham", void 0);
 __decorate([
-    (0, graphql_1.Field)(() => Banggia),
-    __metadata("design:type", Banggia)
+    (0, graphql_1.Field)(() => banggia_types_1.Banggia),
+    __metadata("design:type", banggia_types_1.Banggia)
 ], Banggiasanpham.prototype, "banggia", void 0);
 exports.Banggiasanpham = Banggiasanpham = __decorate([
     (0, graphql_1.ObjectType)()
 ], Banggiasanpham);
-let Banggia = class Banggia {
-};
-exports.Banggia = Banggia;
-__decorate([
-    (0, graphql_1.Field)(() => graphql_1.ID),
-    __metadata("design:type", String)
-], Banggia.prototype, "id", void 0);
-__decorate([
-    (0, graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], Banggia.prototype, "title", void 0);
-__decorate([
-    (0, graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], Banggia.prototype, "mabanggia", void 0);
-__decorate([
-    (0, graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], Banggia.prototype, "type", void 0);
-__decorate([
-    (0, graphql_1.Field)(() => Date, { nullable: true }),
-    __metadata("design:type", Date)
-], Banggia.prototype, "batdau", void 0);
-__decorate([
-    (0, graphql_1.Field)(() => Date, { nullable: true }),
-    __metadata("design:type", Date)
-], Banggia.prototype, "ketthuc", void 0);
-__decorate([
-    (0, graphql_1.Field)(() => graphql_1.Int, { nullable: true }),
-    __metadata("design:type", Number)
-], Banggia.prototype, "order", void 0);
-__decorate([
-    (0, graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], Banggia.prototype, "ghichu", void 0);
-__decorate([
-    (0, graphql_1.Field)({ nullable: true }),
-    __metadata("design:type", String)
-], Banggia.prototype, "status", void 0);
-__decorate([
-    (0, graphql_1.Field)(),
-    __metadata("design:type", Boolean)
-], Banggia.prototype, "isActive", void 0);
-__decorate([
-    (0, graphql_1.Field)(),
-    __metadata("design:type", Boolean)
-], Banggia.prototype, "isDefault", void 0);
-__decorate([
-    (0, graphql_1.Field)(() => Date),
-    __metadata("design:type", Date)
-], Banggia.prototype, "createdAt", void 0);
-__decorate([
-    (0, graphql_1.Field)(() => Date),
-    __metadata("design:type", Date)
-], Banggia.prototype, "updatedAt", void 0);
-__decorate([
-    (0, graphql_1.Field)(() => [Banggiasanpham]),
-    __metadata("design:type", Array)
-], Banggia.prototype, "sanpham", void 0);
-exports.Banggia = Banggia = __decorate([
-    (0, graphql_1.ObjectType)()
-], Banggia);
 let Nhacungcap = class Nhacungcap {
 };
 exports.Nhacungcap = Nhacungcap;

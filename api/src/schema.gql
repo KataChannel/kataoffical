@@ -1,0 +1,712 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Banggia {
+  batdau: DateTime
+  createdAt: DateTime!
+  ghichu: String
+  id: ID!
+  isActive: Boolean!
+  isDefault: Boolean!
+  ketthuc: DateTime
+  mabanggia: String
+  order: Int
+  sanphamIds: [String!]
+  status: String
+  title: String
+  type: String
+  updatedAt: DateTime!
+}
+
+type Banggiasanpham {
+  banggia: Banggia!
+  banggiaId: ID!
+  giaban: Float!
+  id: ID!
+  isActive: Boolean!
+  order: Int
+  sanpham: Sanpham!
+  sanphamId: ID!
+}
+
+type Congty {
+  createdAt: DateTime!
+  diachi: String
+  email: String
+  id: ID!
+  isActive: Boolean!
+  kho: [Kho!]!
+  name: String!
+  sdt: String
+  updatedAt: DateTime!
+}
+
+input CreateDonhangInput {
+  ghichu: String
+  isActive: Boolean! = false
+  isshowvat: Boolean! = false
+  khachhangId: ID!
+  ngaygiao: DateTime
+  order: Int
+  sanpham: [CreateDonhangsanphamInput!]!
+  status: StatusDonhang! = DADAT
+  title: String
+  tongtien: Float! = 0
+  tongvat: Float! = 0
+  type: String
+}
+
+input CreateDonhangsanphamInput {
+  ghichu: String
+  giaban: Float!
+  idSP: ID!
+  isActive: Boolean
+  order: Int
+  sldat: Float!
+  slgiao: Float!
+  slhuy: Float! = 0
+  slnhan: Float! = 0
+  ttdat: Float!
+  ttgiao: Float!
+  ttnhan: Float! = 0
+  ttsauvat: Float!
+  vat: Float! = 0
+}
+
+input CreateKhachhangInput {
+  address: String
+  banggiaId: ID
+  diachi: String
+  email: String
+  ghichu: String
+  gionhanhang: String
+  hiengia: Boolean! = false
+  isActive: Boolean! = false
+  isshowvat: Boolean! = true
+  istitle2: Boolean! = false
+  loaikh: String
+  makh: String!
+  makhold: String
+  mst: String
+  name: String
+  namenn: String
+  phone: String
+  quan: String
+  sdt: String
+  subtitle: String
+  tenfile: String
+  tenkh: String
+}
+
+input CreateKhoInput {
+  congtyId: ID
+  diachi: String
+  ghichu: String
+  isActive: Boolean! = true
+  makho: String
+  name: String!
+  sdt: String
+}
+
+input CreatePhieuKhoInput {
+  ghichu: String
+  isActive: Boolean! = true
+  isChotkho: Boolean! = false
+  khoId: ID
+  madathang: String
+  madncc: String
+  madonhang: String
+  maphieu: String
+  ngay: DateTime
+  sanpham: [CreatePhieuKhoSanphamInput!]!
+  title: String
+  type: String
+}
+
+input CreatePhieuKhoSanphamInput {
+  ghichu: String
+  sanphamId: ID!
+  soluong: Float!
+}
+
+input CreateSanphamInput {
+  dvt: String
+  ghichu: String
+  giaban: Float! = 0
+  giagoc: Float! = 0
+  haohut: Float! = 0
+  hinhanh: String
+  isActive: Boolean! = false
+  loadpoint: Float
+  masp: String!
+  order: Int
+  slug: String
+  soluong: Float
+  soluongkho: Float
+  subtitle: String
+  title: String!
+  title2: String
+  vat: Float
+}
+
+input CreateUserInput {
+  SDT: String
+  email: String
+  isActive: Boolean! = false
+  password: String!
+  provider: String
+  providerId: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Donhang {
+  createdAt: DateTime!
+  ghichu: String
+  id: ID!
+  isActive: Boolean!
+  isshowvat: Boolean!
+  khachhang: Khachhang!
+  khachhangId: ID!
+  madonhang: String!
+  ngaygiao: DateTime
+  order: Int
+  printCount: Int
+  sanpham: [Donhangsanpham!]!
+  status: StatusDonhang!
+  title: String
+  tongtien: Float!
+  tongvat: Float!
+  type: String
+  updatedAt: DateTime!
+}
+
+input DonhangFilterInput {
+  endDate: DateTime
+  isActive: Boolean
+  isshowvat: Boolean
+  khachhangId: ID
+  maxTongtien: Float
+  minTongtien: Float
+  search: String
+  startDate: DateTime
+  status: StatusDonhang
+  statuses: [StatusDonhang!]
+}
+
+type DonhangPaginated {
+  data: [Donhang!]!
+  pagination: PaginationInfo!
+}
+
+type Donhangsanpham {
+  donhang: Donhang!
+  donhangId: ID!
+  ghichu: String
+  giaban: Float!
+  id: ID!
+  idSP: ID!
+  isActive: Boolean
+  order: Int
+  sanpham: Sanpham!
+  sldat: Float!
+  slgiao: Float!
+  slhuy: Float!
+  slnhan: Float!
+  ttdat: Float!
+  ttgiao: Float!
+  ttnhan: Float!
+  ttsauvat: Float!
+  vat: Float!
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Khachhang {
+  address: String
+  banggia: Banggia
+  banggiaId: ID
+  createdAt: DateTime!
+  diachi: String
+  email: String
+  ghichu: String
+  gionhanhang: String
+  hiengia: Boolean!
+  id: ID!
+  isActive: Boolean!
+  isshowvat: Boolean!
+  istitle2: Boolean!
+  loaikh: String
+  makh: String!
+  makhold: String
+  mst: String
+  name: String
+  namenn: String
+  nhomkhachhang: [Nhomkhachhang!]!
+  phone: String
+  quan: String
+  sdt: String
+  subtitle: String
+  tenfile: String
+  tenkh: String
+  updatedAt: DateTime!
+}
+
+input KhachhangFilterInput {
+  hiengia: Boolean
+  isActive: Boolean
+  loaikh: String
+  quan: String
+  search: String
+}
+
+type KhachhangPaginated {
+  data: [Khachhang!]!
+  pagination: PaginationInfo!
+}
+
+type Kho {
+  congty: Congty
+  congtyId: ID
+  createdAt: DateTime!
+  diachi: String
+  ghichu: String
+  id: ID!
+  isActive: Boolean!
+  makho: String
+  name: String!
+  phieukho: [PhieuKho!]!
+  sanphamKho: [SanphamKho!]!
+  sdt: String
+  updatedAt: DateTime!
+}
+
+input KhoFilterInput {
+  congtyId: ID
+  isActive: Boolean
+  search: String
+}
+
+type KhoPaginated {
+  data: [Kho!]!
+  pagination: PaginationInfo!
+}
+
+type Mutation {
+  bulkCreate(data: String!, model: String!): String!
+  bulkDelete(ids: [String!]!, model: String!): Boolean!
+  createDonhang(input: CreateDonhangInput!): Donhang!
+  createKhachhang(input: CreateKhachhangInput!): Khachhang!
+  createKho(input: CreateKhoInput!): Kho!
+  createPhieuKho(input: CreatePhieuKhoInput!): PhieuKho!
+  createSanpham(input: CreateSanphamInput!): Sanpham!
+  createUser(input: CreateUserInput!): User!
+  deleteDonhang(id: String!): Boolean!
+  deleteKhachhang(id: String!): Boolean!
+  deleteKho(id: String!): Boolean!
+  deletePhieuKho(id: String!): Boolean!
+  deleteSanpham(id: String!): Boolean!
+  deleteUser(id: String!): Boolean!
+  updateDonhang(input: UpdateDonhangInput!): Donhang!
+  updateKhachhang(input: UpdateKhachhangInput!): Khachhang!
+  updateKho(input: UpdateKhoInput!): Kho!
+  updatePhieuKho(input: UpdatePhieuKhoInput!): PhieuKho!
+  updateSanpham(input: UpdateSanphamInput!): Sanpham!
+  updateUser(input: UpdateUserInput!): User!
+}
+
+type Nhacungcap {
+  createdAt: DateTime!
+  diachi: String
+  email: String
+  ghichu: String
+  id: ID!
+  isActive: Boolean!
+  isshowvat: Boolean!
+  mancc: String!
+  manccold: String
+  name: String
+  sanpham: [Sanpham!]!
+  sdt: String
+  tenfile: String
+  updatedAt: DateTime!
+}
+
+type Nhomkhachhang {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  khachhang: [Khachhang!]!
+  name: String!
+  updatedAt: DateTime!
+}
+
+type PaginationInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  page: Int!
+  pageSize: Int!
+  total: Int!
+  totalPages: Int!
+}
+
+input PaginationInput {
+  page: Int! = 1
+  pageSize: Int! = 10
+}
+
+type Permission {
+  codeId: String
+  createdAt: DateTime!
+  description: String
+  group: String
+  id: ID!
+  name: String!
+  order: Float
+  updatedAt: DateTime!
+}
+
+type PhieuKho {
+  createdAt: DateTime!
+  donhang: Donhang
+  ghichu: String
+  id: ID!
+  isActive: Boolean!
+  isChotkho: Boolean!
+  kho: Kho
+  khoId: ID
+  madathang: String
+  madncc: String
+  madonhang: String
+  maphieu: String
+  ngay: DateTime
+  sanpham: [PhieuKhoSanpham!]!
+  title: String
+  type: String
+  updatedAt: DateTime!
+}
+
+input PhieuKhoFilterInput {
+  endDate: DateTime
+  isActive: Boolean
+  isChotkho: Boolean
+  khoId: ID
+  search: String
+  startDate: DateTime
+  type: String
+}
+
+type PhieuKhoPaginated {
+  data: [PhieuKho!]!
+  pagination: PaginationInfo!
+}
+
+type PhieuKhoSanpham {
+  createdAt: DateTime!
+  ghichu: String
+  id: ID!
+  phieuKho: PhieuKho!
+  phieuKhoId: ID!
+  sanpham: Sanpham!
+  sanphamId: ID!
+  soluong: Float!
+  updatedAt: DateTime!
+}
+
+type Profile {
+  avatar: String
+  bio: String
+  id: ID!
+  name: String!
+  userId: ID!
+}
+
+type Query {
+  donhang(id: String!): Donhang!
+  donhangs(filter: DonhangFilterInput, pagination: PaginationInput, sort: SortInput): DonhangPaginated!
+
+  """Lấy danh sách records của bất kỳ model nào với pagination và filtering"""
+  findMany(
+    """Include relations (JSON format)"""
+    include: JSON
+
+    """Tên model (ví dụ: user, sanpham, donhang...)"""
+    modelName: String!
+
+    """Sắp xếp (JSON format)"""
+    orderBy: JSON
+
+    """Số records bỏ qua (pagination)"""
+    skip: Float = 0
+
+    """Số records lấy ra (pagination)"""
+    take: Float = 10
+
+    """Điều kiện lọc (JSON format)"""
+    where: JSON
+  ): JSON!
+
+  """Lấy danh sách tất cả models có sẵn trong hệ thống"""
+  getAvailableModels: [String!]!
+  getModelStats(model: String!): String!
+  khachhang(id: String!): Khachhang!
+  khachhangs(filter: KhachhangFilterInput, pagination: PaginationInput, sort: SortInput): KhachhangPaginated!
+  kho(id: String!): Kho!
+  khos(filter: KhoFilterInput, pagination: PaginationInput, sort: SortInput): KhoPaginated!
+  phieukho(id: String!): PhieuKho!
+  phieukhos(filter: PhieuKhoFilterInput, pagination: PaginationInput, sort: SortInput): PhieuKhoPaginated!
+  sanpham(id: String!): Sanpham!
+  sanphams(filter: SanphamFilterInput, pagination: PaginationInput, sort: SortInput): SanphamPaginated!
+  tonkho(id: String!): TonKho!
+  tonkhos(filter: TonKhoFilterInput, pagination: PaginationInput, sort: SortInput): TonKhoPaginated!
+  universalSearch(model: String!, pagination: PaginationInput, searchFields: [String!]!, searchTerm: String!): String!
+  user(id: String!): User!
+  users(filter: UserFilterInput, pagination: PaginationInput, sort: SortInput): UserPaginated!
+}
+
+type Role {
+  createdAt: DateTime!
+  id: ID!
+  name: String!
+  permissions: [Permission!]!
+  updatedAt: DateTime!
+}
+
+type Sanpham {
+  banggia: [Banggiasanpham!]
+  createdAt: DateTime!
+  dvt: String
+  ghichu: String
+  giaban: Float!
+  giagoc: Float!
+  haohut: Float!
+  hinhanh: String
+  id: ID!
+  isActive: Boolean!
+  loadpoint: Float
+  masp: String!
+  nhacungcap: [Nhacungcap!]
+  order: Int
+  slug: String
+  soluong: Float
+  soluongkho: Float
+  subtitle: String
+  title: String!
+  title2: String
+  updatedAt: DateTime!
+  vat: Float
+}
+
+input SanphamFilterInput {
+  dvt: String
+  isActive: Boolean
+  maxPrice: Float
+  minPrice: Float
+  search: String
+}
+
+type SanphamKho {
+  createdAt: DateTime!
+  ghichu: String
+  id: ID!
+  kho: Kho!
+  khoId: ID!
+  sanpham: Sanpham!
+  sanphamId: ID!
+  soluong: Float!
+  updatedAt: DateTime!
+}
+
+type SanphamPaginated {
+  data: [Sanpham!]!
+  pagination: PaginationInfo!
+}
+
+input SortInput {
+  direction: String! = "desc"
+  field: String!
+}
+
+"""Trạng thái đơn hàng"""
+enum StatusDonhang {
+  DADAT
+  DAGIAO
+  DANHAN
+  HOANTHANH
+  HUY
+}
+
+type TonKho {
+  id: ID!
+  sanpham: Sanpham!
+  sanphamId: ID!
+  slchogiao: Float!
+  slchonhap: Float!
+  slton: Float!
+}
+
+input TonKhoFilterInput {
+  maxSlton: Float
+  minSlton: Float
+  sanphamId: ID
+  search: String
+}
+
+type TonKhoPaginated {
+  data: [TonKho!]!
+  pagination: PaginationInfo!
+}
+
+input UpdateDonhangInput {
+  ghichu: String
+  id: ID!
+  isActive: Boolean
+  isshowvat: Boolean
+  khachhangId: ID
+  ngaygiao: DateTime
+  order: Int
+  sanpham: [UpdateDonhangsanphamInput!]
+  status: StatusDonhang
+  title: String
+  tongtien: Float
+  tongvat: Float
+  type: String
+}
+
+input UpdateDonhangsanphamInput {
+  ghichu: String
+  giaban: Float
+  id: ID
+  idSP: ID!
+  isActive: Boolean
+  order: Int
+  sldat: Float
+  slgiao: Float
+  slhuy: Float
+  slnhan: Float
+  ttdat: Float
+  ttgiao: Float
+  ttnhan: Float
+  ttsauvat: Float
+  vat: Float
+}
+
+input UpdateKhachhangInput {
+  address: String
+  banggiaId: ID
+  diachi: String
+  email: String
+  ghichu: String
+  gionhanhang: String
+  hiengia: Boolean
+  id: ID!
+  isActive: Boolean
+  isshowvat: Boolean
+  istitle2: Boolean
+  loaikh: String
+  makh: String
+  makhold: String
+  mst: String
+  name: String
+  namenn: String
+  phone: String
+  quan: String
+  sdt: String
+  subtitle: String
+  tenfile: String
+  tenkh: String
+}
+
+input UpdateKhoInput {
+  congtyId: ID
+  diachi: String
+  ghichu: String
+  id: ID!
+  isActive: Boolean
+  makho: String
+  name: String
+  sdt: String
+}
+
+input UpdatePhieuKhoInput {
+  ghichu: String
+  id: ID!
+  isActive: Boolean
+  isChotkho: Boolean
+  khoId: ID
+  madathang: String
+  madncc: String
+  madonhang: String
+  maphieu: String
+  ngay: DateTime
+  sanpham: [UpdatePhieuKhoSanphamInput!]
+  title: String
+  type: String
+}
+
+input UpdatePhieuKhoSanphamInput {
+  ghichu: String
+  id: ID
+  sanphamId: ID!
+  soluong: Float
+}
+
+input UpdateSanphamInput {
+  dvt: String
+  ghichu: String
+  giaban: Float
+  giagoc: Float
+  haohut: Float
+  hinhanh: String
+  id: ID!
+  isActive: Boolean
+  loadpoint: Float
+  masp: String
+  order: Int
+  slug: String
+  soluong: Float
+  soluongkho: Float
+  subtitle: String
+  title: String
+  title2: String
+  vat: Float
+}
+
+input UpdateUserInput {
+  SDT: String
+  email: String
+  id: ID!
+  isActive: Boolean
+  password: String
+}
+
+type User {
+  SDT: String
+  createdAt: DateTime!
+  email: String
+  id: ID!
+  isActive: Boolean!
+  profile: Profile
+  provider: String
+  providerId: String
+  roles: [Role!]!
+  updatedAt: DateTime!
+}
+
+input UserFilterInput {
+  isActive: Boolean
+  provider: String
+  search: String
+}
+
+type UserPaginated {
+  data: [User!]!
+  pagination: PaginationInfo!
+}

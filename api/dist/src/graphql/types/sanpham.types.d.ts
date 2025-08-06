@@ -1,4 +1,5 @@
 import { PaginationInfo } from './common.types';
+import { Banggia } from './banggia.types';
 export declare class Sanpham {
     id: string;
     title: string;
@@ -32,22 +33,6 @@ export declare class Banggiasanpham {
     isActive: boolean;
     sanpham: Sanpham;
     banggia: Banggia;
-}
-export declare class Banggia {
-    id: string;
-    title?: string;
-    mabanggia?: string;
-    type?: string;
-    batdau?: Date;
-    ketthuc?: Date;
-    order?: number;
-    ghichu?: string;
-    status?: string;
-    isActive: boolean;
-    isDefault: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-    sanpham: Banggiasanpham[];
 }
 export declare class Nhacungcap {
     id: string;

@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GraphQLUniversalModule = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_module_1 = require("../../prisma/prisma.module");
+const auth_module_1 = require("../auth/auth.module");
 const universal_resolver_1 = require("./resolvers/universal.resolver");
 const universal_service_1 = require("./services/universal.service");
 let GraphQLUniversalModule = class GraphQLUniversalModule {
@@ -16,7 +17,10 @@ let GraphQLUniversalModule = class GraphQLUniversalModule {
 exports.GraphQLUniversalModule = GraphQLUniversalModule;
 exports.GraphQLUniversalModule = GraphQLUniversalModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule],
+        imports: [
+            prisma_module_1.PrismaModule,
+            auth_module_1.AuthModule,
+        ],
         providers: [universal_resolver_1.UniversalResolver, universal_service_1.UniversalGraphQLService],
         exports: [universal_service_1.UniversalGraphQLService],
     })

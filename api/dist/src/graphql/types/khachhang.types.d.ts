@@ -1,5 +1,5 @@
 import { PaginationInfo } from './common.types';
-import { Banggia } from './sanpham.types';
+import { Banggia } from './banggia.types';
 export declare class Nhomkhachhang {
     id: string;
     name: string;
