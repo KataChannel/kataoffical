@@ -22,6 +22,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DonhangService } from '../../donhang/donhang.service';
 import moment from 'moment';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { DateHelpers } from '../../../shared/utils/date-helpers';
 @Component({
   selector: 'app-listphieuchuyen',
   templateUrl: './listphieuchuyen.component.html',
@@ -100,10 +101,9 @@ export class ListPhieuchuyenComponent {
   dataSource = new MatTableDataSource([]);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
-  isSearch: boolean = false;
-  SearchParams: any = {
-      Batdau: moment().toDate(),
-      Ketthuc: moment().toDate(),
+  isSearch: boolean = false;  SearchParams: any = {
+      Batdau: DateHelpers.now(),
+      Ketthuc: DateHelpers.now(),
       Type: 'donsi',
       Status:'dadat'
     };

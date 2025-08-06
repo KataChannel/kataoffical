@@ -27,6 +27,7 @@ import { DonhangService } from "../../donhang/donhang.service";
 import { KhoService } from "../../kho/kho.service";
 import { PhieukhoService } from "../../phieukho/phieukho.service";
 import { SanphamService } from "../../sanpham/sanpham.service";
+import { DateHelpers } from '../../../shared/utils/date-helpers';
 
 @Component({
   selector: 'app-detaildexuat',
@@ -93,11 +94,10 @@ export class DetaildexuatComponent {
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   Xuatnhapton:any = this._PhieukhoService.ListPhieukho;
   dataSource = new MatTableDataSource([]);
-  _snackBar: MatSnackBar = inject(MatSnackBar);
-  CountItem: any = 0;
+  _snackBar: MatSnackBar = inject(MatSnackBar);  CountItem: any = 0;
   SearchParams: any = {
-    Batdau: moment().format('YYYY-MM-DD'),
-    Ketthuc: moment().add(1,'day').format('YYYY-MM-DD'),
+    Batdau: DateHelpers.format(DateHelpers.now(), 'YYYY-MM-DD'),
+    Ketthuc: DateHelpers.format(DateHelpers.add(DateHelpers.now(), 1, 'day'), 'YYYY-MM-DD'),
     Type: 'donsi'
   };
   ListDate: any[] = [
@@ -348,28 +348,26 @@ export class DetaildexuatComponent {
           });
         }
       }
-    });
-
-    if (phieuNhapDetails.length > 0) {
+    });    if (phieuNhapDetails.length > 0) {
       // Tạo phiếu nhập một lần với danh sách chi tiết
       this._PhieukhoService.CreatePhieukho(
         {
-        title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
+        title:`Điều Chỉnh Kho Ngày ${DateHelpers.format(DateHelpers.now(), 'DD/MM/YYYY ')}`, 
         type:'nhap',
         sanpham: phieuNhapDetails, 
-        ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
-        ngay: moment()
+        ghichu: `Cập nhật tồn kho lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
+        ngay: DateHelpers.now()
       });
     }
     if (phieuXuatDetails.length > 0) {
       // Tạo phiếu xuất một lần với danh sách chi tiết
       this._PhieukhoService.CreatePhieukho(
         {
-        title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
+        title:`Điều Chỉnh Kho Ngày ${DateHelpers.format(DateHelpers.now(), 'DD/MM/YYYY ')}`, 
         type:'xuat',
         sanpham: phieuXuatDetails, 
-        ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
-        ngay: moment()
+        ghichu: `Cập nhật tồn kho lúc ${DateHelpers.format(DateHelpers.now(), 'HH:mm:ss DD/MM/YYYY ')}`,
+        ngay: DateHelpers.now()
       });
     }
     if (phieuNhapDetails.length > 0) {

@@ -114,6 +114,7 @@ let UniversalService = class UniversalService {
         }
     }
     getModel(modelName) {
+        console.log(`Getting model: ${modelName}`);
         const normalizedModelName = this.normalizeModelName(modelName);
         const model = this.prisma[normalizedModelName];
         if (!model) {
@@ -139,6 +140,17 @@ let UniversalService = class UniversalService {
             'sanpham',
             'donhang',
             'donhangsanpham',
+            'dathang',
+            'dathangsanpham',
+            'kho',
+            'sanphamKho',
+            'phieuKho',
+            'phieuKhoSanpham',
+            'tonKho',
+            'chotkho',
+            'auditLog',
+            'danhmuc',
+            'danhmucsanpham',
             'banggiasanpham',
             'nhacungcap',
             'dathang',

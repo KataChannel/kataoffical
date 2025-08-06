@@ -123,6 +123,8 @@ export class UniversalService {
 
   // Method để lấy model từ Prisma client
   private getModel(modelName: string) {
+    console.log(`Getting model: ${modelName}`);
+    
     const normalizedModelName = this.normalizeModelName(modelName);
     const model = (this.prisma as any)[normalizedModelName];
     
@@ -155,6 +157,17 @@ export class UniversalService {
       'sanpham',
       'donhang',
       'donhangsanpham',
+      'dathang',
+      'dathangsanpham',
+      'kho',
+      'sanphamKho',
+      'phieuKho',
+      'phieuKhoSanpham',
+      'tonKho',
+      'chotkho',
+      'auditLog',
+      'danhmuc',
+      'danhmucsanpham',
       'banggiasanpham',
       'nhacungcap',
       'dathang',

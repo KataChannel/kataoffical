@@ -34,6 +34,7 @@ import {
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { DonhangService } from '../../donhang/donhang.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { DateHelpers } from '../../../shared/utils/date-helpers';
 import moment from 'moment';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 import { TrangThaiDon } from '../../../shared/utils/trangthai';
@@ -112,12 +113,11 @@ export class ListPhieugiaohangComponent {
   CountItem: any = 0;
   page = signal<number>(1);
   pageCount = signal<number>(1);
-  total = signal<number>(0);
-  pageSize = signal<number>(10);
+  total = signal<number>(0);  pageSize = signal<number>(10);
   Trangthaidon: any = TrangThaiDon;
   SearchParams: any = {
-    Batdau: moment().toDate(),
-    Ketthuc: moment().toDate(),
+    Batdau: DateHelpers.now(),
+    Ketthuc: DateHelpers.now(),
     Type: 'donsi',
     Status: ['dadat', 'dagiao','danhan','hoanthanh'],
     pageSize: 10,

@@ -1,4 +1,13 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, computed, effect, inject, TemplateRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -15,8 +24,15 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
-import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
-import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
+import {
+  readExcelFile,
+  writeExcelFile,
+} from '../../../shared/utils/exceldrive.utils';
+import {
+  ConvertDriveData,
+  convertToSlug,
+  GenId,
+} from '../../../shared/utils/shared.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SanphamService } from '../../sanpham/sanpham.service';
@@ -25,6 +41,7 @@ import { DathangService } from '../dathang.service';
 import { TablenhucaudathanhComponent } from './tablenhucaudathanh/tablenhucaudathanh.component';
 import moment from 'moment';
 import { KhoService } from '../../kho/kho.service';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 @Component({
   selector: 'app-nhucaudathang',
   templateUrl: './nhucaudathang.component.html',
@@ -45,9 +62,9 @@ import { KhoService } from '../../kho/kho.service';
     FormsModule,
     MatTooltipModule,
     MatDialogModule,
-    TablenhucaudathanhComponent
+    TablenhucaudathanhComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NhucaudathangComponent {
   displayedColumns: string[] = [
@@ -59,7 +76,7 @@ export class NhucaudathangComponent {
     'slchogiao',
     'slchonhap',
     'haohut',
-    'goiy'
+    'goiy',
   ];
   ColumnName: any = {
     title: 'Tên Sản Phẩm',
@@ -91,28 +108,31 @@ export class NhucaudathangComponent {
   private _NhacungcapService: NhacungcapService = inject(NhacungcapService);
   private _DathangService: DathangService = inject(DathangService);
   private _KhoService: KhoService = inject(KhoService);
+  private _GraphqlService: GraphqlService = inject(GraphqlService);
   private _router: Router = inject(Router);
   private _dialog: MatDialog = inject(MatDialog);
-  Listsanpham:any = this._SanphamService.ListSanpham;
-  EditList:any=[];
+  Listsanpham: any = this._SanphamService.ListSanpham;
+  EditList: any = [];
   dataSource = new MatTableDataSource<any>();
-  sanphamId:any = this._SanphamService.sanphamId;
+  sanphamId: any = this._SanphamService.sanphamId;
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   isSearch: boolean = false;
   constructor() {
-    this.displayedColumns.forEach(column => {
+    this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
     effect(() => {
-      this.dataSource.data = this.Listsanpham()
+      this.dataSource.data = this.Listsanpham();
       this.totalItems = this.Listsanpham().length;
       this.calculateTotalPages();
     });
   }
-  GetGoiy(item:any){
-    return parseFloat(((item.soluongkho - item.soluong) * (1 + (item.haohut / 100))).toString()).toFixed(2);
-   }
+  GetGoiy(item: any) {
+    return parseFloat(
+      ((item.soluongkho - item.soluong) * (1 + item.haohut / 100)).toString()
+    ).toFixed(2);
+  }
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -120,8 +140,10 @@ export class NhucaudathangComponent {
       this.dataSource.paginator.firstPage();
     }
   }
-  async ngOnInit(): Promise<void> {    
+  async ngOnInit(): Promise<void> {
     this.updateDisplayData();
+    this.getDathang();
+    this.loadProducts();
     this._SanphamService.listenSanphamUpdates();
     await this._SanphamService.getNhucau();
     this.dataSource = new MatTableDataSource(this.Listsanpham());
@@ -130,8 +152,23 @@ export class NhucaudathangComponent {
     this.initializeColumns();
     this.setupDrawer();
   }
+  async getDathang() {
+    const result = await this._GraphqlService.getKhachhangs();
+    console.log(result);
+  }
+  async loadProducts() {
+    const result = await this._GraphqlService.findMany('Sanpham',{
+      orderBy: { createdAt: 'desc' },
+      take: 100
+    });
+    
+    if (result.data) {
+      console.log('Products:', result.data.data);
+    }
+  }
+
   async refresh() {
-   await this._SanphamService.getAllSanpham();
+    await this._SanphamService.getAllSanpham();
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -142,7 +179,9 @@ export class NhucaudathangComponent {
     if (this.FilterColumns.length === 0) {
       this.FilterColumns = this.Columns;
     } else {
-      localStorage.setItem('NhucauColFilter',JSON.stringify(this.FilterColumns)
+      localStorage.setItem(
+        'NhucauColFilter',
+        JSON.stringify(this.FilterColumns)
       );
     }
     this.displayedColumns = this.FilterColumns.filter((v) => v.isShow).map(
@@ -173,62 +212,64 @@ export class NhucaudathangComponent {
     }
   }
   @memoize()
-  FilterHederColumn(list:any,column:any)
-  {
-    const uniqueList = list.filter((obj: any, index: number, self: any) => 
-      index === self.findIndex((t: any) => t[column] === obj[column])
+  FilterHederColumn(list: any, column: any) {
+    const uniqueList = list.filter(
+      (obj: any, index: number, self: any) =>
+        index === self.findIndex((t: any) => t[column] === obj[column])
     );
-    return uniqueList
+    return uniqueList;
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listsanpham().filter((v: any) => v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();  
+    this.dataSource.filteredData = this.Listsanpham().filter((v: any) =>
+      v[column].toLowerCase().includes(event.target.value.toLowerCase())
+    );
+    const query = event.target.value.toLowerCase();
   }
-  ListFilter:any[] =[]
-  ChosenItem(item:any,column:any)
-  {
-    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
-    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
-    if(CheckItem1.length>0)
-    {
-      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
-    }
-    else{
-      this.ListFilter = [...this.ListFilter,...CheckItem];
+  ListFilter: any[] = [];
+  ChosenItem(item: any, column: any) {
+    const CheckItem = this.dataSource.filteredData.filter(
+      (v: any) => v[column] === item[column]
+    );
+    const CheckItem1 = this.ListFilter.filter(
+      (v: any) => v[column] === item[column]
+    );
+    if (CheckItem1.length > 0) {
+      this.ListFilter = this.ListFilter.filter(
+        (v) => v[column] !== item[column]
+      );
+    } else {
+      this.ListFilter = [...this.ListFilter, ...CheckItem];
     }
   }
-  ChosenAll(list:any)
-  {
-    list.forEach((v:any) => {
-      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
-      if(CheckItem)
-        {
-          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
-        }
-        else{
-          this.ListFilter.push(v);
-        }
+  ChosenAll(list: any) {
+    list.forEach((v: any) => {
+      const CheckItem = this.ListFilter.find((v1) => v1.id === v.id)
+        ? true
+        : false;
+      if (CheckItem) {
+        this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
+      } else {
+        this.ListFilter.push(v);
+      }
     });
   }
-  ResetFilter()
-  {
+  ResetFilter() {
     this.ListFilter = this.Listsanpham();
     this.dataSource.data = this.Listsanpham();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-  EmptyFiter()
-  {
+  EmptyFiter() {
     this.ListFilter = [];
   }
-  CheckItem(item:any)
-  {
-    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  CheckItem(item: any) {
+    return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
-  ApplyFilterColum(menu:any)
-  {    
-    this.dataSource.data = this.Listsanpham().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+  ApplyFilterColum(menu: any) {
+    this.dataSource.data = this.Listsanpham().filter((v: any) =>
+      this.ListFilter.some((v1) => v1.id === v.id)
+    );
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     menu.closeMenu();
@@ -241,8 +282,7 @@ export class NhucaudathangComponent {
       if (item.isShow) obj[item.key] = item.value;
       return obj;
     }, {} as Record<string, string>);
-    localStorage.setItem('NhucauColFilter',JSON.stringify(this.FilterColumns)
-    );
+    localStorage.setItem('NhucauColFilter', JSON.stringify(this.FilterColumns));
   }
   doFilterColumns(event: any): void {
     const query = event.target.value.toLowerCase();
@@ -254,17 +294,17 @@ export class NhucaudathangComponent {
     this.drawer.open();
     this._router.navigate(['admin/sanpham', 'new']);
   }
-  ListSPNCC:any[] = [];
-  async openDeleteDialog(teamplate: TemplateRef<any>) {    
-      const dialogDeleteRef = this._dialog.open(teamplate, {
-        hasBackdrop: true,
-        disableClose: true,
-      });
-      dialogDeleteRef.afterClosed().subscribe((result) => {
-        if (result=="true") {
-          this.DeleteListItem();
-        }
-      });
+  ListSPNCC: any[] = [];
+  async openDeleteDialog(teamplate: TemplateRef<any>) {
+    const dialogDeleteRef = this._dialog.open(teamplate, {
+      hasBackdrop: true,
+      disableClose: true,
+    });
+    dialogDeleteRef.afterClosed().subscribe((result) => {
+      if (result == 'true') {
+        this.DeleteListItem();
+      }
+    });
   }
   DeleteListItem(): void {
     this.EditList.forEach((item: any) => {
@@ -278,30 +318,30 @@ export class NhucaudathangComponent {
       panelClass: ['snackbar-success'],
     });
   }
-  ListFindNCC:any[] = [];
-  ListDathang:any[] = [];
+  ListFindNCC: any[] = [];
+  ListDathang: any[] = [];
   isSubmit: boolean = false;
-  onListDathangChange(event:any) {
+  onListDathangChange(event: any) {
     console.log(event);
     this.isSubmit = event.isSubmit;
     this.ListDathang = event.ListDathang;
-    console.log(this.ListDathang);  
+    console.log(this.ListDathang);
   }
-  CheckSubmit(){
+  CheckSubmit() {
     // Kiểm tra nếu có sản phẩm nào có số lượng đặt âm thì báo lỗi, ngược lại isSubmit = true
     const hasNegative = this.ListDathang.some((ncc: any) =>
       (ncc.sanpham || []).some((sp: any) => Number(sp.sldat) < 0)
     );
     console.log(hasNegative);
-    
+
     console.log(this.ListDathang);
-    
+
     if (hasNegative) {
       this._snackBar.open('Có sản phẩm có số lượng đặt âm!', '', {
-      duration: 2000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-error'],
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
       });
       this.isSubmit = false;
       return false;
@@ -310,21 +350,27 @@ export class NhucaudathangComponent {
       return true;
     }
   }
-  async OpenTaodonDialog(teamplate: TemplateRef<any>) {    
-    this.ListFindNCC =  await this._NhacungcapService.Findbyids(this.EditList.map((v:any)=>v.id));    
-    this.EditList = this.EditList.filter((v:any)=> this.ListFindNCC.some((v1:any)=>v1.Sanpham.some((v3:any)=>v3.id===v.id)));    
+  async OpenTaodonDialog(teamplate: TemplateRef<any>) {
+    this.ListFindNCC = await this._NhacungcapService.Findbyids(
+      this.EditList.map((v: any) => v.id)
+    );
+    this.EditList = this.EditList.filter((v: any) =>
+      this.ListFindNCC.some((v1: any) =>
+        v1.Sanpham.some((v3: any) => v3.id === v.id)
+      )
+    );
     const dialogDeleteRef = this._dialog.open(teamplate, {
       hasBackdrop: true,
       disableClose: true,
     });
     dialogDeleteRef.afterClosed().subscribe((result) => {
-      if (result=="true") {
+      if (result == 'true') {
         console.log(this.ListDathang);
         (async () => {
           for (const item of this.ListDathang) {
             await this._DathangService.CreateByNhucau(item);
             // Optional delay to allow data updates - adjust delay as needed
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise((resolve) => setTimeout(resolve, 100));
           }
         })()
           .then(() => {
@@ -334,9 +380,9 @@ export class NhucaudathangComponent {
               verticalPosition: 'top',
               panelClass: ['snackbar-success'],
             });
-           this._router.navigate(['/admin/dathang']);
+            this._router.navigate(['/admin/dathang']);
           })
-          .catch(error => {
+          .catch((error) => {
             this._snackBar.open('Có lỗi xảy ra khi Tạo Mới đặt hàng', '', {
               duration: 2000,
               horizontalPosition: 'end',
@@ -348,30 +394,27 @@ export class NhucaudathangComponent {
       }
     });
   }
-  CheckSanphaminNCC(NCC:any,item:any){
-    const existingItem = NCC.Sanpham?.find((v:any) => v.id === item.id);
+  CheckSanphaminNCC(NCC: any, item: any) {
+    const existingItem = NCC.Sanpham?.find((v: any) => v.id === item.id);
     return existingItem ? true : false;
   }
-  updateValue(Soluong:any,Sanpham:any,Nhacungcap:any){
-    const newValue = Number((Soluong.target as HTMLElement).innerText.trim()) || 0
-    const exitNCC = this.ListDathang.find((v:any)=>v.id===Nhacungcap.id);
+  updateValue(Soluong: any, Sanpham: any, Nhacungcap: any) {
+    const newValue =
+      Number((Soluong.target as HTMLElement).innerText.trim()) || 0;
+    const exitNCC = this.ListDathang.find((v: any) => v.id === Nhacungcap.id);
     console.log(exitNCC);
-    
-    if(exitNCC)
-    {
-      const exitSP = exitNCC.sanpham.find((v:any)=>v.id===Sanpham.id);
-      if(exitSP)
-      {
+
+    if (exitNCC) {
+      const exitSP = exitNCC.sanpham.find((v: any) => v.id === Sanpham.id);
+      if (exitSP) {
         exitSP.sldat = newValue;
-      }
-      else{
+      } else {
         Sanpham.sldat = newValue;
         exitNCC.Sanpham.push(Sanpham);
       }
-    }
-    else{
+    } else {
       Sanpham.sldat = newValue;
-      Nhacungcap.sanpham = [Sanpham]
+      Nhacungcap.sanpham = [Sanpham];
       Nhacungcap.ngaynhan = new Date();
       this.ListDathang.push(Nhacungcap);
     }
@@ -387,7 +430,7 @@ export class NhucaudathangComponent {
     }
   }
   ChoseAllEdit(): void {
-    this.EditList = this.Listsanpham()
+    this.EditList = this.Listsanpham();
   }
   CheckItemInEdit(item: any): boolean {
     return this.EditList.some((v: any) => v.id === item.id);
@@ -403,9 +446,9 @@ export class NhucaudathangComponent {
       SheetName: 'SPImport',
       ApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',
     };
-   const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
-   const data = ConvertDriveData(result.values);
-   this.DoImportData(data);
+    const result: any = await this._GoogleSheetService.getDrive(DriveInfo);
+    const data = ConvertDriveData(result.values);
+    this.DoImportData(data);
   }
   async DoImportData(data: any) {
     const transformedData = data.map((v: any) => ({
@@ -420,23 +463,34 @@ export class NhucaudathangComponent {
     }));
 
     // Filter out duplicate masp values
-    const uniqueData = Array.from(new Map(transformedData.map((item:any) => [item.masp, item])).values());
+    const uniqueData = Array.from(
+      new Map(transformedData.map((item: any) => [item.masp, item])).values()
+    );
     const existingSanpham = this._SanphamService.ListSanpham();
-    const existingMasp  = existingSanpham.map((v: any) => v.masp);
-    const newMasp = uniqueData.map((v: any) => v.masp).filter((item: any) => !existingMasp.includes(item));
+    const existingMasp = existingSanpham.map((v: any) => v.masp);
+    const newMasp = uniqueData
+      .map((v: any) => v.masp)
+      .filter((item: any) => !existingMasp.includes(item));
 
-    await Promise.all(uniqueData.map(async (v: any) => {
-      const existingItem = existingSanpham.find((v1: any) => v1.masp === v.masp);
-      if (existingItem) {
-        const updatedItem = { ...existingItem, ...v };
-        await this._SanphamService.updateSanpham(updatedItem);
-      } else {
-        await this._SanphamService.CreateSanpham(v);
-      }
-    }));
-    await Promise.all(existingSanpham
-      .filter(sp => !uniqueData.some((item:any) => item.masp === sp.masp))
-      .map(sp => this._SanphamService.updateSanpham({ ...sp, isActive: false }))
+    await Promise.all(
+      uniqueData.map(async (v: any) => {
+        const existingItem = existingSanpham.find(
+          (v1: any) => v1.masp === v.masp
+        );
+        if (existingItem) {
+          const updatedItem = { ...existingItem, ...v };
+          await this._SanphamService.updateSanpham(updatedItem);
+        } else {
+          await this._SanphamService.CreateSanpham(v);
+        }
+      })
+    );
+    await Promise.all(
+      existingSanpham
+        .filter((sp) => !uniqueData.some((item: any) => item.masp === sp.masp))
+        .map((sp) =>
+          this._SanphamService.updateSanpham({ ...sp, isActive: false })
+        )
     );
 
     this._snackBar.open('Cập Nhật Thành Công', '', {
@@ -446,16 +500,16 @@ export class NhucaudathangComponent {
       panelClass: ['snackbar-success'],
     });
   }
-  
+
   async ImporExcel(event: any) {
-  const data = await readExcelFile(event)
-  this.DoImportData(data);
-  } 
-    
-  async ExportExcel(data:any,title:any) {
-    const ListKho = await this._KhoService.getAllKho()
+    const data = await readExcelFile(event);
+    this.DoImportData(data);
+  }
+
+  async ExportExcel(data: any, title: any) {
+    const ListKho = await this._KhoService.getAllKho();
     console.log(data);
-    
+
     const dulieu = data.map((v: any) => ({
       ngaynhan: moment().format('YYYY-MM-DD'),
       mancc: v.mancc || '',
@@ -472,83 +526,74 @@ export class NhucaudathangComponent {
       ghichu: v.ghichu,
     }));
 
-  const mapping: any = {
-    ngaynhan: 'Ngày Nhận',
-    mancc: 'Mã Nhà Cung Cấp',
-    nhacungcap: 'Nhà Cung Cấp',
-    masp: 'Mã Sản Phẩm',
-    title: 'Tên Sản Phẩm',
-    dvt: 'Đơn Vị Tính',
-    // giagoc: 'Giá Gốc',
-    slchogiao: 'Chờ Giao',
-    goiy: 'Gợi Ý',
-    slchonhap: 'Chờ Nhập',
-    slton: 'Tồn Kho',
-    haohut: 'Hao Hụt',
-    ghichu: 'Ghi Chú'
-  };
-  ListKho.forEach((v: any) => {
-    mapping[`makho_${v.makho}`] = v.makho;
-  });
+    const mapping: any = {
+      ngaynhan: 'Ngày Nhận',
+      mancc: 'Mã Nhà Cung Cấp',
+      nhacungcap: 'Nhà Cung Cấp',
+      masp: 'Mã Sản Phẩm',
+      title: 'Tên Sản Phẩm',
+      dvt: 'Đơn Vị Tính',
+      // giagoc: 'Giá Gốc',
+      slchogiao: 'Chờ Giao',
+      goiy: 'Gợi Ý',
+      slchonhap: 'Chờ Nhập',
+      slton: 'Tồn Kho',
+      haohut: 'Hao Hụt',
+      ghichu: 'Ghi Chú',
+    };
+    ListKho.forEach((v: any) => {
+      mapping[`makho_${v.makho}`] = v.makho;
+    });
 
-  writeExcelFile(dulieu,title,Object.values(mapping),mapping);
+    writeExcelFile(dulieu, title, Object.values(mapping), mapping);
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
 
-
-
-
-
-
-calculateTotalPages() {
-  this.totalPages = Math.ceil(this.totalItems / this.pageSize);
-}
-
-onPageSizeChange(size: number,menuHienthi:any) {
-  if(size>this.Listsanpham().length){
-    this.pageSize = this.Listsanpham().length;
-    this._snackBar.open(`Số lượng tối đa ${this.Listsanpham().length}`, '', {
-      duration: 1000,
-      horizontalPosition: "end",
-      verticalPosition: "top",
-      panelClass: ['snackbar-success'],
-    });
+  calculateTotalPages() {
+    this.totalPages = Math.ceil(this.totalItems / this.pageSize);
   }
-  else {
-    this.pageSize = size;
-  }
-  this.currentPage = 1; // Reset to first page when changing page size
-  this.calculateTotalPages();
-  this.updateDisplayData();
-  menuHienthi.closeMenu();
-}
 
-onPreviousPage() {
-  if (this.currentPage > 1) {
-    this.currentPage--;
+  onPageSizeChange(size: number, menuHienthi: any) {
+    if (size > this.Listsanpham().length) {
+      this.pageSize = this.Listsanpham().length;
+      this._snackBar.open(`Số lượng tối đa ${this.Listsanpham().length}`, '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } else {
+      this.pageSize = size;
+    }
+    this.currentPage = 1; // Reset to first page when changing page size
+    this.calculateTotalPages();
     this.updateDisplayData();
+    menuHienthi.closeMenu();
+  }
+
+  onPreviousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updateDisplayData();
+    }
+  }
+
+  onNextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updateDisplayData();
+    }
+  }
+
+  updateDisplayData() {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    const pageData = this.Listsanpham().slice(startIndex, endIndex);
+    this.dataSource.data = pageData;
   }
 }
-
-onNextPage() {
-  if (this.currentPage < this.totalPages) {
-    this.currentPage++;
-    this.updateDisplayData();
-  }
-}
-
-updateDisplayData() {
-  const startIndex = (this.currentPage - 1) * this.pageSize;
-  const endIndex = startIndex + this.pageSize;
-  const pageData = this.Listsanpham().slice(startIndex, endIndex);
-  this.dataSource.data = pageData;
-  }
-}
-
-
-
 
 function memoize() {
   return function (

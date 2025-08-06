@@ -127,7 +127,6 @@ export class UniversalResolver {
       field: Object.keys(orderBy)[0], 
       direction: (Object.values(orderBy)[0] === 'desc' ? 'desc' : 'asc') as 'desc' | 'asc'
     } : undefined;
-    
     return await this.universalService.findAll(modelName, pagination, where, sort, include);
   }
 

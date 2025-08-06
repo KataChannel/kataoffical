@@ -16,6 +16,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import moment from 'moment';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { DateHelpers } from '../../shared/utils/date-helpers';
 @Component({
   selector: 'app-gioithieu',
   imports: [
@@ -37,8 +38,8 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class GioithieuComponent {
   SearchParams: any = {
-    Batdau:moment().startOf('week').toDate(),
-    Ketthuc: moment().endOf('week').toDate(),
+    Batdau: DateHelpers.startOfWeek(),
+    Ketthuc: DateHelpers.endOfWeek(),
     pageSize:9999,
     pageNumber:0
   };
