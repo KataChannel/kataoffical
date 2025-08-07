@@ -9,6 +9,10 @@ import { environment } from '../environments/environment.development';
 import { provideServiceWorker } from '@angular/service-worker';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { DynamicDateAdapter } from './dynamic-date-adapter';
+import { APOLLO_OPTIONS } from 'apollo-angular';
+import { ApolloClientOptions, InMemoryCache } from '@apollo/client/core';
+import { HttpLink } from 'apollo-angular/http';
+import { Apollo } from 'apollo-angular';
 export const MY_DATE_FORMATS = {
   parse: {
     dateInput: 'DD/MM/YYYY',
@@ -20,12 +24,37 @@ export const MY_DATE_FORMATS = {
     monthYearA11yLabel: 'MMMM YYYY',
   },
 };
+
+// Apollo GraphQL configuration
+export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
+  return {
+    link: httpLink.create({
+      uri: `${environment.APIURL}/graphql`,
+    }),
+    cache: new InMemoryCache(),
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: 'network-only'
+      },
+      query: {
+        fetchPolicy: 'network-only'
+      }
+    }
+  };
+}
 export const appConfig: ApplicationConfig = {
   providers: [
     { provide: FIREBASE_OPTIONS, useValue: environment.firebaseConfig },
     { provide: MAT_DATE_LOCALE, useValue: 'vi-VN' }, // Ngôn ngữ tiếng Việt
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
     { provide: DateAdapter, useClass: DynamicDateAdapter },
+    Apollo,
+    HttpLink,
+    {
+      provide: APOLLO_OPTIONS,
+      useFactory: createApollo,
+      deps: [HttpLink],
+    },
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes), 
     provideClientHydration(withEventReplay()),

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/admin/menu/menu/listmenu/listmenu.component.scss"],
+  "sourcesContent": [".cdk-drag-preview {\r\n    box-sizing: border-box;\r\n    border-radius: 4px;\r\n    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),\r\n                0 8px 10px 1px rgba(0, 0, 0, 0.14),\r\n                0 3px 14px 2px rgba(0, 0, 0, 0.12);\r\n    background-color: white !important;\r\n    width: auto !important;\r\n    display: flex;\r\n    align-items: center !important;\r\n  }\r\n  .example-custom-placeholder {\r\n    min-height: 60px;\r\n    background: #ccc;\r\n    border: dotted 3px #999;\r\n    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);\r\n  }"],
+  "mappings": ";AAAA,CAAA;AACI,cAAA;AACA,iBAAA;AACA;IAAA,EAAA,IAAA,IAAA,KAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA,IAAA;IAAA,EAAA,IAAA,KAAA,IAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA,KAAA;IAAA,EAAA,IAAA,KAAA,IAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;AAGA,oBAAA;AACA,SAAA;AACA,WAAA;AACA,eAAA;;AAEF,CAAA;AACE,cAAA;AACA,cAAA;AACA,UAAA,OAAA,IAAA;AACA,cAAA,UAAA,MAAA,aAAA,CAAA,EAAA,CAAA,EAAA,GAAA,EAAA;;",
+  "names": []
+}

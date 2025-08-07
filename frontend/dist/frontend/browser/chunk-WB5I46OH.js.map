@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/shared/common/users/register/register.component.ts", "src/app/shared/common/users/register/register.component.html"],
+  "sourcesContent": ["import { Component } from '@angular/core';\r\n\r\n@Component({\r\n  selector: 'app-register',\r\n  imports: [],\r\n  templateUrl: './register.component.html',\r\n  styleUrl: './register.component.scss'\r\n})\r\nexport class RegisterComponent {\r\n\r\n}\r\n", "<p>register works!</p>\r\n"],
+  "mappings": ";;;;;;;;;;;AAQM,IAAO,oBAAP,MAAO,mBAAiB;;qCAAjB,oBAAiB;EAAA;yEAAjB,oBAAiB,WAAA,CAAA,CAAA,cAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,UAAA,SAAA,2BAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;ACR9B,MAAA,yBAAA,GAAA,GAAA;AAAG,MAAA,iBAAA,GAAA,iBAAA;AAAe,MAAA,uBAAA;;;;;6EDQL,mBAAiB,EAAA,WAAA,qBAAA,UAAA,8DAAA,YAAA,EAAA,CAAA;AAAA,GAAA;",
+  "names": []
+}

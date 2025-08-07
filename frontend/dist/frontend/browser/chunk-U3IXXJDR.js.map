@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/environments/environment.development.ts"],
+  "sourcesContent": ["export const environment = {\r\n  production: true,\r\n  //APIURL: 'https://sandboxapi2.rausachtrangia.com',\r\n  APIURL: 'http://localhost:3331',\r\n  ImageURL: 'https://storage.rausachtrangia.com/',\r\n  app_id: '1416835846626859002',\r\n  secret_key: 'HLBWj23hToA9fuiQvQY4',\r\n  zalo_redirect_uri: 'https://zalo.tazaskinclinic.com/admin/zalotoken',\r\n    firebaseConfig : {\r\n      apiKey: \"AIzaSyCRVfxKiWK4xyZW_aT72DJ1Suvs9oGq1oM\",\r\n      authDomain: \"Rau Sạch Trần Gia-38d2d.firebaseapp.com\",\r\n      projectId: \"Rau Sạch Trần Gia-38d2d\",\r\n      storageBucket: \"Rau Sạch Trần Gia-38d2d.firebasestorage.app\",\r\n      messagingSenderId: \"362949286600\",\r\n      appId: \"1:362949286600:web:b1f5b55bfed46793fe23fd\"\r\n  },\r\n  GSApiKey: 'AIzaSyD33kgZJKdFpv1JrKHacjCQccL_O0a2Eao',  \r\n};\r\n"],
+  "mappings": ";AAAO,IAAM,cAAc;EACzB,YAAY;;EAEZ,QAAQ;EACR,UAAU;EACV,QAAQ;EACR,YAAY;EACZ,mBAAmB;EACjB,gBAAiB;IACf,QAAQ;IACR,YAAY;IACZ,WAAW;IACX,eAAe;IACf,mBAAmB;IACnB,OAAO;;EAEX,UAAU;;",
+  "names": []
+}

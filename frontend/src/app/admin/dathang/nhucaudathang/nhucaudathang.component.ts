@@ -142,8 +142,7 @@ export class NhucaudathangComponent {
   }
   async ngOnInit(): Promise<void> {
     this.updateDisplayData();
-    this.getDathang();
-    this.loadProducts();
+    this.loadDathang();
     this._SanphamService.listenSanphamUpdates();
     await this._SanphamService.getNhucau();
     this.dataSource = new MatTableDataSource(this.Listsanpham());
@@ -152,18 +151,12 @@ export class NhucaudathangComponent {
     this.initializeColumns();
     this.setupDrawer();
   }
-  async getDathang() {
-    const result = await this._GraphqlService.getKhachhangs();
-    console.log(result);
-  }
-  async loadProducts() {
-    const result = await this._GraphqlService.findMany('Sanpham',{
+  async loadDathang() {
+    const result = await this._GraphqlService.findMany('Dathang',{
       orderBy: { createdAt: 'desc' },
-      take: 100
     });
-    
     if (result.data) {
-      console.log('Products:', result.data.data);
+      console.log('Products:', result);
     }
   }
 

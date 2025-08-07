@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/admin/auditlog/auditlog.route.ts"],
+  "sourcesContent": ["import { NgModule } from '@angular/core';\nimport { Routes, RouterModule } from '@angular/router';\nimport { ListAuditlogComponent } from './listauditlog/listauditlog.component';\nconst routes: Routes = [\n  {\n    path: '',\n    component: ListAuditlogComponent,\n    children: [\n      {\n        path: ':id',\n        loadComponent: () =>\n          import('./detailauditlog/detailauditlog.component').then(\n            (c) => c.DetailAuditlogComponent\n          ),\n      },\n    ],\n  },\n];\n@NgModule({\n  imports: [RouterModule.forChild(routes)],\n  exports: [RouterModule],\n})\nexport class AuditlogRoutingModule {}"],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAGA,IAAM,SAAiB;EACrB;IACE,MAAM;IACN,WAAW;IACX,UAAU;MACR;QACE,MAAM;QACN,eAAe,MACb,OAAO,qBAA2C,EAAE,KAClD,CAAC,MAAM,EAAE,uBAAuB;;;;;AAUtC,IAAO,wBAAP,MAAO,uBAAqB;;qCAArB,wBAAqB;EAAA;wEAArB,uBAAqB,CAAA;4EAHtB,aAAa,SAAS,MAAM,GAC5B,YAAY,EAAA,CAAA;;",
+  "names": []
+}
