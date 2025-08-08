@@ -143,6 +143,7 @@ export class NhucaudathangComponent {
   async ngOnInit(): Promise<void> {
     this.updateDisplayData();
     this.loadDathang();
+    this.loadDonhang();
     this._SanphamService.listenSanphamUpdates();
     await this._SanphamService.getNhucau();
     this.dataSource = new MatTableDataSource(this.Listsanpham());
@@ -150,13 +151,47 @@ export class NhucaudathangComponent {
     this.dataSource.sort = this.sort;
     this.initializeColumns();
     this.setupDrawer();
-  }
+  } 
+
   async loadDathang() {
-    const result = await this._GraphqlService.findMany('Dathang',{
-      orderBy: { createdAt: 'desc' },
-    });
-    if (result.data) {
-      console.log('Products:', result);
+    try {
+      const response = await this._GraphqlService.findAll('dathang', {
+        select: { title: true, id: true },
+        include: {
+          sanpham: {
+            include: {
+              sanpham: true,
+            },
+          },
+          nhacungcap: true,
+          kho: true, // Include kho information
+        },
+        cacheTimeout: 300000,
+        enableBatching: true,
+      });
+      if (response.errors) {
+        console.error('❌ Error loading dathang data:', response.errors);
+        throw new Error(`GraphQL error: ${response.errors[0]?.message}`);
+      }
+      console.log('✅ Dathang data loaded successfully:', response.data);
+    } catch (error) {
+      console.error('❌ Error loading dathang data:', error);
+    }
+  }
+  async loadDonhang() {
+    try {
+      const response = await this._GraphqlService.findAll('donhang', {
+        select: { title: true, id: true },
+        cacheTimeout: 300000,
+        enableBatching: true,
+      });
+      if (response.errors) {
+        console.error('❌ Error loading donhang data:', response.errors);
+        throw new Error(`GraphQL error: ${response.errors[0]?.message}`);
+      }
+      console.log('✅ Donhang data loaded successfully:', response.data);
+    } catch (error) {
+      console.error('❌ Error loading donhang data:', error);
     }
   }
 

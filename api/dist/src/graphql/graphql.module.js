@@ -10,8 +10,8 @@ exports.GraphQLUniversalModule = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const auth_module_1 = require("../auth/auth.module");
-const universal_resolver_1 = require("./resolvers/universal.resolver");
-const universal_service_1 = require("./services/universal.service");
+const universal_resolver_1 = require("./universal.resolver");
+const universal_service_1 = require("./universal.service");
 let GraphQLUniversalModule = class GraphQLUniversalModule {
 };
 exports.GraphQLUniversalModule = GraphQLUniversalModule;
@@ -21,8 +21,8 @@ exports.GraphQLUniversalModule = GraphQLUniversalModule = __decorate([
             prisma_module_1.PrismaModule,
             auth_module_1.AuthModule,
         ],
-        providers: [universal_resolver_1.UniversalResolver, universal_service_1.UniversalGraphQLService],
-        exports: [universal_service_1.UniversalGraphQLService],
+        providers: [universal_resolver_1.UniversalResolver, universal_service_1.UniversalService],
+        exports: [universal_service_1.UniversalService],
     })
 ], GraphQLUniversalModule);
 //# sourceMappingURL=graphql.module.js.map

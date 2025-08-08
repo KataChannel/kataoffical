@@ -1,6 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
-import { ApolloClient, InMemoryCache, ApolloLink, createHttpLink } from '@apollo/client/core';
+import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client/core';
 import { setContext } from '@apollo/client/link/context';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../utils/storage.service';
@@ -39,6 +39,31 @@ export interface FindManyOptions {
   skip?: number;
   take?: number;
   include?: any;
+  select?: any;
+}
+
+export interface OptimizedFindManyOptions extends FindManyOptions {
+  useCache?: boolean;
+  cacheTimeout?: number;
+  cacheKey?: string;
+  enableBatching?: boolean;
+  batchSize?: number;
+}
+
+export interface PaginationResult<T> {
+  data: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasMore: boolean;
+  hasPrevious: boolean;
+}
+
+export interface CacheEntry {
+  data: any;
+  timestamp: number;
+  timeout: number;
 }
 
 @Injectable({
@@ -46,25 +71,34 @@ export interface FindManyOptions {
 })
 export class GraphqlService {
   private apolloClient!: ApolloClient<any>;
+  private queryCache = new Map<string, CacheEntry>();
   
   // Signals for reactive state management
   isLoading = signal<boolean>(false);
   error = signal<string | null>(null);
+  
+  // Cache statistics
+  cacheHits = signal<number>(0);
+  cacheMisses = signal<number>(0);
+  
+  // Computed properties
+  cacheHitRate = computed(() => {
+    const hits = this.cacheHits();
+    const total = hits + this.cacheMisses();
+    return total > 0 ? (hits / total) * 100 : 0;
+  });
 
   constructor(
     private apollo: Apollo,
     private _StorageService: StorageService,
     private _ErrorLogService: ErrorLogService
   ) {
-    // Initialize DateHelpers to suppress moment warnings
     DateHelpers.init();
-    
-    // Setup Apollo Client
     this.setupApolloClient();
   }
 
   /**
-   * Setup Apollo Client with authentication
+   * Setup Apollo Client with authentication and optimized caching
    */
   private setupApolloClient() {
     const httpLink = createHttpLink({
@@ -83,21 +117,64 @@ export class GraphqlService {
 
     this.apolloClient = new ApolloClient({
       link: authLink.concat(httpLink),
-      cache: new InMemoryCache(),
+      cache: new InMemoryCache({
+        typePolicies: {
+          Query: {
+            fields: {
+              findMany: {
+                keyArgs: ['modelName', 'where', 'orderBy'],
+                merge(existing, incoming) {
+                  return incoming;
+                }
+              }
+            }
+          }
+        }
+      }),
       defaultOptions: {
         watchQuery: {
-          fetchPolicy: 'network-only'
+          fetchPolicy: 'cache-first',
+          errorPolicy: 'all'
         },
         query: {
-          fetchPolicy: 'network-only'
+          fetchPolicy: 'cache-first',
+          errorPolicy: 'all'
         }
       }
     });
-
   }
 
   /**
-   * Helper method to normalize model names (convert PascalCase to camelCase)
+   * Cache management methods
+   */
+  private generateCacheKey(modelName: string, options: any): string {
+    const sortedOptions = JSON.stringify(options, Object.keys(options || {}).sort());
+    return `${modelName}:${btoa(sortedOptions)}`;
+  }
+
+  private getCachedData(cacheKey: string): any | null {
+    const cached = this.queryCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < cached.timeout) {
+      this.cacheHits.update(hits => hits + 1);
+      return cached.data;
+    }
+    if (cached) {
+      this.queryCache.delete(cacheKey);
+    }
+    this.cacheMisses.update(misses => misses + 1);
+    return null;
+  }
+
+  private setCachedData(cacheKey: string, data: any, timeout: number = 300000): void {
+    this.queryCache.set(cacheKey, {
+      data,
+      timestamp: Date.now(),
+      timeout
+    });
+  }
+
+  /**
+   * Helper method to normalize model names
    */
   private normalizeModelName(modelName: string): string {
     return modelName.charAt(0).toLowerCase() + modelName.slice(1);
@@ -152,7 +229,7 @@ export class GraphqlService {
   }
 
   /**
-   * Execute a GraphQL query or mutation using Apollo Client
+   * Execute a GraphQL query with enhanced error handling
    */
   async executeGraphQL<T = any>(query: GraphQLQuery): Promise<GraphQLResponse<T>> {
     this.isLoading.set(true);
@@ -163,7 +240,8 @@ export class GraphqlService {
         this.apollo.query({
           query: gql`${query.query}`,
           variables: query.variables,
-          fetchPolicy: 'network-only'
+          fetchPolicy: 'cache-first',
+          errorPolicy: 'all'
         })
       );
 
@@ -192,25 +270,29 @@ export class GraphqlService {
   }
 
   /**
-   * Execute a GraphQL mutation using Apollo Client
+   * Execute a GraphQL mutation
    */
   async executeMutation<T = any>(mutation: GraphQLQuery): Promise<GraphQLResponse<T>> {
     this.isLoading.set(true);
     this.error.set(null);
 
     try {
-      const result:any = await firstValueFrom(
+      const result: any = await firstValueFrom(
         this.apollo.mutate({
           mutation: gql`${mutation.query}`,
-          variables: mutation.variables
+          variables: mutation.variables,
+          errorPolicy: 'all'
         })
       );
 
       if (result.errors && result.errors.length > 0) {
-        const errorMessage = result.errors.map((err:any) => err.message).join(', ');
+        const errorMessage = result.errors.map((err: any) => err.message).join(', ');
         this.error.set(errorMessage);
         await this._ErrorLogService.logError('GraphQL Error', result.errors);
       }
+
+      // Invalidate cache after mutations
+      this.clearCache();
 
       return {
         data: result.data as T,
@@ -227,20 +309,42 @@ export class GraphqlService {
   }
 
   /**
-   * Universal findMany using the actual GraphQL schema
+   * OPTIMIZED findMany - No longer relies on count query
    */
   async findMany<T = any>(
     modelName: string,
-    options: FindManyOptions = {}
-  ): Promise<GraphQLResponse<{ data: T[]; total: number; page: number; pageSize: number }>> {
+    options: OptimizedFindManyOptions = {}
+  ): Promise<GraphQLResponse<PaginationResult<T>>> {
     const normalizedModelName = this.normalizeModelName(modelName);
+    const { 
+      useCache = true, 
+      cacheTimeout = 300000, 
+      cacheKey, 
+      ...queryOptions 
+    } = options;
+    
     const processedOptions = {
-      ...options,
-      where: this.processFilters(options.where)
+      ...queryOptions,
+      where: this.processFilters(queryOptions.where)
     };
 
+    // Calculate pagination
+    const skip = queryOptions.skip || 0;
+    const take = queryOptions.take || 50;
+    const page = Math.floor(skip / take) + 1;
+
+    // Check cache first
+    const finalCacheKey = cacheKey || this.generateCacheKey(normalizedModelName, processedOptions);
+    if (useCache) {
+      const cachedData = this.getCachedData(finalCacheKey);
+      if (cachedData) {
+        return { data: cachedData };
+      }
+    }
+
+    // Simple findMany query without count (fixed variable types to match schema)
     const query = `
-      query FindMany($modelName: String!, $where: JSON, $orderBy: JSON, $skip: Float, $take: Float, $include: JSON) {
+      query FindManyOptimized($modelName: String!, $where: JSON, $orderBy: JSON, $skip: Float, $take: Float, $include: JSON, $select: JSON) {
         findMany(
           modelName: $modelName
           where: $where
@@ -248,6 +352,7 @@ export class GraphqlService {
           skip: $skip
           take: $take
           include: $include
+          select: $select
         )
       }
     `;
@@ -260,25 +365,38 @@ export class GraphqlService {
           ...processedOptions
         }
       });
+
       if (result.errors) {
         console.error('GraphQL Errors:', result.errors);
         throw new Error(result.errors.map(e => e.message).join(', '));
       }
 
-      // The universal resolver returns data directly, so we need to format it
-      if (result.data?.findMany) {
-        return {
-          data: {
-            data: result.data.findMany,
-            total: result.data.findMany.length,
-            page: 1,
-            pageSize: result.data.findMany.length
-          },
-          errors: result.errors
-        };
+      const data = result.data?.findMany || [];
+      
+      // Estimate total and pagination without count query
+      const hasMore = data.length === take;
+      const estimatedTotal = hasMore ? (page * take) + 1 : skip + data.length;
+      const totalPages = Math.ceil(estimatedTotal / take);
+
+      const paginationResult: PaginationResult<T> = {
+        data,
+        total: estimatedTotal,
+        page,
+        pageSize: take,
+        totalPages,
+        hasMore,
+        hasPrevious: page > 1
+      };
+
+      // Cache the result
+      if (useCache) {
+        this.setCachedData(finalCacheKey, paginationResult, cacheTimeout);
       }
 
-      return result;
+      return {
+        data: paginationResult,
+        errors: result.errors
+      };
     } catch (error) {
       console.error(`Error in findMany for model ${normalizedModelName}:`, error);
       throw error;
@@ -286,123 +404,276 @@ export class GraphqlService {
   }
 
   /**
-   * Universal findUnique using model-specific queries
+   * OPTIMIZED findAll - Uses batch fetching for large datasets
    */
-  async findOne<T = any>(
+  async findAll<T = any>(
     modelName: string,
-    where: any,
-    include?: any
-  ): Promise<T | null> {
+    options: Omit<OptimizedFindManyOptions, 'skip' | 'take'> = {}
+  ): Promise<GraphQLResponse<T[]>> {
     const normalizedModelName = this.normalizeModelName(modelName);
-
-    const query = `
-      query FindOne($where: JSON, $include: JSON) {
-        ${normalizedModelName}(where: $where, include: $include)
+    const { 
+      useCache = true, 
+      cacheTimeout = 600000, 
+      cacheKey, 
+      enableBatching = true,
+      batchSize = 500,
+      ...queryOptions 
+    } = options;
+    
+    // Check cache first
+    const finalCacheKey = cacheKey || `${normalizedModelName}:findAll:${this.generateCacheKey(normalizedModelName, queryOptions)}`;
+    if (useCache) {
+      const cachedData = this.getCachedData(finalCacheKey);
+      if (cachedData) {
+        return { data: cachedData };
       }
-    `;
+    }
 
-    try {
-      const result = await this.executeGraphQL<any>({
-        query,
-        variables: { where, include }
+    // Try to get a reasonable batch first to estimate size
+    const initialBatch = await this.findMany<T>(normalizedModelName, {
+      ...queryOptions,
+      take: 100,
+      skip: 0,
+      useCache: false
+    });
+
+    if (!initialBatch.data) {
+      return { data: [], errors: initialBatch.errors };
+    }
+
+    // If we got less than requested, we have all data
+    if (initialBatch.data.data.length < 100) {
+      const allData = initialBatch.data.data;
+      if (useCache) {
+        this.setCachedData(finalCacheKey, allData, cacheTimeout);
+      }
+      return { data: allData };
+    }
+
+    // For larger datasets, use batch fetching if enabled
+    if (enableBatching) {
+      console.info(`FindAll: ${modelName} appears to have many records. Using batch fetching.`);
+      return this.batchFindAll<T>(normalizedModelName, queryOptions, { 
+        useCache, 
+        cacheTimeout, 
+        cacheKey: finalCacheKey,
+        batchSize 
       });
-
-      return result.data?.[normalizedModelName] || null;
-    } catch (error) {
-      console.error(`Error in findOne for model ${normalizedModelName}:`, error);
-      return null;
     }
-  }
 
-  /**
-   * Universal create using mutations
-   */
-  async create<T = any>(
-    modelName: string,
-    data: any,
-    include?: any
-  ): Promise<T> {
-    const normalizedModelName = this.normalizeModelName(modelName);
-
-    const mutation = `
-      mutation Create($data: JSON!, $include: JSON) {
-        create${modelName}(data: $data, include: $include)
+    // Fallback: try to get a large batch
+    const query = `
+      query FindAll($modelName: String!, $where: JSON, $orderBy: JSON, $include: JSON, $select: JSON) {
+        findMany(
+          modelName: $modelName
+          where: $where
+          orderBy: $orderBy
+          include: $include
+          select: $select
+        )
       }
     `;
 
-    const result = await this.executeMutation<any>({
-      query: mutation,
-      variables: { data: this.processFilters(data), include }
+    const result = await this.executeGraphQL<any>({
+      query,
+      variables: { modelName: normalizedModelName, ...queryOptions }
     });
 
-    if (result.errors) {
-      throw new Error(result.errors[0].message);
+    const data = result.data?.findMany || [];
+
+    if (useCache) {
+      this.setCachedData(finalCacheKey, data, cacheTimeout);
     }
 
-    return result.data?.[`create${modelName}`];
+    return { data, errors: result.errors };
   }
 
   /**
-   * Universal update using mutations
+   * Batch processing for large datasets - FIXED for new data structure
    */
-  async update<T = any>(
+  private async batchFindAll<T = any>(
     modelName: string,
-    where: any,
-    data: any,
-    include?: any
-  ): Promise<T> {
-    const mutation = `
-      mutation Update($where: JSON!, $data: JSON!, $include: JSON) {
-        update${modelName}(where: $where, data: $data, include: $include)
+    options: any,
+    cacheOptions: any
+  ): Promise<GraphQLResponse<T[]>> {
+    const batchSize = cacheOptions.batchSize || 500;
+    const allData: T[] = [];
+    let skip = 0;
+    let hasMore = true;
+    let currentPage = 1;
+
+    while (hasMore) {
+      const batchResult = await this.findMany<T>(modelName, {
+        ...options,
+        skip,
+        take: batchSize,
+        useCache: false
+      });
+      if (batchResult.data?.data) {
+        let dataArray: T[] = [];
+        let shouldContinue = false;
+        
+        // Check if it's the new format with nested data and pagination object
+        if (batchResult.data.data && typeof batchResult.data.data === 'object' && 'data' in batchResult.data.data) {
+          // New format: { data: { data: [], pagination: {...} } }
+          const nestedData = (batchResult.data.data as any).data;
+          dataArray = Array.isArray(nestedData) ? nestedData : [];
+          
+          const pagination = (batchResult.data.data as any).pagination;
+          shouldContinue = pagination?.hasNextPage || false;
+          
+          
+        } else if (Array.isArray(batchResult.data.data)) {
+          // Old format: { data: [...], hasMore: boolean }
+          dataArray = batchResult.data.data;
+          shouldContinue = batchResult.data.hasMore || false;
+          
+        }
+        
+        // Add data to collection
+        if (dataArray.length > 0) {
+          allData.push(...dataArray);
+        }
+        
+        // Update pagination
+        hasMore = shouldContinue && dataArray.length > 0;
+        skip += batchSize;
+        currentPage++;
+        
+        // Safety check to prevent infinite loops
+        if (currentPage > 100) {
+          console.warn('⚠️ Batch processing stopped: too many pages (safety limit)');
+          break;
+        }
+        
+        // If we got less data than the batch size and no explicit continuation, stop
+        if (dataArray.length < batchSize && !shouldContinue) {
+          hasMore = false;
+        }
+        
+      } else {
+        hasMore = false;
       }
-    `;
 
-    const result = await this.executeMutation<any>({
-      query: mutation,
-      variables: { where, data: this.processFilters(data), include }
-    });
-
-    if (result.errors) {
-      throw new Error(result.errors[0].message);
+      // Small delay to prevent server overload
+      if (hasMore) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
     }
 
-    return result.data?.[`update${modelName}`];
+    // Cache the complete result
+    if (cacheOptions.useCache && cacheOptions.cacheKey) {
+      this.setCachedData(cacheOptions.cacheKey, allData, cacheOptions.cacheTimeout);
+    }
+
+    return { data: allData };
   }
 
   /**
-   * Universal delete using mutations
+   * Enhanced model-specific methods with optimized defaults
    */
-  async delete<T = any>(
-    modelName: string,
-    where: any
-  ): Promise<T> {
-    const mutation = `
-      mutation Delete($where: JSON!) {
-        delete${modelName}(where: $where)
-      }
-    `;
-
-    const result = await this.executeMutation<any>({
-      query: mutation,
-      variables: { where }
+  async getSanphams(options: OptimizedFindManyOptions = {}) {
+    return this.findMany('sanpham', { 
+      ...options, 
+      cacheTimeout: 300000,
+      take: options.take || 50,
+      include: options.include || { nhacungcap: true, banggia: true }
     });
+  }
 
-    if (result.errors) {
-      throw new Error(result.errors[0].message);
-    }
+  async getAllSanphams(options: Omit<OptimizedFindManyOptions, 'skip' | 'take'> = {}) {
+    return this.findAll('sanpham', { 
+      ...options, 
+      cacheTimeout: 600000,
+      enableBatching: true,
+      batchSize: 500,
+      include: options.include || { nhacungcap: true, banggia: true }
+    });
+  }
 
-    return result.data?.[`delete${modelName}`];
+  async getKhachhangs(options: OptimizedFindManyOptions = {}) {
+    return this.findMany('khachhang', { 
+      ...options, 
+      cacheTimeout: 300000,
+      take: options.take || 50,
+      include: options.include || { banggia: true, nhomkhachhang: true }
+    });
+  }
+
+  async getAllKhachhangs(options: Omit<OptimizedFindManyOptions, 'skip' | 'take'> = {}) {
+    return this.findAll('khachhang', { 
+      ...options, 
+      cacheTimeout: 600000,
+      enableBatching: true,
+      include: options.include || { banggia: true, nhomkhachhang: true }
+    });
+  }
+
+  async getDonhangs(options: OptimizedFindManyOptions = {}) {
+    return this.findMany('donhang', { 
+      ...options, 
+      cacheTimeout: 180000,
+      take: options.take || 50,
+      include: options.include || { 
+        khachhang: true, 
+        donhangsanpham: { include: { sanpham: true } }
+      }
+    });
+  }
+
+  async getAllDonhangs(options: Omit<OptimizedFindManyOptions, 'skip' | 'take'> = {}) {
+    return this.findAll('donhang', { 
+      ...options, 
+      cacheTimeout: 600000,
+      enableBatching: true,
+      include: options.include || { 
+        khachhang: true, 
+        donhangsanpham: { include: { sanpham: true } }
+      }
+    });
+  }
+
+  async getDathangs(options: OptimizedFindManyOptions = {}) {
+    return this.findMany('dathang', { 
+      ...options, 
+      cacheTimeout: 300000,
+      take: options.take || 50
+    });
+  }
+
+  async getAllDathangs(options: Omit<OptimizedFindManyOptions, 'skip' | 'take'> = {}) {
+    return this.findAll('dathang', { 
+      ...options, 
+      cacheTimeout: 600000,
+      enableBatching: true
+    });
+  }
+
+  async getNhacungcaps(options: OptimizedFindManyOptions = {}) {
+    return this.findMany('nhacungcap', { 
+      ...options, 
+      cacheTimeout: 600000,
+      take: options.take || 50
+    });
+  }
+
+  async getAllNhacungcaps(options: Omit<OptimizedFindManyOptions, 'skip' | 'take'> = {}) {
+    return this.findAll('nhacungcap', { 
+      ...options, 
+      cacheTimeout: 1200000,
+      enableBatching: true
+    });
   }
 
   /**
-   * Simplified search method
+   * Enhanced search with caching
    */
   async search<T = any>(
     modelName: string,
     searchTerm: string,
     searchFields: string[],
-    options: FindManyOptions = {}
-  ): Promise<{ data: T[]; total: number }> {
+    options: OptimizedFindManyOptions = {}
+  ): Promise<{ data: T[]; total: number; hasMore: boolean }> {
     const where = {
       OR: searchFields.map(field => ({
         [field]: {
@@ -413,76 +684,50 @@ export class GraphqlService {
       ...options.where
     };
 
-    const result = await this.findMany<T>(modelName, { ...options, where });
+    const result = await this.findMany<T>(modelName, { 
+      ...options, 
+      where,
+      cacheTimeout: 180000,
+      cacheKey: `search:${modelName}:${searchTerm}:${this.generateCacheKey(modelName, options)}`
+    });
     
     return {
       data: result.data?.data || [],
-      total: result.data?.total || 0
+      total: result.data?.total || 0,
+      hasMore: result.data?.hasMore || false
     };
   }
 
   /**
-   * Debug method to test GraphQL connection
+   * Cache management and monitoring
    */
-  async debugQuery(): Promise<any> {
-    try {
-      // Test schema introspection
-      const schemaQuery = `
-        query IntrospectSchema {
-          __schema {
-            types {
-              name
-              kind
-            }
-          }
+  getCacheStats() {
+    return {
+      hits: this.cacheHits(),
+      misses: this.cacheMisses(),
+      hitRate: this.cacheHitRate(),
+      size: this.queryCache.size,
+      apolloCacheSize: this.apolloClient.cache.extract()
+    };
+  }
+
+  clearCache(pattern?: string): void {
+    if (pattern) {
+      for (const key of this.queryCache.keys()) {
+        if (key.includes(pattern)) {
+          this.queryCache.delete(key);
         }
-      `;
-
-      const schemaResult = await this.executeGraphQL({ query: schemaQuery });
-      
-      // Test available models
-      const availableModels = ['khachhang', 'sanpham', 'donhang', 'dathang', 'nhacungcap'];
-      
-      console.log('Available types:', schemaResult.data?.__schema?.types
-        ?.filter((t: any) => !t.name.startsWith('__'))
-        ?.map((t: any) => t.name)
-      );
-
-      // Test a simple query
-      const testResult = await this.findMany('khachhang', { take: 1 });
-      
-      return {
-        schema: schemaResult,
-        testQuery: testResult,
-        availableModels
-      };
-    } catch (error) {
-      console.error('Debug query failed:', error);
-      throw error;
+      }
+    } else {
+      this.queryCache.clear();
     }
+    
+    // Also clear Apollo cache
+    this.apolloClient.cache.reset();
   }
 
-  /**
-   * Get specific model data with proper typing
-   */
-  async getKhachhangs(options: FindManyOptions = {}) {
-    return this.findMany('khachhang', options);
-  }
-
-  async getSanphams(options: FindManyOptions = {}) {
-    return this.findMany('sanpham', options);
-  }
-
-  async getDonhangs(options: FindManyOptions = {}) {
-    return this.findMany('donhang', options);
-  }
-
-  async getDathangs(options: FindManyOptions = {}) {
-    return this.findMany('dathang', options);
-  }
-
-  async getNhacungcaps(options: FindManyOptions = {}) {
-    return this.findMany('nhacungcap', options);
+  invalidateModelCache(modelName: string): void {
+    this.clearCache(this.normalizeModelName(modelName));
   }
 
   /**
@@ -500,17 +745,8 @@ export class GraphqlService {
     return this.error();
   }
 
-  /**
-   * Refresh Apollo Client cache
-   */
   async refreshCache(): Promise<void> {
     await this.apolloClient.resetStore();
-  }
-
-  /**
-   * Clear Apollo Client cache
-   */
-  async clearCache(): Promise<void> {
-    await this.apolloClient.clearStore();
+    this.queryCache.clear();
   }
 }

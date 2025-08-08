@@ -1,246 +1,163 @@
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
-import { UniversalService } from './universal.service';
+import { Injectable } from '@nestjs/common';
 import { GraphQLJSON } from 'graphql-type-json';
+import { UniversalService } from './universal.service';
 
+@Injectable()
 @Resolver()
 export class UniversalResolver {
   constructor(private readonly universalService: UniversalService) {}
 
-  // Query để lấy danh sách records với pagination
-  @Query(() => GraphQLJSON, {
-    description: 'Lấy danh sách records của bất kỳ model nào với pagination và filtering'
+  @Query(() => GraphQLJSON, { 
+    name: 'findMany',
+    description: 'Generic findMany query with FULL support for select parameter'
   })
   async findMany(
-    @Args('modelName', { description: 'Tên model (ví dụ: User, Sanpham, Donhang...)' }) 
+    @Args('modelName', { type: () => String, description: 'Name of the model to query' }) 
     modelName: string,
     
-    @Args('where', { 
-      type: () => GraphQLJSON, 
-      nullable: true,
-      description: 'Điều kiện lọc (JSON format)'
-    }) 
+    @Args('where', { type: () => GraphQLJSON, nullable: true, description: 'Where conditions' }) 
     where?: any,
     
-    @Args('orderBy', { 
-      type: () => GraphQLJSON, 
-      nullable: true,
-      description: 'Sắp xếp (JSON format)'
-    }) 
+    @Args('orderBy', { type: () => GraphQLJSON, nullable: true, description: 'Order by conditions' }) 
     orderBy?: any,
     
-    @Args('skip', { 
-      nullable: true, 
-      defaultValue: 0,
-      description: 'Số records bỏ qua (pagination)'
-    }) 
+    @Args('skip', { type: () => Number, nullable: true, defaultValue: 0, description: 'Number of records to skip' }) 
     skip?: number,
     
-    @Args('take', { 
-      nullable: true, 
-      defaultValue: 10,
-      description: 'Số records lấy ra (pagination)'
-    }) 
+    @Args('take', { type: () => Number, nullable: true, defaultValue: 10, description: 'Number of records to take' }) 
     take?: number,
     
-    @Args('include', { 
-      type: () => GraphQLJSON, 
-      nullable: true,
-      description: 'Include relations (JSON format)'
-    }) 
+    @Args('include', { type: () => GraphQLJSON, nullable: true, description: 'Relations to include' }) 
     include?: any,
     
-    @Args('select', { 
-      type: () => GraphQLJSON, 
-      nullable: true,
-      description: 'Select specific fields (JSON format)'
-    }) 
-    select?: any,
+    // ✅ THÊM SELECT PARAMETER - ĐÂY LÀ ĐIỂM QUAN TRỌNG
+    @Args('select', { type: () => GraphQLJSON, nullable: true, description: 'Specific fields to select - SUPPORTS FIELD SELECTION' }) 
+    select?: any
   ) {
-    return await this.universalService.findMany(modelName, {
-      where,
-      orderBy,
+    console.log(`🔍 GraphQL findMany called with select support:`, {
+      modelName,
+      where: where ? Object.keys(where) : null,
+      orderBy: orderBy ? Object.keys(orderBy) : null,
       skip,
       take,
-      include,
-      select,
+      include: include ? Object.keys(include) : null,
+      select: select ? Object.keys(select) : null, // ✅ LOG SELECT
+      selectEnabled: !!select
     });
+
+    try {
+      const result = await this.universalService.findMany(modelName, {
+        where,
+        orderBy,
+        skip,
+        take,
+        include,
+        select // ✅ PASS SELECT TO SERVICE
+      });
+
+      console.log(`✅ findMany result for ${modelName}:`, {
+        dataCount: result.data?.length || 0,
+        total: result.total,
+        page: result.page,
+        selectUsed: !!select,
+        firstItemFields: result.data?.[0] ? Object.keys(result.data[0]) : []
+      });
+
+      return result;
+    } catch (error) {
+      console.error(`❌ GraphQL findMany error for ${modelName}:`, error.message);
+      throw error;
+    }
   }
 
-  // Query để lấy một record cụ thể
-  @Query(() => GraphQLJSON, {
-    description: 'Lấy một record cụ thể của bất kỳ model nào'
+  @Query(() => GraphQLJSON, { 
+    name: 'findUnique',
+    description: 'Generic findUnique query with select support'
   })
   async findUnique(
-    @Args('modelName', { description: 'Tên model' }) 
-    modelName: string,
-    
-    @Args('where', { 
-      type: () => GraphQLJSON,
-      description: 'Điều kiện tìm kiếm (JSON format)'
-    }) 
-    where: any,
-    
-    @Args('include', { 
-      type: () => GraphQLJSON, 
-      nullable: true,
-      description: 'Include relations (JSON format)'
-    }) 
-    include?: any,
-    
-    @Args('select', { 
-      type: () => GraphQLJSON, 
-      nullable: true,
-      description: 'Select specific fields (JSON format)'
-    }) 
-    select?: any,
+    @Args('modelName', { type: () => String }) modelName: string,
+    @Args('where', { type: () => GraphQLJSON }) where: any,
+    @Args('include', { type: () => GraphQLJSON, nullable: true }) include?: any,
+    @Args('select', { type: () => GraphQLJSON, nullable: true }) select?: any // ✅ SELECT SUPPORT
   ) {
-    const args: any = { where };
+    console.log(`🔍 GraphQL findUnique called for ${modelName} with select:`, !!select);
     
+    const args: any = { where };
     if (select) {
-      args.select = select;
+      args.select = select; // ✅ PRIORITIZE SELECT
     } else if (include) {
       args.include = include;
     }
-    
-    return await this.universalService.findUnique(modelName, args);
+
+    return this.universalService.findUnique(modelName, args);
   }
 
-  // Mutation để tạo record mới
-  @Mutation(() => GraphQLJSON, {
-    description: 'Tạo record mới cho bất kỳ model nào'
+  // Test query để verify select functionality
+  @Query(() => GraphQLJSON, { 
+    name: 'testSelectQuery',
+    description: 'Test query to verify select functionality works'
   })
+  async testSelectQuery(
+    @Args('modelName', { type: () => String, defaultValue: 'dathang' }) modelName: string
+  ) {
+    console.log(`🧪 Testing select functionality for ${modelName}`);
+    
+    // Test 1: With select (only specific fields)
+    const resultWithSelect = await this.universalService.findMany(modelName, {
+      select: { title: true, id: true },
+      take: 3
+    });
+    
+    // Test 2: Without select (all fields)
+    const resultWithoutSelect = await this.universalService.findMany(modelName, {
+      take: 3
+    });
+    
+    return {
+      testResults: {
+        withSelect: {
+          dataCount: resultWithSelect.data?.length || 0,
+          firstItemFields: resultWithSelect.data?.[0] ? Object.keys(resultWithSelect.data[0]) : [],
+          expectedFields: ['title', 'id']
+        },
+        withoutSelect: {
+          dataCount: resultWithoutSelect.data?.length || 0,
+          firstItemFields: resultWithoutSelect.data?.[0] ? Object.keys(resultWithoutSelect.data[0]) : [],
+          expectedFields: ['all fields']
+        },
+        selectFunctionality: resultWithSelect.data?.[0] && Object.keys(resultWithSelect.data[0]).length === 2 ? 'WORKING' : 'NOT_WORKING'
+      }
+    };
+  }
+
+  @Mutation(() => GraphQLJSON, { name: 'createRecord' })
   async createRecord(
-    @Args('modelName', { description: 'Tên model' }) 
-    modelName: string,
-    
-    @Args('data', { 
-      type: () => GraphQLJSON,
-      description: 'Dữ liệu tạo record (JSON format)'
-    }) 
-    data: any,
+    @Args('modelName', { type: () => String }) modelName: string,
+    @Args('data', { type: () => GraphQLJSON }) data: any
   ) {
-    return await this.universalService.create(modelName, data);
+    return this.universalService.create(modelName, data);
   }
 
-  // Mutation để update record
-  @Mutation(() => GraphQLJSON, {
-    description: 'Cập nhật record của bất kỳ model nào'
-  })
+  @Mutation(() => GraphQLJSON, { name: 'updateRecord' })
   async updateRecord(
-    @Args('modelName', { description: 'Tên model' }) 
-    modelName: string,
-    
-    @Args('where', { 
-      type: () => GraphQLJSON,
-      description: 'Điều kiện tìm record cần update (JSON format)'
-    }) 
-    where: any,
-    
-    @Args('data', { 
-      type: () => GraphQLJSON,
-      description: 'Dữ liệu cập nhật (JSON format)'
-    }) 
-    data: any,
+    @Args('modelName', { type: () => String }) modelName: string,
+    @Args('where', { type: () => GraphQLJSON }) where: any,
+    @Args('data', { type: () => GraphQLJSON }) data: any
   ) {
-    return await this.universalService.update(modelName, where, data);
+    return this.universalService.update(modelName, where, data);
   }
 
-  // Mutation để delete record
-  @Mutation(() => GraphQLJSON, {
-    description: 'Xóa record của bất kỳ model nào'
-  })
+  @Mutation(() => GraphQLJSON, { name: 'deleteRecord' })
   async deleteRecord(
-    @Args('modelName', { description: 'Tên model' }) 
-    modelName: string,
-    
-    @Args('where', { 
-      type: () => GraphQLJSON,
-      description: 'Điều kiện tìm record cần xóa (JSON format)'
-    }) 
-    where: any,
+    @Args('modelName', { type: () => String }) modelName: string,
+    @Args('where', { type: () => GraphQLJSON }) where: any
   ) {
-    return await this.universalService.delete(modelName, where);
+    return this.universalService.delete(modelName, where);
   }
 
-  // Mutation để upsert record (update nếu tồn tại, create nếu chưa tồn tại)
-  @Mutation(() => GraphQLJSON, {
-    description: 'Upsert record (update nếu tồn tại, create nếu chưa tồn tại)'
-  })
-  async upsertRecord(
-    @Args('modelName', { description: 'Tên model' }) 
-    modelName: string,
-    
-    @Args('where', { 
-      type: () => GraphQLJSON,
-      description: 'Điều kiện tìm record (JSON format)'
-    }) 
-    where: any,
-    
-    @Args('create', { 
-      type: () => GraphQLJSON,
-      description: 'Dữ liệu tạo mới nếu chưa tồn tại (JSON format)'
-    }) 
-    create: any,
-    
-    @Args('update', { 
-      type: () => GraphQLJSON,
-      description: 'Dữ liệu cập nhật nếu đã tồn tại (JSON format)'
-    }) 
-    update: any,
-  ) {
-    return await this.universalService.upsert(modelName, where, create, update);
-  }
-
-  // Query để aggregate dữ liệu
-  @Query(() => GraphQLJSON, {
-    description: 'Aggregate dữ liệu (count, sum, avg, min, max...)'
-  })
-  async aggregateRecords(
-    @Args('modelName', { description: 'Tên model' }) 
-    modelName: string,
-    
-    @Args('args', { 
-      type: () => GraphQLJSON,
-      description: 'Arguments cho aggregate (JSON format)'
-    }) 
-    args: any,
-  ) {
-    return await this.universalService.aggregate(modelName, args);
-  }
-
-  // Query để group by dữ liệu
-  @Query(() => GraphQLJSON, {
-    description: 'Group by dữ liệu'
-  })
-  async groupByRecords(
-    @Args('modelName', { description: 'Tên model' }) 
-    modelName: string,
-    
-    @Args('args', { 
-      type: () => GraphQLJSON,
-      description: 'Arguments cho group by (JSON format)'
-    }) 
-    args: any,
-  ) {
-    return await this.universalService.groupBy(modelName, args);
-  }
-
-  // Query để lấy danh sách tất cả models có sẵn
-  @Query(() => [String], {
-    description: 'Lấy danh sách tất cả models có sẵn trong hệ thống'
-  })
-  async getAvailableModels() {
+  @Query(() => [String], { name: 'getAvailableModels' })
+  getAvailableModels() {
     return this.universalService.getAvailableModels();
-  }
-
-  // Query để lấy thông tin về model
-  @Query(() => GraphQLJSON, {
-    description: 'Lấy thông tin về model (operations có sẵn...)'
-  })
-  async getModelInfo(
-    @Args('modelName', { description: 'Tên model' }) 
-    modelName: string,
-  ) {
-    return await this.universalService.getModelInfo(modelName);
   }
 }

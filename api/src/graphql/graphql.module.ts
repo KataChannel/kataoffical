@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { AuthModule } from '../auth/auth.module';
-import { UniversalResolver } from './resolvers/universal.resolver';
-import { UniversalGraphQLService } from './services/universal.service';
+import { UniversalResolver } from './universal.resolver';
+import { UniversalService } from './universal.service';
 
 @Module({
   imports: [
     PrismaModule,
     AuthModule, // Fix: Import AuthModule to get JwtService and JwtAuthGuard
   ],
-  providers: [UniversalResolver, UniversalGraphQLService],
-  exports: [UniversalGraphQLService],
+  providers: [UniversalResolver, UniversalService],
+  exports: [UniversalService],
 })
 export class GraphQLUniversalModule {}

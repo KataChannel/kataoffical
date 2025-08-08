@@ -16,114 +16,272 @@ let UniversalService = class UniversalService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async findMany(modelName, args = {}) {
-        const { where = {}, orderBy = [], skip = 0, take = 10, include = {}, select = undefined, } = args;
+    async findAll(model, pagination = { page: 1, pageSize: 10 }, filter, sort, include) {
+        const { page, pageSize } = pagination;
+        const skip = (page - 1) * pageSize;
+        const where = this.buildWhereClause(filter);
+        const orderBy = sort ? { [sort.field]: sort.direction } : { createdAt: 'desc' };
         try {
-            const model = this.getModel(modelName);
-            const query = {
-                where,
-                orderBy,
+            const [data, total] = await Promise.all([
+                this.prisma[model].findMany({
+                    skip,
+                    take: pageSize,
+                    where,
+                    orderBy,
+                    include,
+                }),
+                this.prisma[model].count({ where }),
+            ]);
+            const totalPages = Math.ceil(total / pageSize);
+            return {
+                data,
+                pagination: {
+                    total,
+                    page,
+                    pageSize,
+                    totalPages,
+                    hasNextPage: page < totalPages,
+                    hasPreviousPage: page > 1,
+                },
+            };
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(`Error querying ${model}: ${error.message}`);
+        }
+    }
+    async findMany(modelName, options = {}) {
+        const { where, orderBy, skip = 0, take = 10, include, select } = options;
+        try {
+            const queryArgs = {
                 skip,
                 take,
+                where,
+                orderBy: orderBy || { createdAt: 'desc' },
             };
             if (select) {
-                query.select = select;
+                queryArgs.select = select;
             }
-            else if (Object.keys(include).length > 0) {
-                query.include = include;
+            else if (include) {
+                queryArgs.include = include;
             }
             const [data, total] = await Promise.all([
-                model.findMany(query),
-                model.count({ where }),
+                this.prisma[modelName].findMany(queryArgs),
+                this.prisma[modelName].count({ where: where || {} }),
             ]);
+            const totalPages = Math.ceil(total / take);
+            const currentPage = Math.floor(skip / take) + 1;
             return {
                 data,
                 total,
-                page: Math.floor(skip / take) + 1,
+                page: currentPage,
                 pageSize: take,
-                totalPages: Math.ceil(total / take),
-                hasNextPage: skip + take < total,
-                hasPreviousPage: skip > 0,
+                totalPages,
+                hasNextPage: currentPage < totalPages,
+                hasPreviousPage: currentPage > 1,
             };
         }
         catch (error) {
-            throw new Error(`Error finding ${modelName}: ${error.message}`);
+            throw new common_1.BadRequestException(`Error in findMany for ${modelName}: ${error.message}`);
         }
     }
-    async findUnique(modelName, args) {
+    async findUnique(modelName, options) {
+        const { where, include, select } = options;
         try {
-            const model = this.getModel(modelName);
-            return await model.findUnique(args);
+            const queryArgs = { where };
+            if (select) {
+                queryArgs.select = select;
+            }
+            else if (include) {
+                queryArgs.include = include;
+            }
+            const result = await this.prisma[modelName].findUnique(queryArgs);
+            if (!result) {
+                throw new common_1.NotFoundException(`${modelName} not found with the given criteria`);
+            }
+            return result;
         }
         catch (error) {
-            throw new Error(`Error finding unique ${modelName}: ${error.message}`);
+            if (error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            throw new common_1.BadRequestException(`Error in findUnique for ${modelName}: ${error.message}`);
         }
     }
-    async create(modelName, data) {
+    async findById(model, id, include) {
         try {
-            const model = this.getModel(modelName);
-            return await model.create({ data });
+            const result = await this.prisma[model].findUnique({
+                where: { id },
+                include,
+            });
+            if (!result) {
+                throw new common_1.NotFoundException(`${model} with ID ${id} not found`);
+            }
+            return result;
         }
         catch (error) {
-            throw new Error(`Error creating ${modelName}: ${error.message}`);
+            if (error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            throw new common_1.BadRequestException(`Error finding ${model}: ${error.message}`);
         }
     }
-    async update(modelName, where, data) {
+    async create(model, data, include) {
         try {
-            const model = this.getModel(modelName);
-            return await model.update({ where, data });
+            return await this.prisma[model].create({
+                data,
+                include,
+            });
         }
         catch (error) {
-            throw new Error(`Error updating ${modelName}: ${error.message}`);
+            throw new common_1.BadRequestException(`Error creating ${model}: ${error.message}`);
         }
     }
-    async delete(modelName, where) {
+    async update(model, id, data, include) {
         try {
-            const model = this.getModel(modelName);
-            return await model.delete({ where });
+            await this.findById(model, id);
+            return await this.prisma[model].update({
+                where: { id },
+                data,
+                include,
+            });
         }
         catch (error) {
-            throw new Error(`Error deleting ${modelName}: ${error.message}`);
+            if (error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            throw new common_1.BadRequestException(`Error updating ${model}: ${error.message}`);
         }
     }
-    async upsert(modelName, where, create, update) {
+    async delete(model, id) {
         try {
-            const model = this.getModel(modelName);
-            return await model.upsert({ where, create, update });
+            await this.findById(model, id);
+            await this.prisma[model].delete({
+                where: { id },
+            });
+            return true;
         }
         catch (error) {
-            throw new Error(`Error upserting ${modelName}: ${error.message}`);
+            if (error instanceof common_1.NotFoundException) {
+                throw error;
+            }
+            throw new common_1.BadRequestException(`Error deleting ${model}: ${error.message}`);
         }
     }
-    async aggregate(modelName, args) {
+    async bulkCreate(model, data) {
         try {
-            const model = this.getModel(modelName);
-            return await model.aggregate(args);
+            return await this.prisma[model].createMany({
+                data,
+                skipDuplicates: true,
+            });
         }
         catch (error) {
-            throw new Error(`Error aggregating ${modelName}: ${error.message}`);
+            throw new common_1.BadRequestException(`Error bulk creating ${model}: ${error.message}`);
         }
     }
-    async groupBy(modelName, args) {
+    async bulkUpdate(model, updates) {
         try {
-            const model = this.getModel(modelName);
-            return await model.groupBy(args);
+            const results = await Promise.all(updates.map(({ id, data }) => this.prisma[model].update({
+                where: { id },
+                data,
+            })));
+            return results;
         }
         catch (error) {
-            throw new Error(`Error grouping ${modelName}: ${error.message}`);
+            throw new common_1.BadRequestException(`Error bulk updating ${model}: ${error.message}`);
         }
     }
-    getModel(modelName) {
-        console.log(`Getting model: ${modelName}`);
-        const normalizedModelName = this.normalizeModelName(modelName);
-        const model = this.prisma[normalizedModelName];
-        if (!model) {
-            throw new Error(`Model ${modelName} not found in Prisma client`);
+    async bulkDelete(model, ids) {
+        try {
+            return await this.prisma[model].deleteMany({
+                where: {
+                    id: {
+                        in: ids,
+                    },
+                },
+            });
         }
-        return model;
+        catch (error) {
+            throw new common_1.BadRequestException(`Error bulk deleting ${model}: ${error.message}`);
+        }
     }
-    normalizeModelName(modelName) {
-        return modelName.charAt(0).toLowerCase() + modelName.slice(1);
+    async search(model, searchTerm, searchFields, pagination = { page: 1, pageSize: 10 }, include) {
+        const { page, pageSize } = pagination;
+        const skip = (page - 1) * pageSize;
+        const where = {
+            OR: searchFields.map(field => ({
+                [field]: {
+                    contains: searchTerm,
+                    mode: 'insensitive',
+                },
+            })),
+        };
+        try {
+            const [data, total] = await Promise.all([
+                this.prisma[model].findMany({
+                    skip,
+                    take: pageSize,
+                    where,
+                    include,
+                    orderBy: { createdAt: 'desc' },
+                }),
+                this.prisma[model].count({ where }),
+            ]);
+            const totalPages = Math.ceil(total / pageSize);
+            return {
+                data,
+                pagination: {
+                    total,
+                    page,
+                    pageSize,
+                    totalPages,
+                    hasNextPage: page < totalPages,
+                    hasPreviousPage: page > 1,
+                },
+            };
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(`Error searching ${model}: ${error.message}`);
+        }
+    }
+    async getStats(model) {
+        try {
+            const total = await this.prisma[model].count();
+            const active = await this.prisma[model].count({
+                where: { isActive: true },
+            });
+            const inactive = total - active;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const createdToday = await this.prisma[model].count({
+                where: {
+                    createdAt: {
+                        gte: today,
+                        lt: tomorrow,
+                    },
+                },
+            });
+            const lastWeek = new Date();
+            lastWeek.setDate(lastWeek.getDate() - 7);
+            const createdThisWeek = await this.prisma[model].count({
+                where: {
+                    createdAt: {
+                        gte: lastWeek,
+                    },
+                },
+            });
+            return {
+                total,
+                active,
+                inactive,
+                createdToday,
+                createdThisWeek,
+            };
+        }
+        catch (error) {
+            throw new common_1.BadRequestException(`Error getting stats for ${model}: ${error.message}`);
+        }
     }
     getAvailableModels() {
         return [
@@ -140,17 +298,6 @@ let UniversalService = class UniversalService {
             'sanpham',
             'donhang',
             'donhangsanpham',
-            'dathang',
-            'dathangsanpham',
-            'kho',
-            'sanphamKho',
-            'phieuKho',
-            'phieuKhoSanpham',
-            'tonKho',
-            'chotkho',
-            'auditLog',
-            'danhmuc',
-            'danhmucsanpham',
             'banggiasanpham',
             'nhacungcap',
             'dathang',
@@ -164,21 +311,36 @@ let UniversalService = class UniversalService {
             'auditLog',
         ];
     }
-    async getModelInfo(modelName) {
-        const model = this.getModel(modelName);
-        return {
-            modelName,
-            availableOperations: [
-                'findMany',
-                'findUnique',
-                'create',
-                'update',
-                'delete',
-                'upsert',
-                'aggregate',
-                'groupBy'
-            ]
-        };
+    buildWhereClause(filter) {
+        if (!filter)
+            return {};
+        const where = {};
+        if (filter.search) {
+            where.OR = [
+                { title: { contains: filter.search, mode: 'insensitive' } },
+                { name: { contains: filter.search, mode: 'insensitive' } },
+                { description: { contains: filter.search, mode: 'insensitive' } },
+            ];
+        }
+        if (filter.startDate && filter.endDate) {
+            where.createdAt = {
+                gte: filter.startDate,
+                lte: filter.endDate,
+            };
+        }
+        else if (filter.startDate) {
+            where.createdAt = { gte: filter.startDate };
+        }
+        else if (filter.endDate) {
+            where.createdAt = { lte: filter.endDate };
+        }
+        if (filter.ids && filter.ids.length > 0) {
+            where.id = { in: filter.ids };
+        }
+        if (filter.isActive !== undefined) {
+            where.isActive = filter.isActive;
+        }
+        return where;
     }
 };
 exports.UniversalService = UniversalService;
