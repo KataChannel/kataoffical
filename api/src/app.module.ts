@@ -40,11 +40,26 @@ import { GraphQLUniversalModule } from './graphql/graphql.module';
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      sortSchema: true,
+      typePaths: ['./**/*.graphql'],
+      definitions: {
+        path: join(process.cwd(), 'src/graphql.ts'),
+        outputAs: 'class',
+      },
       playground: true,
       introspection: true,
-      context: ({ req }) => ({ req }),
+      context: ({ req, res }) => ({ req, res }),
+      formatError: (error) => {
+        console.error('GraphQL Error:', error);
+        return {
+          message: error.message,
+          locations: error.locations,
+          path: error.path,
+          extensions: {
+            code: error.extensions?.code,
+            timestamp: new Date().toISOString(),
+          },
+        };
+      },
     }),
     AuthModule, 
     UserModule,

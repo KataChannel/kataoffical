@@ -54,11 +54,26 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             graphql_1.GraphQLModule.forRoot({
                 driver: apollo_1.ApolloDriver,
-                autoSchemaFile: (0, path_1.join)(process.cwd(), 'src/schema.gql'),
-                sortSchema: true,
+                typePaths: ['./**/*.graphql'],
+                definitions: {
+                    path: (0, path_1.join)(process.cwd(), 'src/graphql.ts'),
+                    outputAs: 'class',
+                },
                 playground: true,
                 introspection: true,
-                context: ({ req }) => ({ req }),
+                context: ({ req, res }) => ({ req, res }),
+                formatError: (error) => {
+                    console.error('GraphQL Error:', error);
+                    return {
+                        message: error.message,
+                        locations: error.locations,
+                        path: error.path,
+                        extensions: {
+                            code: error.extensions?.code,
+                            timestamp: new Date().toISOString(),
+                        },
+                    };
+                },
             }),
             auth_module_1.AuthModule,
             user_module_1.UserModule,
