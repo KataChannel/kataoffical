@@ -77,6 +77,15 @@ const Query = queryType({
       },
     });
 
+    // Available models query using enhanced service
+    t.list.field('getAvailableModels', {
+      type: 'String',
+      description: 'Get list of all available models for dynamic queries',
+      resolve: async (_, _args, context) => {
+        return context.enhancedService.getAvailableModels();
+      },
+    });
+
     // Health check
     t.field('health', {
       type: 'JSON',

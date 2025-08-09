@@ -1,752 +1,1445 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client/core';
-import { setContext } from '@apollo/client/link/context';
-import { environment } from '../../../environments/environment.development';
-import { StorageService } from '../utils/storage.service';
-import { ErrorLogService } from './errorlog.service';
-import { DateHelpers } from '../utils/date-helpers';
+import { ApolloQueryResult } from '@apollo/client/core';
 import { firstValueFrom } from 'rxjs';
 
-export interface GraphQLQuery {
-  query: string;
-  variables?: any;
-  operationName?: string;
-}
+// ========================= INTERFACES =========================
 
-export interface GraphQLResponse<T = any> {
-  data?: T;
-  errors?: Array<{
-    message: string;
-    locations?: Array<{ line: number; column: number }>;
-    path?: (string | number)[];
-  }>;
-}
-
-export interface PaginationInput {
-  page?: number;
-  pageSize?: number;
-}
-
-export interface SortInput {
-  field: string;
-  direction: 'asc' | 'desc';
-}
-
-export interface FindManyOptions {
+export interface OptimizedFindManyOptions<T = any> {
   where?: any;
   orderBy?: any;
   skip?: number;
   take?: number;
   include?: any;
   select?: any;
-}
-
-export interface OptimizedFindManyOptions extends FindManyOptions {
-  useCache?: boolean;
-  cacheTimeout?: number;
-  cacheKey?: string;
-  enableBatching?: boolean;
-  batchSize?: number;
+  cursor?: any;
 }
 
 export interface PaginationResult<T> {
   data: T[];
-  total: number;
-  page: number;
-  pageSize: number;
+  totalCount: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  currentPage: number;
   totalPages: number;
-  hasMore: boolean;
-  hasPrevious: boolean;
 }
 
-export interface CacheEntry {
-  data: any;
-  timestamp: number;
-  timeout: number;
+export interface PerformanceMetrics {
+  queryTime: number;
+  cacheHit: boolean;
+  resultCount: number;
+  timestamp: Date;
+  queryType: string;
+  modelName?: string;
 }
+
+export interface CacheEntry<T = any> {
+  data: T;
+  timestamp: Date;
+  ttl: number;
+  key: string;
+}
+
+export interface BatchOperation {
+  operation: 'create' | 'update' | 'delete';
+  modelName: string;
+  data: any;
+  where?: any;
+}
+
+export interface GraphQLError {
+  message: string;
+  code?: string;
+  path?: string[];
+  timestamp: Date;
+}
+
+export interface FindAllOptions<T = any> {
+  where?: any;
+  orderBy?: any;
+  include?: any;
+  select?: any;
+  take?: number;
+  enableParallelFetch?: boolean;
+  enableStreaming?: boolean;
+  batchSize?: number;
+  maxConcurrency?: number;
+  aggressiveCache?: boolean;
+}
+
+export interface FindAllResult<T = any> {
+  data: T[];
+  totalCount: number;
+  fetchTime: number;
+  cacheHit: boolean;
+  parallel: boolean;
+  batches?: number;
+}
+
+// ========================= GRAPHQL QUERIES =========================
+
+const FIND_MANY_QUERY = gql`
+  query FindMany(
+    $modelName: String!
+    $where: JSON
+    $orderBy: JSON
+    $skip: Float
+    $take: Float
+    $include: JSON
+    $select: JSON
+  ) {
+    findMany(
+      modelName: $modelName
+      where: $where
+      orderBy: $orderBy
+      skip: $skip
+      take: $take
+      include: $include
+      select: $select
+    )
+  }
+`;
+
+const FIND_UNIQUE_QUERY = gql`
+  query FindUnique(
+    $modelName: String!
+    $where: JSON!
+    $include: JSON
+    $select: JSON
+  ) {
+    findUnique(
+      modelName: $modelName
+      where: $where
+      include: $include
+      select: $select
+    )
+  }
+`;
+
+const CREATE_ONE_MUTATION = gql`
+  mutation CreateOne(
+    $modelName: String!
+    $data: JSON!
+    $include: JSON
+    $select: JSON
+  ) {
+    createOne(
+      modelName: $modelName
+      data: $data
+      include: $include
+      select: $select
+    )
+  }
+`;
+
+const UPDATE_ONE_MUTATION = gql`
+  mutation UpdateOne(
+    $modelName: String!
+    $where: JSON!
+    $data: JSON!
+    $include: JSON
+    $select: JSON
+  ) {
+    updateOne(
+      modelName: $modelName
+      where: $where
+      data: $data
+      include: $include
+      select: $select
+    )
+  }
+`;
+
+const DELETE_ONE_MUTATION = gql`
+  mutation DeleteOne(
+    $modelName: String!
+    $where: JSON!
+  ) {
+    deleteOne(
+      modelName: $modelName
+      where: $where
+    )
+  }
+`;
+
+const BATCH_CREATE_MUTATION = gql`
+  mutation BatchCreate(
+    $modelName: String!
+    $data: [JSON!]!
+  ) {
+    batchCreate(
+      modelName: $modelName
+      data: $data
+    )
+  }
+`;
+
+const BATCH_UPDATE_MUTATION = gql`
+  mutation BatchUpdate(
+    $modelName: String!
+    $operations: [JSON!]!
+  ) {
+    batchUpdate(
+      modelName: $modelName
+      operations: $operations
+    )
+  }
+`;
+
+const BATCH_DELETE_MUTATION = gql`
+  mutation BatchDelete(
+    $modelName: String!
+    $where: [JSON!]!
+  ) {
+    batchDelete(
+      modelName: $modelName
+      where: $where
+    )
+  }
+`;
+
+const HEALTH_CHECK_QUERY = gql`
+  query HealthCheck {
+    health
+  }
+`;
+
+const GET_AVAILABLE_MODELS_QUERY = gql`
+  query GetAvailableModels {
+    getAvailableModels
+  }
+`;
+
+const MODEL_METADATA_QUERY = gql`
+  query ModelMetadata($modelName: String!) {
+    modelMetadata(modelName: $modelName)
+  }
+`;
 
 @Injectable({
   providedIn: 'root'
 })
 export class GraphqlService {
-  private apolloClient!: ApolloClient<any>;
-  private queryCache = new Map<string, CacheEntry>();
+  // ========================= PROPERTIES =========================
   
-  // Signals for reactive state management
-  isLoading = signal<boolean>(false);
-  error = signal<string | null>(null);
-  
-  // Cache statistics
-  cacheHits = signal<number>(0);
-  cacheMisses = signal<number>(0);
-  
-  // Computed properties
-  cacheHitRate = computed(() => {
-    const hits = this.cacheHits();
-    const total = hits + this.cacheMisses();
-    return total > 0 ? (hits / total) * 100 : 0;
+  private cache = new Map<string, CacheEntry>();
+  private readonly DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes
+  private readonly AGGRESSIVE_TTL = 30 * 60 * 1000; // 30 minutes for findAll
+  private readonly MAX_CACHE_SIZE = 1000;
+  private readonly CLEANUP_INTERVAL = 60 * 1000; // 1 minute
+  private readonly REQUEST_TIMEOUT = 30000; // 30 seconds
+  private readonly MAX_RETRIES = 3;
+  private readonly DEFAULT_BATCH_SIZE = 1000;
+  private readonly MAX_PARALLEL_REQUESTS = 5;
+
+  // Performance monitoring
+  private performanceMetrics = signal<PerformanceMetrics[]>([]);
+  private cacheHitRate = computed(() => {
+    const metrics = this.performanceMetrics();
+    if (metrics.length === 0) return 0;
+    const hits = metrics.filter(m => m.cacheHit).length;
+    return (hits / metrics.length) * 100;
   });
 
-  constructor(
-    private apollo: Apollo,
-    private _StorageService: StorageService,
-    private _ErrorLogService: ErrorLogService
-  ) {
-    DateHelpers.init();
-    this.setupApolloClient();
+  // Error tracking
+  private errors = signal<GraphQLError[]>([]);
+  private isHealthy = signal(true);
+  
+  // Loading states
+  private loadingStates = new Map<string, boolean>();
+  
+  constructor(private apollo: Apollo) {
+    this.initializeCacheCleanup();
+    this.performHealthCheck();
   }
 
-  /**
-   * Setup Apollo Client with authentication and optimized caching
-   */
-  private setupApolloClient() {
-    const httpLink = createHttpLink({
-      uri: `${environment.APIURL}/graphql`
-    });
+  // ========================= CACHE MANAGEMENT =========================
 
-    const authLink = setContext((_, { headers }) => {
-      const token = this._StorageService.getItem('token');
-      return {
-        headers: {
-          ...headers,
-          authorization: token ? `Bearer ${token}` : "",
-        }
-      };
-    });
+  private initializeCacheCleanup(): void {
+    setInterval(() => {
+      this.cleanupExpiredCache();
+    }, this.CLEANUP_INTERVAL);
+  }
 
-    this.apolloClient = new ApolloClient({
-      link: authLink.concat(httpLink),
-      cache: new InMemoryCache({
-        typePolicies: {
-          Query: {
-            fields: {
-              findMany: {
-                keyArgs: ['modelName', 'where', 'orderBy'],
-                merge(existing, incoming) {
-                  return incoming;
-                }
-              }
-            }
-          }
-        }
-      }),
-      defaultOptions: {
-        watchQuery: {
-          fetchPolicy: 'cache-first',
-          errorPolicy: 'all'
-        },
-        query: {
-          fetchPolicy: 'cache-first',
-          errorPolicy: 'all'
-        }
+  private cleanupExpiredCache(): void {
+    const now = new Date();
+    const expiredKeys: string[] = [];
+
+    this.cache.forEach((entry, key) => {
+      if (now.getTime() - entry.timestamp.getTime() > entry.ttl) {
+        expiredKeys.push(key);
       }
     });
-  }
 
-  /**
-   * Cache management methods
-   */
-  private generateCacheKey(modelName: string, options: any): string {
-    const sortedOptions = JSON.stringify(options, Object.keys(options || {}).sort());
-    return `${modelName}:${btoa(sortedOptions)}`;
-  }
+    expiredKeys.forEach(key => this.cache.delete(key));
 
-  private getCachedData(cacheKey: string): any | null {
-    const cached = this.queryCache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < cached.timeout) {
-      this.cacheHits.update(hits => hits + 1);
-      return cached.data;
+    // Enforce max cache size
+    if (this.cache.size > this.MAX_CACHE_SIZE) {
+      const sortedEntries = Array.from(this.cache.entries())
+        .sort((a, b) => a[1].timestamp.getTime() - b[1].timestamp.getTime());
+      
+      const toRemove = this.cache.size - this.MAX_CACHE_SIZE;
+      for (let i = 0; i < toRemove; i++) {
+        this.cache.delete(sortedEntries[i][0]);
+      }
     }
-    if (cached) {
-      this.queryCache.delete(cacheKey);
-    }
-    this.cacheMisses.update(misses => misses + 1);
-    return null;
   }
 
-  private setCachedData(cacheKey: string, data: any, timeout: number = 300000): void {
-    this.queryCache.set(cacheKey, {
-      data,
-      timestamp: Date.now(),
-      timeout
-    });
+  private generateCacheKey(operation: string, variables: any): string {
+    return `${operation}_${JSON.stringify(variables)}`;
   }
 
-  /**
-   * Helper method to normalize model names
-   */
-  private normalizeModelName(modelName: string): string {
-    return modelName.charAt(0).toLowerCase() + modelName.slice(1);
-  }
+  private getFromCache<T>(key: string): T | null {
+    const entry = this.cache.get(key);
+    if (!entry) return null;
 
-  /**
-   * Helper method to safely format dates for GraphQL queries
-   */
-  private formatDateForGraphQL(date: Date | string | moment.Moment | null | undefined): string | null {
-    if (!date) return null;
-    
-    try {
-      return DateHelpers.formatDateForAPI(date);
-    } catch (error) {
-      console.warn('Error formatting date for GraphQL:', error);
+    const now = new Date();
+    if (now.getTime() - entry.timestamp.getTime() > entry.ttl) {
+      this.cache.delete(key);
       return null;
     }
+
+    return entry.data;
   }
 
-  /**
-   * Process filters to ensure dates are properly formatted
-   */
-  private processFilters(filters: any): any {
-    if (!filters) return filters;
-
-    const processedFilters = { ...filters };
-
-    // Common date fields that need formatting
-    const dateFields = [
-      'startDate', 'endDate', 'fromDate', 'toDate', 'createdAt', 'updatedAt',
-      'ngaytao', 'ngaycapnhat', 'ngaygiao', 'ngaydat', 'ngayxuat', 'ngaynhap',
-      'batdau', 'ketthuc', 'tungay', 'denngay'
-    ];
-
-    for (const field of dateFields) {
-      if (processedFilters[field]) {
-        processedFilters[field] = this.formatDateForGraphQL(processedFilters[field]);
-      }
-    }
-
-    // Handle date ranges
-    if (processedFilters.dateRange) {
-      if (processedFilters.dateRange.start) {
-        processedFilters.dateRange.start = this.formatDateForGraphQL(processedFilters.dateRange.start);
-      }
-      if (processedFilters.dateRange.end) {
-        processedFilters.dateRange.end = this.formatDateForGraphQL(processedFilters.dateRange.end);
-      }
-    }
-
-    return processedFilters;
+  private setCache<T>(key: string, data: T, ttl: number = this.DEFAULT_TTL): void {
+    this.cache.set(key, {
+      data,
+      timestamp: new Date(),
+      ttl,
+      key
+    });
   }
 
-  /**
-   * Execute a GraphQL query with enhanced error handling
-   */
-  async executeGraphQL<T = any>(query: GraphQLQuery): Promise<GraphQLResponse<T>> {
-    this.isLoading.set(true);
-    this.error.set(null);
+  private invalidateCache(pattern?: string): void {
+    if (!pattern) {
+      this.cache.clear();
+      return;
+    }
+
+    const keysToDelete: string[] = [];
+    this.cache.forEach((_, key) => {
+      if (key.includes(pattern)) {
+        keysToDelete.push(key);
+      }
+    });
+
+    keysToDelete.forEach(key => this.cache.delete(key));
+  }
+
+  // ========================= PERFORMANCE MONITORING =========================
+
+  private trackPerformance(
+    queryType: string,
+    startTime: number,
+    cacheHit: boolean,
+    resultCount: number,
+    modelName?: string
+  ): void {
+    const metrics: PerformanceMetrics = {
+      queryTime: Date.now() - startTime,
+      cacheHit,
+      resultCount,
+      timestamp: new Date(),
+      queryType,
+      modelName
+    };
+
+    const currentMetrics = this.performanceMetrics();
+    this.performanceMetrics.set([...currentMetrics.slice(-99), metrics]); // Keep last 100 metrics
+  }
+
+  private trackError(error: any, operation: string): void {
+    const graphqlError: GraphQLError = {
+      message: error.message || 'Unknown error',
+      code: error.code || error.extensions?.code,
+      path: error.path,
+      timestamp: new Date()
+    };
+
+    const currentErrors = this.errors();
+    this.errors.set([...currentErrors.slice(-49), graphqlError]); // Keep last 50 errors
+  }
+
+  // ========================= LOADING STATE MANAGEMENT =========================
+
+  private setLoading(key: string, loading: boolean): void {
+    this.loadingStates.set(key, loading);
+  }
+
+  // ========================= HEALTH CHECK =========================
+
+  private async performHealthCheck(): Promise<void> {
+    const startTime = Date.now();
+    
+    try {
+      const result = await firstValueFrom(
+        this.apollo.query({
+          query: HEALTH_CHECK_QUERY,
+          fetchPolicy: 'no-cache'
+        })
+      );
+      
+      this.isHealthy.set(true);
+      this.trackPerformance('health_check', startTime, false, 1);
+    } catch (error) {
+      this.isHealthy.set(false);
+      this.trackError(error, 'health_check');
+    }
+  }
+
+  // ========================= CORE QUERY METHODS =========================
+
+  async findMany<T = any>(
+    modelName: string,
+    options: OptimizedFindManyOptions<T> = {}
+  ): Promise<T[]> {
+    const startTime = Date.now();
+    const cacheKey = this.generateCacheKey('findMany', { modelName, ...options });
+    const loadingKey = `findMany_${modelName}`;
+
+    // Check cache first
+    const cachedData = this.getFromCache<T[]>(cacheKey);
+    if (cachedData) {
+      this.trackPerformance('findMany', startTime, true, cachedData.length, modelName);
+      return cachedData;
+    }
+
+    this.setLoading(loadingKey, true);
+
+    const variables = {
+      modelName,
+      where: options.where,
+      orderBy: options.orderBy,
+      skip: options.skip,
+      take: options.take,
+      include: options.include,
+      select: options.select
+    };
+
+    try {
+      const result = await firstValueFrom(
+        this.apollo.query<{ findMany: T[] }>({
+          query: FIND_MANY_QUERY,
+          variables,
+          fetchPolicy: 'cache-first'
+        })
+      );
+
+      const data = result.data.findMany;
+      this.setCache(cacheKey, data);
+      this.trackPerformance('findMany', startTime, false, data.length, modelName);
+      return data;
+    } catch (error) {
+      this.trackError(error, 'findMany');
+      throw error;
+    } finally {
+      this.setLoading(loadingKey, false);
+    }
+  }
+
+  async findUnique<T = any>(
+    modelName: string,
+    where: any,
+    options: { include?: any; select?: any } = {}
+  ): Promise<T | null> {
+    const startTime = Date.now();
+    const cacheKey = this.generateCacheKey('findUnique', { modelName, where, ...options });
+    const loadingKey = `findUnique_${modelName}`;
+
+    // Check cache first
+    const cachedData = this.getFromCache<T>(cacheKey);
+    if (cachedData) {
+      this.trackPerformance('findUnique', startTime, true, 1, modelName);
+      return cachedData;
+    }
+
+    this.setLoading(loadingKey, true);
+
+    const variables = {
+      modelName,
+      where,
+      include: options.include,
+      select: options.select
+    };
+
+    try {
+      const result = await firstValueFrom(
+        this.apollo.query<{ findUnique: T }>({
+          query: FIND_UNIQUE_QUERY,
+          variables,
+          fetchPolicy: 'cache-first'
+        })
+      );
+
+      const data = result.data.findUnique;
+      this.setCache(cacheKey, data);
+      this.trackPerformance('findUnique', startTime, false, data ? 1 : 0, modelName);
+      return data;
+    } catch (error) {
+      this.trackError(error, 'findUnique');
+      throw error;
+    } finally {
+      this.setLoading(loadingKey, false);
+    }
+  }
+
+  // ========================= MUTATION METHODS =========================
+
+  async createOne<T = any>(
+    modelName: string,
+    data: any,
+    options: { include?: any; select?: any } = {}
+  ): Promise<T> {
+    const startTime = Date.now();
+    const loadingKey = `createOne_${modelName}`;
+
+    this.setLoading(loadingKey, true);
+
+    const variables = {
+      modelName,
+      data,
+      include: options.include,
+      select: options.select
+    };
+
+    try {
+      const result = await firstValueFrom(
+        this.apollo.mutate<{ createOne: T }>({
+          mutation: CREATE_ONE_MUTATION,
+          variables
+        })
+      );
+
+      const createdData = result.data!.createOne;
+      // Invalidate related cache entries
+      this.invalidateCache(modelName);
+      this.trackPerformance('createOne', startTime, false, 1, modelName);
+      return createdData;
+    } catch (error) {
+      this.trackError(error, 'createOne');
+      throw error;
+    } finally {
+      this.setLoading(loadingKey, false);
+    }
+  }
+
+  async updateOne<T = any>(
+    modelName: string,
+    where: any,
+    data: any,
+    options: { include?: any; select?: any } = {}
+  ): Promise<T> {
+    const startTime = Date.now();
+    const loadingKey = `updateOne_${modelName}`;
+
+    this.setLoading(loadingKey, true);
+
+    const variables = {
+      modelName,
+      where,
+      data,
+      include: options.include,
+      select: options.select
+    };
+
+    try {
+      const result = await firstValueFrom(
+        this.apollo.mutate<{ updateOne: T }>({
+          mutation: UPDATE_ONE_MUTATION,
+          variables
+        })
+      );
+
+      const updatedData = result.data!.updateOne;
+      // Invalidate related cache entries
+      this.invalidateCache(modelName);
+      this.trackPerformance('updateOne', startTime, false, 1, modelName);
+      return updatedData;
+    } catch (error) {
+      this.trackError(error, 'updateOne');
+      throw error;
+    } finally {
+      this.setLoading(loadingKey, false);
+    }
+  }
+
+  async deleteOne<T = any>(
+    modelName: string,
+    where: any
+  ): Promise<T> {
+    const startTime = Date.now();
+    const loadingKey = `deleteOne_${modelName}`;
+
+    this.setLoading(loadingKey, true);
+
+    const variables = {
+      modelName,
+      where
+    };
+
+    try {
+      const result = await firstValueFrom(
+        this.apollo.mutate<{ deleteOne: T }>({
+          mutation: DELETE_ONE_MUTATION,
+          variables
+        })
+      );
+
+      const deletedData = result.data!.deleteOne;
+      // Invalidate related cache entries
+      this.invalidateCache(modelName);
+      this.trackPerformance('deleteOne', startTime, false, 1, modelName);
+      return deletedData;
+    } catch (error) {
+      this.trackError(error, 'deleteOne');
+      throw error;
+    } finally {
+      this.setLoading(loadingKey, false);
+    }
+  }
+
+  // ========================= BATCH OPERATIONS =========================
+
+  async batchCreate<T = any>(
+    modelName: string,
+    data: any[]
+  ): Promise<T[]> {
+    const startTime = Date.now();
+    const loadingKey = `batchCreate_${modelName}`;
+
+    this.setLoading(loadingKey, true);
+
+    const variables = {
+      modelName,
+      data
+    };
+
+    try {
+      const result = await firstValueFrom(
+        this.apollo.mutate<{ batchCreate: T[] }>({
+          mutation: BATCH_CREATE_MUTATION,
+          variables
+        })
+      );
+
+      const createdData = result.data!.batchCreate;
+      // Invalidate related cache entries
+      this.invalidateCache(modelName);
+      this.trackPerformance('batchCreate', startTime, false, createdData.length, modelName);
+      return createdData;
+    } catch (error) {
+      this.trackError(error, 'batchCreate');
+      throw error;
+    } finally {
+      this.setLoading(loadingKey, false);
+    }
+  }
+
+  async batchUpdate<T = any>(
+    modelName: string,
+    operations: Array<{ where: any; data: any }>
+  ): Promise<T[]> {
+    const startTime = Date.now();
+    const loadingKey = `batchUpdate_${modelName}`;
+
+    this.setLoading(loadingKey, true);
+
+    const variables = {
+      modelName,
+      operations
+    };
+
+    try {
+      const result = await firstValueFrom(
+        this.apollo.mutate<{ batchUpdate: T[] }>({
+          mutation: BATCH_UPDATE_MUTATION,
+          variables
+        })
+      );
+
+      const updatedData = result.data!.batchUpdate;
+      // Invalidate related cache entries
+      this.invalidateCache(modelName);
+      this.trackPerformance('batchUpdate', startTime, false, updatedData.length, modelName);
+      return updatedData;
+    } catch (error) {
+      this.trackError(error, 'batchUpdate');
+      throw error;
+    } finally {
+      this.setLoading(loadingKey, false);
+    }
+  }
+
+  async batchDelete<T = any>(
+    modelName: string,
+    whereConditions: any[]
+  ): Promise<T[]> {
+    const startTime = Date.now();
+    const loadingKey = `batchDelete_${modelName}`;
+
+    this.setLoading(loadingKey, true);
+
+    const variables = {
+      modelName,
+      where: whereConditions
+    };
+
+    try {
+      const result = await firstValueFrom(
+        this.apollo.mutate<{ batchDelete: T[] }>({
+          mutation: BATCH_DELETE_MUTATION,
+          variables
+        })
+      );
+
+      const deletedData = result.data!.batchDelete;
+      // Invalidate related cache entries
+      this.invalidateCache(modelName);
+      this.trackPerformance('batchDelete', startTime, false, deletedData.length, modelName);
+      return deletedData;
+    } catch (error) {
+      this.trackError(error, 'batchDelete');
+      throw error;
+    } finally {
+      this.setLoading(loadingKey, false);
+    }
+  }
+
+  // ========================= UTILITY METHODS =========================
+
+  async getAvailableModels(): Promise<string[]> {
+    const startTime = Date.now();
+    const cacheKey = 'getAvailableModels';
+
+    // Check cache first
+    const cachedData = this.getFromCache<string[]>(cacheKey);
+    if (cachedData) {
+      this.trackPerformance('getAvailableModels', startTime, true, cachedData.length);
+      return cachedData;
+    }
+
+    try {
+      const result = await firstValueFrom(
+        this.apollo.query<{ getAvailableModels: string[] }>({
+          query: GET_AVAILABLE_MODELS_QUERY,
+          fetchPolicy: 'cache-first'
+        })
+      );
+
+      const data = result.data.getAvailableModels;
+      this.setCache(cacheKey, data, this.DEFAULT_TTL * 12); // Cache for 1 hour
+      this.trackPerformance('getAvailableModels', startTime, false, data.length);
+      return data;
+    } catch (error) {
+      this.trackError(error, 'getAvailableModels');
+      throw error;
+    }
+  }
+
+  async getModelMetadata(modelName: string): Promise<any> {
+    const startTime = Date.now();
+    const cacheKey = this.generateCacheKey('modelMetadata', { modelName });
+
+    // Check cache first
+    const cachedData = this.getFromCache(cacheKey);
+    if (cachedData) {
+      this.trackPerformance('modelMetadata', startTime, true, 1, modelName);
+      return cachedData;
+    }
 
     try {
       const result = await firstValueFrom(
         this.apollo.query({
-          query: gql`${query.query}`,
-          variables: query.variables,
-          fetchPolicy: 'cache-first',
-          errorPolicy: 'all'
+          query: MODEL_METADATA_QUERY,
+          variables: { modelName },
+          fetchPolicy: 'cache-first'
         })
       );
 
-      if (result.errors && result.errors.length > 0) {
-        const errorMessage = result.errors.map(err => err.message).join(', ');
-        this.error.set(errorMessage);
-        await this._ErrorLogService.logError('GraphQL Error', result.errors);
-      }
-
-      return {
-        data: result.data as T,
-        errors: result.errors ? result.errors.map(err => ({
-          message: err.message,
-          locations: err.locations ? err.locations.map(loc => ({ line: loc.line, column: loc.column })) : undefined,
-          path: err.path ? [...err.path] : undefined
-        })) : undefined
-      };
-    } catch (error: any) {
-      const errorMessage = error?.message || 'Unknown GraphQL error';
-      this.error.set(errorMessage);
-      await this._ErrorLogService.logError('GraphQL Request Failed', error);
+      const data = (result as any).data.modelMetadata;
+      this.setCache(cacheKey, data, this.DEFAULT_TTL * 6); // Cache for 30 minutes
+      this.trackPerformance('modelMetadata', startTime, false, 1, modelName);
+      return data;
+    } catch (error) {
+      this.trackError(error, 'modelMetadata');
       throw error;
-    } finally {
-      this.isLoading.set(false);
     }
   }
 
-  /**
-   * Execute a GraphQL mutation
-   */
-  async executeMutation<T = any>(mutation: GraphQLQuery): Promise<GraphQLResponse<T>> {
-    this.isLoading.set(true);
-    this.error.set(null);
+  // ========================= PAGINATION HELPER =========================
 
-    try {
-      const result: any = await firstValueFrom(
-        this.apollo.mutate({
-          mutation: gql`${mutation.query}`,
-          variables: mutation.variables,
-          errorPolicy: 'all'
-        })
-      );
-
-      if (result.errors && result.errors.length > 0) {
-        const errorMessage = result.errors.map((err: any) => err.message).join(', ');
-        this.error.set(errorMessage);
-        await this._ErrorLogService.logError('GraphQL Error', result.errors);
-      }
-
-      // Invalidate cache after mutations
-      this.clearCache();
-
-      return {
-        data: result.data as T,
-        errors: result.errors
-      };
-    } catch (error: any) {
-      const errorMessage = error?.message || 'Unknown GraphQL error';
-      this.error.set(errorMessage);
-      await this._ErrorLogService.logError('GraphQL Mutation Failed', error);
-      throw error;
-    } finally {
-      this.isLoading.set(false);
-    }
-  }
-
-  /**
-   * OPTIMIZED findMany - No longer relies on count query
-   */
-  async findMany<T = any>(
+  async findManyWithPagination<T = any>(
     modelName: string,
-    options: OptimizedFindManyOptions = {}
-  ): Promise<GraphQLResponse<PaginationResult<T>>> {
-    const normalizedModelName = this.normalizeModelName(modelName);
-    const { 
-      useCache = true, 
-      cacheTimeout = 300000, 
-      cacheKey, 
-      ...queryOptions 
-    } = options;
-    
-    const processedOptions = {
-      ...queryOptions,
-      where: this.processFilters(queryOptions.where)
+    options: OptimizedFindManyOptions<T> & { pageSize?: number; page?: number } = {}
+  ): Promise<PaginationResult<T>> {
+    const pageSize = options.pageSize || 10;
+    const page = Math.max(1, options.page || 1);
+    const skip = (page - 1) * pageSize;
+
+    const queryOptions: OptimizedFindManyOptions<T> = {
+      ...options,
+      skip,
+      take: pageSize
     };
 
-    // Calculate pagination
-    const skip = queryOptions.skip || 0;
-    const take = queryOptions.take || 50;
-    const page = Math.floor(skip / take) + 1;
-
-    // Check cache first
-    const finalCacheKey = cacheKey || this.generateCacheKey(normalizedModelName, processedOptions);
-    if (useCache) {
-      const cachedData = this.getCachedData(finalCacheKey);
-      if (cachedData) {
-        return { data: cachedData };
-      }
-    }
-
-    // Simple findMany query without count (fixed variable types to match schema)
-    const query = `
-      query FindManyOptimized($modelName: String!, $where: JSON, $orderBy: JSON, $skip: Float, $take: Float, $include: JSON, $select: JSON) {
-        findMany(
-          modelName: $modelName
-          where: $where
-          orderBy: $orderBy
-          skip: $skip
-          take: $take
-          include: $include
-          select: $select
-        )
-      }
-    `;
+    // Get total count first
+    const countOptions = { ...options, select: { id: true } };
+    delete countOptions.skip;
+    delete countOptions.take;
 
     try {
-      const result = await this.executeGraphQL<any>({
-        query,
-        variables: {
-          modelName: normalizedModelName,
-          ...processedOptions
-        }
-      });
+      const countResult = await this.findMany<{ id: any }>(modelName, countOptions);
+      const totalCount = countResult.length;
 
-      if (result.errors) {
-        console.error('GraphQL Errors:', result.errors);
-        throw new Error(result.errors.map(e => e.message).join(', '));
-      }
-
-      const data = result.data?.findMany || [];
-      
-      // Estimate total and pagination without count query
-      const hasMore = data.length === take;
-      const estimatedTotal = hasMore ? (page * take) + 1 : skip + data.length;
-      const totalPages = Math.ceil(estimatedTotal / take);
-
-      const paginationResult: PaginationResult<T> = {
-        data,
-        total: estimatedTotal,
-        page,
-        pageSize: take,
-        totalPages,
-        hasMore,
-        hasPrevious: page > 1
-      };
-
-      // Cache the result
-      if (useCache) {
-        this.setCachedData(finalCacheKey, paginationResult, cacheTimeout);
-      }
+      const data = await this.findMany<T>(modelName, queryOptions);
 
       return {
-        data: paginationResult,
-        errors: result.errors
+        data,
+        totalCount,
+        hasNextPage: skip + pageSize < totalCount,
+        hasPreviousPage: page > 1,
+        currentPage: page,
+        totalPages: Math.ceil(totalCount / pageSize)
       };
     } catch (error) {
-      console.error(`Error in findMany for model ${normalizedModelName}:`, error);
       throw error;
     }
   }
 
+  // ========================= STATE GETTERS =========================
+
+  getPerformanceMetrics(): PerformanceMetrics[] {
+    return this.performanceMetrics();
+  }
+
+  getCacheHitRate(): number {
+    return this.cacheHitRate();
+  }
+
+  getErrors(): GraphQLError[] {
+    return this.errors();
+  }
+
+  getHealthStatus(): boolean {
+    return this.isHealthy();
+  }
+
+  isLoading(operation: string, modelName?: string): boolean {
+    const key = modelName ? `${operation}_${modelName}` : operation;
+    return this.loadingStates.get(key) || false;
+  }
+
+  getCacheSize(): number {
+    return this.cache.size;
+  }
+
+  // ========================= OPTIMIZED FINDALL METHODS =========================
+
   /**
-   * OPTIMIZED findAll - Uses batch fetching for large datasets
+   * Ultra-optimized findAll method with aggressive caching, parallel fetching, and streaming
+   * Best performance for loading complete datasets
    */
   async findAll<T = any>(
     modelName: string,
-    options: Omit<OptimizedFindManyOptions, 'skip' | 'take'> = {}
-  ): Promise<GraphQLResponse<T[]>> {
-    const normalizedModelName = this.normalizeModelName(modelName);
-    const { 
-      useCache = true, 
-      cacheTimeout = 600000, 
-      cacheKey, 
-      enableBatching = true,
-      batchSize = 500,
-      ...queryOptions 
+    options: FindAllOptions<T> = {}
+  ): Promise<FindAllResult<T>> {
+    const startTime = Date.now();
+    const {
+      enableParallelFetch = true,
+      enableStreaming = true,
+      batchSize = this.DEFAULT_BATCH_SIZE,
+      maxConcurrency = this.MAX_PARALLEL_REQUESTS,
+      aggressiveCache = true,
+      ...queryOptions
     } = options;
-    
-    // Check cache first
-    const finalCacheKey = cacheKey || `${normalizedModelName}:findAll:${this.generateCacheKey(normalizedModelName, queryOptions)}`;
-    if (useCache) {
-      const cachedData = this.getCachedData(finalCacheKey);
-      if (cachedData) {
-        return { data: cachedData };
+
+    const cacheKey = this.generateCacheKey('findAll', { modelName, ...queryOptions });
+    const ttl = aggressiveCache ? this.AGGRESSIVE_TTL : this.DEFAULT_TTL;
+
+    // Check aggressive cache first
+    const cachedData = this.getFromCache<FindAllResult<T>>(cacheKey);
+    if (cachedData && aggressiveCache) {
+      return {
+        ...cachedData,
+        fetchTime: Date.now() - startTime,
+        cacheHit: true
+      };
+    }
+
+    this.setLoading(`findAll_${modelName}`, true);
+
+    try {
+      let result: FindAllResult<T>;
+
+      if (enableParallelFetch) {
+        result = await this.parallelFindAll(modelName, queryOptions, batchSize, maxConcurrency);
+      } else if (enableStreaming) {
+        result = await this.streamingFindAll(modelName, queryOptions, batchSize);
+      } else {
+        result = await this.standardFindAll(modelName, queryOptions);
       }
+
+      const finalResult: FindAllResult<T> = {
+        ...result,
+        fetchTime: Date.now() - startTime,
+        cacheHit: false,
+        parallel: enableParallelFetch
+      };
+
+      // Aggressive caching for findAll
+      this.setCache(cacheKey, finalResult, ttl);
+      this.trackPerformance('findAll', startTime, false, result.totalCount, modelName);
+
+      return finalResult;
+    } catch (error) {
+      this.trackError(error, 'findAll');
+      throw error;
+    } finally {
+      this.setLoading(`findAll_${modelName}`, false);
     }
-
-    // Try to get a reasonable batch first to estimate size
-    const initialBatch = await this.findMany<T>(normalizedModelName, {
-      ...queryOptions,
-      take: 100,
-      skip: 0,
-      useCache: false
-    });
-
-    if (!initialBatch.data) {
-      return { data: [], errors: initialBatch.errors };
-    }
-
-    // If we got less than requested, we have all data
-    if (initialBatch.data.data.length < 100) {
-      const allData = initialBatch.data.data;
-      if (useCache) {
-        this.setCachedData(finalCacheKey, allData, cacheTimeout);
-      }
-      return { data: allData };
-    }
-
-    // For larger datasets, use batch fetching if enabled
-    if (enableBatching) {
-      console.info(`FindAll: ${modelName} appears to have many records. Using batch fetching.`);
-      return this.batchFindAll<T>(normalizedModelName, queryOptions, { 
-        useCache, 
-        cacheTimeout, 
-        cacheKey: finalCacheKey,
-        batchSize 
-      });
-    }
-
-    // Fallback: try to get a large batch
-    const query = `
-      query FindAll($modelName: String!, $where: JSON, $orderBy: JSON, $include: JSON, $select: JSON) {
-        findMany(
-          modelName: $modelName
-          where: $where
-          orderBy: $orderBy
-          include: $include
-          select: $select
-        )
-      }
-    `;
-
-    const result = await this.executeGraphQL<any>({
-      query,
-      variables: { modelName: normalizedModelName, ...queryOptions }
-    });
-
-    const data = result.data?.findMany || [];
-
-    if (useCache) {
-      this.setCachedData(finalCacheKey, data, cacheTimeout);
-    }
-
-    return { data, errors: result.errors };
   }
 
   /**
-   * Batch processing for large datasets - FIXED for new data structure
+   * Parallel batch fetching for maximum speed
    */
-  private async batchFindAll<T = any>(
+  private async parallelFindAll<T>(
     modelName: string,
     options: any,
-    cacheOptions: any
-  ): Promise<GraphQLResponse<T[]>> {
-    const batchSize = cacheOptions.batchSize || 500;
-    const allData: T[] = [];
+    batchSize: number,
+    maxConcurrency: number
+  ): Promise<FindAllResult<T>> {
+    // First, get total count
+    const countResult = await this.findMany<{ id: any }>(modelName, {
+      ...options,
+      select: { id: true }
+    });
+    const totalCount = countResult.length;
+
+    if (totalCount === 0) {
+      return {
+        data: [],
+        totalCount: 0,
+        fetchTime: 0,
+        cacheHit: false,
+        parallel: true,
+        batches: 0
+      };
+    }
+
+    const batches = Math.ceil(totalCount / batchSize);
+
+    // Create batch promises with concurrency control
+    const processBatch = async (skip: number, take: number): Promise<T[]> => {
+      return await this.findMany<T>(modelName, {
+        ...options,
+        skip,
+        take
+      });
+    };
+
+    // Process batches with controlled concurrency
+    const executeInParallel = async (): Promise<T[]> => {
+      const allResults: T[] = [];
+      const executing: Promise<void>[] = [];
+
+      for (let i = 0; i < batches; i++) {
+        const skip = i * batchSize;
+        const take = Math.min(batchSize, totalCount - skip);
+
+        const batchPromise = processBatch(skip, take).then(batchResult => {
+          allResults.push(...batchResult);
+        });
+
+        executing.push(batchPromise);
+
+        // Control concurrency
+        if (executing.length >= maxConcurrency) {
+          await Promise.race(executing);
+          // Remove completed promises
+          const stillRunning = executing.filter(p => {
+            // Check if promise is still pending
+            return p && typeof (p as any).isPending !== 'boolean';
+          });
+          executing.length = 0;
+          executing.push(...stillRunning);
+        }
+      }
+
+      // Wait for all remaining promises
+      await Promise.all(executing);
+      return allResults;
+    };
+
+    const finalResults = await executeInParallel();
+
+    return {
+      data: finalResults,
+      totalCount,
+      fetchTime: 0,
+      cacheHit: false,
+      parallel: true,
+      batches
+    };
+  }
+
+  /**
+   * Streaming approach for memory-efficient large datasets
+   */
+  private async streamingFindAll<T>(
+    modelName: string,
+    options: any,
+    batchSize: number
+  ): Promise<FindAllResult<T>> {
+    const results: T[] = [];
     let skip = 0;
+    let totalFetched = 0;
     let hasMore = true;
-    let currentPage = 1;
+    let batches = 0;
 
     while (hasMore) {
       const batchResult = await this.findMany<T>(modelName, {
         ...options,
         skip,
-        take: batchSize,
-        useCache: false
+        take: batchSize
       });
-      if (batchResult.data?.data) {
-        let dataArray: T[] = [];
-        let shouldContinue = false;
-        
-        // Check if it's the new format with nested data and pagination object
-        if (batchResult.data.data && typeof batchResult.data.data === 'object' && 'data' in batchResult.data.data) {
-          // New format: { data: { data: [], pagination: {...} } }
-          const nestedData = (batchResult.data.data as any).data;
-          dataArray = Array.isArray(nestedData) ? nestedData : [];
-          
-          const pagination = (batchResult.data.data as any).pagination;
-          shouldContinue = pagination?.hasNextPage || false;
-          
-          
-        } else if (Array.isArray(batchResult.data.data)) {
-          // Old format: { data: [...], hasMore: boolean }
-          dataArray = batchResult.data.data;
-          shouldContinue = batchResult.data.hasMore || false;
-          
-        }
-        
-        // Add data to collection
-        if (dataArray.length > 0) {
-          allData.push(...dataArray);
-        }
-        
-        // Update pagination
-        hasMore = shouldContinue && dataArray.length > 0;
-        skip += batchSize;
-        currentPage++;
-        
-        // Safety check to prevent infinite loops
-        if (currentPage > 100) {
-          console.warn('⚠️ Batch processing stopped: too many pages (safety limit)');
-          break;
-        }
-        
-        // If we got less data than the batch size and no explicit continuation, stop
-        if (dataArray.length < batchSize && !shouldContinue) {
-          hasMore = false;
-        }
-        
-      } else {
+
+      if (batchResult.length === 0) {
+        hasMore = false;
+        break;
+      }
+
+      results.push(...batchResult);
+      totalFetched += batchResult.length;
+      skip += batchSize;
+      batches++;
+
+      // If we got less than batchSize, we've reached the end
+      if (batchResult.length < batchSize) {
         hasMore = false;
       }
 
-      // Small delay to prevent server overload
-      if (hasMore) {
-        await new Promise(resolve => setTimeout(resolve, 50));
+      // Memory optimization: yield control to prevent blocking
+      if (batches % 5 === 0) {
+        await new Promise(resolve => setTimeout(resolve, 0));
       }
     }
 
-    // Cache the complete result
-    if (cacheOptions.useCache && cacheOptions.cacheKey) {
-      this.setCachedData(cacheOptions.cacheKey, allData, cacheOptions.cacheTimeout);
-    }
-
-    return { data: allData };
-  }
-
-  /**
-   * Enhanced model-specific methods with optimized defaults
-   */
-  async getSanphams(options: OptimizedFindManyOptions = {}) {
-    return this.findMany('sanpham', { 
-      ...options, 
-      cacheTimeout: 300000,
-      take: options.take || 50,
-      include: options.include || { nhacungcap: true, banggia: true }
-    });
-  }
-
-  async getAllSanphams(options: Omit<OptimizedFindManyOptions, 'skip' | 'take'> = {}) {
-    return this.findAll('sanpham', { 
-      ...options, 
-      cacheTimeout: 600000,
-      enableBatching: true,
-      batchSize: 500,
-      include: options.include || { nhacungcap: true, banggia: true }
-    });
-  }
-
-  async getKhachhangs(options: OptimizedFindManyOptions = {}) {
-    return this.findMany('khachhang', { 
-      ...options, 
-      cacheTimeout: 300000,
-      take: options.take || 50,
-      include: options.include || { banggia: true, nhomkhachhang: true }
-    });
-  }
-
-  async getAllKhachhangs(options: Omit<OptimizedFindManyOptions, 'skip' | 'take'> = {}) {
-    return this.findAll('khachhang', { 
-      ...options, 
-      cacheTimeout: 600000,
-      enableBatching: true,
-      include: options.include || { banggia: true, nhomkhachhang: true }
-    });
-  }
-
-  async getDonhangs(options: OptimizedFindManyOptions = {}) {
-    return this.findMany('donhang', { 
-      ...options, 
-      cacheTimeout: 180000,
-      take: options.take || 50,
-      include: options.include || { 
-        khachhang: true, 
-        donhangsanpham: { include: { sanpham: true } }
-      }
-    });
-  }
-
-  async getAllDonhangs(options: Omit<OptimizedFindManyOptions, 'skip' | 'take'> = {}) {
-    return this.findAll('donhang', { 
-      ...options, 
-      cacheTimeout: 600000,
-      enableBatching: true,
-      include: options.include || { 
-        khachhang: true, 
-        donhangsanpham: { include: { sanpham: true } }
-      }
-    });
-  }
-
-  async getDathangs(options: OptimizedFindManyOptions = {}) {
-    return this.findMany('dathang', { 
-      ...options, 
-      cacheTimeout: 300000,
-      take: options.take || 50
-    });
-  }
-
-  async getAllDathangs(options: Omit<OptimizedFindManyOptions, 'skip' | 'take'> = {}) {
-    return this.findAll('dathang', { 
-      ...options, 
-      cacheTimeout: 600000,
-      enableBatching: true
-    });
-  }
-
-  async getNhacungcaps(options: OptimizedFindManyOptions = {}) {
-    return this.findMany('nhacungcap', { 
-      ...options, 
-      cacheTimeout: 600000,
-      take: options.take || 50
-    });
-  }
-
-  async getAllNhacungcaps(options: Omit<OptimizedFindManyOptions, 'skip' | 'take'> = {}) {
-    return this.findAll('nhacungcap', { 
-      ...options, 
-      cacheTimeout: 1200000,
-      enableBatching: true
-    });
-  }
-
-  /**
-   * Enhanced search with caching
-   */
-  async search<T = any>(
-    modelName: string,
-    searchTerm: string,
-    searchFields: string[],
-    options: OptimizedFindManyOptions = {}
-  ): Promise<{ data: T[]; total: number; hasMore: boolean }> {
-    const where = {
-      OR: searchFields.map(field => ({
-        [field]: {
-          contains: searchTerm,
-          mode: 'insensitive'
-        }
-      })),
-      ...options.where
+    return {
+      data: results,
+      totalCount: totalFetched,
+      fetchTime: 0,
+      cacheHit: false,
+      parallel: false,
+      batches
     };
+  }
 
-    const result = await this.findMany<T>(modelName, { 
-      ...options, 
-      where,
-      cacheTimeout: 180000,
-      cacheKey: `search:${modelName}:${searchTerm}:${this.generateCacheKey(modelName, options)}`
-    });
+  /**
+   * Standard single-request approach
+   */
+  private async standardFindAll<T>(
+    modelName: string,
+    options: any
+  ): Promise<FindAllResult<T>> {
+    const data = await this.findMany<T>(modelName, options);
     
     return {
-      data: result.data?.data || [],
-      total: result.data?.total || 0,
-      hasMore: result.data?.hasMore || false
+      data,
+      totalCount: data.length,
+      fetchTime: 0,
+      cacheHit: false,
+      parallel: false
     };
   }
 
   /**
-   * Cache management and monitoring
+   * Multi-model parallel findAll - fetch multiple models simultaneously
    */
-  getCacheStats() {
-    return {
-      hits: this.cacheHits(),
-      misses: this.cacheMisses(),
-      hitRate: this.cacheHitRate(),
-      size: this.queryCache.size,
-      apolloCacheSize: this.apolloClient.cache.extract()
-    };
+  async findAllMultiple<T = any>(
+    models: Array<{
+      name: string;
+      options?: FindAllOptions<T>;
+    }>,
+    globalOptions: FindAllOptions<T> = {}
+  ): Promise<Record<string, FindAllResult<T>>> {
+    const startTime = Date.now();
+    const results: Record<string, FindAllResult<T>> = {};
+
+    // Execute all model queries in parallel
+    const promises = models.map(async ({ name, options = {} }) => {
+      const mergedOptions = { ...globalOptions, ...options };
+      const result = await this.findAll<T>(name, mergedOptions);
+      return { name, result };
+    });
+
+    try {
+      const resolvedResults = await Promise.all(promises);
+      
+      resolvedResults.forEach(({ name, result }) => {
+        results[name] = result;
+      });
+
+      // Track combined performance
+      const totalRecords = Object.values(results).reduce(
+        (sum, result) => sum + result.totalCount, 0
+      );
+      this.trackPerformance('findAllMultiple', startTime, false, totalRecords, 'multiple');
+
+      return results;
+    } catch (error) {
+      this.trackError(error, 'findAllMultiple');
+      throw error;
+    }
   }
+
+  /**
+   * Smart findAll with automatic optimization selection
+   */
+  async smartFindAll<T = any>(
+    modelName: string,
+    options: FindAllOptions<T> = {}
+  ): Promise<FindAllResult<T>> {
+    // Get model metadata to make smart decisions
+    const metadata = await this.getModelMetadata(modelName);
+    
+    // Auto-optimize based on estimated dataset size and complexity
+    const estimatedSize = metadata?.estimatedRecordCount || 1000;
+    const hasComplexRelations = metadata?.hasComplexRelations || false;
+
+    const optimizedOptions: FindAllOptions<T> = {
+      ...options,
+      enableParallelFetch: estimatedSize > 5000,
+      enableStreaming: estimatedSize > 10000,
+      batchSize: hasComplexRelations ? 500 : 2000,
+      maxConcurrency: hasComplexRelations ? 3 : 5,
+      aggressiveCache: estimatedSize < 50000 // Only cache smaller datasets aggressively
+    };
+
+    return await this.findAll(modelName, optimizedOptions);
+  }
+
+  // ========================= CACHE CONTROL =========================
 
   clearCache(pattern?: string): void {
-    if (pattern) {
-      for (const key of this.queryCache.keys()) {
-        if (key.includes(pattern)) {
-          this.queryCache.delete(key);
-        }
-      }
-    } else {
-      this.queryCache.clear();
-    }
-    
-    // Also clear Apollo cache
-    this.apolloClient.cache.reset();
+    this.invalidateCache(pattern);
   }
 
-  invalidateModelCache(modelName: string): void {
-    this.clearCache(this.normalizeModelName(modelName));
+  async refreshHealthCheck(): Promise<void> {
+    await this.performHealthCheck();
+  }
+
+  // ========================= PERFORMANCE TESTING =========================
+
+  /**
+   * Performance benchmark for findAll methods
+   */
+  async benchmarkFindAll(modelName: string, testCases: FindAllOptions[] = []): Promise<{
+    results: Array<{
+      config: FindAllOptions;
+      result: FindAllResult<any>;
+      performance: {
+        totalTime: number;
+        recordsPerSecond: number;
+        cacheEfficiency: number;
+      };
+    }>;
+    recommendation: FindAllOptions;
+  }> {
+    const defaultTestCases: FindAllOptions[] = [
+      { enableParallelFetch: false, enableStreaming: false }, // Standard
+      { enableParallelFetch: true, enableStreaming: false, batchSize: 500 }, // Parallel small
+      { enableParallelFetch: true, enableStreaming: false, batchSize: 2000 }, // Parallel large
+      { enableParallelFetch: false, enableStreaming: true, batchSize: 1000 }, // Streaming
+      { enableParallelFetch: true, enableStreaming: false, aggressiveCache: true }, // Smart cached
+    ];
+
+    const testConfigs = testCases.length > 0 ? testCases : defaultTestCases;
+    const results = [];
+
+    // Clear cache for fair testing
+    this.clearCache(modelName);
+
+    for (const config of testConfigs) {
+      console.log(`🧪 Testing configuration:`, config);
+      
+      const startTime = Date.now();
+      const result = await this.findAll(modelName, config);
+      const totalTime = Date.now() - startTime;
+
+      const performance = {
+        totalTime,
+        recordsPerSecond: Math.round(result.totalCount / (totalTime / 1000)),
+        cacheEfficiency: result.cacheHit ? 100 : 0
+      };
+
+      results.push({
+        config,
+        result,
+        performance
+      });
+
+      console.log(`✅ Completed: ${totalTime}ms, ${performance.recordsPerSecond} records/sec`);
+      
+      // Small delay between tests
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    // Find best performing configuration
+    const bestResult = results.reduce((best, current) => 
+      current.performance.recordsPerSecond > best.performance.recordsPerSecond ? current : best
+    );
+
+    return {
+      results,
+      recommendation: bestResult.config
+    };
+  }
+
+  // ========================= MODEL-SPECIFIC OPTIMIZED METHODS =========================
+
+  // ========================= ULTRA-FAST FINDALL METHODS =========================
+
+  /**
+   * Ultra-fast tonKho findAll with inventory-specific optimizations
+   */
+  async findAllTonKho(options: FindAllOptions = {}): Promise<FindAllResult<any>> {
+    return await this.findAll('tonkho', {
+      batchSize: 2000, // Large batches for simple inventory data
+      enableParallelFetch: true,
+      aggressiveCache: true,
+      select: {
+        id: true,
+        sanphamId: true,
+        slton: true,
+        slchogiao: true,
+        slchonhap: true,
+        sanpham: {
+          select: {
+            id: true,
+            ten: true,
+            gia: true
+          }
+        }
+      },
+      ...options
+    });
   }
 
   /**
-   * Utility methods
+   * Ultra-fast sanpham findAll with product-specific optimizations
    */
-  clearError(): void {
-    this.error.set(null);
+  async findAllSanpham(options: FindAllOptions = {}): Promise<FindAllResult<any>> {
+    return await this.smartFindAll('sanpham', {
+      select: {
+        id: true,
+        ten: true,
+        gia: true,
+        mota: true,
+        active: true,
+        createdAt: true
+      },
+      orderBy: { ten: 'asc' },
+      aggressiveCache: true,
+      ...options
+    });
   }
 
-  isLoadingState(): boolean {
-    return this.isLoading();
+  /**
+   * Ultra-fast khachhang findAll with customer-specific optimizations
+   */
+  async findAllKhachhang(options: FindAllOptions = {}): Promise<FindAllResult<any>> {
+    return await this.smartFindAll('khachhang', {
+      select: {
+        id: true,
+        ten: true,
+        email: true,
+        sdt: true,
+        diachi: true,
+        active: true
+      },
+      orderBy: { ten: 'asc' },
+      batchSize: 1000,
+      enableParallelFetch: true,
+      ...options
+    });
   }
 
-  getCurrentError(): string | null {
-    return this.error();
+  /**
+   * Ultra-fast donhang findAll with optimized relations
+   */
+  async findAllDonhang(options: FindAllOptions = {}): Promise<FindAllResult<any>> {
+    return await this.findAll('donhang', {
+      include: {
+        khachhang: {
+          select: {
+            id: true,
+            ten: true,
+            sdt: true
+          }
+        },
+        donhangsanpham: {
+          select: {
+            id: true,
+            soluong: true,
+            gia: true,
+            sanpham: {
+              select: {
+                id: true,
+                ten: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+      batchSize: 500, // Smaller batches due to complex relations
+      maxConcurrency: 3,
+      ...options
+    });
   }
 
-  async refreshCache(): Promise<void> {
-    await this.apolloClient.resetStore();
-    this.queryCache.clear();
+  /**
+   * Comprehensive dashboard data loader - loads all essential data in parallel
+   */
+  async loadDashboardData(options: FindAllOptions = {}): Promise<{
+    sanpham: FindAllResult<any>;
+    khachhang: FindAllResult<any>;
+    tonkho: FindAllResult<any>;
+    donhang: FindAllResult<any>;
+    totalLoadTime: number;
+  }> {
+    const startTime = Date.now();
+
+    const [sanpham, khachhang, tonkho, donhang] = await Promise.all([
+      this.findAllSanpham({ 
+        take: 100, // Limit for dashboard
+        aggressiveCache: true,
+        ...options 
+      }),
+      this.findAllKhachhang({ 
+        take: 50,
+        aggressiveCache: true,
+        ...options 
+      }),
+      this.findAllTonKho({ 
+        take: 200,
+        aggressiveCache: true,
+        ...options 
+      }),
+      this.findAllDonhang({ 
+        take: 20,
+        aggressiveCache: true,
+        ...options 
+      })
+    ]);
+
+    return {
+      sanpham,
+      khachhang,
+      tonkho,
+      donhang,
+      totalLoadTime: Date.now() - startTime
+    };
+  }
+
+  // ========================= LEGACY OPTIMIZED METHODS (ENHANCED) =========================
+
+  // Sanpham methods
+  async getSanphamList(options: OptimizedFindManyOptions = {}): Promise<any[]> {
+    return await this.findMany('sanpham', {
+      orderBy: { ten: 'asc' },
+      ...options
+    });
+  }
+
+  async getSanphamById(id: string | number): Promise<any> {
+    return await this.findUnique('sanpham', { id });
+  }
+
+  // Khachhang methods
+  async getKhachhangList(options: OptimizedFindManyOptions = {}): Promise<any[]> {
+    return await this.findMany('khachhang', {
+      orderBy: { ten: 'asc' },
+      ...options
+    });
+  }
+
+  async getKhachhangById(id: string | number): Promise<any> {
+    return await this.findUnique('khachhang', { id });
+  }
+
+  // Donhang methods
+  async getDonhangList(options: OptimizedFindManyOptions = {}): Promise<any[]> {
+    return await this.findMany('donhang', {
+      orderBy: { createdAt: 'desc' },
+      include: {
+        khachhang: true,
+        donhangsanpham: {
+          include: {
+            sanpham: true
+          }
+        }
+      },
+      ...options
+    });
+  }
+
+  async getDonhangById(id: string | number): Promise<any> {
+    return await this.findUnique('donhang', { id }, {
+      include: {
+        khachhang: true,
+        donhangsanpham: {
+          include: {
+            sanpham: true
+          }
+        }
+      }
+    });
+  }
+
+  // Dathang methods
+  async getDathangList(options: OptimizedFindManyOptions = {}): Promise<any[]> {
+    return await this.findMany('dathang', {
+      orderBy: { createdAt: 'desc' },
+      include: {
+        nhacungcap: true,
+        dathangsanpham: {
+          include: {
+            sanpham: true
+          }
+        }
+      },
+      ...options
+    });
+  }
+
+  // User methods
+  async getUserList(options: OptimizedFindManyOptions = {}): Promise<any[]> {
+    return await this.findMany('user', {
+      orderBy: { ten: 'asc' },
+      select: {
+        id: true,
+        ten: true,
+        email: true,
+        sdt: true,
+        createdAt: true,
+        updatedAt: true
+      },
+      ...options
+    });
+  }
+
+  async getUserById(id: string | number): Promise<any> {
+    return await this.findUnique('user', { id }, {
+      include: {
+        profile: true,
+        userRole: {
+          include: {
+            role: true
+          }
+        }
+      }
+    });
   }
 }

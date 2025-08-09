@@ -314,16 +314,69 @@ export class EnhancedUniversalService {
   }
 
   /**
-   * Get Prisma model delegate
+   * Model name mapping for case-sensitive Prisma client access
+   */
+  private readonly modelMapping: { [key: string]: string } = {
+    // Lowercase -> Prisma Client Property
+    'user': 'user',
+    'role': 'role',
+    'userrole': 'userRole',
+    'permission': 'permission',
+    'rolepermission': 'rolePermission',
+    'menu': 'menu',
+    'profile': 'profile',
+    'banggia': 'banggia',
+    'banggiaKhachhang': 'banggiaKhachhang',
+    'banggiasanpham': 'banggiasanpham',
+    'khachhang': 'khachhang',
+    'khachhangNhom': 'khachhangNhom',
+    'nhomkhachhang': 'nhomkhachhang',
+    'sanpham': 'sanpham',
+    'donhang': 'donhang',
+    'donhangsanpham': 'donhangsanpham',
+    'nhacungcap': 'nhacungcap',
+    'dathang': 'dathang',
+    'dathangsanpham': 'dathangsanpham',
+    'congty': 'congty',
+    'kho': 'kho',
+    'sanphamkho': 'sanphamKho',
+    'phieukho': 'phieuKho',
+    'phieukhosanpham': 'phieuKhoSanpham',
+    'tonkho': 'tonKho', // ✅ FIX: tonKho -> tonKho (correct Prisma client property)
+    'chotkho': 'chotkho',
+    'auditlog': 'auditLog',
+    'filemanager': 'fileManager',
+    'chataimessage': 'chatAIMessage',
+    'chataihistory': 'chatAIHistory',
+    'file': 'file',
+    'errorlog': 'errorLog',
+    'userguidblock': 'userguidBlock',
+    'userguidstep': 'userguidStep',
+    'importhistory': 'importHistory'
+  };
+
+  /**
+   * Get Prisma model delegate with proper case mapping
    */
   private getModel(modelName: string) {
     const normalizedName = modelName.toLowerCase();
-    const model = this.prisma[normalizedName];
+    const prismaProperty = this.modelMapping[normalizedName];
     
-    if (!model) {
-      throw new Error(`Model ${modelName} not found in Prisma client`);
+    if (!prismaProperty) {
+      // Log available models for debugging
+      console.error(`❌ Model mapping not found for: ${modelName}`);
+      console.log('Available mappings:', Object.keys(this.modelMapping));
+      throw new Error(`Model ${modelName} not found in model mapping`);
     }
     
+    const model = this.prisma[prismaProperty];
+    
+    if (!model) {
+      console.error(`❌ Prisma model not found for property: ${prismaProperty}`);
+      throw new Error(`Model ${modelName} (${prismaProperty}) not found in Prisma client`);
+    }
+    
+    console.log(`✅ Model resolved: ${modelName} -> ${prismaProperty}`);
     return model;
   }
 
@@ -332,21 +385,46 @@ export class EnhancedUniversalService {
    */
   async getModelMetadata(modelName: string): Promise<any> {
     try {
-      // This would require Prisma introspection
-      // For now, return basic info
+      const normalizedName = modelName.toLowerCase();
+      const prismaProperty = this.modelMapping[normalizedName];
+      
+      if (!prismaProperty) {
+        return {
+          name: modelName,
+          available: false,
+          supportsOptimization: false,
+          error: 'Model not found in mapping'
+        };
+      }
+      
+      const isAvailable = !!this.prisma[prismaProperty];
+      
       return {
         name: modelName,
-        available: !!this.prisma[modelName.toLowerCase()],
-        supportsOptimization: true
+        prismaProperty,
+        available: isAvailable,
+        supportsOptimization: isAvailable,
+        normalizedName
       };
     } catch (error) {
       console.error(`❌ Failed to get metadata for ${modelName}:`, error);
       return {
         name: modelName,
         available: false,
-        supportsOptimization: false
+        supportsOptimization: false,
+        error: error.message
       };
     }
+  }
+
+  /**
+   * Get all available models from mapping
+   */
+  getAvailableModels(): string[] {
+    return Object.keys(this.modelMapping).filter(modelName => {
+      const prismaProperty = this.modelMapping[modelName];
+      return !!this.prisma[prismaProperty];
+    });
   }
 
   /**

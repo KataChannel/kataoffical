@@ -1,0 +1,404 @@
+{
+  "tests": [
+    {
+      "name": "FindMany khachhang",
+      "success": false,
+      "result": "FAIL",
+      "details": {}
+    },
+    {
+      "name": "FindMany sanpham",
+      "success": false,
+      "result": "FAIL",
+      "details": {}
+    },
+    {
+      "name": "FindMany user",
+      "success": false,
+      "result": "FAIL",
+      "details": {}
+    },
+    {
+      "name": "Field Selection - Custom Select",
+      "success": [
+        {
+          "id": "0032fc11-b99f-4ab6-a10b-9bfdb32f61b5",
+          "name": "Nguyễn Thủy (0903755012)",
+          "email": ""
+        },
+        {
+          "id": "008fc6fb-4834-4c72-9f80-7281db4b09db",
+          "name": "Bùi Thiên Thanh (0382178302)",
+          "email": ""
+        },
+        {
+          "id": "011c521e-8b2e-4ba1-a9dc-4a819321444d",
+          "name": "Le Monde Steak (Bình Tân)",
+          "email": ""
+        }
+      ],
+      "result": "PASS",
+      "details": {
+        "data": {
+          "findMany": [
+            {
+              "id": "0032fc11-b99f-4ab6-a10b-9bfdb32f61b5",
+              "name": "Nguyễn Thủy (0903755012)",
+              "email": ""
+            },
+            {
+              "id": "008fc6fb-4834-4c72-9f80-7281db4b09db",
+              "name": "Bùi Thiên Thanh (0382178302)",
+              "email": ""
+            },
+            {
+              "id": "011c521e-8b2e-4ba1-a9dc-4a819321444d",
+              "name": "Le Monde Steak (Bình Tân)",
+              "email": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Field Selection - Include Relations",
+      "success": [
+        {
+          "id": "001ccb76-5ccc-40d4-99d8-94b00eca2624",
+          "title": "Import cham2 - 29_07_2025",
+          "type": "donsi",
+          "madonhang": "TG-AA01849",
+          "ngaygiao": "2025-07-30T00:00:00.000Z",
+          "ghichu": null,
+          "isshowvat": false,
+          "status": "dadat",
+          "khachhangId": "9e315387-940f-4f99-8b2d-f78690bf9d8f",
+          "printCount": 0,
+          "order": null,
+          "isActive": false,
+          "createdAt": "2025-07-29T17:04:07.539Z",
+          "updatedAt": "2025-07-29T17:04:07.539Z",
+          "tongvat": "0",
+          "tongtien": "0",
+          "khachhang": {
+            "id": "9e315387-940f-4f99-8b2d-f78690bf9d8f",
+            "tenfile": "chambistrogarden2",
+            "tenkh": null,
+            "name": "Chạm Bistro Garden (2)",
+            "namenn": "Chạm Bistro Garden (2)",
+            "subtitle": "chambistrogarden2chambistrogarden2",
+            "makh": "TG-KS00492",
+            "makhold": null,
+            "diachi": "Số B3-02 Biệt Thự Nam Thiên, đường Phạm Thái Bường, Khu Đô Thị Phú Mỹ Hưng, Phường Tân Phong, Quận 7",
+            "sdt": "937949769",
+            "mst": "",
+            "gionhanhang": "trước 7h",
+            "quan": "",
+            "email": "",
+            "phone": null,
+            "address": null,
+            "loaikh": "khachsi",
+            "ghichu": "",
+            "hiengia": true,
+            "isActive": false,
+            "istitle2": false,
+            "isshowvat": true,
+            "banggiaId": "07ed48a1-9c31-4cfd-9067-e7ced8f0c91f",
+            "createdAt": "2025-05-21T07:36:54.574Z",
+            "updatedAt": "2025-07-26T02:45:40.724Z"
+          }
+        },
+        {
+          "id": "006a4102-0178-43cd-b00d-f2db61136c74",
+          "title": "Import springfishthuduc - 28_07_2025",
+          "type": "donsi",
+          "madonhang": "TG-AA01712",
+          "ngaygiao": "2025-07-29T00:00:00.000Z",
+          "ghichu": null,
+          "isshowvat": false,
+          "status": "dadat",
+          "khachhangId": "4ac4d02f-493a-4f47-be14-965436377b8b",
+          "printCount": 0,
+          "order": null,
+          "isActive": false,
+          "createdAt": "2025-07-28T17:15:35.342Z",
+          "updatedAt": "2025-07-28T17:15:35.342Z",
+          "tongvat": "0",
+          "tongtien": "0",
+          "khachhang": {
+            "id": "4ac4d02f-493a-4f47-be14-965436377b8b",
+            "tenfile": "springfishlaucatuxuyenthuuc",
+            "tenkh": null,
+            "name": "SpringFish Lẩu cá Tứ Xuyên (Thủ Đức)",
+            "namenn": "",
+            "subtitle": "springfishlaucatuxuyenthuuc",
+            "makh": "TG-KS01191",
+            "makhold": null,
+            "diachi": "Tầng 4 Vincom Thủ Đức, 216 Đ. Võ Văn Ngân, Bình Thọ, Thủ Đức, Hồ Chí Minh",
+            "sdt": "0765097633",
+            "mst": "",
+            "gionhanhang": "9h",
+            "quan": "",
+            "email": "",
+            "phone": null,
+            "address": null,
+            "loaikh": "khachsi",
+            "ghichu": "",
+            "hiengia": true,
+            "isActive": true,
+            "istitle2": false,
+            "isshowvat": true,
+            "banggiaId": "861b0ec1-d8ec-4e05-95ae-1c17d5cf6620",
+            "createdAt": "2025-06-27T01:52:42.145Z",
+            "updatedAt": "2025-07-26T02:45:34.099Z"
+          }
+        }
+      ],
+      "result": "PASS",
+      "details": {
+        "data": {
+          "findMany": [
+            {
+              "id": "001ccb76-5ccc-40d4-99d8-94b00eca2624",
+              "title": "Import cham2 - 29_07_2025",
+              "type": "donsi",
+              "madonhang": "TG-AA01849",
+              "ngaygiao": "2025-07-30T00:00:00.000Z",
+              "ghichu": null,
+              "isshowvat": false,
+              "status": "dadat",
+              "khachhangId": "9e315387-940f-4f99-8b2d-f78690bf9d8f",
+              "printCount": 0,
+              "order": null,
+              "isActive": false,
+              "createdAt": "2025-07-29T17:04:07.539Z",
+              "updatedAt": "2025-07-29T17:04:07.539Z",
+              "tongvat": "0",
+              "tongtien": "0",
+              "khachhang": {
+                "id": "9e315387-940f-4f99-8b2d-f78690bf9d8f",
+                "tenfile": "chambistrogarden2",
+                "tenkh": null,
+                "name": "Chạm Bistro Garden (2)",
+                "namenn": "Chạm Bistro Garden (2)",
+                "subtitle": "chambistrogarden2chambistrogarden2",
+                "makh": "TG-KS00492",
+                "makhold": null,
+                "diachi": "Số B3-02 Biệt Thự Nam Thiên, đường Phạm Thái Bường, Khu Đô Thị Phú Mỹ Hưng, Phường Tân Phong, Quận 7",
+                "sdt": "937949769",
+                "mst": "",
+                "gionhanhang": "trước 7h",
+                "quan": "",
+                "email": "",
+                "phone": null,
+                "address": null,
+                "loaikh": "khachsi",
+                "ghichu": "",
+                "hiengia": true,
+                "isActive": false,
+                "istitle2": false,
+                "isshowvat": true,
+                "banggiaId": "07ed48a1-9c31-4cfd-9067-e7ced8f0c91f",
+                "createdAt": "2025-05-21T07:36:54.574Z",
+                "updatedAt": "2025-07-26T02:45:40.724Z"
+              }
+            },
+            {
+              "id": "006a4102-0178-43cd-b00d-f2db61136c74",
+              "title": "Import springfishthuduc - 28_07_2025",
+              "type": "donsi",
+              "madonhang": "TG-AA01712",
+              "ngaygiao": "2025-07-29T00:00:00.000Z",
+              "ghichu": null,
+              "isshowvat": false,
+              "status": "dadat",
+              "khachhangId": "4ac4d02f-493a-4f47-be14-965436377b8b",
+              "printCount": 0,
+              "order": null,
+              "isActive": false,
+              "createdAt": "2025-07-28T17:15:35.342Z",
+              "updatedAt": "2025-07-28T17:15:35.342Z",
+              "tongvat": "0",
+              "tongtien": "0",
+              "khachhang": {
+                "id": "4ac4d02f-493a-4f47-be14-965436377b8b",
+                "tenfile": "springfishlaucatuxuyenthuuc",
+                "tenkh": null,
+                "name": "SpringFish Lẩu cá Tứ Xuyên (Thủ Đức)",
+                "namenn": "",
+                "subtitle": "springfishlaucatuxuyenthuuc",
+                "makh": "TG-KS01191",
+                "makhold": null,
+                "diachi": "Tầng 4 Vincom Thủ Đức, 216 Đ. Võ Văn Ngân, Bình Thọ, Thủ Đức, Hồ Chí Minh",
+                "sdt": "0765097633",
+                "mst": "",
+                "gionhanhang": "9h",
+                "quan": "",
+                "email": "",
+                "phone": null,
+                "address": null,
+                "loaikh": "khachsi",
+                "ghichu": "",
+                "hiengia": true,
+                "isActive": true,
+                "istitle2": false,
+                "isshowvat": true,
+                "banggiaId": "861b0ec1-d8ec-4e05-95ae-1c17d5cf6620",
+                "createdAt": "2025-06-27T01:52:42.145Z",
+                "updatedAt": "2025-07-26T02:45:34.099Z"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "DataLoader Batching",
+      "success": true,
+      "result": "PASS",
+      "details": [
+        {
+          "data": {
+            "findUnique": null
+          }
+        },
+        {
+          "data": {
+            "findUnique": null
+          }
+        },
+        {
+          "data": {
+            "findUnique": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "Enhanced Create Mutation",
+      "success": null,
+      "result": "FAIL",
+      "details": {
+        "errors": [
+          {
+            "message": "Failed to create khachhang: \nInvalid `model.create()` invocation in\n/chikiet/kataoffical/rausachfullstack/api/src/graphql/enhanced-universal.service.ts:138:34\n\n  135 };\n  136 \n  137 const startTime = Date.now();\n→ 138 const result = await model.create({\n        data: {\n          name: \"Test Customer Enhanced\",\n          email: \"test-enhanced@example.com\",\n          phone: \"1234567890\",\n      +   makh: String\n        },\n        select: {\n          id: true,\n          name: true,\n          email: true,\n          createdAt: true\n        }\n      })\n\nArgument `makh` is missing.",
+            "locations": [
+              {
+                "line": 3,
+                "column": 11
+              }
+            ],
+            "path": [
+              "createOne"
+            ],
+            "extensions": {
+              "code": "INTERNAL_SERVER_ERROR",
+              "timestamp": "2025-08-09T07:33:03.534Z"
+            }
+          }
+        ],
+        "data": {
+          "createOne": null
+        }
+      }
+    },
+    {
+      "name": "Batch Create Operation",
+      "success": null,
+      "result": "FAIL",
+      "details": {
+        "errors": [
+          {
+            "message": "\nInvalid `model.createMany()` invocation in\n/chikiet/kataoffical/rausachfullstack/api/src/graphql/enhanced-universal.service.ts:445:30\n\n  442 \n  443 switch (operation) {\n  444   case 'create':\n→ 445     return await model.createMany({\n            data: [\n              {\n                name: \"Batch Customer 1\",\n                email: \"batch1@example.com\",\n                phone: \"1111111111\"\n              },\n              {\n                name: \"Batch Customer 2\",\n                email: \"batch2@example.com\",\n                phone: \"2222222222\"\n              },\n              {\n                name: \"Batch Customer 3\",\n                email: \"batch3@example.com\",\n                phone: \"3333333333\"\n              }\n            ],\n            skipDuplicates: true\n          })\n\nArgument `makh` is missing.",
+            "locations": [
+              {
+                "line": 3,
+                "column": 11
+              }
+            ],
+            "path": [
+              "batchCreate"
+            ],
+            "extensions": {
+              "code": "INTERNAL_SERVER_ERROR",
+              "timestamp": "2025-08-09T07:33:03.546Z"
+            }
+          }
+        ],
+        "data": {
+          "batchCreate": null
+        }
+      }
+    },
+    {
+      "name": "Model Metadata Query",
+      "success": {
+        "name": "khachhang",
+        "prismaProperty": "khachhang",
+        "available": true,
+        "supportsOptimization": true,
+        "normalizedName": "khachhang"
+      },
+      "result": "PASS",
+      "details": {
+        "data": {
+          "modelMetadata": {
+            "name": "khachhang",
+            "prismaProperty": "khachhang",
+            "available": true,
+            "supportsOptimization": true,
+            "normalizedName": "khachhang"
+          }
+        }
+      }
+    },
+    {
+      "name": "Cache Clear Operation",
+      "success": true,
+      "result": "PASS",
+      "details": {
+        "data": {
+          "clearDataLoaderCache": {
+            "success": true,
+            "message": "Cache cleared for khachhang",
+            "timestamp": "2025-08-09T07:33:03.557Z"
+          }
+        }
+      }
+    },
+    {
+      "name": "Invalid Model Error Handling",
+      "success": true,
+      "result": "PASS",
+      "details": {
+        "errors": [
+          {
+            "message": "Failed to query nonexistentmodel: Model nonexistentmodel not found in model mapping",
+            "locations": [
+              {
+                "line": 3,
+                "column": 11
+              }
+            ],
+            "path": [
+              "findMany"
+            ],
+            "extensions": {
+              "code": "INTERNAL_SERVER_ERROR",
+              "timestamp": "2025-08-09T07:33:03.564Z"
+            }
+          }
+        ],
+        "data": {
+          "findMany": null
+        }
+      }
+    }
+  ],
+  "summary": {
+    "total": 11,
+    "passed": 6,
+    "failed": 5,
+    "duration": 289
+  }
+}

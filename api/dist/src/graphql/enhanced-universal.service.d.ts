@@ -37,7 +37,9 @@ export declare class EnhancedUniversalService {
     private buildOptimizedQuery;
     private postProcessWithDataLoader;
     private hasRelationFields;
+    private readonly modelMapping;
     private getModel;
     getModelMetadata(modelName: string): Promise<any>;
+    getAvailableModels(): string[];
     batchOperation(modelName: string, operation: 'create' | 'update' | 'delete', items: any[]): Promise<any>;
 }

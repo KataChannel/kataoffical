@@ -57,6 +57,13 @@ const Query = (0, nexus_1.queryType)({
                 return context.enhancedService.getModelMetadata(args.modelName);
             },
         });
+        t.list.field('getAvailableModels', {
+            type: 'String',
+            description: 'Get list of all available models for dynamic queries',
+            resolve: async (_, _args, context) => {
+                return context.enhancedService.getAvailableModels();
+            },
+        });
         t.field('health', {
             type: 'JSON',
             description: 'GraphQL health check',

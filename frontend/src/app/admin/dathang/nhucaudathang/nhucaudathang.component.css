@@ -1,0 +1,219 @@
+/* Enhanced Material Table Styles */
+.mat-mdc-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mat-mdc-header-cell {
+  padding: 8px 12px;
+  position: sticky;
+  top: 0;
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.mat-mdc-cell {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+
+.mat-mdc-row:hover {
+  background-color: #f1f5f9;
+  transition: background-color 0.2s ease;
+}
+
+/* Quick Filter Buttons */
+.quick-filter-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.quick-filter-button {
+  padding: 4px 12px;
+  font-size: 12px;
+  min-height: 32px;
+  border-radius: 16px;
+}
+
+.quick-filter-button.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* Filter Menu Styles */
+.filter-menu {
+  max-width: 400px;
+}
+
+.filter-menu .mat-mdc-menu-content {
+  padding: 0;
+}
+
+.filter-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.filter-search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Filter Options */
+.filter-options {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.filter-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 4px;
+  margin: 2px 4px;
+}
+
+.filter-option:hover {
+  background-color: #f1f5f9;
+}
+
+.filter-option.selected {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+/* Column Header Filter Icon */
+.column-filter-icon {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.column-filter-icon:hover {
+  opacity: 1;
+  color: #3b82f6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .mat-mdc-header-cell,
+  .mat-mdc-cell {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+  
+  .quick-filter-buttons {
+    gap: 4px;
+  }
+  
+  .quick-filter-button {
+    padding: 3px 8px;
+    font-size: 11px;
+    min-height: 28px;
+  }
+}
+
+/* Status indicators */
+.status-low-stock {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.status-normal-stock {
+  color: #059669;
+  font-weight: 600;
+}
+
+.status-pending {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.status-suggestion {
+  color: #7c3aed;
+  font-weight: 600;
+}
+
+/* Animation for filter state changes */
+.mat-mdc-row {
+  transition: all 0.2s ease;
+}
+
+.mat-mdc-row.filtered-out {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+/* Enhanced search input with icon */
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: #6b7280;
+  z-index: 1;
+}
+
+.search-input {
+  padding-left: 40px;
+}
+
+/* Pagination enhancement */
+.pagination-info {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.pagination-controls button {
+  margin: 0 4px;
+}
+
+/* Filter badge */
+.filter-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #dc2626;
+  color: white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Custom scrollbar for filter options */
+.filter-options::-webkit-scrollbar {
+  width: 6px;
+}
+
+.filter-options::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.filter-options::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.filter-options::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

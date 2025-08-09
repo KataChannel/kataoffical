@@ -8,7 +8,7 @@ const BACKUP_ROOT_DIR = './rausach_json';
 function getFormattedDate() {
     const now = new Date();
     const pad = (num) => num.toString().padStart(2, '0');
-    return `${pad(now.getDate())}${pad(now.getMonth() + 1)}${now.getFullYear()}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+    return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
 }
 const BACKUP_DIR = path.join(BACKUP_ROOT_DIR, getFormattedDate());
 async function getTables() {

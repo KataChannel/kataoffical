@@ -19,6 +19,43 @@ let EnhancedUniversalService = class EnhancedUniversalService {
         this.prisma = prisma;
         this.dataLoader = dataLoader;
         this.fieldSelection = fieldSelection;
+        this.modelMapping = {
+            'user': 'user',
+            'role': 'role',
+            'userrole': 'userRole',
+            'permission': 'permission',
+            'rolepermission': 'rolePermission',
+            'menu': 'menu',
+            'profile': 'profile',
+            'banggia': 'banggia',
+            'banggiaKhachhang': 'banggiaKhachhang',
+            'banggiasanpham': 'banggiasanpham',
+            'khachhang': 'khachhang',
+            'khachhangNhom': 'khachhangNhom',
+            'nhomkhachhang': 'nhomkhachhang',
+            'sanpham': 'sanpham',
+            'donhang': 'donhang',
+            'donhangsanpham': 'donhangsanpham',
+            'nhacungcap': 'nhacungcap',
+            'dathang': 'dathang',
+            'dathangsanpham': 'dathangsanpham',
+            'congty': 'congty',
+            'kho': 'kho',
+            'sanphamkho': 'sanphamKho',
+            'phieukho': 'phieuKho',
+            'phieukhosanpham': 'phieuKhoSanpham',
+            'tonkho': 'tonKho',
+            'chotkho': 'chotkho',
+            'auditlog': 'auditLog',
+            'filemanager': 'fileManager',
+            'chataimessage': 'chatAIMessage',
+            'chataihistory': 'chatAIHistory',
+            'file': 'file',
+            'errorlog': 'errorLog',
+            'userguidblock': 'userguidBlock',
+            'userguidstep': 'userguidStep',
+            'importhistory': 'importHistory'
+        };
     }
     async findMany(modelName, args, info) {
         console.log(`🚀 Enhanced findMany for ${modelName}:`, {
@@ -194,18 +231,39 @@ let EnhancedUniversalService = class EnhancedUniversalService {
     }
     getModel(modelName) {
         const normalizedName = modelName.toLowerCase();
-        const model = this.prisma[normalizedName];
-        if (!model) {
-            throw new Error(`Model ${modelName} not found in Prisma client`);
+        const prismaProperty = this.modelMapping[normalizedName];
+        if (!prismaProperty) {
+            console.error(`❌ Model mapping not found for: ${modelName}`);
+            console.log('Available mappings:', Object.keys(this.modelMapping));
+            throw new Error(`Model ${modelName} not found in model mapping`);
         }
+        const model = this.prisma[prismaProperty];
+        if (!model) {
+            console.error(`❌ Prisma model not found for property: ${prismaProperty}`);
+            throw new Error(`Model ${modelName} (${prismaProperty}) not found in Prisma client`);
+        }
+        console.log(`✅ Model resolved: ${modelName} -> ${prismaProperty}`);
         return model;
     }
     async getModelMetadata(modelName) {
         try {
+            const normalizedName = modelName.toLowerCase();
+            const prismaProperty = this.modelMapping[normalizedName];
+            if (!prismaProperty) {
+                return {
+                    name: modelName,
+                    available: false,
+                    supportsOptimization: false,
+                    error: 'Model not found in mapping'
+                };
+            }
+            const isAvailable = !!this.prisma[prismaProperty];
             return {
                 name: modelName,
-                available: !!this.prisma[modelName.toLowerCase()],
-                supportsOptimization: true
+                prismaProperty,
+                available: isAvailable,
+                supportsOptimization: isAvailable,
+                normalizedName
             };
         }
         catch (error) {
@@ -213,9 +271,16 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             return {
                 name: modelName,
                 available: false,
-                supportsOptimization: false
+                supportsOptimization: false,
+                error: error.message
             };
         }
+    }
+    getAvailableModels() {
+        return Object.keys(this.modelMapping).filter(modelName => {
+            const prismaProperty = this.modelMapping[modelName];
+            return !!this.prisma[prismaProperty];
+        });
     }
     async batchOperation(modelName, operation, items) {
         console.log(`📦 Batch ${operation} for ${modelName}:`, items.length, 'items');
