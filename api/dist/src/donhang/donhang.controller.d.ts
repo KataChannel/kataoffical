@@ -32,8 +32,8 @@ export declare class DonhangController {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        madonhang: string;
         ngaygiao: Date | null;
+        madonhang: string;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -89,8 +89,8 @@ export declare class DonhangController {
             isshowvat: boolean;
             type: string | null;
             status: import(".prisma/client").$Enums.StatusDonhang;
-            madonhang: string;
             ngaygiao: Date | null;
+            madonhang: string;
             khachhangId: string;
             printCount: number | null;
             tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -119,8 +119,8 @@ export declare class DonhangController {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        madonhang: string;
         ngaygiao: Date | null;
+        madonhang: string;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -175,8 +175,8 @@ export declare class DonhangController {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        madonhang: string;
         ngaygiao: Date | null;
+        madonhang: string;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -249,8 +249,8 @@ export declare class DonhangController {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        madonhang: string;
         ngaygiao: Date | null;
+        madonhang: string;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -321,8 +321,8 @@ export declare class DonhangController {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        madonhang: string;
         ngaygiao: Date | null;
+        madonhang: string;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -407,8 +407,8 @@ export declare class DonhangController {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        madonhang: string;
         ngaygiao: Date | null;
+        madonhang: string;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -507,8 +507,8 @@ export declare class DonhangController {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        madonhang: string;
         ngaygiao: Date | null;
+        madonhang: string;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -544,8 +544,8 @@ export declare class DonhangController {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        madonhang: string;
         ngaygiao: Date | null;
+        madonhang: string;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -566,8 +566,8 @@ export declare class DonhangController {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        madonhang: string;
         ngaygiao: Date | null;
+        madonhang: string;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -599,8 +599,8 @@ export declare class DonhangController {
             isshowvat: boolean;
             type: string | null;
             status: import(".prisma/client").$Enums.StatusDonhang;
-            madonhang: string;
             ngaygiao: Date | null;
+            madonhang: string;
             khachhangId: string;
             printCount: number | null;
             tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -618,8 +618,8 @@ export declare class DonhangController {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        madonhang: string;
         ngaygiao: Date | null;
+        madonhang: string;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;

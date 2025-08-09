@@ -1,10 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import * as moment from 'moment-timezone';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 
 @Injectable()
 export class ChotkhoService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly timezoneUtil: TimezoneUtilService,
+  ) {}
 
   async getLastUpdatedChotkho(): Promise<{ updatedAt: number }> {
     try {
@@ -19,7 +22,7 @@ export class ChotkhoService {
   }
   async generateCodeId(): Promise<string> {
     try {
-      const timestamp = moment().format('YYYYMMDDHHmmss');
+      const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
       const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
       return `CK-${timestamp}-${randomPart}`;
     } catch (error) {
@@ -81,8 +84,9 @@ export class ChotkhoService {
           const existingRecordsMap = new Map();
           for (const item of dataArray) {
             if (item.sanphamId && item.ngay) {
-              const startOfDay = moment(item.ngay).startOf('day').toDate();
-              const endOfDay = moment(item.ngay).endOf('day').toDate();
+              // ✅ Sử dụng TimezoneUtilService cho date operations
+              const startOfDay = new Date(this.timezoneUtil.getStartOfDay(item.ngay));
+              const endOfDay = new Date(this.timezoneUtil.getEndOfDay(item.ngay));
               
               const existing = await prisma.chotkho.findFirst({
                 where: {
@@ -95,7 +99,7 @@ export class ChotkhoService {
               });
               
               if (existing) {
-                existingRecordsMap.set(`${item.sanphamId}-${moment(item.ngay).format('YYYY-MM-DD')}`, existing);
+                existingRecordsMap.set(`${item.sanphamId}-${new Date(item.ngay).toISOString().split('T')[0]}`, existing);
               }
             }
           }
@@ -111,7 +115,7 @@ export class ChotkhoService {
               const item = dataArray[i];
               const {sanphamId, tonkhoId, phieukhoId, ngay, slthucte, slhethong, chenhlech, ghichu, title} = item;
               
-              const dateKey = `${sanphamId}-${moment(ngay).format('YYYY-MM-DD')}`;
+              const dateKey = `${sanphamId}-${new Date(ngay).toISOString().split('T')[0]}`;
               const existingRecord = existingRecordsMap.get(dateKey);
 
               // Use provided slhethong or get from cached TonKho
@@ -145,7 +149,7 @@ export class ChotkhoService {
                   sanphamId,
                   tonkhoId,
                   phieukhoId,
-                  ngay: ngay ? moment(ngay).startOf('day').toDate() : moment().startOf('day').toDate(),
+                  ngay: ngay ? new Date(this.timezoneUtil.getStartOfDay(ngay)) : new Date(this.timezoneUtil.getStartOfDay(new Date())),
                   slthucte: finalSlthucte,
                   slhethong: finalSlhethong,
                   chenhlech: finalChenhlech,
@@ -171,7 +175,7 @@ export class ChotkhoService {
                   data: {
                     title: `Điều chỉnh tồn kho - ${codeId}`,
                     maphieu: `DC-${codeId}`,
-                    ngay: ngay ? moment(ngay).startOf('day').toDate() : moment().startOf('day').toDate(),
+                    ngay: ngay ? new Date(this.timezoneUtil.getStartOfDay(ngay)) : new Date(this.timezoneUtil.getStartOfDay(new Date())),
                     type: finalChenhlech > 0 ? 'nhap' : 'xuat',
                     isChotkho: true,
                     khoId: item.khoId || '4cc01811-61f5-4bdc-83de-a493764e9258',
@@ -379,8 +383,8 @@ export class ChotkhoService {
       // Handle date filtering
       const where: any = { ...restWhere };
       if (ngay) {
-        const dateStart = moment(ngay).startOf('day').toDate();
-        const dateEnd = moment(ngay).endOf('day').toDate();
+        const dateStart = new Date(this.timezoneUtil.getStartOfDay(ngay));
+        const dateEnd = new Date(this.timezoneUtil.getEndOfDay(ngay));
         where.ngay = {
           gte: dateStart,
           lte: dateEnd
@@ -502,7 +506,7 @@ export class ChotkhoService {
         if (tuNgay) {
           where.AND.push({
             tuNgay: {
-              gte: moment(tuNgay).startOf('day').toDate(),
+              gte: new Date(this.timezoneUtil.getStartOfDay(tuNgay)),
             },
           });
         }
@@ -510,7 +514,7 @@ export class ChotkhoService {
         if (denNgay) {
           where.AND.push({
             denNgay: {
-              lte: moment(denNgay).endOf('day').toDate(),
+              lte: new Date(this.timezoneUtil.getEndOfDay(denNgay)),
             },
           });
         }
@@ -620,10 +624,10 @@ export class ChotkhoService {
   async findByDateRange(startDate: string, endDate?: string, page?: number, limit?: number) {
     try {
       // Parse the date and create date range
-      const start = moment(startDate).startOf('day').toDate();
+      const start = new Date(this.timezoneUtil.getStartOfDay(startDate));
       const end = endDate 
-        ? moment(endDate).endOf('day').toDate() 
-        : moment(startDate).endOf('day').toDate();
+        ? new Date(this.timezoneUtil.getEndOfDay(endDate)) 
+        : new Date(this.timezoneUtil.getEndOfDay(startDate));
 
       const where = {
         ngay: {
@@ -666,7 +670,7 @@ export class ChotkhoService {
         // Group by date and sanphamId to get unique records
         const uniqueRecordsMap = new Map();
         allRecords.forEach(record => {
-          const dateKey = moment(record.ngay).format('YYYY-MM-DD');          
+          const dateKey = new Date(record.ngay).toISOString().split('T')[0];          
           // Keep the latest record for each date-sanpham combination
           if (!uniqueRecordsMap.has(dateKey) || 
               record.updatedAt > uniqueRecordsMap.get(dateKey).updatedAt) {
@@ -719,7 +723,7 @@ export class ChotkhoService {
       // Group by date and sanphamId to get unique records
       const uniqueRecordsMap = new Map();
       allRecords.forEach(record => {
-        const dateKey = moment(record.ngay).format('YYYY-MM-DD');
+        const dateKey = new Date(record.ngay).toISOString().split('T')[0];
         const key = `${dateKey}-${record.sanphamId}`;
         
         // Keep the latest record for each date-sanpham combination
@@ -762,11 +766,11 @@ export class ChotkhoService {
         where.ngay = {};
 
         if (startDate) {
-          where.ngay.gte = moment(startDate).startOf('day').toDate();
+          where.ngay.gte = new Date(this.timezoneUtil.getStartOfDay(startDate));
         }
 
         if (endDate) {
-          where.ngay.lte = moment(endDate).endOf('day').toDate();
+          where.ngay.lte = new Date(this.timezoneUtil.getEndOfDay(endDate));
         }
       }
 

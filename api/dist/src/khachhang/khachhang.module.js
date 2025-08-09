@@ -12,12 +12,13 @@ const khachhang_service_1 = require("./khachhang.service");
 const khachhang_controller_1 = require("./khachhang.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const importdata_module_1 = require("../importdata/importdata.module");
+const shared_module_1 = require("../shared/shared.module");
 let KhachhangModule = class KhachhangModule {
 };
 exports.KhachhangModule = KhachhangModule;
 exports.KhachhangModule = KhachhangModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, importdata_module_1.ImportdataModule],
+        imports: [prisma_module_1.PrismaModule, importdata_module_1.ImportdataModule, shared_module_1.SharedModule],
         controllers: [khachhang_controller_1.KhachhangController],
         providers: [khachhang_service_1.KhachhangService],
         exports: [khachhang_service_1.KhachhangService]

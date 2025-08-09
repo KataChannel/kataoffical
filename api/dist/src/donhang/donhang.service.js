@@ -12,11 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DonhangService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const moment = require("moment-timezone");
+const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 let DonhangService = class DonhangService {
-    constructor(prisma) {
+    constructor(prisma, timezoneUtil) {
         this.prisma = prisma;
+        this.timezoneUtil = timezoneUtil;
     }
     async generateNextOrderCode() {
         const lastOrder = await this.prisma.donhang.findFirst({
@@ -64,15 +65,14 @@ let DonhangService = class DonhangService {
     }
     async search(params) {
         const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, query, } = params;
-        const where = {
+        const dateRange = this.timezoneUtil.convertDateFilters({
             ngaygiao: {
-                gte: Batdau
-                    ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-                    : undefined,
-                lte: Ketthuc
-                    ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-                    : undefined,
-            },
+                gte: Batdau ? new Date(Batdau) : undefined,
+                lte: Ketthuc ? new Date(Ketthuc) : undefined,
+            }
+        });
+        const where = {
+            ngaygiao: dateRange.ngaygiao,
             status: Array.isArray(params.Status)
                 ? { in: params.Status }
                 : params.Status,
@@ -134,15 +134,14 @@ let DonhangService = class DonhangService {
     }
     async congnokhachhang(params) {
         const { Batdau, Ketthuc, query } = params;
-        const where = {
+        const dateRange = this.timezoneUtil.convertDateFilters({
             ngaygiao: {
-                gte: Batdau
-                    ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-                    : undefined,
-                lte: Ketthuc
-                    ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-                    : undefined,
-            },
+                gte: Batdau ? new Date(Batdau) : undefined,
+                lte: Ketthuc ? new Date(Ketthuc) : undefined,
+            }
+        });
+        const where = {
+            ngaygiao: dateRange.ngaygiao,
             status: Array.isArray(params.Status)
                 ? { in: params.Status }
                 : params.Status,
@@ -200,16 +199,15 @@ let DonhangService = class DonhangService {
     }
     async getchogiao(params) {
         const { Batdau, Ketthuc, Type } = params;
+        const dateRange = this.timezoneUtil.convertDateFilters({
+            ngaygiao: {
+                gte: Batdau ? new Date(Batdau) : undefined,
+                lte: Ketthuc ? new Date(Ketthuc) : undefined,
+            }
+        });
         const donhangs = await this.prisma.donhang.findMany({
             where: {
-                ngaygiao: {
-                    gte: Batdau
-                        ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-                        : undefined,
-                    lte: Ketthuc
-                        ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-                        : undefined,
-                },
+                ngaygiao: dateRange.ngaygiao,
             },
             include: {
                 sanpham: {
@@ -306,16 +304,15 @@ let DonhangService = class DonhangService {
     }
     async phieuchuyen(params) {
         const { Batdau, Ketthuc, Type } = params;
+        const dateRange = this.timezoneUtil.convertDateFilters({
+            ngaygiao: {
+                gte: Batdau ? new Date(Batdau) : undefined,
+                lte: Ketthuc ? new Date(Ketthuc) : undefined,
+            }
+        });
         const result = await this.prisma.donhang.findMany({
             where: {
-                ngaygiao: {
-                    gte: Batdau
-                        ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-                        : undefined,
-                    lte: Ketthuc
-                        ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-                        : undefined,
-                },
+                ngaygiao: dateRange.ngaygiao,
                 status: Array.isArray(params.Status)
                     ? { in: params.Status }
                     : params.Status,
@@ -546,7 +543,7 @@ let DonhangService = class DonhangService {
                     return null;
                 }
                 return {
-                    title: `Import ${v.tenkh} - ${moment().format('DD_MM_YYYY')}`,
+                    title: `Import ${v.tenkh} - ${this.timezoneUtil.formatDateUnderscored()}`,
                     type: 'donsi',
                     ngaygiao: new Date(v.ngaygiao) || new Date(),
                     khachhangId: v.khachhangId,
@@ -563,8 +560,8 @@ let DonhangService = class DonhangService {
         let fail = 0;
         let skip = 0;
         for (const order of rawData) {
-            const startOfDay = moment(order.ngaygiao).startOf('day').toDate();
-            const endOfDay = moment(order.ngaygiao).endOf('day').toDate();
+            const startOfDay = this.timezoneUtil.getStartOfDay(order.ngaygiao);
+            const endOfDay = this.timezoneUtil.getEndOfDay(order.ngaygiao);
             const existingOrder = await this.prisma.donhang.findFirst({
                 where: {
                     khachhangId: order.khachhangId,
@@ -595,7 +592,7 @@ let DonhangService = class DonhangService {
                     where: { makh: curr.makh },
                 });
                 acc[curr.makh] = {
-                    title: `Import ${moment().format('DD_MM_YYYY')}`,
+                    title: `Import ${this.timezoneUtil.formatDateUnderscored()}`,
                     ngaygiao: curr.ngaygiao,
                     makh: curr.makh,
                     khachhangId: khachhang?.id,
@@ -972,7 +969,7 @@ let DonhangService = class DonhangService {
                     }
                 }
                 if (shortageItems.length > 0) {
-                    const maphieuNhap = `PN-${data.madonhang}-RET-${moment().format('DDMMYYYY')}`;
+                    const maphieuNhap = `PN-${data.madonhang}-RET-${this.timezoneUtil.formatDateForFilename()}`;
                     const phieuKhoData = {
                         maphieu: maphieuNhap,
                         ngay: new Date(data.ngaygiao),
@@ -1034,7 +1031,7 @@ let DonhangService = class DonhangService {
                         },
                     });
                 }
-                const maphieuNhap = `PN-${oldDonhang.madonhang}-RET-${moment().format('DDMMYYYY')}`;
+                const maphieuNhap = `PN-${oldDonhang.madonhang}-RET-${this.timezoneUtil.formatDateForFilename()}`;
                 const phieuNhap = await prisma.phieuKho.findUnique({
                     where: { maphieu: maphieuNhap },
                 });
@@ -1089,7 +1086,7 @@ let DonhangService = class DonhangService {
                         },
                     });
                 }
-                const maphieuNew = `PX-${data.madonhang}-${moment().format('DDMMYYYY')}`;
+                const maphieuNew = `PX-${data.madonhang}-${this.timezoneUtil.formatDateForFilename()}`;
                 const phieuPayload = {
                     ngay: new Date(data.ngaygiao),
                     type: 'xuat',
@@ -1169,7 +1166,7 @@ let DonhangService = class DonhangService {
                     }
                 }
                 if (shortageItems.length > 0) {
-                    const maphieuNhap = `PN-${data.madonhang}-RET-${moment().format('DDMMYYYY')}`;
+                    const maphieuNhap = `PN-${data.madonhang}-RET-${this.timezoneUtil.formatDateForFilename()}`;
                     const phieuKhoData = {
                         maphieu: maphieuNhap,
                         ngay: new Date(data.ngaygiao),
@@ -1497,7 +1494,7 @@ let DonhangService = class DonhangService {
                     }
                 }
                 if (shortageItems.length > 0) {
-                    const maphieuNhap = `PN-${data.madonhang}-RET-${moment().format('DDMMYYYY')}`;
+                    const maphieuNhap = `PN-${data.madonhang}-RET-${this.timezoneUtil.formatDateForFilename()}`;
                     const phieuKhoData = {
                         maphieu: maphieuNhap,
                         ngay: new Date(data.ngaygiao),
@@ -1748,7 +1745,7 @@ let DonhangService = class DonhangService {
                             }
                             return acc;
                         }, []);
-                        const maphieuNew = `PX-${oldDonhang.madonhang}-${moment().format('DDMMYYYY')}`;
+                        const maphieuNew = `PX-${oldDonhang.madonhang}-${this.timezoneUtil.formatDateForFilename()}`;
                         const phieuPayload = {
                             ngay: oldDonhang.ngaygiao
                                 ? new Date(oldDonhang.ngaygiao)
@@ -1860,8 +1857,8 @@ let DonhangService = class DonhangService {
                             });
                         }
                     }
-                    const maphieuXuat = `PX-${donhang.madonhang}-${moment().format('DDMMYYYY')}`;
-                    const maphieuNhap = `PN-${donhang.madonhang}-RET-${moment().format('DDMMYYYY')}`;
+                    const maphieuXuat = `PX-${donhang.madonhang}-${this.timezoneUtil.formatDateForFilename()}`;
+                    const maphieuNhap = `PN-${donhang.madonhang}-RET-${this.timezoneUtil.formatDateForFilename()}`;
                     const phieuXuat = await prisma.phieuKho.findUnique({
                         where: { maphieu: maphieuXuat },
                     });
@@ -1917,6 +1914,7 @@ let DonhangService = class DonhangService {
 exports.DonhangService = DonhangService;
 exports.DonhangService = DonhangService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        timezone_util_service_1.TimezoneUtilService])
 ], DonhangService);
 //# sourceMappingURL=donhang.service.js.map

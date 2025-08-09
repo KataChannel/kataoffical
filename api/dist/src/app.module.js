@@ -30,6 +30,7 @@ const role_module_1 = require("./role/role.module");
 const permission_module_1 = require("./permission/permission.module");
 const nhomkhachhang_module_1 = require("./nhomkhachhang/nhomkhachhang.module");
 const googledrive_module_1 = require("./shared/googledrive/googledrive.module");
+const shared_module_1 = require("./shared/shared.module");
 const errorlogs_module_1 = require("./errorlogs/errorlogs.module");
 const callback_module_1 = require("./callback/callback.module");
 const dashboard_module_1 = require("./dashboard/dashboard.module");
@@ -91,6 +92,7 @@ exports.AppModule = AppModule = __decorate([
             role_module_1.RoleModule,
             permission_module_1.PermissionModule,
             googledrive_module_1.GoogledriveModule,
+            shared_module_1.SharedModule,
             errorlogs_module_1.ErrorlogsModule,
             callback_module_1.CallbackModule,
             dashboard_module_1.DashboardModule,

@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 
 @Injectable()
 export class DathangService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly  _ImportdataService: ImportdataService
+    private readonly _ImportdataService: ImportdataService,
+    private readonly timezoneUtil: TimezoneUtilService,
   ) {}
 
   async generateNextOrderCode(): Promise<string> {
@@ -158,7 +159,7 @@ export class DathangService {
           },
           order: 1,
           createdBy: 'system',
-          title: `Import Đặt hàng ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+          title: `Import Đặt hàng ${new Date().toLocaleString('vi-VN')}`,
           type: 'dathang',
         });
       }
@@ -235,9 +236,9 @@ async convertDathangImportToTransfer(
 
       // Tạo object theo format đích
       const transferItem = {
-        title: `Import ${moment().format('DDMMYYYY')}`,
+        title: `Import ${this.timezoneUtil.formatDateForFilename()}`,
         type: "dathang",
-        ngaynhan: moment(importItem.ngaynhan).format('YYYY-MM-DD'),
+        ngaynhan: new Date(importItem.ngaynhan).toISOString().split('T')[0],
         nhacungcapId: nhacungcap.id,
         nhacungcap: {
           name: nhacungcap.name,
@@ -276,15 +277,15 @@ async convertDathangImportToTransfer(
     const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, khoId } = params;
     const where: any = {};
 
-    // Date filter
+    // ✅ Date filter using TimezoneUtilService
     if (Batdau || Ketthuc) {
-      where.ngaynhan = {};
-      if (Batdau) {
-        where.ngaynhan.gte = moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
-      }
-      if (Ketthuc) {
-        where.ngaynhan.lte = moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
-      }
+      const dateRange = this.timezoneUtil.convertDateFilters({
+        ngaynhan: {
+          gte: Batdau ? new Date(Batdau) : undefined,
+          lte: Ketthuc ? new Date(Ketthuc) : undefined,
+        }
+      });
+      where.ngaynhan = dateRange.ngaynhan;
     }
 
     // Kho filter
@@ -331,15 +332,15 @@ async convertDathangImportToTransfer(
 
     const where: any = {};
 
-    // Date filter
+    // ✅ Date filter using TimezoneUtilService
     if (Batdau || Ketthuc) {
-      where.ngaynhan = {};
-      if (Batdau) {
-        where.ngaynhan.gte = moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
-      }
-      if (Ketthuc) {
-        where.ngaynhan.lte = moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
-      }
+      const dateRange = this.timezoneUtil.convertDateFilters({
+        ngaynhan: {
+          gte: Batdau ? new Date(Batdau) : undefined,
+          lte: Ketthuc ? new Date(Ketthuc) : undefined,
+        }
+      });
+      where.ngaynhan = dateRange.ngaynhan;
     }
 
     // Kho filter
@@ -408,21 +409,15 @@ async convertDathangImportToTransfer(
       }
     }
 
-    // Filter by ngaynhan (order receive date)
+    // ✅ Filter by ngaynhan (order receive date) using TimezoneUtilService
     if (where.Batdau || where.Ketthuc) {
-      whereClause.ngaynhan = {};
-      if (where.Batdau) {
-        whereClause.ngaynhan.gte = moment(where.Batdau)
-      .tz('Asia/Ho_Chi_Minh')
-      .startOf('day')
-      .toDate();
-      }
-      if (where.Ketthuc) {
-        whereClause.ngaynhan.lte = moment(where.Ketthuc)
-      .tz('Asia/Ho_Chi_Minh')
-      .endOf('day')
-      .toDate();
-      }
+      const dateRange = this.timezoneUtil.convertDateFilters({
+        ngaynhan: {
+          gte: where.Batdau ? new Date(where.Batdau) : undefined,
+          lte: where.Ketthuc ? new Date(where.Ketthuc) : undefined,
+        }
+      });
+      whereClause.ngaynhan = dateRange.ngaynhan;
     }
 
     // Filter by kho
@@ -781,7 +776,7 @@ async convertDathangImportToTransfer(
         }
 
         // 4.2. Tạo/upsert phiếu kho xuất
-        const maphieuNew = `PX-${data.madncc}-${moment().format('DDMMYYYY')}`;
+        const maphieuNew = `PX-${data.madncc}-${this.timezoneUtil.formatDateForFilename()}`;
         const phieuPayload = {
           ngay: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
           type: 'xuat',
@@ -873,7 +868,7 @@ async convertDathangImportToTransfer(
         // Nếu có sản phẩm thiếu, phát sinh phiếu kho nhập hàng trả về
       if (shortageItems.length > 0) {
           // Sử dụng mã đơn hàng hiện có (madncc) để tạo mã phiếu kho nhập
-        const maphieuNhap = `PX-${oldDathang.madncc}-RET-${moment().format('DDMMYYYY')}`;
+        const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
         const phieuKhoData = {
         maphieu: maphieuNhap,
         ngay: new Date(data.ngaynhan), // Ngày nhập có thể sử dụng ngày giao hoặc hiện tại
@@ -991,7 +986,7 @@ async convertDathangImportToTransfer(
       }
 
       // 7.2. Xóa phiếu kho nhập hàng trả về (nếu có)
-      const maphieuReturn = `PX-${oldDathang.madncc}-RET-${moment(oldDathang.ngaynhan).format('DDMMYYYY')}`;
+      const maphieuReturn = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
       const phieuKhoReturn = await prisma.phieuKho.findUnique({
         where: { maphieu: maphieuReturn },
       });
@@ -1089,7 +1084,7 @@ async convertDathangImportToTransfer(
       }
       }
       if (shortageItems.length > 0) {
-      const maphieuNhap = `PX-${oldDathang.madncc}-RET-${moment().format('DDMMYYYY')}`;
+      const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
       const phieuKhoData = {
         maphieu: maphieuNhap,
         ngay: new Date(data.ngaynhan),
@@ -1326,7 +1321,7 @@ async findByProductId(idSP: string) {
 //           },
 //           order: 1,
 //           createdBy: 'system',
-//           title: `Import Dathang Cu ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+//           title: `Import Dathang Cu ${new Date().toLocaleString('vi-VN')}`,
 //           type: 'dathang',
 //         });
 //       }
@@ -1379,7 +1374,7 @@ async deletebulk(data: any) {
           },
           order: 1,
           createdBy: 'system',
-          title: `Delete Bulk Dathang Error ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+          title: `Delete Bulk Dathang Error ${new Date().toLocaleString('vi-VN')}`,
           type: 'dathang',
         });
       }

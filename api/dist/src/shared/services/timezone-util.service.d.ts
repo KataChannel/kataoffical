@@ -1,18 +1,13 @@
 export declare class TimezoneUtilService {
-    toUTC(date: any): string;
-    fromUTC(utcDate: any, format?: string): string;
+    toUTC(date: Date | string | number): string;
+    fromUTC(utcDate: string | Date, timezone?: string): Date;
     nowUTC(): string;
-    validateAndConvertToUTC(dateInput: any): string | null;
-    normalizeeDateRange(startDate?: any, endDate?: any): {
-        startUTC?: string;
-        endUTC?: string;
-    };
-    normalizeDateFields(data: any, dateFields: string[]): any;
-    createDateRangeWhere(fieldName: string, startDate?: any, endDate?: any): any;
-    formatForResponse(utcDate: any, format?: string): string;
-    isSameDay(date1: any, date2: any): boolean;
-    getDayBounds(date: any): {
-        startOfDay: string;
-        endOfDay: string;
-    };
+    normalizeDateFields(data: any, dateFields?: string[]): any;
+    convertDateFilters(filters: any): any;
+    formatDateForFilename(): string;
+    formatDateUnderscored(): string;
+    getStartOfDay(date: Date | string): string;
+    getEndOfDay(date: Date | string): string;
+    validateAndConvertToUTC(date: any): string | null;
+    private isDateField;
 }

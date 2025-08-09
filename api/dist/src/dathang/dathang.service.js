@@ -11,13 +11,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DathangService = void 0;
 const common_1 = require("@nestjs/common");
-const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
+const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 let DathangService = class DathangService {
-    constructor(prisma, _ImportdataService) {
+    constructor(prisma, _ImportdataService, timezoneUtil) {
         this.prisma = prisma;
         this._ImportdataService = _ImportdataService;
+        this.timezoneUtil = timezoneUtil;
     }
     async generateNextOrderCode() {
         const lastOrder = await this.prisma.dathang.findFirst({
@@ -155,7 +156,7 @@ let DathangService = class DathangService {
                     },
                     order: 1,
                     createdBy: 'system',
-                    title: `Import Đặt hàng ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+                    title: `Import Đặt hàng ${new Date().toLocaleString('vi-VN')}`,
                     type: 'dathang',
                 });
             }
@@ -214,9 +215,9 @@ let DathangService = class DathangService {
                     });
                 }
                 const transferItem = {
-                    title: `Import ${moment().format('DDMMYYYY')}`,
+                    title: `Import ${this.timezoneUtil.formatDateForFilename()}`,
                     type: "dathang",
-                    ngaynhan: moment(importItem.ngaynhan).format('YYYY-MM-DD'),
+                    ngaynhan: new Date(importItem.ngaynhan).toISOString().split('T')[0],
                     nhacungcapId: nhacungcap.id,
                     nhacungcap: {
                         name: nhacungcap.name,
@@ -248,13 +249,13 @@ let DathangService = class DathangService {
         const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, khoId } = params;
         const where = {};
         if (Batdau || Ketthuc) {
-            where.ngaynhan = {};
-            if (Batdau) {
-                where.ngaynhan.gte = moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
-            }
-            if (Ketthuc) {
-                where.ngaynhan.lte = moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
-            }
+            const dateRange = this.timezoneUtil.convertDateFilters({
+                ngaynhan: {
+                    gte: Batdau ? new Date(Batdau) : undefined,
+                    lte: Ketthuc ? new Date(Ketthuc) : undefined,
+                }
+            });
+            where.ngaynhan = dateRange.ngaynhan;
         }
         if (khoId) {
             where.khoId = khoId;
@@ -294,13 +295,13 @@ let DathangService = class DathangService {
         const { Batdau, Ketthuc, Type, khoId } = params;
         const where = {};
         if (Batdau || Ketthuc) {
-            where.ngaynhan = {};
-            if (Batdau) {
-                where.ngaynhan.gte = moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
-            }
-            if (Ketthuc) {
-                where.ngaynhan.lte = moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
-            }
+            const dateRange = this.timezoneUtil.convertDateFilters({
+                ngaynhan: {
+                    gte: Batdau ? new Date(Batdau) : undefined,
+                    lte: Ketthuc ? new Date(Ketthuc) : undefined,
+                }
+            });
+            where.ngaynhan = dateRange.ngaynhan;
         }
         if (khoId) {
             where.khoId = khoId;
@@ -358,19 +359,13 @@ let DathangService = class DathangService {
             }
         }
         if (where.Batdau || where.Ketthuc) {
-            whereClause.ngaynhan = {};
-            if (where.Batdau) {
-                whereClause.ngaynhan.gte = moment(where.Batdau)
-                    .tz('Asia/Ho_Chi_Minh')
-                    .startOf('day')
-                    .toDate();
-            }
-            if (where.Ketthuc) {
-                whereClause.ngaynhan.lte = moment(where.Ketthuc)
-                    .tz('Asia/Ho_Chi_Minh')
-                    .endOf('day')
-                    .toDate();
-            }
+            const dateRange = this.timezoneUtil.convertDateFilters({
+                ngaynhan: {
+                    gte: where.Batdau ? new Date(where.Batdau) : undefined,
+                    lte: where.Ketthuc ? new Date(where.Ketthuc) : undefined,
+                }
+            });
+            whereClause.ngaynhan = dateRange.ngaynhan;
         }
         if (khoId) {
             whereClause.khoId = khoId;
@@ -682,7 +677,7 @@ let DathangService = class DathangService {
                         },
                     });
                 }
-                const maphieuNew = `PX-${data.madncc}-${moment().format('DDMMYYYY')}`;
+                const maphieuNew = `PX-${data.madncc}-${this.timezoneUtil.formatDateForFilename()}`;
                 const phieuPayload = {
                     ngay: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
                     type: 'xuat',
@@ -759,7 +754,7 @@ let DathangService = class DathangService {
                     }
                 }
                 if (shortageItems.length > 0) {
-                    const maphieuNhap = `PX-${oldDathang.madncc}-RET-${moment().format('DDMMYYYY')}`;
+                    const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
                     const phieuKhoData = {
                         maphieu: maphieuNhap,
                         ngay: new Date(data.ngaynhan),
@@ -861,7 +856,7 @@ let DathangService = class DathangService {
                         });
                     }
                 }
-                const maphieuReturn = `PX-${oldDathang.madncc}-RET-${moment(oldDathang.ngaynhan).format('DDMMYYYY')}`;
+                const maphieuReturn = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
                 const phieuKhoReturn = await prisma.phieuKho.findUnique({
                     where: { maphieu: maphieuReturn },
                 });
@@ -945,7 +940,7 @@ let DathangService = class DathangService {
                     }
                 }
                 if (shortageItems.length > 0) {
-                    const maphieuNhap = `PX-${oldDathang.madncc}-RET-${moment().format('DDMMYYYY')}`;
+                    const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
                     const phieuKhoData = {
                         maphieu: maphieuNhap,
                         ngay: new Date(data.ngaynhan),
@@ -1071,7 +1066,7 @@ let DathangService = class DathangService {
                         },
                         order: 1,
                         createdBy: 'system',
-                        title: `Delete Bulk Dathang Error ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+                        title: `Delete Bulk Dathang Error ${new Date().toLocaleString('vi-VN')}`,
                         type: 'dathang',
                     });
                 }
@@ -1095,6 +1090,7 @@ exports.DathangService = DathangService;
 exports.DathangService = DathangService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        importdata_service_1.ImportdataService])
+        importdata_service_1.ImportdataService,
+        timezone_util_service_1.TimezoneUtilService])
 ], DathangService);
 //# sourceMappingURL=dathang.service.js.map

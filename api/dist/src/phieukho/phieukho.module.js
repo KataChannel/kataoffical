@@ -12,12 +12,13 @@ const phieukho_service_1 = require("./phieukho.service");
 const phieukho_controller_1 = require("./phieukho.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const importdata_module_1 = require("../importdata/importdata.module");
+const shared_module_1 = require("../shared/shared.module");
 let PhieukhoModule = class PhieukhoModule {
 };
 exports.PhieukhoModule = PhieukhoModule;
 exports.PhieukhoModule = PhieukhoModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, importdata_module_1.ImportdataModule],
+        imports: [prisma_module_1.PrismaModule, importdata_module_1.ImportdataModule, shared_module_1.SharedModule],
         controllers: [phieukho_controller_1.PhieukhoController],
         providers: [phieukho_service_1.PhieukhoService],
         exports: [phieukho_service_1.PhieukhoService]

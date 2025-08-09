@@ -14,12 +14,13 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const socket_gateway_1 = require("../socket.gateway");
 const errorlogs_service_1 = require("../errorlogs/errorlogs.service");
-const moment = require("moment-timezone");
+const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 let DashboardService = class DashboardService {
-    constructor(prisma, socketGateway, errorLogService) {
+    constructor(prisma, socketGateway, errorLogService, timezoneUtil) {
         this.prisma = prisma;
         this.socketGateway = socketGateway;
         this.errorLogService = errorLogService;
+        this.timezoneUtil = timezoneUtil;
     }
     getSummary(query) {
         throw new Error('Method not implemented.');
@@ -42,18 +43,14 @@ let DashboardService = class DashboardService {
     async getDonhang(data) {
         const { Batdau, Ketthuc } = data;
         const startDate = Batdau
-            ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-            : moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
+            ? new Date(this.timezoneUtil.getStartOfDay(Batdau))
+            : new Date(this.timezoneUtil.getStartOfDay(new Date()));
         const endDate = Ketthuc
-            ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-            : moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
-        const duration = moment(endDate).diff(moment(startDate));
-        const previousStartDate = moment(startDate)
-            .subtract(duration, 'milliseconds')
-            .toDate();
-        const previousEndDate = moment(endDate)
-            .subtract(duration, 'milliseconds')
-            .toDate();
+            ? new Date(this.timezoneUtil.getEndOfDay(Ketthuc))
+            : new Date(this.timezoneUtil.getEndOfDay(new Date()));
+        const duration = endDate.getTime() - startDate.getTime();
+        const previousStartDate = new Date(startDate.getTime() - duration);
+        const previousEndDate = new Date(endDate.getTime() - duration);
         const dateFilter = {
             ngaygiao: {
                 gte: startDate,
@@ -223,6 +220,7 @@ exports.DashboardService = DashboardService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         socket_gateway_1.SocketGateway,
-        errorlogs_service_1.ErrorlogsService])
+        errorlogs_service_1.ErrorlogsService,
+        timezone_util_service_1.TimezoneUtilService])
 ], DashboardService);
 //# sourceMappingURL=dashboard.service.js.map

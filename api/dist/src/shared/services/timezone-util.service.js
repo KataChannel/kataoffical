@@ -8,118 +8,107 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TimezoneUtilService = void 0;
 const common_1 = require("@nestjs/common");
-const moment = require("moment");
 let TimezoneUtilService = class TimezoneUtilService {
     toUTC(date) {
         if (!date)
-            return '';
-        if (typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-            return moment(date, 'YYYY-MM-DD').utc().toISOString();
+            return new Date().toISOString();
+        const d = new Date(date);
+        if (isNaN(d.getTime())) {
+            throw new Error('Invalid date provided');
         }
-        return moment(date).utc().toISOString();
+        return d.toISOString();
     }
-    fromUTC(utcDate, format = 'YYYY-MM-DD') {
-        if (!utcDate)
-            return '';
-        return moment.utc(utcDate).local().format(format);
+    fromUTC(utcDate, timezone = 'Asia/Ho_Chi_Minh') {
+        const date = new Date(utcDate);
+        return new Date(date.toLocaleString('en-US', { timeZone: timezone }));
     }
     nowUTC() {
-        return moment().utc().toISOString();
+        return new Date().toISOString();
     }
-    validateAndConvertToUTC(dateInput) {
-        if (!dateInput)
-            return null;
-        try {
-            if (typeof dateInput === 'string' && dateInput.includes('T') && dateInput.includes('Z')) {
-                const parsed = moment.utc(dateInput);
-                return parsed.isValid() ? parsed.toISOString() : null;
-            }
-            if (typeof dateInput === 'string' && dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                const parsed = moment(dateInput, 'YYYY-MM-DD');
-                return parsed.isValid() ? parsed.utc().toISOString() : null;
-            }
-            const parsed = moment(dateInput);
-            return parsed.isValid() ? parsed.utc().toISOString() : null;
-        }
-        catch (error) {
-            console.error('Date validation error:', error);
-            return null;
-        }
-    }
-    normalizeeDateRange(startDate, endDate) {
-        const result = {};
-        if (startDate) {
-            const startUTC = this.validateAndConvertToUTC(startDate);
-            if (startUTC) {
-                result.startUTC = startUTC;
-            }
-        }
-        if (endDate) {
-            const endUTC = this.validateAndConvertToUTC(endDate);
-            if (endUTC) {
-                result.endUTC = moment.utc(endUTC).endOf('day').toISOString();
-            }
-        }
-        return result;
-    }
-    normalizeDateFields(data, dateFields) {
+    normalizeDateFields(data, dateFields = ['createdAt', 'updatedAt', 'ngaygiao', 'ngaynhan', 'ngaytao']) {
         if (!data || typeof data !== 'object')
             return data;
-        const normalizedData = { ...data };
+        const normalized = { ...data };
         dateFields.forEach(field => {
-            if (normalizedData[field]) {
-                const utcDate = this.validateAndConvertToUTC(normalizedData[field]);
-                if (utcDate) {
-                    normalizedData[field] = utcDate;
+            if (normalized[field]) {
+                try {
+                    normalized[field] = this.toUTC(normalized[field]);
                 }
-                else {
-                    normalizedData[field] = null;
+                catch (error) {
+                    console.warn(`Warning: Could not normalize date field ${field}:`, error);
                 }
             }
         });
-        return normalizedData;
+        return normalized;
     }
-    createDateRangeWhere(fieldName, startDate, endDate) {
-        const dateRange = this.normalizeeDateRange(startDate, endDate);
-        const where = {};
-        if (dateRange.startUTC || dateRange.endUTC) {
-            where[fieldName] = {};
-            if (dateRange.startUTC) {
-                where[fieldName].gte = new Date(dateRange.startUTC);
+    convertDateFilters(filters) {
+        if (!filters || typeof filters !== 'object')
+            return filters;
+        const converted = { ...filters };
+        Object.keys(converted).forEach(key => {
+            const value = converted[key];
+            if (value && typeof value === 'object') {
+                if (value.gte) {
+                    const startDate = new Date(value.gte);
+                    startDate.setHours(0, 0, 0, 0);
+                    value.gte = this.toUTC(startDate);
+                }
+                if (value.lte) {
+                    const endDate = new Date(value.lte);
+                    endDate.setHours(23, 59, 59, 999);
+                    value.lte = this.toUTC(endDate);
+                }
+                if (value.gt)
+                    value.gt = this.toUTC(value.gt);
+                if (value.lt)
+                    value.lt = this.toUTC(value.lt);
+                if (value.equals)
+                    value.equals = this.toUTC(value.equals);
             }
-            if (dateRange.endUTC) {
-                where[fieldName].lte = new Date(dateRange.endUTC);
+            else if (this.isDateField(key) && value) {
+                converted[key] = this.toUTC(value);
             }
-        }
-        return where;
+        });
+        return converted;
     }
-    formatForResponse(utcDate, format) {
-        if (!utcDate)
-            return '';
-        if (format) {
-            return moment.utc(utcDate).local().format(format);
-        }
-        return moment.utc(utcDate).local().toISOString();
+    formatDateForFilename() {
+        const now = new Date();
+        const day = now.getDate().toString().padStart(2, '0');
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const year = now.getFullYear();
+        return `${day}${month}${year}`;
     }
-    isSameDay(date1, date2) {
-        if (!date1 || !date2)
-            return false;
-        return moment.utc(date1).format('YYYY-MM-DD') === moment.utc(date2).format('YYYY-MM-DD');
+    formatDateUnderscored() {
+        const now = new Date();
+        const day = now.getDate().toString().padStart(2, '0');
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const year = now.getFullYear();
+        return `${day}_${month}_${year}`;
     }
-    getDayBounds(date) {
-        const utcDate = this.validateAndConvertToUTC(date);
-        if (!utcDate) {
-            const now = moment().utc();
-            return {
-                startOfDay: now.startOf('day').toISOString(),
-                endOfDay: now.endOf('day').toISOString()
-            };
+    getStartOfDay(date) {
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        return this.toUTC(d);
+    }
+    getEndOfDay(date) {
+        const d = new Date(date);
+        d.setHours(23, 59, 59, 999);
+        return this.toUTC(d);
+    }
+    validateAndConvertToUTC(date) {
+        if (!date)
+            return null;
+        try {
+            return this.toUTC(date);
         }
-        const momentDate = moment.utc(utcDate);
-        return {
-            startOfDay: momentDate.startOf('day').toISOString(),
-            endOfDay: momentDate.endOf('day').toISOString()
-        };
+        catch (error) {
+            console.warn('Date validation error:', error);
+            return null;
+        }
+    }
+    isDateField(fieldName) {
+        const dateFields = ['createdAt', 'updatedAt', 'ngaygiao', 'ngaynhan', 'ngaytao', 'date', 'time', 'datetime'];
+        return dateFields.some(field => fieldName.toLowerCase().includes(field.toLowerCase()));
     }
 };
 exports.TimezoneUtilService = TimezoneUtilService;

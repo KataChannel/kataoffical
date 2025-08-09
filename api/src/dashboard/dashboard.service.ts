@@ -3,7 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 import { SocketGateway } from 'src/socket.gateway';
 import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
 import { SummaryQueryDto } from './dto/summary-query.dto';
-import * as moment from 'moment-timezone';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 
 @Injectable()
 export class DashboardService {
@@ -11,6 +11,7 @@ export class DashboardService {
     private readonly prisma: PrismaService,
     private readonly socketGateway: SocketGateway,
     private readonly errorLogService: ErrorlogsService,
+    private readonly timezoneUtil: TimezoneUtilService,
   ) {}
 
   getSummary(query: SummaryQueryDto) {
@@ -34,23 +35,20 @@ export class DashboardService {
 
   async getDonhang(data: any) {
     const { Batdau, Ketthuc } = data;
-    // Prepare date filters
-    const startDate = Batdau
-      ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-      : moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate();
+    
+    // ✅ Prepare date filters using TimezoneUtilService
+    const startDate = Batdau 
+      ? new Date(this.timezoneUtil.getStartOfDay(Batdau))
+      : new Date(this.timezoneUtil.getStartOfDay(new Date()));
 
-    const endDate = Ketthuc
-      ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-      : moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
+    const endDate = Ketthuc 
+      ? new Date(this.timezoneUtil.getEndOfDay(Ketthuc))
+      : new Date(this.timezoneUtil.getEndOfDay(new Date()));
 
-    // Calculate previous period
-    const duration = moment(endDate).diff(moment(startDate));
-    const previousStartDate = moment(startDate)
-      .subtract(duration, 'milliseconds')
-      .toDate();
-    const previousEndDate = moment(endDate)
-      .subtract(duration, 'milliseconds')
-      .toDate();
+    // ✅ Calculate previous period using native Date
+    const duration = endDate.getTime() - startDate.getTime();
+    const previousStartDate = new Date(startDate.getTime() - duration);
+    const previousEndDate = new Date(endDate.getTime() - duration);
 
     const dateFilter = {
       ngaygiao: {

@@ -13,12 +13,13 @@ const dashboard_controller_1 = require("./dashboard.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const socket_gateway_1 = require("../socket.gateway");
 const errorlogs_module_1 = require("../errorlogs/errorlogs.module");
+const shared_module_1 = require("../shared/shared.module");
 let DashboardModule = class DashboardModule {
 };
 exports.DashboardModule = DashboardModule;
 exports.DashboardModule = DashboardModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, errorlogs_module_1.ErrorlogsModule],
+        imports: [prisma_module_1.PrismaModule, errorlogs_module_1.ErrorlogsModule, shared_module_1.SharedModule],
         controllers: [dashboard_controller_1.DashboardController],
         providers: [dashboard_service_1.DashboardService, socket_gateway_1.SocketGateway],
         exports: [dashboard_service_1.DashboardService],

@@ -2,7 +2,8 @@ import { Inject, Injectable, signal,Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
-import moment from 'moment';
+import { TimezoneService } from '../../shared/services/timezone.service';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -10,6 +11,7 @@ export class DonhangService {
   constructor(
     private _StorageService: StorageService,
     private router: Router,
+    private timezoneService: TimezoneService,
   ) { }
   ListDonhang = signal<any[]>([]);
   DetailDonhang = signal<any>({});
@@ -143,8 +145,9 @@ export class DonhangService {
 
   async getSLChogiao(SearchParams: any) {
     const payload = {...SearchParams}
-    payload.Batdau = moment(payload.Batdau).utc()
-    payload.Ketthuc = moment(payload.Ketthuc).utc()
+    // ✅ Sử dụng TimezoneService để convert UTC
+    payload.Batdau = this.timezoneService.toUTC(payload.Batdau)
+    payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc)
     try {
       const options = {
         method: 'POST',
@@ -171,8 +174,9 @@ export class DonhangService {
   }
   async searchDonhang(SearchParams: any) {
     const payload = {...SearchParams}
-    payload.Batdau = moment(payload.Batdau).utc()
-    payload.Ketthuc = moment(payload.Ketthuc).utc()
+    // ✅ Sử dụng TimezoneService để convert UTC
+    payload.Batdau = this.timezoneService.toUTC(payload.Batdau)
+    payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc)
     try {
       const options = {
         method: 'POST',
@@ -199,8 +203,9 @@ export class DonhangService {
   }
   async searchCongno(SearchParams: any) {
     const payload = {...SearchParams}
-    payload.Batdau = moment(payload.Batdau).utc()
-    payload.Ketthuc = moment(payload.Ketthuc).utc()
+    // ✅ Sử dụng TimezoneService để convert UTC
+    payload.Batdau = this.timezoneService.toUTC(payload.Batdau)
+    payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc)
     try {
       const options = {
         method: 'POST',
@@ -224,8 +229,9 @@ export class DonhangService {
 
   async Phieuchuyen(SearchParams: any) {
     const payload = {...SearchParams}
-    payload.Batdau = moment(payload.Batdau).utc()
-    payload.Ketthuc = moment(payload.Ketthuc).utc()
+    // ✅ Sử dụng TimezoneService để convert UTC
+    payload.Batdau = this.timezoneService.toUTC(payload.Batdau)
+    payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc)
     try {
       const options = {
         method: 'POST',

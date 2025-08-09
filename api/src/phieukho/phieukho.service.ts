@@ -1,14 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
 import { convertXuatnhapton } from 'src/shared/utils/xuatnhapton.utils';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 
 @Injectable()
 export class PhieukhoService {
   constructor(
     private readonly prisma: PrismaService,
     private _ImportdataService: ImportdataService,
+    private readonly timezoneUtil: TimezoneUtilService,
   ) {}
 
   async generateNextOrderCode(type: any): Promise<string> {
@@ -169,7 +170,7 @@ export class PhieukhoService {
             },
             order: 1, // Cập nhật nếu cần theo thứ tự của bạn
             createdBy: 'system', // Thay bằng ID người dùng thực nếu có
-            title: `Import Khách Hàng ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+            title: `Import Khách Hàng ${new Date().toLocaleString('vi-VN')}`,
             type: 'sanpham',
           });
           if (

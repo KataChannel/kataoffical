@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
 import { SocketGateway } from 'src/socket.gateway';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 
 @Injectable()
 export class BanggiaService {
@@ -10,6 +10,7 @@ export class BanggiaService {
     private readonly prisma: PrismaService,
     private readonly _SocketGateway: SocketGateway,
     private readonly _ImportdataService: ImportdataService,
+    private readonly timezoneUtil: TimezoneUtilService,
   ) {}
 
   async importSPBG(listBanggia: any[]) {
@@ -50,7 +51,7 @@ export class BanggiaService {
               },
               order: 1,
               createdBy: 'system',
-              title: `Import Sản Phẩm Bảng giá ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+              title: `Import Sản Phẩm Bảng giá ${new Date().toLocaleString('vi-VN')} `,
               type: 'banggia',
             });
             throw new NotFoundException(`Sanpham with ID "${sp.masp}" not found`);
@@ -102,7 +103,7 @@ export class BanggiaService {
           },
           order: 1,
           createdBy: 'system',
-          title: `Import Sản Phẩm Bảng giá (413 Error) ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+          title: `Import Sản Phẩm Bảng giá (413 Error) ${new Date().toLocaleString('vi-VN')} `,
           type: 'banggia',
         });
         throw new InternalServerErrorException('Content too large. Please reduce the amount of data and try again.');
@@ -116,7 +117,7 @@ export class BanggiaService {
         },
         order: 1,
         createdBy: 'system',
-        title: `Import Sản Phẩm Bảng giá ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+        title: `Import Sản Phẩm Bảng giá ${new Date().toLocaleString('vi-VN')} `,
         type: 'banggia',
       });
       throw new InternalServerErrorException(
@@ -151,7 +152,7 @@ export class BanggiaService {
           },
           order: 1, // cập nhật nếu cần theo thứ tự của bạn
           createdBy: 'system', // thay bằng ID người dùng thực nếu có
-          title: `Import Bảng giá ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+          title: `Import Bảng giá ${new Date().toLocaleString('vi-VN')} `,
           type: 'banggia',
         });
         
@@ -249,7 +250,7 @@ export class BanggiaService {
           },
           order: 1,
           createdBy: 'system',
-          title: `Import Bảng giá khách hàng (413 Error) ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+          title: `Import Bảng giá khách hàng (413 Error) ${new Date().toLocaleString('vi-VN')} `,
           type: 'banggia',
         });
         throw new InternalServerErrorException('Content too large. Please reduce the amount of data and try again.');
@@ -263,7 +264,7 @@ export class BanggiaService {
         },
         order: 1,
         createdBy: 'system',
-        title: `Import Bảng giá khách hàng ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+        title: `Import Bảng giá khách hàng ${new Date().toLocaleString('vi-VN')} `,
         type: 'banggia',
       });
       throw new InternalServerErrorException(

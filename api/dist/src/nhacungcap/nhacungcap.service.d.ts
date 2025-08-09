@@ -1,9 +1,11 @@
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 export declare class NhacungcapService {
     private readonly prisma;
     private _ImportdataService;
-    constructor(prisma: PrismaService, _ImportdataService: ImportdataService);
+    private readonly timezoneUtil;
+    constructor(prisma: PrismaService, _ImportdataService: ImportdataService, timezoneUtil: TimezoneUtilService);
     getLastUpdatedNhacungcap(): Promise<{
         updatedAt: number;
     }>;

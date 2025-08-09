@@ -14,12 +14,13 @@ const prisma_module_1 = require("../../prisma/prisma.module");
 const socket_gateway_1 = require("../socket.gateway");
 const auth_module_1 = require("../auth/auth.module");
 const errorlogs_service_1 = require("../errorlogs/errorlogs.service");
+const shared_module_1 = require("../shared/shared.module");
 let ChotkhoModule = class ChotkhoModule {
 };
 exports.ChotkhoModule = ChotkhoModule;
 exports.ChotkhoModule = ChotkhoModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, auth_module_1.AuthModule],
+        imports: [prisma_module_1.PrismaModule, auth_module_1.AuthModule, shared_module_1.SharedModule],
         controllers: [chotkho_controller_1.ChotkhoController],
         providers: [chotkho_service_1.ChotkhoService, socket_gateway_1.SocketGateway, errorlogs_service_1.ErrorlogsService],
         exports: [chotkho_service_1.ChotkhoService]

@@ -50,6 +50,61 @@
   max-width: 400px;
 }
 
+/* Date Filter Menu Styles */
+.date-filter-menu {
+  max-width: 350px;
+}
+
+.date-filter-menu .mat-mdc-menu-content {
+  padding: 0 !important;
+}
+
+.date-range-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+/* Date picker form field styling */
+.mat-mdc-form-field.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  background-color: white;
+}
+
+/* Date range status styling */
+.date-range-status {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+  color: #475569;
+}
+
+/* Quick date buttons */
+.quick-date-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.quick-date-buttons .mat-mdc-button {
+  font-size: 11px;
+  min-width: auto;
+  padding: 4px 8px;
+  height: 28px;
+  line-height: 20px;
+}
+
 .filter-menu .mat-mdc-menu-content {
   padding: 0;
 }

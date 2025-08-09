@@ -11,17 +11,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SanphamService = void 0;
 const common_1 = require("@nestjs/common");
-const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const errorlogs_service_1 = require("../errorlogs/errorlogs.service");
 const importdata_service_1 = require("../importdata/importdata.service");
 const socket_gateway_1 = require("../socket.gateway");
+const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 let SanphamService = class SanphamService {
-    constructor(prisma, _SocketGateway, _ErrorlogsService, _ImportdataService) {
+    constructor(prisma, _SocketGateway, _ErrorlogsService, _ImportdataService, timezoneUtil) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
         this._ErrorlogsService = _ErrorlogsService;
         this._ImportdataService = _ImportdataService;
+        this.timezoneUtil = timezoneUtil;
     }
     async findAllForSelect() {
         try {
@@ -130,7 +131,7 @@ let SanphamService = class SanphamService {
                     },
                     order: 1,
                     createdBy: 'system',
-                    title: `Import Sản Phẩm ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                    title: `Import Sản Phẩm ${new Date().toLocaleString('vi-VN')} `,
                     type: 'sanpham',
                 };
                 this._ImportdataService.create(importData);
@@ -147,7 +148,7 @@ let SanphamService = class SanphamService {
             },
             order: 0,
             createdBy: 'system',
-            title: `Import ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+            title: `Import ${new Date().toLocaleString('vi-VN')}`,
             type: 'sanpham',
         };
         this._ImportdataService.create(importData);
@@ -465,6 +466,7 @@ exports.SanphamService = SanphamService = __decorate([
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         socket_gateway_1.SocketGateway,
         errorlogs_service_1.ErrorlogsService,
-        importdata_service_1.ImportdataService])
+        importdata_service_1.ImportdataService,
+        timezone_util_service_1.TimezoneUtilService])
 ], SanphamService);
 //# sourceMappingURL=sanpham.service.js.map

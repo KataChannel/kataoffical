@@ -12,48 +12,95 @@
                         <span class="material-symbols-outlined text-gray-500">search</span>
                     </div>
                 </div>
-
-                <!-- Quick Filters -->
-                <!-- <div class="flex flex-wrap gap-1 items-center">
-                    <button mat-stroked-button 
-                            [color]="quickFilter === 'all' ? 'primary' : 'basic'"
-                            (click)="applyQuickFilter('all')" 
-                            class="text-xs px-2 py-1">
-                        Tất cả
-                    </button>
-                    <button mat-stroked-button 
-                            [color]="quickFilter === 'lowStock' ? 'primary' : 'basic'"
-                            (click)="applyQuickFilter('lowStock')" 
-                            class="text-xs px-2 py-1">
-                        Tồn thấp
-                    </button>
-                    <button mat-stroked-button 
-                            [color]="quickFilter === 'needOrder' ? 'primary' : 'basic'"
-                            (click)="applyQuickFilter('needOrder')" 
-                            class="text-xs px-2 py-1">
-                        Cần đặt
-                    </button>
-                    <button mat-stroked-button 
-                            [color]="quickFilter === 'pendingDelivery' ? 'primary' : 'basic'"
-                            (click)="applyQuickFilter('pendingDelivery')" 
-                            class="text-xs px-2 py-1">
-                        Chờ giao
-                    </button>
-                    <button mat-icon-button
-                            matTooltip="Xóa tất cả bộ lọc"
-                            (click)="clearAllFilters()"
-                            class="text-xs">
-                        <mat-icon>clear_all</mat-icon>
-                    </button>
-                </div> -->
-
-                <!-- <button class="flex flex-row items-center btn-primary" matTooltip="Thêm mới" (click)="create()" mat-flat-button>
-                    <mat-icon>add_circle</mat-icon>
-                    <span class="whitespace- ">Tạo Mới</span>
-                </button> -->
                 <button matTooltip="Ẩn hiện cột" mat-icon-button color="primary" [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
                     <mat-icon>tune</mat-icon>
                 </button>
+                
+                <!-- Date Range Filter -->
+                <button matTooltip="Lọc theo ngày" mat-icon-button color="primary" [matMenuTriggerFor]="dateMenu" aria-label="Date filter menu">
+                    <mat-icon [class.text-blue-600]="isDateRangeEnabled">date_range</mat-icon>
+                </button>
+                <mat-menu #dateMenu="matMenu" class="date-filter-menu">
+                    <div class="p-4" (click)="$event.stopPropagation()">
+                        <div class="flex flex-col space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="font-semibold">Lọc theo khoảng thời gian</span>
+                                <mat-slide-toggle 
+                                    [(ngModel)]="isDateRangeEnabled" 
+                                    (toggleChange)="toggleDateRangeFilter()"
+                                    color="primary">
+                                </mat-slide-toggle>
+                            </div>
+                            
+                            @if (isDateRangeEnabled) {
+                                <div class="flex flex-col space-y-3">
+                                    <!-- Start Date -->
+                                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                        <mat-label>Từ ngày</mat-label>
+                                        <input matInput 
+                                               [matDatepicker]="startPicker" 
+                                               [(ngModel)]="batdau"
+                                               (dateChange)="onStartDateChange($event)"
+                                               readonly>
+                                        <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+                                        <mat-datepicker #startPicker></mat-datepicker>
+                                    </mat-form-field>
+                                    
+                                    <!-- End Date -->
+                                    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                                        <mat-label>Đến ngày</mat-label>
+                                        <input matInput 
+                                               [matDatepicker]="endPicker" 
+                                               [(ngModel)]="ketthuc"
+                                               (dateChange)="onEndDateChange($event)"
+                                               readonly>
+                                        <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+                                        <mat-datepicker #endPicker></mat-datepicker>
+                                    </mat-form-field>
+                                    
+                                    <!-- Quick Date Buttons -->
+                                    <div class="flex flex-wrap gap-2">
+                                        <button mat-stroked-button color="primary" (click)="setToday()" class="text-xs">
+                                            Hôm nay
+                                        </button>
+                                        <button mat-stroked-button color="primary" (click)="setThisWeek()" class="text-xs">
+                                            Tuần này
+                                        </button>
+                                        <button mat-stroked-button color="primary" (click)="setThisMonth()" class="text-xs">
+                                            Tháng này
+                                        </button>
+                                        <button mat-stroked-button color="warn" (click)="clearDateFilter()" class="text-xs">
+                                            Xóa lọc
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Apply Filter Button -->
+                                    <div class="flex justify-center">
+                                        <button mat-raised-button 
+                                                [color]="hasUnappliedDateChanges ? 'warn' : 'primary'" 
+                                                (click)="applyDateFilter()" 
+                                                class="w-full">
+                                            <mat-icon>{{ hasUnappliedDateChanges ? 'pending' : 'filter_alt' }}</mat-icon>
+                                            {{ hasUnappliedDateChanges ? 'Có thay đổi - Áp dụng' : 'Áp dụng lọc' }}
+                                        </button>
+                                    </div>
+                                    
+                                    @if (hasUnappliedDateChanges) {
+                                        <div class="text-xs text-orange-600 bg-orange-50 p-2 rounded text-center">
+                                            ⚠️ Có thay đổi ngày chưa được áp dụng
+                                        </div>
+                                    }
+                                    
+                                    <!-- Date Range Display -->
+                                    <div class="text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                                        <strong>Khoảng thời gian:</strong><br>
+                                        {{ formatDateForDisplay(batdau, 'DD/MM/YYYY') }} - {{ formatDateForDisplay(ketthuc, 'DD/MM/YYYY') }}
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </mat-menu>
                 <mat-menu #menu="matMenu">
                     <div class="p-4">
                         <mat-form-field appearance="outline" class="w-full" subscriptSizing="dynamic">
@@ -82,6 +129,11 @@
                 </button> -->
                 <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{this.TonghopsFinal.length > 0 ? this.TonghopsFinal.length : this.Listsanpham().length}} Sản Phẩm
+                    @if (isDateRangeEnabled) {
+                        <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
+                            📅 {{ formatDateForDisplay(batdau, 'DD/MM') }} - {{ formatDateForDisplay(ketthuc, 'DD/MM') }}
+                        </span>
+                    }
                 </span>
             </div>
         </div>

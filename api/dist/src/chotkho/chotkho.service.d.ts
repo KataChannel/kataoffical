@@ -1,7 +1,9 @@
 import { PrismaService } from 'prisma/prisma.service';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 export declare class ChotkhoService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly timezoneUtil;
+    constructor(prisma: PrismaService, timezoneUtil: TimezoneUtilService);
     getLastUpdatedChotkho(): Promise<{
         updatedAt: number;
     }>;

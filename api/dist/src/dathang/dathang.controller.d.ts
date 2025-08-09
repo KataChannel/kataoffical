@@ -30,9 +30,9 @@ export declare class DathangController {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ngaynhan: Date | null;
         printCount: number | null;
         madncc: string | null;
-        ngaynhan: Date | null;
         nhacungcapId: string | null;
         khoId: string | null;
     }>;
@@ -69,9 +69,9 @@ export declare class DathangController {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ngaynhan: Date | null;
         printCount: number | null;
         madncc: string | null;
-        ngaynhan: Date | null;
         nhacungcapId: string | null;
         khoId: string | null;
     }>;
@@ -160,9 +160,9 @@ export declare class DathangController {
             updatedAt: Date | null;
             type: string | null;
             status: import(".prisma/client").$Enums.StatusDonhang;
+            ngaynhan: Date | null;
             printCount: number | null;
             madncc: string | null;
-            ngaynhan: Date | null;
             nhacungcapId: string | null;
             khoId: string | null;
         })[];
@@ -210,9 +210,9 @@ export declare class DathangController {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ngaynhan: Date | null;
         printCount: number | null;
         madncc: string | null;
-        ngaynhan: Date | null;
         nhacungcapId: string | null;
         khoId: string | null;
     }[]>;
@@ -294,9 +294,9 @@ export declare class DathangController {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ngaynhan: Date | null;
         printCount: number | null;
         madncc: string | null;
-        ngaynhan: Date | null;
         nhacungcapId: string | null;
         khoId: string | null;
     }) | {
@@ -378,9 +378,9 @@ export declare class DathangController {
             updatedAt: Date | null;
             type: string | null;
             status: import(".prisma/client").$Enums.StatusDonhang;
+            ngaynhan: Date | null;
             printCount: number | null;
             madncc: string | null;
-            ngaynhan: Date | null;
             nhacungcapId: string | null;
             khoId: string | null;
         })[];
@@ -466,9 +466,9 @@ export declare class DathangController {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ngaynhan: Date | null;
         printCount: number | null;
         madncc: string | null;
-        ngaynhan: Date | null;
         nhacungcapId: string | null;
         khoId: string | null;
     }>;
@@ -549,9 +549,9 @@ export declare class DathangController {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ngaynhan: Date | null;
         printCount: number | null;
         madncc: string | null;
-        ngaynhan: Date | null;
         nhacungcapId: string | null;
         khoId: string | null;
     }[]>;
@@ -566,9 +566,9 @@ export declare class DathangController {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ngaynhan: Date | null;
         printCount: number | null;
         madncc: string | null;
-        ngaynhan: Date | null;
         nhacungcapId: string | null;
         khoId: string | null;
     }>;
@@ -583,9 +583,9 @@ export declare class DathangController {
         updatedAt: Date | null;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
+        ngaynhan: Date | null;
         printCount: number | null;
         madncc: string | null;
-        ngaynhan: Date | null;
         nhacungcapId: string | null;
         khoId: string | null;
     }>;

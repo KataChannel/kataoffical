@@ -21,6 +21,7 @@ import { RoleModule } from './role/role.module';
 import { PermissionModule } from './permission/permission.module';
 import { NhomkhachhangModule } from './nhomkhachhang/nhomkhachhang.module';
 import { GoogledriveModule } from './shared/googledrive/googledrive.module';
+import { SharedModule } from './shared/shared.module';
 import { ErrorlogsModule } from './errorlogs/errorlogs.module';
 import { CallbackModule } from './callback/callback.module';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -77,6 +78,7 @@ import { GraphQLUniversalModule } from './graphql/graphql.module';
     RoleModule,
     PermissionModule,
     GoogledriveModule,
+    SharedModule,
     ErrorlogsModule,
     CallbackModule,
     DashboardModule,

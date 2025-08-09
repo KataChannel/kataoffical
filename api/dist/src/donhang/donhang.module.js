@@ -12,12 +12,13 @@ const donhang_service_1 = require("./donhang.service");
 const donhang_controller_1 = require("./donhang.controller");
 const prisma_module_1 = require("../../prisma/prisma.module");
 const importdata_module_1 = require("../importdata/importdata.module");
+const shared_module_1 = require("../shared/shared.module");
 let DonhangModule = class DonhangModule {
 };
 exports.DonhangModule = DonhangModule;
 exports.DonhangModule = DonhangModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, importdata_module_1.ImportdataModule],
+        imports: [prisma_module_1.PrismaModule, importdata_module_1.ImportdataModule, shared_module_1.SharedModule],
         controllers: [donhang_controller_1.DonhangController],
         providers: [donhang_service_1.DonhangService],
         exports: [donhang_service_1.DonhangService]

@@ -11,13 +11,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NhacungcapService = void 0;
 const common_1 = require("@nestjs/common");
-const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
+const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 let NhacungcapService = class NhacungcapService {
-    constructor(prisma, _ImportdataService) {
+    constructor(prisma, _ImportdataService, timezoneUtil) {
         this.prisma = prisma;
         this._ImportdataService = _ImportdataService;
+        this.timezoneUtil = timezoneUtil;
     }
     async getLastUpdatedNhacungcap() {
         try {
@@ -138,7 +139,7 @@ let NhacungcapService = class NhacungcapService {
                 },
                 order: 1,
                 createdBy: 'system',
-                title: `Import Nhà Cung Cấp ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                title: `Import Nhà Cung Cấp ${new Date().toLocaleString('vi-VN')} `,
                 type: 'nhacungcap',
             });
             throw new common_1.InternalServerErrorException('Lỗi khi nhập khẩu nhà cung cấp');
@@ -323,6 +324,7 @@ exports.NhacungcapService = NhacungcapService;
 exports.NhacungcapService = NhacungcapService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        importdata_service_1.ImportdataService])
+        importdata_service_1.ImportdataService,
+        timezone_util_service_1.TimezoneUtilService])
 ], NhacungcapService);
 //# sourceMappingURL=nhacungcap.service.js.map

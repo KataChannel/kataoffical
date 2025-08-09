@@ -26,9 +26,10 @@ import {
   writeExcelFile,
 } from '../../../shared/utils/exceldrive.utils';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { SanphamService } from '../../sanpham/sanpham.service';
-import { TablenhucaudathanhComponent } from './tablenhucaudathanh/tablenhucaudathanh.component';
-import moment from 'moment';
 import { GraphqlService } from '../../../shared/services/graphql.service';
 import { GenId } from '../../../shared/utils/shared.utils';
 import { TimezoneService } from '../../../shared/services/timezone.service';
@@ -53,7 +54,9 @@ import { TimezoneService } from '../../../shared/services/timezone.service';
     FormsModule,
     MatTooltipModule,
     MatDialogModule,
-    TablenhucaudathanhComponent,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSlideToggleModule,
   ],
 })
 export class NhucaudathangComponent {
@@ -109,6 +112,12 @@ export class NhucaudathangComponent {
   isSubmit = false;
   quickFilter: string = 'all';
   globalFilterValue: string = '';
+  
+  // Date range properties
+  batdau: Date = new Date(); // Start date
+  ketthuc: Date = new Date(); // End date
+  isDateRangeEnabled: boolean = false;
+  hasUnappliedDateChanges: boolean = false; // Track if there are changes not yet applied
 
   constructor() {
     effect(() => {
@@ -163,12 +172,27 @@ export class NhucaudathangComponent {
 
   async loadDonhangWithRelations() {
     try {
+      // Determine date range for queries
+      const startDate = this.isDateRangeEnabled ? 
+        this._timezoneService.formDateToUTC(this.batdau) : 
+        new Date().toISOString();
+      
+      const endDate = this.isDateRangeEnabled ? 
+        this._timezoneService.formDateToUTC(new Date(this.ketthuc.getTime() + 24 * 60 * 60 * 1000 - 1)) : 
+        new Date(new Date().setHours(23, 59, 59, 999)).toISOString();
+
       const [Donhangs, Dathangs, Tonkhos] = await Promise.all([
         this._GraphqlService.findAll('donhang', {
           enableParallelFetch: true,
           batchSize: 1000,
           aggressiveCache: true,
           orderBy: { createdAt: 'desc' },
+          where:{
+            ngaygiao: {
+              gte: startDate,
+              lte: endDate,
+            },
+          },
           select: {
             id: true,
             madonhang: true,
@@ -190,6 +214,12 @@ export class NhucaudathangComponent {
           batchSize: 1000,
           aggressiveCache: true,
           orderBy: { createdAt: 'desc' },
+          where:{
+            ngaynhan: {
+              gte: startDate,
+              lte: endDate,
+            },
+          },
           select: {
             id: true,
             madncc: true,
@@ -772,6 +802,104 @@ export class NhucaudathangComponent {
         input.value = '';
       }
     });
+  }
+
+  /**
+   * Toggle date range filter functionality
+   */
+  toggleDateRangeFilter(): void {
+    this.isDateRangeEnabled = !this.isDateRangeEnabled;
+    this.hasUnappliedDateChanges = false;
+    if (this.isDateRangeEnabled) {
+      // Set default range to today if enabled
+      this.batdau = new Date();
+      this.ketthuc = new Date();
+    } else {
+      // When disabled, reload data without date filter
+      this.loadDonhangWithRelations();
+    }
+  }
+
+  /**
+   * Apply date range filter - called by user action
+   */
+  applyDateFilter(): void {
+    if (this.isDateRangeEnabled) {
+      this.hasUnappliedDateChanges = false;
+      this.loadDonhangWithRelations();
+    }
+  }
+
+  /**
+   * Handle start date change
+   */
+  onStartDateChange(event: any): void {
+    this.batdau = event.value;
+    if (this.batdau > this.ketthuc) {
+      this.ketthuc = new Date(this.batdau);
+    }
+    // Mark that there are unapplied changes
+    this.hasUnappliedDateChanges = true;
+  }
+
+  /**
+   * Handle end date change
+   */
+  onEndDateChange(event: any): void {
+    this.ketthuc = event.value;
+    if (this.ketthuc < this.batdau) {
+      this.batdau = new Date(this.ketthuc);
+    }
+    // Mark that there are unapplied changes
+    this.hasUnappliedDateChanges = true;
+  }
+
+  /**
+   * Set date range to today
+   */
+  setToday(): void {
+    const today = new Date();
+    this.batdau = new Date(today);
+    this.ketthuc = new Date(today);
+    // Auto apply when using quick buttons
+    this.applyDateFilter();
+  }
+
+  /**
+   * Set date range to this week
+   */
+  setThisWeek(): void {
+    const today = new Date();
+    const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+    const lastDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + 6));
+    
+    this.batdau = new Date(firstDayOfWeek);
+    this.ketthuc = new Date(lastDayOfWeek);
+    // Auto apply when using quick buttons
+    this.applyDateFilter();
+  }
+
+  /**
+   * Set date range to this month
+   */
+  setThisMonth(): void {
+    const today = new Date();
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    
+    this.batdau = new Date(firstDayOfMonth);
+    this.ketthuc = new Date(lastDayOfMonth);
+    // Auto apply when using quick buttons
+    this.applyDateFilter();
+  }
+
+  /**
+   * Clear date filter and reload all data
+   */
+  clearDateFilter(): void {
+    this.isDateRangeEnabled = false;
+    this.hasUnappliedDateChanges = false;
+    this.loadDonhangWithRelations();
   }
 
   /**

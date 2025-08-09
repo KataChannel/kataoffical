@@ -1,10 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
-import * as moment from 'moment-timezone';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 @Injectable()
 export class DonhangService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly timezoneUtil: TimezoneUtilService,
+  ) {}
 
   async generateNextOrderCode(): Promise<string> {
     // Lấy mã đơn hàng gần nhất
@@ -73,15 +76,17 @@ export class DonhangService {
       pageNumber = 1,
       query,
     } = params;
-    const where: any = {
+
+    // ✅ Sử dụng TimezoneUtilService cho date range
+    const dateRange = this.timezoneUtil.convertDateFilters({
       ngaygiao: {
-        gte: Batdau
-          ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-          : undefined,
-        lte: Ketthuc
-          ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-          : undefined,
-      },
+        gte: Batdau ? new Date(Batdau) : undefined,
+        lte: Ketthuc ? new Date(Ketthuc) : undefined,
+      }
+    });
+
+    const where: any = {
+      ngaygiao: dateRange.ngaygiao,
       // type: Type,
       status: Array.isArray(params.Status)
         ? { in: params.Status }
@@ -150,15 +155,17 @@ export class DonhangService {
 
   async congnokhachhang(params: any) {
     const { Batdau, Ketthuc, query } = params;
-    const where: any = {
+
+    // ✅ Sử dụng TimezoneUtilService cho date range
+    const dateRange = this.timezoneUtil.convertDateFilters({
       ngaygiao: {
-        gte: Batdau
-          ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-          : undefined,
-        lte: Ketthuc
-          ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-          : undefined,
-      },
+        gte: Batdau ? new Date(Batdau) : undefined,
+        lte: Ketthuc ? new Date(Ketthuc) : undefined,
+      }
+    });
+
+    const where: any = {
+      ngaygiao: dateRange.ngaygiao,
       // type: Type,
       status: Array.isArray(params.Status)
         ? { in: params.Status }
@@ -230,17 +237,18 @@ export class DonhangService {
   async getchogiao(params: any) {
     const { Batdau, Ketthuc, Type } = params;
 
+    // ✅ Sử dụng TimezoneUtilService cho date range
+    const dateRange = this.timezoneUtil.convertDateFilters({
+      ngaygiao: {
+        gte: Batdau ? new Date(Batdau) : undefined,
+        lte: Ketthuc ? new Date(Ketthuc) : undefined,
+      }
+    });
+
     // Lấy danh sách đơn hàng theo điều kiện lọc
     const donhangs = await this.prisma.donhang.findMany({
       where: {
-        ngaygiao: {
-          gte: Batdau
-            ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-            : undefined,
-          lte: Ketthuc
-            ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-            : undefined,
-        },
+        ngaygiao: dateRange.ngaygiao,
         // type: Type,
         // Có thể bổ sung điều kiện status nếu cần
       },
@@ -369,16 +377,18 @@ export class DonhangService {
 
   async phieuchuyen(params: any) {
     const { Batdau, Ketthuc, Type } = params;
+
+    // ✅ Sử dụng TimezoneUtilService cho date range
+    const dateRange = this.timezoneUtil.convertDateFilters({
+      ngaygiao: {
+        gte: Batdau ? new Date(Batdau) : undefined,
+        lte: Ketthuc ? new Date(Ketthuc) : undefined,
+      }
+    });
+
     const result = await this.prisma.donhang.findMany({
       where: {
-        ngaygiao: {
-          gte: Batdau
-            ? moment(Batdau).tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
-            : undefined,
-          lte: Ketthuc
-            ? moment(Ketthuc).tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
-            : undefined,
-        },
+        ngaygiao: dateRange.ngaygiao,
         // type: Type,
         status: Array.isArray(params.Status)
           ? { in: params.Status }
@@ -647,7 +657,7 @@ export class DonhangService {
           }
 
           return {
-            title: `Import ${v.tenkh} - ${moment().format('DD_MM_YYYY')}`,
+            title: `Import ${v.tenkh} - ${this.timezoneUtil.formatDateUnderscored()}`,
             type: 'donsi',
             ngaygiao: new Date(v.ngaygiao) || new Date(),
             khachhangId: v.khachhangId,
@@ -669,8 +679,8 @@ export class DonhangService {
 
     for (const order of rawData) {
       // Kiểm tra đơn hàng theo ngày (ngày giao tính theo startOf day và endOf day)
-      const startOfDay = moment(order.ngaygiao).startOf('day').toDate();
-      const endOfDay = moment(order.ngaygiao).endOf('day').toDate();
+      const startOfDay = this.timezoneUtil.getStartOfDay(order.ngaygiao);
+      const endOfDay = this.timezoneUtil.getEndOfDay(order.ngaygiao);
       const existingOrder = await this.prisma.donhang.findFirst({
         where: {
           khachhangId: order.khachhangId,
@@ -707,7 +717,7 @@ export class DonhangService {
           where: { makh: curr.makh },
         });
         acc[curr.makh] = {
-          title: `Import ${moment().format('DD_MM_YYYY')}`,
+          title: `Import ${this.timezoneUtil.formatDateUnderscored()}`,
           ngaygiao: curr.ngaygiao,
           makh: curr.makh,
           khachhangId: khachhang?.id,
@@ -1115,7 +1125,7 @@ export class DonhangService {
           }
         }
         if (shortageItems.length > 0) {
-          const maphieuNhap = `PN-${data.madonhang}-RET-${moment().format('DDMMYYYY')}`;
+          const maphieuNhap = `PN-${data.madonhang}-RET-${this.timezoneUtil.formatDateForFilename()}`;
           const phieuKhoData = {
             maphieu: maphieuNhap,
             ngay: new Date(data.ngaygiao),
@@ -1182,7 +1192,7 @@ export class DonhangService {
             },
           });
         }
-        const maphieuNhap = `PN-${oldDonhang.madonhang}-RET-${moment().format('DDMMYYYY')}`;
+        const maphieuNhap = `PN-${oldDonhang.madonhang}-RET-${this.timezoneUtil.formatDateForFilename()}`;
         const phieuNhap = await prisma.phieuKho.findUnique({
           where: { maphieu: maphieuNhap },
         });
@@ -1239,7 +1249,7 @@ export class DonhangService {
             },
           });
         }
-        const maphieuNew = `PX-${data.madonhang}-${moment().format('DDMMYYYY')}`;
+        const maphieuNew = `PX-${data.madonhang}-${this.timezoneUtil.formatDateForFilename()}`;
         const phieuPayload = {
           ngay: new Date(data.ngaygiao),
           type: 'xuat',
@@ -1331,7 +1341,7 @@ export class DonhangService {
           }
         }
         if (shortageItems.length > 0) {
-          const maphieuNhap = `PN-${data.madonhang}-RET-${moment().format('DDMMYYYY')}`;
+          const maphieuNhap = `PN-${data.madonhang}-RET-${this.timezoneUtil.formatDateForFilename()}`;
           const phieuKhoData = {
             maphieu: maphieuNhap,
             ngay: new Date(data.ngaygiao),
@@ -1704,7 +1714,7 @@ export class DonhangService {
 
         // Nếu có sản phẩm thiếu, phát sinh phiếu kho nhập hàng trả về
         if (shortageItems.length > 0) {
-          const maphieuNhap = `PN-${data.madonhang}-RET-${moment().format('DDMMYYYY')}`; // Tạo mã phiếu nhập phù hợp
+          const maphieuNhap = `PN-${data.madonhang}-RET-${this.timezoneUtil.formatDateForFilename()}`; // Tạo mã phiếu nhập phù hợp
           const phieuKhoData = {
             maphieu: maphieuNhap,
             ngay: new Date(data.ngaygiao), // Ngày nhập có thể sử dụng ngày giao hoặc hiện tại
@@ -1990,7 +2000,7 @@ export class DonhangService {
             );
 
             // Tạo phiếu xuất kho
-            const maphieuNew = `PX-${oldDonhang.madonhang}-${moment().format('DDMMYYYY')}`;
+            const maphieuNew = `PX-${oldDonhang.madonhang}-${this.timezoneUtil.formatDateForFilename()}`;
             const phieuPayload = {
               ngay: oldDonhang.ngaygiao
                 ? new Date(oldDonhang.ngaygiao)
@@ -2151,8 +2161,8 @@ export class DonhangService {
           }
 
           // 3. Xóa phiếu kho liên quan nếu có
-          const maphieuXuat = `PX-${donhang.madonhang}-${moment().format('DDMMYYYY')}`;
-          const maphieuNhap = `PN-${donhang.madonhang}-RET-${moment().format('DDMMYYYY')}`;
+          const maphieuXuat = `PX-${donhang.madonhang}-${this.timezoneUtil.formatDateForFilename()}`;
+          const maphieuNhap = `PN-${donhang.madonhang}-RET-${this.timezoneUtil.formatDateForFilename()}`;
           // Xóa phiếu xuất kho
           const phieuXuat = await prisma.phieuKho.findUnique({
             where: { maphieu: maphieuXuat },

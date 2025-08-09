@@ -4,15 +4,16 @@ import {
   InternalServerErrorException,
   BadRequestException,
 } from '@nestjs/common';
-import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 
 @Injectable()
 export class NhacungcapService {
   constructor(
     private readonly prisma: PrismaService,
     private _ImportdataService: ImportdataService,
+    private readonly timezoneUtil: TimezoneUtilService,
   ) {}
   async getLastUpdatedNhacungcap(): Promise<{ updatedAt: number }> {
     try {
@@ -148,7 +149,7 @@ export class NhacungcapService {
         },
         order: 1, // cập nhật nếu cần theo thứ tự của bạn
         createdBy: 'system', // thay bằng ID người dùng thực nếu có
-        title: `Import Nhà Cung Cấp ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+        title: `Import Nhà Cung Cấp ${new Date().toLocaleString('vi-VN')} `,
         type: 'nhacungcap',
       });
 

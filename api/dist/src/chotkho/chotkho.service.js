@@ -12,10 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChotkhoService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const moment = require("moment-timezone");
+const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 let ChotkhoService = class ChotkhoService {
-    constructor(prisma) {
+    constructor(prisma, timezoneUtil) {
         this.prisma = prisma;
+        this.timezoneUtil = timezoneUtil;
     }
     async getLastUpdatedChotkho() {
         try {
@@ -31,7 +32,7 @@ let ChotkhoService = class ChotkhoService {
     }
     async generateCodeId() {
         try {
-            const timestamp = moment().format('YYYYMMDDHHmmss');
+            const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
             const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
             return `CK-${timestamp}-${randomPart}`;
         }
@@ -77,8 +78,8 @@ let ChotkhoService = class ChotkhoService {
                     const existingRecordsMap = new Map();
                     for (const item of dataArray) {
                         if (item.sanphamId && item.ngay) {
-                            const startOfDay = moment(item.ngay).startOf('day').toDate();
-                            const endOfDay = moment(item.ngay).endOf('day').toDate();
+                            const startOfDay = new Date(this.timezoneUtil.getStartOfDay(item.ngay));
+                            const endOfDay = new Date(this.timezoneUtil.getEndOfDay(item.ngay));
                             const existing = await prisma.chotkho.findFirst({
                                 where: {
                                     sanphamId: item.sanphamId,
@@ -89,7 +90,7 @@ let ChotkhoService = class ChotkhoService {
                                 }
                             });
                             if (existing) {
-                                existingRecordsMap.set(`${item.sanphamId}-${moment(item.ngay).format('YYYY-MM-DD')}`, existing);
+                                existingRecordsMap.set(`${item.sanphamId}-${new Date(item.ngay).toISOString().split('T')[0]}`, existing);
                             }
                         }
                     }
@@ -101,7 +102,7 @@ let ChotkhoService = class ChotkhoService {
                         try {
                             const item = dataArray[i];
                             const { sanphamId, tonkhoId, phieukhoId, ngay, slthucte, slhethong, chenhlech, ghichu, title } = item;
-                            const dateKey = `${sanphamId}-${moment(ngay).format('YYYY-MM-DD')}`;
+                            const dateKey = `${sanphamId}-${new Date(ngay).toISOString().split('T')[0]}`;
                             const existingRecord = existingRecordsMap.get(dateKey);
                             let finalSlhethong = slhethong !== undefined ? Number(slhethong) : 0;
                             if (finalSlhethong === 0 && sanphamId) {
@@ -129,7 +130,7 @@ let ChotkhoService = class ChotkhoService {
                                     sanphamId,
                                     tonkhoId,
                                     phieukhoId,
-                                    ngay: ngay ? moment(ngay).startOf('day').toDate() : moment().startOf('day').toDate(),
+                                    ngay: ngay ? new Date(this.timezoneUtil.getStartOfDay(ngay)) : new Date(this.timezoneUtil.getStartOfDay(new Date())),
                                     slthucte: finalSlthucte,
                                     slhethong: finalSlhethong,
                                     chenhlech: finalChenhlech,
@@ -152,7 +153,7 @@ let ChotkhoService = class ChotkhoService {
                                     data: {
                                         title: `Điều chỉnh tồn kho - ${codeId}`,
                                         maphieu: `DC-${codeId}`,
-                                        ngay: ngay ? moment(ngay).startOf('day').toDate() : moment().startOf('day').toDate(),
+                                        ngay: ngay ? new Date(this.timezoneUtil.getStartOfDay(ngay)) : new Date(this.timezoneUtil.getStartOfDay(new Date())),
                                         type: finalChenhlech > 0 ? 'nhap' : 'xuat',
                                         isChotkho: true,
                                         khoId: item.khoId || '4cc01811-61f5-4bdc-83de-a493764e9258',
@@ -333,8 +334,8 @@ let ChotkhoService = class ChotkhoService {
             const { isOne, page = 1, limit = 20, ngay, ...restWhere } = param;
             const where = { ...restWhere };
             if (ngay) {
-                const dateStart = moment(ngay).startOf('day').toDate();
-                const dateEnd = moment(ngay).endOf('day').toDate();
+                const dateStart = new Date(this.timezoneUtil.getStartOfDay(ngay));
+                const dateEnd = new Date(this.timezoneUtil.getEndOfDay(ngay));
                 where.ngay = {
                     gte: dateStart,
                     lte: dateEnd
@@ -436,14 +437,14 @@ let ChotkhoService = class ChotkhoService {
                 if (tuNgay) {
                     where.AND.push({
                         tuNgay: {
-                            gte: moment(tuNgay).startOf('day').toDate(),
+                            gte: new Date(this.timezoneUtil.getStartOfDay(tuNgay)),
                         },
                     });
                 }
                 if (denNgay) {
                     where.AND.push({
                         denNgay: {
-                            lte: moment(denNgay).endOf('day').toDate(),
+                            lte: new Date(this.timezoneUtil.getEndOfDay(denNgay)),
                         },
                     });
                 }
@@ -551,10 +552,10 @@ let ChotkhoService = class ChotkhoService {
     }
     async findByDateRange(startDate, endDate, page, limit) {
         try {
-            const start = moment(startDate).startOf('day').toDate();
+            const start = new Date(this.timezoneUtil.getStartOfDay(startDate));
             const end = endDate
-                ? moment(endDate).endOf('day').toDate()
-                : moment(startDate).endOf('day').toDate();
+                ? new Date(this.timezoneUtil.getEndOfDay(endDate))
+                : new Date(this.timezoneUtil.getEndOfDay(startDate));
             const where = {
                 ngay: {
                     gte: start,
@@ -591,7 +592,7 @@ let ChotkhoService = class ChotkhoService {
                 ]);
                 const uniqueRecordsMap = new Map();
                 allRecords.forEach(record => {
-                    const dateKey = moment(record.ngay).format('YYYY-MM-DD');
+                    const dateKey = new Date(record.ngay).toISOString().split('T')[0];
                     if (!uniqueRecordsMap.has(dateKey) ||
                         record.updatedAt > uniqueRecordsMap.get(dateKey).updatedAt) {
                         uniqueRecordsMap.set(dateKey, record);
@@ -637,7 +638,7 @@ let ChotkhoService = class ChotkhoService {
             });
             const uniqueRecordsMap = new Map();
             allRecords.forEach(record => {
-                const dateKey = moment(record.ngay).format('YYYY-MM-DD');
+                const dateKey = new Date(record.ngay).toISOString().split('T')[0];
                 const key = `${dateKey}-${record.sanphamId}`;
                 if (!uniqueRecordsMap.has(key) ||
                     record.updatedAt > uniqueRecordsMap.get(key).updatedAt) {
@@ -666,10 +667,10 @@ let ChotkhoService = class ChotkhoService {
             if (startDate || endDate) {
                 where.ngay = {};
                 if (startDate) {
-                    where.ngay.gte = moment(startDate).startOf('day').toDate();
+                    where.ngay.gte = new Date(this.timezoneUtil.getStartOfDay(startDate));
                 }
                 if (endDate) {
-                    where.ngay.lte = moment(endDate).endOf('day').toDate();
+                    where.ngay.lte = new Date(this.timezoneUtil.getEndOfDay(endDate));
                 }
             }
             if (khoId) {
@@ -981,6 +982,7 @@ let ChotkhoService = class ChotkhoService {
 exports.ChotkhoService = ChotkhoService;
 exports.ChotkhoService = ChotkhoService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        timezone_util_service_1.TimezoneUtilService])
 ], ChotkhoService);
 //# sourceMappingURL=chotkho.service.js.map

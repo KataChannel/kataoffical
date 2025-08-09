@@ -3,15 +3,16 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 
 @Injectable()
 export class KhachhangService {
   constructor(
     private readonly prisma: PrismaService,
     private _ImportdataService: ImportdataService,
+    private readonly timezoneUtil: TimezoneUtilService,
   ) {}
 
     async getLastUpdated(): Promise<{ updatedAt: number }> {
@@ -124,7 +125,7 @@ export class KhachhangService {
           },
           order: 1,
           createdBy: 'system',
-          title: `Import Khách Hàng ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+          title: `Import Khách Hàng ${new Date().toLocaleString('vi-VN')}`,
           type: 'khachhang',
         });
         notifications.push(`Lỗi xử lý khách hàng với makh ${customer.makh}: ${error.message}`);

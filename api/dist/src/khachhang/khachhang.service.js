@@ -11,13 +11,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.KhachhangService = void 0;
 const common_1 = require("@nestjs/common");
-const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
+const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 let KhachhangService = class KhachhangService {
-    constructor(prisma, _ImportdataService) {
+    constructor(prisma, _ImportdataService, timezoneUtil) {
         this.prisma = prisma;
         this._ImportdataService = _ImportdataService;
+        this.timezoneUtil = timezoneUtil;
     }
     async getLastUpdated() {
         try {
@@ -118,7 +119,7 @@ let KhachhangService = class KhachhangService {
                     },
                     order: 1,
                     createdBy: 'system',
-                    title: `Import Khách Hàng ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+                    title: `Import Khách Hàng ${new Date().toLocaleString('vi-VN')}`,
                     type: 'khachhang',
                 });
                 notifications.push(`Lỗi xử lý khách hàng với makh ${customer.makh}: ${error.message}`);
@@ -326,6 +327,7 @@ exports.KhachhangService = KhachhangService;
 exports.KhachhangService = KhachhangService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        importdata_service_1.ImportdataService])
+        importdata_service_1.ImportdataService,
+        timezone_util_service_1.TimezoneUtilService])
 ], KhachhangService);
 //# sourceMappingURL=khachhang.service.js.map

@@ -2,11 +2,13 @@ import { PrismaService } from 'prisma/prisma.service';
 import { SocketGateway } from 'src/socket.gateway';
 import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
 import { SummaryQueryDto } from './dto/summary-query.dto';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 export declare class DashboardService {
     private readonly prisma;
     private readonly socketGateway;
     private readonly errorLogService;
-    constructor(prisma: PrismaService, socketGateway: SocketGateway, errorLogService: ErrorlogsService);
+    private readonly timezoneUtil;
+    constructor(prisma: PrismaService, socketGateway: SocketGateway, errorLogService: ErrorlogsService, timezoneUtil: TimezoneUtilService);
     getSummary(query: SummaryQueryDto): void;
     getTopSellingProducts(limit: number, query: SummaryQueryDto): void;
     getLowStockProducts(): void;

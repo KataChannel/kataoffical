@@ -11,15 +11,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BanggiaService = void 0;
 const common_1 = require("@nestjs/common");
-const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
 const socket_gateway_1 = require("../socket.gateway");
+const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 let BanggiaService = class BanggiaService {
-    constructor(prisma, _SocketGateway, _ImportdataService) {
+    constructor(prisma, _SocketGateway, _ImportdataService, timezoneUtil) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
         this._ImportdataService = _ImportdataService;
+        this.timezoneUtil = timezoneUtil;
     }
     async importSPBG(listBanggia) {
         try {
@@ -49,7 +50,7 @@ let BanggiaService = class BanggiaService {
                             },
                             order: 1,
                             createdBy: 'system',
-                            title: `Import Sản Phẩm Bảng giá ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                            title: `Import Sản Phẩm Bảng giá ${new Date().toLocaleString('vi-VN')} `,
                             type: 'banggia',
                         });
                         throw new common_1.NotFoundException(`Sanpham with ID "${sp.masp}" not found`);
@@ -95,7 +96,7 @@ let BanggiaService = class BanggiaService {
                     },
                     order: 1,
                     createdBy: 'system',
-                    title: `Import Sản Phẩm Bảng giá (413 Error) ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                    title: `Import Sản Phẩm Bảng giá (413 Error) ${new Date().toLocaleString('vi-VN')} `,
                     type: 'banggia',
                 });
                 throw new common_1.InternalServerErrorException('Content too large. Please reduce the amount of data and try again.');
@@ -108,7 +109,7 @@ let BanggiaService = class BanggiaService {
                 },
                 order: 1,
                 createdBy: 'system',
-                title: `Import Sản Phẩm Bảng giá ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                title: `Import Sản Phẩm Bảng giá ${new Date().toLocaleString('vi-VN')} `,
                 type: 'banggia',
             });
             throw new common_1.InternalServerErrorException(error.message || 'Error importing san pham bang gia');
@@ -139,7 +140,7 @@ let BanggiaService = class BanggiaService {
                 },
                 order: 1,
                 createdBy: 'system',
-                title: `Import Bảng giá ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                title: `Import Bảng giá ${new Date().toLocaleString('vi-VN')} `,
                 type: 'banggia',
             });
             throw new common_1.InternalServerErrorException(error.message || 'Error importing bang gia');
@@ -221,7 +222,7 @@ let BanggiaService = class BanggiaService {
                     },
                     order: 1,
                     createdBy: 'system',
-                    title: `Import Bảng giá khách hàng (413 Error) ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                    title: `Import Bảng giá khách hàng (413 Error) ${new Date().toLocaleString('vi-VN')} `,
                     type: 'banggia',
                 });
                 throw new common_1.InternalServerErrorException('Content too large. Please reduce the amount of data and try again.');
@@ -234,7 +235,7 @@ let BanggiaService = class BanggiaService {
                 },
                 order: 1,
                 createdBy: 'system',
-                title: `Import Bảng giá khách hàng ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+                title: `Import Bảng giá khách hàng ${new Date().toLocaleString('vi-VN')} `,
                 type: 'banggia',
             });
             throw new common_1.InternalServerErrorException(error.message || 'Error importing bang gia');
@@ -468,6 +469,7 @@ exports.BanggiaService = BanggiaService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         socket_gateway_1.SocketGateway,
-        importdata_service_1.ImportdataService])
+        importdata_service_1.ImportdataService,
+        timezone_util_service_1.TimezoneUtilService])
 ], BanggiaService);
 //# sourceMappingURL=banggia.service.js.map

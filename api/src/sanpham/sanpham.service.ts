@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
 import { SocketGateway } from 'src/socket.gateway';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 
 @Injectable()
 export class SanphamService {
@@ -12,6 +12,7 @@ export class SanphamService {
     private _SocketGateway: SocketGateway,
     private _ErrorlogsService: ErrorlogsService,
     private _ImportdataService: ImportdataService,
+    private readonly timezoneUtil: TimezoneUtilService,
   ) {}
 
   // async create(data: any) {
@@ -150,7 +151,7 @@ export class SanphamService {
           },
           order: 1, // cập nhật nếu cần theo thứ tự của bạn
           createdBy: 'system', // thay bằng ID người dùng thực nếu có
-          title: `Import Sản Phẩm ${moment().format('HH:mm:ss DD/MM/YYYY')} `,
+          title: `Import Sản Phẩm ${new Date().toLocaleString('vi-VN')} `,
           type: 'sanpham',
         };
         this._ImportdataService.create(importData);
@@ -168,7 +169,7 @@ export class SanphamService {
       },
       order: 0,
       createdBy: 'system',
-      title: `Import ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+      title: `Import ${new Date().toLocaleString('vi-VN')}`,
       type: 'sanpham',
     };
     this._ImportdataService.create(importData);

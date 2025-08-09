@@ -5,8 +5,9 @@ import { PrismaModule } from 'prisma/prisma.module';
 import { SocketGateway } from 'src/socket.gateway';
 import { ErrorlogsModule } from 'src/errorlogs/errorlogs.module';
 import { ImportdataModule } from 'src/importdata/importdata.module';
+import { SharedModule } from '../shared/shared.module';
   @Module({
-    imports: [PrismaModule,ErrorlogsModule,ImportdataModule],
+    imports: [PrismaModule, ErrorlogsModule, ImportdataModule, SharedModule],
     controllers: [SanphamController],
     providers: [SanphamService,SocketGateway],
     exports:[SanphamService]
