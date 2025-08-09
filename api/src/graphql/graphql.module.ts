@@ -8,6 +8,7 @@ import { EnhancedUniversalService } from './enhanced-universal.service';
 import { DataLoaderService } from './dataloader.service';
 import { FieldSelectionService } from './field-selection.service';
 import { GraphQLPerformanceService } from './performance.service';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 
 @Module({
   imports: [
@@ -25,6 +26,9 @@ import { GraphQLPerformanceService } from './performance.service';
     DataLoaderService,
     FieldSelectionService,
     GraphQLPerformanceService,
+    
+    // Timezone utility service
+    TimezoneUtilService,
   ],
   exports: [
     UniversalService,

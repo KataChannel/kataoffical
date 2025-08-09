@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/site/home/home.component.scss"],
-  "sourcesContent": ["app-home\r\n{\r\n    background-color: gray;\r\n}"],
-  "mappings": ";AAAA;AAEI,oBAAA;;",
-  "names": []
-}

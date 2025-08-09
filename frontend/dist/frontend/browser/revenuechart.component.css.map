@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/admin/dashboard/revenuechart/revenuechart.component.scss"],
-  "sourcesContent": [".chart-container {\r\n    width: 100%;\r\n    max-width: 800px;\r\n    margin: 0 auto;\r\n  }\r\n  svg {\r\n    width: 100%;\r\n    height: 400px;\r\n  }\r\n  .bar {\r\n    fill: steelblue;\r\n  }\r\n  .line {\r\n    fill: none;\r\n    stroke: orange;\r\n    stroke-width: 2;\r\n  }\r\n  .tooltip {\r\n    position: absolute;\r\n    background: rgba(0, 0, 0, 0.8);\r\n    color: white;\r\n    padding: 5px 10px;\r\n    border-radius: 4px;\r\n    pointer-events: none;\r\n  }"],
-  "mappings": ";AAAA,CAAA;AACI,SAAA;AACA,aAAA;AACA,UAAA,EAAA;;AAEF;AACE,SAAA;AACA,UAAA;;AAEF,CAAA;AACE,QAAA;;AAEF,CAAA;AACE,QAAA;AACA,UAAA;AACA,gBAAA;;AAEF,CAAA;AACE,YAAA;AACA,cAAA,KAAA,CAAA,EAAA,CAAA,EAAA,CAAA,EAAA;AACA,SAAA;AACA,WAAA,IAAA;AACA,iBAAA;AACA,kBAAA;;",
-  "names": []
-}

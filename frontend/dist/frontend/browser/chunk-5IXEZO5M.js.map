@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/admin/khachhang/khachhang.route.ts"],
-  "sourcesContent": ["import { NgModule } from '@angular/core';\nimport { Routes, RouterModule } from '@angular/router';\nimport { ListKhachhangComponent } from './listkhachhang/listkhachhang.component';\nconst routes: Routes = [\n  {\n    path: 'dashboard',\n    loadComponent: () =>\n      import('./dashboarkhachhang/dashboarkhachhang.component').then(\n        (c) => c.DashboarkhachhangComponent\n      ),\n  },\n  {\n    path: '',\n    component: ListKhachhangComponent,\n    children: [\n      {\n        path: ':id',\n        loadComponent: () =>\n          import('./detailkhachhang/detailkhachhang.component').then(\n            (c) => c.DetailKhachhangComponent\n          ),\n      },\n    ],\n  },\n];\n@NgModule({\n  imports: [RouterModule.forChild(routes)],\n  exports: [RouterModule],\n})\nexport class KhachhangRoutingModule {}"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAGA,IAAM,SAAiB;EACrB;IACE,MAAM;IACN,eAAe,MACb,OAAO,qBAAiD,EAAE,KACxD,CAAC,MAAM,EAAE,0BAA0B;;EAGzC;IACE,MAAM;IACN,WAAW;IACX,UAAU;MACR;QACE,MAAM;QACN,eAAe,MACb,OAAO,qBAA6C,EAAE,KACpD,CAAC,MAAM,EAAE,wBAAwB;;;;;AAUvC,IAAO,yBAAP,MAAO,wBAAsB;;qCAAtB,yBAAsB;EAAA;wEAAtB,wBAAsB,CAAA;4EAHvB,aAAa,SAAS,MAAM,GAC5B,YAAY,EAAA,CAAA;;",
-  "names": []
-}

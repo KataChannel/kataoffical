@@ -14,11 +14,13 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const dataloader_service_1 = require("./dataloader.service");
 const field_selection_service_1 = require("./field-selection.service");
+const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 let EnhancedUniversalService = class EnhancedUniversalService {
-    constructor(prisma, dataLoader, fieldSelection) {
+    constructor(prisma, dataLoader, fieldSelection, timezoneUtil) {
         this.prisma = prisma;
         this.dataLoader = dataLoader;
         this.fieldSelection = fieldSelection;
+        this.timezoneUtil = timezoneUtil;
         this.modelMapping = {
             'user': 'user',
             'role': 'role',
@@ -69,7 +71,9 @@ let EnhancedUniversalService = class EnhancedUniversalService {
         });
         try {
             const model = this.getModel(modelName);
-            const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
+            const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
+            const normalizedArgs = { ...args, where: normalizedWhere };
+            const queryOptions = await this.buildOptimizedQuery(modelName, normalizedArgs, info);
             const startTime = Date.now();
             const results = await model.findMany(queryOptions);
             const queryTime = Date.now() - startTime;
@@ -93,7 +97,9 @@ let EnhancedUniversalService = class EnhancedUniversalService {
         });
         try {
             const model = this.getModel(modelName);
-            const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
+            const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
+            const normalizedArgs = { ...args, where: normalizedWhere };
+            const queryOptions = await this.buildOptimizedQuery(modelName, normalizedArgs, info);
             const startTime = Date.now();
             const result = await model.findUnique(queryOptions);
             const queryTime = Date.now() - startTime;
@@ -115,9 +121,10 @@ let EnhancedUniversalService = class EnhancedUniversalService {
         });
         try {
             const model = this.getModel(modelName);
+            const normalizedData = this.normalizeDateFieldsForModel(modelName, args.data);
             const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
             const createOptions = {
-                data: args.data,
+                data: normalizedData,
                 ...queryOptions
             };
             const startTime = Date.now();
@@ -142,10 +149,12 @@ let EnhancedUniversalService = class EnhancedUniversalService {
         });
         try {
             const model = this.getModel(modelName);
+            const normalizedData = this.normalizeDateFieldsForModel(modelName, args.data);
+            const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
             const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
             const updateOptions = {
-                where: args.where,
-                data: args.data,
+                where: normalizedWhere,
+                data: normalizedData,
                 ...queryOptions
             };
             const startTime = Date.now();
@@ -319,12 +328,68 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             this.dataLoader.clearLoaderCache(modelName);
         }
     }
+    normalizeDateFieldsForModel(modelName, data) {
+        if (!data || typeof data !== 'object')
+            return data;
+        const dateFieldsMap = {
+            donhang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
+            dathang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
+            tonkho: ['ngaynhan', 'createdAt', 'updatedAt'],
+            phieugiaohang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
+            auditlog: ['createdAt', 'updatedAt'],
+        };
+        const dateFields = dateFieldsMap[modelName.toLowerCase()] || ['createdAt', 'updatedAt'];
+        return this.timezoneUtil.normalizeDateFields(data, dateFields);
+    }
+    normalizeDateFilters(modelName, where) {
+        if (!where || typeof where !== 'object')
+            return where;
+        const normalizedWhere = { ...where };
+        const dateFieldsMap = {
+            donhang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
+            dathang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
+            tonkho: ['ngaynhan', 'createdAt', 'updatedAt'],
+            phieugiaohang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
+            auditlog: ['createdAt', 'updatedAt'],
+        };
+        const dateFields = dateFieldsMap[modelName.toLowerCase()] || ['createdAt', 'updatedAt'];
+        dateFields.forEach(field => {
+            if (normalizedWhere[field]) {
+                if (typeof normalizedWhere[field] === 'object') {
+                    const dateFilter = normalizedWhere[field];
+                    if (dateFilter.gte) {
+                        dateFilter.gte = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.gte) || dateFilter.gte);
+                    }
+                    if (dateFilter.lte) {
+                        dateFilter.lte = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.lte) || dateFilter.lte);
+                    }
+                    if (dateFilter.gt) {
+                        dateFilter.gt = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.gt) || dateFilter.gt);
+                    }
+                    if (dateFilter.lt) {
+                        dateFilter.lt = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.lt) || dateFilter.lt);
+                    }
+                    if (dateFilter.equals) {
+                        dateFilter.equals = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.equals) || dateFilter.equals);
+                    }
+                }
+                else {
+                    const utcDate = this.timezoneUtil.validateAndConvertToUTC(normalizedWhere[field]);
+                    if (utcDate) {
+                        normalizedWhere[field] = new Date(utcDate);
+                    }
+                }
+            }
+        });
+        return normalizedWhere;
+    }
 };
 exports.EnhancedUniversalService = EnhancedUniversalService;
 exports.EnhancedUniversalService = EnhancedUniversalService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         dataloader_service_1.DataLoaderService,
-        field_selection_service_1.FieldSelectionService])
+        field_selection_service_1.FieldSelectionService,
+        timezone_util_service_1.TimezoneUtilService])
 ], EnhancedUniversalService);
 //# sourceMappingURL=enhanced-universal.service.js.map

@@ -1,12 +1,14 @@
 import { PrismaService } from '../../prisma/prisma.service';
 import { DataLoaderService } from './dataloader.service';
 import { FieldSelectionService } from './field-selection.service';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 import { GraphQLResolveInfo } from 'graphql';
 export declare class EnhancedUniversalService {
     private readonly prisma;
     private readonly dataLoader;
     private readonly fieldSelection;
-    constructor(prisma: PrismaService, dataLoader: DataLoaderService, fieldSelection: FieldSelectionService);
+    private readonly timezoneUtil;
+    constructor(prisma: PrismaService, dataLoader: DataLoaderService, fieldSelection: FieldSelectionService, timezoneUtil: TimezoneUtilService);
     findMany(modelName: string, args: {
         where?: any;
         orderBy?: any;
@@ -42,4 +44,6 @@ export declare class EnhancedUniversalService {
     getModelMetadata(modelName: string): Promise<any>;
     getAvailableModels(): string[];
     batchOperation(modelName: string, operation: 'create' | 'update' | 'delete', items: any[]): Promise<any>;
+    private normalizeDateFieldsForModel;
+    private normalizeDateFilters;
 }

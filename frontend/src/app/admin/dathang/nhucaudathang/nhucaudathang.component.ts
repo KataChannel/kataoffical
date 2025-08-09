@@ -31,6 +31,7 @@ import { TablenhucaudathanhComponent } from './tablenhucaudathanh/tablenhucaudat
 import moment from 'moment';
 import { GraphqlService } from '../../../shared/services/graphql.service';
 import { GenId } from '../../../shared/utils/shared.utils';
+import { TimezoneService } from '../../../shared/services/timezone.service';
 
 @Component({
   selector: 'app-nhucaudathang',
@@ -52,12 +53,11 @@ import { GenId } from '../../../shared/utils/shared.utils';
     FormsModule,
     MatTooltipModule,
     MatDialogModule,
+    TablenhucaudathanhComponent,
   ],
 })
 export class NhucaudathangComponent {
   displayedColumns: string[] = [
-    'makho',
-    'namekho',
     'title',
     'masp',
     'slton',
@@ -68,8 +68,6 @@ export class NhucaudathangComponent {
     'goiy',
   ];
   ColumnName: any = {
-    makho: 'Mã Kho',
-    namekho: 'Tên Kho',
     title: 'Tên Sản Phẩm',
     masp: 'Mã Sản Phẩm',
     slton: 'Tồn Kho',
@@ -99,6 +97,7 @@ export class NhucaudathangComponent {
   private _GraphqlService = inject(GraphqlService);
   private _router = inject(Router);
   private _dialog = inject(MatDialog);
+  private _timezoneService = inject(TimezoneService);
   _snackBar = inject(MatSnackBar);
   
   Listsanpham: any = this._SanphamService.ListSanpham;
@@ -209,13 +208,6 @@ export class NhucaudathangComponent {
                 sanpham: { select: { masp: true } },
               },
             },
-            kho:{
-              select: {
-                id: true,
-                name: true,
-                makho:true
-              }
-            }
           },
         }),
         
@@ -249,12 +241,11 @@ export class NhucaudathangComponent {
           slgiao: Number(sp.slgiao) || 0,
           slnhan: Number(sp.slnhan) || 0
         }))
-      );      
+      );
+
       const DathangsTranfer = Dathangs.data.flatMap((order: any) =>
         order.sanpham.map((sp: any) => ({
           type: 'dathang',
-          makho: order.kho.makho,
-          namekho: order.kho.name,
           madncc: order.madncc,
           mancc: order.nhacungcap.mancc,
           name: order.nhacungcap.name,
@@ -265,8 +256,7 @@ export class NhucaudathangComponent {
           slnhan: Number(sp.slnhan) || 0
         }))
       );
-      console.log(Dathangs);
-      console.log(DathangsTranfer);
+
       const TonkhosTranfer = Tonkhos.data.map((sp: any) => ({
         type: 'tonkho',
         masp: sp.sanpham.masp,
@@ -282,8 +272,6 @@ export class NhucaudathangComponent {
         tonghopMap.set(tonkho.masp, {
           id: GenId(8, false),
           ngaynhan: tonkho.ngaynhan,
-          makho: tonkho.makho,
-          namekho: tonkho.namekho,
           mancc: tonkho.mancc,
           name: tonkho.name,
           masp: tonkho.masp,
@@ -304,8 +292,6 @@ export class NhucaudathangComponent {
           item.ngaynhan = dathang.ngaynhan;
           item.mancc = dathang.mancc;
           item.name = dathang.name;
-          item.makho = dathang.makho;
-          item.namekho = dathang.namekho;
         }
       });
 
@@ -562,7 +548,7 @@ export class NhucaudathangComponent {
 
   async ExportExcel(data: any, title: any) {
     const dulieu = data.map((v: any) => ({
-      ngaynhan: moment().format('YYYY-MM-DD'),
+      ngaynhan: this._timezoneService.nowLocal('YYYY-MM-DD'),
       masp: v.masp,
       title: v.title,
       dvt: v.dvt,
@@ -787,8 +773,43 @@ export class NhucaudathangComponent {
       }
     });
   }
+
+  /**
+   * Format ngày từ UTC database để hiển thị local time
+   * @param utcDate UTC date từ database
+   * @param format Format muốn hiển thị (default: DD/MM/YYYY)
+   * @returns Formatted string theo timezone local
+   */
+  formatDateForDisplay(utcDate: any, format: string = 'DD/MM/YYYY'): string {
+    return this._timezoneService.formatForDisplay(utcDate, format);
+  }
+
+  /**
+   * Chuyển đổi date input từ form sang UTC để gửi API
+   * @param formDate Date từ form input
+   * @returns UTC ISO string
+   */
+  convertFormDateToUTC(formDate: any): string {
+    return this._timezoneService.formDateToUTC(formDate);
+  }
+
+  /**
+   * Parse ngày tháng từ input user
+   * @param userInput Input từ user
+   * @param format Format của input
+   * @returns UTC ISO string để lưu database
+   */
+  parseUserDateInput(userInput: string, format: string = 'YYYY-MM-DD'): string {
+    try {
+      return this._timezoneService.parseUserInputToUTC(userInput, format);
+    } catch (error) {
+      console.error('Invalid date format:', error);
+      return '';
+    }
+  }
 }
 
+// Debounce decorator để tối ưu hiệu suất
 function Debounce(delay: number = 300) {
   return function (
     target: any,

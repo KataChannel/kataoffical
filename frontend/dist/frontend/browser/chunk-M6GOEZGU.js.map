@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/admin/nhacungcap/nhacungcap.route.ts"],
-  "sourcesContent": ["import { NgModule } from '@angular/core';\nimport { Routes, RouterModule } from '@angular/router';\nimport { ListNhacungcapComponent } from './listnhacungcap/listnhacungcap';\nconst routes: Routes = [\n  {\n    path: '',\n    component: ListNhacungcapComponent,\n    children: [\n      {\n        path: ':id',\n        loadComponent: () =>\n          import('./detailnhacungcap/detailnhacungcap.component').then(\n            (c) => c.DetailNhacungcapComponent\n          ),\n      },\n    ],\n  },\n];\n@NgModule({\n  imports: [RouterModule.forChild(routes)],\n  exports: [RouterModule],\n})\nexport class NhacungcapRoutingModule {}"],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAGA,IAAM,SAAiB;EACrB;IACE,MAAM;IACN,WAAW;IACX,UAAU;MACR;QACE,MAAM;QACN,eAAe,MACb,OAAO,qBAA+C,EAAE,KACtD,CAAC,MAAM,EAAE,yBAAyB;;;;;AAUxC,IAAO,0BAAP,MAAO,yBAAuB;;qCAAvB,0BAAuB;EAAA;wEAAvB,yBAAuB,CAAA;4EAHxB,aAAa,SAAS,MAAM,GAC5B,YAAY,EAAA,CAAA;;",
-  "names": []
-}

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/admin/congnoncc/congnoncc.component.ts", "src/app/admin/congnoncc/congnoncc.component.html"],
-  "sourcesContent": ["import { Component } from '@angular/core';\r\n\r\n@Component({\r\n  selector: 'app-congnoncc',\r\n  imports: [],\r\n  templateUrl: './congnoncc.component.html',\r\n  styleUrl: './congnoncc.component.scss'\r\n})\r\nexport class CongnonccComponent {\r\n\r\n}\r\n", "<p>congnoncc works!</p>\r\n"],
-  "mappings": ";;;;;;;;;;;;AAQM,IAAO,qBAAP,MAAO,oBAAkB;;qCAAlB,qBAAkB;EAAA;yEAAlB,qBAAkB,WAAA,CAAA,CAAA,eAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,UAAA,SAAA,4BAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;ACR/B,MAAA,yBAAA,GAAA,GAAA;AAAG,MAAA,iBAAA,GAAA,kBAAA;AAAgB,MAAA,uBAAA;;;;;6EDQN,oBAAkB,EAAA,WAAA,sBAAA,UAAA,kDAAA,YAAA,EAAA,CAAA;AAAA,GAAA;",
-  "names": []
-}

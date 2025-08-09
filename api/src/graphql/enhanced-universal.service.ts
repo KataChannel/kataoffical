@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { DataLoaderService } from './dataloader.service';
 import { FieldSelectionService } from './field-selection.service';
+import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 import { GraphQLResolveInfo } from 'graphql';
 
 /**
@@ -13,7 +14,8 @@ export class EnhancedUniversalService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly dataLoader: DataLoaderService,
-    private readonly fieldSelection: FieldSelectionService
+    private readonly fieldSelection: FieldSelectionService,
+    private readonly timezoneUtil: TimezoneUtilService
   ) {}
 
   /**
@@ -45,8 +47,12 @@ export class EnhancedUniversalService {
       // Get the model
       const model = this.getModel(modelName);
       
+      // Chuẩn hóa date filters trong where conditions
+      const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
+      const normalizedArgs = { ...args, where: normalizedWhere };
+      
       // Build optimized query with field selection
-      const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
+      const queryOptions = await this.buildOptimizedQuery(modelName, normalizedArgs, info);
       
       // Execute the query
       const startTime = Date.now();
@@ -88,7 +94,12 @@ export class EnhancedUniversalService {
 
     try {
       const model = this.getModel(modelName);
-      const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
+      
+      // Chuẩn hóa date filters trong where
+      const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
+      const normalizedArgs = { ...args, where: normalizedWhere };
+      
+      const queryOptions = await this.buildOptimizedQuery(modelName, normalizedArgs, info);
       
       const startTime = Date.now();
       const result = await model.findUnique(queryOptions);
@@ -127,10 +138,13 @@ export class EnhancedUniversalService {
     try {
       const model = this.getModel(modelName);
       
+      // Chuẩn hóa date fields trong data
+      const normalizedData = this.normalizeDateFieldsForModel(modelName, args.data);
+      
       // Build query options for response
       const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
       const createOptions = {
-        data: args.data,
+        data: normalizedData,
         ...queryOptions
       };
       
@@ -175,10 +189,15 @@ export class EnhancedUniversalService {
     try {
       const model = this.getModel(modelName);
       
+      // Chuẩn hóa date fields trong data
+      const normalizedData = this.normalizeDateFieldsForModel(modelName, args.data);
+      // Chuẩn hóa date filters trong where
+      const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
+      
       const queryOptions = await this.buildOptimizedQuery(modelName, args, info);
       const updateOptions = {
-        where: args.where,
-        data: args.data,
+        where: normalizedWhere,
+        data: normalizedData,
         ...queryOptions
       };
       
@@ -477,5 +496,84 @@ export class EnhancedUniversalService {
       // Clear caches after batch operations
       this.dataLoader.clearLoaderCache(modelName);
     }
+  }
+
+  /**
+   * Chuẩn hóa date fields trong data trước khi lưu database
+   * @param modelName Tên model
+   * @param data Data cần chuẩn hóa
+   * @returns Data với date fields đã được chuyển sang UTC
+   */
+  private normalizeDateFieldsForModel(modelName: string, data: any): any {
+    if (!data || typeof data !== 'object') return data;
+
+    // Define date fields cho từng model
+    const dateFieldsMap: Record<string, string[]> = {
+      donhang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
+      dathang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'], 
+      tonkho: ['ngaynhan', 'createdAt', 'updatedAt'],
+      phieugiaohang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
+      auditlog: ['createdAt', 'updatedAt'],
+      // Thêm các model khác nếu cần
+    };
+
+    const dateFields = dateFieldsMap[modelName.toLowerCase()] || ['createdAt', 'updatedAt'];
+    return this.timezoneUtil.normalizeDateFields(data, dateFields);
+  }
+
+  /**
+   * Xử lý where conditions có chứa date filters
+   * @param modelName Tên model  
+   * @param where Where conditions
+   * @returns Where conditions với date fields đã được chuẩn hóa
+   */
+  private normalizeDateFilters(modelName: string, where: any): any {
+    if (!where || typeof where !== 'object') return where;
+
+    const normalizedWhere = { ...where };
+    
+    // Define date fields cho từng model
+    const dateFieldsMap: Record<string, string[]> = {
+      donhang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
+      dathang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
+      tonkho: ['ngaynhan', 'createdAt', 'updatedAt'],
+      phieugiaohang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
+      auditlog: ['createdAt', 'updatedAt'],
+    };
+
+    const dateFields = dateFieldsMap[modelName.toLowerCase()] || ['createdAt', 'updatedAt'];
+
+    dateFields.forEach(field => {
+      if (normalizedWhere[field]) {
+        // Xử lý date range filters (gte, lte, gt, lt)
+        if (typeof normalizedWhere[field] === 'object') {
+          const dateFilter = normalizedWhere[field];
+          
+          if (dateFilter.gte) {
+            dateFilter.gte = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.gte) || dateFilter.gte);
+          }
+          if (dateFilter.lte) {
+            dateFilter.lte = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.lte) || dateFilter.lte);
+          }
+          if (dateFilter.gt) {
+            dateFilter.gt = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.gt) || dateFilter.gt);
+          }
+          if (dateFilter.lt) {
+            dateFilter.lt = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.lt) || dateFilter.lt);
+          }
+          if (dateFilter.equals) {
+            dateFilter.equals = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.equals) || dateFilter.equals);
+          }
+        } else {
+          // Xử lý exact date match
+          const utcDate = this.timezoneUtil.validateAndConvertToUTC(normalizedWhere[field]);
+          if (utcDate) {
+            normalizedWhere[field] = new Date(utcDate);
+          }
+        }
+      }
+    });
+
+    return normalizedWhere;
   }
 }

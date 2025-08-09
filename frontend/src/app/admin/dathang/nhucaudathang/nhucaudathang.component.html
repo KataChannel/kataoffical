@@ -130,10 +130,13 @@
                                         <span *ngIf="!CheckItem(item)" class="w-6"></span>
                                         @switch (column) {
                                             @case ('createdAt') {
-                                                <span>{{item[column]|date:'dd/MM/yyyy'}}</span> 
+                                                <span>{{formatDateForDisplay(item[column], 'DD/MM/YYYY')}}</span> 
                                             }
                                             @case ('updatedAt') {
-                                                <span>{{item[column]|date:'dd/MM/yyyy'}}</span> 
+                                                <span>{{formatDateForDisplay(item[column], 'DD/MM/YYYY')}}</span> 
+                                            }
+                                            @case ('ngaynhan') {
+                                                <span>{{formatDateForDisplay(item[column], 'DD/MM/YYYY')}}</span> 
                                             }
                                             @case ('slton') {
                                                 <span>{{item[column]|number:'1.0-0'}}</span> 
@@ -219,12 +222,17 @@
                             }
                             @case ('createdAt') {
                                 <span class="max-w-28 line-clamp-1 text-sm">
-                                    {{ row[column]|date:'dd/MM/yyyy' }}
+                                    {{ formatDateForDisplay(row[column], 'DD/MM/YYYY') }}
                                 </span>
                             }
                             @case ('updatedAt') {
                                 <span class="max-w-28 line-clamp-1 text-sm">
-                                    {{ row[column]|date:'dd/MM/yyyy' }}
+                                    {{ formatDateForDisplay(row[column], 'DD/MM/YYYY') }}
+                                </span>
+                            }
+                            @case ('ngaynhan') {
+                                <span class="max-w-28 line-clamp-1 text-sm">
+                                    {{ formatDateForDisplay(row[column], 'DD/MM/YYYY') }}
                                 </span>
                             }
                             @case ('isActive') {

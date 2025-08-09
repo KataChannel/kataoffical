@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/shared/utils/trangthai.ts"],
-  "sourcesContent": ["export const TrangThaiDon = {\r\n    dadat: 'Đơn mới',\r\n    dagiao: 'Đã giao',\r\n    danhan: 'Đã nhận',\r\n    huy: 'Đã hủy',\r\n    hoanthanh: 'Hoàn thành',\r\n};"],
-  "mappings": ";;;AAAO,IAAM,eAAe;EACxB,OAAO;EACP,QAAQ;EACR,QAAQ;EACR,KAAK;EACL,WAAW;;",
-  "names": []
-}
