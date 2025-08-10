@@ -5,7 +5,7 @@ RUN apt-get update -y && apt-get install -y openssl libssl-dev
 WORKDIR /app
 
 # Copy package.json and bun.lock to cache dependencies
-COPY package.json bun.lock ./
+COPY package.json bun.lockb ./
 
 # Install dependencies using Bun
 RUN bun install --no-cache
