@@ -20,7 +20,7 @@ import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatMenu, MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import {
   readExcelFile,
   writeExcelFile,
@@ -238,6 +238,12 @@ export class NhucaudathangComponent {
                 sanpham: { select: { masp: true } },
               },
             },
+            kho:{
+              select:{
+                name:true,
+                makho:true
+              }
+            }
           },
         }),
         
@@ -269,9 +275,11 @@ export class NhucaudathangComponent {
           giaban: Number(sp.giaban) || 0,
           sldat: Number(sp.sldat) || 0,
           slgiao: Number(sp.slgiao) || 0,
-          slnhan: Number(sp.slnhan) || 0
+          slnhan: Number(sp.slnhan) || 0,
         }))
       );
+
+      console.log(Dathangs);
 
       const DathangsTranfer = Dathangs.data.flatMap((order: any) =>
         order.sanpham.map((sp: any) => ({
@@ -283,7 +291,9 @@ export class NhucaudathangComponent {
           masp: sp.sanpham.masp,
           sldat: Number(sp.sldat) || 0,
           slgiao: Number(sp.slgiao) || 0,
-          slnhan: Number(sp.slnhan) || 0
+          slnhan: Number(sp.slnhan) || 0,
+          makho: sp.kho.makho,
+          namekho: sp.kho.name
         }))
       );
 
@@ -322,6 +332,8 @@ export class NhucaudathangComponent {
           item.ngaynhan = dathang.ngaynhan;
           item.mancc = dathang.mancc;
           item.name = dathang.name;
+          item.makho = dathang.makho;
+          item.namekho = dathang.namekho;
         }
       });
 
@@ -823,11 +835,21 @@ export class NhucaudathangComponent {
   /**
    * Apply date range filter - called by user action
    */
-  applyDateFilter(): void {
+
+  applyDateFilter(dateMenuTrigger: MatMenuTrigger): void {
     if (this.isDateRangeEnabled) {
       this.hasUnappliedDateChanges = false;
       this.loadDonhangWithRelations();
+      this._snackBar.open('Đã áp dụng bộ lọc ngày', '', {
+        duration: 2000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
     }
+    
+    // Close the date menu
+    dateMenuTrigger.closeMenu();
   }
 
   /**
@@ -857,18 +879,18 @@ export class NhucaudathangComponent {
   /**
    * Set date range to today
    */
-  setToday(): void {
+  setToday(dateMenuTrigger: MatMenuTrigger): void {
     const today = new Date();
     this.batdau = new Date(today);
     this.ketthuc = new Date(today);
     // Auto apply when using quick buttons
-    this.applyDateFilter();
+    this.applyDateFilter(dateMenuTrigger);
   }
 
   /**
    * Set date range to this week
    */
-  setThisWeek(): void {
+  setThisWeek(dateMenuTrigger: MatMenuTrigger): void {
     const today = new Date();
     const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
     const lastDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + 6));
@@ -876,13 +898,13 @@ export class NhucaudathangComponent {
     this.batdau = new Date(firstDayOfWeek);
     this.ketthuc = new Date(lastDayOfWeek);
     // Auto apply when using quick buttons
-    this.applyDateFilter();
+    this.applyDateFilter(dateMenuTrigger);
   }
 
   /**
    * Set date range to this month
    */
-  setThisMonth(): void {
+  setThisMonth(dateMenuTrigger: MatMenuTrigger): void {
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
@@ -890,7 +912,7 @@ export class NhucaudathangComponent {
     this.batdau = new Date(firstDayOfMonth);
     this.ketthuc = new Date(lastDayOfMonth);
     // Auto apply when using quick buttons
-    this.applyDateFilter();
+    this.applyDateFilter(dateMenuTrigger);
   }
 
   /**

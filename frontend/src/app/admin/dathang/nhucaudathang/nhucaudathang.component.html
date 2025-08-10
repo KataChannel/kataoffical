@@ -17,7 +17,7 @@
                 </button>
                 
                 <!-- Date Range Filter -->
-                <button matTooltip="Lọc theo ngày" mat-icon-button color="primary" [matMenuTriggerFor]="dateMenu" aria-label="Date filter menu">
+                <button matTooltip="Lọc theo ngày" mat-icon-button color="primary" [matMenuTriggerFor]="dateMenu" #dateMenuTrigger="matMenuTrigger" aria-label="Date filter menu">
                     <mat-icon [class.text-blue-600]="isDateRangeEnabled">date_range</mat-icon>
                 </button>
                 <mat-menu #dateMenu="matMenu" class="date-filter-menu">
@@ -25,14 +25,7 @@
                         <div class="flex flex-col space-y-4">
                             <div class="flex items-center justify-between">
                                 <span class="font-semibold">Lọc theo khoảng thời gian</span>
-                                <mat-slide-toggle 
-                                    [(ngModel)]="isDateRangeEnabled" 
-                                    (toggleChange)="toggleDateRangeFilter()"
-                                    color="primary">
-                                </mat-slide-toggle>
                             </div>
-                            
-                            @if (isDateRangeEnabled) {
                                 <div class="flex flex-col space-y-3">
                                     <!-- Start Date -->
                                     <mat-form-field appearance="outline" subscriptSizing="dynamic">
@@ -60,13 +53,13 @@
                                     
                                     <!-- Quick Date Buttons -->
                                     <div class="flex flex-wrap gap-2">
-                                        <button mat-stroked-button color="primary" (click)="setToday()" class="text-xs">
+                                        <button mat-stroked-button color="primary" (click)="setToday(dateMenuTrigger)" class="text-xs">
                                             Hôm nay
                                         </button>
-                                        <button mat-stroked-button color="primary" (click)="setThisWeek()" class="text-xs">
+                                        <button mat-stroked-button color="primary" (click)="setThisWeek(dateMenuTrigger)" class="text-xs">
                                             Tuần này
                                         </button>
-                                        <button mat-stroked-button color="primary" (click)="setThisMonth()" class="text-xs">
+                                        <button mat-stroked-button color="primary" (click)="setThisMonth(dateMenuTrigger)" class="text-xs">
                                             Tháng này
                                         </button>
                                         <button mat-stroked-button color="warn" (click)="clearDateFilter()" class="text-xs">
@@ -78,7 +71,7 @@
                                     <div class="flex justify-center">
                                         <button mat-raised-button 
                                                 [color]="hasUnappliedDateChanges ? 'warn' : 'primary'" 
-                                                (click)="applyDateFilter()" 
+                                                (click)="applyDateFilter(dateMenuTrigger)" 
                                                 class="w-full">
                                             <mat-icon>{{ hasUnappliedDateChanges ? 'pending' : 'filter_alt' }}</mat-icon>
                                             {{ hasUnappliedDateChanges ? 'Có thay đổi - Áp dụng' : 'Áp dụng lọc' }}
@@ -97,7 +90,6 @@
                                         {{ formatDateForDisplay(batdau, 'DD/MM/YYYY') }} - {{ formatDateForDisplay(ketthuc, 'DD/MM/YYYY') }}
                                     </div>
                                 </div>
-                            }
                         </div>
                     </div>
                 </mat-menu>
