@@ -41,11 +41,12 @@ import { GraphQLUniversalModule } from './graphql/graphql.module';
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      typePaths: ['./**/*.graphql'],
-      definitions: {
-        path: join(process.cwd(), 'src/graphql.ts'),
-        outputAs: 'class',
-      },
+      // typePaths: ['./**/*.graphql'], // Comment out to use code-first approach
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      // definitions: {
+      //   path: join(process.cwd(), 'src/graphql.ts'),
+      //   outputAs: 'class',
+      // },
       playground: true,
       introspection: true,
       context: ({ req, res }) => ({ req, res }),

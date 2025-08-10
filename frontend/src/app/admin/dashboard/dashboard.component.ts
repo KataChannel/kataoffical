@@ -1,118 +1,371 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { environment } from '../../../environments/environment.development';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { DonhangService } from '../donhang/donhang.service';
-import { SearchService } from '../../shared/services/search.service';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { DashboardService } from './dashboard.services';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatNativeDateModule } from '@angular/material/core';
+import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { DashboardService, ComprehensiveDashboardData, DailyMonthlyReport, TopProductsResponse } from './dashboard.service';
+
+// Chart.js types
+declare var Chart: any;
 
 @Component({
   selector: 'app-dashboard',
+  standalone: true,
   imports: [
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    FormsModule,
     CommonModule,
+    MatSelectModule,
+    MatIconModule,
     MatButtonModule,
     MatCardModule,
-    MatIconModule,
-    MatMenuModule
+    MatDatepickerModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatNativeDateModule,
+    FormsModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
-  _PhieugiaohangService: DonhangService = inject(DonhangService);
-  _DashboardService: DashboardService = inject(DashboardService);
-  _SearchService: SearchService = inject(SearchService);
-  
-  selectedFile!: File;
-  ketqua: any = [];
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('columnChart', { static: false }) columnChartCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('donutChart', { static: false }) donutChartCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('pieChart', { static: false }) pieChartCanvas!: ElementRef<HTMLCanvasElement>;
+
+  // Data properties
+  comprehensiveData: ComprehensiveDashboardData | null = null;
+  dailyMonthlyData: DailyMonthlyReport[] = [];
+  topProductsData: TopProductsResponse | null = null;
+
+  // Chart instances
+  columnChart: any = null;
+  donutChart: any = null;
+  pieChart: any = null;
+
+  // UI state
   isLoading = false;
-  uploadMessage = '';
-  public dashboardData: any = null;
-  
-  // Date range properties
-  batdau: Date = new Date();
-  ketthuc: Date = new Date();
-  
-  // Chart data cho TailwindCSS
-  public chartData: any = {
-    productChart: [],
-    comparisonChart: [],
-    topProducts: []
-  };
+  dateMenuOpen = false;
 
-  constructor() {
-    // Set default dates (last 30 days)
-    this.ketthuc = new Date();
-    this.batdau = new Date();
-    this.batdau.setDate(this.batdau.getDate() - 30);
+  // Date filter
+  batdau: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1); // First day of current month
+  ketthuc: Date = new Date(); // Today
+
+  // Report group options
+  reportGroupBy: 'day' | 'month' | 'year' = 'day';
+  reportGroupOptions = [
+    { value: 'day' as const, label: 'Theo Ngày' },
+    { value: 'month' as const, label: 'Theo Tháng' },
+    { value: 'year' as const, label: 'Theo Năm' }
+  ];
+
+  private subscriptions: Subscription[] = [];
+
+  constructor(private dashboardService: DashboardService) {}
+
+  ngOnInit(): void {
+    this.loadAllData();
   }
 
-  async ngOnInit() {
-    await this.loadDashboardData();
+  ngAfterViewInit(): void {
+    // Charts will be created after data is loaded
   }
 
-  // Load dashboard data method
-  async loadDashboardData() {
+  ngOnDestroy(): void {
+    // Destroy chart instances
+    this.destroyCharts();
+    
+    // Unsubscribe from all subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  // Data loading methods
+  loadAllData(): void {
     this.isLoading = true;
-    try {
-      const dashboardResult = await this._DashboardService.DonhangDashboard({ 
-        Batdau: this.batdau, 
-        Ketthuc: this.ketthuc 
+    
+    const batdauStr = this.batdau.toISOString();
+    const ketthucStr = this.ketthuc.toISOString();
+
+    // Load comprehensive data
+    const comprehensiveSub = this.dashboardService.getComprehensiveDashboard(batdauStr, ketthucStr)
+      .subscribe({
+        next: (data) => {
+          this.comprehensiveData = data;
+          this.checkLoadingComplete();
+        },
+        error: (error) => {
+          console.error('Error loading comprehensive data:', error);
+          this.isLoading = false;
+        }
       });
-      console.log('Dashboard Data:', dashboardResult);
-      this.dashboardData = dashboardResult;
-      
-      // Chuẩn bị dữ liệu cho biểu đồ
-      this.prepareChartData();
-    } catch (error) {
-      console.error('Error loading dashboard:', error);
-    } finally {
+
+    // Load daily/monthly report
+    const reportSub = this.dashboardService.getDailyMonthlyReport(batdauStr, ketthucStr, this.reportGroupBy)
+      .subscribe({
+        next: (data) => {
+          this.dailyMonthlyData = data;
+          this.createColumnChart();
+          this.checkLoadingComplete();
+        },
+        error: (error) => {
+          console.error('Error loading daily/monthly data:', error);
+          this.isLoading = false;
+        }
+      });
+
+    // Load top products
+    const topProductsSub = this.dashboardService.getTopProducts(batdauStr, ketthucStr, 10)
+      .subscribe({
+        next: (data) => {
+          this.topProductsData = data;
+          this.createDonutChart();
+          this.createPieChart();
+          this.checkLoadingComplete();
+        },
+        error: (error) => {
+          console.error('Error loading top products:', error);
+          this.isLoading = false;
+        }
+      });
+
+    this.subscriptions.push(comprehensiveSub, reportSub, topProductsSub);
+  }
+
+  private checkLoadingComplete(): void {
+    if (this.comprehensiveData && this.dailyMonthlyData && this.topProductsData) {
       this.isLoading = false;
     }
   }
 
-  // Apply date filter
-  async applyDateFilter() {
-    await this.loadDashboardData();
+  // Chart creation methods
+  createColumnChart(): void {
+    if (!this.columnChartCanvas || !this.dailyMonthlyData?.length) return;
+
+    // Destroy existing chart
+    if (this.columnChart) {
+      this.columnChart.destroy();
+    }
+
+    const ctx = this.columnChartCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    const config = {
+      type: 'bar',
+      data: {
+        labels: this.dailyMonthlyData.map(item => item.period),
+        datasets: [
+          {
+            label: 'Số Đơn Hàng',
+            data: this.dailyMonthlyData.map(item => item.totalDonhang),
+            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+            borderColor: 'rgb(59, 130, 246)',
+            borderWidth: 1,
+            yAxisID: 'y'
+          },
+          {
+            label: 'Doanh Thu (triệu đồng)',
+            data: this.dailyMonthlyData.map(item => item.totalRevenue / 1000000),
+            backgroundColor: 'rgba(16, 185, 129, 0.8)',
+            borderColor: 'rgb(16, 185, 129)',
+            borderWidth: 1,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: {
+              display: true,
+              text: 'Số Đơn Hàng'
+            }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: {
+              display: true,
+              text: 'Doanh Thu (triệu đồng)'
+            },
+            grid: {
+              drawOnChartArea: false,
+            },
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top'
+          }
+        }
+      }
+    };
+
+    this.columnChart = new Chart(ctx, config);
   }
 
-  // Quick date range setter
-  async setDateRange(range: string) {
+  createDonutChart(): void {
+    if (!this.donutChartCanvas || !this.topProductsData?.byQuantity?.length) return;
+
+    // Destroy existing chart
+    if (this.donutChart) {
+      this.donutChart.destroy();
+    }
+
+    const ctx = this.donutChartCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    const config = {
+      type: 'doughnut',
+      data: {
+        labels: this.topProductsData.byQuantity.map(item => item.sanpham.title),
+        datasets: [{
+          data: this.topProductsData.byQuantity.map(item => item.totalQuantity),
+          backgroundColor: [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+            '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#36A2EB'
+          ],
+          hoverBackgroundColor: [
+            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+            '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#36A2EB'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'bottom'
+          }
+        }
+      }
+    };
+
+    this.donutChart = new Chart(ctx, config);
+  }
+
+  createPieChart(): void {
+    if (!this.pieChartCanvas || !this.topProductsData?.byValue?.length) return;
+
+    // Destroy existing chart
+    if (this.pieChart) {
+      this.pieChart.destroy();
+    }
+
+    const ctx = this.pieChartCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    const config = {
+      type: 'pie',
+      data: {
+        labels: this.topProductsData.byValue.map(item => item.sanpham.title),
+        datasets: [{
+          data: this.topProductsData.byValue.map(item => item.totalValue),
+          backgroundColor: [
+            '#8B5CF6', '#06D6A0', '#F59E0B', '#EF4444', '#3B82F6',
+            '#10B981', '#F97316', '#8B5CF6', '#06D6A0', '#F59E0B'
+          ],
+          hoverBackgroundColor: [
+            '#8B5CF6', '#06D6A0', '#F59E0B', '#EF4444', '#3B82F6',
+            '#10B981', '#F97316', '#8B5CF6', '#06D6A0', '#F59E0B'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'bottom'
+          }
+        }
+      }
+    };
+
+    this.pieChart = new Chart(ctx, config);
+  }
+
+  private destroyCharts(): void {
+    if (this.columnChart) {
+      this.columnChart.destroy();
+      this.columnChart = null;
+    }
+    if (this.donutChart) {
+      this.donutChart.destroy();
+      this.donutChart = null;
+    }
+    if (this.pieChart) {
+      this.pieChart.destroy();
+      this.pieChart = null;
+    }
+  }
+
+  // Event handlers
+  applyDateFilter(): void {
+    this.dateMenuOpen = false;
+    this.loadAllData();
+  }
+
+  applyGroupByFilter(): void {
+    const batdauStr = this.batdau.toISOString();
+    const ketthucStr = this.ketthuc.toISOString();
+
+    const reportSub = this.dashboardService.getDailyMonthlyReport(batdauStr, ketthucStr, this.reportGroupBy)
+      .subscribe({
+        next: (data) => {
+          this.dailyMonthlyData = data;
+          this.createColumnChart();
+        },
+        error: (error) => {
+          console.error('Error loading daily/monthly data:', error);
+        }
+      });
+
+    this.subscriptions.push(reportSub);
+  }
+
+  // Additional methods for HTML template
+  loadAllDashboardData(): void {
+    this.loadAllData();
+  }
+
+  setDateRange(range: string): void {
     const today = new Date();
-    
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
     switch (range) {
       case 'today':
         this.batdau = new Date(today);
         this.ketthuc = new Date(today);
         break;
       case 'yesterday':
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
         this.batdau = new Date(yesterday);
         this.ketthuc = new Date(yesterday);
         break;
       case 'last7days':
-        this.ketthuc = new Date(today);
         this.batdau = new Date(today);
-        this.batdau.setDate(this.batdau.getDate() - 6);
+        this.batdau.setDate(this.batdau.getDate() - 7);
+        this.ketthuc = new Date(today);
         break;
       case 'last30days':
-        this.ketthuc = new Date(today);
         this.batdau = new Date(today);
-        this.batdau.setDate(this.batdau.getDate() - 29);
+        this.batdau.setDate(this.batdau.getDate() - 30);
+        this.ketthuc = new Date(today);
         break;
       case 'thisMonth':
         this.batdau = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -120,104 +373,35 @@ export class DashboardComponent implements OnInit {
         break;
       case 'lastMonth':
         const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-        this.batdau = new Date(lastMonth);
-        this.ketthuc = new Date(today.getFullYear(), today.getMonth(), 0);
+        const lastDayOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+        this.batdau = lastMonth;
+        this.ketthuc = lastDayOfLastMonth;
         break;
     }
-    
-    await this.loadDashboardData();
+    this.loadAllData();
   }
 
-  // Chuẩn bị dữ liệu cho các biểu đồ TailwindCSS
-  prepareChartData(): void {
-    if (!this.dashboardData) return;
-
-    // Top 10 sản phẩm có số lượng cao nhất
-    this.chartData.topProducts = this.dashboardData.productQuantities?.donhang
-      ?.sort((a: any, b: any) => parseFloat(b.soluong) - parseFloat(a.soluong))
-      ?.slice(0, 10) || [];
-
-    // Dữ liệu so sánh hiện tại vs trước đó
-    this.chartData.comparisonChart = [
-      {
-        label: 'Đơn Hàng Hiện Tại',
-        current: this.dashboardData.donhang?.total || 0,
-        previous: this.dashboardData.donhang?.previousTotal || 0,
-        color: 'bg-blue-500'
-      },
-      {
-        label: 'Đặt Hàng Hiện Tại',
-        current: this.dashboardData.dathang?.total || 0,
-        previous: this.dashboardData.dathang?.previousTotal || 0,
-        color: 'bg-green-500'
-      }
-    ];
-
-    // Dữ liệu cho biểu đồ sản phẩm (top 8)
-    this.chartData.productChart = this.chartData.topProducts.slice(0, 8);
+  getSelectedGroupLabel(): string {
+    const found = this.reportGroupOptions.find(option => option.value === this.reportGroupBy);
+    return found ? found.label : 'Theo Ngày';
   }
 
-  // Helper methods cho TailwindCSS charts
-  getBarHeight(value: number, maxValue: number): string {
-    if (maxValue === 0) return '2%';
-    const percentage = (value / maxValue) * 100;
-    return `${Math.max(percentage, 2)}%`;
-  }
-
-  getMaxValue(data: any[], field: string): number {
-    return Math.max(...data.map(item => parseFloat(item[field]) || 0));
-  }
-
-  getPercentageChange(current: number, previous: number): number {
-    if (previous === 0) return 0;
-    return Number(((current - previous) / previous * 100).toFixed(1));
-  }
-
-  getChangeColor(change: number): string {
-    return change >= 0 ? 'text-green-600' : 'text-red-600';
-  }
-
-  getChangeIcon(change: number): string {
-    return change >= 0 ? 'trending_up' : 'trending_down';
+  // Helper methods
+  getDaysDifference(): number {
+    const timeDiff = this.ketthuc.getTime() - this.batdau.getTime();
+    return Math.ceil(timeDiff / (1000 * 3600 * 24));
   }
 
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(value);
   }
 
-  formatNumber(value: string | number): string {
-    return new Intl.NumberFormat('vi-VN').format(Number(value));
-  }
-
-  // Get color for each product bar
-  getProductColor(index: number): string {
-    const colors = [
-      'bg-blue-500', 'bg-green-500', 'bg-yellow-500', 'bg-red-500',
-      'bg-purple-500', 'bg-pink-500', 'bg-indigo-500', 'bg-teal-500'
-    ];
-    return colors[index % colors.length];
-  }
-
-  truncateText(text: string, length: number = 20): string {
-    return text.length > length ? text.substring(0, length) + '...' : text;
-  }
-
-  // Template helper methods for global functions
-  parseFloat(value: any): number {
-    return parseFloat(value);
-  }
-
-  mathMax(a: number, b: number): number {
-    return Math.max(a, b);
-  }
-
-  // Get days difference between start and end date
-  getDaysDifference(): number {
-    const diffTime = Math.abs(this.ketthuc.getTime() - this.batdau.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-    return diffDays;
+  formatNumber(value: number): string {
+    return new Intl.NumberFormat('vi-VN').format(value);
   }
 }

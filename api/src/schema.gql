@@ -2,46 +2,165 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AggregateCount {
+  _all: Int!
+}
+
+type AggregateSum {
+  tongtien: Float
+  tongvat: Float
+}
+
+type AggregateResult {
+  _count: AggregateCount!
+  _sum: AggregateSum
+}
+
+type DailyMonthlyReportItem {
+  period: String!
+  totalDonhang: Int!
+  totalDathang: Int!
+  totalRevenue: Float!
+  totalProfit: Float!
+}
+
+type SanphamInfo {
+  id: String!
+  title: String
+  masp: String
+}
+
+type TopProductItem {
+  sanpham: SanphamInfo!
+  totalQuantity: Float!
+  totalValue: Float!
+}
+
+type Query {
+  """
+  Enhanced dynamic findMany with intelligent field selection and DataLoader optimization
+  """
+  findMany(
+    """Model name (case-insensitive)"""
+    modelName: String!
+
+    """Filter conditions"""
+    where: JSON
+
+    """Sort conditions"""
+    orderBy: JSON
+
+    """Records to skip for pagination"""
+    skip: Float = 0
+
+    """Maximum records to return (max 1000)"""
+    take: Float = 50
+
+    """Relations to include"""
+    include: JSON
+
+    """Specific fields to select"""
+    select: JSON
+  ): JSON!
+
+  """Enhanced dynamic findUnique with field selection optimization"""
+  findUnique(
+    """Model name (case-insensitive)"""
+    modelName: String!
+
+    """Unique identifier conditions"""
+    where: JSON!
+
+    """Relations to include"""
+    include: JSON
+
+    """Specific fields to select"""
+    select: JSON
+  ): JSON!
+
+  """Test query to verify select functionality works"""
+  testSelectQuery(modelName: String! = "dathang"): JSON!
+  getAvailableModels: [String!]!
+
+  """Get metadata about a model for optimization"""
+  modelMetadata(
+    """Model name to get metadata for"""
+    modelName: String!
+  ): JSON!
+  aggregateDonhang(batdau: String, ketthuc: String): AggregateResult!
+  aggregateDathang(batdau: String, ketthuc: String): AggregateResult!
+  aggregateSanpham: AggregateResult!
+  aggregateKhachhang: AggregateResult!
+  aggregateNhacungcap: AggregateResult!
+  dailyMonthlyReport(batdau: String!, ketthuc: String!, groupBy: String!): [DailyMonthlyReportItem!]!
+  topProductsByQuantity(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
+  topProductsByValue(batdau: String!, ketthuc: String!, limit: Int!): [TopProductItem!]!
+}
+
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
 scalar JSON
 
 type Mutation {
-  createRecord(data: JSON!, modelName: String!): JSON!
+  createRecord(modelName: String!, data: JSON!): JSON!
+  updateRecord(modelName: String!, where: JSON!, data: JSON!): JSON!
   deleteRecord(modelName: String!, where: JSON!): JSON!
-  updateRecord(data: JSON!, modelName: String!, where: JSON!): JSON!
-}
 
-type Query {
-  """Generic findMany query with FULL support for select parameter"""
-  findMany(
-    """Relations to include"""
-    include: JSON
-
-    """Name of the model to query"""
+  """Enhanced dynamic create with optimized response"""
+  createOne(
+    """Model name (case-insensitive)"""
     modelName: String!
 
-    """Order by conditions"""
-    orderBy: JSON
+    """Data to create"""
+    data: JSON!
 
-    """Specific fields to select - SUPPORTS FIELD SELECTION"""
+    """Relations to include in response"""
+    include: JSON
+
+    """Specific fields to select in response"""
     select: JSON
-
-    """Number of records to skip"""
-    skip: Float = 0
-
-    """Number of records to take"""
-    take: Float = 10
-
-    """Where conditions"""
-    where: JSON
   ): JSON!
 
-  """Generic findUnique query with select support"""
-  findUnique(include: JSON, modelName: String!, select: JSON, where: JSON!): JSON!
-  getAvailableModels: [String!]!
+  """Enhanced dynamic update with optimized response"""
+  updateOne(
+    """Model name (case-insensitive)"""
+    modelName: String!
 
-  """Test query to verify select functionality works"""
-  testSelectQuery(modelName: String! = "dathang"): JSON!
+    """Unique identifier conditions"""
+    where: JSON!
+
+    """Data to update"""
+    data: JSON!
+
+    """Relations to include in response"""
+    include: JSON
+
+    """Specific fields to select in response"""
+    select: JSON
+  ): JSON!
+
+  """Enhanced dynamic delete operation"""
+  deleteOne(
+    """Model name (case-insensitive)"""
+    modelName: String!
+
+    """Unique identifier conditions"""
+    where: JSON!
+  ): JSON!
+
+  """Enhanced batch create for multiple records"""
+  batchCreate(
+    """Model name (case-insensitive)"""
+    modelName: String!
+
+    """Array of data objects to create"""
+    data: [JSON!]!
+  ): JSON!
+
+  """Clear DataLoader cache for better performance testing"""
+  clearDataLoaderCache(
+    """Specific model to clear cache for (optional)"""
+    modelName: String
+  ): JSON!
 }

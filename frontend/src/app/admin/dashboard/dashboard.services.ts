@@ -43,6 +43,93 @@ async DonhangDashboard(params: any) {
     }
 }
 
+// API tổng hợp tất cả dữ liệu
+async getComprehensiveDashboard(params: any) {
+    try {
+        const queryParams = new URLSearchParams({
+            Batdau: moment(params.Batdau).utc().toISOString(),
+            Ketthuc: moment(params.Ketthuc).utc().toISOString()
+        }).toString();
+        
+        const options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+            },
+        };
+        
+        const response = await fetch(`${environment.APIURL}/dashboard/comprehensive?${queryParams}`, options);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('Comprehensive Dashboard Data:', data);  
+        return data;
+    } catch (error) {
+        console.error('Error fetching comprehensive dashboard:', error);
+        return null;
+    }
+}
+
+// API báo cáo theo ngày/tháng/năm
+async getDailyMonthlyReport(params: any) {
+    try {
+        const queryParams = new URLSearchParams({
+            Batdau: moment(params.Batdau).utc().toISOString(),
+            Ketthuc: moment(params.Ketthuc).utc().toISOString(),
+            groupBy: params.groupBy || 'day' // day, month, year
+        }).toString();
+        
+        const options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+            },
+        };
+        
+        const response = await fetch(`${environment.APIURL}/dashboard/time-series?${queryParams}`, options);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching time series data:', error);
+        return null;
+    }
+}
+
+// API top sản phẩm
+async getTopProducts(params: any) {
+    try {
+        const queryParams = new URLSearchParams({
+            Batdau: moment(params.Batdau).utc().toISOString(),
+            Ketthuc: moment(params.Ketthuc).utc().toISOString(),
+            limit: params.limit || 10
+        }).toString();
+        
+        const options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this._StorageService.getItem('token')
+            },
+        };
+        
+        const response = await fetch(`${environment.APIURL}/dashboard/top-products?${queryParams}`, options);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching top products:', error);
+        return null;
+    }
+}
+
   async getSLChogiao(SearchParams: any) {
     const payload = {...SearchParams}
     payload.Batdau = moment(payload.Batdau).utc()

@@ -9,6 +9,7 @@ import { DataLoaderService } from './dataloader.service';
 import { FieldSelectionService } from './field-selection.service';
 import { GraphQLPerformanceService } from './performance.service';
 import { TimezoneUtilService } from '../shared/services/timezone-util.service';
+import { DashboardResolver } from '../dashboard/dashboard.resolver';
 
 @Module({
   imports: [
@@ -29,6 +30,9 @@ import { TimezoneUtilService } from '../shared/services/timezone-util.service';
     
     // Timezone utility service
     TimezoneUtilService,
+    
+    // Dashboard resolver
+    DashboardResolver,
   ],
   exports: [
     UniversalService,

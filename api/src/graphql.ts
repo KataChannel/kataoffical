@@ -20,6 +20,22 @@ export abstract class IQuery {
     abstract getAvailableModels(): string[] | Promise<string[]>;
 
     abstract testSelectQuery(modelName: string): JSON | Promise<JSON>;
+
+    abstract aggregateDonhang(where?: Nullable<JSON>): Nullable<AggregateResult> | Promise<Nullable<AggregateResult>>;
+
+    abstract aggregateDathang(where?: Nullable<JSON>): Nullable<AggregateResult> | Promise<Nullable<AggregateResult>>;
+
+    abstract aggregateSanpham(): Nullable<AggregateResult> | Promise<Nullable<AggregateResult>>;
+
+    abstract aggregateKhachhang(): Nullable<AggregateResult> | Promise<Nullable<AggregateResult>>;
+
+    abstract aggregateNhacungcap(): Nullable<AggregateResult> | Promise<Nullable<AggregateResult>>;
+
+    abstract dailyMonthlyReport(batdau: string, ketthuc: string, groupBy: string): DailyMonthlyReportItem[] | Promise<DailyMonthlyReportItem[]>;
+
+    abstract topProductsByQuantity(batdau: string, ketthuc: string, limit: number): TopProductItem[] | Promise<TopProductItem[]>;
+
+    abstract topProductsByValue(batdau: string, ketthuc: string, limit: number): TopProductItem[] | Promise<TopProductItem[]>;
 }
 
 export abstract class IMutation {
@@ -42,6 +58,39 @@ export abstract class IMutation {
     abstract deleteRecord(modelName: string, where: JSON): JSON | Promise<JSON>;
 
     abstract updateRecord(data: JSON, modelName: string, where: JSON): JSON | Promise<JSON>;
+}
+
+export class AggregateResult {
+    _count?: Nullable<CountResult>;
+    _sum?: Nullable<SumResult>;
+}
+
+export class CountResult {
+    _all?: Nullable<number>;
+}
+
+export class SumResult {
+    tongtien?: Nullable<number>;
+    tongvat?: Nullable<number>;
+}
+
+export class DailyMonthlyReportItem {
+    period: string;
+    totalDonhang: number;
+    totalRevenue: number;
+    totalProfit: number;
+}
+
+export class TopProductItem {
+    sanpham: ProductInfo;
+    totalQuantity: number;
+    totalValue: number;
+}
+
+export class ProductInfo {
+    id: string;
+    title?: Nullable<string>;
+    masp?: Nullable<string>;
 }
 
 export type JSON = any;
