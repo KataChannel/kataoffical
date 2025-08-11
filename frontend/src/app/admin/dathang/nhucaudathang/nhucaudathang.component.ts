@@ -137,6 +137,11 @@ export class NhucaudathangComponent {
   }
 
   async ngOnInit(): Promise<void> {
+    // ✅ Initialize date range to today
+    const today = new Date();
+    this.batdau = new Date(today);
+    this.ketthuc = new Date(today);
+    
     this.updateDisplayData();
     this.loadDonhangWithRelations();
     this._SanphamService.listenSanphamUpdates();
@@ -180,15 +185,25 @@ export class NhucaudathangComponent {
 
   async loadDonhangWithRelations() {
     try {
-      // Determine date range for queries
-      const startDate = this.isDateRangeEnabled ? 
-        this._timezoneService.formDateToUTC(this.batdau) : 
-        new Date().toISOString();
+      // ✅ Sử dụng TimezoneService để xử lý date range đúng cách
+      let startDate: string;
+      let endDate: string;
       
-      const endDate = this.isDateRangeEnabled ? 
-        this._timezoneService.formDateToUTC(new Date(this.ketthuc.getTime() + 24 * 60 * 60 * 1000 - 1)) : 
-        new Date(new Date().setHours(23, 59, 59, 999)).toISOString();
+      if (this.isDateRangeEnabled && this.batdau && this.ketthuc) {
+        // ✅ Sử dụng getAPIDateRange để đảm bảo consistent timezone handling
+        const dateRange = this._timezoneService.getAPIDateRange(this.batdau, this.ketthuc);
+        startDate = dateRange.Batdau;
+        endDate = dateRange.Ketthuc;
+      } else {
+        // Default to today if no date range is set
+        const today = new Date();
+        const todayRange = this._timezoneService.getAPIDateRange(today, today);
+        startDate = todayRange.Batdau;
+        endDate = todayRange.Ketthuc;
+      }
 
+      console.log(`Fetching data from ${startDate} to ${endDate}`);
+        
       const [Donhangs, Dathangs, Tonkhos] = await Promise.all([
         this._GraphqlService.findAll('donhang', {
           enableParallelFetch: true,
@@ -255,7 +270,7 @@ export class NhucaudathangComponent {
           },
         }),
         
-        this._GraphqlService.findAllTonKho({
+        this._GraphqlService.findAll('tonkho',{
           enableParallelFetch: true,
           aggressiveCache: true,
           select: {
@@ -271,7 +286,7 @@ export class NhucaudathangComponent {
               },
             },
           },
-        })
+        }),
       ]);
 
       const DonhangsTranfer = Donhangs.data.flatMap((order: any) =>
@@ -286,11 +301,8 @@ export class NhucaudathangComponent {
           slnhan: Number(sp.slnhan) || 0,
         }))
       );
-
-      console.log(Dathangs);
-
-      const DathangsTranfer = Dathangs.data.flatMap((order: any) =>
-        order.sanpham.map((sp: any) => ({
+      const DathangsTranfer = Dathangs.data.flatMap((order: any) => {
+        return order.sanpham.map((sp: any) => ({
           type: 'dathang',
           madncc: order.madncc,
           mancc: order.nhacungcap.mancc,
@@ -300,10 +312,10 @@ export class NhucaudathangComponent {
           sldat: Number(sp.sldat) || 0,
           slgiao: Number(sp.slgiao) || 0,
           slnhan: Number(sp.slnhan) || 0,
-          makho: sp.kho.makho,
-          namekho: sp.kho.name
-        }))
-      );
+          makho: order.kho.makho,
+          namekho: order.kho.name
+        }));
+      });
 
       const TonkhosTranfer = Tonkhos.data.map((sp: any) => ({
         type: 'tonkho',
@@ -353,6 +365,8 @@ export class NhucaudathangComponent {
       });
 
       const TonghopsFinal = Array.from(tonghopMap.values());
+      console.log(Donhangs);
+      console.log(Dathangs);
       console.log(TonghopsFinal);
 
       this.TonghopsFinal = TonghopsFinal;
@@ -830,10 +844,13 @@ export class NhucaudathangComponent {
   toggleDateRangeFilter(): void {
     this.isDateRangeEnabled = !this.isDateRangeEnabled;
     this.hasUnappliedDateChanges = false;
+    
     if (this.isDateRangeEnabled) {
-      // Set default range to today if enabled
-      this.batdau = new Date();
-      this.ketthuc = new Date();
+      // ✅ Set default date range to today when enabling
+      const today = new Date();
+      this.batdau = new Date(today);
+      this.ketthuc = new Date(today);
+      this.loadDonhangWithRelations();
     } else {
       // When disabled, reload data without date filter
       this.loadDonhangWithRelations();
@@ -843,18 +860,44 @@ export class NhucaudathangComponent {
   /**
    * Apply date range filter - called by user action
    */
-
   applyDateFilter(dateMenuTrigger: MatMenuTrigger): void {
-    if (this.isDateRangeEnabled) {
-      this.hasUnappliedDateChanges = false;
-      this.loadDonhangWithRelations();
-      this._snackBar.open('Đã áp dụng bộ lọc ngày', '', {
-        duration: 2000,
+    // ✅ Enable date range filtering if not already enabled
+    if (!this.isDateRangeEnabled) {
+      this.isDateRangeEnabled = true;
+    }
+    
+    // ✅ Validate date range
+    if (!this.batdau || !this.ketthuc) {
+      this._snackBar.open('Vui lòng chọn khoảng thời gian hợp lệ', '', {
+        duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
+        panelClass: ['snackbar-error'],
       });
+      return;
     }
+    
+    // ✅ Ensure start date is not after end date
+    if (this.batdau > this.ketthuc) {
+      this._snackBar.open('Ngày bắt đầu không thể sau ngày kết thúc', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+      return;
+    }
+    
+    // ✅ Apply the filter
+    this.hasUnappliedDateChanges = false;
+    this.loadDonhangWithRelations();
+    
+    this._snackBar.open('Đã áp dụng bộ lọc ngày', '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
     
     // Close the date menu
     dateMenuTrigger.closeMenu();
@@ -900,11 +943,16 @@ export class NhucaudathangComponent {
    */
   setThisWeek(dateMenuTrigger: MatMenuTrigger): void {
     const today = new Date();
-    const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-    const lastDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + 6));
+    // ✅ Fix: Calculate week dates properly
+    const firstDayOfWeek = new Date(today);
+    firstDayOfWeek.setDate(today.getDate() - today.getDay());
+    
+    const lastDayOfWeek = new Date(firstDayOfWeek);
+    lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
     
     this.batdau = new Date(firstDayOfWeek);
     this.ketthuc = new Date(lastDayOfWeek);
+    
     // Auto apply when using quick buttons
     this.applyDateFilter(dateMenuTrigger);
   }
@@ -929,7 +977,20 @@ export class NhucaudathangComponent {
   clearDateFilter(): void {
     this.isDateRangeEnabled = false;
     this.hasUnappliedDateChanges = false;
+    
+    // ✅ Reset dates to today
+    const today = new Date();
+    this.batdau = new Date(today);
+    this.ketthuc = new Date(today);
+    
     this.loadDonhangWithRelations();
+    
+    this._snackBar.open('Đã xóa bộ lọc ngày', '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
   }
 
   /**
