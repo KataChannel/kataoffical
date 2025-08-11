@@ -67,16 +67,12 @@ export class TimezoneUtilService {
       if (value && typeof value === 'object') {
         // Handle range queries like { gte: date, lte: date }
         if (value.gte) {
-          // Start of day for gte
-          const startDate = new Date(value.gte);
-          startDate.setHours(0, 0, 0, 0);
-          value.gte = this.toUTC(startDate);
+          // ✅ Frontend đã gửi start-of-day UTC, không cần modify thêm
+          value.gte = this.toUTC(value.gte);
         }
         if (value.lte) {
-          // End of day for lte
-          const endDate = new Date(value.lte);
-          endDate.setHours(23, 59, 59, 999);
-          value.lte = this.toUTC(endDate);
+          // ✅ Frontend đã gửi end-of-day UTC, không cần modify thêm
+          value.lte = this.toUTC(value.lte);
         }
         if (value.gt) value.gt = this.toUTC(value.gt);
         if (value.lt) value.lt = this.toUTC(value.lt);

@@ -145,9 +145,12 @@ export class DonhangService {
 
   async getSLChogiao(SearchParams: any) {
     const payload = {...SearchParams}
-    // ✅ Sử dụng TimezoneService để convert UTC
-    payload.Batdau = this.timezoneService.toUTC(payload.Batdau)
-    payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc)
+    // ✅ Sử dụng getAPIDateRange để đảm bảo consistent date handling
+    if (payload.Batdau || payload.Ketthuc) {
+      const dateRange = this.timezoneService.getAPIDateRange(payload.Batdau, payload.Ketthuc);
+      payload.Batdau = dateRange.Batdau;
+      payload.Ketthuc = dateRange.Ketthuc;
+    }
     try {
       const options = {
         method: 'POST',
@@ -174,9 +177,14 @@ export class DonhangService {
   }
   async searchDonhang(SearchParams: any) {
     const payload = {...SearchParams}
-    // ✅ Sử dụng TimezoneService để convert UTC
-    payload.Batdau = this.timezoneService.toUTC(payload.Batdau)
-    payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc)
+    
+    // ✅ Sử dụng getAPIDateRange để đảm bảo consistent date handling
+    if (payload.Batdau || payload.Ketthuc) {
+      const dateRange = this.timezoneService.getAPIDateRange(payload.Batdau, payload.Ketthuc);
+      payload.Batdau = dateRange.Batdau;
+      payload.Ketthuc = dateRange.Ketthuc;
+    }
+    
     try {
       const options = {
         method: 'POST',
@@ -203,9 +211,12 @@ export class DonhangService {
   }
   async searchCongno(SearchParams: any) {
     const payload = {...SearchParams}
-    // ✅ Sử dụng TimezoneService để convert UTC
-    payload.Batdau = this.timezoneService.toUTC(payload.Batdau)
-    payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc)
+    // ✅ Sử dụng getAPIDateRange để đảm bảo consistent date handling
+    if (payload.Batdau || payload.Ketthuc) {
+      const dateRange = this.timezoneService.getAPIDateRange(payload.Batdau, payload.Ketthuc);
+      payload.Batdau = dateRange.Batdau;
+      payload.Ketthuc = dateRange.Ketthuc;
+    }
     try {
       const options = {
         method: 'POST',
@@ -229,9 +240,12 @@ export class DonhangService {
 
   async Phieuchuyen(SearchParams: any) {
     const payload = {...SearchParams}
-    // ✅ Sử dụng TimezoneService để convert UTC
-    payload.Batdau = this.timezoneService.toUTC(payload.Batdau)
-    payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc)
+    // ✅ Sử dụng getAPIDateRange để đảm bảo consistent date handling
+    if (payload.Batdau || payload.Ketthuc) {
+      const dateRange = this.timezoneService.getAPIDateRange(payload.Batdau, payload.Ketthuc);
+      payload.Batdau = dateRange.Batdau;
+      payload.Ketthuc = dateRange.Ketthuc;
+    }
     try {
       const options = {
         method: 'POST',

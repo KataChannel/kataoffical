@@ -49,14 +49,10 @@ let TimezoneUtilService = class TimezoneUtilService {
             const value = converted[key];
             if (value && typeof value === 'object') {
                 if (value.gte) {
-                    const startDate = new Date(value.gte);
-                    startDate.setHours(0, 0, 0, 0);
-                    value.gte = this.toUTC(startDate);
+                    value.gte = this.toUTC(value.gte);
                 }
                 if (value.lte) {
-                    const endDate = new Date(value.lte);
-                    endDate.setHours(23, 59, 59, 999);
-                    value.lte = this.toUTC(endDate);
+                    value.lte = this.toUTC(value.lte);
                 }
                 if (value.gt)
                     value.gt = this.toUTC(value.gt);

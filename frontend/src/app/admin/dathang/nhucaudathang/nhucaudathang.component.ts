@@ -63,6 +63,10 @@ export class NhucaudathangComponent {
   displayedColumns: string[] = [
     'title',
     'masp',
+    'mancc',
+    'name',
+    'makho',
+    'namekho',
     'slton',
     'slchogiao',
     'slchonhap',
@@ -73,6 +77,10 @@ export class NhucaudathangComponent {
   ColumnName: any = {
     title: 'Tên Sản Phẩm',
     masp: 'Mã Sản Phẩm',
+    mancc: 'Mã NCC',
+    name: 'Tên Nhà Cung Cấp',
+    makho: 'Mã Kho',
+    namekho: 'Tên Kho',
     slton: 'Tồn Kho',
     slchogiao: 'Chờ Giao',
     slchonhap: 'Chờ Nhập',

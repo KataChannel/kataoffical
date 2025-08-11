@@ -185,9 +185,36 @@ export class TimezoneService {
    * @returns Object với startUTC và endUTC
    */
   getUTCDateRange(startDate: any, endDate: any): { startUTC: string; endUTC: string } {
-    const startUTC = startDate ? this.toUTC(startDate) : '';
-    const endUTC = endDate ? this.toUTC(endDate) : '';
+    let startUTC = '';
+    let endUTC = '';
+    
+    if (startDate) {
+      // ✅ Đảm bảo start of day theo local timezone, convert sang UTC
+      const start = moment(startDate).startOf('day').utc().toISOString();
+      startUTC = start;
+    }
+    
+    if (endDate) {
+      // ✅ Đảm bảo end of day theo local timezone, convert sang UTC
+      const end = moment(endDate).endOf('day').utc().toISOString();
+      endUTC = end;
+    }
     
     return { startUTC, endUTC };
+  }
+
+  /**
+   * Convert date range từ frontend form để gửi API
+   * Đảm bảo consistent timezone handling
+   * @param startDate Ngày bắt đầu
+   * @param endDate Ngày kết thúc  
+   * @returns Object với Batdau và Ketthuc format chuẩn
+   */
+  getAPIDateRange(startDate: any, endDate: any): { Batdau: string; Ketthuc: string } {
+    const range = this.getUTCDateRange(startDate, endDate);
+    return {
+      Batdau: range.startUTC,
+      Ketthuc: range.endUTC
+    };
   }
 }

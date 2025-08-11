@@ -42,7 +42,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 @Component({
   selector: 'app-listdonhang',
   templateUrl: './listdonhang.component.html',
-  styleUrls: ['./listdonhang.component.scss'],  imports: [
+  styleUrls: ['./listdonhang.component.scss'],
+  imports: [
     MatFormFieldModule,
     MatInputModule,
     MatTableModule,
@@ -63,7 +64,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatProgressSpinnerModule,
     MatCheckboxModule,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListDonhangComponent {
   displayedColumns: string[] = [
@@ -117,16 +118,18 @@ export class ListDonhangComponent {
   page = signal<number>(1);
   total = signal<number>(0);
   pageCount = signal<number>(0);
-  FilterKhachhang: any[] = [];constructor() {
+  FilterKhachhang: any[] = [];
+  constructor() {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
-  }async onPageChange(event: any): Promise<void> {
+  }
+  async onPageChange(event: any): Promise<void> {
     console.log('Page change event:', event);
-    
+
     // Show loading indicator during page change
     this.isLoading.set(true);
-    
+
     try {
       this.SearchParams.pageSize = event.pageSize;
       this.SearchParams.pageNumber = event.page;
@@ -141,24 +144,27 @@ export class ListDonhangComponent {
       });
     }
   }
-    async LoadData() {
+  async LoadData() {
     this.isLoading.set(true);
     try {
       // Load customers in background if needed
       if (!this._KhachhangService.ListKhachhang()?.length) {
-        await this._KhachhangService.getKhachhangBy({ page: 1, pageSize: 9999 });
+        await this._KhachhangService.getKhachhangBy({
+          page: 1,
+          pageSize: 9999,
+        });
       }
-      
+
       // Fetch paginated data from server
       const data = await this._DonhangService.searchDonhang(this.SearchParams);
       this.Listdonhang.set(data);
-      
+
       if (data && data.data) {
         this.total.set(Number(data.total || 0));
         this.pageSize.set(Number(data.pageSize || 10));
         this.page.set(Number(data.pageNumber || 1));
         this.pageCount.set(Number(data.totalPages || 1));
-        
+
         // Set data to table without client-side pagination since we're using server-side
         this.dataSource = new MatTableDataSource(data.data);
         // Disable client-side pagination/sorting since we're using server-side
@@ -187,21 +193,28 @@ export class ListDonhangComponent {
     } finally {
       this.isLoading.set(false);
     }
-  }  async onSelectionChange(event: MatSelectChange): Promise<void> {
+  }
+  async onSelectionChange(event: MatSelectChange): Promise<void> {
     // Show loading indicator during time frame change
     this.isLoading.set(true);
-    
+
     try {
       const timeFrames: { [key: string]: () => void } = {
         day: () => {
-          this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
-          this.SearchParams.Ketthuc = moment().endOf('day').format('YYYY-MM-DD');
+          this.SearchParams.Batdau = moment()
+            .startOf('day')
+            .format('YYYY-MM-DD');
+          this.SearchParams.Ketthuc = moment()
+            .endOf('day')
+            .format('YYYY-MM-DD');
         },
         week: () => {
           this.SearchParams.Batdau = moment()
             .startOf('week')
             .format('YYYY-MM-DD');
-          this.SearchParams.Ketthuc = moment().endOf('week').format('YYYY-MM-DD');
+          this.SearchParams.Ketthuc = moment()
+            .endOf('week')
+            .format('YYYY-MM-DD');
         },
         month: () => {
           this.SearchParams.Batdau = moment()
@@ -215,10 +228,12 @@ export class ListDonhangComponent {
           this.SearchParams.Batdau = moment()
             .startOf('year')
             .format('YYYY-MM-DD');
-          this.SearchParams.Ketthuc = moment().endOf('year').format('YYYY-MM-DD');
+          this.SearchParams.Ketthuc = moment()
+            .endOf('year')
+            .format('YYYY-MM-DD');
         },
       };
-      
+
       const selectedTimeFrame = timeFrames[event.value];
       if (selectedTimeFrame) {
         selectedTimeFrame();
@@ -235,11 +250,11 @@ export class ListDonhangComponent {
         panelClass: ['snackbar-error'],
       });
     }
-  }  
+  }
   onDateChange(event: any): void {
     // Show loading indicator during date change
     this.isLoading.set(true);
-    
+
     try {
       // Reset to first page when changing date
       this.SearchParams.pageNumber = 1;
@@ -274,15 +289,15 @@ export class ListDonhangComponent {
   async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     console.log('filterValue', filterValue);
-    
+
     // Show loading indicator while filtering
     this.isLoading.set(true);
-    
+
     try {
       // Reset to first page when searching
       this.SearchParams.pageNumber = 1;
       this.SearchParams.query = filterValue.trim();
-      
+
       // Load data from server with search query
       await this.LoadData();
     } catch (error) {
@@ -384,18 +399,19 @@ export class ListDonhangComponent {
         index === self.findIndex((t: any) => t[column] === obj[column])
     );
     return uniqueList;
-  }  @Debounce(300)
+  }
+  @Debounce(300)
   async doFilterHederColumn(event: any, column: any): Promise<void> {
     const query = event.target.value.toLowerCase();
-    
+
     // Show loading indicator during column filtering
     this.isLoading.set(true);
-    
+
     try {
       // Reset to first page when filtering
       this.SearchParams.pageNumber = 1;
       this.SearchParams[`${column}Filter`] = query;
-      
+
       // Load data from server with column filter
       await this.LoadData();
     } catch (error) {
@@ -408,7 +424,8 @@ export class ListDonhangComponent {
       });
     }
   }
-  ListFilter: any[] = [];  ChosenItem(item: any, column: any) {
+  ListFilter: any[] = [];
+  ChosenItem(item: any, column: any) {
     const CheckItem = this.dataSource.data.filter(
       (v: any) => v[column] === item[column]
     );
@@ -434,7 +451,8 @@ export class ListDonhangComponent {
         this.ListFilter.push(v);
       }
     });
-  }  ResetFilter() {
+  }
+  ResetFilter() {
     this.ListFilter = this.Listdonhang().data || [];
     this.dataSource.data = this.Listdonhang().data || [];
   }
@@ -443,7 +461,8 @@ export class ListDonhangComponent {
   }
   CheckItem(item: any) {
     return this.ListFilter.find((v) => v.id === item.id) ? true : false;
-  }  ApplyFilterColum(menu: any) {
+  }
+  ApplyFilterColum(menu: any) {
     this.dataSource.data = this.Listdonhang().data.filter((v: any) =>
       this.ListFilter.some((v1) => v1.id === v.id)
     );
@@ -453,7 +472,8 @@ export class ListDonhangComponent {
   create(): void {
     this.drawer.open();
     this._router.navigate(['admin/donhang', 'new']);
-  }  goToDetail(item: any): void {
+  }
+  goToDetail(item: any): void {
     this._DonhangService.setDonhangId(item.id);
     this.drawer.open();
     this._router.navigate(['admin/donhang', item.id]);
@@ -462,7 +482,7 @@ export class ListDonhangComponent {
   async Dongbogia() {
     try {
       const result = await this._DonhangService.DongboGia(this.EditList);
-      
+
       if (result.status === 'success') {
         this._snackBar.open(result.message || 'Đồng bộ giá thành công', '', {
           duration: 3000,
@@ -478,7 +498,7 @@ export class ListDonhangComponent {
           panelClass: ['snackbar-error'],
         });
       }
-      
+
       // Reload data after sync
       await this.LoadData();
       this.EditList = [];
@@ -597,7 +617,7 @@ export class ListDonhangComponent {
         continue;
       }
     }
-    await this._SanphamService.getAllSanpham({pageSize:99999});
+    await this._SanphamService.getAllSanpham({ pageSize: 99999 });
     this.dialog.open(this.dialogImportExcelCu, {
       disableClose: true,
     });
@@ -616,14 +636,17 @@ export class ListDonhangComponent {
 
     console.log('Status Details:', this.statusDetails);
     console.log('List Import Data:', this.ListImportData);
-
   }
   removeItemImport(item: any) {
-    this.statusDetails = this.statusDetails.filter((v) => v.tenkhongdau !== item.tenkhongdau);
-    this.ListImportData = this.ListImportData.filter((v) => v.tenkh !== item.tenkhongdau);
+    this.statusDetails = this.statusDetails.filter(
+      (v) => v.tenkhongdau !== item.tenkhongdau
+    );
+    this.ListImportData = this.ListImportData.filter(
+      (v) => v.tenkh !== item.tenkhongdau
+    );
   }
 
-  async DoImportKhachhangCu(ListImportData:any[]) {
+  async DoImportKhachhangCu(ListImportData: any[]) {
     try {
       console.log('ListImportData', ListImportData);
       const invalidItems = ListImportData.filter(
@@ -674,7 +697,7 @@ export class ListDonhangComponent {
     }, 3000);
   }
 
-  async ImportDonhang(items: any[]){
+  async ImportDonhang(items: any[]) {
     // items = items.slice(1); // Remove the first row (header)
     if (!items || !items.length) {
       this._snackBar.open('Không có dữ liệu để nhập', '', {
@@ -686,7 +709,7 @@ export class ListDonhangComponent {
       return;
     }
     console.log('Importing items:', items);
-    
+
     try {
       // Validate required field in first item
       const firstItem = items[0];
@@ -784,11 +807,11 @@ export class ListDonhangComponent {
     }));
     writeExcelFileWithSheets({ SP, KH, BG }, title);
   }
-  
+
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
   }
-  
+
   @Debounce(300)
   async SelectKhachhang(item: any, event: any) {
     const value = event.value;
@@ -799,13 +822,13 @@ export class ListDonhangComponent {
       // Reset giá trị của select về null/undefined
       event.source.value = null;
       event.source._value = null;
-      
+
       // Xóa khachhangId của item hiện tại
       this.ListImportData.filter((v) => v.tenkh === item.tenkhongdau).forEach(
         (v1: any) => {
           delete v1.khachhangId;
         }
-      );      
+      );
       this._snackBar.open('Khách hàng đã tồn tại', '', {
         duration: 3000,
         horizontalPosition: 'end',
@@ -826,7 +849,10 @@ export class ListDonhangComponent {
    * Matches filename (tenkhongdau) with customer data fields like name, subtitle, makh
    */
   autoSelectCustomersFromFilename(): void {
-    if (!this.statusDetails?.length || !this._KhachhangService.ListKhachhang()?.length) {
+    if (
+      !this.statusDetails?.length ||
+      !this._KhachhangService.ListKhachhang()?.length
+    ) {
       return;
     }
 
@@ -840,27 +866,33 @@ export class ListDonhangComponent {
       }
 
       // Check if customer is already selected for this detail
-      const existingImportData = this.ListImportData.find(v => v.tenkh === detail.tenkhongdau);
+      const existingImportData = this.ListImportData.find(
+        (v) => v.tenkh === detail.tenkhongdau
+      );
       if (existingImportData?.khachhangId) {
         skippedCount++;
         return;
       }
 
       const filename = detail.tenkhongdau.toLowerCase();
-      
+
       // Try to match with customer data using multiple strategies
       let matchedCustomer = null;
 
       // Strategy 1: Exact match with customer name (without accents)
       matchedCustomer = customers.find((customer: any) => {
-        const customerNameNoAccent = removeVietnameseAccents(customer.name || '').toLowerCase();
+        const customerNameNoAccent = removeVietnameseAccents(
+          customer.name || ''
+        ).toLowerCase();
         return customerNameNoAccent === filename;
       });
 
       // Strategy 2: Exact match with customer subtitle (without accents)
       if (!matchedCustomer) {
         matchedCustomer = customers.find((customer: any) => {
-          const customerSubtitleNoAccent = removeVietnameseAccents(customer.subtitle || '').toLowerCase();
+          const customerSubtitleNoAccent = removeVietnameseAccents(
+            customer.subtitle || ''
+          ).toLowerCase();
           return customerSubtitleNoAccent === filename;
         });
       }
@@ -876,26 +908,37 @@ export class ListDonhangComponent {
       // Strategy 4: Partial match - filename contains customer name
       if (!matchedCustomer) {
         matchedCustomer = customers.find((customer: any) => {
-          const customerNameNoAccent = removeVietnameseAccents(customer.name || '').toLowerCase();
-          return customerNameNoAccent && filename.includes(customerNameNoAccent);
+          const customerNameNoAccent = removeVietnameseAccents(
+            customer.name || ''
+          ).toLowerCase();
+          return (
+            customerNameNoAccent && filename.includes(customerNameNoAccent)
+          );
         });
       }
 
       // Strategy 5: Partial match - customer name contains filename
       if (!matchedCustomer) {
         matchedCustomer = customers.find((customer: any) => {
-          const customerNameNoAccent = removeVietnameseAccents(customer.name || '').toLowerCase();
-          return customerNameNoAccent && customerNameNoAccent.includes(filename);
+          const customerNameNoAccent = removeVietnameseAccents(
+            customer.name || ''
+          ).toLowerCase();
+          return (
+            customerNameNoAccent && customerNameNoAccent.includes(filename)
+          );
         });
       }
 
       // Strategy 6: Partial match with subtitle
       if (!matchedCustomer) {
         matchedCustomer = customers.find((customer: any) => {
-          const customerSubtitleNoAccent = removeVietnameseAccents(customer.subtitle || '').toLowerCase();
-          return customerSubtitleNoAccent && (
-            filename.includes(customerSubtitleNoAccent) || 
-            customerSubtitleNoAccent.includes(filename)
+          const customerSubtitleNoAccent = removeVietnameseAccents(
+            customer.subtitle || ''
+          ).toLowerCase();
+          return (
+            customerSubtitleNoAccent &&
+            (filename.includes(customerSubtitleNoAccent) ||
+              customerSubtitleNoAccent.includes(filename))
           );
         });
       }
@@ -906,23 +949,27 @@ export class ListDonhangComponent {
         const existingSelection = this.ListImportData.find(
           (v: any) => v.khachhangId === matchedCustomer.id
         );
-        
+
         if (existingSelection) {
-          console.warn(`Customer ${matchedCustomer.name} is already selected for another import`);
+          console.warn(
+            `Customer ${matchedCustomer.name} is already selected for another import`
+          );
           skippedCount++;
           return;
-        }        // Auto-select the customer
-        this.ListImportData.filter((v) => v.tenkh === detail.tenkhongdau).forEach(
-          (v1: any) => {
-            v1.khachhangId = matchedCustomer.id;
-          }
-        );
+        } // Auto-select the customer
+        this.ListImportData.filter(
+          (v) => v.tenkh === detail.tenkhongdau
+        ).forEach((v1: any) => {
+          v1.khachhangId = matchedCustomer.id;
+        });
 
         // Mark as auto-selected for visual indication
         detail.autoSelected = true;
 
         matchedCount++;
-        console.log(`Auto-selected customer "${matchedCustomer.name}" for file "${detail.fileName}"`);
+        console.log(
+          `Auto-selected customer "${matchedCustomer.name}" for file "${detail.fileName}"`
+        );
       }
     });
 
@@ -950,14 +997,16 @@ export class ListDonhangComponent {
    * Get selected customer for a specific order detail
    */
   getSelectedCustomer(detail: any): any {
-    const importData = this.ListImportData.find(v => v.tenkh === detail.tenkhongdau);
+    const importData = this.ListImportData.find(
+      (v) => v.tenkh === detail.tenkhongdau
+    );
     if (!importData?.khachhangId) {
       return null;
     }
-    
-    return this._KhachhangService.ListKhachhang().find(
-      (customer: any) => customer.id === importData.khachhangId
-    );
+
+    return this._KhachhangService
+      .ListKhachhang()
+      .find((customer: any) => customer.id === importData.khachhangId);
   }
 
   /**
@@ -972,10 +1021,14 @@ export class ListDonhangComponent {
    * Toggle confirmation for all orders
    */
   toggleAllOrderConfirmation(): void {
-    const processedOrders = this.statusDetails.filter(detail => detail.status === 'Processed');
-    const allConfirmed = processedOrders.every(detail => detail.configOptions?.confirmed);
-    
-    processedOrders.forEach(detail => {
+    const processedOrders = this.statusDetails.filter(
+      (detail) => detail.status === 'Processed'
+    );
+    const allConfirmed = processedOrders.every(
+      (detail) => detail.configOptions?.confirmed
+    );
+
+    processedOrders.forEach((detail) => {
       if (!detail.configOptions) {
         detail.configOptions = {};
       }
@@ -998,8 +1051,9 @@ export class ListDonhangComponent {
    * Get count of confirmed orders
    */
   getConfirmedOrdersCount(): number {
-    return this.statusDetails.filter(detail => 
-      detail.status === 'Processed' && detail.configOptions?.confirmed
+    return this.statusDetails.filter(
+      (detail) =>
+        detail.status === 'Processed' && detail.configOptions?.confirmed
     ).length;
   }
 
@@ -1007,7 +1061,8 @@ export class ListDonhangComponent {
    * Get count of processed orders
    */
   getProcessedOrdersCount(): number {
-    return this.statusDetails.filter(detail => detail.status === 'Processed').length;
+    return this.statusDetails.filter((detail) => detail.status === 'Processed')
+      .length;
   }
 
   /**
@@ -1015,7 +1070,7 @@ export class ListDonhangComponent {
    */
   toggleAllOrdersExpansion(): void {
     const allExpanded = this.allOrdersExpanded();
-    this.statusDetails.forEach(detail => {
+    this.statusDetails.forEach((detail) => {
       if (detail.status === 'Processed') {
         detail.expanded = !allExpanded;
       }
@@ -1026,8 +1081,13 @@ export class ListDonhangComponent {
    * Check if all orders are expanded
    */
   allOrdersExpanded(): boolean {
-    const processedOrders = this.statusDetails.filter(detail => detail.status === 'Processed');
-    return processedOrders.length > 0 && processedOrders.every(detail => detail.expanded);
+    const processedOrders = this.statusDetails.filter(
+      (detail) => detail.status === 'Processed'
+    );
+    return (
+      processedOrders.length > 0 &&
+      processedOrders.every((detail) => detail.expanded)
+    );
   }
 
   /**
@@ -1042,30 +1102,36 @@ export class ListDonhangComponent {
    * Get products for an order
    */
   getOrderProducts(detail: any): any[] {
-    const orderData = this.ListImportData.filter(item => item.tenkh === detail.tenkhongdau);
-    const transformedData = orderData.map((v:any) => {
-      const sanphamList = v.sanpham.map((item: any) => {
-        const sanpham = this._SanphamService.ListSanpham().find(sp => sp.masp === item.ItemCode);
-        if (sanpham) {
-          return {
-            id: sanpham.id,
-            title: sanpham.title,
-            masp: sanpham.masp,
-            dvt: sanpham.dvt,
-            sldat: Number(item.Quantity),
-            slgiao: Number(item.Quantity),
-            slnhan: Number(item.Quantity),
-          };
-        } else {
-          return null;
-        }
-      }).filter((item:any) => item !== null);
+    const orderData = this.ListImportData.filter(
+      (item) => item.tenkh === detail.tenkhongdau
+    );
+    const transformedData = orderData.map((v: any) => {
+      const sanphamList = v.sanpham
+        .map((item: any) => {
+          const sanpham = this._SanphamService
+            .ListSanpham()
+            .find((sp) => sp.masp === item.ItemCode);
+          if (sanpham) {
+            return {
+              id: sanpham.id,
+              title: sanpham.title,
+              masp: sanpham.masp,
+              dvt: sanpham.dvt,
+              sldat: Number(item.Quantity),
+              slgiao: Number(item.Quantity),
+              slnhan: Number(item.Quantity),
+            };
+          } else {
+            return null;
+          }
+        })
+        .filter((item: any) => item !== null);
       return {
         ...v,
-        sanpham: sanphamList
+        sanpham: sanphamList,
       };
     });
-    return transformedData.flatMap(item => item.sanpham) || [];
+    return transformedData.flatMap((item) => item.sanpham) || [];
   }
 
   /**
@@ -1073,7 +1139,10 @@ export class ListDonhangComponent {
    */
   getTotalQuantity(detail: any): number {
     const products = this.getOrderProducts(detail);
-    return products.reduce((total, product) => Number(total) + (Number(product.sldat) || 0), 0);
+    return products.reduce(
+      (total, product) => Number(total) + (Number(product.sldat) || 0),
+      0
+    );
   }
 
   /**
@@ -1136,13 +1205,19 @@ export class ListDonhangComponent {
     }
 
     try {
-      const result: any = await this._DonhangService.DeleteBulkDonhang(this.EditList.map((v: any) => v.id));
-      this._snackBar.open(`Xóa thành công ${result.success} đơn hàng ${result.fail} lỗi`, '', {
-        duration: 3000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
+      const result: any = await this._DonhangService.DeleteBulkDonhang(
+        this.EditList.map((v: any) => v.id)
+      );
+      this._snackBar.open(
+        `Xóa thành công ${result.success} đơn hàng ${result.fail} lỗi`,
+        '',
+        {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        }
+      );
       this.EditList = [];
       await this.LoadData();
     } catch (error: any) {
@@ -1161,8 +1236,14 @@ export class ListDonhangComponent {
    */
   getTotalProducts(): number {
     return this.statusDetails
-      .filter(detail => detail.status === 'Processed' && detail.configOptions?.confirmed)
-      .reduce((total, detail) => total + this.getOrderProducts(detail).length, 0);
+      .filter(
+        (detail) =>
+          detail.status === 'Processed' && detail.configOptions?.confirmed
+      )
+      .reduce(
+        (total, detail) => total + this.getOrderProducts(detail).length,
+        0
+      );
   }
 
   /**
@@ -1179,7 +1260,7 @@ export class ListDonhangComponent {
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
-      currency: 'VND'
+      currency: 'VND',
     }).format(amount);
   }
 
@@ -1187,8 +1268,8 @@ export class ListDonhangComponent {
    * Import confirmed orders
    */
   async ImportConfirmedDonhang(): Promise<void> {
-    const confirmedOrders = this.ListImportData.filter((_, index) => 
-      this.statusDetails[index]?.configOptions?.confirmed
+    const confirmedOrders = this.ListImportData.filter(
+      (_, index) => this.statusDetails[index]?.configOptions?.confirmed
     );
 
     if (confirmedOrders.length === 0) {
