@@ -23,9 +23,9 @@ export declare class KhoahocService {
         error?: undefined;
     }>;
     create(data: any): Promise<{
+        name: string | null;
         id: string;
         codeId: string;
-        name: string | null;
         gender: string | null;
         phone: string | null;
         createdAt: Date;
@@ -53,9 +53,9 @@ export declare class KhoahocService {
         branchId: string | null;
     }>;
     findBy(param: any): Promise<{
+        name: string | null;
         id: string;
         codeId: string;
-        name: string | null;
         gender: string | null;
         phone: string | null;
         createdAt: Date;
@@ -83,9 +83,9 @@ export declare class KhoahocService {
         branchId: string | null;
     } | {
         data: {
+            name: string | null;
             id: string;
             codeId: string;
-            name: string | null;
             gender: string | null;
             phone: string | null;
             createdAt: Date;
@@ -118,9 +118,9 @@ export declare class KhoahocService {
     } | null>;
     findAll(query: any): Promise<{
         data: {
+            name: string | null;
             id: string;
             codeId: string;
-            name: string | null;
             gender: string | null;
             phone: string | null;
             createdAt: Date;
@@ -153,9 +153,9 @@ export declare class KhoahocService {
         totalPages: number;
     }>;
     findOne(id: string): Promise<{
+        name: string | null;
         id: string;
         codeId: string;
-        name: string | null;
         gender: string | null;
         phone: string | null;
         createdAt: Date;
@@ -183,9 +183,9 @@ export declare class KhoahocService {
         branchId: string | null;
     }>;
     update(id: string, data: any): Promise<{
+        name: string | null;
         id: string;
         codeId: string;
-        name: string | null;
         gender: string | null;
         phone: string | null;
         createdAt: Date;
@@ -213,9 +213,9 @@ export declare class KhoahocService {
         branchId: string | null;
     }>;
     remove(id: string): Promise<{
+        name: string | null;
         id: string;
         codeId: string;
-        name: string | null;
         gender: string | null;
         phone: string | null;
         createdAt: Date;

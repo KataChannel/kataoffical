@@ -67,6 +67,24 @@ let AuthController = class AuthController {
     async randomPassword(req) {
         return this.authService.generateRandomPassword(req.user.id);
     }
+    async forgotPassword(body) {
+        try {
+            const result = await this.authService.forgotPassword(body.email, body.phone);
+            return { statusCode: common_1.HttpStatus.OK, message: 'Link đặt lại mật khẩu đã được gửi', result };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.BAD_REQUEST);
+        }
+    }
+    async resetPassword(body) {
+        try {
+            const result = await this.authService.resetPassword(body.token, body.newPassword);
+            return { statusCode: common_1.HttpStatus.OK, message: 'Mật khẩu đã được đặt lại thành công', result };
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.BAD_REQUEST);
+        }
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -151,6 +169,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "randomPassword", null);
+__decorate([
+    (0, common_1.Post)('forgot-password'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "forgotPassword", null);
+__decorate([
+    (0, common_1.Post)('reset-password'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "resetPassword", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])

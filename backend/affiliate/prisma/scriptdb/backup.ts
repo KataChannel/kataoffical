@@ -8,7 +8,7 @@ const BACKUP_ROOT_DIR = './affiliate_json';
 function getFormattedDate(): string {
   const now = new Date();
   const pad = (num: number) => num.toString().padStart(2, '0');
-  return `${pad(now.getDate())}${pad(now.getMonth() + 1)}${now.getFullYear()}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+  return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
 }
 
 const BACKUP_DIR = path.join(BACKUP_ROOT_DIR, getFormattedDate());
@@ -22,13 +22,7 @@ async function backupTableToJson(table: string): Promise<void> {
   try {
     const data: any[] = await prisma.$queryRawUnsafe(`SELECT * FROM "${table}"`);
     const filePath: string = path.join(BACKUP_DIR, `${table}.json`);
-    
-    // Custom replacer to handle BigInt values
-    const bigIntReplacer = (key: string, value: any) => {
-      return typeof value === 'bigint' ? value.toString() : value;
-    };
-    
-    fs.writeFileSync(filePath, JSON.stringify(data, bigIntReplacer, 2));
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
     console.log(`✅ Backup JSON thành công: ${filePath}`);
   } catch (error) {
     console.error(`❌ Lỗi backup bảng ${table}:`, error);

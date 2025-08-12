@@ -13,9 +13,9 @@ export declare class AuthController {
         statusCode: HttpStatus;
         message: string;
         user: {
+            name: string | null;
             id: string;
             codeId: string | null;
-            name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
             email: string | null;
@@ -43,9 +43,9 @@ export declare class AuthController {
         statusCode: HttpStatus;
         message: string;
         user: {
+            name: string | null;
             id: string;
             codeId: string | null;
-            name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
             email: string | null;
@@ -84,9 +84,9 @@ export declare class AuthController {
         statusCode: HttpStatus;
         message: string;
         result: {
+            name: string | null;
             id: string;
             codeId: string | null;
-            name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
             email: string | null;
@@ -112,5 +112,44 @@ export declare class AuthController {
     }>;
     randomPassword(req: any): Promise<{
         newPassword: string;
+    }>;
+    forgotPassword(body: {
+        email?: string;
+        phone?: string;
+    }): Promise<{
+        statusCode: HttpStatus;
+        message: string;
+        result: {
+            message: string;
+            emailSent: boolean;
+            email: string;
+            resetToken?: undefined;
+            resetUrl?: undefined;
+            error?: undefined;
+        } | {
+            message: string;
+            resetToken: string;
+            emailSent: boolean;
+            resetUrl: string;
+            email?: undefined;
+            error?: undefined;
+        } | {
+            message: string;
+            resetToken: string;
+            emailSent: boolean;
+            resetUrl: string;
+            error: string;
+            email?: undefined;
+        };
+    }>;
+    resetPassword(body: {
+        token: string;
+        newPassword: string;
+    }): Promise<{
+        statusCode: HttpStatus;
+        message: string;
+        result: {
+            message: string;
+        };
     }>;
 }

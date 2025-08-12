@@ -1,289 +1,374 @@
 import { PrismaClient } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
-import { execSync } from 'child_process';
 
 const prisma = new PrismaClient();
 const BACKUP_ROOT_DIR = './affiliate_json';
 
-// Định nghĩa thứ tự khôi phục bảng để thỏa mãn ràng buộc khóa ngoại
-const TABLE_ORDER = [
-  'User',
-  'Role',
-  'Permission',
-  'Resource',
-  'FileManager',
-  'Dichvu',
-  'LandingPage',
-  'AffiliateLink',
-  'Menu',
-  'ChatAIHistory',
-  'ChatAIMessage',
-  'ErrorLog',
-  'AuditLog',
-  'Notification',
-  'Doanhso',
-  'Doanhthu',
-  'HoaHong',
-  'ThanhToanHoaHong',
-  'TrackingEvent',
-  'UserRole',
-  'RolePermission',
-];
+interface RestoreStats {
+  tablesProcessed: number;
+  recordsRestored: number;
+  errors: string[];
+  warnings: string[];
+}
+
+const stats: RestoreStats = {
+  tablesProcessed: 0,
+  recordsRestored: 0,
+  errors: [],
+  warnings: []
+};
+
+async function cleanupBeforeRestore(): Promise<void> {
+  console.log('🧹 Dọn dẹp dữ liệu cũ trước khi restore...');
+  
+  try {
+    // Delete in reverse dependency order to avoid FK constraint issues
+    const cleanupOrder = [
+      'dathangsanpham',
+      'donhangsanpham', 
+      'phieugiaohangsanpham',
+      'phieunhapkhosanpham',
+      'dathang',
+      'donhang',
+      'phieugiaohang',
+      'phieunhapkho',
+      'tonkho'
+      // Keep core data like khachhang, nhacungcap, sanpham, users, kho
+    ];
+    
+    let totalDeleted = 0;
+    for (const table of cleanupOrder) {
+      try {
+        const model = (prisma as any)[table];
+        if (model && typeof model.deleteMany === 'function') {
+          const result = await model.deleteMany({});
+          const deletedCount = result.count || 0;
+          totalDeleted += deletedCount;
+          console.log(`🗑️  Đã xóa ${deletedCount} records từ bảng ${table}`);
+        }
+      } catch (error) {
+        const errorMsg = `Không thể xóa bảng ${table}: ${error}`;
+        console.log(`⚠️  ${errorMsg}`);
+        stats.warnings.push(errorMsg);
+      }
+    }
+    
+    console.log(`✅ Hoàn thành dọn dẹp ${totalDeleted} records`);
+  } catch (error) {
+    const errorMsg = `Lỗi khi dọn dẹp: ${error}`;
+    console.error(`❌ ${errorMsg}`);
+    stats.errors.push(errorMsg);
+  }
+}
 
 async function getTables(): Promise<string[]> {
-  try {
-    const tables: { tablename: string }[] =
-      await prisma.$queryRaw`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
-    return tables.map((table) => table.tablename).filter((table) => table !== '_prisma_migrations');
-  } catch (error: any) {
-    console.error('❌ Lỗi khi lấy danh sách bảng:', error.message, error.stack);
-    throw error;
+  const tables: { tablename: string }[] =
+    await prisma.$queryRaw`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
+  return tables.map((table) => table.tablename);
+}
+
+async function validateBackupData(data: any[], table: string): Promise<any[]> {
+  if (!Array.isArray(data)) {
+    throw new Error(`Dữ liệu backup cho bảng ${table} không phải là array`);
   }
+  
+  if (data.length === 0) {
+    return data;
+  }
+  
+  // Basic data validation and cleaning
+  const cleanedData = data.map((item, index) => {
+    if (!item || typeof item !== 'object') {
+      stats.warnings.push(`Record ${index} trong bảng ${table} không hợp lệ`);
+      return null;
+    }
+    
+    const newItem = { ...item };
+    
+    // Convert string numbers to actual numbers for common fields
+    ['size', 'slton', 'slchogiao', 'slchonhap', 'soluong', 'giaban', 'giagoc'].forEach(field => {
+      if (newItem[field] && typeof newItem[field] === 'string') {
+        const trimmed = newItem[field].trim();
+        if (trimmed === '') {
+          newItem[field] = null;
+        } else {
+          const parsed = parseFloat(trimmed);
+          newItem[field] = isNaN(parsed) ? null : parsed;
+        }
+      }
+    });
+    
+    // Clean string fields
+    Object.keys(newItem).forEach(key => {
+      if (typeof newItem[key] === 'string') {
+        newItem[key] = newItem[key].trim();
+      }
+    });
+    
+    return newItem;
+  }).filter(item => item !== null);
+  
+  console.log(`🔍 Đã validate ${data.length} records cho bảng ${table}, ${cleanedData.length} records hợp lệ`);
+  
+  return cleanedData;
 }
 
 async function restoreTableFromJson(table: string): Promise<void> {
   try {
     const latestBackupDir = fs.readdirSync(BACKUP_ROOT_DIR).sort().reverse()[0];
-    console.log(`Đang khôi phục dữ liệu cho bảng: ${table} từ thư mục backup: ${latestBackupDir}`);
-    
     if (!latestBackupDir) {
-      console.error(`❌ Không tìm thấy thư mục backup.`);
-      return;
+      throw new Error(`Không tìm thấy thư mục backup.`);
     }
-    const filePath: string = path.join(BACKUP_ROOT_DIR, latestBackupDir, `${table}.json`);
+    
+    const filePath: string = path.join(
+      BACKUP_ROOT_DIR,
+      latestBackupDir,
+      `${table}.json`,
+    );
+    
     if (!fs.existsSync(filePath)) {
-      console.log(`⚠️ Không tìm thấy tệp JSON cho bảng ${table}, bỏ qua.`);
+      console.log(`⚠️  Không tìm thấy file backup cho bảng ${table}, bỏ qua.`);
+      stats.warnings.push(`File backup không tồn tại cho bảng ${table}`);
       return;
     }
-    const data: any[] = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-
-    if (!Array.isArray(data) || data.length === 0) {
-      console.log(`⚠️ Dữ liệu JSON cho bảng ${table} trống hoặc không hợp lệ, bỏ qua.`);
+    
+    console.log(`📥 Đọc dữ liệu cho bảng: ${table}`);
+    const rawData: any[] = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    
+    if (!Array.isArray(rawData) || rawData.length === 0) {
+      console.log(`⚠️  Bảng ${table} không có dữ liệu để restore`);
       return;
     }
-
-    const processedData = data.map((item) => {
-      const newItem = { ...item };
-
-      // Xử lý trường DateTime
-      for (const key in newItem) {
-        if (newItem[key] && typeof newItem[key] === 'string' && key.match(/At$/)) {
-          newItem[key] = new Date(newItem[key]);
-        }
-      }
-
-      // Xử lý trường Float và cung cấp giá trị mặc định
-      const floatFields = ['amount', 'commission', 'amountPaid', 'originalAmount', 'discountAmount', 'actualAmount', 'tienhoahong', 'price'];
-      for (const key of floatFields) {
-        if (key in newItem) {
-          newItem[key] = newItem[key] != null ? parseFloat(newItem[key]) : null;
-        } else if (table === 'Doanhso' && key === 'actualAmount') {
-          newItem[key] = newItem.originalAmount - (newItem.discountAmount ?? 0);
-        }
-      }
-
-      // Xử lý trường size
-      if (newItem.size && typeof newItem.size === 'string') {
-        newItem.size = newItem.size.trim() === '' ? null : parseInt(newItem.size, 10);
-      }
-
-      // Xử lý khóa ngoại
-      const foreignKeys: { [key: string]: { field: string; model: string }[] } = {
-        TrackingEvent: [
-          { field: 'affiliateLinkId', model: 'affiliateLink' },
-          { field: 'userId', model: 'user' },
-        ],
-        Doanhso: [
-          { field: 'affiliateLinkId', model: 'affiliateLink' },
-          { field: 'dichvuId', model: 'dichvu' },
-          { field: 'userId', model: 'user' },
-        ],
-        AuditLog: [{ field: 'userId', model: 'user' }],
-        Notification: [{ field: 'userId', model: 'user' }],
-        HoaHong: [
-          { field: 'affiliateLinkId', model: 'affiliateLink' },
-          { field: 'doanhthuId', model: 'doanhthu' },
-          { field: 'userId', model: 'user' },
-        ],
-        ThanhToanHoaHong: [
-          { field: 'hoaHongId', model: 'hoaHong' },
-          { field: 'userId', model: 'user' },
-        ],
-        LandingPage: [{ field: 'ownerId', model: 'user' }],
-        User: [{ field: 'referrerId', model: 'user' }],
-        UserRole: [
-          { field: 'userId', model: 'user' },
-          { field: 'roleId', model: 'role' },
-        ],
-        RolePermission: [
-          { field: 'roleId', model: 'role' },
-          { field: 'permissionId', model: 'permission' },
-        ],
-        Menu: [{ field: 'parentId', model: 'menu' }],
-        Doanhthu: [{ field: 'doanhsoId', model: 'doanhso' }],
-      };
-
-      if (foreignKeys[table]) {
-        for (const { field, model } of foreignKeys[table]) {
-          if (newItem[field]) {
-            const isValid = (prisma as any)[model].findUnique({
-              where: { id: newItem[field] },
-            });
-            if (!isValid) {
-              console.warn(`⚠️ ${field} ${newItem[field]} không tồn tại trong ${model}, đặt thành null hoặc bỏ qua.`);
-              newItem[field] = null; // Đặt thành null nếu nullable
-            }
-          }
-        }
-      }
-
-      return newItem;
-    }).filter(item => item !== null);
-
+    
+    // Validate and clean data
+    const processedData = await validateBackupData(rawData, table);
+    
     if (processedData.length === 0) {
-      console.log(`⚠️ Không có bản ghi hợp lệ để khôi phục cho bảng ${table}.`);
+      console.log(`⚠️  Bảng ${table} không có dữ liệu hợp lệ sau validation`);
       return;
     }
 
     const model = (prisma as any)[table];
     if (!model || typeof model.createMany !== 'function') {
-      console.log(`Bảng join ${table} không có model. Sử dụng raw SQL để khôi phục dữ liệu.`);
-      const columns = Object.keys(processedData[0]).map((col) => `"${col}"`).join(', ');
-      const values = processedData
-        .map((item) => {
-          return (
-            '(' +
-            Object.values(item)
-              .map((val) => {
-                if (val instanceof Date) {
-                  return `'${val.toISOString()}'`;
-                } else if (typeof val === 'string') {
-                  return `'${val.replace(/'/g, "''")}'`;
-                } else if (val === null || val === undefined) {
-                  return 'NULL';
-                }
-                return val;
-              })
-              .join(', ') +
-            ')'
-          );
-        })
-        .join(', ');
-      await prisma.$executeRawUnsafe(
-        `INSERT INTO "${table}" (${columns}) VALUES ${values} ON CONFLICT DO NOTHING`
-      );
-    } else {
-      try {
-        await model.createMany({
-          data: processedData,
-          skipDuplicates: true,
-        });
-      } catch (error: any) {
-        console.error(`❌ Lỗi khi chèn dữ liệu vào ${table} bằng createMany:`, error.message);
-        // Thử chèn từng bản ghi
-        for (const item of processedData) {
-          try {
-            const data: any = { ...item };
-            // Xử lý quan hệ
-            if (table === 'Doanhso') {
-              data.dichvu = item.dichvuId ? { connect: { id: item.dichvuId } } : undefined;
-              data.user = item.userId ? { connect: { id: item.userId } } : undefined;
-              data.affiliateLink = item.affiliateLinkId ? { connect: { id: item.affiliateLinkId } } : undefined;
-              delete data.dichvuId;
-              delete data.userId;
-              delete data.affiliateLinkId;
-            } else if (table === 'TrackingEvent') {
-              data.affiliateLink = item.affiliateLinkId ? { connect: { id: item.affiliateLinkId } } : undefined;
-              data.user = item.userId ? { connect: { id: item.userId } } : undefined;
-              delete data.affiliateLinkId;
-              delete data.userId;
-            } else if (['AuditLog', 'Notification', 'HoaHong', 'ThanhToanHoaHong'].includes(table)) {
-              data.user = item.userId ? { connect: { id: item.userId } } : undefined;
-              delete data.userId;
-              if (table === 'HoaHong') {
-                data.affiliateLink = item.affiliateLinkId ? { connect: { id: item.affiliateLinkId } } : undefined;
-                data.doanhthu = item.doanhthuId ? { connect: { id: item.doanhthuId } } : undefined;
-                delete data.affiliateLinkId;
-                delete data.doanhthuId;
-              } else if (table === 'ThanhToanHoaHong') {
-                data.hoaHong = item.hoaHongId ? { connect: { id: item.hoaHongId } } : undefined;
-                delete data.hoaHongId;
-              }
-            } else if (table === 'LandingPage') {
-              data.owner = item.ownerId ? { connect: { id: item.ownerId } } : undefined;
-              delete data.ownerId;
-            } else if (table === 'User') {
-              data.referrer = item.referrerId ? { connect: { id: item.referrerId } } : undefined;
-              delete data.referrerId;
-            } else if (table === 'UserRole') {
-              data.user = item.userId ? { connect: { id: item.userId } } : undefined;
-              data.role = item.roleId ? { connect: { id: item.roleId } } : undefined;
-              delete data.userId;
-              delete data.roleId;
-            } else if (table === 'RolePermission') {
-              data.role = item.roleId ? { connect: { id: item.roleId } } : undefined;
-              data.permission = item.permissionId ? { connect: { id: item.permissionId } } : undefined;
-              delete data.roleId;
-              delete data.permissionId;
-            } else if (table === 'Menu') {
-              data.parent = item.parentId ? { connect: { id: item.parentId } } : undefined;
-              delete data.parentId;
-            } else if (table === 'Doanhthu') {
-              data.doanhso = item.doanhsoId ? { connect: { id: item.doanhsoId } } : undefined;
-              delete data.doanhsoId;
-            }
-            await model.create({ data });
-          } catch (subError: any) {
-            console.warn(`⚠️ Bỏ qua bản ghi trong ${table}:`, item, subError.message);
-          }
-        }
+      console.log(`🔧 Bảng ${table} không có Prisma model, sử dụng raw SQL...`);
+      await restoreWithRawSQL(table, processedData);
+      return;
+    }
+
+    // Try batch insert first
+    try {
+      console.log(`⏳ Đang restore ${processedData.length} records cho bảng ${table}...`);
+      
+      await model.createMany({
+        data: processedData,
+        skipDuplicates: true,
+      });
+      
+      stats.recordsRestored += processedData.length;
+      console.log(`✅ Đã nhập ${processedData.length} records vào bảng ${table}`);
+      
+    } catch (fkError: any) {
+      if (fkError.message && fkError.message.includes('Foreign key constraint')) {
+        console.log(`⚠️  Foreign key constraint lỗi cho bảng ${table}, thử từng record...`);
+        await restoreRecordsIndividually(model, table, processedData);
+      } else {
+        throw fkError;
       }
     }
-    console.log(`✅ Đã nhập dữ liệu vào bảng ${table}`);
-  } catch (error: any) {
-    console.error(`❌ Lỗi khôi phục bảng ${table}:`, error.message, error.stack);
-    throw error;
+    
+    stats.tablesProcessed++;
+    
+  } catch (error) {
+    const errorMsg = `Lỗi khôi phục bảng ${table}: ${error}`;
+    console.error(`❌ ${errorMsg}`);
+    stats.errors.push(errorMsg);
+  }
+}
+
+async function restoreWithRawSQL(table: string, data: any[]): Promise<void> {
+  try {
+    const columns = Object.keys(data[0])
+      .map((col) => `"${col}"`)
+      .join(', ');
+
+    const values = data
+      .map((item) => {
+        return (
+          '(' +
+          Object.values(item)
+            .map((val) => {
+              if (typeof val === 'string') {
+                return `'${val.replace(/'/g, "''")}'`;
+              } else if (val === null || val === undefined) {
+                return 'NULL';
+              }
+              return val;
+            })
+            .join(', ') +
+          ')'
+        );
+      })
+      .join(', ');
+
+    await prisma.$executeRawUnsafe(
+      `INSERT INTO "${table}" (${columns}) VALUES ${values} ON CONFLICT DO NOTHING`,
+    );
+    
+    stats.recordsRestored += data.length;
+    console.log(`✅ Đã nhập ${data.length} records vào bảng ${table} (raw SQL)`);
+    
+  } catch (error) {
+    throw new Error(`Raw SQL insert failed: ${error}`);
+  }
+}
+
+async function restoreRecordsIndividually(model: any, table: string, data: any[]): Promise<void> {
+  let successCount = 0;
+  let errorCount = 0;
+  
+  for (let i = 0; i < data.length; i++) {
+    try {
+      await model.create({
+        data: data[i]
+      });
+      successCount++;
+      
+      // Progress indicator for large datasets
+      if (i % 100 === 0 && i > 0) {
+        console.log(`   Progress: ${i}/${data.length} records processed...`);
+      }
+      
+    } catch (recordError: any) {
+      errorCount++;
+      if (errorCount <= 5) { // Only log first 5 errors to avoid spam
+        console.log(`   ⚠️  Error inserting record ${i}: ${recordError.message}`);
+      }
+    }
+  }
+  
+  stats.recordsRestored += successCount;
+  console.log(`✅ Bảng ${table}: ${successCount} thành công, ${errorCount} lỗi`);
+  
+  if (errorCount > 0) {
+    stats.warnings.push(`Bảng ${table}: ${errorCount} records không thể restore`);
   }
 }
 
 async function restoreAllTablesFromJson(): Promise<void> {
-  try {
-    // Kiểm tra kết nối cơ sở dữ liệu
-    console.log('Kiểm tra kết nối cơ sở dữ liệu...');
-    await prisma.$executeRaw`SELECT 1`;
-    console.log('Kết nối cơ sở dữ liệu thành công.');
-
-    // Xóa lược đồ public
-    console.log('Đang xóa lược đồ public...');
-    await prisma.$executeRaw`DROP SCHEMA public CASCADE`;
-    await prisma.$executeRaw`CREATE SCHEMA public`;
-    console.log('Đã xóa và tạo lại lược đồ public.');
-
-    // Tạo migration mới và áp dụng schema.prisma
-    console.log('Đang tạo và áp dụng migration mới...');
-    try {
-      execSync('npx prisma migrate dev --name init_after_restore', { stdio: 'inherit' });
-      console.log('Đã tạo và áp dụng migration mới.');
-    } catch (error: any) {
-      console.error('❌ Lỗi khi tạo migration mới:', error.message);
-      throw error;
-    }
-
-    // Khôi phục dữ liệu theo thứ tự bảng
-    console.log(`Khôi phục dữ liệu cho ${TABLE_ORDER.length} bảng...`);
-    for (const table of TABLE_ORDER) {
-      await restoreTableFromJson(table);
-    }
-  } catch (error: any) {
-    console.error('❌ Lỗi trong quá trình đặt lại và khôi phục dữ liệu:', error.message, error.stack);
-    throw error;
+  const tables: string[] = await getTables();
+  console.log(`📊 Tìm thấy ${tables.length} bảng trong cơ sở dữ liệu.`);
+  
+  // Define table restore order based on foreign key dependencies
+  const tableOrder = [
+    // Core tables without dependencies first
+    'khachhang',
+    'nhacungcap', 
+    'sanpham',
+    'users',
+    'kho',
+    'tonkho',
+    
+    // Tables with dependencies
+    'dathang',
+    'donhang',
+    'phieugiaohang',
+    'phieunhapkho',
+    
+    // Junction/relationship tables last
+    'dathangsanpham',
+    'donhangsanpham',
+    'phieugiaohangsanpham',
+    'phieunhapkhosanpham',
+    
+    // Any remaining tables
+    ...tables.filter(t => ![
+      'khachhang', 'nhacungcap', 'sanpham', 'users', 'kho', 'tonkho',
+      'dathang', 'donhang', 'phieugiaohang', 'phieunhapkho',
+      'dathangsanpham', 'donhangsanpham', 'phieugiaohangsanpham', 'phieunhapkhosanpham'
+    ].includes(t))
+  ];
+  
+  // Filter to only include tables that actually exist
+  const orderedTables = tableOrder.filter(table => tables.includes(table));
+  
+  console.log(`🔄 Sẽ restore ${orderedTables.length} bảng theo thứ tự dependency`);
+  
+  for (let i = 0; i < orderedTables.length; i++) {
+    const table = orderedTables[i];
+    if (!table) continue;
+    console.log(`\n[${i + 1}/${orderedTables.length}] Restore bảng: ${table}`);
+    await restoreTableFromJson(table);
   }
 }
 
-restoreAllTablesFromJson()
-  .then(() => console.log('🎉 Đặt lại, áp dụng migration và khôi phục dữ liệu JSON hoàn tất!'))
-  .catch((err) =>
-    console.error('❌ Lỗi chung trong quá trình xử lý:', err.message, err.stack),
-  )
+function printFinalStats(): void {
+  console.log('\n' + '='.repeat(60));
+  console.log('📊 KẾT QUẢ RESTORE DATA');
+  console.log('='.repeat(60));
+  console.log(`✅ Số bảng đã xử lý: ${stats.tablesProcessed}`);
+  console.log(`📝 Tổng records restored: ${stats.recordsRestored.toLocaleString()}`);
+  console.log(`⚠️  Số warnings: ${stats.warnings.length}`);
+  console.log(`❌ Số errors: ${stats.errors.length}`);
+  
+  if (stats.warnings.length > 0) {
+    console.log('\n⚠️  WARNINGS:');
+    stats.warnings.slice(0, 10).forEach((warning, i) => {
+      console.log(`   ${i + 1}. ${warning}`);
+    });
+    if (stats.warnings.length > 10) {
+      console.log(`   ... và ${stats.warnings.length - 10} warnings khác`);
+    }
+  }
+  
+  if (stats.errors.length > 0) {
+    console.log('\n❌ ERRORS:');
+    stats.errors.slice(0, 5).forEach((error, i) => {
+      console.log(`   ${i + 1}. ${error}`);
+    });
+    if (stats.errors.length > 5) {
+      console.log(`   ... và ${stats.errors.length - 5} errors khác`);
+    }
+  }
+  
+  console.log('='.repeat(60));
+}
+
+async function main(): Promise<void> {
+  const startTime = Date.now();
+  console.log('🚀 BẮT ĐẦU QUÁ TRÌNH RESTORE DỮ LIỆU');
+  console.log(`⏰ Thời gian bắt đầu: ${new Date().toLocaleString()}`);
+  
+  try {
+    // Step 1: Clean up existing data
+    await cleanupBeforeRestore();
+    
+    // Step 2: Restore data in proper order
+    await restoreAllTablesFromJson();
+    
+    const duration = Math.round((Date.now() - startTime) / 1000);
+    console.log(`\n🎉 HOÀN THÀNH RESTORE! (${duration}s)`);
+    
+  } catch (error) {
+    console.error(`💥 Restore process failed: ${error}`);
+    stats.errors.push(`Main process error: ${error}`);
+  } finally {
+    printFinalStats();
+  }
+}
+
+main()
+  .then(() => {
+    if (stats.errors.length === 0) {
+      console.log('\n✅ Restore process completed successfully!');
+      process.exit(0);
+    } else {
+      console.log('\n⚠️  Restore completed with errors!');
+      process.exit(1);
+    }
+  })
+  .catch((err) => {
+    console.error('❌ Fatal error:', err);
+    process.exit(1);
+  })
   .finally(() => prisma.$disconnect());

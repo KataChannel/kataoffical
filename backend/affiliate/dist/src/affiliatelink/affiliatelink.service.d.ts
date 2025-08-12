@@ -13,6 +13,7 @@ export declare class affiliateLinkService {
     create(data: any, user: {
         id: string;
     }): Promise<{
+        url: string | null;
         id: string;
         codeId: string | null;
         isActive: boolean;
@@ -27,7 +28,6 @@ export declare class affiliateLinkService {
         utmCampaign: string | null;
         utmTerm: string | null;
         utmContent: string | null;
-        url: string | null;
         createdById: string | null;
     }>;
     findBy(param: any): Promise<({
@@ -69,6 +69,7 @@ export declare class affiliateLinkService {
             sharePlatform: string | null;
         }[];
     } & {
+        url: string | null;
         id: string;
         codeId: string | null;
         isActive: boolean;
@@ -83,10 +84,10 @@ export declare class affiliateLinkService {
         utmCampaign: string | null;
         utmTerm: string | null;
         utmContent: string | null;
-        url: string | null;
         createdById: string | null;
     }) | {
         data: {
+            url: string | null;
             id: string;
             codeId: string | null;
             isActive: boolean;
@@ -101,7 +102,6 @@ export declare class affiliateLinkService {
             utmCampaign: string | null;
             utmTerm: string | null;
             utmContent: string | null;
-            url: string | null;
             createdById: string | null;
         }[];
         total: number;
@@ -148,6 +148,7 @@ export declare class affiliateLinkService {
                 sharePlatform: string | null;
             }[];
         } & {
+            url: string | null;
             id: string;
             codeId: string | null;
             isActive: boolean;
@@ -162,7 +163,6 @@ export declare class affiliateLinkService {
             utmCampaign: string | null;
             utmTerm: string | null;
             utmContent: string | null;
-            url: string | null;
             createdById: string | null;
         })[];
         total: number;
@@ -171,6 +171,7 @@ export declare class affiliateLinkService {
         pageSize: number;
     }>;
     findOne(id: string): Promise<{
+        url: string | null;
         id: string;
         codeId: string | null;
         isActive: boolean;
@@ -185,11 +186,11 @@ export declare class affiliateLinkService {
         utmCampaign: string | null;
         utmTerm: string | null;
         utmContent: string | null;
-        url: string | null;
         createdById: string | null;
     }>;
     update(id: string, data: any): Promise<any>;
     remove(id: string): Promise<{
+        url: string | null;
         id: string;
         codeId: string | null;
         isActive: boolean;
@@ -204,7 +205,6 @@ export declare class affiliateLinkService {
         utmCampaign: string | null;
         utmTerm: string | null;
         utmContent: string | null;
-        url: string | null;
         createdById: string | null;
     }>;
     reorderaffiliateLinks(affiliateLinkIds: string[]): Promise<{

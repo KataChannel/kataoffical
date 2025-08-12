@@ -396,6 +396,26 @@ export const routes: Routes = [
   },
 
   {
+    path: 'forgot-password-ctv',
+    canActivate: [GuestGuard],
+    canActivateChild: [GuestGuard],
+    loadComponent: () =>
+      import('./admin/user/common/forgot-password/forgot-password.component').then(
+        (c) => c.ForgotPasswordComponent
+      ),
+  },
+
+  {
+    path: 'reset-password-ctv',
+    canActivate: [GuestGuard],
+    canActivateChild: [GuestGuard],
+    loadComponent: () =>
+      import('./admin/user/common/reset-password/reset-password.component').then(
+        (c) => c.ResetPasswordComponent
+      ),
+  },
+
+  {
     path: 'register',
     canActivate: [GuestGuard],
     canActivateChild: [GuestGuard],

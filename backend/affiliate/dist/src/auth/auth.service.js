@@ -14,10 +14,12 @@ const common_1 = require("@nestjs/common");
 const bcrypt = require("bcryptjs");
 const jwt_1 = require("@nestjs/jwt");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const email_service_1 = require("../email/email.service");
 let AuthService = class AuthService {
-    constructor(prisma, jwtService) {
+    constructor(prisma, jwtService, emailService) {
         this.prisma = prisma;
         this.jwtService = jwtService;
+        this.emailService = emailService;
     }
     async generateCodeId() {
         try {
@@ -153,6 +155,14 @@ let AuthService = class AuthService {
                     googleId: googleId || null,
                 },
             });
+            if (user.email) {
+                try {
+                    await this.emailService.sendWelcomeEmail(user.email, user.codeId || 'CTV');
+                }
+                catch (emailError) {
+                    console.error('Failed to send welcome email:', emailError);
+                }
+            }
             return user;
         }
         catch (error) {
@@ -222,6 +232,79 @@ let AuthService = class AuthService {
         });
         return { newPassword };
     }
+    async forgotPassword(email, phone) {
+        if (!email && !phone) {
+            throw new common_1.UnauthorizedException('Email hoặc số điện thoại là bắt buộc');
+        }
+        const user = await this.prisma.user.findFirst({
+            where: {
+                OR: [
+                    { email: email || undefined },
+                    { phone: phone || undefined },
+                    { SDT: phone || undefined },
+                ],
+            },
+        });
+        if (!user) {
+            throw new common_1.UnauthorizedException('Không tìm thấy người dùng');
+        }
+        const resetToken = this.jwtService.sign({ userId: user.id, type: 'password_reset' }, { expiresIn: '15m' });
+        try {
+            if (user.email) {
+                await this.emailService.sendPasswordResetEmail(user.email, resetToken, user.name || user.codeId || undefined);
+                return {
+                    message: 'Link đặt lại mật khẩu đã được gửi qua email',
+                    emailSent: true,
+                    email: this.maskEmail(user.email),
+                };
+            }
+            else {
+                return {
+                    message: 'Token đặt lại mật khẩu đã được tạo',
+                    resetToken,
+                    emailSent: false,
+                    resetUrl: `${process.env.BASE_URL}/reset-password-ctv?token=${resetToken}`,
+                };
+            }
+        }
+        catch (emailError) {
+            console.error('Email sending failed:', emailError);
+            return {
+                message: 'Có lỗi khi gửi email. Vui lòng sử dụng token bên dưới',
+                resetToken,
+                emailSent: false,
+                resetUrl: `${process.env.BASE_URL}/reset-password-ctv?token=${resetToken}`,
+                error: 'Email sending failed',
+            };
+        }
+    }
+    maskEmail(email) {
+        const [localPart, domain] = email.split('@');
+        const maskedLocal = localPart.length > 2
+            ? localPart[0] + '*'.repeat(localPart.length - 2) + localPart[localPart.length - 1]
+            : localPart;
+        return `${maskedLocal}@${domain}`;
+    }
+    async resetPassword(token, newPassword) {
+        try {
+            const decoded = this.jwtService.verify(token);
+            if (decoded.type !== 'password_reset') {
+                throw new common_1.UnauthorizedException('Token không hợp lệ');
+            }
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            const user = await this.prisma.user.update({
+                where: { id: decoded.userId },
+                data: { password: hashedPassword },
+            });
+            return { message: 'Mật khẩu đã được đặt lại thành công' };
+        }
+        catch (error) {
+            if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+                throw new common_1.UnauthorizedException('Token không hợp lệ hoặc đã hết hạn');
+            }
+            throw error;
+        }
+    }
     async validateOAuthLogin(provider, providerId, email) {
         let user = await this.prisma.user.findFirst({ where: { providerId } });
         if (!user) {
@@ -265,6 +348,7 @@ exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        email_service_1.EmailService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

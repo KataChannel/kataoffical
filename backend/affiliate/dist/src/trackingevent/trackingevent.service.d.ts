@@ -38,6 +38,7 @@ export declare class TrackingeventService {
     }[]>;
     findBy(param: any): Promise<({
         affiliateLink: {
+            url: string | null;
             id: string;
             codeId: string | null;
             isActive: boolean;
@@ -52,7 +53,6 @@ export declare class TrackingeventService {
             utmCampaign: string | null;
             utmTerm: string | null;
             utmContent: string | null;
-            url: string | null;
             createdById: string | null;
         } | null;
     } & {

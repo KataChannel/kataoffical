@@ -3,9 +3,9 @@ export declare class KhoahocController {
     private readonly khoahocService;
     constructor(khoahocService: KhoahocService);
     create(data: any): Promise<{
+        name: string | null;
         id: string;
         codeId: string;
-        name: string | null;
         gender: string | null;
         phone: string | null;
         createdAt: Date;
@@ -45,9 +45,9 @@ export declare class KhoahocController {
         error?: undefined;
     }>;
     findby(param: any): Promise<{
+        name: string | null;
         id: string;
         codeId: string;
-        name: string | null;
         gender: string | null;
         phone: string | null;
         createdAt: Date;
@@ -75,9 +75,9 @@ export declare class KhoahocController {
         branchId: string | null;
     } | {
         data: {
+            name: string | null;
             id: string;
             codeId: string;
-            name: string | null;
             gender: string | null;
             phone: string | null;
             createdAt: Date;
@@ -110,9 +110,9 @@ export declare class KhoahocController {
     } | null>;
     findAll(query: any): Promise<{
         data: {
+            name: string | null;
             id: string;
             codeId: string;
-            name: string | null;
             gender: string | null;
             phone: string | null;
             createdAt: Date;
@@ -148,9 +148,9 @@ export declare class KhoahocController {
         updatedAt: number;
     }>;
     findOne(id: string): Promise<{
+        name: string | null;
         id: string;
         codeId: string;
-        name: string | null;
         gender: string | null;
         phone: string | null;
         createdAt: Date;
@@ -178,9 +178,9 @@ export declare class KhoahocController {
         branchId: string | null;
     }>;
     update(id: string, data: any): Promise<{
+        name: string | null;
         id: string;
         codeId: string;
-        name: string | null;
         gender: string | null;
         phone: string | null;
         createdAt: Date;
@@ -208,9 +208,9 @@ export declare class KhoahocController {
         branchId: string | null;
     }>;
     remove(id: string): Promise<{
+        name: string | null;
         id: string;
         codeId: string;
-        name: string | null;
         gender: string | null;
         phone: string | null;
         createdAt: Date;

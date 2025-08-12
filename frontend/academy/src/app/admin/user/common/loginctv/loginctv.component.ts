@@ -29,6 +29,7 @@ import { Config } from '../login/login';
       FormsModule,
       MatIconModule,
       CommonModule,
+      RouterLink,
     ],
     templateUrl: './loginctv.component.html',
     styleUrls: ['./loginctv.component.scss']

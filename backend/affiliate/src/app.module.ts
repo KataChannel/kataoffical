@@ -23,6 +23,7 @@ import { HoahongModule } from './hoahong/hoahong.module';
 import { ThanhtoanhoahongModule } from './thanhtoanhoahong/thanhtoanhoahong.module';
 import { LichhenModule } from './lichhen/lichhen.module';
 import { KhoahocModule } from './khoahoc/khoahoc.module';
+import { EmailModule } from './email/email.module';
 @Module({
   imports: [
     AuthModule, 
@@ -44,7 +45,8 @@ import { KhoahocModule } from './khoahoc/khoahoc.module';
     HoahongModule,
     ThanhtoanhoahongModule,
     KhoahocModule,
-    LichhenModule
+    LichhenModule,
+    EmailModule
   ],
   controllers: [AppController],
   providers: [AppService,PrismaService],  

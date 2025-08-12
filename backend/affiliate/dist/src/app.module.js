@@ -32,6 +32,7 @@ const hoahong_module_1 = require("./hoahong/hoahong.module");
 const thanhtoanhoahong_module_1 = require("./thanhtoanhoahong/thanhtoanhoahong.module");
 const lichhen_module_1 = require("./lichhen/lichhen.module");
 const khoahoc_module_1 = require("./khoahoc/khoahoc.module");
+const email_module_1 = require("./email/email.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(auth_middleware_1.AuthMiddleware).forRoutes('*');
@@ -60,7 +61,8 @@ exports.AppModule = AppModule = __decorate([
             hoahong_module_1.HoahongModule,
             thanhtoanhoahong_module_1.ThanhtoanhoahongModule,
             khoahoc_module_1.KhoahocModule,
-            lichhen_module_1.LichhenModule
+            lichhen_module_1.LichhenModule,
+            email_module_1.EmailModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],

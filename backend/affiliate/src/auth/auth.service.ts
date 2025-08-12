@@ -2,12 +2,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private emailService: EmailService,
   ) {}
 
   async generateCodeId(): Promise<string> {
@@ -169,6 +171,20 @@ export class AuthService {
           googleId: googleId || null,
         },
       });
+
+      // Send welcome email if user has an email
+      if (user.email) {
+        try {
+          await this.emailService.sendWelcomeEmail(
+            user.email,
+            user.codeId || 'CTV'
+          );
+        } catch (emailError) {
+          console.error('Failed to send welcome email:', emailError);
+          // Don't throw error as registration was successful
+        }
+      }
+
       return user;
     } catch (error) {
       // Log error for debugging
@@ -254,6 +270,99 @@ export class AuthService {
       data: { password: hashedPassword },
     });
     return { newPassword };
+  }
+
+  async forgotPassword(email?: string, phone?: string) {
+    if (!email && !phone) {
+      throw new UnauthorizedException('Email hoặc số điện thoại là bắt buộc');
+    }
+
+    const user = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: email || undefined },
+          { phone: phone || undefined },
+          { SDT: phone || undefined },
+        ],
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Không tìm thấy người dùng');
+    }
+
+    // Generate reset token
+    const resetToken = this.jwtService.sign(
+      { userId: user.id, type: 'password_reset' },
+      { expiresIn: '15m' } // Token expires in 15 minutes
+    );
+
+    try {
+      // Send email if user has an email address
+      if (user.email) {
+        await this.emailService.sendPasswordResetEmail(
+          user.email,
+          resetToken,
+          user.name || user.codeId || undefined
+        );
+        
+        return {
+          message: 'Link đặt lại mật khẩu đã được gửi qua email',
+          emailSent: true,
+          email: this.maskEmail(user.email),
+        };
+      } else {
+        // If no email, return token for manual handling (SMS, etc.)
+        return {
+          message: 'Token đặt lại mật khẩu đã được tạo',
+          resetToken,
+          emailSent: false,
+          resetUrl: `${process.env.BASE_URL}/reset-password-ctv?token=${resetToken}`,
+        };
+      }
+    } catch (emailError) {
+      // If email fails, still provide token as fallback
+      console.error('Email sending failed:', emailError);
+      return {
+        message: 'Có lỗi khi gửi email. Vui lòng sử dụng token bên dưới',
+        resetToken,
+        emailSent: false,
+        resetUrl: `${process.env.BASE_URL}/reset-password-ctv?token=${resetToken}`,
+        error: 'Email sending failed',
+      };
+    }
+  }
+
+  private maskEmail(email: string): string {
+    const [localPart, domain] = email.split('@');
+    const maskedLocal = localPart.length > 2 
+      ? localPart[0] + '*'.repeat(localPart.length - 2) + localPart[localPart.length - 1]
+      : localPart;
+    return `${maskedLocal}@${domain}`;
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    try {
+      const decoded = this.jwtService.verify(token);
+      
+      if (decoded.type !== 'password_reset') {
+        throw new UnauthorizedException('Token không hợp lệ');
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
+      const user = await this.prisma.user.update({
+        where: { id: decoded.userId },
+        data: { password: hashedPassword },
+      });
+
+      return { message: 'Mật khẩu đã được đặt lại thành công' };
+    } catch (error) {
+      if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+        throw new UnauthorizedException('Token không hợp lệ hoặc đã hết hạn');
+      }
+      throw error;
+    }
   }
   async validateOAuthLogin(
     provider: string,

@@ -16,6 +16,7 @@ const facebook_strategy_1 = require("./strategies/facebook.strategy");
 const google_strategy_1 = require("./strategies/google.strategy");
 const zalo_strategy_1 = require("./strategies/zalo.strategy");
 const passport_1 = require("@nestjs/passport");
+const email_module_1 = require("../email/email.module");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -25,6 +26,7 @@ exports.AuthModule = AuthModule = __decorate([
         providers: [auth_service_1.AuthService, google_strategy_1.GoogleStrategy, facebook_strategy_1.FacebookStrategy, zalo_strategy_1.ZaloStrategy],
         imports: [
             prisma_module_1.PrismaModule,
+            email_module_1.EmailModule,
             passport_1.PassportModule.register({ defaultStrategy: 'google' }),
             jwt_1.JwtModule.register({
                 secret: process.env.JWT_SECRET || 'your_secret_key',

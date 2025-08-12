@@ -82,5 +82,25 @@ export class AuthController {
   async randomPassword(@Req() req) {
     return this.authService.generateRandomPassword(req.user.id);
   }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() body: { email?: string; phone?: string }) {
+    try {
+      const result = await this.authService.forgotPassword(body.email, body.phone);
+      return { statusCode: HttpStatus.OK, message: 'Link đặt lại mật khẩu đã được gửi', result };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() body: { token: string; newPassword: string }) {
+    try {
+      const result = await this.authService.resetPassword(body.token, body.newPassword);
+      return { statusCode: HttpStatus.OK, message: 'Mật khẩu đã được đặt lại thành công', result };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
   
 }

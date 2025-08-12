@@ -3,8 +3,8 @@ export declare class RoleService {
     private prisma;
     constructor(prisma: PrismaService);
     create(data: any): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -15,8 +15,8 @@ export declare class RoleService {
             permissionId: string;
         }[];
     } & {
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
     })[]>;
@@ -27,8 +27,8 @@ export declare class RoleService {
             permissionId: string;
         }[];
     } & {
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
     }) | null>;
@@ -38,8 +38,8 @@ export declare class RoleService {
     }): Promise<{
         permissions: ({
             permission: {
-                id: string;
                 name: string;
+                id: string;
                 createdAt: Date;
                 updatedAt: Date;
                 description: string | null;
@@ -50,14 +50,14 @@ export declare class RoleService {
             permissionId: string;
         })[];
     } & {
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
     }>;
     remove(id: string): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
     }>;

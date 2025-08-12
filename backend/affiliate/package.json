@@ -18,7 +18,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "db:backup": "npx ts-node prisma/scriptdb/backup.ts",
+    "db:restore": "npx ts-node prisma/scriptdb/restore.ts",
+    "db:studio": "bun prisma studio"
   },
   "dependencies": {
     "@katachanneloffical/kata-snippets": "^1.0.19",
@@ -36,6 +39,7 @@
     "@nestjs/websockets": "^11.0.17",
     "@prisma/client": "^6.6.0",
     "@types/multer": "^1.4.12",
+    "@types/nodemailer": "^6.4.17",
     "bcryptjs": "^3.0.2",
     "cache-manager": "^6.4.2",
     "cache-manager-redis-store": "^3.0.1",

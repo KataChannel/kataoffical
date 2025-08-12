@@ -11,9 +11,9 @@ export declare class UserService {
     }>;
     generateCodeId(): Promise<string>;
     createUser(dto: any): Promise<{
+        name: string | null;
         id: string;
         codeId: string | null;
-        name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         email: string | null;
@@ -39,14 +39,14 @@ export declare class UserService {
     getUsers(): Promise<{
         name: string | null;
         roles: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
         }[];
         permissions: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
@@ -76,21 +76,21 @@ export declare class UserService {
     }[]>;
     findAll(): Promise<{
         roles: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
         }[];
         permissions: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
         }[];
+        name: string | null;
         id: string;
         codeId: string | null;
-        name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         email: string | null;
@@ -114,21 +114,21 @@ export declare class UserService {
     }[]>;
     findby(param: any): Promise<{
         roles: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
         }[];
         permissions: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
         }[];
+        name: string | null;
         id: string;
         codeId: string | null;
-        name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         email: string | null;
@@ -157,9 +157,9 @@ export declare class UserService {
         email: string | null;
         referralsCount: number;
         referrals: {
+            name: string | null;
             id: string;
             codeId: string | null;
-            name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
             email: string | null;
@@ -204,22 +204,22 @@ export declare class UserService {
     }[]>;
     findOne(id: string): Promise<{
         roles: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
         }[];
         permissions: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
         }[];
         referrer: {
+            name: string | null;
             id: string;
             codeId: string | null;
-            name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
             email: string | null;
@@ -243,9 +243,9 @@ export declare class UserService {
             ghichu: string | null;
         } | null;
         referrals: {
+            name: string | null;
             id: string;
             codeId: string | null;
-            name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
             email: string | null;
@@ -268,9 +268,9 @@ export declare class UserService {
             referrerId: string | null;
             ghichu: string | null;
         }[];
+        name: string | null;
         id: string;
         codeId: string | null;
-        name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         email: string | null;
@@ -293,9 +293,9 @@ export declare class UserService {
         ghichu: string | null;
     }>;
     update(id: string, data: Partial<Omit<any, 'id' | 'roles' | 'permissions'>>): Promise<{
+        name: string | null;
         id: string;
         codeId: string | null;
-        name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         email: string | null;
@@ -318,9 +318,9 @@ export declare class UserService {
         ghichu: string | null;
     }>;
     remove(id: string): Promise<{
+        name: string | null;
         id: string;
         codeId: string | null;
-        name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         email: string | null;

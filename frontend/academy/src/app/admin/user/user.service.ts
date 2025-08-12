@@ -543,4 +543,72 @@ import { AuthUtils } from '../../shared/utils/auth.utils';
     return true
   }
 
+  async forgotPassword(data: { email?: string; phone?: string }) {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      };
+
+      const response = await fetch(`${environment.ACADEMY_APIURL}/auth/forgot-password`, options);
+      const result = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          message: result.message || 'Có lỗi xảy ra'
+        };
+      }
+
+      return {
+        success: true,
+        message: result.message,
+        data: result.result
+      };
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      return {
+        success: false,
+        message: 'Có lỗi xảy ra, vui lòng thử lại'
+      };
+    }
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, newPassword }),
+      };
+
+      const response = await fetch(`${environment.ACADEMY_APIURL}/auth/reset-password`, options);
+      const result = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          message: result.message || 'Có lỗi xảy ra'
+        };
+      }
+
+      return {
+        success: true,
+        message: result.message,
+        data: result.result
+      };
+    } catch (error) {
+      console.error('Reset password error:', error);
+      return {
+        success: false,
+        message: 'Có lỗi xảy ra, vui lòng thử lại'
+      };
+    }
+  }
+
   }

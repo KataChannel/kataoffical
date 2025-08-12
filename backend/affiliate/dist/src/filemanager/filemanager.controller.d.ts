@@ -3,6 +3,7 @@ export declare class FilemanagerController {
     private readonly filemanagerService;
     constructor(filemanagerService: fileManagerService);
     create(data: any): Promise<{
+        url: string | null;
         id: string;
         codeId: string | null;
         createdAt: Date;
@@ -11,13 +12,13 @@ export declare class FilemanagerController {
         order: number | null;
         title: string | null;
         category: string | null;
-        url: string | null;
         fileType: string | null;
         fileSize: number | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
         group: string | null;
     }>;
     findby(param: any): Promise<{
+        url: string | null;
         id: string;
         codeId: string | null;
         createdAt: Date;
@@ -26,13 +27,13 @@ export declare class FilemanagerController {
         order: number | null;
         title: string | null;
         category: string | null;
-        url: string | null;
         fileType: string | null;
         fileSize: number | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;
         group: string | null;
     } | {
         data: {
+            url: string | null;
             id: string;
             codeId: string | null;
             createdAt: Date;
@@ -41,7 +42,6 @@ export declare class FilemanagerController {
             order: number | null;
             title: string | null;
             category: string | null;
-            url: string | null;
             fileType: string | null;
             fileSize: number | null;
             metaData: import(".prisma/client/runtime/library").JsonValue | null;
@@ -53,6 +53,7 @@ export declare class FilemanagerController {
     } | null>;
     findAll(page?: string, limit?: string): Promise<{
         data: {
+            url: string | null;
             id: string;
             codeId: string | null;
             createdAt: Date;
@@ -61,7 +62,6 @@ export declare class FilemanagerController {
             order: number | null;
             title: string | null;
             category: string | null;
-            url: string | null;
             fileType: string | null;
             fileSize: number | null;
             metaData: import(".prisma/client/runtime/library").JsonValue | null;
@@ -75,6 +75,7 @@ export declare class FilemanagerController {
         updatedAt: number;
     }>;
     findOne(id: string): Promise<{
+        url: string | null;
         id: string;
         codeId: string | null;
         createdAt: Date;
@@ -83,7 +84,6 @@ export declare class FilemanagerController {
         order: number | null;
         title: string | null;
         category: string | null;
-        url: string | null;
         fileType: string | null;
         fileSize: number | null;
         metaData: import(".prisma/client/runtime/library").JsonValue | null;

@@ -18,10 +18,11 @@
                   <input type="password" matInput class="w-full" (keyup.enter)="Dangnhap()" [(ngModel)]="User.password" [ngModelOptions]="{standalone: true}" [placeholder]="'Mật khẩu'"/>
                   <mat-icon class="material-symbols-outlined" matPrefix>lock</mat-icon>
                 </mat-form-field>
-                <!-- <div class="w-full flex flex-row justify-between items-center">
-                  <a routerLink="/forgot-password" class="text-blue-500 cursor-pointer font-bold">Quên mật khẩu?</a>
-                  <a routerLink="/register" class="text-blue-500 cursor-pointer font-bold">Đăng ký</a>
-                </div> -->
+                
+                <div class="w-full flex flex-row justify-between items-center">
+                  <a routerLink="/forgot-password-ctv" class="text-blue-500 cursor-pointer font-bold hover:underline">Quên mật khẩu?</a>
+                  <a routerLink="/dangkyctv" class="text-blue-500 cursor-pointer font-bold hover:underline">Đăng ký</a>
+                </div>
     
                 <div (click)="Dangnhap()" (keyup.enter)="Dangnhap()" class="text-white cursor-pointer lg:w-64 w-full flex space-x-2 border items-center justify-center p-4 rounded-lg bg-blue-400 hover:bg-blue-600">
                     <span>Đăng nhập tài khoản</span>   

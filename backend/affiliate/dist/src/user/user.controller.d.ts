@@ -5,9 +5,9 @@ export declare class UserController {
     private readonly authService;
     constructor(userService: UserService, authService: AuthService);
     create(dto: any): Promise<{
+        name: string | null;
         id: string;
         codeId: string | null;
-        name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         email: string | null;
@@ -32,21 +32,21 @@ export declare class UserController {
     }>;
     findby(param: any): Promise<{
         roles: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
         }[];
         permissions: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
         }[];
+        name: string | null;
         id: string;
         codeId: string | null;
-        name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         email: string | null;
@@ -70,21 +70,21 @@ export declare class UserController {
     }>;
     findAll(): Promise<{
         roles: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
         }[];
         permissions: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
         }[];
+        name: string | null;
         id: string;
         codeId: string | null;
-        name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         email: string | null;
@@ -116,9 +116,9 @@ export declare class UserController {
         email: string | null;
         referralsCount: number;
         referrals: {
+            name: string | null;
             id: string;
             codeId: string | null;
-            name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
             email: string | null;
@@ -163,22 +163,22 @@ export declare class UserController {
     }[]>;
     getProfile(req: any): Promise<{
         roles: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
         }[];
         permissions: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
         }[];
         referrer: {
+            name: string | null;
             id: string;
             codeId: string | null;
-            name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
             email: string | null;
@@ -202,9 +202,9 @@ export declare class UserController {
             ghichu: string | null;
         } | null;
         referrals: {
+            name: string | null;
             id: string;
             codeId: string | null;
-            name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
             email: string | null;
@@ -227,9 +227,9 @@ export declare class UserController {
             referrerId: string | null;
             ghichu: string | null;
         }[];
+        name: string | null;
         id: string;
         codeId: string | null;
-        name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         email: string | null;
@@ -263,22 +263,22 @@ export declare class UserController {
     }>;
     findOne(id: string): Promise<{
         roles: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
         }[];
         permissions: {
-            id: string;
             name: string;
+            id: string;
             createdAt: Date;
             updatedAt: Date;
             description: string | null;
         }[];
         referrer: {
+            name: string | null;
             id: string;
             codeId: string | null;
-            name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
             email: string | null;
@@ -302,9 +302,9 @@ export declare class UserController {
             ghichu: string | null;
         } | null;
         referrals: {
+            name: string | null;
             id: string;
             codeId: string | null;
-            name: string | null;
             avatar: string | null;
             gender: import(".prisma/client").$Enums.Gender | null;
             email: string | null;
@@ -327,9 +327,9 @@ export declare class UserController {
             referrerId: string | null;
             ghichu: string | null;
         }[];
+        name: string | null;
         id: string;
         codeId: string | null;
-        name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         email: string | null;
@@ -352,9 +352,9 @@ export declare class UserController {
         ghichu: string | null;
     }>;
     update(id: string, data: any): Promise<{
+        name: string | null;
         id: string;
         codeId: string | null;
-        name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         email: string | null;
@@ -377,9 +377,9 @@ export declare class UserController {
         ghichu: string | null;
     }>;
     remove(id: string): Promise<{
+        name: string | null;
         id: string;
         codeId: string | null;
-        name: string | null;
         avatar: string | null;
         gender: import(".prisma/client").$Enums.Gender | null;
         email: string | null;
