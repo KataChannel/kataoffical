@@ -389,6 +389,8 @@ async convertDathangImportToTransfer(
   }
 
   async findby(param: any) {
+    console.log('findby', param);
+    
     const { page = 1, pageSize = 50, isOne, khoId, ...where } = param;
     const whereClause: any = {};     
 
@@ -417,6 +419,8 @@ async convertDathangImportToTransfer(
           lte: where.Ketthuc ? new Date(where.Ketthuc) : undefined,
         }
       });
+      console.log('dateRange', dateRange);
+      
       whereClause.ngaynhan = dateRange.ngaynhan;
     }
 

@@ -342,6 +342,7 @@ let DathangService = class DathangService {
         }));
     }
     async findby(param) {
+        console.log('findby', param);
         const { page = 1, pageSize = 50, isOne, khoId, ...where } = param;
         const whereClause = {};
         if (where.subtitle) {
@@ -365,6 +366,7 @@ let DathangService = class DathangService {
                     lte: where.Ketthuc ? new Date(where.Ketthuc) : undefined,
                 }
             });
+            console.log('dateRange', dateRange);
             whereClause.ngaynhan = dateRange.ngaynhan;
         }
         if (khoId) {

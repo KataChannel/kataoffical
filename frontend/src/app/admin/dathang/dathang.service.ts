@@ -2,8 +2,8 @@ import { Inject, Injectable, signal,Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
-import { openDB } from 'idb';
 import moment from 'moment';
+import { TimezoneService } from '../../shared/services/timezone.service';
 @Injectable({
   providedIn: 'root'
 })
@@ -11,6 +11,7 @@ export class DathangService {
   constructor(
     private _StorageService: StorageService,
     private router: Router,
+    private timezoneService: TimezoneService,
   ) { }
   ListDathang = signal<any[]>([]);
   DetailDathang = signal<any>({});
@@ -260,6 +261,11 @@ export class DathangService {
   }
 
  async getDathangBy(param: any) {
+  if (param.Batdau || param.Ketthuc) {
+      const dateRange = this.timezoneService.getAPIDateRange(param.Batdau, param.Ketthuc);
+      param.Batdau = dateRange.Batdau;
+      param.Ketthuc = dateRange.Ketthuc;
+    }
     try {
       const options = {
         method: 'POST',
