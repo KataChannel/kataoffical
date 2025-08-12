@@ -22,7 +22,7 @@ deploy_to_server() {
     ssh $SERVER_USER@$SERVER_IP << 'EOF'
         cd tazasandbox1/
         git pull
-        docker compose -f 'docker-compose.yml' up -d --build --remove-orphans
+        docker compose -f 'docker-compose.yml' up -d --build
 EOF
 
     if [ $? -eq 0 ]; then
