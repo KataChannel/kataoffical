@@ -375,6 +375,22 @@ export class DetailDathangComponent {
       return v;
     });
   }
+  
+  // ✅ Method để auto-select text khi focus vào input - Same as DetailDonhang
+  onInputFocus(event: FocusEvent) {
+    const target = event.target as HTMLElement;
+    setTimeout(() => {
+      // Delay để đảm bảo focus đã hoàn tất
+      if (document.createRange && window.getSelection) {
+        const range = document.createRange();
+        range.selectNodeContents(target);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+    }, 10);
+  }
+
   EnterUpdateValue(
     event: Event,
     order: number | null,
@@ -384,7 +400,7 @@ export class DetailDathangComponent {
   ) {
     const newValue =
       type === 'number'
-        ? Number((event.target as HTMLElement).innerText.trim()) || 0
+        ? this.parseDecimalValue((event.target as HTMLElement).innerText.trim())
         : (event.target as HTMLElement).innerText.trim();
     const keyboardEvent = event as KeyboardEvent;
     if (keyboardEvent.key === 'Enter' && !keyboardEvent.shiftKey) {
@@ -397,12 +413,19 @@ export class DetailDathangComponent {
         'ArrowLeft',
         'ArrowRight',
         'Tab',
+        'Enter',
       ];
 
-      // Chặn nếu không phải số và không thuộc danh sách phím cho phép
+      // ✅ Cho phép số thập phân: số (0-9), dấu chấm (.), dấu phẩy (,), và các phím điều khiển
+      const currentText = (event.target as HTMLElement).innerText.trim();
+      const isDecimalSeparator = keyboardEvent.key === '.' || keyboardEvent.key === ',';
+      const hasDecimalSeparator = currentText.includes('.') || currentText.includes(',');
+      
+      // Chặn nếu không phải số, dấu thập phân hợp lệ, hoặc phím điều khiển
       if (
-        !/^\d$/.test(keyboardEvent.key) &&
-        !allowedKeys.includes(keyboardEvent.key)
+        !/^\d$/.test(keyboardEvent.key) && 
+        !allowedKeys.includes(keyboardEvent.key) &&
+        !(isDecimalSeparator && !hasDecimalSeparator) // Cho phép dấu thập phân nếu chưa có
       ) {
         event.preventDefault();
       }
@@ -412,37 +435,10 @@ export class DetailDathangComponent {
       if (index !== null) {
         if (field === 'sldat') {
           v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
-          // Find the next input to focus on
-          const inputs = document.querySelectorAll(
-            '.sldat-input'
-          ) as NodeListOf<HTMLInputElement>;
-          if (index < this.dataSource.filteredData.length - 1) {
-            const nextInput = inputs[index + 1] as HTMLInputElement;
-            if (nextInput) {
-              if (nextInput instanceof HTMLInputElement) {
-                nextInput.focus();
-                nextInput.select();
-              }
-              // Then select text using a different method that works on more element types
-              setTimeout(() => {
-                if (document.createRange && window.getSelection) {
-                  const range = document.createRange();
-                  range.selectNodeContents(nextInput);
-                  const selection = window.getSelection();
-                  selection?.removeAllRanges();
-                  selection?.addRange(range);
-                }
-              }, 10);
-            }
-          }
-        } else if (field === 'ghichu') {
-          v.sanpham[index][field] = newValue;
-          // Find the next input to focus on
-          const inputs = document.querySelectorAll(
-            '.ghichu-input'
-          ) as NodeListOf<HTMLInputElement>;
-          if (index < this.dataSource.filteredData.length - 1) {
-            const nextInput = inputs[index + 1] as HTMLInputElement;
+          // ✅ Focus next input in same column (like DetailDonhang)
+          const inputs = document.querySelectorAll('.sldat-input') as NodeListOf<HTMLElement>;
+          if (index < this.dataSource.data.length - 1) {
+            const nextInput = inputs[index + 1] as HTMLElement;
             if (nextInput) {
               if (nextInput instanceof HTMLInputElement) {
                 nextInput.focus();
@@ -474,19 +470,101 @@ export class DetailDathangComponent {
           } else {
             v.sanpham[index]['slgiao'] = newGiao;
           }
-        }  else if (field === 'gianhap') {
-          v.sanpham[index]['ttnhan'] =
-            Number(
-              (Number(newValue) * v.sanpham[index]['slnhan']).toFixed(2)
-            ) || 0;
-          v.sanpham[index][field] = Number(newValue);
+          // ✅ Focus next input in same column
+          const inputs = document.querySelectorAll('.slgiao-input') as NodeListOf<HTMLElement>;
+          if (index < this.dataSource.data.length - 1) {
+            const nextInput = inputs[index + 1] as HTMLElement;
+            if (nextInput) {
+              if (nextInput instanceof HTMLInputElement) {
+                nextInput.focus();
+                nextInput.select();
+              }
+              setTimeout(() => {
+                if (document.createRange && window.getSelection) {
+                  const range = document.createRange();
+                  range.selectNodeContents(nextInput);
+                  const selection = window.getSelection();
+                  selection?.removeAllRanges();
+                  selection?.addRange(range);
+                }
+              }, 10);
+            }
+          }
         } else if (field === 'slnhan') {
           v.sanpham[index]['ttnhan'] =
-            Number(
-              (v.sanpham[index]['gianhap'] * Number(newValue)).toFixed(2)
+            parseFloat(
+              (v.sanpham[index]['gianhap'] * parseFloat(newValue.toString())).toFixed(2)
             ) || 0;
-          v.sanpham[index][field] = Number(newValue);
-        }  else {
+          v.sanpham[index][field] = parseFloat(newValue.toString()) || 0;
+          // ✅ Focus next input in same column
+          const inputs = document.querySelectorAll('.slnhan-input') as NodeListOf<HTMLElement>;
+          if (index < this.dataSource.data.length - 1) {
+            const nextInput = inputs[index + 1] as HTMLElement;
+            if (nextInput) {
+              if (nextInput instanceof HTMLInputElement) {
+                nextInput.focus();
+                nextInput.select();
+              }
+              setTimeout(() => {
+                if (document.createRange && window.getSelection) {
+                  const range = document.createRange();
+                  range.selectNodeContents(nextInput);
+                  const selection = window.getSelection();
+                  selection?.removeAllRanges();
+                  selection?.addRange(range);
+                }
+              }, 10);
+            }
+          }
+        } else if (field === 'gianhap') {
+          v.sanpham[index]['ttnhan'] =
+            parseFloat(
+              (parseFloat(newValue.toString()) * v.sanpham[index]['slnhan']).toFixed(2)
+            ) || 0;
+          v.sanpham[index][field] = parseFloat(newValue.toString()) || 0;
+          // ✅ Focus next input in same column
+          const inputs = document.querySelectorAll('.gianhap-input') as NodeListOf<HTMLElement>;
+          if (index < this.dataSource.data.length - 1) {
+            const nextInput = inputs[index + 1] as HTMLElement;
+            if (nextInput) {
+              if (nextInput instanceof HTMLInputElement) {
+                nextInput.focus();
+                nextInput.select();
+              }
+              setTimeout(() => {
+                if (document.createRange && window.getSelection) {
+                  const range = document.createRange();
+                  range.selectNodeContents(nextInput);
+                  const selection = window.getSelection();
+                  selection?.removeAllRanges();
+                  selection?.addRange(range);
+                }
+              }, 10);
+            }
+          }
+        } else if (field === 'ghichu') {
+          v.sanpham[index][field] = newValue;
+          // ✅ Focus next input in same column
+          const inputs = document.querySelectorAll('.ghichu-input') as NodeListOf<HTMLElement>;
+          if (index < this.dataSource.data.length - 1) {
+            const nextInput = inputs[index + 1] as HTMLElement;
+            if (nextInput) {
+              if (nextInput instanceof HTMLInputElement) {
+                nextInput.focus();
+                nextInput.select();
+              }
+              setTimeout(() => {
+                if (document.createRange && window.getSelection) {
+                  const range = document.createRange();
+                  range.selectNodeContents(nextInput);
+                  const selection = window.getSelection();
+                  selection?.removeAllRanges();
+                  selection?.addRange(range);
+                }
+              }, 10);
+            }
+          }
+        } else {
           v.sanpham[index][field] = newValue;
         }
       } else {
@@ -507,7 +585,7 @@ export class DetailDathangComponent {
     
     const newValue =
       type === 'number'
-        ? Number((event.target as HTMLElement).innerText.trim()) || 0
+        ? this.parseDecimalValue((event.target as HTMLElement).innerText.trim())
         : (event.target as HTMLElement).innerText.trim();
 
     const index = this.dataSource.data.findIndex((item: any) => item.order === order);   
@@ -519,16 +597,16 @@ export class DetailDathangComponent {
           v.sanpham[index][field] = newValue;
         } else if (field === 'gianhap') {
           v.sanpham[index]['ttnhan'] =
-            Number(
-              (Number(newValue) * v.sanpham[index]['slnhan']).toFixed(2)
+            parseFloat(
+              (parseFloat(newValue.toString()) * v.sanpham[index]['slnhan']).toFixed(2)
             ) || 0;
-          v.sanpham[index][field] = Number(newValue);
+          v.sanpham[index][field] = parseFloat(newValue.toString()) || 0;
         } else if (field === 'slnhan') {
           v.sanpham[index]['ttnhan'] =
-            Number(
-              (v.sanpham[index]['gianhap'] * Number(newValue)).toFixed(2)
+            parseFloat(
+              (v.sanpham[index]['gianhap'] * parseFloat(newValue.toString())).toFixed(2)
             ) || 0;
-          v.sanpham[index][field] = Number(newValue);
+          v.sanpham[index][field] = parseFloat(newValue.toString()) || 0;
         } else if (field === 'slgiao') {
           const newGiao = newValue;
           if (newGiao < v.sanpham[index]['sldat']) {
@@ -840,5 +918,73 @@ export class DetailDathangComponent {
         });
         this.isEdit.update((value) => !value);
       });
+  }
+
+  // ✅ Helper method to validate and parse decimal numbers (supports both . and ,)
+  private parseDecimalValue(input: string): number {
+    // Remove any non-numeric characters except decimal separators (. and ,)
+    const cleanInput = input.replace(/[^\d.,]/g, '');
+    
+    // Convert comma to dot for consistent parsing (European format support)
+    const normalizedInput = cleanInput.replace(/,/g, '.');
+    
+    // Handle multiple decimal points - keep only the first one
+    const parts = normalizedInput.split('.');
+    const cleanDecimal = parts.length > 1 
+      ? `${parts[0]}.${parts.slice(1).join('')}` 
+      : normalizedInput;
+    
+    const parsed = parseFloat(cleanDecimal);
+    return isNaN(parsed) ? 0 : parsed;
+  }
+
+  // ✅ Method to format decimal display
+  formatDecimalDisplay(value: number): string {
+    return value % 1 === 0 ? value.toString() : value.toFixed(2);
+  }
+
+  // ✅ Method to normalize decimal input (convert comma to dot for consistency)
+  normalizeDecimalInput(input: string): string {
+    return input.replace(/,/g, '.');
+  }
+
+  // ✅ Method to validate decimal input (supports both . and ,)
+  isValidDecimalInput(input: string): boolean {
+    // Allow digits, one decimal separator (. or ,), and basic validation
+    const normalizedInput = this.normalizeDecimalInput(input);
+    const decimalPattern = /^\d*\.?\d*$/;
+    return decimalPattern.test(normalizedInput);
+  }
+
+  // ✅ Helper method to focus next input in sequence
+  private focusNextInput(currentFieldClass: string, currentIndex: number): void {
+    setTimeout(() => {
+      const inputs = document.querySelectorAll(
+        `.${currentFieldClass}`
+      ) as NodeListOf<HTMLElement>;
+      
+      if (currentIndex < inputs.length - 1) {
+        const nextInput = inputs[currentIndex + 1] as HTMLElement;
+        if (nextInput) {
+          nextInput.focus();
+          
+          // Select all text in the input
+          if (document.createRange && window.getSelection) {
+            const range = document.createRange();
+            range.selectNodeContents(nextInput);
+            const selection = window.getSelection();
+            selection?.removeAllRanges();
+            selection?.addRange(range);
+          }
+        }
+      }
+    }, 10);
+  }
+
+  // ✅ Helper method to get tabindex for field navigation
+  getTabIndex(field: string, rowIndex: number): number {
+    const fieldSequence = ['sldat', 'slgiao', 'slnhan', 'gianhap', 'ghichu'];
+    const fieldIndex = fieldSequence.indexOf(field);
+    return (rowIndex * fieldSequence.length) + fieldIndex + 1;
   }
 }

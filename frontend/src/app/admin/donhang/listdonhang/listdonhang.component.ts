@@ -573,6 +573,7 @@ export class ListDonhangComponent {
             // tenkh: TenKH,
             ItemCode: item.ItemCode ?? '',
             Quantity: Number(item.Quantity) ?? 0,
+            Remark: item.Remark ?? '',
           }));
         const itemEdit = {
           tenfile: removeVietnameseAccents(file.name.replace('.xlsx', '')),
@@ -1120,6 +1121,7 @@ export class ListDonhangComponent {
               sldat: Number(item.Quantity),
               slgiao: Number(item.Quantity),
               slnhan: Number(item.Quantity),
+              ghichu: item.Remark || '',
             };
           } else {
             return null;
