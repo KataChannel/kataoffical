@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
-import { TimezoneUtilService } from './services/timezone-util.service';
 
 @Module({
-  providers: [TimezoneUtilService],
-  exports: [TimezoneUtilService],
+  providers: [],
+  exports: [],
 })
 export class SharedModule {}

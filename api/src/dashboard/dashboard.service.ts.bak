@@ -49,12 +49,12 @@ export class DashboardService {
     
     // ✅ Prepare date filters using TimezoneUtilService
     const startDate = Batdau 
-      ? new Date(this.getStartOfDay(Batdau))
-      : new Date(this.getStartOfDay(new Date()));
+      ? new Date(this.timezoneUtil.getStartOfDay(Batdau))
+      : new Date(this.timezoneUtil.getStartOfDay(new Date()));
 
     const endDate = Ketthuc 
-      ? new Date(this.getEndOfDay(Ketthuc))
-      : new Date(this.getEndOfDay(new Date()));
+      ? new Date(this.timezoneUtil.getEndOfDay(Ketthuc))
+      : new Date(this.timezoneUtil.getEndOfDay(new Date()));
 
     // ✅ Calculate previous period using native Date
     const duration = endDate.getTime() - startDate.getTime();

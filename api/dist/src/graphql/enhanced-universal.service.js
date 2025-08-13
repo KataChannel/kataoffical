@@ -14,13 +14,11 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const dataloader_service_1 = require("./dataloader.service");
 const field_selection_service_1 = require("./field-selection.service");
-const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 let EnhancedUniversalService = class EnhancedUniversalService {
-    constructor(prisma, dataLoader, fieldSelection, timezoneUtil) {
+    constructor(prisma, dataLoader, fieldSelection) {
         this.prisma = prisma;
         this.dataLoader = dataLoader;
         this.fieldSelection = fieldSelection;
-        this.timezoneUtil = timezoneUtil;
         this.modelMapping = {
             'user': 'user',
             'role': 'role',
@@ -58,6 +56,32 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             'userguidstep': 'userguidStep',
             'importhistory': 'importHistory'
         };
+    }
+    synchronizeDateField(fieldName, value) {
+        if (!value)
+            return null;
+        console.log(`🔄 GraphQL synchronizing ${fieldName}: ${value} (type: ${typeof value})`);
+        try {
+            return new Date(value);
+        }
+        catch (error) {
+            console.error(`❌ GraphQL error synchronizing ${fieldName}:`, error);
+            return null;
+        }
+    }
+    toUTC(value) {
+        if (!value)
+            return null;
+        try {
+            return new Date(value).toISOString();
+        }
+        catch (error) {
+            console.error('GraphQL toUTC error:', error);
+            return null;
+        }
+    }
+    validateAndConvertToUTC(value) {
+        return this.toUTC(value);
     }
     async findMany(modelName, args, info) {
         console.log(`🚀 Enhanced findMany for ${modelName}:`, {
@@ -347,10 +371,11 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             if (normalizedData[field] !== undefined && normalizedData[field] !== null) {
                 try {
                     if (['ngaygiao', 'ngaynhan'].includes(field)) {
-                        normalizedData[field] = this.timezoneUtil.synchronizeDateField(field, normalizedData[field]);
+                        normalizedData[field] = this.synchronizeDateField(field, normalizedData[field]);
                     }
                     else {
-                        normalizedData[field] = new Date(this.timezoneUtil.toUTC(normalizedData[field]));
+                        const utcValue = this.toUTC(normalizedData[field]);
+                        normalizedData[field] = utcValue ? new Date(utcValue) : null;
                     }
                 }
                 catch (error) {
@@ -379,23 +404,23 @@ let EnhancedUniversalService = class EnhancedUniversalService {
                 if (typeof normalizedWhere[field] === 'object') {
                     const dateFilter = normalizedWhere[field];
                     if (dateFilter.gte) {
-                        dateFilter.gte = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.gte) || dateFilter.gte);
+                        dateFilter.gte = new Date(this.validateAndConvertToUTC(dateFilter.gte) || dateFilter.gte);
                     }
                     if (dateFilter.lte) {
-                        dateFilter.lte = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.lte) || dateFilter.lte);
+                        dateFilter.lte = new Date(this.validateAndConvertToUTC(dateFilter.lte) || dateFilter.lte);
                     }
                     if (dateFilter.gt) {
-                        dateFilter.gt = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.gt) || dateFilter.gt);
+                        dateFilter.gt = new Date(this.validateAndConvertToUTC(dateFilter.gt) || dateFilter.gt);
                     }
                     if (dateFilter.lt) {
-                        dateFilter.lt = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.lt) || dateFilter.lt);
+                        dateFilter.lt = new Date(this.validateAndConvertToUTC(dateFilter.lt) || dateFilter.lt);
                     }
                     if (dateFilter.equals) {
-                        dateFilter.equals = new Date(this.timezoneUtil.validateAndConvertToUTC(dateFilter.equals) || dateFilter.equals);
+                        dateFilter.equals = new Date(this.validateAndConvertToUTC(dateFilter.equals) || dateFilter.equals);
                     }
                 }
                 else {
-                    const utcDate = this.timezoneUtil.validateAndConvertToUTC(normalizedWhere[field]);
+                    const utcDate = this.validateAndConvertToUTC(normalizedWhere[field]);
                     if (utcDate) {
                         normalizedWhere[field] = new Date(utcDate);
                     }
@@ -410,7 +435,6 @@ exports.EnhancedUniversalService = EnhancedUniversalService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         dataloader_service_1.DataLoaderService,
-        field_selection_service_1.FieldSelectionService,
-        timezone_util_service_1.TimezoneUtilService])
+        field_selection_service_1.FieldSelectionService])
 ], EnhancedUniversalService);
 //# sourceMappingURL=enhanced-universal.service.js.map

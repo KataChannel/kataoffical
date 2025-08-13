@@ -8,14 +8,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SharedModule = void 0;
 const common_1 = require("@nestjs/common");
-const timezone_util_service_1 = require("./services/timezone-util.service");
 let SharedModule = class SharedModule {
 };
 exports.SharedModule = SharedModule;
 exports.SharedModule = SharedModule = __decorate([
     (0, common_1.Module)({
-        providers: [timezone_util_service_1.TimezoneUtilService],
-        exports: [timezone_util_service_1.TimezoneUtilService],
+        providers: [],
+        exports: [],
     })
 ], SharedModule);
 //# sourceMappingURL=shared.module.js.map

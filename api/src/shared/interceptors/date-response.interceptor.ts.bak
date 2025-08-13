@@ -71,7 +71,7 @@ export class DateResponseInterceptor implements NestInterceptor {
       if (criticalDateFields.includes(key) && this.isDateValue(value)) {
         try {
           // Ensure proper UTC format for critical fields
-          const utcDate = value instanceof Date ? value.toISOString() : new Date(value).toISOString();
+          const utcDate = this.timezoneUtil.toUTC(value);
           transformed[key] = new Date(utcDate).toISOString();
           
           console.log(`📤 Response transform ${key}: ${value} → ${transformed[key]}`);

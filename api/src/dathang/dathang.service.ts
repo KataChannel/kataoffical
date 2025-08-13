@@ -1,15 +1,40 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
-import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 
 @Injectable()
 export class DathangService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly _ImportdataService: ImportdataService,
-    private readonly timezoneUtil: TimezoneUtilService,
   ) {}
+
+  // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
+  private formatDateForFilename(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
+    return `${year}${month}${day}_${hours}${minutes}${seconds}`;
+  }
+
+  private convertDateFilters(filters: any): any {
+    // ✅ Frontend đã gửi UTC, chỉ cần parse trực tiếp
+    const result: any = {};
+    
+    if (filters.fromDate) {
+      result.fromDate = new Date(filters.fromDate);
+    }
+    
+    if (filters.toDate) {
+      result.toDate = new Date(filters.toDate);
+    }
+    
+    return result;
+  }
 
   async generateNextOrderCode(): Promise<string> {
     // Lấy mã đơn hàng gần nhất
@@ -236,9 +261,9 @@ async convertDathangImportToTransfer(
 
       // Tạo object theo format đích
       const transferItem = {
-        title: `Import ${this.timezoneUtil.formatDateForFilename()}`,
+        title: `Import ${this.formatDateForFilename()}`,
         type: "dathang",
-        ngaynhan: this.timezoneUtil.toUTC(importItem.ngaynhan).split('T')[0],
+        ngaynhan: importItem.ngaynhan ? new Date(importItem.ngaynhan).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
         nhacungcapId: nhacungcap.id,
         nhacungcap: {
           name: nhacungcap.name,
@@ -277,15 +302,12 @@ async convertDathangImportToTransfer(
     const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, khoId } = params;
     const where: any = {};
 
-    // ✅ Date filter using TimezoneUtilService
+    // ✅ Date filter - Frontend gửi UTC nên parse trực tiếp
     if (Batdau || Ketthuc) {
-      const dateRange = this.timezoneUtil.convertDateFilters({
-        ngaynhan: {
-          gte: Batdau ? new Date(Batdau) : undefined,
-          lte: Ketthuc ? new Date(Ketthuc) : undefined,
-        }
-      });
-      where.ngaynhan = dateRange.ngaynhan;
+      where.ngaynhan = {
+        ...(Batdau && { gte: new Date(Batdau) }),
+        ...(Ketthuc && { lte: new Date(Ketthuc) })
+      };
     }
 
     // Kho filter
@@ -332,15 +354,12 @@ async convertDathangImportToTransfer(
 
     const where: any = {};
 
-    // ✅ Date filter using TimezoneUtilService
+    // ✅ Date filter - Frontend gửi UTC nên parse trực tiếp
     if (Batdau || Ketthuc) {
-      const dateRange = this.timezoneUtil.convertDateFilters({
-        ngaynhan: {
-          gte: Batdau ? new Date(Batdau) : undefined,
-          lte: Ketthuc ? new Date(Ketthuc) : undefined,
-        }
-      });
-      where.ngaynhan = dateRange.ngaynhan;
+      where.ngaynhan = {
+        ...(Batdau && { gte: new Date(Batdau) }),
+        ...(Ketthuc && { lte: new Date(Ketthuc) })
+      };
     }
 
     // Kho filter
@@ -411,17 +430,13 @@ async convertDathangImportToTransfer(
       }
     }
 
-    // ✅ Filter by ngaynhan (order receive date) using TimezoneUtilService
+    // ✅ Filter by ngaynhan (order receive date) - Frontend gửi UTC
     if (where.Batdau || where.Ketthuc) {
-      const dateRange = this.timezoneUtil.convertDateFilters({
-        ngaynhan: {
-          gte: where.Batdau ? new Date(where.Batdau) : undefined,
-          lte: where.Ketthuc ? new Date(where.Ketthuc) : undefined,
-        }
-      });
-      console.log('dateRange', dateRange);
-      
-      whereClause.ngaynhan = dateRange.ngaynhan;
+      whereClause.ngaynhan = {
+        ...(where.Batdau && { gte: new Date(where.Batdau) }),
+        ...(where.Ketthuc && { lte: new Date(where.Ketthuc) })
+      };
+      console.log('dateRange', whereClause.ngaynhan);
     }
 
     // Filter by kho
@@ -498,7 +513,7 @@ async convertDathangImportToTransfer(
           title: dto.title,
           type: dto.type,
           madncc: madathang,
-          ngaynhan: dto.ngaynhan ? new Date(this.timezoneUtil.toUTC(dto.ngaynhan)) : new Date(),
+          ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
           nhacungcapId: nhacungcap.id,
           khoId: dto.khoId, // Add khoId
           isActive: dto.isActive !== undefined ? dto.isActive : true,
@@ -565,7 +580,7 @@ async convertDathangImportToTransfer(
           title: dto.title,
           type: dto.type,
           madncc: madathang,
-          ngaynhan: dto.ngaynhan ? new Date(this.timezoneUtil.toUTC(dto.ngaynhan)) : new Date(),
+          ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
           nhacungcapId: nhacungcap.id,
           khoId: dto.khoId, // Add khoId
           isActive: dto.isActive !== undefined ? dto.isActive : true,
@@ -663,7 +678,7 @@ async convertDathangImportToTransfer(
           data: {
             title: data.title,
             type: data.type,
-            ngaynhan: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : undefined,
+            ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
             nhacungcapId: data.nhacungcapId,
             khoId: khoId, // Update khoId
             isActive: data.isActive,
@@ -739,7 +754,7 @@ async convertDathangImportToTransfer(
           data: {
             title: data.title,
             type: data.type,
-            ngaynhan: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : undefined,
+            ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
             nhacungcapId: data.nhacungcapId,
             khoId: khoId, // Update khoId
             isActive: data.isActive,
@@ -780,9 +795,9 @@ async convertDathangImportToTransfer(
         }
 
         // 4.2. Tạo/upsert phiếu kho xuất
-        const maphieuNew = `PX-${data.madncc}-${this.timezoneUtil.formatDateForFilename()}`;
+        const maphieuNew = `PX-${data.madncc}-${this.formatDateForFilename()}`;
         const phieuPayload = {
-          ngay: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : new Date(),
+          ngay: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
           type: 'xuat',
           khoId: khoId, // Use the khoId from dathang
           madncc: data.madncc,
@@ -872,10 +887,10 @@ async convertDathangImportToTransfer(
         // Nếu có sản phẩm thiếu, phát sinh phiếu kho nhập hàng trả về
       if (shortageItems.length > 0) {
           // Sử dụng mã đơn hàng hiện có (madncc) để tạo mã phiếu kho nhập
-        const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
+        const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
         const phieuKhoData = {
         maphieu: maphieuNhap,
-        ngay: new Date(this.timezoneUtil.toUTC(data.ngaynhan)), // Ngày nhập có thể sử dụng ngày giao hoặc hiện tại
+        ngay: new Date(data.ngaynhan), // Ngày nhập có thể sử dụng ngày giao hoặc hiện tại
         type: 'xuat', // Loại phiếu xuất
         khoId: khoId, // Use the khoId from dathang
         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
@@ -990,7 +1005,7 @@ async convertDathangImportToTransfer(
       }
 
       // 7.2. Xóa phiếu kho nhập hàng trả về (nếu có)
-      const maphieuReturn = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
+      const maphieuReturn = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
       const phieuKhoReturn = await prisma.phieuKho.findUnique({
         where: { maphieu: maphieuReturn },
       });
@@ -1027,7 +1042,7 @@ async convertDathangImportToTransfer(
         data: {
           title: data.title,
           type: data.type,
-          ngaynhan: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : undefined,
+          ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
           nhacungcapId: data.nhacungcapId,
           khoId: khoId, // Update khoId
           isActive: data.isActive,
@@ -1088,10 +1103,10 @@ async convertDathangImportToTransfer(
       }
       }
       if (shortageItems.length > 0) {
-      const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
+      const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
       const phieuKhoData = {
         maphieu: maphieuNhap,
-        ngay: new Date(this.timezoneUtil.toUTC(data.ngaynhan)),
+        ngay: new Date(data.ngaynhan),
         type: 'xuat',
         khoId: khoId, // Use the khoId from dathang
         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',

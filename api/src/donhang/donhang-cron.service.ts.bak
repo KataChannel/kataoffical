@@ -47,8 +47,8 @@ export class DonhangCronService {
       endOfDay.setHours(23, 59, 59, 999);
 
       // Convert to UTC for database query
-      const startOfDayUTC = startOfDay.toISOString();
-      const endOfDayUTC = endOfDay.toISOString();
+      const startOfDayUTC = this.timezoneUtil.toUTC(startOfDay);
+      const endOfDayUTC = this.timezoneUtil.toUTC(endOfDay);
 
       this.logger.log(`Processing orders from ${startOfDayUTC} to ${endOfDayUTC}`);
 
@@ -130,8 +130,8 @@ export class DonhangCronService {
   /**
    * Convert date to Vietnam timezone
    */
-  private convertToVietnamTime(date: Date): string {
-    return date.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+  private convertToVietnamTime(date: Date): Date {
+    return this.timezoneUtil.fromUTC(date.toISOString(), 'Asia/Ho_Chi_Minh');
   }
 
   /**
@@ -149,7 +149,7 @@ export class DonhangCronService {
             action: 'auto-complete-orders-cron',
             ordersProcessed: updateCount,
             timestamp: new Date().toISOString(),
-            vietnamTime: this.convertToVietnamTime(new Date()),
+            vietnamTime: this.convertToVietnamTime(new Date()).toLocaleString('vi-VN'),
             orderDetails: orders.map(order => ({
               id: order.id,
               madonhang: order.madonhang,
@@ -180,8 +180,8 @@ export class DonhangCronService {
       endOfDay.setHours(23, 59, 59, 999);
 
       // Convert to UTC for database query
-      const startOfDayUTC = startOfDay.toISOString();
-      const endOfDayUTC = endOfDay.toISOString();
+      const startOfDayUTC = this.timezoneUtil.toUTC(startOfDay);
+      const endOfDayUTC = this.timezoneUtil.toUTC(endOfDay);
 
       const ordersToUpdate = await this.prisma.donhang.findMany({
         where: {
@@ -203,7 +203,7 @@ export class DonhangCronService {
       if (ordersToUpdate.length === 0) {
         return {
           success: true,
-          message: `No orders found to auto-complete for date: ${vietnamDate.toString()}`,
+          message: `No orders found to auto-complete for date: ${vietnamDate.toDateString()}`,
           count: 0,
           orders: [],
         };

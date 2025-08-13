@@ -14,13 +14,21 @@ const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const socket_gateway_1 = require("../socket.gateway");
 const errorlogs_service_1 = require("../errorlogs/errorlogs.service");
-const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 let DashboardService = class DashboardService {
-    constructor(prisma, socketGateway, errorLogService, timezoneUtil) {
+    constructor(prisma, socketGateway, errorLogService) {
         this.prisma = prisma;
         this.socketGateway = socketGateway;
         this.errorLogService = errorLogService;
-        this.timezoneUtil = timezoneUtil;
+    }
+    getStartOfDay(date) {
+        const d = new Date(date);
+        d.setUTCHours(0, 0, 0, 0);
+        return d;
+    }
+    getEndOfDay(date) {
+        const d = new Date(date);
+        d.setUTCHours(23, 59, 59, 999);
+        return d;
     }
     getSummary(query) {
         throw new Error('Method not implemented.');
@@ -43,11 +51,11 @@ let DashboardService = class DashboardService {
     async getDonhang(data) {
         const { Batdau, Ketthuc } = data;
         const startDate = Batdau
-            ? new Date(this.timezoneUtil.getStartOfDay(Batdau))
-            : new Date(this.timezoneUtil.getStartOfDay(new Date()));
+            ? new Date(this.getStartOfDay(Batdau))
+            : new Date(this.getStartOfDay(new Date()));
         const endDate = Ketthuc
-            ? new Date(this.timezoneUtil.getEndOfDay(Ketthuc))
-            : new Date(this.timezoneUtil.getEndOfDay(new Date()));
+            ? new Date(this.getEndOfDay(Ketthuc))
+            : new Date(this.getEndOfDay(new Date()));
         const duration = endDate.getTime() - startDate.getTime();
         const previousStartDate = new Date(startDate.getTime() - duration);
         const previousEndDate = new Date(endDate.getTime() - duration);
@@ -220,7 +228,6 @@ exports.DashboardService = DashboardService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         socket_gateway_1.SocketGateway,
-        errorlogs_service_1.ErrorlogsService,
-        timezone_util_service_1.TimezoneUtilService])
+        errorlogs_service_1.ErrorlogsService])
 ], DashboardService);
 //# sourceMappingURL=dashboard.service.js.map

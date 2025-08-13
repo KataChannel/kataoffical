@@ -2,14 +2,13 @@ import { PrismaService } from 'prisma/prisma.service';
 import { ErrorlogsService } from 'src/errorlogs/errorlogs.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
 import { SocketGateway } from 'src/socket.gateway';
-import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 export declare class SanphamService {
     private readonly prisma;
     private _SocketGateway;
     private _ErrorlogsService;
     private _ImportdataService;
-    private readonly timezoneUtil;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogsService: ErrorlogsService, _ImportdataService: ImportdataService, timezoneUtil: TimezoneUtilService);
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ErrorlogsService: ErrorlogsService, _ImportdataService: ImportdataService);
+    private formatDateForFilename;
     findAllForSelect(): Promise<{
         data: {
             id: string;

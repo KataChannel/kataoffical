@@ -8,7 +8,6 @@ import { EnhancedUniversalService } from './enhanced-universal.service';
 import { DataLoaderService } from './dataloader.service';
 import { FieldSelectionService } from './field-selection.service';
 import { GraphQLPerformanceService } from './performance.service';
-import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 import { DashboardResolver } from '../dashboard/dashboard.resolver';
 
 @Module({
@@ -27,9 +26,6 @@ import { DashboardResolver } from '../dashboard/dashboard.resolver';
     DataLoaderService,
     FieldSelectionService,
     GraphQLPerformanceService,
-    
-    // Timezone utility service
-    TimezoneUtilService,
     
     // Dashboard resolver
     DashboardResolver,

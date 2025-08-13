@@ -1,14 +1,15 @@
 import { PrismaService } from '../../prisma/prisma.service';
 import { DataLoaderService } from './dataloader.service';
 import { FieldSelectionService } from './field-selection.service';
-import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 import { GraphQLResolveInfo } from 'graphql';
 export declare class EnhancedUniversalService {
     private readonly prisma;
     private readonly dataLoader;
     private readonly fieldSelection;
-    private readonly timezoneUtil;
-    constructor(prisma: PrismaService, dataLoader: DataLoaderService, fieldSelection: FieldSelectionService, timezoneUtil: TimezoneUtilService);
+    constructor(prisma: PrismaService, dataLoader: DataLoaderService, fieldSelection: FieldSelectionService);
+    private synchronizeDateField;
+    private toUTC;
+    private validateAndConvertToUTC;
     findMany(modelName: string, args: {
         where?: any;
         orderBy?: any;

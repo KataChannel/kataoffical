@@ -1,13 +1,12 @@
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
 import { SocketGateway } from 'src/socket.gateway';
-import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 export declare class BanggiaService {
     private readonly prisma;
     private readonly _SocketGateway;
     private readonly _ImportdataService;
-    private readonly timezoneUtil;
-    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ImportdataService: ImportdataService, timezoneUtil: TimezoneUtilService);
+    constructor(prisma: PrismaService, _SocketGateway: SocketGateway, _ImportdataService: ImportdataService);
+    private formatDateForFilename;
     importSPBG(listBanggia: any[]): Promise<{}>;
     importBanggia(data: any): Promise<any[]>;
     importBGKH(data: any[]): Promise<any[]>;

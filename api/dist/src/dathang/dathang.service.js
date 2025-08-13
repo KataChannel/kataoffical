@@ -13,12 +13,30 @@ exports.DathangService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
-const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 let DathangService = class DathangService {
-    constructor(prisma, _ImportdataService, timezoneUtil) {
+    constructor(prisma, _ImportdataService) {
         this.prisma = prisma;
         this._ImportdataService = _ImportdataService;
-        this.timezoneUtil = timezoneUtil;
+    }
+    formatDateForFilename() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        return `${year}${month}${day}_${hours}${minutes}${seconds}`;
+    }
+    convertDateFilters(filters) {
+        const result = {};
+        if (filters.fromDate) {
+            result.fromDate = new Date(filters.fromDate);
+        }
+        if (filters.toDate) {
+            result.toDate = new Date(filters.toDate);
+        }
+        return result;
     }
     async generateNextOrderCode() {
         const lastOrder = await this.prisma.dathang.findFirst({
@@ -215,9 +233,9 @@ let DathangService = class DathangService {
                     });
                 }
                 const transferItem = {
-                    title: `Import ${this.timezoneUtil.formatDateForFilename()}`,
+                    title: `Import ${this.formatDateForFilename()}`,
                     type: "dathang",
-                    ngaynhan: this.timezoneUtil.toUTC(importItem.ngaynhan).split('T')[0],
+                    ngaynhan: importItem.ngaynhan ? new Date(importItem.ngaynhan).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
                     nhacungcapId: nhacungcap.id,
                     nhacungcap: {
                         name: nhacungcap.name,
@@ -249,13 +267,10 @@ let DathangService = class DathangService {
         const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, khoId } = params;
         const where = {};
         if (Batdau || Ketthuc) {
-            const dateRange = this.timezoneUtil.convertDateFilters({
-                ngaynhan: {
-                    gte: Batdau ? new Date(Batdau) : undefined,
-                    lte: Ketthuc ? new Date(Ketthuc) : undefined,
-                }
-            });
-            where.ngaynhan = dateRange.ngaynhan;
+            where.ngaynhan = {
+                ...(Batdau && { gte: new Date(Batdau) }),
+                ...(Ketthuc && { lte: new Date(Ketthuc) })
+            };
         }
         if (khoId) {
             where.khoId = khoId;
@@ -295,13 +310,10 @@ let DathangService = class DathangService {
         const { Batdau, Ketthuc, Type, khoId } = params;
         const where = {};
         if (Batdau || Ketthuc) {
-            const dateRange = this.timezoneUtil.convertDateFilters({
-                ngaynhan: {
-                    gte: Batdau ? new Date(Batdau) : undefined,
-                    lte: Ketthuc ? new Date(Ketthuc) : undefined,
-                }
-            });
-            where.ngaynhan = dateRange.ngaynhan;
+            where.ngaynhan = {
+                ...(Batdau && { gte: new Date(Batdau) }),
+                ...(Ketthuc && { lte: new Date(Ketthuc) })
+            };
         }
         if (khoId) {
             where.khoId = khoId;
@@ -360,14 +372,11 @@ let DathangService = class DathangService {
             }
         }
         if (where.Batdau || where.Ketthuc) {
-            const dateRange = this.timezoneUtil.convertDateFilters({
-                ngaynhan: {
-                    gte: where.Batdau ? new Date(where.Batdau) : undefined,
-                    lte: where.Ketthuc ? new Date(where.Ketthuc) : undefined,
-                }
-            });
-            console.log('dateRange', dateRange);
-            whereClause.ngaynhan = dateRange.ngaynhan;
+            whereClause.ngaynhan = {
+                ...(where.Batdau && { gte: new Date(where.Batdau) }),
+                ...(where.Ketthuc && { lte: new Date(where.Ketthuc) })
+            };
+            console.log('dateRange', whereClause.ngaynhan);
         }
         if (khoId) {
             whereClause.khoId = khoId;
@@ -434,7 +443,7 @@ let DathangService = class DathangService {
                     title: dto.title,
                     type: dto.type,
                     madncc: madathang,
-                    ngaynhan: dto.ngaynhan ? new Date(this.timezoneUtil.toUTC(dto.ngaynhan)) : new Date(),
+                    ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
                     nhacungcapId: nhacungcap.id,
                     khoId: dto.khoId,
                     isActive: dto.isActive !== undefined ? dto.isActive : true,
@@ -493,7 +502,7 @@ let DathangService = class DathangService {
                     title: dto.title,
                     type: dto.type,
                     madncc: madathang,
-                    ngaynhan: dto.ngaynhan ? new Date(this.timezoneUtil.toUTC(dto.ngaynhan)) : new Date(),
+                    ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
                     nhacungcapId: nhacungcap.id,
                     khoId: dto.khoId,
                     isActive: dto.isActive !== undefined ? dto.isActive : true,
@@ -576,7 +585,7 @@ let DathangService = class DathangService {
                     data: {
                         title: data.title,
                         type: data.type,
-                        ngaynhan: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : undefined,
+                        ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
                         nhacungcapId: data.nhacungcapId,
                         khoId: khoId,
                         isActive: data.isActive,
@@ -643,7 +652,7 @@ let DathangService = class DathangService {
                     data: {
                         title: data.title,
                         type: data.type,
-                        ngaynhan: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : undefined,
+                        ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
                         nhacungcapId: data.nhacungcapId,
                         khoId: khoId,
                         isActive: data.isActive,
@@ -679,9 +688,9 @@ let DathangService = class DathangService {
                         },
                     });
                 }
-                const maphieuNew = `PX-${data.madncc}-${this.timezoneUtil.formatDateForFilename()}`;
+                const maphieuNew = `PX-${data.madncc}-${this.formatDateForFilename()}`;
                 const phieuPayload = {
-                    ngay: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : new Date(),
+                    ngay: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
                     type: 'xuat',
                     khoId: khoId,
                     madncc: data.madncc,
@@ -756,10 +765,10 @@ let DathangService = class DathangService {
                     }
                 }
                 if (shortageItems.length > 0) {
-                    const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
+                    const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
                     const phieuKhoData = {
                         maphieu: maphieuNhap,
-                        ngay: new Date(this.timezoneUtil.toUTC(data.ngaynhan)),
+                        ngay: new Date(data.ngaynhan),
                         type: 'xuat',
                         khoId: khoId,
                         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
@@ -858,7 +867,7 @@ let DathangService = class DathangService {
                         });
                     }
                 }
-                const maphieuReturn = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
+                const maphieuReturn = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
                 const phieuKhoReturn = await prisma.phieuKho.findUnique({
                     where: { maphieu: maphieuReturn },
                 });
@@ -891,7 +900,7 @@ let DathangService = class DathangService {
                     data: {
                         title: data.title,
                         type: data.type,
-                        ngaynhan: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : undefined,
+                        ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
                         nhacungcapId: data.nhacungcapId,
                         khoId: khoId,
                         isActive: data.isActive,
@@ -942,10 +951,10 @@ let DathangService = class DathangService {
                     }
                 }
                 if (shortageItems.length > 0) {
-                    const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
+                    const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.formatDateForFilename()}`;
                     const phieuKhoData = {
                         maphieu: maphieuNhap,
-                        ngay: new Date(this.timezoneUtil.toUTC(data.ngaynhan)),
+                        ngay: new Date(data.ngaynhan),
                         type: 'xuat',
                         khoId: khoId,
                         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
@@ -1092,7 +1101,6 @@ exports.DathangService = DathangService;
 exports.DathangService = DathangService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        importdata_service_1.ImportdataService,
-        timezone_util_service_1.TimezoneUtilService])
+        importdata_service_1.ImportdataService])
 ], DathangService);
 //# sourceMappingURL=dathang.service.js.map

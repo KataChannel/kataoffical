@@ -14,12 +14,20 @@ exports.DonhangCronService = void 0;
 const common_1 = require("@nestjs/common");
 const schedule_1 = require("@nestjs/schedule");
 const prisma_service_1 = require("../../prisma/prisma.service");
-const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 let DonhangCronService = DonhangCronService_1 = class DonhangCronService {
-    constructor(prisma, timezoneUtil) {
+    constructor(prisma) {
         this.prisma = prisma;
-        this.timezoneUtil = timezoneUtil;
         this.logger = new common_1.Logger(DonhangCronService_1.name);
+    }
+    getStartOfDay(date) {
+        const d = date || new Date();
+        d.setUTCHours(0, 0, 0, 0);
+        return d;
+    }
+    getEndOfDay(date) {
+        const d = date || new Date();
+        d.setUTCHours(23, 59, 59, 999);
+        return d;
     }
     async autoCompleteOrdersDaily() {
         try {
@@ -30,8 +38,8 @@ let DonhangCronService = DonhangCronService_1 = class DonhangCronService {
             startOfDay.setHours(0, 0, 0, 0);
             const endOfDay = new Date(vietnamToday);
             endOfDay.setHours(23, 59, 59, 999);
-            const startOfDayUTC = this.timezoneUtil.toUTC(startOfDay);
-            const endOfDayUTC = this.timezoneUtil.toUTC(endOfDay);
+            const startOfDayUTC = startOfDay.toISOString();
+            const endOfDayUTC = endOfDay.toISOString();
             this.logger.log(`Processing orders from ${startOfDayUTC} to ${endOfDayUTC}`);
             const ordersToUpdate = await this.prisma.donhang.findMany({
                 where: {
@@ -80,7 +88,7 @@ let DonhangCronService = DonhangCronService_1 = class DonhangCronService {
         }
     }
     convertToVietnamTime(date) {
-        return this.timezoneUtil.fromUTC(date.toISOString(), 'Asia/Ho_Chi_Minh');
+        return date.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
     }
     async createAuditLog(orders, updateCount) {
         try {
@@ -94,7 +102,7 @@ let DonhangCronService = DonhangCronService_1 = class DonhangCronService {
                         action: 'auto-complete-orders-cron',
                         ordersProcessed: updateCount,
                         timestamp: new Date().toISOString(),
-                        vietnamTime: this.convertToVietnamTime(new Date()).toLocaleString('vi-VN'),
+                        vietnamTime: this.convertToVietnamTime(new Date()),
                         orderDetails: orders.map(order => ({
                             id: order.id,
                             madonhang: order.madonhang,
@@ -118,8 +126,8 @@ let DonhangCronService = DonhangCronService_1 = class DonhangCronService {
             startOfDay.setHours(0, 0, 0, 0);
             const endOfDay = new Date(vietnamDate);
             endOfDay.setHours(23, 59, 59, 999);
-            const startOfDayUTC = this.timezoneUtil.toUTC(startOfDay);
-            const endOfDayUTC = this.timezoneUtil.toUTC(endOfDay);
+            const startOfDayUTC = startOfDay.toISOString();
+            const endOfDayUTC = endOfDay.toISOString();
             const ordersToUpdate = await this.prisma.donhang.findMany({
                 where: {
                     status: 'dagiao',
@@ -139,7 +147,7 @@ let DonhangCronService = DonhangCronService_1 = class DonhangCronService {
             if (ordersToUpdate.length === 0) {
                 return {
                     success: true,
-                    message: `No orders found to auto-complete for date: ${vietnamDate.toDateString()}`,
+                    message: `No orders found to auto-complete for date: ${vietnamDate.toString()}`,
                     count: 0,
                     orders: [],
                 };
@@ -190,7 +198,6 @@ __decorate([
 ], DonhangCronService.prototype, "autoCompleteOrdersDaily", null);
 exports.DonhangCronService = DonhangCronService = DonhangCronService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        timezone_util_service_1.TimezoneUtilService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
 ], DonhangCronService);
 //# sourceMappingURL=donhang-cron.service.js.map

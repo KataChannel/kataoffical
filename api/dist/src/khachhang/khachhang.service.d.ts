@@ -1,11 +1,10 @@
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
-import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 export declare class KhachhangService {
     private readonly prisma;
     private _ImportdataService;
-    private readonly timezoneUtil;
-    constructor(prisma: PrismaService, _ImportdataService: ImportdataService, timezoneUtil: TimezoneUtilService);
+    constructor(prisma: PrismaService, _ImportdataService: ImportdataService);
+    private formatDateForFilename;
     getLastUpdated(): Promise<{
         updatedAt: number;
     }>;

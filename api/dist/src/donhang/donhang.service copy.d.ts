@@ -47,8 +47,8 @@ export declare class DonhangService {
             isshowvat: boolean;
             type: string | null;
             status: import(".prisma/client").$Enums.StatusDonhang;
-            ngaygiao: Date | null;
             madonhang: string;
+            ngaygiao: Date | null;
             khachhangId: string;
             printCount: number | null;
             tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -76,8 +76,8 @@ export declare class DonhangService {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        ngaygiao: Date | null;
         madonhang: string;
+        ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -122,8 +122,8 @@ export declare class DonhangService {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        ngaygiao: Date | null;
         madonhang: string;
+        ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -194,8 +194,8 @@ export declare class DonhangService {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        ngaygiao: Date | null;
         madonhang: string;
+        ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -268,8 +268,8 @@ export declare class DonhangService {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        ngaygiao: Date | null;
         madonhang: string;
+        ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -368,8 +368,8 @@ export declare class DonhangService {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        ngaygiao: Date | null;
         madonhang: string;
+        ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -414,8 +414,8 @@ export declare class DonhangService {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        ngaygiao: Date | null;
         madonhang: string;
+        ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -432,8 +432,8 @@ export declare class DonhangService {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        ngaygiao: Date | null;
         madonhang: string;
+        ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -469,8 +469,8 @@ export declare class DonhangService {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        ngaygiao: Date | null;
         madonhang: string;
+        ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
@@ -487,8 +487,8 @@ export declare class DonhangService {
         isshowvat: boolean;
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
-        ngaygiao: Date | null;
         madonhang: string;
+        ngaygiao: Date | null;
         khachhangId: string;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;

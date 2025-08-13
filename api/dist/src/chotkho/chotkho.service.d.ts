@@ -1,9 +1,10 @@
 import { PrismaService } from 'prisma/prisma.service';
-import { TimezoneUtilService } from '../shared/services/timezone-util.service';
 export declare class ChotkhoService {
     private readonly prisma;
-    private readonly timezoneUtil;
-    constructor(prisma: PrismaService, timezoneUtil: TimezoneUtilService);
+    constructor(prisma: PrismaService);
+    private convertDateFilters;
+    private getStartOfDay;
+    private getEndOfDay;
     getLastUpdatedChotkho(): Promise<{
         updatedAt: number;
     }>;

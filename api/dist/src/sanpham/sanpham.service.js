@@ -15,14 +15,22 @@ const prisma_service_1 = require("../../prisma/prisma.service");
 const errorlogs_service_1 = require("../errorlogs/errorlogs.service");
 const importdata_service_1 = require("../importdata/importdata.service");
 const socket_gateway_1 = require("../socket.gateway");
-const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 let SanphamService = class SanphamService {
-    constructor(prisma, _SocketGateway, _ErrorlogsService, _ImportdataService, timezoneUtil) {
+    constructor(prisma, _SocketGateway, _ErrorlogsService, _ImportdataService) {
         this.prisma = prisma;
         this._SocketGateway = _SocketGateway;
         this._ErrorlogsService = _ErrorlogsService;
         this._ImportdataService = _ImportdataService;
-        this.timezoneUtil = timezoneUtil;
+    }
+    formatDateForFilename() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        return `${year}${month}${day}_${hours}${minutes}${seconds}`;
     }
     async findAllForSelect() {
         try {
@@ -466,7 +474,6 @@ exports.SanphamService = SanphamService = __decorate([
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         socket_gateway_1.SocketGateway,
         errorlogs_service_1.ErrorlogsService,
-        importdata_service_1.ImportdataService,
-        timezone_util_service_1.TimezoneUtilService])
+        importdata_service_1.ImportdataService])
 ], SanphamService);
 //# sourceMappingURL=sanpham.service.js.map

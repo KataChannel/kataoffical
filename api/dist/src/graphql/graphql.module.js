@@ -17,7 +17,6 @@ const enhanced_universal_service_1 = require("./enhanced-universal.service");
 const dataloader_service_1 = require("./dataloader.service");
 const field_selection_service_1 = require("./field-selection.service");
 const performance_service_1 = require("./performance.service");
-const timezone_util_service_1 = require("../shared/services/timezone-util.service");
 const dashboard_resolver_1 = require("../dashboard/dashboard.resolver");
 let GraphQLUniversalModule = class GraphQLUniversalModule {
 };
@@ -36,7 +35,6 @@ exports.GraphQLUniversalModule = GraphQLUniversalModule = __decorate([
             dataloader_service_1.DataLoaderService,
             field_selection_service_1.FieldSelectionService,
             performance_service_1.GraphQLPerformanceService,
-            timezone_util_service_1.TimezoneUtilService,
             dashboard_resolver_1.DashboardResolver,
         ],
         exports: [

@@ -12,11 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DateResponseInterceptor = void 0;
 const common_1 = require("@nestjs/common");
 const operators_1 = require("rxjs/operators");
-const timezone_util_service_1 = require("../services/timezone-util.service");
 let DateResponseInterceptor = class DateResponseInterceptor {
-    constructor(timezoneUtil) {
-        this.timezoneUtil = timezoneUtil;
-    }
+    constructor() { }
     intercept(context, next) {
         return next.handle().pipe((0, operators_1.map)(data => this.transformDatesInResponse(data, context)));
     }
@@ -51,7 +48,7 @@ let DateResponseInterceptor = class DateResponseInterceptor {
             const value = transformed[key];
             if (criticalDateFields.includes(key) && this.isDateValue(value)) {
                 try {
-                    const utcDate = this.timezoneUtil.toUTC(value);
+                    const utcDate = value instanceof Date ? value.toISOString() : new Date(value).toISOString();
                     transformed[key] = new Date(utcDate).toISOString();
                     console.log(`📤 Response transform ${key}: ${value} → ${transformed[key]}`);
                 }
@@ -84,6 +81,6 @@ let DateResponseInterceptor = class DateResponseInterceptor {
 exports.DateResponseInterceptor = DateResponseInterceptor;
 exports.DateResponseInterceptor = DateResponseInterceptor = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [timezone_util_service_1.TimezoneUtilService])
+    __metadata("design:paramtypes", [])
 ], DateResponseInterceptor);
 //# sourceMappingURL=date-response.interceptor.js.map
