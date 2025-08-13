@@ -39,6 +39,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
 import html2canvas from 'html2canvas';
 import { Debounce } from '../../../shared/utils/decorators';
 import { KhoService } from '../../kho/kho.service';
+import { SharedInputService } from '../../../shared/services/shared-input.service';
 @Component({
   selector: 'app-detaildathang',
   imports: [
@@ -68,6 +69,7 @@ export class DetailDathangComponent {
   _BanggiaService: BanggiaService = inject(BanggiaService);
   _SanphamService: SanphamService = inject(SanphamService);
   _KhoService: KhoService = inject(KhoService);
+  _SharedInputService: SharedInputService = inject(SharedInputService);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -376,19 +378,14 @@ export class DetailDathangComponent {
     });
   }
   
-  // ✅ Method để auto-select text khi focus vào input - Same as DetailDonhang
+  // ✅ Method để auto-select text khi focus vào input - Using shared service
   onInputFocus(event: FocusEvent) {
-    const target = event.target as HTMLElement;
-    setTimeout(() => {
-      // Delay để đảm bảo focus đã hoàn tất
-      if (document.createRange && window.getSelection) {
-        const range = document.createRange();
-        range.selectNodeContents(target);
-        const selection = window.getSelection();
-        selection?.removeAllRanges();
-        selection?.addRange(range);
-      }
-    }, 10);
+    this._SharedInputService.onInputFocus(event);
+  }
+
+  // ✅ Method để validate keyboard input for decimal handling
+  validateKeyInput(event: KeyboardEvent, type: 'number' | 'string') {
+    return this._SharedInputService.handleKeyboardEvent(event, type);
   }
 
   EnterUpdateValue(
@@ -398,180 +395,20 @@ export class DetailDathangComponent {
     field: keyof any,
     type: 'number' | 'string'
   ) {
-    const newValue =
-      type === 'number'
-        ? this.parseDecimalValue((event.target as HTMLElement).innerText.trim())
-        : (event.target as HTMLElement).innerText.trim();
-    const keyboardEvent = event as KeyboardEvent;
-    if (keyboardEvent.key === 'Enter' && !keyboardEvent.shiftKey) {
-      event.preventDefault();
-    }
-    if (type === 'number') {
-      const allowedKeys = [
-        'Backspace',
-        'Delete',
-        'ArrowLeft',
-        'ArrowRight',
-        'Tab',
-        'Enter',
-      ];
-
-      // ✅ Cho phép số thập phân: số (0-9), dấu chấm (.), dấu phẩy (,), và các phím điều khiển
-      const currentText = (event.target as HTMLElement).innerText.trim();
-      const isDecimalSeparator = keyboardEvent.key === '.' || keyboardEvent.key === ',';
-      const hasDecimalSeparator = currentText.includes('.') || currentText.includes(',');
-      
-      // Chặn nếu không phải số, dấu thập phân hợp lệ, hoặc phím điều khiển
-      if (
-        !/^\d$/.test(keyboardEvent.key) && 
-        !allowedKeys.includes(keyboardEvent.key) &&
-        !(isDecimalSeparator && !hasDecimalSeparator) // Cho phép dấu thập phân nếu chưa có
-      ) {
-        event.preventDefault();
-      }
-    }
+    // Convert order to index for shared service
     const index = this.dataSource.data.findIndex((item: any) => item.order === order);
-    this.DetailDathang.update((v: any) => {
-      if (index !== null) {
-        if (field === 'sldat') {
-          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao'] = v.sanpham[index]['slnhan'] = newValue;
-          // ✅ Focus next input in same column (like DetailDonhang)
-          const inputs = document.querySelectorAll('.sldat-input') as NodeListOf<HTMLElement>;
-          if (index < this.dataSource.data.length - 1) {
-            const nextInput = inputs[index + 1] as HTMLElement;
-            if (nextInput) {
-              if (nextInput instanceof HTMLInputElement) {
-                nextInput.focus();
-                nextInput.select();
-              }
-              // Then select text using a different method that works on more element types
-              setTimeout(() => {
-                if (document.createRange && window.getSelection) {
-                  const range = document.createRange();
-                  range.selectNodeContents(nextInput);
-                  const selection = window.getSelection();
-                  selection?.removeAllRanges();
-                  selection?.addRange(range);
-                }
-              }, 10);
-            }
-          }
-        } else if (field === 'slgiao') {
-          const newGiao = newValue;
-          if (newGiao < v.sanpham[index]['sldat']) {
-            // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
-            v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
-            this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
-              duration: 1000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['snackbar-error'],
-            });
-          } else {
-            v.sanpham[index]['slgiao'] = newGiao;
-          }
-          // ✅ Focus next input in same column
-          const inputs = document.querySelectorAll('.slgiao-input') as NodeListOf<HTMLElement>;
-          if (index < this.dataSource.data.length - 1) {
-            const nextInput = inputs[index + 1] as HTMLElement;
-            if (nextInput) {
-              if (nextInput instanceof HTMLInputElement) {
-                nextInput.focus();
-                nextInput.select();
-              }
-              setTimeout(() => {
-                if (document.createRange && window.getSelection) {
-                  const range = document.createRange();
-                  range.selectNodeContents(nextInput);
-                  const selection = window.getSelection();
-                  selection?.removeAllRanges();
-                  selection?.addRange(range);
-                }
-              }, 10);
-            }
-          }
-        } else if (field === 'slnhan') {
-          v.sanpham[index]['ttnhan'] =
-            parseFloat(
-              (v.sanpham[index]['gianhap'] * parseFloat(newValue.toString())).toFixed(2)
-            ) || 0;
-          v.sanpham[index][field] = parseFloat(newValue.toString()) || 0;
-          // ✅ Focus next input in same column
-          const inputs = document.querySelectorAll('.slnhan-input') as NodeListOf<HTMLElement>;
-          if (index < this.dataSource.data.length - 1) {
-            const nextInput = inputs[index + 1] as HTMLElement;
-            if (nextInput) {
-              if (nextInput instanceof HTMLInputElement) {
-                nextInput.focus();
-                nextInput.select();
-              }
-              setTimeout(() => {
-                if (document.createRange && window.getSelection) {
-                  const range = document.createRange();
-                  range.selectNodeContents(nextInput);
-                  const selection = window.getSelection();
-                  selection?.removeAllRanges();
-                  selection?.addRange(range);
-                }
-              }, 10);
-            }
-          }
-        } else if (field === 'gianhap') {
-          v.sanpham[index]['ttnhan'] =
-            parseFloat(
-              (parseFloat(newValue.toString()) * v.sanpham[index]['slnhan']).toFixed(2)
-            ) || 0;
-          v.sanpham[index][field] = parseFloat(newValue.toString()) || 0;
-          // ✅ Focus next input in same column
-          const inputs = document.querySelectorAll('.gianhap-input') as NodeListOf<HTMLElement>;
-          if (index < this.dataSource.data.length - 1) {
-            const nextInput = inputs[index + 1] as HTMLElement;
-            if (nextInput) {
-              if (nextInput instanceof HTMLInputElement) {
-                nextInput.focus();
-                nextInput.select();
-              }
-              setTimeout(() => {
-                if (document.createRange && window.getSelection) {
-                  const range = document.createRange();
-                  range.selectNodeContents(nextInput);
-                  const selection = window.getSelection();
-                  selection?.removeAllRanges();
-                  selection?.addRange(range);
-                }
-              }, 10);
-            }
-          }
-        } else if (field === 'ghichu') {
-          v.sanpham[index][field] = newValue;
-          // ✅ Focus next input in same column
-          const inputs = document.querySelectorAll('.ghichu-input') as NodeListOf<HTMLElement>;
-          if (index < this.dataSource.data.length - 1) {
-            const nextInput = inputs[index + 1] as HTMLElement;
-            if (nextInput) {
-              if (nextInput instanceof HTMLInputElement) {
-                nextInput.focus();
-                nextInput.select();
-              }
-              setTimeout(() => {
-                if (document.createRange && window.getSelection) {
-                  const range = document.createRange();
-                  range.selectNodeContents(nextInput);
-                  const selection = window.getSelection();
-                  selection?.removeAllRanges();
-                  selection?.addRange(range);
-                }
-              }, 10);
-            }
-          }
-        } else {
-          v.sanpham[index][field] = newValue;
-        }
-      } else {
-        v[field] = newValue;
-      }
-      return v;
-    });
+    
+    this._SharedInputService.updateValue(
+      event,
+      'dathang',
+      index,
+      element,
+      field as string,
+      type,
+      this.DetailDathang().sanpham || [],
+      (updateFn: (v: any) => any) => this.DetailDathang.update(updateFn),
+      this.dataSource.data.length
+    );
   }
 
   UpdateBlurValue(
@@ -581,53 +418,22 @@ export class DetailDathangComponent {
     field: keyof any,
     type: 'number' | 'string'
   ) {
-    console.log('UpdateBlurValue', event, order, element, field, type);
+    // Convert order to index for shared service
+    const index = this.dataSource.data.findIndex((item: any) => item.order === order);
     
-    const newValue =
-      type === 'number'
-        ? this.parseDecimalValue((event.target as HTMLElement).innerText.trim())
-        : (event.target as HTMLElement).innerText.trim();
+    this._SharedInputService.updateBlurValue(
+      event,
+      'dathang',
+      index,
+      element,
+      field as string,
+      type,
+      this.DetailDathang().sanpham || [],
+      (updateFn: (v: any) => any) => this.DetailDathang.update(updateFn)
+    );
 
-    const index = this.dataSource.data.findIndex((item: any) => item.order === order);   
-    this.DetailDathang.update((v: any) => {
-      if (index !== null) {
-        if (field === 'sldat') {
-          v.sanpham[index]['sldat'] = v.sanpham[index]['slgiao']=v.sanpham[index]['slnhan'] = newValue;
-        } else if (field === 'ghichu') {
-          v.sanpham[index][field] = newValue;
-        } else if (field === 'gianhap') {
-          v.sanpham[index]['ttnhan'] =
-            parseFloat(
-              (parseFloat(newValue.toString()) * v.sanpham[index]['slnhan']).toFixed(2)
-            ) || 0;
-          v.sanpham[index][field] = parseFloat(newValue.toString()) || 0;
-        } else if (field === 'slnhan') {
-          v.sanpham[index]['ttnhan'] =
-            parseFloat(
-              (v.sanpham[index]['gianhap'] * parseFloat(newValue.toString())).toFixed(2)
-            ) || 0;
-          v.sanpham[index][field] = parseFloat(newValue.toString()) || 0;
-        } else if (field === 'slgiao') {
-          const newGiao = newValue;
-          if (newGiao < v.sanpham[index]['sldat']) {
-            v.sanpham[index]['slgiao'] = v.sanpham[index]['sldat'];
-            this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
-              duration: 1000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['snackbar-error'],
-            });
-          } else {
-            v.sanpham[index]['slgiao'] = newGiao;
-          }
-        } else {
-          v.sanpham[index][field] = newValue;
-        }
-      } else {
-        v[field] = newValue;
-      }
-      return v;
-    });
+    // Update dataSource to reflect changes  
+    this.dataSource.data = [...this.DetailDathang().sanpham];
   }
 
   Tongcong: any = 0;

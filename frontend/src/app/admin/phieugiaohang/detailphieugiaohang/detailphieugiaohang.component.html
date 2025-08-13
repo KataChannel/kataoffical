@@ -130,7 +130,8 @@
                   @if(DetailPhieugiaohang().status!='dagiao') {
                   <div [contentEditable]="true" (focus)="onInputFocus($event)"
                     (blur)="updateBlurValue($event,idx, row, 'slgiao','number')"
-                    (keydown)="updateValue($event,idx, row, 'slgiao','number')"
+                    (keydown.enter)="updateValue($event,idx, row, 'slgiao','number')"
+                    (keydown)="validateKeyInput($event, 'number')"
                     class="slgiao-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
                     [attr.data-index]="idx" [attr.data-id]="row.id">
                     {{ row[column]||0|number:'1.0-2' }}
@@ -145,7 +146,8 @@
                   @case ('slnhan') {
                   <div [contentEditable]="true" (focus)="onInputFocus($event)"
                     (blur)="updateBlurValue($event,idx, row, 'slnhan','number')"
-                    (keydown)="updateValue($event,idx, row, 'slnhan','number')"
+                    (keydown.enter)="updateValue($event,idx, row, 'slnhan','number')"
+                    (keydown)="validateKeyInput($event, 'number')"
                     class="p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
                     [attr.data-index]="idx" [attr.data-id]="row.id">
                     {{ row[column]||0|number:'1.0-2' }}
@@ -154,7 +156,8 @@
                   @case ('ghichu') {
                   <div [contentEditable]="true" (focus)="onInputFocus($event)"
                     (blur)="updateBlurValue($event,idx, row, 'ghichu','string')"
-                    (keydown)="updateValue($event,idx, row, 'ghichu','string')"
+                    (keydown.enter)="updateValue($event,idx, row, 'ghichu','string')"
+                    (keydown)="validateKeyInput($event, 'string')"
                     class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border text-end rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none transition-colors duration-200"
                     [attr.data-index]="idx" [attr.data-id]="row.id">
                     {{ row[column]||'' }}

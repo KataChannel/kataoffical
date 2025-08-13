@@ -47,6 +47,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
 import { UserService } from '../../user/user.service';
 import { Debounce } from '../../../shared/utils/decorators';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SharedInputService } from '../../../shared/services/shared-input.service';
 @Component({
   selector: 'app-detaildonhang',
   imports: [
@@ -78,6 +79,7 @@ export class DetailDonhangComponent {
   _SanphamService: SanphamService = inject(SanphamService);
   _SearchService: SearchService = inject(SearchService);
   _UserService: UserService = inject(UserService);
+  _SharedInputService: SharedInputService = inject(SharedInputService);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -282,21 +284,14 @@ export class DetailDonhangComponent {
     return item.id;
   }
   
-  // Method để auto-select text khi focus vào input - Same as detailphieugiaohang
+  // Method để auto-select text khi focus vào input - Using shared service
   onInputFocus(event: FocusEvent) {
-    const target = event.target as HTMLElement;
-    if (target && target.isContentEditable) {
-      // Delay để đảm bảo focus đã hoàn tất
-      setTimeout(() => {
-        if (document.createRange && window.getSelection) {
-          const range = document.createRange();
-          range.selectNodeContents(target);
-          const selection = window.getSelection();
-          selection?.removeAllRanges();
-          selection?.addRange(range);
-        }
-      }, 10);
-    }
+    this._SharedInputService.onInputFocus(event);
+  }
+
+  // Method để validate keyboard input for decimal handling
+  validateKeyInput(event: KeyboardEvent, type: 'number' | 'string') {
+    return this._SharedInputService.handleKeyboardEvent(event, type);
   }
   
   toggleEdit() {
@@ -383,166 +378,36 @@ export class DetailDonhangComponent {
     });
   }
   updateValue(event: Event,index: number | null,element: any,field: keyof any,type: 'number' | 'string') {
-    const target = event.target as HTMLElement;
-    let newValue: any;
-    
-    if (type === 'number') {
-      // Clean the text content and convert to number
-      const textContent = target.innerText.trim().replace(/,/g, '.'); // Replace comma with dot for decimal
-      newValue = Number(textContent) || 0;
-    } else {
-      newValue = target.innerText.trim();
-    }
-    
-    const keyboardEvent = event as KeyboardEvent;
-    if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
-      event.preventDefault();
-    }
-    if (type === "number") {
-      const allowedKeys = [
-        "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Enter",
-        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", // Regular number keys
-        ".", ",", // Decimal separators
-        "Home", "End", "PageUp", "PageDown" // Navigation keys
-      ];
-      
-      // Allow regular digits, numpad digits, and control keys
-      const isDigit = /^[0-9]$/.test(keyboardEvent.key);
-      const isNumpadDigit = keyboardEvent.code && keyboardEvent.code.startsWith('Numpad') && /Numpad[0-9]/.test(keyboardEvent.code);
-      const isDecimal = keyboardEvent.key === '.' || keyboardEvent.key === ',';
-      const isControlKey = allowedKeys.includes(keyboardEvent.key);
-      
-      if (!isDigit && !isNumpadDigit && !isDecimal && !isControlKey) {
-        event.preventDefault();
-        return;
-      }
-    }
-    this.DetailDonhang.update((v: any) => {
-      if (index !== null) {
-        const itemIndex = v.sanpham.findIndex((v1: any) => v1.id === element.id);
-        if (field === 'sldat') {
-          v.sanpham[itemIndex]['sldat'] = v.sanpham[itemIndex]['slgiao'] = v.sanpham[itemIndex]['slnhan'] = newValue;
-          // Find the next input to focus on
-          const inputs = document.querySelectorAll('.sldat-input')as NodeListOf<HTMLInputElement>;
-              if (index < this.dataSource().filteredData.length - 1) {
-                const nextInput = inputs[index + 1]as HTMLInputElement
-                if (nextInput) {
-                  if (nextInput instanceof HTMLInputElement) {
-                    nextInput.focus();
-                    nextInput.select();
-                  }
-                  // Then select text using a different method that works on more element types
-                  setTimeout(() => {
-                    if (document.createRange && window.getSelection) {
-                      const range = document.createRange();
-                      range.selectNodeContents(nextInput);
-                      const selection = window.getSelection();
-                      selection?.removeAllRanges();
-                      selection?.addRange(range);
-                    }
-                  }, 10);
-                }
-              }
-
-        } 
-        else if (field === 'ghichu') {
-          v.sanpham[itemIndex][field] = newValue;
-          // Find the next input to focus on
-          const inputs = document.querySelectorAll('.ghichu-input')as NodeListOf<HTMLInputElement>;
-              if (index < this.dataSource().filteredData.length - 1) {
-                const nextInput = inputs[index + 1]as HTMLInputElement
-                if (nextInput) {
-                  if (nextInput instanceof HTMLInputElement) {
-                    nextInput.focus();
-                    nextInput.select();
-                  }
-                  // Then select text using a different method that works on more element types
-                  setTimeout(() => {
-                    if (document.createRange && window.getSelection) {
-                      const range = document.createRange();
-                      range.selectNodeContents(nextInput);
-                      const selection = window.getSelection();
-                      selection?.removeAllRanges();
-                      selection?.addRange(range);
-                    }
-                  }, 10);
-                }
-              }
-        } 
-        
-        else if (field === 'slgiao') {
-          const newGiao = newValue
-          if (newGiao < v.sanpham[itemIndex]['sldat']) {
-            // CẬP NHẬT GIÁ TRỊ TRƯỚC KHI HIỂN THỊ SNACKBAR
-            v.sanpham[itemIndex]['slgiao'] = v.sanpham[itemIndex]['sldat'];
-            this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
-              duration: 1000,
-              horizontalPosition: "end",
-              verticalPosition: "top",
-              panelClass: ['snackbar-error'],
-            });
-          } else {
-            v.sanpham[itemIndex]['slgiao'] =  newGiao;
-          }
-        } else {
-          v.sanpham[itemIndex][field] = newValue;
-        }
-      } else {
-        v[field] = newValue;
-      }
-      return v;
-    });
+    this._SharedInputService.updateValue(
+      event,
+      'donhang',
+      index,
+      element,
+      field as string,
+      type,
+      this.DetailDonhang().sanpham || [],
+      (updateFn: (v: any) => any) => this.DetailDonhang.update(updateFn),
+      this.dataSource().filteredData.length
+    );
   }
-    updateBlurValue(
+
+  updateBlurValue(
     event: Event,
     index: number | null,
     element: any,
     field: keyof any,
     type: 'number' | 'string'
   ) {
-    const target = event.target as HTMLElement;
-    let newValue: any;
-    
-    if (type === 'number') {
-      // Clean the text content and convert to number
-      const textContent = target.innerText.trim().replace(/,/g, '.'); // Replace comma with dot for decimal
-      newValue = Number(textContent) || 0;
-    } else {
-      newValue = target.innerText.trim();
-    }
-
-    this.DetailDonhang.update((v: any) => {
-      if (index !== null) {
-        const itemIndex = v.sanpham.findIndex((v1: any) => v1.id === element.id);
-        if (field === 'sldat') {
-          v.sanpham[itemIndex] = {
-            ...v.sanpham[itemIndex],
-            sldat: newValue,
-            slgiao: newValue,
-            slnhan: newValue
-          };
-        } else if (field === 'slgiao') {
-          if (newValue < v.sanpham[itemIndex]['sldat']) {
-            v.sanpham[itemIndex]['slgiao'] = v.sanpham[itemIndex]['sldat'];
-            this._snackBar.open('Số lượng giao phải lớn hơn số lượng đặt', '', {
-              duration: 1000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['snackbar-error'],
-            });
-          } else {
-            v.sanpham[itemIndex]['slgiao'] = newValue;
-          }
-        } else {
-          v.sanpham[itemIndex][field] = newValue;
-        }
-        console.log('v.sanpham[itemIndex]',v.sanpham[itemIndex]);
-        
-      } else {
-        v[field] = newValue;
-      }
-      return v;
-    });
+    this._SharedInputService.updateBlurValue(
+      event,
+      'donhang',
+      index,
+      element,
+      field as string,
+      type,
+      this.DetailDonhang().sanpham || [],
+      (updateFn: (v: any) => any) => this.DetailDonhang.update(updateFn)
+    );
 
     // Update dataSource to reflect changes
     this.dataSource.update(ds => {

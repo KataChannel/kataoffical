@@ -195,7 +195,7 @@ export class ListImportdataComponent implements OnInit {
       this.loadingMessage.set('Đang tải dữ liệu...');
       
       try {
-        await this._ImportdataService.getAllImportdata(100, true);
+        await this._ImportdataService.getAllImportdata(1000, true);
         
         // Load data with date parameters
         await this.loadDataWithDateRange();

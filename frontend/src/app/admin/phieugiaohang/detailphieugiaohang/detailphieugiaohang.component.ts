@@ -39,6 +39,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { DonhangService } from '../../donhang/donhang.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { UserService } from '../../user/user.service';
+import { SharedInputService } from '../../../shared/services/shared-input.service';
 @Component({
   selector: 'app-detailphieugiaohang',
   imports: [
@@ -67,6 +68,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
   _PhieugiaohangService: DonhangService = inject(DonhangService);
   _SanphamService: SanphamService = inject(SanphamService);
   _UserService: UserService = inject(UserService);
+  _SharedInputService: SharedInputService = inject(SharedInputService);
   _route: ActivatedRoute = inject(ActivatedRoute);
   _router: Router = inject(Router);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -116,7 +118,9 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
     { value: 'danhan', title: 'Đã Nhận' },
     { value: 'huy', title: 'Hủy' },
   ];
-  constructor() {
+  constructor(
+    private sharedInputService: SharedInputService
+  ) {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
       this._PhieugiaohangService.setDonhangId(id);
@@ -278,21 +282,14 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
     return item.id;
   }
   
-  // Method để auto-select text khi focus vào input
+  // Method để auto-select text khi focus vào input - Using shared service
   onInputFocus(event: FocusEvent) {
-    const target = event.target as HTMLElement;
-    if (target && target.isContentEditable) {
-      // Delay để đảm bảo focus đã hoàn tất
-      setTimeout(() => {
-        if (document.createRange && window.getSelection) {
-          const range = document.createRange();
-          range.selectNodeContents(target);
-          const selection = window.getSelection();
-          selection?.removeAllRanges();
-          selection?.addRange(range);
-        }
-      }, 10);
-    }
+    this.sharedInputService.onInputFocus(event);
+  }
+
+  // Method để validate keyboard input for decimal handling
+  validateKeyInput(event: KeyboardEvent, type: 'number' | 'string') {
+    return this.sharedInputService.handleKeyboardEvent(event, type);
   }
 
   // Method để xử lý input từ numpad và format số
@@ -371,6 +368,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       return v;
     });
   }
+
+  
   updateValue(
     event: Event,
     index: number | null,
@@ -378,121 +377,23 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
     field: keyof any,
     type: 'number' | 'string'
   ) {
-    const target = event.target as HTMLElement;
-    let newValue: any;
-    
-    if (type === 'number') {
-      // Clean the text content and convert to number
-      const textContent = target.innerText.trim().replace(/,/g, '.'); // Replace comma with dot for decimal
-      newValue = Number(textContent) || 0;
-    } else {
-      newValue = target.innerText.trim();
-    }
-
-    const keyboardEvent = event as KeyboardEvent;
-      // Handle Enter key
-    if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
-      event.preventDefault();
-      
-      // Focus next input for specific fields - Fix: use correct filtered data length
-      if (index !== null) {
-        const inputs = document.querySelectorAll(
-          field === 'ghichu' ? '.ghichu-input' : '.slgiao-input'
-        ) as NodeListOf<HTMLElement>;
+    this.sharedInputService.updateValue(
+      event,
+      'phieugiaohang',
+      index,
+      element,
+      field as string,
+      type,
+      this.DetailPhieugiaohang().sanpham,
+      (updateFn: (v: any) => any) => {
+        // Apply the update function from shared service
+        this.DetailPhieugiaohang.update(updateFn);
         
-        if (index < this.dataSource.filteredData.length - 1) {
-          const nextInput = inputs[index + 1];
-          if (nextInput) {
-            nextInput.focus();
-            // Select text for better UX - Same style as detaildonhang
-            setTimeout(() => {
-              if (document.createRange && window.getSelection) {
-                const range = document.createRange();
-                range.selectNodeContents(nextInput);
-                const selection = window.getSelection();
-                selection?.removeAllRanges();
-                selection?.addRange(range);
-              }
-            }, 10);
-          }
-        }
-      }
-    }// Validate number input
-    if (type === "number") {
-      const allowedKeys = [
-        "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Enter",
-        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", // Regular number keys
-        ".", ",", // Decimal separators
-        "Home", "End", "PageUp", "PageDown" // Navigation keys
-      ];
-      
-      // Allow regular digits, numpad digits, and control keys
-      const isDigit = /^[0-9]$/.test(keyboardEvent.key);
-      const isNumpadDigit = keyboardEvent.code && keyboardEvent.code.startsWith('Numpad') && /Numpad[0-9]/.test(keyboardEvent.code);
-      const isDecimal = keyboardEvent.key === '.' || keyboardEvent.key === ',';
-      const isControlKey = allowedKeys.includes(keyboardEvent.key);
-      
-      if (!isDigit && !isNumpadDigit && !isDecimal && !isControlKey) {
-        event.preventDefault();
-        return;
-      }
-      
-      // Handle numeric input processing
-      this.handleNumericInput(keyboardEvent, target);
-    }
-
-    // Fix: Find correct item index in original data using element.id
-    if (index !== null && element?.id) {
-      const actualIndex = this.DetailPhieugiaohang().sanpham.findIndex((item: any) => item.id === element.id);
-      
-      if (actualIndex === -1) {
-        console.warn('Item not found in original data:', element.id);
-        return;
-      }      // Update data using actual index
-      this.DetailPhieugiaohang.update((v: any) => {
-        // Handle specific field logic
-        switch (field) {
-          case 'sldat':
-            // Sync sldat with slgiao and slnhan
-            v.sanpham[actualIndex]['sldat'] = newValue;
-            v.sanpham[actualIndex]['slgiao'] = newValue;
-            v.sanpham[actualIndex]['slnhan'] = newValue;
-            v.sanpham[actualIndex]['ttgiao'] = Number(newValue) * (v.sanpham[actualIndex]['giaban'] || 0);
-            break;
-          case 'slgiao':
-            // Update slgiao and sync with slnhan, calculate ttgiao
-            v.sanpham[actualIndex]['slgiao'] = newValue;
-            v.sanpham[actualIndex]['slnhan'] = newValue;
-            v.sanpham[actualIndex]['ttgiao'] = Number(newValue) * (v.sanpham[actualIndex]['giaban'] || 0);
-            break;
-          case 'slnhan':
-            // Update only slnhan
-            v.sanpham[actualIndex]['slnhan'] = newValue;
-            break;
-          case 'giaban':
-            // Update giaban and recalculate ttgiao
-            v.sanpham[actualIndex]['giaban'] = newValue;
-            v.sanpham[actualIndex]['ttgiao'] = (v.sanpham[actualIndex]['slgiao'] || 0) * Number(newValue);
-            break;
-          case 'ghichu':
-            // Update ghichu
-            v.sanpham[actualIndex]['ghichu'] = newValue;
-            break;
-          default:
-            v.sanpham[actualIndex][field] = newValue;
-        }
-        return v;
-      });
-      
-      // Update dataSource
-      this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
-    } else if (index === null) {
-      // Update main phieu field
-      this.DetailPhieugiaohang.update((v: any) => {
-        v[field] = newValue;
-        return v;
-      });
-    }
+        // Update dataSource after changes
+        this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
+      },
+      this.dataSource.filteredData.length
+    );
   }
   updateBlurValue(
     event: FocusEvent,
@@ -501,71 +402,22 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
     field: keyof any,
     type: 'number' | 'string'
   ) {
-    const target = event.target as HTMLElement;
-    let newValue: any;
-    
-    if (type === 'number') {
-      // Clean the text content and convert to number
-      const textContent = target.innerText.trim().replace(/,/g, '.'); // Replace comma with dot for decimal
-      newValue = Number(textContent) || 0;
-    } else {
-      newValue = target.innerText.trim();
-    }
-
-    // Fix: Find correct item index in original data using element.id
-    if (index !== null && element?.id) {
-      const actualIndex = this.DetailPhieugiaohang().sanpham.findIndex((item: any) => item.id === element.id);
-      
-      if (actualIndex === -1) {
-        console.warn('Item not found in original data:', element.id);
-        return;
+    this.sharedInputService.updateBlurValue(
+      event,
+      'phieugiaohang',
+      index,
+      element,
+      field as string,
+      type,
+      this.DetailPhieugiaohang().sanpham,
+      (updateFn: (v: any) => any) => {
+        // Apply the update function from shared service
+        this.DetailPhieugiaohang.update(updateFn);
+        
+        // Update dataSource after changes
+        this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
       }
-
-      // Update data using actual index
-      this.DetailPhieugiaohang.update((v: any) => {
-        // Handle specific field logic
-        switch (field) {
-          case 'sldat':
-            // Sync sldat with slgiao and slnhan
-            v.sanpham[actualIndex]['sldat'] = newValue;
-            v.sanpham[actualIndex]['slgiao'] = newValue;
-            v.sanpham[actualIndex]['slnhan'] = newValue;
-            v.sanpham[actualIndex]['ttgiao'] = Number(newValue) * (v.sanpham[actualIndex]['giaban'] || 0);
-            break;
-          case 'slgiao':
-            // Update slgiao and sync with slnhan, calculate ttgiao
-            v.sanpham[actualIndex]['slgiao'] = newValue;
-            v.sanpham[actualIndex]['slnhan'] = newValue;
-            v.sanpham[actualIndex]['ttgiao'] = Number(newValue) * (v.sanpham[actualIndex]['giaban'] || 0);
-            break;
-          case 'slnhan':
-            // Update only slnhan
-            v.sanpham[actualIndex]['slnhan'] = newValue;
-            break;
-          case 'giaban':
-            // Update giaban and recalculate ttgiao
-            v.sanpham[actualIndex]['giaban'] = newValue;
-            v.sanpham[actualIndex]['ttgiao'] = (v.sanpham[actualIndex]['slgiao'] || 0) * Number(newValue);
-            break;
-          case 'ghichu':
-            // Update ghichu
-            v.sanpham[actualIndex]['ghichu'] = newValue;
-            break;
-          default:
-            v.sanpham[actualIndex][field] = newValue;
-        }
-        return v;  
-      });
-      
-      // Update dataSource
-      this.dataSource.data = [...this.DetailPhieugiaohang().sanpham];
-    } else if (index === null) {
-      // Update main phieu field
-      this.DetailPhieugiaohang.update((v: any) => {
-        v[field] = newValue;
-        return v;
-      });
-    }
+    );
   }
 
 
