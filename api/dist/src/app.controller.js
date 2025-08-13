@@ -42,6 +42,9 @@ let AppController = class AppController {
     async getLastUpdated(table) {
         return this.appService.getLastUpdated(table);
     }
+    async getDatabaseInfo() {
+        return this.appService.getDatabaseInfo();
+    }
 };
 exports.AppController = AppController;
 __decorate([
@@ -77,6 +80,12 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "getLastUpdated", null);
+__decorate([
+    (0, common_1.Get)('database-info'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], AppController.prototype, "getDatabaseInfo", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService])

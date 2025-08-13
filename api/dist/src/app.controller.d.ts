@@ -13,4 +13,28 @@ export declare class AppController {
         table: string;
         updatedAt: number;
     }>;
+    getDatabaseInfo(): Promise<{
+        success: boolean;
+        database: {
+            type: string;
+            name: any;
+            host: string;
+            port: string;
+            username: string;
+            version: any;
+            current_user: any;
+            server_address: any;
+            server_port: any;
+            ssl_mode: string;
+            schema: string;
+            connection_url: string;
+        };
+        timestamp: string;
+        error?: undefined;
+    } | {
+        success: boolean;
+        error: any;
+        timestamp: string;
+        database?: undefined;
+    }>;
 }

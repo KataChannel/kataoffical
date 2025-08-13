@@ -57,29 +57,29 @@ services:
     environment:
       - NODE_ENV=production
 
-  # backend-shop:
-  #   # Build image từ Dockerfile trong thư mục hiện tại (.)
-  #   build:
-  #     context: ./beshop
-  #     dockerfile: Dockerfile
-  #   container_name: beshop
-  #   restart: unless-stopped
-  #   # Phụ thuộc vào service 'db'. Backend chỉ khởi động sau khi 'db' healthy.
-  #   ports:
-  #     # Map cổng 3200 của container ra cổng 3200 của máy host
-  #     - "3500:3200"
-  #   volumes:
-  #     # Mount named volume 'uploads_data' vào thư mục /app/uploads trong container
-  #     # để lưu trữ file upload bền bỉ và khắc phục lỗi EACCES
-  #     - uploads_data:/app/uploads
-  # frontend-shop:
-  #   build:
-  #     context: ./feshop
-  #     dockerfile: Dockerfile
-  #   container_name: frontend-shop
-  #   ports:
-  #     - "4500:4000"
-  #   restart: unless-stopped
+  backend-shop:
+    # Build image từ Dockerfile trong thư mục hiện tại (.)
+    build:
+      context: ./beshop
+      dockerfile: Dockerfile
+    container_name: beshop
+    restart: unless-stopped
+    # Phụ thuộc vào service 'db'. Backend chỉ khởi động sau khi 'db' healthy.
+    ports:
+      # Map cổng 3200 của container ra cổng 3200 của máy host
+      - "3500:3200"
+    volumes:
+      # Mount named volume 'uploads_data' vào thư mục /app/uploads trong container
+      # để lưu trữ file upload bền bỉ và khắc phục lỗi EACCES
+      - uploads_data:/app/uploads
+  frontend-shop:
+    build:
+      context: ./feshop
+      dockerfile: Dockerfile
+    container_name: frontend-shop
+    ports:
+      - "4500:4000"
+    restart: unless-stopped
   minio_rausach:
     image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
     container_name: minio_rausach

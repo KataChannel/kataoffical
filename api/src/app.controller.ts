@@ -34,4 +34,8 @@ export class AppController {
   async getLastUpdated(@Query('table') table: string) {
     return this.appService.getLastUpdated(table);
   }
+  @Get('database-info')
+  async getDatabaseInfo() {
+    return this.appService.getDatabaseInfo();
+  }
 }

@@ -86,6 +86,50 @@ let AppService = class AppService {
         });
         return { table, updatedAt: new Date(lastUpdated._max.updatedAt).getTime() || 0 };
     }
+    async getDatabaseInfo() {
+        try {
+            const databaseUrl = process.env.DATABASE_URL;
+            if (!databaseUrl) {
+                throw new common_1.BadRequestException('DATABASE_URL not found in environment variables');
+            }
+            const url = new URL(databaseUrl);
+            const result = await this.prisma.$queryRaw `
+        SELECT 
+          current_database() as database_name,
+          version() as database_version,
+          current_user as current_user,
+          inet_server_addr() as server_address,
+          inet_server_port() as server_port
+      `;
+            const dbInfo = Array.isArray(result) ? result[0] : result;
+            return {
+                success: true,
+                database: {
+                    type: 'PostgreSQL',
+                    name: dbInfo.database_name,
+                    host: url.hostname,
+                    port: url.port || '5432',
+                    username: url.username,
+                    version: dbInfo.database_version,
+                    current_user: dbInfo.current_user,
+                    server_address: dbInfo.server_address,
+                    server_port: dbInfo.server_port,
+                    ssl_mode: url.searchParams.get('sslmode') || 'prefer',
+                    schema: url.searchParams.get('schema') || 'public',
+                    connection_url: databaseUrl.replace(/:[^:@]*@/, ':****@')
+                },
+                timestamp: new Date().toISOString()
+            };
+        }
+        catch (error) {
+            console.error('Error getting database info:', error);
+            return {
+                success: false,
+                error: error.message,
+                timestamp: new Date().toISOString()
+            };
+        }
+    }
     async processCallback(param) {
         const result = new callback_data_output_dto_1.CallbackDataOutput();
         try {
