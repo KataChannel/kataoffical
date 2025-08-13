@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,12 +8,28 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatTableModule } from '@angular/material/table';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DashboardService, ComprehensiveDashboardData, DailyMonthlyReport, TopProductsResponse } from './dashboard.service';
+import moment from 'moment';
+
+// Chart.js imports
+import { Chart as ChartJS, registerables } from 'chart.js';
 
 // Chart.js types
 declare var Chart: any;
+
+interface TopCustomer {
+  id: string;
+  ten: string;
+  loai: 'Sỉ' | 'Lẻ';
+  doanhthu: number;
+  ngay: string;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -28,33 +44,53 @@ declare var Chart: any;
     MatInputModule,
     MatFormFieldModule,
     MatNativeDateModule,
+    MatTableModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule,
     FormsModule
   ],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss']
+  templateUrl: './dashboard.component.html'
 })
 export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('columnChart', { static: false }) columnChartCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('ordersChart', { static: false }) ordersChartCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('donutChart', { static: false }) donutChartCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('pieChart', { static: false }) pieChartCanvas!: ElementRef<HTMLCanvasElement>;
+
+  private router = inject(Router);
 
   // Data properties
   comprehensiveData: ComprehensiveDashboardData | null = null;
   dailyMonthlyData: DailyMonthlyReport[] = [];
   topProductsData: TopProductsResponse | null = null;
+  topCustomersData: TopCustomer[] = [];
 
   // Chart instances
-  columnChart: any = null;
+  ordersChart: any = null;
   donutChart: any = null;
   pieChart: any = null;
 
-  // UI state
+  // Time filter properties
+  selectedTimeFrame: 'hôm nay' | 'tuần' | 'tháng' | 'năm' = 'hôm nay';
+  selectedReportPeriod: 'ngày' | 'tuần' | 'tháng' | 'năm' = 'ngày';
+  
+  // Date filter properties 
+  startDate: Date = new Date();
+  endDate: Date = new Date();
+  
+  // Loading states
   isLoading = false;
+  isChartsLoading = false;
+  isCustomersLoading = false;
+
+  // Table columns for customers
+  customerColumns: string[] = ['stt', 'loai', 'ten', 'ngay', 'doanhthu', 'action'];
+
+  // UI state
   dateMenuOpen = false;
 
-  // Date filter
-  batdau: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1); // First day of current month
-  ketthuc: Date = new Date(); // Today
+  // Legacy date filter - keep for compatibility
+  batdau: Date = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  ketthuc: Date = new Date();
 
   // Report group options
   reportGroupBy: 'day' | 'month' | 'year' = 'day';
@@ -64,38 +100,103 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     { value: 'year' as const, label: 'Theo Năm' }
   ];
 
+  // Additional properties for enhanced dashboard
+  retailCustomerRevenue: number = 0;
+  
   private subscriptions: Subscription[] = [];
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(private dashboardService: DashboardService) {
+    // Register Chart.js components
+    ChartJS.register(...registerables);
+    
+    // Set default date to current date
+    this.initializeDefaultDates();
+  }
 
   ngOnInit(): void {
     this.loadAllData();
   }
 
   ngAfterViewInit(): void {
-    // Charts will be created after data is loaded
+    // Initialize charts after view is ready
+    setTimeout(() => {
+      this.createAllCharts();
+    }, 100);
   }
 
   ngOnDestroy(): void {
-    // Destroy chart instances
-    this.destroyCharts();
-    
-    // Unsubscribe from all subscriptions
     this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.destroyCharts();
   }
 
-  // Data loading methods
+  // Initialize default dates based on selected time frame
+  initializeDefaultDates(): void {
+    const today = new Date();
+    
+    switch (this.selectedTimeFrame) {
+      case 'hôm nay':
+        this.startDate = new Date(today);
+        this.endDate = new Date(today);
+        break;
+      case 'tuần':
+        const startOfWeek = moment().startOf('week').toDate();
+        const endOfWeek = moment().endOf('week').toDate();
+        this.startDate = startOfWeek;
+        this.endDate = endOfWeek;
+        break;
+      case 'tháng':
+        const startOfMonth = moment().startOf('month').toDate();
+        const endOfMonth = moment().endOf('month').toDate();
+        this.startDate = startOfMonth;
+        this.endDate = endOfMonth;
+        break;
+      case 'năm':
+        const startOfYear = moment().startOf('year').toDate();
+        const endOfYear = moment().endOf('year').toDate();
+        this.startDate = startOfYear;
+        this.endDate = endOfYear;
+        break;
+    }
+  }
+
+  // Handle time frame selection change
+  onTimeFrameChange(): void {
+    this.initializeDefaultDates();
+    this.loadAllData();
+  }
+
+  // Handle report period change
+  onReportPeriodChange(): void {
+    this.loadDailyMonthlyReport();
+    this.createOrdersChart(); // Update chart with new data
+  }
+
+    // Enhanced data loading methods
   loadAllData(): void {
     this.isLoading = true;
     
-    const batdauStr = this.batdau.toISOString();
-    const ketthucStr = this.ketthuc.toISOString();
-
     // Load comprehensive data
-    const comprehensiveSub = this.dashboardService.getComprehensiveDashboard(batdauStr, ketthucStr)
+    this.loadComprehensiveData();
+    
+    // Load daily/monthly reports
+    this.loadDailyMonthlyReport();
+    
+    // Load top products
+    this.loadTopProducts();
+    
+    // Load top customers
+    this.loadTopCustomers();
+  }
+
+  private loadComprehensiveData(): void {
+    const startDateStr = moment(this.startDate).format('YYYY-MM-DD');
+    const endDateStr = moment(this.endDate).format('YYYY-MM-DD');
+
+    const comprehensiveSub = this.dashboardService.getComprehensiveDashboard(startDateStr, endDateStr)
       .subscribe({
         next: (data) => {
           this.comprehensiveData = data;
+          this.calculateRetailRevenue();
           this.checkLoadingComplete();
         },
         error: (error) => {
@@ -104,21 +205,43 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
 
-    // Load daily/monthly report
-    const reportSub = this.dashboardService.getDailyMonthlyReport(batdauStr, ketthucStr, this.reportGroupBy)
+    this.subscriptions.push(comprehensiveSub);
+  }
+
+  private loadDailyMonthlyReport(): void {
+    const startDateStr = moment(this.startDate).format('YYYY-MM-DD');
+    const endDateStr = moment(this.endDate).format('YYYY-MM-DD');
+
+    // Map Vietnamese period to English
+    const periodMapping: { [key: string]: 'day' | 'month' | 'year' } = {
+      'ngày': 'day',
+      'tuần': 'day', // Use day for weekly data
+      'tháng': 'month',
+      'năm': 'year'
+    };
+
+    const mappedPeriod = periodMapping[this.selectedReportPeriod] || 'day';
+
+    const reportSub = this.dashboardService.getDailyMonthlyReport(startDateStr, endDateStr, mappedPeriod)
       .subscribe({
         next: (data) => {
           this.dailyMonthlyData = data;
           this.checkLoadingComplete();
         },
         error: (error) => {
-          console.error('Error loading daily/monthly data:', error);
+          console.error('Error loading daily/monthly report:', error);
           this.isLoading = false;
         }
       });
 
-    // Load top products
-    const topProductsSub = this.dashboardService.getTopProducts(batdauStr, ketthucStr, 10)
+    this.subscriptions.push(reportSub);
+  }
+
+  private loadTopProducts(): void {
+    const startDateStr = moment(this.startDate).format('YYYY-MM-DD');
+    const endDateStr = moment(this.endDate).format('YYYY-MM-DD');
+
+    const topProductsSub = this.dashboardService.getTopProducts(startDateStr, endDateStr)
       .subscribe({
         next: (data) => {
           this.topProductsData = data;
@@ -130,25 +253,52 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         }
       });
 
-    this.subscriptions.push(comprehensiveSub, reportSub, topProductsSub);
+    this.subscriptions.push(topProductsSub);
+  }
+
+  private loadTopCustomers(): void {
+    this.isCustomersLoading = true;
+    const startDateStr = moment(this.startDate).format('YYYY-MM-DD');
+    const endDateStr = moment(this.endDate).format('YYYY-MM-DD');
+
+    // Mock data for now - replace with actual service call
+    setTimeout(() => {
+      this.topCustomersData = this.generateMockCustomers();
+      this.isCustomersLoading = false;
+    }, 1000);
+  }
+
+  private generateMockCustomers(): TopCustomer[] {
+    const customers: TopCustomer[] = [];
+    const customerNames = ['Nguyễn Văn A', 'Trần Thị B', 'Lê Hoàng C', 'Phạm Minh D', 'Hoàng Thị E', 'Đỗ Văn F', 'Bùi Thị G', 'Vũ Minh H', 'Đinh Thị I', 'Lý Văn J'];
+    
+    for (let i = 0; i < 10; i++) {
+      customers.push({
+        id: `KH${String(i + 1).padStart(3, '0')}`,
+        ten: customerNames[i],
+        loai: Math.random() > 0.5 ? 'Sỉ' : 'Lẻ',
+        doanhthu: Math.floor(Math.random() * 100000000) + 10000000,
+        ngay: moment().subtract(Math.floor(Math.random() * 30), 'days').format('YYYY-MM-DD')
+      });
+    }
+    
+    return customers.sort((a, b) => b.doanhthu - a.doanhthu);
   }
 
   private checkLoadingComplete(): void {
     // ✅ Check if all required data is loaded
-    if (this.comprehensiveData && this.dailyMonthlyData && this.topProductsData) {
-      this.isLoading = false;
-      
-      // ✅ Create charts after all data is loaded to ensure consistency
-      setTimeout(() => {
-        this.createAllCharts();
-      }, 100);
-    }
+    this.isLoading = false;
+    
+    // ✅ Create charts after all data is loaded to ensure consistency
+    setTimeout(() => {
+      this.createAllCharts();
+    }, 100);
   }
 
   // ✅ Create all charts in one method to ensure proper sequencing
   private createAllCharts(): void {
     try {
-      this.createColumnChart();
+      this.createOrdersChart();
       this.createDonutChart();
       this.createPieChart();
     } catch (error) {
@@ -156,28 +306,27 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  // Chart creation methods
-  createColumnChart(): void {
-    if (!this.columnChartCanvas) {
-      console.warn('Column chart canvas not available');
+  createOrdersChart(): void {
+    if (!this.ordersChartCanvas) {
+      console.warn('Orders chart canvas not found');
       return;
     }
 
     // Destroy existing chart
-    if (this.columnChart) {
-      this.columnChart.destroy();
-      this.columnChart = null;
-    }
-
-    const ctx = this.columnChartCanvas.nativeElement.getContext('2d');
-    if (!ctx) {
-      console.error('Failed to get 2D context for column chart');
-      return;
+    if (this.ordersChart) {
+      this.ordersChart.destroy();
+      this.ordersChart = null;
     }
 
     // ✅ Check if we have valid data
     if (!this.dailyMonthlyData?.length) {
-      console.warn('No column chart data available');
+      console.warn('No orders chart data available');
+      return;
+    }
+
+    const ctx = this.ordersChartCanvas.nativeElement.getContext('2d');
+    if (!ctx) {
+      console.error('Failed to get 2D context for orders chart');
       return;
     }
 
@@ -190,7 +339,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     if (!validData.length) {
-      console.warn('No valid column chart data after filtering');
+      console.warn('No valid orders chart data after filtering');
       return;
     }
 
@@ -305,9 +454,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     try {
-      this.columnChart = new Chart(ctx, config);
+      this.ordersChart = new Chart(ctx, config);
     } catch (error) {
-      console.error('Error creating column chart:', error);
+      console.error('Error creating orders chart:', error);
     }
   }
 
@@ -320,14 +469,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.donutChart = null;
     }
 
-    const ctx = this.donutChartCanvas.nativeElement.getContext('2d');
-    if (!ctx) return;
-
     // ✅ Check if we have valid data
     if (!this.topProductsData?.byQuantity?.length) {
       console.warn('No donut chart data available');
       return;
     }
+
+    const ctx = this.donutChartCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
 
     // ✅ Filter out invalid data and prepare chart data
     const validData = this.topProductsData.byQuantity.filter(item => 
@@ -445,14 +594,14 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
       this.pieChart = null;
     }
 
-    const ctx = this.pieChartCanvas.nativeElement.getContext('2d');
-    if (!ctx) return;
-
     // ✅ Check if we have valid data
     if (!this.topProductsData?.byValue?.length) {
       console.warn('No pie chart data available');
       return;
     }
+
+    const ctx = this.pieChartCanvas.nativeElement.getContext('2d');
+    if (!ctx) return;
 
     // ✅ Filter out invalid data and prepare chart data
     const validData = this.topProductsData.byValue.filter(item => 
@@ -562,9 +711,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private destroyCharts(): void {
-    if (this.columnChart) {
-      this.columnChart.destroy();
-      this.columnChart = null;
+    if (this.ordersChart) {
+      this.ordersChart.destroy();
+      this.ordersChart = null;
     }
     if (this.donutChart) {
       this.donutChart.destroy();
@@ -665,5 +814,168 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   formatNumber(value: number): string {
     return new Intl.NumberFormat('vi-VN').format(value);
+  }
+
+  // Date range helper methods
+  onDateRangeChange(): void {
+    this.loadAllData();
+  }
+
+  isToday(): boolean {
+    const today = moment();
+    return moment(this.startDate).isSame(today, 'day') && moment(this.endDate).isSame(today, 'day');
+  }
+
+  isThisWeek(): boolean {
+    const startOfWeek = moment().startOf('week');
+    const endOfWeek = moment().endOf('week');
+    return moment(this.startDate).isSame(startOfWeek, 'day') && moment(this.endDate).isSame(endOfWeek, 'day');
+  }
+
+  isThisMonth(): boolean {
+    const startOfMonth = moment().startOf('month');
+    const endOfMonth = moment().endOf('month');
+    return moment(this.startDate).isSame(startOfMonth, 'day') && moment(this.endDate).isSame(endOfMonth, 'day');
+  }
+
+  isThisYear(): boolean {
+    const startOfYear = moment().startOf('year');
+    const endOfYear = moment().endOf('year');
+    return moment(this.startDate).isSame(startOfYear, 'day') && moment(this.endDate).isSame(endOfYear, 'day');
+  }
+
+  // Summary calculation methods
+  getTotalOrders(): number {
+    return this.comprehensiveData?.summary?.totalDonhang || 0;
+  }
+
+  getTotalRevenue(): number {
+    return this.comprehensiveData?.summary?.totalRevenue || 0;
+  }
+
+  // Enhanced dashboard methods
+  onDateChange(): void {
+    this.loadAllData();
+  }
+
+  formatDateRange(): string {
+    if (this.selectedTimeFrame === 'hôm nay') {
+      return moment().format('DD/MM/YYYY');
+    } else if (this.selectedTimeFrame === 'tuần') {
+      const startOfWeek = moment().startOf('week');
+      const endOfWeek = moment().endOf('week');
+      return `${startOfWeek.format('DD/MM')} - ${endOfWeek.format('DD/MM/YYYY')}`;
+    } else if (this.selectedTimeFrame === 'tháng') {
+      return moment().format('MM/YYYY');
+    } else if (this.selectedTimeFrame === 'năm') {
+      return moment().format('YYYY');
+    }
+    
+    return `${moment(this.startDate).format('DD/MM/YYYY')} - ${moment(this.endDate).format('DD/MM/YYYY')}`;
+  }
+
+  getChartColor(index: number): string {
+    const colors = [
+      '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
+      '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6366F1'
+    ];
+    return colors[index % colors.length];
+  }
+
+  // Navigation methods
+  navigateToFullReport(): void {
+    this.router.navigate(['/admin/dashboard/baocaodoanhthu'], {
+      queryParams: {
+        startDate: moment(this.startDate).format('YYYY-MM-DD'),
+        endDate: moment(this.endDate).format('YYYY-MM-DD'),
+        timeFrame: this.selectedTimeFrame
+      }
+    });
+  }
+
+  viewCustomerDetails(customerId: string): void {
+    this.router.navigate(['/admin/khachhang', customerId]);
+  }
+
+  viewCustomerOrders(customerId: string): void {
+    this.router.navigate(['/admin/donhang'], {
+      queryParams: {
+        khachhangId: customerId,
+        startDate: moment(this.startDate).format('YYYY-MM-DD'),
+        endDate: moment(this.endDate).format('YYYY-MM-DD')
+      }
+    });
+  }
+
+  // Calculate retail customer revenue
+  private calculateRetailRevenue(): void {
+    // This would be calculated based on actual customer data
+    // For now, estimate as 30% of total revenue
+    this.retailCustomerRevenue = (this.comprehensiveData?.summary?.totalRevenue || 0) * 0.3;
+  }
+
+  getMonthlyRevenue(): number {
+    return this.comprehensiveData?.summary?.totalRevenue || 0; // Using total revenue as monthly
+  }
+
+  getRetailRevenue(): number {
+    return this.retailCustomerRevenue;
+  }
+
+  // Data validation helper methods
+  hasMetricsData(): boolean {
+    return this.comprehensiveData !== null && 
+           this.comprehensiveData.summary !== null;
+  }
+
+  hasOrderReportData(): boolean {
+    return this.dailyMonthlyData !== null && 
+           this.dailyMonthlyData.length > 0;
+  }
+
+  hasProductQuantityData(): boolean {
+    return this.topProductsData !== null && 
+           this.topProductsData.byQuantity !== null && 
+           this.topProductsData.byQuantity.length > 0;
+  }
+
+  hasProductValueData(): boolean {
+    return this.topProductsData !== null && 
+           this.topProductsData.byValue !== null && 
+           this.topProductsData.byValue.length > 0;
+  }
+
+  hasCustomersData(): boolean {
+    return this.topCustomersData !== null && 
+           this.topCustomersData.length > 0;
+  }
+
+  // Refresh individual data sections
+  refreshMetricsData(): void {
+    this.loadComprehensiveData();
+  }
+
+  refreshChartsData(): void {
+    this.loadDailyMonthlyReport();
+    this.loadTopProducts();
+  }
+
+  refreshCustomersData(): void {
+    this.loadTopCustomers();
+  }
+
+  // Navigation methods
+  viewMoreOrderReport(): void {
+    this.router.navigate(['/admin/dashboard/baocaodoanhthu'], { 
+      queryParams: { 
+        startDate: moment(this.startDate).format('YYYY-MM-DD'),
+        endDate: moment(this.endDate).format('YYYY-MM-DD')
+      }
+    });
+  }
+
+  viewMoreCustomers(): void {
+    console.log('Navigate to detailed customers report');
+    // Implementation for detailed customer report navigation
   }
 }

@@ -13,6 +13,7 @@ const apollo_1 = require("@nestjs/apollo");
 const path_1 = require("path");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
+const test_resolver_1 = require("./test/test.resolver");
 const auth_module_1 = require("./auth/auth.module");
 const user_module_1 = require("./user/user.module");
 const prisma_module_1 = require("../prisma/prisma.module");
@@ -103,6 +104,7 @@ exports.AppModule = AppModule = __decorate([
         providers: [
             app_service_1.AppService,
             prisma_service_1.PrismaService,
+            test_resolver_1.TestResolver,
             {
                 provide: core_1.APP_INTERCEPTOR,
                 useClass: audit_interceptor_1.AuditInterceptor,

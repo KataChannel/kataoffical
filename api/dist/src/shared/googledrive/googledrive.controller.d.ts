@@ -1,5 +1,5 @@
 import { GoogleDriveService } from './googledrive.service';
-import { ChatbotService } from 'src/chatbot/chatbot.service';
+import { ChatbotService } from '../../chatbot/chatbot.service';
 import { PrismaService } from 'prisma/prisma.service';
 export declare class GoogleDriveController {
     private readonly googleDriveService;

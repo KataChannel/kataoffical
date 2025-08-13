@@ -40,6 +40,7 @@ export declare class SumResult {
 export declare class DailyMonthlyReportItem {
     period: string;
     totalDonhang: number;
+    totalDathang: number;
     totalRevenue: number;
     totalProfit: number;
 }

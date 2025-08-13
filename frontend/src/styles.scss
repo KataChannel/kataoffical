@@ -3,6 +3,10 @@
 @use 'swiper/css/pagination';
 @use 'swiper/css/autoplay'; // Nếu sử dụng autoplay
 @use '@angular/material' as mat;
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 :root {
   @include mat.button-overrides((
     // filled-container-color: white,   // Background color of the button
@@ -103,9 +107,7 @@
   background-color: #57A345;
   color: #FFFFFF;
 }
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+
 /* Các style tùy chỉnh của bạn */
 // .swiper {
 //   width: 600px;

@@ -3,13 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { ListKhachhangComponent } from './listkhachhang/listkhachhang.component';
 const routes: Routes = [
   {
-    path: 'dashboard',
-    loadComponent: () =>
-      import('./dashboarkhachhang/dashboarkhachhang.component').then(
-        (c) => c.DashboarkhachhangComponent
-      ),
-  },
-  {
     path: '',
     component: ListKhachhangComponent,
     children: [

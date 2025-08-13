@@ -2,6 +2,11 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type TestItem {
+  name: String!
+  value: Float!
+}
+
 type AggregateCount {
   _all: Int!
 }
@@ -37,6 +42,8 @@ type TopProductItem {
 }
 
 type Query {
+  testQuery: [TestItem!]!
+
   """
   Enhanced dynamic findMany with intelligent field selection and DataLoader optimization
   """

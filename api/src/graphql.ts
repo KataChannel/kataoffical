@@ -77,6 +77,7 @@ export class SumResult {
 export class DailyMonthlyReportItem {
     period: string;
     totalDonhang: number;
+    totalDathang: number; // Add missing field
     totalRevenue: number;
     totalProfit: number;
 }

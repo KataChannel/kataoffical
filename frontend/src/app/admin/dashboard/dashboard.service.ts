@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, map } from 'rxjs';
 import { Apollo, gql } from 'apollo-angular';
+import { TimezoneService } from '../../shared/services/timezone.service';
+import moment from 'moment';
 
 export interface ComprehensiveDashboardData {
   summary: {
@@ -127,7 +129,8 @@ const GET_TOP_PRODUCTS = gql`
 export class DashboardService {
 
   constructor(
-    private apollo: Apollo
+    private apollo: Apollo,
+    private timezoneService: TimezoneService,
   ) {}
 
   private getHeaders() {
@@ -139,18 +142,12 @@ export class DashboardService {
     };
   }
 
-  private formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toISOString(); // Full ISO-8601 format với timestamp
-  }
-
   /**
    * Lấy dữ liệu tổng hợp từ dathang, donhang, sanpham, khachhang, nhacungcap
    */
   getComprehensiveDashboard(batdau: string, ketthuc: string): Observable<ComprehensiveDashboardData> {
-    const startDate = this.formatDate(batdau);
-    const endDate = this.formatDate(ketthuc);
-
+    const startDate = moment(batdau).startOf('day').utc().toISOString();
+    const endDate = moment(ketthuc).endOf('day').utc().toISOString();
     return this.apollo.query({
       query: GET_COMPREHENSIVE_DASHBOARD,
       variables: {
@@ -187,8 +184,8 @@ export class DashboardService {
     ketthuc: string, 
     groupBy: 'day' | 'month' | 'year' = 'day'
   ): Observable<DailyMonthlyReport[]> {
-    const startDate = this.formatDate(batdau);
-    const endDate = this.formatDate(ketthuc);
+    const startDate = moment(batdau).startOf('day').utc().toISOString();
+    const endDate = moment(ketthuc).endOf('day').utc().toISOString();
 
     return this.apollo.query({
       query: GET_DAILY_MONTHLY_REPORT,
@@ -209,8 +206,8 @@ export class DashboardService {
    * Top 10 sản phẩm bán chạy theo số lượng và giá trị
    */
   getTopProducts(batdau: string, ketthuc: string, limit: number = 10): Observable<TopProductsResponse> {
-    const startDate = this.formatDate(batdau);
-    const endDate = this.formatDate(ketthuc);
+    const startDate = moment(batdau).startOf('day').utc().toISOString();
+    const endDate = moment(ketthuc).endOf('day').utc().toISOString();
 
     return this.apollo.query({
       query: GET_TOP_PRODUCTS,

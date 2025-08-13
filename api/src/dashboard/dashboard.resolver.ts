@@ -181,35 +181,40 @@ export class DashboardResolver {
     const endDate = new Date(ketthuc);
 
     let selectFormat = '';
+    let groupByFormat = '';
     let orderBy = '';
 
     switch (groupBy) {
       case 'day':
-        selectFormat = `DATE(createdAt) as period`;
+        selectFormat = `DATE("createdAt") as period`;
+        groupByFormat = `DATE("createdAt")`;
         orderBy = 'period';
         break;
       case 'month':
-        selectFormat = `DATE_FORMAT(createdAt, '%Y-%m') as period`;
+        selectFormat = `TO_CHAR("createdAt", 'YYYY-MM') as period`;
+        groupByFormat = `TO_CHAR("createdAt", 'YYYY-MM')`;
         orderBy = 'period';
         break;
       case 'year':
-        selectFormat = `YEAR(createdAt) as period`;
+        selectFormat = `EXTRACT(YEAR FROM "createdAt")::text as period`;
+        groupByFormat = `EXTRACT(YEAR FROM "createdAt")`;
         orderBy = 'period';
         break;
       default:
-        selectFormat = `DATE(createdAt) as period`;
+        selectFormat = `DATE("createdAt")::text as period`;
+        groupByFormat = `DATE("createdAt")`;
         orderBy = 'period';
     }
 
     const rawQuery = `
       SELECT 
         ${selectFormat},
-        COUNT(*) as totalDonhang,
-        COALESCE(SUM(tongtien), 0) as totalRevenue,
-        COALESCE(SUM(tongtien), 0) as totalProfit
+        COUNT(*)::int as total_donhang,
+        COALESCE(SUM("tongtien"), 0)::numeric as total_revenue,
+        COALESCE(SUM("tongtien"), 0)::numeric as total_profit
       FROM "Donhang" 
       WHERE "createdAt" >= $1 AND "createdAt" <= $2
-      GROUP BY ${selectFormat}
+      GROUP BY ${groupByFormat}
       ORDER BY ${orderBy}
     `;
 
@@ -220,11 +225,11 @@ export class DashboardResolver {
     ) as any[];
 
     return result.map((item: any) => ({
-      period: item.period,
-      totalDonhang: Number(item.totalDonhang),
-      totalDathang: Number(item.totalDathang || 0), // Add totalDathang field
-      totalRevenue: Number(item.totalRevenue),
-      totalProfit: Number(item.totalProfit),
+      period: String(item.period),
+      totalDonhang: parseInt(item.total_donhang) || 0,
+      totalDathang: 0, // Not available in Donhang table
+      totalRevenue: parseFloat(item.total_revenue) || 0,
+      totalProfit: parseFloat(item.total_profit) || 0,
     }));
   }
 

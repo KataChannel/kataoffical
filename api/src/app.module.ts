@@ -4,6 +4,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { TestResolver } from './test/test.resolver';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from '../prisma/prisma.module';
@@ -95,6 +96,7 @@ import { GraphQLUniversalModule } from './graphql/graphql.module';
   providers: [
     AppService,
     PrismaService,
+    TestResolver,
     {
       provide: APP_INTERCEPTOR,
       useClass: AuditInterceptor,

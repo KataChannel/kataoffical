@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Delete, Param, Body, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { GoogleDriveService } from './googledrive.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ChatbotService } from 'src/chatbot/chatbot.service';
+import { ChatbotService } from '../../chatbot/chatbot.service';
 import { PrismaService } from 'prisma/prisma.service';
 @Controller('googledrive')
 export class GoogleDriveController {

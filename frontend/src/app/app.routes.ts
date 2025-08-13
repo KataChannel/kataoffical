@@ -35,6 +35,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'dashboard/baocaodoanhthu',
+        loadComponent: () =>
+          import('./admin/dashboard/baocaodoanhthu.component').then(
+            (c) => c.BaocaodoanhtuComponent
+          ),
+      },
+      {
         path: 'lienheadmin',
         loadComponent: () =>
           import('./site/lienheadmin/lienheadmin.component').then(
