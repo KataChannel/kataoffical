@@ -16,6 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ValidationResult, ValidationError } from '../../utils/data-validation.utils';
 import { ImportConfig } from '../../services/import-data.service';
 import { writeExcelFile } from '../../utils/exceldrive.utils';
+import { TimezoneService } from '../../services/timezone.service';
 
 interface ImportPreviewData {
   rawData: any[];
@@ -66,7 +67,8 @@ export class ImportPreviewDialogComponent implements OnInit, AfterViewInit {
   constructor(
     public dialogRef: MatDialogRef<ImportPreviewDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ImportPreviewData,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private timezoneService: TimezoneService
   ) {}
 
   ngOnInit(): void {
@@ -145,7 +147,8 @@ export class ImportPreviewDialogComponent implements OnInit, AfterViewInit {
     
     switch (column) {
       case 'ngaygiao':
-        return new Date(value).toLocaleDateString('vi-VN');
+        // Use TimezoneService for proper date formatting
+        return this.timezoneService.formatForDisplay(value, 'DD/MM/YYYY');
       case 'sldat':
       case 'slgiao':
       case 'slnhan':

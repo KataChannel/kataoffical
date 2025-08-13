@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { TimezoneService } from '../services/timezone.service';
 
 export class DateHelpers {
   private static readonly TIMEZONE = 'Asia/Ho_Chi_Minh';
@@ -6,12 +7,20 @@ export class DateHelpers {
   private static readonly DATE_FORMAT = 'YYYY-MM-DD';
   private static readonly DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 
+  // Inject TimezoneService instance for proper timezone handling
+  private static timezoneService: TimezoneService | null = null;
+
   /**
-   * Initialize and suppress deprecation warnings
+   * Initialize DateHelpers with TimezoneService (optional)
    */
-  static init(): void {
+  static init(timezoneService?: TimezoneService): void {
     // Suppress moment deprecation warnings
-    moment.suppressDeprecationWarnings = true;
+    (moment as any).suppressDeprecationWarnings = true;
+    
+    // Set timezone service if provided
+    if (timezoneService) {
+      this.timezoneService = timezoneService;
+    }
   }
 
   /**
@@ -81,11 +90,16 @@ export class DateHelpers {
   }
 
   /**
-   * Format date for display
+   * Format date for display - use TimezoneService if available
    */
   static formatDate(date: Date | string | moment.Moment | null | undefined, format: string = 'DD/MM/YYYY'): string {
     if (!date) {
       return '';
+    }
+
+    // Use TimezoneService if available for proper timezone handling
+    if (this.timezoneService) {
+      return this.timezoneService.formatForDisplay(date, format);
     }
 
     const momentDate = this.toMoment(date);
@@ -93,11 +107,16 @@ export class DateHelpers {
   }
 
   /**
-   * Format date for API (YYYY-MM-DD)
+   * Format date for API (YYYY-MM-DD) - use TimezoneService if available
    */
   static formatDateForAPI(date: Date | string | moment.Moment | null | undefined): string {
     if (!date) {
       return '';
+    }
+
+    // Use TimezoneService if available for proper UTC conversion
+    if (this.timezoneService) {
+      return this.timezoneService.toUTC(date).split('T')[0];
     }
 
     const momentDate = this.toMoment(date);

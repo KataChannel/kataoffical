@@ -238,7 +238,7 @@ async convertDathangImportToTransfer(
       const transferItem = {
         title: `Import ${this.timezoneUtil.formatDateForFilename()}`,
         type: "dathang",
-        ngaynhan: new Date(importItem.ngaynhan).toISOString().split('T')[0],
+        ngaynhan: this.timezoneUtil.toUTC(importItem.ngaynhan).split('T')[0],
         nhacungcapId: nhacungcap.id,
         nhacungcap: {
           name: nhacungcap.name,
@@ -498,7 +498,7 @@ async convertDathangImportToTransfer(
           title: dto.title,
           type: dto.type,
           madncc: madathang,
-          ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
+          ngaynhan: dto.ngaynhan ? new Date(this.timezoneUtil.toUTC(dto.ngaynhan)) : new Date(),
           nhacungcapId: nhacungcap.id,
           khoId: dto.khoId, // Add khoId
           isActive: dto.isActive !== undefined ? dto.isActive : true,
@@ -565,7 +565,7 @@ async convertDathangImportToTransfer(
           title: dto.title,
           type: dto.type,
           madncc: madathang,
-          ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
+          ngaynhan: dto.ngaynhan ? new Date(this.timezoneUtil.toUTC(dto.ngaynhan)) : new Date(),
           nhacungcapId: nhacungcap.id,
           khoId: dto.khoId, // Add khoId
           isActive: dto.isActive !== undefined ? dto.isActive : true,
@@ -663,7 +663,7 @@ async convertDathangImportToTransfer(
           data: {
             title: data.title,
             type: data.type,
-            ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+            ngaynhan: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : undefined,
             nhacungcapId: data.nhacungcapId,
             khoId: khoId, // Update khoId
             isActive: data.isActive,
@@ -739,7 +739,7 @@ async convertDathangImportToTransfer(
           data: {
             title: data.title,
             type: data.type,
-            ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+            ngaynhan: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : undefined,
             nhacungcapId: data.nhacungcapId,
             khoId: khoId, // Update khoId
             isActive: data.isActive,
@@ -782,7 +782,7 @@ async convertDathangImportToTransfer(
         // 4.2. Tạo/upsert phiếu kho xuất
         const maphieuNew = `PX-${data.madncc}-${this.timezoneUtil.formatDateForFilename()}`;
         const phieuPayload = {
-          ngay: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
+          ngay: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : new Date(),
           type: 'xuat',
           khoId: khoId, // Use the khoId from dathang
           madncc: data.madncc,
@@ -875,7 +875,7 @@ async convertDathangImportToTransfer(
         const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
         const phieuKhoData = {
         maphieu: maphieuNhap,
-        ngay: new Date(data.ngaynhan), // Ngày nhập có thể sử dụng ngày giao hoặc hiện tại
+        ngay: new Date(this.timezoneUtil.toUTC(data.ngaynhan)), // Ngày nhập có thể sử dụng ngày giao hoặc hiện tại
         type: 'xuat', // Loại phiếu xuất
         khoId: khoId, // Use the khoId from dathang
         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
@@ -1027,7 +1027,7 @@ async convertDathangImportToTransfer(
         data: {
           title: data.title,
           type: data.type,
-          ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+          ngaynhan: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : undefined,
           nhacungcapId: data.nhacungcapId,
           khoId: khoId, // Update khoId
           isActive: data.isActive,
@@ -1091,7 +1091,7 @@ async convertDathangImportToTransfer(
       const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
       const phieuKhoData = {
         maphieu: maphieuNhap,
-        ngay: new Date(data.ngaynhan),
+        ngay: new Date(this.timezoneUtil.toUTC(data.ngaynhan)),
         type: 'xuat',
         khoId: khoId, // Use the khoId from dathang
         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',

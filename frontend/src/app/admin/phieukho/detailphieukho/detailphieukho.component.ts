@@ -17,6 +17,7 @@ import { KhoService } from '../../kho/kho.service';
 import { DonhangService } from '../../donhang/donhang.service';
 import { DathangService } from '../../dathang/dathang.service';
 import { SanphamService } from '../../sanpham/sanpham.service';
+import { TimezoneService } from '../../../shared/services/timezone.service';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
@@ -45,6 +46,7 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
     _DonhangService:DonhangService = inject(DonhangService)
     _DathangService:DathangService = inject(DathangService)
     _SanphamService:SanphamService = inject(SanphamService)
+    _timezoneService:TimezoneService = inject(TimezoneService)
     _route:ActivatedRoute = inject(ActivatedRoute)
     _router:Router = inject(Router)
     _snackBar:MatSnackBar = inject(MatSnackBar)

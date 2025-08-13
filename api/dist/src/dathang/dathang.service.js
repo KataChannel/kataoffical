@@ -217,7 +217,7 @@ let DathangService = class DathangService {
                 const transferItem = {
                     title: `Import ${this.timezoneUtil.formatDateForFilename()}`,
                     type: "dathang",
-                    ngaynhan: new Date(importItem.ngaynhan).toISOString().split('T')[0],
+                    ngaynhan: this.timezoneUtil.toUTC(importItem.ngaynhan).split('T')[0],
                     nhacungcapId: nhacungcap.id,
                     nhacungcap: {
                         name: nhacungcap.name,
@@ -434,7 +434,7 @@ let DathangService = class DathangService {
                     title: dto.title,
                     type: dto.type,
                     madncc: madathang,
-                    ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
+                    ngaynhan: dto.ngaynhan ? new Date(this.timezoneUtil.toUTC(dto.ngaynhan)) : new Date(),
                     nhacungcapId: nhacungcap.id,
                     khoId: dto.khoId,
                     isActive: dto.isActive !== undefined ? dto.isActive : true,
@@ -493,7 +493,7 @@ let DathangService = class DathangService {
                     title: dto.title,
                     type: dto.type,
                     madncc: madathang,
-                    ngaynhan: dto.ngaynhan ? new Date(dto.ngaynhan) : new Date(),
+                    ngaynhan: dto.ngaynhan ? new Date(this.timezoneUtil.toUTC(dto.ngaynhan)) : new Date(),
                     nhacungcapId: nhacungcap.id,
                     khoId: dto.khoId,
                     isActive: dto.isActive !== undefined ? dto.isActive : true,
@@ -576,7 +576,7 @@ let DathangService = class DathangService {
                     data: {
                         title: data.title,
                         type: data.type,
-                        ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+                        ngaynhan: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : undefined,
                         nhacungcapId: data.nhacungcapId,
                         khoId: khoId,
                         isActive: data.isActive,
@@ -643,7 +643,7 @@ let DathangService = class DathangService {
                     data: {
                         title: data.title,
                         type: data.type,
-                        ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+                        ngaynhan: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : undefined,
                         nhacungcapId: data.nhacungcapId,
                         khoId: khoId,
                         isActive: data.isActive,
@@ -681,7 +681,7 @@ let DathangService = class DathangService {
                 }
                 const maphieuNew = `PX-${data.madncc}-${this.timezoneUtil.formatDateForFilename()}`;
                 const phieuPayload = {
-                    ngay: data.ngaynhan ? new Date(data.ngaynhan) : new Date(),
+                    ngay: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : new Date(),
                     type: 'xuat',
                     khoId: khoId,
                     madncc: data.madncc,
@@ -759,7 +759,7 @@ let DathangService = class DathangService {
                     const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
                     const phieuKhoData = {
                         maphieu: maphieuNhap,
-                        ngay: new Date(data.ngaynhan),
+                        ngay: new Date(this.timezoneUtil.toUTC(data.ngaynhan)),
                         type: 'xuat',
                         khoId: khoId,
                         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',
@@ -891,7 +891,7 @@ let DathangService = class DathangService {
                     data: {
                         title: data.title,
                         type: data.type,
-                        ngaynhan: data.ngaynhan ? new Date(data.ngaynhan) : undefined,
+                        ngaynhan: data.ngaynhan ? new Date(this.timezoneUtil.toUTC(data.ngaynhan)) : undefined,
                         nhacungcapId: data.nhacungcapId,
                         khoId: khoId,
                         isActive: data.isActive,
@@ -945,7 +945,7 @@ let DathangService = class DathangService {
                     const maphieuNhap = `PX-${oldDathang.madncc}-RET-${this.timezoneUtil.formatDateForFilename()}`;
                     const phieuKhoData = {
                         maphieu: maphieuNhap,
-                        ngay: new Date(data.ngaynhan),
+                        ngay: new Date(this.timezoneUtil.toUTC(data.ngaynhan)),
                         type: 'xuat',
                         khoId: khoId,
                         ghichu: 'Phiếu xuất hàng trả về do thiếu hàng khi nhận',

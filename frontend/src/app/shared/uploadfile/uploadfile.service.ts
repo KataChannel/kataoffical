@@ -2,11 +2,15 @@ import { Injectable } from '@angular/core';
 import { Observable, finalize } from 'rxjs';
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { environment } from '../../../environments/environment.development';
+import { TimezoneService } from '../services/timezone.service';
 @Injectable({
   providedIn: 'root'
 })
 export class UploadService {
-  constructor(private storage: AngularFireStorage) { }
+  constructor(
+    private storage: AngularFireStorage,
+    private timezoneService: TimezoneService
+  ) { }
   async DeleteuploadDriver(data: any) {
     console.log(data);
     try {
@@ -38,11 +42,8 @@ export class UploadService {
       try {
         const formData = new FormData();
         formData.append('file', file);
-        const currentDate = new Date();
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-        const year = currentDate.getFullYear();
-        const formattedDate = `${day}_${month}_${year}`;
+        // Get current date in user's timezone for file naming
+        const formattedDate = this.timezoneService.nowLocal('DD_MM_YYYY');
         const requestOptions = {
           method: "POST",
           body: formData,
@@ -71,11 +72,8 @@ export class UploadService {
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const currentDate = new Date();
-      const day = String(currentDate.getDate()).padStart(2, '0');
-      const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-      const year = currentDate.getFullYear();
-      const formattedDate = `${day}_${month}_${year}`;
+      // Get current date in user's timezone for file naming
+      const formattedDate = this.timezoneService.nowLocal('DD_MM_YYYY');
       if(type=="googledrive"){
         const response = await fetch(environment.APIURL + `/upload/googledrive?folderId=1aAvPsWRhjwgDjYulHkHLdEgXlk6694bc`, {
           method: 'POST',

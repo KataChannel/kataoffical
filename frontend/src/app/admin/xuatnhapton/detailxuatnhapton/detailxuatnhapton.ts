@@ -15,6 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { GenId, convertToSlug } from '../../../shared/utils/shared.utils';
 import { ChotkhoService } from '../../chotkho/chotkho.service';
 import { XuatnhaptonComponent } from '../xuatnhapton.component';
+import { TimezoneService } from '../../../shared/services/timezone.service';
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -38,6 +39,7 @@ import * as XLSX from 'xlsx';
 export class DetailXuatnhaptonComponent {
   _XuatnhaptonComponent: XuatnhaptonComponent = inject(XuatnhaptonComponent)
   _ChotkhoService: ChotkhoService = inject(ChotkhoService)
+  _timezoneService: TimezoneService = inject(TimezoneService)
   _route: ActivatedRoute = inject(ActivatedRoute)
   _router: Router = inject(Router)
   _snackBar: MatSnackBar = inject(MatSnackBar)
@@ -48,7 +50,7 @@ export class DetailXuatnhaptonComponent {
   // Add loading state for save operation
   isSaving = signal(false);
   ListChotkho: any = this._ChotkhoService.ListChotkho;
-  Title:any ='Chốt Kho Ngày ' + new Date().toLocaleDateString();
+  Title:any ='Chốt Kho Ngày ' + this._timezoneService.nowLocal('DD/MM/YYYY');
   isEdit = signal(false);
   isDelete = signal(false);
   xuatnhaptonId: any = this._ChotkhoService.chotkhoId
@@ -307,7 +309,7 @@ export class DetailXuatnhaptonComponent {
           masp: item.masp,
           tonkhoId: sanpham ? sanpham.id : null, // This should be the tonkho record ID
           phieukhoId: null,
-          ngay: new Date(),
+          ngay: this._timezoneService.nowUTC(),
           slthucte: slthucte,
           slhethong: slhethong,
           chenhlech: chenhlech,

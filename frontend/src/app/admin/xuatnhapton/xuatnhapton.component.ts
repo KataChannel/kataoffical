@@ -29,6 +29,7 @@ import { DonhangService } from '../donhang/donhang.service';
 import { TrangThaiDon } from '../../shared/utils/trangthai';
 import { ChotkhoService } from '../chotkho/chotkho.service';
 import { DetaildexuatComponent } from './detaildexuat/detaildexuat';
+import { TimezoneService } from '../../shared/services/timezone.service';
 
 @Component({
   selector: 'app-xuatnhapton',
@@ -87,6 +88,7 @@ export class XuatnhaptonComponent {
   private _DonhangService: DonhangService = inject(DonhangService);
   private _KhoService: KhoService = inject(KhoService);
   private _ChotkhoService: ChotkhoService = inject(ChotkhoService);
+  private _timezoneService: TimezoneService = inject(TimezoneService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _router: Router = inject(Router);
   
@@ -218,15 +220,15 @@ export class XuatnhaptonComponent {
   // Method to view chot kho details
   viewChotkhoDetail(row: any) {
     this.drawer.open();
-    window.location.href = `/admin/xuatnhapton/${moment(row.ngay).format('YYYY-MM-DD')}`;
-    // this._router.navigate(['admin/xuatnhapton', moment(row.ngay).format('YYYY-MM-DD')]);
+    window.location.href = `/admin/xuatnhapton/${this._timezoneService.formatForDisplay(row.ngay, 'YYYY-MM-DD')}`;
+    // this._router.navigate(['admin/xuatnhapton', this._timezoneService.formatForDisplay(row.ngay, 'YYYY-MM-DD')]);
   }
 
   // Method to edit chot kho
   editChotkho(row: any) {
     this.drawer.open();
-    window.location.href = `/admin/xuatnhapton/${moment(row.ngay).format('YYYY-MM-DD')}`;
-    // this._router.navigate(['admin/xuatnhapton', moment(row.ngay).format('YYYY-MM-DD')]);
+    window.location.href = `/admin/xuatnhapton/${this._timezoneService.formatForDisplay(row.ngay, 'YYYY-MM-DD')}`;
+    // this._router.navigate(['admin/xuatnhapton', this._timezoneService.formatForDisplay(row.ngay, 'YYYY-MM-DD')]);
   }
 
   // Method to delete chot kho
@@ -436,22 +438,22 @@ export class XuatnhaptonComponent {
       // Tạo phiếu nhập một lần với danh sách chi tiết
       this._PhieukhoService.CreatePhieukho(
         {
-        title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
+        title:`Điều Chỉnh Kho Ngày ${this._timezoneService.nowLocal('DD/MM/YYYY ')}`, 
         type:'nhap',
         sanpham: phieuNhapDetails, 
-        ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
-        ngay: moment()
+        ghichu: `Cập nhật tồn kho lúc ${this._timezoneService.nowLocal('HH:mm:ss DD/MM/YYYY ')}`,
+        ngay: new Date()
       });
     }
     if (phieuXuatDetails.length > 0) {
       // Tạo phiếu xuất một lần với danh sách chi tiết
       this._PhieukhoService.CreatePhieukho(
         {
-        title:`Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`, 
+        title:`Điều Chỉnh Kho Ngày ${this._timezoneService.nowLocal('DD/MM/YYYY ')}`, 
         type:'xuat',
         sanpham: phieuXuatDetails, 
-        ghichu: `Cập nhật tồn kho lúc ${moment().format('HH:mm:ss DD/MM/YYYY ')}`,
-        ngay: moment()
+        ghichu: `Cập nhật tồn kho lúc ${this._timezoneService.nowLocal('HH:mm:ss DD/MM/YYYY ')}`,
+        ngay: new Date()
       });
     }
     if (phieuNhapDetails.length > 0) {
@@ -518,5 +520,21 @@ export class XuatnhaptonComponent {
     return (
       items?.reduce((sum: any, item: any) => sum + (Number(item?.sanpham[fieldTong]) || 0), 0) || 0
     );
+  }
+
+  // Date formatting helper methods for templates
+  formatDate(date: any, format: string = 'DD/MM/YYYY'): string {
+    if (!date) return '';
+    return this._timezoneService.formatForDisplay(date, format);
+  }
+
+  formatDateTime(date: any): string {
+    if (!date) return '';
+    return this._timezoneService.formatForDisplay(date, 'DD/MM/YYYY HH:mm');
+  }
+
+  formatDateTimeSeconds(date: any): string {
+    if (!date) return '';
+    return this._timezoneService.formatForDisplay(date, 'HH:mm:ss DD/MM/YYYY');
   }
 }

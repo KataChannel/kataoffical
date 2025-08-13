@@ -23,12 +23,6 @@ export class DathangService {
   setDathangId(id: string | null) {
     this.dathangId.set(id);
   }
-  // getListDathang(): Signal<any[]> {    
-  //   return this.ListDathang;
-  // }
-  // getDetailDathang(): Signal<any | null> {
-  //   return this.DetailDathang;
-  // }  
   async ImportDathang(dulieu: any) {
     try {
       const options = {
@@ -101,8 +95,8 @@ export class DathangService {
 
   async getSLChonhap(SearchParams: any) {
     const payload = {...SearchParams}
-    payload.Batdau = moment(payload.Batdau).utc()
-    payload.Ketthuc = moment(payload.Ketthuc).utc()
+    payload.Batdau = this.timezoneService.toUTC(payload.Batdau)
+    payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc)
     try {
       const options = {
         method: 'POST',
@@ -127,8 +121,8 @@ export class DathangService {
 
   async searchDathang(SearchParams: any) {
     const payload = {...SearchParams}
-    payload.Batdau = moment(payload.Batdau).utc()
-    payload.Ketthuc = moment(payload.Ketthuc).utc()
+    payload.Batdau = this.timezoneService.toUTC(payload.Batdau)
+    payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc)
     try {
       const options = {
         method: 'POST',
@@ -283,7 +277,7 @@ export class DathangService {
       if (param.isOne === true) {
         this.DetailDathang.set(data);
       } else {
-        this._StorageService.setItem('dathangs_updatedAt', new Date().toISOString());
+        this._StorageService.setItem('dathangs_updatedAt', this.timezoneService.nowUTC());
         this.ListDathang.set(data.data);
         this.page.set(data.page || 1);
         this.pageCount.set(data.pageCount || 1);

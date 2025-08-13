@@ -49,6 +49,7 @@ import { KhachhangService } from '../../khachhang/khachhang.service';
 import { GenId } from '../../../shared/utils/shared.utils';
 import * as XLSX from 'xlsx';
 import { KhoService } from '../../kho/kho.service';
+import { TimezoneService } from '../../../shared/services/timezone.service';
 @Component({
   selector: 'app-listdathang',
   templateUrl: './listdathang.component.html',
@@ -127,6 +128,7 @@ export class ListDathangComponent {
   private _BanggiaService: BanggiaService = inject(BanggiaService);
   private _KhoService: KhoService = inject(KhoService);
   private _router: Router = inject(Router);
+  private _timezoneService: TimezoneService = inject(TimezoneService);
   Listdathang: any = this._DathangService.ListDathang;
   page = this._DathangService.page;
   pageCount = this._DathangService.pageCount;
@@ -140,8 +142,8 @@ export class ListDathangComponent {
   dialog: MatDialog = inject(MatDialog);
   ListImportExcel: any[] = []; // Import data from Excel
   searchParam: any = {
-    Batdau: moment().toDate(),
-    Ketthuc: moment().toDate(),
+    Batdau: moment().toDate(), // These are for datepicker - keep as Date objects
+    Ketthuc: moment().toDate(), // These are for datepicker - keep as Date objects
     page: this.page(),
     pageSize: this.pageSize(),
   };
@@ -341,7 +343,7 @@ export class ListDathangComponent {
   async ExportExcel() {
     // Use existing data if no specific data provided
     const exportData = this.Listdathang();
-    const exportTitle = `Danh Sách Đặt Hàng ${moment().format('DD-MM-YYYY')}`;
+    const exportTitle = `Danh Sách Đặt Hàng ${this._timezoneService.formatForDisplay(new Date(), 'DD-MM-YYYY')}`;
 
     await this._NhacungcapService.getAllNhacungcap();
     await this._SanphamService.getAllSanpham();
@@ -352,7 +354,7 @@ export class ListDathangComponent {
         ? exportData.flatMap((record: any) => {
             if (!Array.isArray(record.sanpham)) return [];
             return record.sanpham.map((sp: any) => ({
-              ngaynhan: moment(record.ngaynhan).format('DD/MM/YYYY'),
+              ngaynhan: this._timezoneService.formatForDisplay(record.ngaynhan, 'DD/MM/YYYY'),
               mancc: record.nhacungcap?.mancc,
               name: record.nhacungcap?.name,
               masp: sp?.sanpham?.masp,
@@ -366,7 +368,7 @@ export class ListDathangComponent {
           })
         : [
             {
-              ngaynhan: moment().format('DD/MM/YYYY'),
+              ngaynhan: this._timezoneService.nowLocal('DD/MM/YYYY'),
               mancc: '',
               name: '',
               masp: '',
@@ -516,7 +518,7 @@ export class ListDathangComponent {
   FilterNhacungcap: any = [];
   FilterKho: any[] = []; // For kho filtering in dialog
   ImportConfig = {
-    selectedDate: new Date(),
+    selectedDate: new Date(), // This stays as Date object for date picker
     selectedKho: '',
     ListKho: [] as any[],
   };
@@ -577,7 +579,7 @@ export class ListDathangComponent {
     }    // Show import dialog if we have processed data
     if (this.ListImportExcel.length > 0) {
       // Set default date to today
-      this.ImportConfig.selectedDate = new Date();
+      this.ImportConfig.selectedDate = new Date(); // This stays as Date object for date picker
       
       // Set default kho for orders without specific kho
       this.setDefaultKhoForOrders();
@@ -691,7 +693,7 @@ export class ListDathangComponent {
         if (validProducts.length > 0) {
           // Get ngaynhan from first row (should be same for all rows of same supplier)
           const firstRow = rows[0];
-          let ngaynhan = new Date();
+          let ngaynhan = new Date(); // Default to current date
 
           if (firstRow.ngaynhan) {
             try {
@@ -710,7 +712,7 @@ export class ListDathangComponent {
           }          const dathangOrder = {
             id: `temp_${mancc}_${Date.now()}`, // Temporary ID for tracking
             title: `Đơn hàng ${
-              firstRow.ngaynhan || moment().format('DD/MM/YYYY')
+              firstRow.ngaynhan || this._timezoneService.nowLocal('DD/MM/YYYY')
             } - ${supplier.name}`,
             ngaynhan: ngaynhan,
             nhacungcapId: supplier.id,
@@ -756,7 +758,7 @@ export class ListDathangComponent {
 
   // Generate order code
   private generateOrderCode(mancc: string): string {
-    const today = moment().format('YYYYMMDD');
+    const today = this._timezoneService.formatForDisplay(new Date(), 'YYYYMMDD');
     const random = Math.floor(Math.random() * 1000)
       .toString()
       .padStart(3, '0');
@@ -767,7 +769,7 @@ export class ListDathangComponent {
   updateOrderDate(order: any, newDate: Date) {
     order.ngaynhan = newDate;
     order.configOptions.selectedDate = newDate;
-    order.title = `Đơn hàng ${moment(newDate).format('DD/MM/YYYY')} - ${
+    order.title = `Đơn hàng ${this._timezoneService.formatForDisplay(newDate, 'DD/MM/YYYY')} - ${
       order.nhacungcap.name
     }`;
   }
@@ -872,7 +874,7 @@ export class ListDathangComponent {
         const Kho = this._KhoService.ListKho().find(
           (k) => k.makho === order.makho);
         return {
-          ngaynhan: new Date(order.ngaynhan),
+          ngaynhan: this._timezoneService.formDateToUTC(order.ngaynhan),
           mancc: order?.nhacungcap.mancc,
           makho: order.makho,
           khoId: Kho?.id,
@@ -887,10 +889,7 @@ export class ListDathangComponent {
           ghichu: order.ghichu,
         };
       });
-      
-      console.log('Confirmed orders:', confirmedOrders);
-      console.log('Confirmed Import:', ordersToImport);
-                      
+                            
       const result = await this._DathangService.ImportDathang(ordersToImport);
 
       this._snackBar.open(
@@ -934,12 +933,12 @@ export class ListDathangComponent {
   DoChonNgaynhan(event: any, detail?: any) {
     const selectedDate = event.value;
     if (detail && detail !== 'All') {
-      detail.ngaynhan = moment(selectedDate).format('YYYY-MM-DD');
+      detail.ngaynhan = this._timezoneService.formatForDisplay(selectedDate, 'YYYY-MM-DD');
     } else {
       // Apply to all items
       this.ListImportExcel.forEach((item) => {
         item.details?.forEach((d: any) => {
-          d.ngaynhan = moment(selectedDate).format('YYYY-MM-DD');
+          d.ngaynhan = this._timezoneService.formatForDisplay(selectedDate, 'YYYY-MM-DD');
         });
       });
     }
