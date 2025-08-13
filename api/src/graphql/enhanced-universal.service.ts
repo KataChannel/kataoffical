@@ -504,21 +504,49 @@ export class EnhancedUniversalService {
    * @param data Data cần chuẩn hóa
    * @returns Data với date fields đã được chuyển sang UTC
    */
+  /**
+   * Enhanced date field normalization for specific models with precise synchronization
+   */
   private normalizeDateFieldsForModel(modelName: string, data: any): any {
     if (!data || typeof data !== 'object') return data;
 
-    // Define date fields cho từng model
+    console.log(`🔄 Normalizing date fields for ${modelName}:`, Object.keys(data));
+
+    // Define date fields cho từng model với ưu tiên cao cho ngaygiao, ngaynhan
     const dateFieldsMap: Record<string, string[]> = {
       donhang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
       dathang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'], 
       tonkho: ['ngaynhan', 'createdAt', 'updatedAt'],
+      phieukho: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
       phieugiaohang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
       auditlog: ['createdAt', 'updatedAt'],
+      chotkho: ['ngay', 'createdAt', 'updatedAt'],
       // Thêm các model khác nếu cần
     };
 
     const dateFields = dateFieldsMap[modelName.toLowerCase()] || ['createdAt', 'updatedAt'];
-    return this.timezoneUtil.normalizeDateFields(data, dateFields);
+    const normalizedData = { ...data };
+    
+    // Enhanced synchronization for each date field
+    dateFields.forEach(field => {
+      if (normalizedData[field] !== undefined && normalizedData[field] !== null) {
+        try {
+          // Use enhanced synchronization for critical fields
+          if (['ngaygiao', 'ngaynhan'].includes(field)) {
+            normalizedData[field] = this.timezoneUtil.synchronizeDateField(field, normalizedData[field]);
+          } else {
+            // Standard normalization for other fields
+            normalizedData[field] = new Date(this.timezoneUtil.toUTC(normalizedData[field]));
+          }
+        } catch (error) {
+          console.error(`❌ Error normalizing ${field} for ${modelName}:`, error);
+          throw new Error(`Failed to normalize ${field}: ${error.message}`);
+        }
+      }
+    });
+
+    console.log(`✅ Date normalization completed for ${modelName}`);
+    return normalizedData;
   }
 
   /**

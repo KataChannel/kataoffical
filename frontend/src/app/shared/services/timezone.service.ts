@@ -7,21 +7,40 @@ import moment from 'moment';
 export class TimezoneService {
   
   /**
-   * Chuyển đổi ngày từ timezone local sang UTC để lưu database
+   * Enhanced UTC conversion with precise date field handling
+   * Special handling for ngaygiao, ngaynhan fields
    * @param date Date string hoặc Date object hoặc moment object
+   * @param fieldName Optional field name for special handling
    * @returns ISO string UTC để lưu database
    */
-  toUTC(date: any): string {
+  toUTC(date: any, fieldName?: string): string {
     if (!date) return '';
+    
+    // Log for critical fields
+    if (fieldName && ['ngaygiao', 'ngaynhan'].includes(fieldName)) {
+      console.log(`🔄 Frontend converting ${fieldName}: ${date} to UTC`);
+    }
     
     // Nếu là string date format YYYY-MM-DD
     if (typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
       // Coi như local date và chuyển sang UTC
-      return moment(date, 'YYYY-MM-DD').utc().toISOString();
+      const utcDate = moment(date, 'YYYY-MM-DD').utc().toISOString();
+      
+      if (fieldName && ['ngaygiao', 'ngaynhan'].includes(fieldName)) {
+        console.log(`✅ Frontend converted ${fieldName}: ${utcDate}`);
+      }
+      
+      return utcDate;
     }
     
     // Các trường hợp khác
-    return moment(date).utc().toISOString();
+    const utcDate = moment(date).utc().toISOString();
+    
+    if (fieldName && ['ngaygiao', 'ngaynhan'].includes(fieldName)) {
+      console.log(`✅ Frontend converted ${fieldName}: ${utcDate}`);
+    }
+    
+    return utcDate;
   }
   
   /**
@@ -216,5 +235,89 @@ export class TimezoneService {
       Batdau: range.startUTC,
       Ketthuc: range.endUTC
     };
+  }
+
+  /**
+   * Enhanced object date field synchronization
+   * Specifically handles ngaygiao, ngaynhan fields for API calls
+   * @param data Object containing date fields
+   * @param dateFields Array of date field names to process
+   * @returns Object with UTC-converted date fields
+   */
+  synchronizeObjectDates(data: any, dateFields: string[] = ['ngaygiao', 'ngaynhan']): any {
+    if (!data || typeof data !== 'object') return data;
+    
+    const synchronized = { ...data };
+    
+    dateFields.forEach(field => {
+      if (synchronized[field] !== undefined && synchronized[field] !== null) {
+        console.log(`🔄 Frontend synchronizing ${field}: ${synchronized[field]}`);
+        
+        try {
+          synchronized[field] = this.toUTC(synchronized[field], field);
+          console.log(`✅ Frontend synchronized ${field}: ${synchronized[field]}`);
+        } catch (error) {
+          console.error(`❌ Error synchronizing ${field}:`, error);
+          throw new Error(`Failed to synchronize ${field}: ${error instanceof Error ? error.message : String(error)}`);
+        }
+      }
+    });
+    
+    return synchronized;
+  }
+
+  /**
+   * Enhanced formatForDisplay method with logging for critical fields
+   * @param utcDate UTC date từ database
+   * @param format Format muốn hiển thị
+   * @param fieldName Optional field name for logging
+   * @returns Formatted string
+   */
+  formatForDisplayEnhanced(utcDate: any, format: string = 'DD/MM/YYYY', fieldName?: string): string {
+    if (!utcDate) return '';
+    
+    try {
+      const formatted = moment.utc(utcDate).local().format(format);
+      
+      if (fieldName && ['ngaygiao', 'ngaynhan'].includes(fieldName)) {
+        console.log(`📅 Frontend displaying ${fieldName}: ${utcDate} → ${formatted}`);
+      }
+      
+      return formatted;
+    } catch (error) {
+      console.error(`Error formatting date for display:`, error);
+      return '';
+    }
+  }
+
+  /**
+   * Validate date synchronization between client and server
+   * @param clientDate Date from client
+   * @param serverDate Date from server response
+   * @param fieldName Field name for logging
+   * @returns boolean indicating if dates match
+   */
+  validateDateSync(clientDate: any, serverDate: any, fieldName?: string): boolean {
+    if (!clientDate || !serverDate) return false;
+    
+    try {
+      const clientUTC = this.toUTC(clientDate);
+      const serverUTC = moment.utc(serverDate).toISOString();
+      
+      const isMatch = clientUTC === serverUTC;
+      
+      if (fieldName && ['ngaygiao', 'ngaynhan'].includes(fieldName)) {
+        console.log(`🔍 Date sync validation for ${fieldName}:`, {
+          client: clientUTC,
+          server: serverUTC,
+          match: isMatch
+        });
+      }
+      
+      return isMatch;
+    } catch (error) {
+      console.error(`Error validating date sync:`, error);
+      return false;
+    }
   }
 }

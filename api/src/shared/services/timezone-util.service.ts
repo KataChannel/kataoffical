@@ -4,13 +4,27 @@ import { Injectable } from '@nestjs/common';
 export class TimezoneUtilService {
   /**
    * Convert any date input to UTC ISO string for database storage
+   * Enhanced with better validation and timezone handling
    */
   toUTC(date: Date | string | number): string {
     if (!date) return new Date().toISOString();
     
-    const d = new Date(date);
+    let d: Date;
+    
+    // Handle different input types
+    if (typeof date === 'string') {
+      // Handle YYYY-MM-DD format specifically (treat as local date)
+      if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        d = new Date(date + 'T00:00:00'); // Add time component to avoid UTC conversion issues
+      } else {
+        d = new Date(date);
+      }
+    } else {
+      d = new Date(date);
+    }
+    
     if (isNaN(d.getTime())) {
-      throw new Error('Invalid date provided');
+      throw new Error(`Invalid date provided: ${date}`);
     }
     
     return d.toISOString();
@@ -18,9 +32,18 @@ export class TimezoneUtilService {
 
   /**
    * Convert UTC date to local timezone for display
+   * Enhanced with better error handling
    */
   fromUTC(utcDate: string | Date, timezone: string = 'Asia/Ho_Chi_Minh'): Date {
+    if (!utcDate) {
+      throw new Error('UTC date is required');
+    }
+    
     const date = new Date(utcDate);
+    if (isNaN(date.getTime())) {
+      throw new Error(`Invalid UTC date: ${utcDate}`);
+    }
+    
     return new Date(date.toLocaleString('en-US', { timeZone: timezone }));
   }
 
@@ -33,6 +56,7 @@ export class TimezoneUtilService {
 
   /**
    * Normalize date fields in an object to UTC
+   * Enhanced to handle ngaygiao, ngaynhan specifically
    */
   normalizeDateFields(data: any, dateFields: string[] = ['createdAt', 'updatedAt', 'ngaygiao', 'ngaynhan', 'ngaytao']): any {
     if (!data || typeof data !== 'object') return data;
@@ -40,11 +64,22 @@ export class TimezoneUtilService {
     const normalized = { ...data };
     
     dateFields.forEach(field => {
-      if (normalized[field]) {
+      if (normalized[field] !== undefined && normalized[field] !== null) {
         try {
-          normalized[field] = this.toUTC(normalized[field]);
+          // Special handling for critical date fields
+          if (['ngaygiao', 'ngaynhan'].includes(field)) {
+            console.log(`🔄 Converting ${field}: ${normalized[field]} to UTC`);
+          }
+          
+          const utcDate = this.toUTC(normalized[field]);
+          normalized[field] = new Date(utcDate);
+          
+          if (['ngaygiao', 'ngaynhan'].includes(field)) {
+            console.log(`✅ Converted ${field}: ${normalized[field]} (UTC)`);
+          }
         } catch (error) {
-          console.warn(`Warning: Could not normalize date field ${field}:`, error);
+          console.error(`❌ Error normalizing date field ${field}:`, error);
+          throw new Error(`Failed to normalize date field ${field}: ${error.message}`);
         }
       }
     });
@@ -53,7 +88,51 @@ export class TimezoneUtilService {
   }
 
   /**
-   * Convert date filters for queries
+   * Enhanced date conversion specifically for ngaygiao and ngaynhan
+   * Ensures precise synchronization between client and server
+   */
+  synchronizeDateField(fieldName: string, value: any): Date | null {
+    if (!value) return null;
+    
+    console.log(`🔄 Synchronizing ${fieldName}: ${value}`);
+    
+    try {
+      // For critical date fields, ensure proper UTC conversion
+      if (['ngaygiao', 'ngaynhan'].includes(fieldName)) {
+        let utcDate: string;
+        
+        // Handle different input formats from frontend
+        if (typeof value === 'string') {
+          if (value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            // YYYY-MM-DD format from date picker - treat as local date
+            utcDate = this.toUTC(value + 'T00:00:00');
+          } else if (value.includes('T') || value.includes('Z')) {
+            // ISO string already - validate and convert
+            utcDate = this.toUTC(value);
+          } else {
+            // Other string formats
+            utcDate = this.toUTC(value);
+          }
+        } else {
+          // Date object or timestamp
+          utcDate = this.toUTC(value);
+        }
+        
+        const result = new Date(utcDate);
+        console.log(`✅ Synchronized ${fieldName}: ${result.toISOString()}`);
+        return result;
+      }
+      
+      // For other date fields, use standard conversion
+      return new Date(this.toUTC(value));
+    } catch (error) {
+      console.error(`❌ Error synchronizing ${fieldName}:`, error);
+      throw new Error(`Failed to synchronize date field ${fieldName}: ${error.message}`);
+    }
+  }
+
+  /**
+   * Convert date filters for queries with enhanced synchronization
    */
   convertDateFilters(filters: any): any {
     if (!filters || typeof filters !== 'object') return filters;

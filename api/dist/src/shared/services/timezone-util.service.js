@@ -12,14 +12,31 @@ let TimezoneUtilService = class TimezoneUtilService {
     toUTC(date) {
         if (!date)
             return new Date().toISOString();
-        const d = new Date(date);
+        let d;
+        if (typeof date === 'string') {
+            if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                d = new Date(date + 'T00:00:00');
+            }
+            else {
+                d = new Date(date);
+            }
+        }
+        else {
+            d = new Date(date);
+        }
         if (isNaN(d.getTime())) {
-            throw new Error('Invalid date provided');
+            throw new Error(`Invalid date provided: ${date}`);
         }
         return d.toISOString();
     }
     fromUTC(utcDate, timezone = 'Asia/Ho_Chi_Minh') {
+        if (!utcDate) {
+            throw new Error('UTC date is required');
+        }
         const date = new Date(utcDate);
+        if (isNaN(date.getTime())) {
+            throw new Error(`Invalid UTC date: ${utcDate}`);
+        }
         return new Date(date.toLocaleString('en-US', { timeZone: timezone }));
     }
     nowUTC() {
@@ -30,16 +47,56 @@ let TimezoneUtilService = class TimezoneUtilService {
             return data;
         const normalized = { ...data };
         dateFields.forEach(field => {
-            if (normalized[field]) {
+            if (normalized[field] !== undefined && normalized[field] !== null) {
                 try {
-                    normalized[field] = this.toUTC(normalized[field]);
+                    if (['ngaygiao', 'ngaynhan'].includes(field)) {
+                        console.log(`🔄 Converting ${field}: ${normalized[field]} to UTC`);
+                    }
+                    const utcDate = this.toUTC(normalized[field]);
+                    normalized[field] = new Date(utcDate);
+                    if (['ngaygiao', 'ngaynhan'].includes(field)) {
+                        console.log(`✅ Converted ${field}: ${normalized[field]} (UTC)`);
+                    }
                 }
                 catch (error) {
-                    console.warn(`Warning: Could not normalize date field ${field}:`, error);
+                    console.error(`❌ Error normalizing date field ${field}:`, error);
+                    throw new Error(`Failed to normalize date field ${field}: ${error.message}`);
                 }
             }
         });
         return normalized;
+    }
+    synchronizeDateField(fieldName, value) {
+        if (!value)
+            return null;
+        console.log(`🔄 Synchronizing ${fieldName}: ${value}`);
+        try {
+            if (['ngaygiao', 'ngaynhan'].includes(fieldName)) {
+                let utcDate;
+                if (typeof value === 'string') {
+                    if (value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        utcDate = this.toUTC(value + 'T00:00:00');
+                    }
+                    else if (value.includes('T') || value.includes('Z')) {
+                        utcDate = this.toUTC(value);
+                    }
+                    else {
+                        utcDate = this.toUTC(value);
+                    }
+                }
+                else {
+                    utcDate = this.toUTC(value);
+                }
+                const result = new Date(utcDate);
+                console.log(`✅ Synchronized ${fieldName}: ${result.toISOString()}`);
+                return result;
+            }
+            return new Date(this.toUTC(value));
+        }
+        catch (error) {
+            console.error(`❌ Error synchronizing ${fieldName}:`, error);
+            throw new Error(`Failed to synchronize date field ${fieldName}: ${error.message}`);
+        }
     }
     convertDateFilters(filters) {
         if (!filters || typeof filters !== 'object')

@@ -18,11 +18,18 @@ let DateResponseInterceptor = class DateResponseInterceptor {
         this.timezoneUtil = timezoneUtil;
     }
     intercept(context, next) {
-        return next.handle().pipe((0, operators_1.map)(data => this.transformDatesInResponse(data)));
+        return next.handle().pipe((0, operators_1.map)(data => this.transformDatesInResponse(data, context)));
     }
-    transformDatesInResponse(data) {
+    transformDatesInResponse(data, context) {
         if (!data)
             return data;
+        if (context) {
+            const request = context.switchToHttp?.()?.getRequest?.();
+            const endpoint = request?.url || 'unknown';
+            if (endpoint.includes('dathang') || endpoint.includes('donhang')) {
+                console.log(`📤 Enhanced date response transform for ${endpoint}`);
+            }
+        }
         if (Array.isArray(data)) {
             return data.map(item => this.transformDatesInObject(item));
         }
@@ -35,14 +42,26 @@ let DateResponseInterceptor = class DateResponseInterceptor {
         if (!obj || typeof obj !== 'object')
             return obj;
         const transformed = { ...obj };
+        const criticalDateFields = ['ngaygiao', 'ngaynhan'];
         const commonDateFields = [
-            'createdAt', 'updatedAt', 'ngaynhan', 'ngaygiao', 'ngaytao', 'ngaycapnhat',
-            'batdau', 'ketthuc', 'startDate', 'endDate', 'date', 'datetime'
+            'createdAt', 'updatedAt', 'ngaytao', 'ngaycapnhat',
+            'batdau', 'ketthuc', 'startDate', 'endDate', 'date', 'datetime', 'ngay'
         ];
         Object.keys(transformed).forEach(key => {
             const value = transformed[key];
-            if (this.isDateValue(value)) {
-                transformed[key] = value;
+            if (criticalDateFields.includes(key) && this.isDateValue(value)) {
+                try {
+                    const utcDate = this.timezoneUtil.toUTC(value);
+                    transformed[key] = new Date(utcDate).toISOString();
+                    console.log(`📤 Response transform ${key}: ${value} → ${transformed[key]}`);
+                }
+                catch (error) {
+                    console.error(`❌ Error transforming ${key}:`, error);
+                    transformed[key] = value;
+                }
+            }
+            else if (commonDateFields.includes(key) && this.isDateValue(value)) {
+                transformed[key] = value instanceof Date ? value.toISOString() : value;
             }
             else if (value && typeof value === 'object') {
                 transformed[key] = this.transformDatesInResponse(value);

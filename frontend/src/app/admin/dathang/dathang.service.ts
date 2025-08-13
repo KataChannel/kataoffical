@@ -48,12 +48,18 @@ export class DathangService {
   }
   async CreateDathang(dulieu: any) {
     try {
+      // Enhanced date synchronization for dathang creation
+      console.log('🔄 Creating dathang with enhanced date sync:', dulieu);
+      
+      // Synchronize date fields if they exist
+      const synchronizedData = this.timezoneService.synchronizeObjectDates(dulieu, ['ngaygiao', 'ngaynhan']);
+      
       const options = {
           method:'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(dulieu),
+          body: JSON.stringify(synchronizedData),
         };
         const response = await fetch(`${environment.APIURL}/dathang`, options);
         if (!response.ok) {
@@ -94,9 +100,17 @@ export class DathangService {
   }
 
   async getSLChonhap(SearchParams: any) {
+    // Enhanced date synchronization for search parameters
     const payload = {...SearchParams}
-    payload.Batdau = this.timezoneService.toUTC(payload.Batdau)
-    payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc)
+    
+    console.log('🔄 Enhanced date sync for getSLChonhap:', payload);
+    
+    // Use enhanced synchronization for date range filters
+    if (payload.Batdau || payload.Ketthuc) {
+      payload.Batdau = this.timezoneService.toUTC(payload.Batdau, 'searchStartDate');
+      payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc, 'searchEndDate');
+    }
+    
     try {
       const options = {
         method: 'POST',
@@ -120,9 +134,16 @@ export class DathangService {
 
 
   async searchDathang(SearchParams: any) {
+    // Enhanced date synchronization for search parameters
     const payload = {...SearchParams}
-    payload.Batdau = this.timezoneService.toUTC(payload.Batdau)
-    payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc)
+    
+    console.log('🔄 Enhanced date sync for searchDathang:', payload);
+    
+    // Use enhanced synchronization for date range filters
+    if (payload.Batdau || payload.Ketthuc) {
+      payload.Batdau = this.timezoneService.toUTC(payload.Batdau, 'searchStartDate');
+      payload.Ketthuc = this.timezoneService.toUTC(payload.Ketthuc, 'searchEndDate');
+    }
     try {
       const options = {
         method: 'POST',
@@ -216,12 +237,18 @@ export class DathangService {
   }
   async updateDathang(dulieu: any) {
     try {
+      // Enhanced date synchronization for dathang update
+      console.log('🔄 Updating dathang with enhanced date sync:', dulieu);
+      
+      // Synchronize date fields if they exist
+      const synchronizedData = this.timezoneService.synchronizeObjectDates(dulieu, ['ngaygiao', 'ngaynhan']);
+      
       const options = {
           method:'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(dulieu),
+          body: JSON.stringify(synchronizedData),
         };
         const response = await fetch(`${environment.APIURL}/dathang/${dulieu.id}`, options);
         if (!response.ok) {

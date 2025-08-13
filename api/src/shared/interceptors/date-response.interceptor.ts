@@ -4,8 +4,9 @@ import { map } from 'rxjs/operators';
 import { TimezoneUtilService } from '../services/timezone-util.service';
 
 /**
- * Interceptor để tự động format date fields trong response
+ * Enhanced interceptor for precise date field synchronization
  * Chuyển đổi UTC dates từ database về local timezone cho client
+ * Special handling for ngaygiao, ngaynhan fields
  */
 @Injectable()
 export class DateResponseInterceptor implements NestInterceptor {
@@ -13,17 +14,28 @@ export class DateResponseInterceptor implements NestInterceptor {
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map(data => this.transformDatesInResponse(data))
+      map(data => this.transformDatesInResponse(data, context))
     );
   }
 
   /**
-   * Transform UTC dates trong response về local timezone
+   * Enhanced transform UTC dates trong response
    * @param data Response data
-   * @returns Data với dates đã được format
+   * @param context Execution context for logging
+   * @returns Data với dates đã được synchronized
    */
-  private transformDatesInResponse(data: any): any {
+  private transformDatesInResponse(data: any, context?: ExecutionContext): any {
     if (!data) return data;
+
+    // Log for debugging critical operations
+    if (context) {
+      const request = context.switchToHttp?.()?.getRequest?.();
+      const endpoint = request?.url || 'unknown';
+      
+      if (endpoint.includes('dathang') || endpoint.includes('donhang')) {
+        console.log(`📤 Enhanced date response transform for ${endpoint}`);
+      }
+    }
 
     // Nếu là array
     if (Array.isArray(data)) {
@@ -39,31 +51,44 @@ export class DateResponseInterceptor implements NestInterceptor {
   }
 
   /**
-   * Transform dates trong một object
+   * Enhanced transform dates trong một object với special handling
    * @param obj Object cần transform
-   * @returns Object với dates đã được format
+   * @returns Object với dates đã được synchronized
    */
   private transformDatesInObject(obj: any): any {
     if (!obj || typeof obj !== 'object') return obj;
 
     const transformed = { ...obj };
 
-    // Các field thường là date
+    // Priority date fields requiring enhanced synchronization
+    const criticalDateFields = ['ngaygiao', 'ngaynhan'];
     const commonDateFields = [
-      'createdAt', 'updatedAt', 'ngaynhan', 'ngaygiao', 'ngaytao', 'ngaycapnhat',
-      'batdau', 'ketthuc', 'startDate', 'endDate', 'date', 'datetime'
+      'createdAt', 'updatedAt', 'ngaytao', 'ngaycapnhat',
+      'batdau', 'ketthuc', 'startDate', 'endDate', 'date', 'datetime', 'ngay'
     ];
 
     Object.keys(transformed).forEach(key => {
       const value = transformed[key];
 
-      // Nếu value là date string hoặc Date object
-      if (this.isDateValue(value)) {
-        // Giữ nguyên UTC ISO string để client tự xử lý với timezone service
-        // Không tự động convert ở server để tránh confusion
-        transformed[key] = value;
+      // Enhanced handling for critical date fields
+      if (criticalDateFields.includes(key) && this.isDateValue(value)) {
+        try {
+          // Ensure proper UTC format for critical fields
+          const utcDate = this.timezoneUtil.toUTC(value);
+          transformed[key] = new Date(utcDate).toISOString();
+          
+          console.log(`📤 Response transform ${key}: ${value} → ${transformed[key]}`);
+        } catch (error) {
+          console.error(`❌ Error transforming ${key}:`, error);
+          transformed[key] = value; // Keep original on error
+        }
       }
-      // Nếu value là nested object hoặc array
+      // Standard handling for other date fields
+      else if (commonDateFields.includes(key) && this.isDateValue(value)) {
+        // Ensure UTC ISO string format for consistency
+        transformed[key] = value instanceof Date ? value.toISOString() : value;
+      }
+      // Nested objects or arrays
       else if (value && typeof value === 'object') {
         transformed[key] = this.transformDatesInResponse(value);
       }

@@ -331,15 +331,36 @@ let EnhancedUniversalService = class EnhancedUniversalService {
     normalizeDateFieldsForModel(modelName, data) {
         if (!data || typeof data !== 'object')
             return data;
+        console.log(`🔄 Normalizing date fields for ${modelName}:`, Object.keys(data));
         const dateFieldsMap = {
             donhang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
             dathang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
             tonkho: ['ngaynhan', 'createdAt', 'updatedAt'],
+            phieukho: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
             phieugiaohang: ['ngaynhan', 'ngaygiao', 'createdAt', 'updatedAt'],
             auditlog: ['createdAt', 'updatedAt'],
+            chotkho: ['ngay', 'createdAt', 'updatedAt'],
         };
         const dateFields = dateFieldsMap[modelName.toLowerCase()] || ['createdAt', 'updatedAt'];
-        return this.timezoneUtil.normalizeDateFields(data, dateFields);
+        const normalizedData = { ...data };
+        dateFields.forEach(field => {
+            if (normalizedData[field] !== undefined && normalizedData[field] !== null) {
+                try {
+                    if (['ngaygiao', 'ngaynhan'].includes(field)) {
+                        normalizedData[field] = this.timezoneUtil.synchronizeDateField(field, normalizedData[field]);
+                    }
+                    else {
+                        normalizedData[field] = new Date(this.timezoneUtil.toUTC(normalizedData[field]));
+                    }
+                }
+                catch (error) {
+                    console.error(`❌ Error normalizing ${field} for ${modelName}:`, error);
+                    throw new Error(`Failed to normalize ${field}: ${error.message}`);
+                }
+            }
+        });
+        console.log(`✅ Date normalization completed for ${modelName}`);
+        return normalizedData;
     }
     normalizeDateFilters(modelName, where) {
         if (!where || typeof where !== 'object')
