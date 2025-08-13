@@ -8,7 +8,6 @@
     <button mat-icon-button color="primary" (click)="CoppyDon()">
       <mat-icon>content_copy</mat-icon>
     </button>
-
     <!-- <button mat-icon-button color="primary" (click)="printContent()">
       <mat-icon>print</mat-icon>
     </button> -->
@@ -186,13 +185,12 @@
                       (click)="RemoveSanpham(row)"><mat-icon>delete</mat-icon></button>
                   </span>
                   }
-                  @case ('sldat') {                  @if(permissions?.includes('donhang.sldat')) {
-                  <div [contentEditable]="true" 
-                       (focus)="onInputFocus($event)"
-                       (blur)="updateBlurValue($event,idx, row, 'sldat','number')"
-                       (keydown.enter)="updateValue($event,idx, row, 'sldat','number')"
-                       (keydown)="validateKeyInput($event, 'number')"
-                       class="sldat-input p-2 min-w-28 text-end bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
+                  @case ('sldat') { @if(permissions?.includes('donhang.sldat')) {
+                  <div [contentEditable]="true" (focus)="onInputFocus($event)"
+                    (blur)="updateBlurValue($event,idx, row, 'sldat','number')"
+                    (keydown.enter)="updateValue($event,idx, row, 'sldat','number')"
+                    (keydown)="validateKeyInput($event, 'number')"
+                    class="sldat-input p-2 min-w-28 text-end bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
                     {{ row[column]||0|number:'1.0-2' }}
                   </div>
                   } @else {
@@ -205,12 +203,11 @@
                   @case ('slnhan') {
                   <div class="text-end">{{ row[column]||0|number:'1.0-2' }}</div>
                   }
-                  @case ('ghichu') {                  <div [contentEditable]="true"
-                       (focus)="onInputFocus($event)" 
-                       (blur)="updateBlurValue($event,idx, row, 'ghichu','string')"
-                       (keydown.enter)="updateValue($event,idx, row, 'ghichu','string')"
-                       (keydown)="validateKeyInput($event, 'string')"
-                       class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
+                  @case ('ghichu') { <div [contentEditable]="true" (focus)="onInputFocus($event)"
+                    (blur)="updateBlurValue($event,idx, row, 'ghichu','string')"
+                    (keydown.enter)="updateValue($event,idx, row, 'ghichu','string')"
+                    (keydown)="validateKeyInput($event, 'string')"
+                    class="ghichu-input p-2 min-w-28 bg-slate-200 focus:border rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none">
                     {{ row[column]||'' }}
                   </div>
                   }

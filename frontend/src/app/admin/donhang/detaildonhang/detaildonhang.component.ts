@@ -416,9 +416,6 @@ export class DetailDonhangComponent {
     });
   }
 
-
-  
-
   Tongcong: any = 0;
   Tong: any = 0;
   Tinhtongcong(value: any) {
@@ -701,8 +698,6 @@ export class DetailDonhangComponent {
             v.printCount= v.printCount+1;
             return v;
           })
-          console.log(this.DetailDonhang());
-          
           this._DonhangService.updateDonhang(this.DetailDonhang());
       } else {
         console.error('Không thể mở cửa sổ in');

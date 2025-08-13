@@ -468,6 +468,30 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       });
     }
   }
+  async Dagiaohang() {
+    try {
+      this.DetailPhieugiaohang.update((v: any) => {
+        v.status = 'dagiao';
+        return v;
+      });
+      await this._PhieugiaohangService.updateDonhang(this.DetailPhieugiaohang());
+      this._snackBar.open('Đã Nhận đơn hàng thành công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+      this.isEdit.update((value) => !value);
+    } catch (error) {
+      console.error('Lỗi khi nhận đơn hàng:', error);
+      this._snackBar.open('Nhận đơn hàng thất bại', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+    }
+  }
 
   Tongcong: any = 0;
   Tong: any = 0;
@@ -560,7 +584,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
         `);
         newWindow.document.close();
         if(this.DetailPhieugiaohang().status === 'dadat') {
-         this.Danhanhang();
+         this.Dagiaohang();
         }
       } else {
         console.error('Không thể mở cửa sổ in');

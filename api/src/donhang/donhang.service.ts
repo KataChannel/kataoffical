@@ -777,6 +777,13 @@ export class DonhangService {
   async create(dto: any) {
     const madonhang = await this.generateNextOrderCode();
     return this.prisma.$transaction(async (prisma) => {
+      // Get khachhang data
+      const khachhang = await prisma.khachhang.findUnique({
+        where: { id: dto.khachhangId },
+      });
+      if (!khachhang) {
+        throw new NotFoundException('Khách hàng không tồn tại');
+      }
       const newDonhang = await prisma.donhang.create({
         data: {
           title: dto.title,
@@ -787,6 +794,7 @@ export class DonhangService {
           isActive: dto.isActive,
           order: dto.order,
           ghichu: dto.ghichu,
+          isshowvat: khachhang.isshowvat, // Set isshowvat from khachhang
           sanpham: {
             create: dto?.sanpham?.map((sp: any) => ({
               idSP: sp.id,
