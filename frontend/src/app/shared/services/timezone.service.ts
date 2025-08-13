@@ -9,6 +9,7 @@ export class TimezoneService {
   /**
    * Enhanced UTC conversion with precise date field handling
    * Special handling for ngaygiao, ngaynhan fields
+   * FIXED: Prevents date shifting by treating dates as local midnight
    * @param date Date string hoặc Date object hoặc moment object
    * @param fieldName Optional field name for special handling
    * @returns ISO string UTC để lưu database
@@ -21,23 +22,57 @@ export class TimezoneService {
       console.log(`🔄 Frontend converting ${fieldName}: ${date} to UTC`);
     }
     
-    // Nếu là string date format YYYY-MM-DD
+    // FIXED: Handle YYYY-MM-DD format without timezone shift
     if (typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      // Coi như local date và chuyển sang UTC
-      const utcDate = moment(date, 'YYYY-MM-DD').utc().toISOString();
+      // Create date at local midnight to prevent timezone shifts
+      const localDate = moment(date, 'YYYY-MM-DD').startOf('day');
+      const utcDate = localDate.utc().toISOString();
       
       if (fieldName && ['ngaygiao', 'ngaynhan'].includes(fieldName)) {
-        console.log(`✅ Frontend converted ${fieldName}: ${utcDate}`);
+        console.log(`✅ Frontend converted ${fieldName}: ${date} (local) -> ${utcDate} (UTC)`);
       }
       
       return utcDate;
     }
     
-    // Các trường hợp khác
-    const utcDate = moment(date).utc().toISOString();
+    // FIXED: Handle DD/MM/YYYY format (Vietnamese format)
+    if (typeof date === 'string' && date.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+      // Parse Vietnamese date format and create at local midnight
+      const localDate = moment(date, 'DD/MM/YYYY').startOf('day');
+      const utcDate = localDate.utc().toISOString();
+      
+      if (fieldName && ['ngaygiao', 'ngaynhan'].includes(fieldName)) {
+        console.log(`✅ Frontend converted ${fieldName}: ${date} (DD/MM/YYYY) -> ${utcDate} (UTC)`);
+      }
+      
+      return utcDate;
+    }
+    
+    // FIXED: Handle Date objects without timezone shift
+    if (date instanceof Date) {
+      // For Date objects from date pickers, ensure we get the local date without timezone conversion
+      const localDate = moment(date).startOf('day');
+      const utcDate = localDate.utc().toISOString();
+      
+      if (fieldName && ['ngaygiao', 'ngaynhan'].includes(fieldName)) {
+        console.log(`✅ Frontend converted ${fieldName}: ${date} (Date object) -> ${utcDate} (UTC)`);
+      }
+      
+      return utcDate;
+    }
+    
+    // For other formats, convert carefully
+    const momentDate = moment(date);
+    if (!momentDate.isValid()) {
+      console.error(`Invalid date provided: ${date}`);
+      return moment().utc().toISOString(); // Fallback to current UTC
+    }
+    
+    // Use startOf('day') to prevent timezone shift issues
+    const utcDate = momentDate.startOf('day').utc().toISOString();
     
     if (fieldName && ['ngaygiao', 'ngaynhan'].includes(fieldName)) {
-      console.log(`✅ Frontend converted ${fieldName}: ${utcDate}`);
+      console.log(`✅ Frontend converted ${fieldName}: ${date} -> ${utcDate} (UTC)`);
     }
     
     return utcDate;

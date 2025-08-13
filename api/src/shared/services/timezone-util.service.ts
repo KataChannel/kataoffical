@@ -4,19 +4,30 @@ import { Injectable } from '@nestjs/common';
 export class TimezoneUtilService {
   /**
    * Convert any date input to UTC ISO string for database storage
-   * Enhanced with better validation and timezone handling
+   * FIXED: Enhanced to prevent date shifting issues
    */
   toUTC(date: Date | string | number): string {
     if (!date) return new Date().toISOString();
     
     let d: Date;
     
-    // Handle different input types
+    // Handle different input types with timezone-aware logic
     if (typeof date === 'string') {
-      // Handle YYYY-MM-DD format specifically (treat as local date)
+      // FIXED: Handle YYYY-MM-DD format as local midnight
       if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        d = new Date(date + 'T00:00:00'); // Add time component to avoid UTC conversion issues
-      } else {
+        // Parse as local date at midnight to prevent timezone shifts
+        const [year, month, day] = date.split('-').map(Number);
+        d = new Date(year, month - 1, day, 0, 0, 0, 0); // Local midnight
+        console.log(`🔄 Backend parsing YYYY-MM-DD: ${date} -> Local: ${d} -> UTC: ${d.toISOString()}`);
+      } 
+      // FIXED: Handle DD/MM/YYYY format (Vietnamese)
+      else if (date.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+        const [day, month, year] = date.split('/').map(Number);
+        d = new Date(year, month - 1, day, 0, 0, 0, 0); // Local midnight
+        console.log(`🔄 Backend parsing DD/MM/YYYY: ${date} -> Local: ${d} -> UTC: ${d.toISOString()}`);
+      }
+      // Handle ISO strings and other formats
+      else {
         d = new Date(date);
       }
     } else {
@@ -27,7 +38,9 @@ export class TimezoneUtilService {
       throw new Error(`Invalid date provided: ${date}`);
     }
     
-    return d.toISOString();
+    const utcResult = d.toISOString();
+    console.log(`✅ Backend UTC conversion: ${date} -> ${utcResult}`);
+    return utcResult;
   }
 
   /**
@@ -89,45 +102,64 @@ export class TimezoneUtilService {
 
   /**
    * Enhanced date conversion specifically for ngaygiao and ngaynhan
-   * Ensures precise synchronization between client and server
+   * FIXED: Prevents date shifting issues
    */
   synchronizeDateField(fieldName: string, value: any): Date | null {
     if (!value) return null;
     
-    console.log(`🔄 Synchronizing ${fieldName}: ${value}`);
+    console.log(`🔄 Backend synchronizing ${fieldName}: ${value} (type: ${typeof value})`);
     
     try {
-      // For critical date fields, ensure proper UTC conversion
+      // For critical date fields, ensure proper UTC conversion without shifting
       if (['ngaygiao', 'ngaynhan'].includes(fieldName)) {
-        let utcDate: string;
+        let result: Date;
         
         // Handle different input formats from frontend
         if (typeof value === 'string') {
+          // FIXED: Handle YYYY-MM-DD format properly
           if (value.match(/^\d{4}-\d{2}-\d{2}$/)) {
-            // YYYY-MM-DD format from date picker - treat as local date
-            utcDate = this.toUTC(value + 'T00:00:00');
-          } else if (value.includes('T') || value.includes('Z')) {
-            // ISO string already - validate and convert
-            utcDate = this.toUTC(value);
-          } else {
-            // Other string formats
-            utcDate = this.toUTC(value);
+            const [year, month, day] = value.split('-').map(Number);
+            result = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+            console.log(`🔧 Backend YYYY-MM-DD: ${value} -> UTC Date: ${result.toISOString()}`);
+          } 
+          // FIXED: Handle DD/MM/YYYY format
+          else if (value.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+            const [day, month, year] = value.split('/').map(Number);
+            result = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+            console.log(`🔧 Backend DD/MM/YYYY: ${value} -> UTC Date: ${result.toISOString()}`);
           }
+          // Handle ISO strings
+          else if (value.includes('T') || value.includes('Z')) {
+            result = new Date(value);
+            console.log(`🔧 Backend ISO string: ${value} -> UTC Date: ${result.toISOString()}`);
+          } 
+          // Other string formats
+          else {
+            result = new Date(this.toUTC(value));
+          }
+        } else if (value instanceof Date) {
+          // FIXED: Handle Date objects properly
+          result = new Date(Date.UTC(
+            value.getFullYear(), 
+            value.getMonth(), 
+            value.getDate(), 
+            0, 0, 0, 0
+          ));
+          console.log(`🔧 Backend Date object: ${value} -> UTC Date: ${result.toISOString()}`);
         } else {
-          // Date object or timestamp
-          utcDate = this.toUTC(value);
+          // Fallback
+          result = new Date(this.toUTC(value));
         }
         
-        const result = new Date(utcDate);
-        console.log(`✅ Synchronized ${fieldName}: ${result.toISOString()}`);
+        console.log(`✅ Backend synchronized ${fieldName}: ${result.toISOString()}`);
         return result;
       }
       
       // For other date fields, use standard conversion
       return new Date(this.toUTC(value));
     } catch (error) {
-      console.error(`❌ Error synchronizing ${fieldName}:`, error);
-      throw new Error(`Failed to synchronize date field ${fieldName}: ${error.message}`);
+      console.error(`❌ Backend error synchronizing ${fieldName}:`, error);
+      throw new Error(`Failed to synchronize date field ${fieldName}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

@@ -15,7 +15,14 @@ let TimezoneUtilService = class TimezoneUtilService {
         let d;
         if (typeof date === 'string') {
             if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                d = new Date(date + 'T00:00:00');
+                const [year, month, day] = date.split('-').map(Number);
+                d = new Date(year, month - 1, day, 0, 0, 0, 0);
+                console.log(`🔄 Backend parsing YYYY-MM-DD: ${date} -> Local: ${d} -> UTC: ${d.toISOString()}`);
+            }
+            else if (date.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+                const [day, month, year] = date.split('/').map(Number);
+                d = new Date(year, month - 1, day, 0, 0, 0, 0);
+                console.log(`🔄 Backend parsing DD/MM/YYYY: ${date} -> Local: ${d} -> UTC: ${d.toISOString()}`);
             }
             else {
                 d = new Date(date);
@@ -27,7 +34,9 @@ let TimezoneUtilService = class TimezoneUtilService {
         if (isNaN(d.getTime())) {
             throw new Error(`Invalid date provided: ${date}`);
         }
-        return d.toISOString();
+        const utcResult = d.toISOString();
+        console.log(`✅ Backend UTC conversion: ${date} -> ${utcResult}`);
+        return utcResult;
     }
     fromUTC(utcDate, timezone = 'Asia/Ho_Chi_Minh') {
         if (!utcDate) {
@@ -69,33 +78,44 @@ let TimezoneUtilService = class TimezoneUtilService {
     synchronizeDateField(fieldName, value) {
         if (!value)
             return null;
-        console.log(`🔄 Synchronizing ${fieldName}: ${value}`);
+        console.log(`🔄 Backend synchronizing ${fieldName}: ${value} (type: ${typeof value})`);
         try {
             if (['ngaygiao', 'ngaynhan'].includes(fieldName)) {
-                let utcDate;
+                let result;
                 if (typeof value === 'string') {
                     if (value.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                        utcDate = this.toUTC(value + 'T00:00:00');
+                        const [year, month, day] = value.split('-').map(Number);
+                        result = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+                        console.log(`🔧 Backend YYYY-MM-DD: ${value} -> UTC Date: ${result.toISOString()}`);
+                    }
+                    else if (value.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+                        const [day, month, year] = value.split('/').map(Number);
+                        result = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+                        console.log(`🔧 Backend DD/MM/YYYY: ${value} -> UTC Date: ${result.toISOString()}`);
                     }
                     else if (value.includes('T') || value.includes('Z')) {
-                        utcDate = this.toUTC(value);
+                        result = new Date(value);
+                        console.log(`🔧 Backend ISO string: ${value} -> UTC Date: ${result.toISOString()}`);
                     }
                     else {
-                        utcDate = this.toUTC(value);
+                        result = new Date(this.toUTC(value));
                     }
                 }
-                else {
-                    utcDate = this.toUTC(value);
+                else if (value instanceof Date) {
+                    result = new Date(Date.UTC(value.getFullYear(), value.getMonth(), value.getDate(), 0, 0, 0, 0));
+                    console.log(`🔧 Backend Date object: ${value} -> UTC Date: ${result.toISOString()}`);
                 }
-                const result = new Date(utcDate);
-                console.log(`✅ Synchronized ${fieldName}: ${result.toISOString()}`);
+                else {
+                    result = new Date(this.toUTC(value));
+                }
+                console.log(`✅ Backend synchronized ${fieldName}: ${result.toISOString()}`);
                 return result;
             }
             return new Date(this.toUTC(value));
         }
         catch (error) {
-            console.error(`❌ Error synchronizing ${fieldName}:`, error);
-            throw new Error(`Failed to synchronize date field ${fieldName}: ${error.message}`);
+            console.error(`❌ Backend error synchronizing ${fieldName}:`, error);
+            throw new Error(`Failed to synchronize date field ${fieldName}: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
     convertDateFilters(filters) {
