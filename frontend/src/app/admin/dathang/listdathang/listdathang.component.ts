@@ -874,7 +874,7 @@ export class ListDathangComponent {
         const Kho = this._KhoService.ListKho().find(
           (k) => k.makho === order.makho);
         return {
-          ngaynhan: this._timezoneService.formDateToUTC(order.ngaynhan),
+          ngaynhan: moment(order.ngaynhan).format('YYYY-MM-DD'),
           mancc: order?.nhacungcap.mancc,
           makho: order.makho,
           khoId: Kho?.id,

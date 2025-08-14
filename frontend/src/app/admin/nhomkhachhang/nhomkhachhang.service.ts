@@ -2,7 +2,6 @@ import { Inject, Injectable, signal,Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
-import { io } from 'socket.io-client';
 import { openDB } from 'idb';
 @Injectable({
   providedIn: 'root'
@@ -18,11 +17,6 @@ export class NhomkhachhangService {
   setNhomkhachhangId(id: string | null) {
     this.nhomkhachhangId.set(id);
   }
-  private socket = io(`${environment.APIURL}`,{
-    transports: ['websocket', 'polling'], // Thêm polling để fallback
-    reconnectionAttempts: 5, // Giới hạn reconnect nếu fail
-    timeout: 5000, // Timeout 5s
-  });
   async addKHtoNhom(dulieu: any) {
     try {
       const options = {
@@ -115,10 +109,7 @@ export class NhomkhachhangService {
 
   // 3️⃣ Lắng nghe cập nhật từ WebSocket
   listenNhomkhachhangUpdates() {
-    this.socket.on('nhomkhachhang-updated', async () => {
-      console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-      await this.getAllNhomkhachhang();
-    });
+
   }
   // Khởi tạo IndexedDB
   private async initDB() {

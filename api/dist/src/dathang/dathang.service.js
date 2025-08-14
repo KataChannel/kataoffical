@@ -235,7 +235,7 @@ let DathangService = class DathangService {
                 const transferItem = {
                     title: `Import ${this.formatDateForFilename()}`,
                     type: "dathang",
-                    ngaynhan: importItem.ngaynhan ? new Date(importItem.ngaynhan).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                    ngaynhan: importItem.ngaynhan,
                     nhacungcapId: nhacungcap.id,
                     nhacungcap: {
                         name: nhacungcap.name,

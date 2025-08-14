@@ -1,61 +1,8 @@
 import { PrismaClient } from '@prisma/client';
-import { bangiakhachahng } from './migrations/dulieu';
-const fs = require('fs');
-const path = require('path');
-
 const prisma = new PrismaClient();
 
 async function main() {
-  try {
-    // Đọc dữ liệu từ file dh18.json
-    const dh18Data = JSON.parse(
-      fs.readFileSync(path.join(__dirname, 'dh18.json'), 'utf-8')
-    );
-    
-    // Đọc dữ liệu từ file dhsp.json
-    const dhsp: any[] = JSON.parse(
-      fs.readFileSync(path.join(__dirname, 'dhsp.json'), 'utf-8')
-    );
 
-    // Tạo map để tra cứu nhanh hơn
-    const dhspMap = new Map(dhsp.map(dh => [dh.donhangId, dh]));
-
-    // Chuẩn bị batch update
-    const updatePromises:any[] = [];
-
-    for (const donhangId of dh18Data) {
-      // Lọc tất cả các donhangsanpham có cùng donhangId
-      const dhspItems = dhsp.filter(item => item.donhangId === donhangId);
-      
-      if (dhspItems.length === 0) {
-      console.warn(`⚠️ Không tìm thấy donhangsanpham với donhangId: ${donhangId}`);
-      continue;
-      }
-
-      // Cập nhật từng donhangsanpham
-      for (const item of dhspItems) {
-      updatePromises.push(
-        prisma.donhangsanpham.update({
-          where: { id: item.id },
-          data: {
-            sldat: item.slgiao,
-            slgiao: item.slgiao,
-            slnhan: item.slnhan,
-          }
-        })
-      );
-      }
-    }
-
-    // Thực hiện batch update
-    await prisma.$transaction(updatePromises);
-
-    console.log(`✅ Hoàn thành cập nhật ${updatePromises.length} bản ghi từ dh18.json`);
-
-  } catch (error) {
-    console.error('❌ Lỗi khi cập nhật dữ liệu:', error);
-    throw error;
-  }
 }
 
 main()
@@ -84,6 +31,7 @@ export function convertData(data1: any[]) {
     khachhangIds: result[key]
   }));
 }
+
 
 export function removeVietnameseAccents(text: any) {
   if (!text) {

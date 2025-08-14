@@ -3,39 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertData = convertData;
 exports.removeVietnameseAccents = removeVietnameseAccents;
 const client_1 = require("@prisma/client");
-const fs = require('fs');
-const path = require('path');
 const prisma = new client_1.PrismaClient();
 async function main() {
-    try {
-        const dh18Data = JSON.parse(fs.readFileSync(path.join(__dirname, 'dh18.json'), 'utf-8'));
-        const dhsp = JSON.parse(fs.readFileSync(path.join(__dirname, 'dhsp.json'), 'utf-8'));
-        const dhspMap = new Map(dhsp.map(dh => [dh.donhangId, dh]));
-        const updatePromises = [];
-        for (const donhangId of dh18Data) {
-            const dhspItems = dhsp.filter(item => item.donhangId === donhangId);
-            if (dhspItems.length === 0) {
-                console.warn(`⚠️ Không tìm thấy donhangsanpham với donhangId: ${donhangId}`);
-                continue;
-            }
-            for (const item of dhspItems) {
-                updatePromises.push(prisma.donhangsanpham.update({
-                    where: { id: item.id },
-                    data: {
-                        sldat: item.slgiao,
-                        slgiao: item.slgiao,
-                        slnhan: item.slnhan,
-                    }
-                }));
-            }
-        }
-        await prisma.$transaction(updatePromises);
-        console.log(`✅ Hoàn thành cập nhật ${updatePromises.length} bản ghi từ dh18.json`);
-    }
-    catch (error) {
-        console.error('❌ Lỗi khi cập nhật dữ liệu:', error);
-        throw error;
-    }
 }
 main()
     .catch((e) => {

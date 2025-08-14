@@ -2,7 +2,6 @@ import {  Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
-import { io } from 'socket.io-client';
 import { openDB } from 'idb';
 import { MatSnackBar } from '@angular/material/snack-bar';
 @Injectable({
@@ -26,11 +25,6 @@ export class SanphamService {
   setSanphamId(id: string | null) {
     this.sanphamId.set(id);
   }
-  private socket = io(`${environment.APIURL}`,{
-    transports: ['websocket', 'polling'], // Thêm polling để fallback
-    reconnectionAttempts: 5, // Giới hạn reconnect nếu fail
-    timeout: 5000, // Timeout 5s
-  });
 
   async Banggiamacdinh(dulieu: any) {
     try {
@@ -215,10 +209,7 @@ export class SanphamService {
 
   // 3️⃣ Lắng nghe cập nhật từ WebSocket
   listenSanphamUpdates() {
-    this.socket.on('sanpham-updated', async () => {
-      console.log('🔄 Dữ liệu sản phẩm thay đổi, cập nhật lại cache...');
-      await this.getAllSanpham();
-    });
+
   }
   private async initDB() {
     return await openDB('SanphamDB', 4, {
