@@ -2,8 +2,6 @@ import { Inject, Injectable, signal,Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { StorageService } from '../../shared/utils/storage.service';
-import { io } from 'socket.io-client';
-import { openDB } from 'idb';
 @Injectable({
   providedIn: 'root'
 })
