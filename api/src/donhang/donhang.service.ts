@@ -107,6 +107,7 @@ export class DonhangService {
   }
 
   async search(params: any) {
+
     const {
       Batdau,
       Ketthuc,
@@ -116,17 +117,13 @@ export class DonhangService {
       query,
     } = params;
 
-    // ✅ Sử dụng TimezoneUtilService cho date range
-    const dateRange = this.convertDateFilters({
-      ngaygiao: {
-        gte: Batdau ? new Date(Batdau) : undefined,
-        lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      },
-    });
+    const ngaygiao = (Batdau || Ketthuc) ? {
+      ...(Batdau && { gte: new Date(Batdau) }),
+      ...(Ketthuc && { lte: new Date(Ketthuc) })
+    } : undefined;
 
     const where: any = {
-      ngaygiao: dateRange.ngaygiao,
-      // type: Type,
+      ...(ngaygiao && { ngaygiao }),
       status: Array.isArray(params.Status)
         ? { in: params.Status }
         : params.Status,

@@ -31,7 +31,6 @@ let DonhangController = class DonhangController {
         return this.donhangService.ImportDonhang(data);
     }
     async search(params) {
-        console.log('search params', params);
         return this.donhangService.search(params);
     }
     async congnokhachhang(params) {

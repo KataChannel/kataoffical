@@ -96,14 +96,12 @@ let DonhangService = class DonhangService {
     }
     async search(params) {
         const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, query, } = params;
-        const dateRange = this.convertDateFilters({
-            ngaygiao: {
-                gte: Batdau ? new Date(Batdau) : undefined,
-                lte: Ketthuc ? new Date(Ketthuc) : undefined,
-            },
-        });
+        const ngaygiao = (Batdau || Ketthuc) ? {
+            ...(Batdau && { gte: new Date(Batdau) }),
+            ...(Ketthuc && { lte: new Date(Ketthuc) })
+        } : undefined;
         const where = {
-            ngaygiao: dateRange.ngaygiao,
+            ...(ngaygiao && { ngaygiao }),
             status: Array.isArray(params.Status)
                 ? { in: params.Status }
                 : params.Status,
