@@ -235,7 +235,7 @@ let DathangService = class DathangService {
                 const transferItem = {
                     title: `Import ${this.formatDateForFilename()}`,
                     type: "dathang",
-                    ngaynhan: importItem.ngaynhan,
+                    ngaynhan: importItem.ngaynhan ? new Date(importItem.ngaynhan).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
                     nhacungcapId: nhacungcap.id,
                     nhacungcap: {
                         name: nhacungcap.name,
@@ -371,15 +371,12 @@ let DathangService = class DathangService {
                 });
             }
         }
-        const dateRange = this.convertDateFilters({
-            ngaynhan: {
-                gte: where.Batdau ? new Date(where.Batdau) : undefined,
-                lte: where.Ketthuc ? new Date(where.Ketthuc) : undefined,
-            },
-        });
         if (where.Batdau || where.Ketthuc) {
-            whereClause.ngaynhan = dateRange.ngaynhan,
-                console.log('dateRange', whereClause.ngaynhan);
+            whereClause.ngaynhan = {
+                ...(where.Batdau && { gte: new Date(where.Batdau) }),
+                ...(where.Ketthuc && { lte: new Date(where.Ketthuc) })
+            };
+            console.log('dateRange', whereClause.ngaynhan);
         }
         if (khoId) {
             whereClause.khoId = khoId;
