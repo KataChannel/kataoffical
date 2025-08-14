@@ -111,7 +111,7 @@
                         }
                     </div>
                 </mat-menu>
-                <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(dataSource.data,'Tonghop')" color="primary" mat-icon-button>
+                <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(TonghopsFinal,'Tonghop')" color="primary" mat-icon-button>
                     <mat-icon>file_download</mat-icon>
                 </button>
                 <!-- <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
@@ -121,7 +121,7 @@
                 <!-- <button matTooltip="Tải dữ liệu từ drive" (click)="LoadDrive()" color="primary" mat-icon-button>
                     <mat-icon>cloud_download</mat-icon>
                 </button> -->
-                <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
+                <span (click)="pageSize = this.TonghopsFinal.length;updateDisplayData()" class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{this.TonghopsFinal.length > 0 ? this.TonghopsFinal.length : this.Listsanpham().length}} Sản Phẩm
                     @if (isDateRangeEnabled) {
                         <span class="ml-2 px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">

@@ -37,7 +37,10 @@ import { TimezoneService } from '../../../shared/services/timezone.service';
 @Component({
   selector: 'app-nhucaudathang',
   templateUrl: './nhucaudathang.component.html',
-  styleUrls: ['./nhucaudathang.component.scss', './nhucaudathang.component.css'],
+  styleUrls: [
+    './nhucaudathang.component.scss',
+    './nhucaudathang.component.css',
+  ],
   imports: [
     MatFormFieldModule,
     MatInputModule,
@@ -63,46 +66,72 @@ export class NhucaudathangComponent {
   displayedColumns: string[] = [
     'title',
     'masp',
+    'dvt',
     'mancc',
     'name',
-    'makho',
-    'namekho',
-    'slton',
-    'slchogiao',
     'slchonhap',
-    'SLDat',
-    'SLGiao',
     'goiy',
+    'slchogiao',
+    'sltontt',
+    'slton',
+    'kho1',
+    'kho2',
+    'kho3',
+    'kho4',
+    'kho5',
+    'kho6',
+    'haohut',
+    'slhaohut',
   ];
   ColumnName: any = {
-    title: 'Tên Sản Phẩm',
-    masp: 'Mã Sản Phẩm',
-    mancc: 'Mã NCC',
-    name: 'Tên Nhà Cung Cấp',
-    makho: 'Mã Kho',
-    namekho: 'Tên Kho',
-    slton: 'Tồn Kho',
-    slchogiao: 'Chờ Giao',
-    slchonhap: 'Chờ Nhập',
-    SLDat: 'SL Đặt (Nhà CC)',
-    SLGiao: 'SL Giao (Khách)',
-    goiy: 'Gợi Ý',
-  };
+      title: 'Tên Sản Phẩm',
+      masp: 'Mã Sản Phẩm',
+      dvt:'ĐVT',
+      mancc: 'Mã NCC',
+      name: 'Tên Nhà Cung Cấp',
+      slchonhap: 'SL Đặt (Chờ Nhập)',
+      goiy: 'SL Cần Đặt (Gợi Ý)',
+      slchogiao: 'SL Bán (Chờ Giao)',
+      sltontt: 'Tồn Kho (Thực Tế)',
+      slton: 'Tồn Kho',
+      kho1: 'TG-LONG AN',
+      kho2: 'Bổ Sung',
+      kho3: 'TG-ĐÀ LẠT',
+      kho4: 'KHO TỔNG - HCM',
+      kho5: 'SG1',
+      kho6: 'SG2',
+      haohut: 'Tỉ Lệ Hao Hụt',
+      slhaohut: 'SL Hao Hụt',
+   };
+  // ColumnName: any = {
+  //   title: 'Tên Sản Phẩm',
+  //   masp: 'Mã Sản Phẩm',
+  //   mancc: 'Mã NCC',
+  //   name: 'Tên Nhà Cung Cấp',
+  //   makho: 'Mã Kho',
+  //   namekho: 'Tên Kho',
+  //   slton: 'Tồn Kho',
+  //   slchogiao: 'Chờ Giao',
+  //   slchonhap: 'Chờ Nhập',
+  //   SLDat: 'SL Đặt (Nhà CC)',
+  //   SLGiao: 'SL Giao (Khách)',
+  //   goiy: 'Gợi Ý',
+  // };
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('NhucauColFilter') || '[]'
   );
   Columns: any[] = [];
-  
+
   // Pagination
   totalItems = 0;
   pageSize = 10;
   currentPage = 1;
   totalPages = 1;
-  
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
-  
+
   private _SanphamService = inject(SanphamService);
   private _breakpointObserver = inject(BreakpointObserver);
   private _GraphqlService = inject(GraphqlService);
@@ -110,7 +139,7 @@ export class NhucaudathangComponent {
   private _dialog = inject(MatDialog);
   private _timezoneService = inject(TimezoneService);
   _snackBar = inject(MatSnackBar);
-  
+
   Listsanpham: any = this._SanphamService.ListSanpham;
   TonghopsFinal: any[] = [];
   EditList: any = [];
@@ -120,7 +149,7 @@ export class NhucaudathangComponent {
   isSubmit = false;
   quickFilter: string = 'all';
   globalFilterValue: string = '';
-  
+
   // Date range properties
   batdau: Date = new Date(); // Start date
   ketthuc: Date = new Date(); // End date
@@ -141,34 +170,46 @@ export class NhucaudathangComponent {
     const today = new Date();
     this.batdau = new Date(today);
     this.ketthuc = new Date(today);
-    
+
     this.updateDisplayData();
     this.loadDonhangWithRelations();
-    this._SanphamService.listenSanphamUpdates();
     await this._SanphamService.getNhucau();
     this.dataSource = new MatTableDataSource(this.Listsanpham());
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-    
+
     // Custom sorting for specific columns
     this.dataSource.sortingDataAccessor = (item: any, property: string) => {
       switch (property) {
-        case 'slton':
-        case 'slchogiao':
-        case 'slchonhap':
-        case 'SLDat':
-        case 'SLGiao':
-          return Number(item[property]) || 0;
-        case 'goiy':
-          return parseFloat(this.GetGoiy(item));
-        case 'title':
-        case 'masp':
-          return item[property]?.toLowerCase() || '';
-        default:
-          return item[property] || '';
+      case 'slton':
+      case 'slchogiao':
+      case 'slchonhap':
+      case 'SLDat':
+      case 'SLGiao':
+      case 'kho1':
+      case 'kho2':
+      case 'kho3':
+      case 'kho4':
+      case 'kho5':
+      case 'kho6':
+      case 'haohut':
+      case 'slhaohut':
+        return Number(item[property]) || 0;
+      case 'goiy':
+        return parseFloat(this.GetGoiy(item));
+      case 'title':
+      case 'masp':
+      case 'dvt':
+      case 'mancc':
+      case 'name':
+      case 'makho':
+      case 'namekho':
+        return item[property]?.toLowerCase() || '';
+      default:
+        return item[property]?.toString().toLowerCase() || '';
       }
     };
-    
+
     this.initializeColumns();
     this.setupDrawer();
   }
@@ -178,8 +219,11 @@ export class NhucaudathangComponent {
     const pendingDelivery = item.slchogiao || 0;
     const pendingInput = item.slchonhap || 0;
     const deliveredQuantity = item.SLGiao || 0;
-    
-    const suggestion = Math.max(0, deliveredQuantity + pendingDelivery - currentStock - pendingInput);
+
+    const suggestion = Math.max(
+      0,
+      deliveredQuantity + pendingDelivery - currentStock - pendingInput
+    );
     return suggestion.toFixed(0);
   }
 
@@ -188,10 +232,13 @@ export class NhucaudathangComponent {
       // ✅ Sử dụng TimezoneService để xử lý date range đúng cách
       let startDate: string;
       let endDate: string;
-      
+
       if (this.isDateRangeEnabled && this.batdau && this.ketthuc) {
         // ✅ Sử dụng getAPIDateRange để đảm bảo consistent timezone handling
-        const dateRange = this._timezoneService.getAPIDateRange(this.batdau, this.ketthuc);
+        const dateRange = this._timezoneService.getAPIDateRange(
+          this.batdau,
+          this.ketthuc
+        );
         startDate = dateRange.Batdau;
         endDate = dateRange.Ketthuc;
       } else {
@@ -203,14 +250,15 @@ export class NhucaudathangComponent {
       }
 
       console.log(`Fetching data from ${startDate} to ${endDate}`);
-        
+
       const [Donhangs, Dathangs, Tonkhos] = await Promise.all([
         this._GraphqlService.findAll('donhang', {
           enableParallelFetch: true,
           batchSize: 1000,
+          take: 999999,
           aggressiveCache: true,
           orderBy: { createdAt: 'desc' },
-          where:{
+          where: {
             ngaygiao: {
               gte: startDate,
               lte: endDate,
@@ -231,13 +279,14 @@ export class NhucaudathangComponent {
             },
           },
         }),
-        
+
         this._GraphqlService.findAll('dathang', {
           enableParallelFetch: true,
           batchSize: 1000,
+          take: 999999,
           aggressiveCache: true,
           orderBy: { createdAt: 'desc' },
-          where:{
+          where: {
             ngaynhan: {
               gte: startDate,
               lte: endDate,
@@ -247,11 +296,11 @@ export class NhucaudathangComponent {
             id: true,
             madncc: true,
             ngaynhan: true,
-            nhacungcap:{
+            nhacungcap: {
               select: {
                 name: true,
-                mancc: true
-              }
+                mancc: true,
+              },
             },
             sanpham: {
               select: {
@@ -261,18 +310,20 @@ export class NhucaudathangComponent {
                 sanpham: { select: { masp: true } },
               },
             },
-            kho:{
-              select:{
-                name:true,
-                makho:true
-              }
-            }
+            kho: {
+              select: {
+                name: true,
+                makho: true,
+              },
+            },
           },
         }),
-        
-        this._GraphqlService.findAll('tonkho',{
+
+        this._GraphqlService.findAll('tonkho', {
           enableParallelFetch: true,
           aggressiveCache: true,
+          batchSize: 1000,
+          take: 999999,
           select: {
             id: true,
             sanphamId: true,
@@ -283,6 +334,8 @@ export class NhucaudathangComponent {
               select: {
                 title: true,
                 masp: true,
+                dvt:true,
+                haohut:true
               },
             },
           },
@@ -313,19 +366,20 @@ export class NhucaudathangComponent {
           slgiao: Number(sp.slgiao) || 0,
           slnhan: Number(sp.slnhan) || 0,
           makho: order.kho.makho,
-          namekho: order.kho.name
+          namekho: order.kho.name,
         }));
-      });
-
+      });            
       const TonkhosTranfer = Tonkhos.data.map((sp: any) => ({
         type: 'tonkho',
         masp: sp.sanpham.masp,
         title: sp.sanpham.title,
+        dvt: sp.sanpham.dvt,
+        haohut: sp.sanpham.haohut || 0,
         slton: Number(sp.slton) || 0,
         slchogiao: Number(sp.slchogiao) || 0,
-        slchonhap: Number(sp.slchonhap) || 0
+        slchonhap: Number(sp.slchonhap) || 0,
       }));
-
+     console.log('Tonkhos',TonkhosTranfer);
       const tonghopMap = new Map<string, any>();
 
       TonkhosTranfer.forEach((tonkho: any) => {
@@ -336,16 +390,18 @@ export class NhucaudathangComponent {
           name: tonkho.name,
           masp: tonkho.masp,
           title: tonkho.title,
+          dvt: tonkho.dvt,
+          haohut: tonkho.haohut || 0,
           slton: tonkho.slton,
           slchogiao: tonkho.slchogiao,
           slchonhap: tonkho.slchonhap,
           SLDat: 0,
-          SLGiao: 0
+          SLGiao: 0,
         });
       });
 
       DathangsTranfer.forEach((dathang: any) => {
-        console.log(dathang);
+        // console.log(dathang);
         if (tonghopMap.has(dathang.masp)) {
           const item = tonghopMap.get(dathang.masp);
           item.SLDat += dathang.slnhan;
@@ -365,16 +421,13 @@ export class NhucaudathangComponent {
       });
 
       const TonghopsFinal = Array.from(tonghopMap.values());
-      console.log(Donhangs);
-      console.log(Dathangs);
-      console.log(TonghopsFinal);
-
-      this.TonghopsFinal = TonghopsFinal;
-      this.dataSource.data = TonghopsFinal;
+      this.TonghopsFinal = this.convertData(TonghopsFinal);
+      this.dataSource.data = this.convertData(TonghopsFinal);
       this.totalItems = TonghopsFinal.length;
+      console.log('TonghopsFinal:', this.TonghopsFinal);
+      
       this.calculateTotalPages();
       this.updateDisplayData();
-
     } catch (error) {
       console.error('Error loading data:', error);
       this._snackBar.open('Lỗi khi tải dữ liệu', '', {
@@ -444,9 +497,13 @@ export class NhucaudathangComponent {
 
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    const currentData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
     this.dataSource.filteredData = currentData.filter((v: any) =>
-      v[column]?.toString().toLowerCase().includes(event.target.value.toLowerCase())
+      v[column]
+        ?.toString()
+        .toLowerCase()
+        .includes(event.target.value.toLowerCase())
     );
   }
 
@@ -457,12 +514,13 @@ export class NhucaudathangComponent {
       this.getCurrentFilteredData(column);
       return;
     }
-    
-    const currentData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
     const filteredItems = currentData.filter((item: any) =>
       item[column]?.toString().toLowerCase().includes(filterValue)
     );
-    
+
     // Update temporary filter for this column
     this.dataSource.filteredData = filteredItems;
   }
@@ -495,7 +553,8 @@ export class NhucaudathangComponent {
   }
 
   ResetFilter() {
-    const currentData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
     this.ListFilter = currentData;
     this.dataSource.data = currentData;
     this.dataSource.paginator = this.paginator;
@@ -507,11 +566,14 @@ export class NhucaudathangComponent {
   }
 
   CheckItem(item: any) {
-    return this.ListFilter.find((v) => v.masp === item.masp || v.id === item.id) ? true : false;
+    return this.ListFilter.find((v) => v.masp === item.masp || v.id === item.id)
+      ? true
+      : false;
   }
 
   ApplyFilterColum(menu: any) {
-    const currentData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
     this.dataSource.data = currentData.filter((v: any) =>
       this.ListFilter.some((v1) => v1.masp === v.masp)
     );
@@ -539,21 +601,28 @@ export class NhucaudathangComponent {
   }
 
   AddToEdit(item: any): void {
-    const existingItem = this.EditList.find((v: any) => v.masp === item.masp || v.id === item.id);
+    const existingItem = this.EditList.find(
+      (v: any) => v.masp === item.masp || v.id === item.id
+    );
     if (existingItem) {
-      this.EditList = this.EditList.filter((v: any) => v.masp !== item.masp && v.id !== item.id);
+      this.EditList = this.EditList.filter(
+        (v: any) => v.masp !== item.masp && v.id !== item.id
+      );
     } else {
       this.EditList.push(item);
     }
   }
 
   ChoseAllEdit(): void {
-    const currentData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
     this.EditList = currentData;
   }
 
   CheckItemInEdit(item: any): boolean {
-    return this.EditList.some((v: any) => v.masp === item.masp || v.id === item.id);
+    return this.EditList.some(
+      (v: any) => v.masp === item.masp || v.id === item.id
+    );
   }
 
   onListDathangChange(event: any) {
@@ -577,9 +646,9 @@ export class NhucaudathangComponent {
     const uniqueData = Array.from(
       new Map(transformedData.map((item: any) => [item.masp, item])).values()
     );
-    
+
     const existingSanpham = this._SanphamService.ListSanpham();
-    
+
     await Promise.all(
       uniqueData.map(async (v: any) => {
         const existingItem = existingSanpham.find(
@@ -612,32 +681,74 @@ export class NhucaudathangComponent {
 
   async ExportExcel(data: any, title: any) {
     const dulieu = data.map((v: any) => ({
-      ngaynhan: this._timezoneService.nowLocal('YYYY-MM-DD'),
-      masp: v.masp,
-      title: v.title,
-      dvt: v.dvt,
-      slchogiao: v.slchogiao,
-      goiy: this.GetGoiy(v),
-      slchonhap: v.slchonhap,
-      slton: v.slton,
-      haohut: v.haohut,
-      ghichu: v.ghichu,
+      title: v.title || '',
+      masp: v.masp || '',
+      mancc: v.mancc || '',
+      name: v.name || '',
+      makho: v.makho || '',
+      namekho: v.namekho || '',
+      slton: v.slton || 0,
+      slchogiao: v.slchogiao || 0,
+      slchonhap: v.slchonhap || 0,
+      SLDat: v.SLDat || 0,
+      SLGiao: v.SLGiao || 0,
+      goiy: v.goiy || 0,
     }));
 
     const mapping: any = {
-      ngaynhan: 'Ngày Nhận',
-      masp: 'Mã Sản Phẩm',
       title: 'Tên Sản Phẩm',
-      dvt: 'Đơn Vị Tính',
-      slchogiao: 'Chờ Giao',
-      goiy: 'Gợi Ý',
-      slchonhap: 'Chờ Nhập',
+      masp: 'Mã Sản Phẩm',
+      dvt:'ĐVT',
+      mancc: 'Mã NCC',
+      name: 'Tên Nhà Cung Cấp',
+      slchonhap: 'SL Đặt (Chờ Nhập)',
+      goiy: 'SL Cần Đặt (Gợi Ý)',
+      slchogiao: 'SL Bán (Chờ Giao)',
+      sltontt: 'Tồn Kho (Thực Tế)',
       slton: 'Tồn Kho',
-      haohut: 'Hao Hụt',
-      ghichu: 'Ghi Chú',
+      kho1: 'TG-LONG AN',
+      kho2: 'Bổ Sung',
+      kho3: 'TG-ĐÀ LẠT',
+      kho4: 'KHO TỔNG - HCM',
+      kho5: 'SG1',
+      kho6: 'SG2',
+      haohut: 'Tỉ Lệ Hao Hụt',
+      slhaohut: 'SL Hao Hụt',
     };
+    const resultDulieu = this.convertData(dulieu);
+    writeExcelFile(resultDulieu, title, Object.values(mapping), mapping);
+  }
 
-    writeExcelFile(dulieu, title, Object.values(mapping), mapping);
+  convertData(inputData: any) {
+    const warehouses = [
+      { name: 'kho1', label: 'TG-LONG AN' },
+      { name: 'kho2', label: 'Bổ Sung' },
+      { name: 'kho3', label: 'TG-ĐÀ LẠT' },
+      { name: 'kho4', label: 'KHO TỔNG - HCM' },
+      { name: 'kho5', label: 'SG1' },
+      { name: 'kho6', label: 'SG2' },
+    ];
+
+    return inputData.map((item: any) => {
+      // Create a new object with all original fields
+      const newItem = { ...item };
+      
+      // Initialize all warehouse fields with 0
+      warehouses.forEach((warehouse) => {
+      newItem[warehouse.name] = '0';
+      });
+      
+      // Find the matching warehouse by label and set the value
+      const matchingWarehouse = warehouses.find(
+      (warehouse) => warehouse.label === item.namekho
+      );
+      
+      if (matchingWarehouse) {
+      newItem[matchingWarehouse.name] = item.slchonhap || '0';
+      }
+      
+      return newItem;
+    });
   }
 
   trackByFn(index: number, item: any): any {
@@ -649,7 +760,8 @@ export class NhucaudathangComponent {
   }
 
   onPageSizeChange(size: number, menuHienthi: any) {
-    const currentData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
     if (size > currentData.length) {
       this.pageSize = currentData.length;
       this._snackBar.open(`Số lượng tối đa ${currentData.length}`, '', {
@@ -682,7 +794,8 @@ export class NhucaudathangComponent {
   }
 
   updateDisplayData() {
-    const currentData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    const currentData =
+    this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     const pageData = currentData.slice(startIndex, endIndex);
@@ -690,8 +803,9 @@ export class NhucaudathangComponent {
   }
 
   getCurrentFilteredData(column: string): any[] {
-    const currentData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
-    
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+
     // Get unique values for the column
     const uniqueValues = new Map();
     currentData.forEach((item: any) => {
@@ -700,7 +814,7 @@ export class NhucaudathangComponent {
         uniqueValues.set(key, item);
       }
     });
-    
+
     return Array.from(uniqueValues.values());
   }
 
@@ -710,11 +824,14 @@ export class NhucaudathangComponent {
 
   applyQuickFilter(filterType: string) {
     this.quickFilter = filterType;
-    let filteredData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
-    
+    let filteredData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+
     switch (filterType) {
       case 'lowStock':
-        filteredData = filteredData.filter((item: any) => (item.slton || 0) <= 10);
+        filteredData = filteredData.filter(
+          (item: any) => (item.slton || 0) <= 10
+        );
         break;
       case 'needOrder':
         filteredData = filteredData.filter((item: any) => {
@@ -723,19 +840,24 @@ export class NhucaudathangComponent {
         });
         break;
       case 'pendingDelivery':
-        filteredData = filteredData.filter((item: any) => (item.slchogiao || 0) > 0);
+        filteredData = filteredData.filter(
+          (item: any) => (item.slchogiao || 0) > 0
+        );
         break;
       case 'all':
       default:
         // No additional filtering for 'all'
         break;
     }
-    
+
     // Apply global filter if exists
     if (this.globalFilterValue) {
-      filteredData = this.applyGlobalFilterToData(filteredData, this.globalFilterValue);
+      filteredData = this.applyGlobalFilterToData(
+        filteredData,
+        this.globalFilterValue
+      );
     }
-    
+
     this.dataSource.data = filteredData;
     this.totalItems = filteredData.length;
     this.calculateTotalPages();
@@ -746,20 +868,21 @@ export class NhucaudathangComponent {
   applyGlobalFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.globalFilterValue = filterValue;
-    
-    let filteredData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
-    
+
+    let filteredData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+
     // Apply quick filter first
     if (this.quickFilter !== 'all') {
       this.applyQuickFilter(this.quickFilter);
       return; // applyQuickFilter will handle global filter too
     }
-    
+
     // Apply global filter
     if (filterValue) {
       filteredData = this.applyGlobalFilterToData(filteredData, filterValue);
     }
-    
+
     this.dataSource.data = filteredData;
     this.totalItems = filteredData.length;
     this.calculateTotalPages();
@@ -769,11 +892,12 @@ export class NhucaudathangComponent {
 
   private applyGlobalFilterToData(data: any[], filterValue: string): any[] {
     const searchTerm = filterValue.trim().toLowerCase();
-    return data.filter((item: any) => 
-      (item.title?.toLowerCase().includes(searchTerm)) ||
-      (item.masp?.toLowerCase().includes(searchTerm)) ||
-      (item.name?.toLowerCase().includes(searchTerm)) ||
-      (item.mancc?.toLowerCase().includes(searchTerm))
+    return data.filter(
+      (item: any) =>
+        item.title?.toLowerCase().includes(searchTerm) ||
+        item.masp?.toLowerCase().includes(searchTerm) ||
+        item.name?.toLowerCase().includes(searchTerm) ||
+        item.mancc?.toLowerCase().includes(searchTerm)
     );
   }
 
@@ -796,7 +920,11 @@ export class NhucaudathangComponent {
         case 'slchonhap':
         case 'SLDat':
         case 'SLGiao':
-          return this.compareNumbers(Number(a[sort.active]) || 0, Number(b[sort.active]) || 0, isAsc);
+          return this.compareNumbers(
+            Number(a[sort.active]) || 0,
+            Number(b[sort.active]) || 0,
+            isAsc
+          );
         case 'goiy':
           return this.compareNumbers(
             parseFloat(this.GetGoiy(a)),
@@ -822,13 +950,14 @@ export class NhucaudathangComponent {
     this.quickFilter = 'all';
     this.globalFilterValue = '';
     this.ListFilter = [];
-    const currentData = this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
+    const currentData =
+      this.TonghopsFinal.length > 0 ? this.TonghopsFinal : this.Listsanpham();
     this.dataSource.data = currentData;
     this.totalItems = currentData.length;
     this.calculateTotalPages();
     this.currentPage = 1;
     this.updateDisplayData();
-    
+
     // Clear search inputs
     const searchInputs = document.querySelectorAll('input[type="text"]');
     searchInputs.forEach((input: any) => {
@@ -844,7 +973,7 @@ export class NhucaudathangComponent {
   toggleDateRangeFilter(): void {
     this.isDateRangeEnabled = !this.isDateRangeEnabled;
     this.hasUnappliedDateChanges = false;
-    
+
     if (this.isDateRangeEnabled) {
       // ✅ Set default date range to today when enabling
       const today = new Date();
@@ -865,7 +994,7 @@ export class NhucaudathangComponent {
     if (!this.isDateRangeEnabled) {
       this.isDateRangeEnabled = true;
     }
-    
+
     // ✅ Validate date range
     if (!this.batdau || !this.ketthuc) {
       this._snackBar.open('Vui lòng chọn khoảng thời gian hợp lệ', '', {
@@ -876,7 +1005,7 @@ export class NhucaudathangComponent {
       });
       return;
     }
-    
+
     // ✅ Ensure start date is not after end date
     if (this.batdau > this.ketthuc) {
       this._snackBar.open('Ngày bắt đầu không thể sau ngày kết thúc', '', {
@@ -887,18 +1016,18 @@ export class NhucaudathangComponent {
       });
       return;
     }
-    
+
     // ✅ Apply the filter
     this.hasUnappliedDateChanges = false;
     this.loadDonhangWithRelations();
-    
+
     this._snackBar.open('Đã áp dụng bộ lọc ngày', '', {
       duration: 2000,
       horizontalPosition: 'end',
       verticalPosition: 'top',
       panelClass: ['snackbar-success'],
     });
-    
+
     // Close the date menu
     dateMenuTrigger.closeMenu();
   }
@@ -946,13 +1075,13 @@ export class NhucaudathangComponent {
     // ✅ Fix: Calculate week dates properly
     const firstDayOfWeek = new Date(today);
     firstDayOfWeek.setDate(today.getDate() - today.getDay());
-    
+
     const lastDayOfWeek = new Date(firstDayOfWeek);
     lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
-    
+
     this.batdau = new Date(firstDayOfWeek);
     this.ketthuc = new Date(lastDayOfWeek);
-    
+
     // Auto apply when using quick buttons
     this.applyDateFilter(dateMenuTrigger);
   }
@@ -963,8 +1092,12 @@ export class NhucaudathangComponent {
   setThisMonth(dateMenuTrigger: MatMenuTrigger): void {
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    
+    const lastDayOfMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() + 1,
+      0
+    );
+
     this.batdau = new Date(firstDayOfMonth);
     this.ketthuc = new Date(lastDayOfMonth);
     // Auto apply when using quick buttons
@@ -977,14 +1110,14 @@ export class NhucaudathangComponent {
   clearDateFilter(): void {
     this.isDateRangeEnabled = false;
     this.hasUnappliedDateChanges = false;
-    
+
     // ✅ Reset dates to today
     const today = new Date();
     this.batdau = new Date(today);
     this.ketthuc = new Date(today);
-    
+
     this.loadDonhangWithRelations();
-    
+
     this._snackBar.open('Đã xóa bộ lọc ngày', '', {
       duration: 2000,
       horizontalPosition: 'end',
