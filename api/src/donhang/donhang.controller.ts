@@ -119,7 +119,36 @@ export class DonhangController {
   //   return this.donhangService.danhan(data);
   // }
   @Get('autoCompleteOrdersDaily')
+  @Audit({entity: 'Manual Auto Complete Orders', action: AuditAction.UPDATE, includeResponse: true})
   async autoCompleteOrdersDaily() {
-    return this.donhangCronService.autoCompleteOrdersDaily();
+    try {
+      const result = await this.donhangCronService.autoCompleteOrdersDaily();
+      return {
+        success: true,
+        message: 'Auto-complete cron job executed manually',
+        result: result
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to execute auto-complete cron job',
+        error: error.message
+      };
+    }
+  }
+
+  @Post('manualAutoComplete')
+  @Audit({entity: 'Manual Auto Complete Orders', action: AuditAction.UPDATE, includeResponse: true})
+  async manualAutoComplete(@Body() body: { date?: string }) {
+    try {
+      const result = await this.donhangCronService.manualAutoComplete(body.date);
+      return result;
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to execute manual auto-complete',
+        error: error.message
+      };
+    }
   }
 }

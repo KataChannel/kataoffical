@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import * as moment from 'moment-timezone';
 import { PrismaService } from 'prisma/prisma.service';
 
 @Injectable()
@@ -10,23 +11,7 @@ export class DonhangCronService {
     private readonly prisma: PrismaService,
   ) {}
 
-  // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
-  private getStartOfDay(date?: Date): Date {
-    const d = date || new Date();
-    d.setUTCHours(0, 0, 0, 0);
-    return d;
-  }
 
-  private getEndOfDay(date?: Date): Date {
-    const d = date || new Date();
-    d.setUTCHours(23, 59, 59, 999);
-    return d;
-  }
-
-  /**
-   * Cron job chạy hàng ngày lúc 14:00 (2:00 PM) theo giờ Việt Nam
-   * Tự động chuyển status đơn hàng từ 'dagiao' sang 'danhan' cho các đơn hàng của ngày hôm đó
-   */
   @Cron('0 14 * * *', {
     name: 'auto-complete-orders',
     timeZone: 'Asia/Ho_Chi_Minh', // Giờ Việt Nam
@@ -35,30 +20,24 @@ export class DonhangCronService {
     try {
       this.logger.log('Starting auto-complete orders cron job at 14:00 Vietnam time');
 
-      // Lấy ngày hiện tại theo giờ Việt Nam
-      const today = new Date();
-      const vietnamToday = this.convertToVietnamTime(today);
+      // Lấy ngày hiện tại và tạo startOfDay/endOfDay trực tiếp (UTC)
+      const now = new Date();
       
-      // Tạo startOfDay và endOfDay theo giờ Việt Nam rồi convert sang UTC
-      const startOfDay = new Date(vietnamToday);
-      startOfDay.setHours(0, 0, 0, 0);
-      
-      const endOfDay = new Date(vietnamToday);
-      endOfDay.setHours(23, 59, 59, 999);
+      // Tạo startOfDay và endOfDay cho ngày hiện tại
+      const startOfDay =  moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+      const endOfDay =  moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate()
 
-      // Convert to UTC for database query
-      const startOfDayUTC = startOfDay.toISOString();
-      const endOfDayUTC = endOfDay.toISOString();
-
-      this.logger.log(`Processing orders from ${startOfDayUTC} to ${endOfDayUTC}`);
+      this.logger.log(`Processing orders from ${startOfDay} to ${endOfDay}`);
 
       // Tìm các đơn hàng có status 'dagiao' trong ngày hôm nay
       const ordersToUpdate = await this.prisma.donhang.findMany({
         where: {
-          status: 'dagiao',
+          status: {
+            in: ['dadat', 'dagiao']
+          },
           ngaygiao: {
-            gte: new Date(startOfDayUTC),
-            lte: new Date(endOfDayUTC),
+            gte: startOfDay,
+            lte: endOfDay,
           },
         },
         select: {
@@ -66,6 +45,7 @@ export class DonhangCronService {
           madonhang: true,
           ngaygiao: true,
           status: true,
+          ghichu: true,
           khachhang: {
             select: {
               name: true,
@@ -81,30 +61,34 @@ export class DonhangCronService {
 
       this.logger.log(`Found ${ordersToUpdate.length} orders to auto-complete`);
 
-      // Cập nhật status sang 'danhan'
-      const updateResult = await this.prisma.donhang.updateMany({
-        where: {
-          id: {
-            in: ordersToUpdate.map(order => order.id),
-          },
-        },
-        data: {
-          status: 'danhan',
-          updatedAt: new Date(),
-        },
-      });
+      // Cập nhật từng đơn hàng để thêm ghi chú riêng biệt
+      let updateCount = 0;
+      const currentTime = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+      
+      for (const order of ordersToUpdate) {
+        try {
+          await this.prisma.donhang.update({
+            where: { id: order.id },
+            data: {
+              status: 'danhan',
+              ghichu: `${order.ghichu ? order.ghichu + ' | ' : ''}[AUTOCOMPLETE] Tự động chuyển trạng thái lúc ${currentTime}`,
+              updatedAt: new Date(),
+            },
+          });
+          updateCount++;
+          
+          this.logger.log(
+            `Order updated: ${order.madonhang} - Customer: ${order.khachhang?.name || 'N/A'} - Delivery Date: ${order.ngaygiao}`
+          );
+        } catch (error) {
+          this.logger.error(`Failed to update order ${order.madonhang}:`, error);
+        }
+      }
 
-      this.logger.log(`Successfully updated ${updateResult.count} orders to 'danhan' status`);
-
-      // Log chi tiết các đơn hàng đã được cập nhật
-      ordersToUpdate.forEach(order => {
-        this.logger.log(
-          `Order updated: ${order.madonhang} - Customer: ${order.khachhang?.name || 'N/A'} - Delivery Date: ${order.ngaygiao}`
-        );
-      });
+      this.logger.log(`Successfully updated ${updateCount} orders to 'danhan' status`);
 
       // Tạo audit log cho việc auto-complete
-      await this.createAuditLog(ordersToUpdate, updateResult.count);
+      await this.createAuditLog(ordersToUpdate, updateCount);
 
     } catch (error) {
       this.logger.error('Error in auto-complete orders cron job:', error);
@@ -173,8 +157,8 @@ export class DonhangCronService {
               affectedCustomers: [...new Set(orders.map(o => o.khachhang?.name).filter(Boolean))].length
             },
             dateRange: {
-              startOfDay: this.getStartOfDay().toISOString(),
-              endOfDay: this.getEndOfDay().toISOString(),
+              startOfDay: moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate(),
+              endOfDay: moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate(),
               vietnamDate: vietnamTime.split(',')[0] // Chỉ lấy phần date
             }
           },
@@ -260,26 +244,21 @@ export class DonhangCronService {
   async manualAutoComplete(dateString?: string): Promise<any> {
     try {
       const targetDate = dateString ? new Date(dateString) : new Date();
-      const vietnamDate = this.convertToVietnamTime(targetDate);
       
-      const startOfDay = new Date(vietnamDate);
-      startOfDay.setHours(0, 0, 0, 0);
+      // Tạo startOfDay và endOfDay trực tiếp từ targetDate
+      const startOfDay = moment().tz('Asia/Ho_Chi_Minh').startOf('day').toDate()
+      const endOfDay = moment().tz('Asia/Ho_Chi_Minh').endOf('day').toDate();
       
-      const endOfDay = new Date(vietnamDate);
-      endOfDay.setHours(23, 59, 59, 999);
+      const vietnamDateString = this.convertToVietnamTime(targetDate);
 
-      // Convert to UTC for database query
-      const startOfDayUTC = startOfDay.toISOString();
-      const endOfDayUTC = endOfDay.toISOString();
-
-      this.logger.log(`Manual auto-complete for date: ${vietnamDate} (${startOfDayUTC} to ${endOfDayUTC})`);
+      this.logger.log(`Manual auto-complete for date: ${vietnamDateString} (${startOfDay.toISOString()} to ${endOfDay.toISOString()})`);
 
       const ordersToUpdate = await this.prisma.donhang.findMany({
         where: {
           status: 'dagiao',
           ngaygiao: {
-            gte: new Date(startOfDayUTC),
-            lte: new Date(endOfDayUTC),
+            gte: startOfDay,
+            lte: endOfDay,
           },
         },
         include: {
@@ -301,16 +280,16 @@ export class DonhangCronService {
             entityId: null,
             oldValues: {
               executionType: 'MANUAL_EXECUTION',
-              targetDate: vietnamDate,
+              targetDate: vietnamDateString,
               status: 'dagiao'
             },
             newValues: {
               result: 'NO_ORDERS_FOUND',
-              message: `No orders found to auto-complete for date: ${vietnamDate}`,
+              message: `No orders found to auto-complete for date: ${vietnamDateString}`,
               searchRange: {
-                startOfDayUTC,
-                endOfDayUTC,
-                vietnamDate
+                startOfDay: startOfDay.toISOString(),
+                endOfDay: endOfDay.toISOString(),
+                vietnamDate: vietnamDateString
               },
               executionTime: new Date().toISOString(),
               executionType: 'MANUAL_EXECUTION'
@@ -321,7 +300,7 @@ export class DonhangCronService {
 
         return {
           success: true,
-          message: `No orders found to auto-complete for date: ${vietnamDate}`,
+          message: `No orders found to auto-complete for date: ${vietnamDateString}`,
           count: 0,
           orders: [],
         };
@@ -340,7 +319,7 @@ export class DonhangCronService {
       });
 
       // Tạo detailed audit logs cho manual execution
-      await this.createManualAuditLog(ordersToUpdate, updateResult.count, vietnamDate);
+      await this.createManualAuditLog(ordersToUpdate, updateResult.count, vietnamDateString);
 
       const result = {
         success: true,

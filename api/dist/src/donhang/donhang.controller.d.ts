@@ -627,5 +627,18 @@ export declare class DonhangController {
         tongvat: import("@prisma/client/runtime/library").Decimal;
         tongtien: import("@prisma/client/runtime/library").Decimal;
     } | undefined>;
-    autoCompleteOrdersDaily(): Promise<void>;
+    autoCompleteOrdersDaily(): Promise<{
+        success: boolean;
+        message: string;
+        result: void;
+        error?: undefined;
+    } | {
+        success: boolean;
+        message: string;
+        error: any;
+        result?: undefined;
+    }>;
+    manualAutoComplete(body: {
+        date?: string;
+    }): Promise<any>;
 }

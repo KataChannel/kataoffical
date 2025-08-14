@@ -94,7 +94,34 @@ let DonhangController = class DonhangController {
         return result;
     }
     async autoCompleteOrdersDaily() {
-        return this.donhangCronService.autoCompleteOrdersDaily();
+        try {
+            const result = await this.donhangCronService.autoCompleteOrdersDaily();
+            return {
+                success: true,
+                message: 'Auto-complete cron job executed manually',
+                result: result
+            };
+        }
+        catch (error) {
+            return {
+                success: false,
+                message: 'Failed to execute auto-complete cron job',
+                error: error.message
+            };
+        }
+    }
+    async manualAutoComplete(body) {
+        try {
+            const result = await this.donhangCronService.manualAutoComplete(body.date);
+            return result;
+        }
+        catch (error) {
+            return {
+                success: false,
+                message: 'Failed to execute manual auto-complete',
+                error: error.message
+            };
+        }
     }
 };
 exports.DonhangController = DonhangController;
@@ -260,10 +287,19 @@ __decorate([
 ], DonhangController.prototype, "danhan", null);
 __decorate([
     (0, common_1.Get)('autoCompleteOrdersDaily'),
+    (0, audit_decorator_1.Audit)({ entity: 'Manual Auto Complete Orders', action: client_1.AuditAction.UPDATE, includeResponse: true }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], DonhangController.prototype, "autoCompleteOrdersDaily", null);
+__decorate([
+    (0, common_1.Post)('manualAutoComplete'),
+    (0, audit_decorator_1.Audit)({ entity: 'Manual Auto Complete Orders', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DonhangController.prototype, "manualAutoComplete", null);
 exports.DonhangController = DonhangController = __decorate([
     (0, common_1.Controller)('donhang'),
     __metadata("design:paramtypes", [donhang_service_1.DonhangService,
