@@ -100,7 +100,7 @@ let DonhangService = class DonhangService {
             ngaygiao: {
                 gte: Batdau ? new Date(Batdau) : undefined,
                 lte: Ketthuc ? new Date(Ketthuc) : undefined,
-            }
+            },
         });
         const where = {
             ngaygiao: dateRange.ngaygiao,
@@ -169,7 +169,7 @@ let DonhangService = class DonhangService {
             ngaygiao: {
                 gte: Batdau ? new Date(Batdau) : undefined,
                 lte: Ketthuc ? new Date(Ketthuc) : undefined,
-            }
+            },
         });
         const where = {
             ngaygiao: dateRange.ngaygiao,
@@ -199,7 +199,10 @@ let DonhangService = class DonhangService {
         const result = donhangs.flatMap((v) => {
             const orderItems = v.sanpham.map((v1) => {
                 const product = Sanphams.find((sp) => sp.id === v1.idSP);
-                const giaban = v?.khachhang?.banggia?.sanpham.find((sp) => sp.id === v1.idSP)?.giaban || product?.giaban || 0;
+                const giaban = v?.khachhang?.banggia?.sanpham.find((sp) => sp.id === v1.idSP)
+                    ?.giaban ||
+                    product?.giaban ||
+                    0;
                 const vat = product?.vat || 0;
                 const thanhtiensauvat = v1.slgiao * giaban * (1 + vat / 100);
                 return {
@@ -221,9 +224,9 @@ let DonhangService = class DonhangService {
                 };
             });
             const tongtiensauvat = orderItems.reduce((sum, item) => sum + item.thanhtiensauvat, 0);
-            return orderItems.map(item => ({
+            return orderItems.map((item) => ({
                 ...item,
-                tongtiensauvat: tongtiensauvat
+                tongtiensauvat: tongtiensauvat,
             }));
         });
         return result || [];
@@ -234,7 +237,7 @@ let DonhangService = class DonhangService {
             ngaygiao: {
                 gte: Batdau ? new Date(Batdau) : undefined,
                 lte: Ketthuc ? new Date(Ketthuc) : undefined,
-            }
+            },
         });
         const donhangs = await this.prisma.donhang.findMany({
             where: {
@@ -339,7 +342,7 @@ let DonhangService = class DonhangService {
             ngaygiao: {
                 gte: Batdau ? new Date(Batdau) : undefined,
                 lte: Ketthuc ? new Date(Ketthuc) : undefined,
-            }
+            },
         });
         const result = await this.prisma.donhang.findMany({
             where: {
@@ -388,7 +391,8 @@ let DonhangService = class DonhangService {
         return {
             ...result,
             sanpham: result.sanpham.map((item) => {
-                const priceFromBanggia = result.khachhang.banggia ? result.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
+                const priceFromBanggia = result.khachhang.banggia
+                    ? result.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
                     : 0;
                 const giaban = priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
                 return {

@@ -3,9 +3,7 @@ import { PrismaService } from 'prisma/prisma.service';
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 @Injectable()
 export class DonhangService {
-  constructor(
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
   private formatDateForFilename(): string {
@@ -26,15 +24,15 @@ export class DonhangService {
   private convertDateFilters(filters: any): any {
     // ✅ Frontend đã gửi UTC, chỉ cần parse trực tiếp
     const result: any = {};
-    
+
     if (filters.fromDate) {
       result.fromDate = new Date(filters.fromDate);
     }
-    
+
     if (filters.toDate) {
       result.toDate = new Date(filters.toDate);
     }
-    
+
     return result;
   }
 
@@ -123,7 +121,7 @@ export class DonhangService {
       ngaygiao: {
         gte: Batdau ? new Date(Batdau) : undefined,
         lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      }
+      },
     });
 
     const where: any = {
@@ -202,7 +200,7 @@ export class DonhangService {
       ngaygiao: {
         gte: Batdau ? new Date(Batdau) : undefined,
         lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      }
+      },
     });
 
     const where: any = {
@@ -233,21 +231,25 @@ export class DonhangService {
       orderBy: { createdAt: 'desc' },
     });
     const Sanphams = await this.prisma.sanpham.findMany();
-    const result = donhangs.flatMap((v: any) => {     
+    const result = donhangs.flatMap((v: any) => {
       const orderItems = v.sanpham.map((v1: any) => {
         const product = Sanphams.find((sp: any) => sp.id === v1.idSP);
-        const giaban = v?.khachhang?.banggia?.sanpham.find((sp: any) => sp.id === v1.idSP)?.giaban || product?.giaban || 0;
-        const vat:any = product?.vat || 0;
-        const thanhtiensauvat = v1.slgiao * giaban * (1 + vat / 100);     
+        const giaban =
+          v?.khachhang?.banggia?.sanpham.find((sp: any) => sp.id === v1.idSP)
+            ?.giaban ||
+          product?.giaban ||
+          0;
+        const vat: any = product?.vat || 0;
+        const thanhtiensauvat = v1.slgiao * giaban * (1 + vat / 100);
         return {
-          id:v.id,
+          id: v.id,
           ngaygiao: v.ngaygiao,
           tenkhachhang: v.khachhang?.name,
           makhachhang: v.khachhang?.makh,
           madonhang: v.madonhang,
-          tenhang: product?.title||'',
-          mahang: product?.masp||'',
-          dvt: product?.dvt||'',
+          tenhang: product?.title || '',
+          mahang: product?.masp || '',
+          dvt: product?.dvt || '',
           soluong: v1.slgiao,
           dongia: giaban,
           thanhtientruocvat: v1.slgiao * giaban,
@@ -257,17 +259,20 @@ export class DonhangService {
           ghichu: v1.ghichu,
         };
       });
-      
+
       // Calculate tongtiensauvat for the entire order
-      const tongtiensauvat = orderItems.reduce((sum, item) => sum + item.thanhtiensauvat, 0);
-      
+      const tongtiensauvat = orderItems.reduce(
+        (sum, item) => sum + item.thanhtiensauvat,
+        0,
+      );
+
       // Add tongtiensauvat to each item
-      return orderItems.map(item => ({
+      return orderItems.map((item) => ({
         ...item,
-        tongtiensauvat: tongtiensauvat
+        tongtiensauvat: tongtiensauvat,
       }));
     });
-    
+
     return result || [];
   }
 
@@ -283,7 +288,7 @@ export class DonhangService {
       ngaygiao: {
         gte: Batdau ? new Date(Batdau) : undefined,
         lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      }
+      },
     });
 
     // Lấy danh sách đơn hàng theo điều kiện lọc
@@ -424,7 +429,7 @@ export class DonhangService {
       ngaygiao: {
         gte: Batdau ? new Date(Batdau) : undefined,
         lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      }
+      },
     });
 
     const result = await this.prisma.donhang.findMany({
@@ -478,7 +483,8 @@ export class DonhangService {
     return {
       ...result,
       sanpham: result.sanpham.map((item: any) => {
-        const priceFromBanggia = result.khachhang.banggia ? result.khachhang.banggia.sanpham.find(
+        const priceFromBanggia = result.khachhang.banggia
+          ? result.khachhang.banggia.sanpham.find(
               (sp) => sp.sanphamId === item.idSP,
             )?.giaban
           : 0;
@@ -495,7 +501,9 @@ export class DonhangService {
           ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
           ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
           vat: parseFloat((item.vat ?? 0).toFixed(2)),
-          ttsauvat: parseFloat((item.ttnhan * (1 + (item.vat || 0) / 100)).toFixed(2)),
+          ttsauvat: parseFloat(
+            (item.ttnhan * (1 + (item.vat || 0) / 100)).toFixed(2),
+          ),
           ghichu: item.ghichu,
         };
       }),

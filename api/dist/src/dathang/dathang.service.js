@@ -371,12 +371,15 @@ let DathangService = class DathangService {
                 });
             }
         }
+        const dateRange = this.convertDateFilters({
+            ngaynhan: {
+                gte: where.Batdau ? new Date(where.Batdau) : undefined,
+                lte: where.Ketthuc ? new Date(where.Ketthuc) : undefined,
+            },
+        });
         if (where.Batdau || where.Ketthuc) {
-            whereClause.ngaynhan = {
-                ...(where.Batdau && { gte: new Date(where.Batdau) }),
-                ...(where.Ketthuc && { lte: new Date(where.Ketthuc) })
-            };
-            console.log('dateRange', whereClause.ngaynhan);
+            whereClause.ngaynhan = dateRange.ngaynhan,
+                console.log('dateRange', whereClause.ngaynhan);
         }
         if (khoId) {
             whereClause.khoId = khoId;
