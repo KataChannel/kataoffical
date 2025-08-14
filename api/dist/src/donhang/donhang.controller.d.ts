@@ -1,7 +1,9 @@
 import { DonhangService } from './donhang.service';
+import { DonhangCronService } from './donhang-cron.service';
 export declare class DonhangController {
     private readonly donhangService;
-    constructor(donhangService: DonhangService);
+    private readonly donhangCronService;
+    constructor(donhangService: DonhangService, donhangCronService: DonhangCronService);
     create(createDonhangDto: any): Promise<{
         sanpham: {
             id: string;
@@ -625,4 +627,5 @@ export declare class DonhangController {
         tongvat: import("@prisma/client/runtime/library").Decimal;
         tongtien: import("@prisma/client/runtime/library").Decimal;
     } | undefined>;
+    autoCompleteOrdersDaily(): Promise<void>;
 }

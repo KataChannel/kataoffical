@@ -17,9 +17,11 @@ const common_1 = require("@nestjs/common");
 const donhang_service_1 = require("./donhang.service");
 const client_1 = require("@prisma/client");
 const audit_decorator_1 = require("../auditlog/audit.decorator");
+const donhang_cron_service_1 = require("./donhang-cron.service");
 let DonhangController = class DonhangController {
-    constructor(donhangService) {
+    constructor(donhangService, donhangCronService) {
         this.donhangService = donhangService;
+        this.donhangCronService = donhangCronService;
     }
     create(createDonhangDto) {
         return this.donhangService.create(createDonhangDto);
@@ -90,6 +92,9 @@ let DonhangController = class DonhangController {
         const result = await this.donhangService.danhan(id, data);
         console.log('result', result);
         return result;
+    }
+    async autoCompleteOrdersDaily() {
+        return this.donhangCronService.autoCompleteOrdersDaily();
     }
 };
 exports.DonhangController = DonhangController;
@@ -253,8 +258,15 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], DonhangController.prototype, "danhan", null);
+__decorate([
+    (0, common_1.Get)('autoCompleteOrdersDaily'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], DonhangController.prototype, "autoCompleteOrdersDaily", null);
 exports.DonhangController = DonhangController = __decorate([
     (0, common_1.Controller)('donhang'),
-    __metadata("design:paramtypes", [donhang_service_1.DonhangService])
+    __metadata("design:paramtypes", [donhang_service_1.DonhangService,
+        donhang_cron_service_1.DonhangCronService])
 ], DonhangController);
 //# sourceMappingURL=donhang.controller.js.map

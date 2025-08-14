@@ -2,10 +2,14 @@ import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestj
 import { DonhangService } from './donhang.service';
 import { AuditAction } from '@prisma/client';
 import { Audit } from 'src/auditlog/audit.decorator';
+import { DonhangCronService } from './donhang-cron.service';
 
 @Controller('donhang')
 export class DonhangController {
-  constructor(private readonly donhangService: DonhangService) {}
+  constructor(
+    private readonly donhangService: DonhangService,
+    private readonly donhangCronService: DonhangCronService,
+  ) {}
   @Post()
   @Audit({entity: 'Create Donhang', action: AuditAction.CREATE, includeResponse: true})
   create(@Body() createDonhangDto: any) {
@@ -114,4 +118,8 @@ export class DonhangController {
   // danhan(@Body() data: any) {
   //   return this.donhangService.danhan(data);
   // }
+  @Get('autoCompleteOrdersDaily')
+  async autoCompleteOrdersDaily() {
+    return this.donhangCronService.autoCompleteOrdersDaily();
+  }
 }

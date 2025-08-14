@@ -9,4 +9,5 @@ export declare class DonhangCronService {
     private convertToVietnamTime;
     private createAuditLog;
     manualAutoComplete(dateString?: string): Promise<any>;
+    private createManualAuditLog;
 }
