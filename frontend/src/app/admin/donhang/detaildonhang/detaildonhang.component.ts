@@ -584,7 +584,8 @@ export class DetailDonhangComponent {
         toUpdate: toUpdate.length,
         toDelete: toDelete.length
       });
-
+      console.log(toDelete);
+      
       // 3. DELETE: Remove products that are no longer in the list
       if (toDelete.length > 0) {
         const idsToDelete = toDelete.map(sp => sp.id);

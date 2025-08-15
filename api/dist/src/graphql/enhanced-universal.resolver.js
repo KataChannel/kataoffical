@@ -30,16 +30,16 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
             skip: Math.max(0, skip || 0),
             take: Math.min(99999, Math.max(1, take || 50)),
             include,
-            select
+            select,
         });
         console.log(`🚀 Enhanced findMany query:`, {
             model: modelName,
             args: {
                 ...sanitizedArgs,
                 take: sanitizedArgs.take,
-                skip: sanitizedArgs.skip
+                skip: sanitizedArgs.skip,
             },
-            hasGraphQLInfo: !!info
+            hasGraphQLInfo: !!info,
         });
         try {
             return await this.enhancedService.findMany(modelName, sanitizedArgs, info);
@@ -53,11 +53,11 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
         const sanitizedArgs = {
             where: where || {},
             include,
-            select
+            select,
         };
         console.log(`🎯 Enhanced findUnique query:`, {
             model: modelName,
-            whereKeys: Object.keys(sanitizedArgs.where)
+            whereKeys: Object.keys(sanitizedArgs.where),
         });
         try {
             return await this.enhancedService.findUnique(modelName, sanitizedArgs, info);
@@ -71,11 +71,11 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
         const sanitizedArgs = {
             data: data || {},
             include,
-            select
+            select,
         };
         console.log(`➕ Enhanced create mutation:`, {
             model: modelName,
-            dataKeys: Object.keys(sanitizedArgs.data)
+            dataKeys: Object.keys(sanitizedArgs.data),
         });
         try {
             return await this.enhancedService.create(modelName, sanitizedArgs, info);
@@ -90,12 +90,12 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
             where: where || {},
             data: data || {},
             include,
-            select
+            select,
         };
         console.log(`✏️ Enhanced update mutation:`, {
             model: modelName,
             whereKeys: Object.keys(sanitizedArgs.where),
-            dataKeys: Object.keys(sanitizedArgs.data)
+            dataKeys: Object.keys(sanitizedArgs.data),
         });
         try {
             return await this.enhancedService.update(modelName, sanitizedArgs, info);
@@ -107,11 +107,11 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
     }
     async deleteOne(modelName, where) {
         const sanitizedArgs = {
-            where: where || {}
+            where: where || {},
         };
         console.log(`🗑️ Enhanced delete mutation:`, {
             model: modelName,
-            whereKeys: Object.keys(sanitizedArgs.where)
+            whereKeys: Object.keys(sanitizedArgs.where),
         });
         try {
             return await this.enhancedService.delete(modelName, sanitizedArgs);
@@ -124,13 +124,27 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
     async batchCreate(modelName, data) {
         console.log(`📦 Enhanced batch create:`, {
             model: modelName,
-            count: data?.length || 0
+            count: data?.length || 0,
         });
         try {
             return await this.enhancedService.batchOperation(modelName, 'create', data);
         }
         catch (error) {
             console.error(`❌ Enhanced batch create error:`, error);
+            throw error;
+        }
+    }
+    async batchDelete(modelName, ids) {
+        console.log(`🗑️ Enhanced batch delete:`, {
+            model: modelName,
+            count: ids?.length || 0,
+            ids: ids?.slice(0, 5)
+        });
+        try {
+            return await this.enhancedService.batchOperation(modelName, 'delete', ids);
+        }
+        catch (error) {
+            console.error(`❌ Enhanced batch delete error:`, error);
             throw error;
         }
     }
@@ -156,7 +170,7 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
             return {
                 success: true,
                 message: `Cache cleared${modelName ? ` for ${modelName}` : ' for all models'}`,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
             };
         }
         catch (error) {
@@ -207,44 +221,44 @@ exports.EnhancedUniversalResolver = EnhancedUniversalResolver;
 __decorate([
     (0, graphql_1.Query)(() => graphql_type_json_1.GraphQLJSON, {
         name: 'findMany',
-        description: 'Enhanced dynamic findMany with intelligent field selection and DataLoader optimization'
+        description: 'Enhanced dynamic findMany with intelligent field selection and DataLoader optimization',
     }),
     __param(0, (0, graphql_1.Args)('modelName', {
         type: () => String,
-        description: 'Model name (case-insensitive)'
+        description: 'Model name (case-insensitive)',
     })),
     __param(1, (0, graphql_1.Info)()),
     __param(2, (0, graphql_1.Args)('where', {
         type: () => graphql_type_json_1.GraphQLJSON,
         nullable: true,
-        description: 'Filter conditions'
+        description: 'Filter conditions',
     })),
     __param(3, (0, graphql_1.Args)('orderBy', {
         type: () => graphql_type_json_1.GraphQLJSON,
         nullable: true,
-        description: 'Sort conditions'
+        description: 'Sort conditions',
     })),
     __param(4, (0, graphql_1.Args)('skip', {
         type: () => Number,
         nullable: true,
         defaultValue: 0,
-        description: 'Records to skip for pagination'
+        description: 'Records to skip for pagination',
     })),
     __param(5, (0, graphql_1.Args)('take', {
         type: () => Number,
         nullable: true,
         defaultValue: 50,
-        description: 'Maximum records to return (max 999999)'
+        description: 'Maximum records to return (max 999999)',
     })),
     __param(6, (0, graphql_1.Args)('include', {
         type: () => graphql_type_json_1.GraphQLJSON,
         nullable: true,
-        description: 'Relations to include'
+        description: 'Relations to include',
     })),
     __param(7, (0, graphql_1.Args)('select', {
         type: () => graphql_type_json_1.GraphQLJSON,
         nullable: true,
-        description: 'Specific fields to select'
+        description: 'Specific fields to select',
     })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object, Object, Object, Number, Number, Object, Object]),
@@ -253,26 +267,26 @@ __decorate([
 __decorate([
     (0, graphql_1.Query)(() => graphql_type_json_1.GraphQLJSON, {
         name: 'findUnique',
-        description: 'Enhanced dynamic findUnique with field selection optimization'
+        description: 'Enhanced dynamic findUnique with field selection optimization',
     }),
     __param(0, (0, graphql_1.Args)('modelName', {
         type: () => String,
-        description: 'Model name (case-insensitive)'
+        description: 'Model name (case-insensitive)',
     })),
     __param(1, (0, graphql_1.Args)('where', {
         type: () => graphql_type_json_1.GraphQLJSON,
-        description: 'Unique identifier conditions'
+        description: 'Unique identifier conditions',
     })),
     __param(2, (0, graphql_1.Info)()),
     __param(3, (0, graphql_1.Args)('include', {
         type: () => graphql_type_json_1.GraphQLJSON,
         nullable: true,
-        description: 'Relations to include'
+        description: 'Relations to include',
     })),
     __param(4, (0, graphql_1.Args)('select', {
         type: () => graphql_type_json_1.GraphQLJSON,
         nullable: true,
-        description: 'Specific fields to select'
+        description: 'Specific fields to select',
     })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object, Object, Object, Object]),
@@ -281,26 +295,26 @@ __decorate([
 __decorate([
     (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
         name: 'createOne',
-        description: 'Enhanced dynamic create with optimized response'
+        description: 'Enhanced dynamic create with optimized response',
     }),
     __param(0, (0, graphql_1.Args)('modelName', {
         type: () => String,
-        description: 'Model name (case-insensitive)'
+        description: 'Model name (case-insensitive)',
     })),
     __param(1, (0, graphql_1.Args)('data', {
         type: () => graphql_type_json_1.GraphQLJSON,
-        description: 'Data to create'
+        description: 'Data to create',
     })),
     __param(2, (0, graphql_1.Info)()),
     __param(3, (0, graphql_1.Args)('include', {
         type: () => graphql_type_json_1.GraphQLJSON,
         nullable: true,
-        description: 'Relations to include in response'
+        description: 'Relations to include in response',
     })),
     __param(4, (0, graphql_1.Args)('select', {
         type: () => graphql_type_json_1.GraphQLJSON,
         nullable: true,
-        description: 'Specific fields to select in response'
+        description: 'Specific fields to select in response',
     })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object, Object, Object, Object]),
@@ -309,30 +323,30 @@ __decorate([
 __decorate([
     (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
         name: 'updateOne',
-        description: 'Enhanced dynamic update with optimized response'
+        description: 'Enhanced dynamic update with optimized response',
     }),
     __param(0, (0, graphql_1.Args)('modelName', {
         type: () => String,
-        description: 'Model name (case-insensitive)'
+        description: 'Model name (case-insensitive)',
     })),
     __param(1, (0, graphql_1.Args)('where', {
         type: () => graphql_type_json_1.GraphQLJSON,
-        description: 'Unique identifier conditions'
+        description: 'Unique identifier conditions',
     })),
     __param(2, (0, graphql_1.Args)('data', {
         type: () => graphql_type_json_1.GraphQLJSON,
-        description: 'Data to update'
+        description: 'Data to update',
     })),
     __param(3, (0, graphql_1.Info)()),
     __param(4, (0, graphql_1.Args)('include', {
         type: () => graphql_type_json_1.GraphQLJSON,
         nullable: true,
-        description: 'Relations to include in response'
+        description: 'Relations to include in response',
     })),
     __param(5, (0, graphql_1.Args)('select', {
         type: () => graphql_type_json_1.GraphQLJSON,
         nullable: true,
-        description: 'Specific fields to select in response'
+        description: 'Specific fields to select in response',
     })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object, Object, Object, Object, Object]),
@@ -341,15 +355,15 @@ __decorate([
 __decorate([
     (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
         name: 'deleteOne',
-        description: 'Enhanced dynamic delete operation'
+        description: 'Enhanced dynamic delete operation',
     }),
     __param(0, (0, graphql_1.Args)('modelName', {
         type: () => String,
-        description: 'Model name (case-insensitive)'
+        description: 'Model name (case-insensitive)',
     })),
     __param(1, (0, graphql_1.Args)('where', {
         type: () => graphql_type_json_1.GraphQLJSON,
-        description: 'Unique identifier conditions'
+        description: 'Unique identifier conditions',
     })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
@@ -358,28 +372,45 @@ __decorate([
 __decorate([
     (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
         name: 'batchCreate',
-        description: 'Enhanced batch create for multiple records'
+        description: 'Enhanced batch create for multiple records',
     }),
     __param(0, (0, graphql_1.Args)('modelName', {
         type: () => String,
-        description: 'Model name (case-insensitive)'
+        description: 'Model name (case-insensitive)',
     })),
     __param(1, (0, graphql_1.Args)('data', {
         type: () => [graphql_type_json_1.GraphQLJSON],
-        description: 'Array of data objects to create'
+        description: 'Array of data objects to create',
     })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Array]),
     __metadata("design:returntype", Promise)
 ], EnhancedUniversalResolver.prototype, "batchCreate", null);
 __decorate([
-    (0, graphql_1.Query)(() => graphql_type_json_1.GraphQLJSON, {
-        name: 'modelMetadata',
-        description: 'Get metadata about a model for optimization'
+    (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
+        name: 'batchDelete',
+        description: 'Enhanced batch delete for multiple records',
     }),
     __param(0, (0, graphql_1.Args)('modelName', {
         type: () => String,
-        description: 'Model name to get metadata for'
+        description: 'Model name (case-insensitive)',
+    })),
+    __param(1, (0, graphql_1.Args)('ids', {
+        type: () => [String],
+        description: 'Array of IDs to delete',
+    })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Array]),
+    __metadata("design:returntype", Promise)
+], EnhancedUniversalResolver.prototype, "batchDelete", null);
+__decorate([
+    (0, graphql_1.Query)(() => graphql_type_json_1.GraphQLJSON, {
+        name: 'modelMetadata',
+        description: 'Get metadata about a model for optimization',
+    }),
+    __param(0, (0, graphql_1.Args)('modelName', {
+        type: () => String,
+        description: 'Model name to get metadata for',
     })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -388,12 +419,12 @@ __decorate([
 __decorate([
     (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
         name: 'clearDataLoaderCache',
-        description: 'Clear DataLoader cache for better performance testing'
+        description: 'Clear DataLoader cache for better performance testing',
     }),
     __param(0, (0, graphql_1.Args)('modelName', {
         type: () => String,
         nullable: true,
-        description: 'Specific model to clear cache for (optional)'
+        description: 'Specific model to clear cache for (optional)',
     })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

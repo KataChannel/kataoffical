@@ -165,6 +165,15 @@ type Mutation {
     data: [JSON!]!
   ): JSON!
 
+  """Enhanced batch delete for multiple records"""
+  batchDelete(
+    """Model name (case-insensitive)"""
+    modelName: String!
+
+    """Array of IDs to delete"""
+    ids: [String!]!
+  ): JSON!
+
   """Clear DataLoader cache for better performance testing"""
   clearDataLoaderCache(
     """Specific model to clear cache for (optional)"""

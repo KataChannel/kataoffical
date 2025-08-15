@@ -11,6 +11,7 @@ export declare class EnhancedUniversalResolver {
     updateOne(modelName: string, where: any, data: any, info: GraphQLResolveInfo, include?: any, select?: any): Promise<any>;
     deleteOne(modelName: string, where: any): Promise<any>;
     batchCreate(modelName: string, data: any[]): Promise<any>;
+    batchDelete(modelName: string, ids: string[]): Promise<any>;
     modelMetadata(modelName: string): Promise<any>;
     clearDataLoaderCache(modelName?: string): Promise<{
         success: boolean;
