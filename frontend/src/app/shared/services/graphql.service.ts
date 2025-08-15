@@ -189,11 +189,11 @@ const BATCH_UPDATE_MUTATION = gql`
 const BATCH_DELETE_MUTATION = gql`
   mutation BatchDelete(
     $modelName: String!
-    $where: [JSON!]!
+    $ids: [String!]!
   ) {
     batchDelete(
       modelName: $modelName
-      where: $where
+      ids: $ids
     )
   }
 `;
@@ -673,7 +673,7 @@ export class GraphqlService {
 
   async batchDelete<T = any>(
     modelName: string,
-    whereConditions: any[]
+    ids: string[]
   ): Promise<T[]> {
     const startTime = Date.now();
     const loadingKey = `batchDelete_${modelName}`;
@@ -682,7 +682,7 @@ export class GraphqlService {
 
     const variables = {
       modelName,
-      where: whereConditions
+      ids
     };
 
     try {

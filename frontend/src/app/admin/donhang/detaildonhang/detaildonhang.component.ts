@@ -177,6 +177,9 @@ export class DetailDonhangComponent {
         id: true,
         makh: true,
         name: true,
+        diachi:true,
+        sdt:true,
+        ghichu:true,
         banggia: {
           select: {
             id: true,
@@ -333,7 +336,7 @@ export class DetailDonhangComponent {
       const createData = {
         ...donhangData,
         // Convert Date to ISO string if needed
-        ngaygiao: donhangData.ngaygiao ? new Date(donhangData.ngaygiao).toISOString() : null,
+        ngaygiao: donhangData.ngaygiao,
         // Calculate totals
         tongvat: this.calculateTotalVat(),
         tongtien: this.calculateTotalAmount(),
@@ -357,9 +360,7 @@ export class DetailDonhangComponent {
           })) || []
         }
       };
-
       console.log('GraphQL Create Data:', createData);
-
       // Create Donhang via GraphQL
       const result = await this._GraphqlService.createOne('donhang', createData);
       
@@ -399,6 +400,9 @@ export class DetailDonhangComponent {
     }
   }
 
+
+
+
   // Helper methods for calculations
   private calculateTotalVat(): number {
     return this.DetailDonhang().sanpham?.reduce((total: number, sp: any) => {
@@ -421,7 +425,7 @@ export class DetailDonhangComponent {
     
     const createData = {
       ...donhangData,
-      ngaygiao: donhangData.ngaygiao ? new Date(donhangData.ngaygiao).toISOString() : null,
+      ngaygiao: donhangData.ngaygiao,
       tongvat: this.calculateTotalVat(),
       tongtien: this.calculateTotalAmount(),
       sanpham: {
@@ -451,34 +455,371 @@ export class DetailDonhangComponent {
 
   private async updateDonhang(status?: any) {
     try {
+      console.log('Updating Donhang:', this.DetailDonhang());
+
+      // Update status if provided
       this.DetailDonhang.update((v: any) => ({
         ...v,
         type: 'donsi',
         status: status || v.status,
       }));
 
-      await this._DonhangService
-        .updateDonhang(this.DetailDonhang())
-        .then((data) => {
-          console.log(data);
+      // Prepare data for GraphQL update mutation
+      const currentDonhang = this.DetailDonhang();
+      const { khachhang, banggia, createdAt, updatedAt, sanpham, ...donhangData } = currentDonhang;
+      
+      // Build update payload - KHÔNG bao gồm sanpham trong update chính
+      const updateData = {
+        ...donhangData,
+        // Convert Date to ISO string if needed
+        ngaygiao: donhangData.ngaygiao,
+        // Calculate totals
+        tongvat: this.calculateTotalVat(),
+        tongtien: this.calculateTotalAmount(),
+        // KHÔNG update sanpham ở đây - sẽ xử lý riêng
+      };
+
+      console.log('GraphQL Update Data (without sanpham):', updateData);
+
+      // Update Donhang via GraphQL (không bao gồm sanpham)
+      const result = await this._GraphqlService.updateOne('donhang', 
+        { id: currentDonhang.id }, 
+        updateData
+      );
+      
+      console.log('Updated Donhang Result:', result);
+      
+      if (result && result.id) {
+        // ALWAYS update sanpham when updating donhang
+        // This handles all cases: thay đổi khách hàng, bảng giá, sản phẩm, số lượng, ghi chú
+        await this.updateDonhangSanpham();
+
+        // Update the local state with the result
+        this.DetailDonhang.update((v: any) => ({
+          ...v,
+          ...result,
+          sanpham: currentDonhang.sanpham, // Giữ nguyên sanpham local
+          updatedAt: result.updatedAt || new Date().toISOString()
+        }));
+
+        this._snackBar.open('Cập Nhật Thành Công', '', {
+          duration: 1000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
         });
-      this._snackBar.open('Cập Nhật Thành Công', '', {
-        duration: 1000,
+        this.isEdit.update((value) => !value);
+      } else {
+        throw new Error('Không nhận được kết quả từ server');
+      }
+
+    } catch (error: any) {
+      console.error('Lỗi khi cập nhật donhang:', error);
+      
+      let errorMessage = 'Lỗi khi cập nhật đơn hàng';
+      if (error?.message) {
+        errorMessage = error.message.includes('sanpham') 
+          ? 'Lỗi dữ liệu sản phẩm. Vui lòng kiểm tra lại.'
+          : error.message;
+      }
+      
+      this._snackBar.open(errorMessage, '', {
+        duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
+        panelClass: ['snackbar-error'],
       });
-      this.isEdit.update((value) => !value);
-    } catch (error) {
-      console.error('Lỗi khi cập nhật donhang:', error);
     }
   }
+
+  /**
+   * Update sanpham in donhang - handles nested relation updates
+   * This method should be called separately when sanpham data changes
+   */
+  /**
+   * Comprehensive sanpham update with all change scenarios:
+   * - Thay đổi khách hàng: Cập nhật lại giá theo bảng giá mới
+   * - Thay đổi bảng giá: Áp dụng giá mới cho tất cả sản phẩm 
+   * - Sửa sldat, ghichu: Cập nhật từng sản phẩm
+   * - Thêm/bớt sản phẩm: Xử lý danh sách sản phẩm hoàn toàn mới
+   */
+  private async updateDonhangSanpham() {
+    try {
+      const currentDonhang = this.DetailDonhang();
+      if (!currentDonhang.id) {
+        console.log('No donhang ID found, skipping sanpham update');
+        return;
+      }
+
+      console.log('Starting comprehensive sanpham update for donhang:', currentDonhang.id);
+
+      // Get existing sanpham records to compare changes
+      const existingSanpham = await this._GraphqlService.findMany('donhangsanpham', {
+        where: { donhangId: currentDonhang.id },
+        select: { 
+          id: true, 
+          idSP: true, 
+          giaban: true, 
+          sldat: true, 
+          ghichu: true,
+          order: true
+        }
+      });
+
+      const currentSanphamList = currentDonhang.sanpham || [];
+
+      // 1. SCENARIO: Thay đổi khách hàng hoặc bảng giá
+      // Need to recalculate prices for all products
+      if (this.hasCustomerOrPriceListChanged(currentDonhang)) {
+        await this.updateAllSanphamPrices(currentDonhang, currentSanphamList);
+        return; // Complete price recalculation, no need for other updates
+      }
+
+      // 2. SCENARIO: Thêm/bớt sản phẩm
+      // Compare existing vs current product lists
+      const { toAdd, toUpdate, toDelete } = this.compareSanphamLists(existingSanpham, currentSanphamList);
+
+      console.log('Sanpham changes detected:', {
+        toAdd: toAdd.length,
+        toUpdate: toUpdate.length,
+        toDelete: toDelete.length
+      });
+
+      // 3. DELETE: Remove products that are no longer in the list
+      if (toDelete.length > 0) {
+        const idsToDelete = toDelete.map(sp => sp.id);
+        await this._GraphqlService.batchDelete('donhangsanpham', idsToDelete);
+        console.log(`Deleted ${toDelete.length} sanpham records`);
+      }
+
+      // 4. UPDATE: Modify existing products (sldat, ghichu changes)
+      if (toUpdate.length > 0) {
+        await this.batchUpdateExistingSanpham(toUpdate);
+        console.log(`Updated ${toUpdate.length} sanpham records`);
+      }
+
+      // 5. ADD: Create new products
+      if (toAdd.length > 0) {
+        const createData = toAdd.map((sp: any, index: number) => ({
+          donhangId: currentDonhang.id,
+          idSP: sp.id,
+          giaban: this.parseNumericValue(sp.giaban),
+          sldat: this.parseNumericValue(sp.sldat),
+          slgiao: this.parseNumericValue(sp.slgiao),
+          slnhan: this.parseNumericValue(sp.slnhan),
+          slhuy: this.parseNumericValue(sp.slhuy),
+          ttdat: this.parseNumericValue(sp.ttdat),
+          ttgiao: this.parseNumericValue(sp.ttgiao),
+          ttnhan: this.parseNumericValue(sp.ttnhan),
+          vat: this.parseNumericValue(sp.vat),
+          ttsauvat: this.parseNumericValue(sp.ttsauvat),
+          ghichu: sp.ghichu || null,
+          order: existingSanpham.length + index + 1,
+          isActive: true
+        }));
+
+        await this._GraphqlService.batchCreate('donhangsanpham', createData);
+        console.log(`Created ${toAdd.length} new sanpham records`);
+      }
+
+      console.log('Comprehensive sanpham update completed successfully');
+
+      // Reset change flags after successful update
+      this.sanphamDataChanged = false;
+      
+    } catch (error) {
+      console.error('Lỗi khi cập nhật sanpham trong donhang:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Check if customer or price list has changed
+   */
+  private hasCustomerOrPriceListChanged(currentDonhang: any): boolean {
+    // This would compare with original values stored somewhere
+    // For now, we'll assume this is determined by UI state
+    return this.customerChanged || this.priceListChanged || false;
+  }
+
+  /**
+   * Update all sanpham prices based on new customer or price list
+   */
+  private async updateAllSanphamPrices(donhang: any, sanphamList: any[]) {
+    console.log('Recalculating all sanpham prices due to customer/price list change');
+    
+    // Delete all existing sanpham
+    const existingSanpham = await this._GraphqlService.findMany('donhangsanpham', {
+      where: { donhangId: donhang.id },
+      select: { id: true }
+    });
+
+    if (existingSanpham.length > 0) {
+      const idsToDelete = existingSanpham.map(sp => sp.id);
+      await this._GraphqlService.batchDelete('donhangsanpham', idsToDelete);
+    }
+
+    // Recreate all sanpham with new prices
+    if (sanphamList.length > 0) {
+      const createData = sanphamList.map((sp: any, index: number) => ({
+        donhangId: donhang.id,
+        idSP: sp.id,
+        giaban: this.parseNumericValue(sp.giaban),
+        sldat: this.parseNumericValue(sp.sldat),
+        slgiao: this.parseNumericValue(sp.slgiao),
+        slnhan: this.parseNumericValue(sp.slnhan),
+        slhuy: this.parseNumericValue(sp.slhuy),
+        ttdat: this.parseNumericValue(sp.ttdat),
+        ttgiao: this.parseNumericValue(sp.ttgiao),
+        ttnhan: this.parseNumericValue(sp.ttnhan),
+        vat: this.parseNumericValue(sp.vat),
+        ttsauvat: this.parseNumericValue(sp.ttsauvat),
+        ghichu: sp.ghichu || null,
+        order: index + 1,
+        isActive: true
+      }));
+
+      await this._GraphqlService.batchCreate('donhangsanpham', createData);
+    }
+
+    // Reset change flags
+    this.customerChanged = false;
+    this.priceListChanged = false;
+    this.sanphamDataChanged = false;
+  }
+
+  /**
+   * Compare existing vs current sanpham lists to determine changes
+   */
+  private compareSanphamLists(existing: any[], current: any[]) {
+    const toAdd: any[] = [];
+    const toUpdate: any[] = [];
+    const toDelete: any[] = [];
+
+    // Find products to add (in current but not in existing)
+    current.forEach(currentSP => {
+      const existingSP = existing.find(e => e.idSP === currentSP.id);
+      if (!existingSP) {
+        toAdd.push(currentSP);
+      } else {
+        // Check if product needs update (sldat, ghichu changes)
+        const needsUpdate = 
+          this.parseNumericValue(existingSP.sldat) !== this.parseNumericValue(currentSP.sldat) ||
+          existingSP.ghichu !== (currentSP.ghichu || null) ||
+          this.parseNumericValue(existingSP.giaban) !== this.parseNumericValue(currentSP.giaban);
+
+        if (needsUpdate) {
+          toUpdate.push({
+            existingId: existingSP.id,
+            currentData: currentSP
+          });
+        }
+      }
+    });
+
+    // Find products to delete (in existing but not in current)
+    existing.forEach(existingSP => {
+      const currentSP = current.find(c => c.id === existingSP.idSP);
+      if (!currentSP) {
+        toDelete.push(existingSP);
+      }
+    });
+
+    return { toAdd, toUpdate, toDelete };
+  }
+
+  /**
+   * Batch update existing sanpham records
+   */
+  private async batchUpdateExistingSanpham(updateList: any[]) {
+    for (const update of updateList) {
+      const { existingId, currentData } = update;
+      
+      const updateData = {
+        giaban: this.parseNumericValue(currentData.giaban),
+        sldat: this.parseNumericValue(currentData.sldat),
+        slgiao: this.parseNumericValue(currentData.slgiao),
+        slnhan: this.parseNumericValue(currentData.slnhan),
+        slhuy: this.parseNumericValue(currentData.slhuy),
+        ttdat: this.parseNumericValue(currentData.ttdat),
+        ttgiao: this.parseNumericValue(currentData.ttgiao),
+        ttnhan: this.parseNumericValue(currentData.ttnhan),
+        vat: this.parseNumericValue(currentData.vat),
+        ttsauvat: this.parseNumericValue(currentData.ttsauvat),
+        ghichu: currentData.ghichu || null
+      };
+
+      await this._GraphqlService.updateOne('donhangsanpham', 
+        { id: existingId },
+        updateData
+      );
+    }
+  }
+
+  /**
+   * Helper method to parse numeric values safely
+   */
+  private parseNumericValue(value: any): number {
+    if (value === null || value === undefined || value === '') {
+      return 0;
+    }
+    const parsed = parseFloat(value.toString());
+    return isNaN(parsed) ? 0 : parsed;
+  }
+
+  // Change tracking flags
+  private customerChanged: boolean = false;
+  private priceListChanged: boolean = false;
+  private sanphamDataChanged: boolean = false;
+
+  /**
+   * Call this method when customer changes
+   */
+  onCustomerChange() {
+    this.customerChanged = true;
+    console.log('Customer change detected, will recalculate prices on next update');
+  }
+
+  /**
+   * Call this method when price list changes
+   */
+  onPriceListChange() {
+    this.priceListChanged = true;
+    console.log('Price list change detected, will recalculate prices on next update');
+  }
+
+  /**
+   * Update donhang WITH sanpham - comprehensive update
+   * Use this method when you need to update both donhang and sanpham
+   */
+  private async updateDonhangWithSanpham(status?: any) {
+    try {
+      // First update the main donhang record
+      await this.updateDonhang(status);
+      
+      // Then update sanpham separately
+      await this.updateDonhangSanpham();
+      
+      console.log('Complete donhang with sanpham update successful');
+      
+    } catch (error) {
+      console.error('Lỗi khi cập nhật donhang với sanpham:', error);
+      throw error;
+    }
+  }
+
   UpdateStatus(status: any) {
     this.updateDonhang(status);
   }
   async DeleteData() {
     try {
-      await this._DonhangService.DeleteDonhang(this.DetailDonhang());
+      const currentDonhang = this.DetailDonhang();
+      console.log('Deleting Donhang:', currentDonhang);
+
+      // Delete Donhang via GraphQL
+      const result = await this._GraphqlService.deleteOne('donhang', { id: currentDonhang.id });
+      
+      console.log('Deleted Donhang Result:', result);
 
       this._snackBar.open('Xóa Thành Công', '', {
         duration: 1000,
@@ -488,8 +829,22 @@ export class DetailDonhangComponent {
       });
 
       this._router.navigate(['/admin/donhang']);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Lỗi khi xóa donhang:', error);
+      
+      let errorMessage = 'Lỗi khi xóa đơn hàng';
+      if (error?.message) {
+        errorMessage = error.message.includes('constraint') 
+          ? 'Không thể xóa đơn hàng do có ràng buộc dữ liệu'
+          : error.message;
+      }
+      
+      this._snackBar.open(errorMessage, '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
     }
   }
   goBack() {
@@ -572,8 +927,18 @@ export class DetailDonhangComponent {
     // console.log(this.Detail.Giohangs);
   }
   SelectBanggia(event: any) {
-    console.log(event.value);
-    // this.Detail.idBanggia = event.value
+    console.log('Selecting new banggia:', event.value);
+    
+    // Mark that price list has changed for comprehensive update
+    this.onPriceListChange();
+    
+    // Update the donhang with new banggia
+    this.DetailDonhang.update((v: any) => ({
+      ...v,
+      banggiaId: event.value
+    }));
+    
+    console.log('Price list change detected, products will be repriced on next update');
   }
   Chonkhachhang(item: any) {
     this.DetailDonhang.update((v: any) => {
@@ -599,6 +964,10 @@ export class DetailDonhangComponent {
       (updateFn: (v: any) => any) => this.DetailDonhang.update(updateFn),
       this.dataSource().filteredData.length
     );
+
+    // Mark that sanpham data has changed
+    this.sanphamDataChanged = true;
+    console.log('Sanpham data changed, will be updated on next save');
   }
 
   updateBlurValue(
@@ -618,6 +987,10 @@ export class DetailDonhangComponent {
       this.DetailDonhang().sanpham || [],
       (updateFn: (v: any) => any) => this.DetailDonhang.update(updateFn)
     );
+
+    // Mark that sanpham data has changed
+    this.sanphamDataChanged = true;
+    console.log('Sanpham data changed (blur event), will be updated on next save');
 
     // Update dataSource to reflect changes
     this.dataSource.update((ds) => {
@@ -646,6 +1019,9 @@ export class DetailDonhangComponent {
     console.log('Selected Khachhang:', selectedKhachhang);
     
     if (selectedKhachhang) {
+      // Mark that customer has changed for comprehensive update
+      this.onCustomerChange();
+      
       // Check if banggia is expired
       const isExpired = selectedKhachhang?.banggia?.ketthuc
         ? moment().isAfter(moment(selectedKhachhang.banggia.ketthuc))
@@ -669,15 +1045,17 @@ export class DetailDonhangComponent {
   }
 
   private updateKhachhangSelection(selectedKhachhang: any) {
+    // Mark that customer has changed for comprehensive update
+    this.onCustomerChange();
+    
     this.DetailDonhang.update((v: any) => ({
       ...v,
       khachhangId: selectedKhachhang.id,
       banggiaId: selectedKhachhang?.banggia?.id || null,
       khachhang: selectedKhachhang,
       banggia: selectedKhachhang?.banggia || null
-    }));
-    
-    console.log('Updated DetailDonhang:', this.DetailDonhang());
+    }));    
+    console.log('Updated DetailDonhang with new customer:', this.DetailDonhang());
   }
 
   displayedColumns: string[] = [
@@ -812,44 +1190,104 @@ export class DetailDonhangComponent {
     this.ListFilter = this.dataSource().data = this.DetailDonhang().sanpham;
   }
 
-  CoppyDon() {
+  async CoppyDon() {
     this._snackBar.open('Đang Coppy Đơn Hàng', '', {
       duration: 1000,
       horizontalPosition: 'end',
       verticalPosition: 'top',
       panelClass: ['snackbar-warning'],
     });
-    this.DetailDonhang.update((v: any) => {
-      delete v.id;
-      v.title = `${v.title} - Coppy`;
-      v.madonhang = GenId(8, false);
-      return v;
-    });
-    console.log(this.DetailDonhang());
 
-    this._DonhangService
-      .CreateDonhang(this.DetailDonhang())
-      .then((data: any) => {
-        if (data) {
-          this._snackBar.open('Coppy Đơn Hàng Thành Công', '', {
-            duration: 1000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['snackbar-success'],
-          });
-          this._router.navigate(['/admin/donhang', data.id]);
-        } else {
-          this._snackBar.open('Coppy Đơn Hàng Thất Bại', '', {
-            duration: 1000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['snackbar-error'],
-          });
-        }
-        //  setTimeout(() => {
-        //   window.location.href = `admin/donhang/donsi/${data.id}`;
-        //  }, 1000);
+    try {
+      // Get max order number for new order
+      const maxOrderResult = await this._GraphqlService.findAll('donhang', {
+        take: 1,
+        orderBy: { order: 'desc' },
+        select: { order: true },
       });
+
+      let maxOrder = 0;
+      if (maxOrderResult?.data && Array.isArray(maxOrderResult.data) && maxOrderResult.data.length > 0) {
+        maxOrder = maxOrderResult.data[0]?.order || 0;
+      }
+      
+      const newOrder = maxOrder + 1;
+
+      // Prepare copy data
+      const originalDonhang = this.DetailDonhang();
+      const { id, khachhang, banggia, createdAt, updatedAt, ...donhangData } = originalDonhang;
+      
+      const copyData = {
+        ...donhangData,
+        title: `${originalDonhang.title} - Copy`,
+        madonhang: DonhangnumberToCode(newOrder),
+        order: newOrder,
+        type: 'donsi',
+        status: 'dadat',
+        isActive: true,
+        printCount: 0,
+        // Convert Date to ISO string if needed
+        ngaygiao: donhangData.ngaygiao,
+        // Calculate totals
+        tongvat: this.calculateTotalVat(),
+        tongtien: this.calculateTotalAmount(),
+        // Nested create for sanpham relation
+        sanpham: {
+          create: originalDonhang.sanpham?.map((sp: any, index: number) => ({
+            idSP: sp.id,
+            giaban: parseFloat(sp.giaban?.toString() || '0'),
+            sldat: parseFloat(sp.sldat?.toString() || '0'),
+            slgiao: parseFloat(sp.slgiao?.toString() || '0'), 
+            slnhan: parseFloat(sp.slnhan?.toString() || '0'),
+            slhuy: parseFloat(sp.slhuy?.toString() || '0'),
+            ttdat: parseFloat(sp.ttdat?.toString() || '0'),
+            ttgiao: parseFloat(sp.ttgiao?.toString() || '0'),
+            ttnhan: parseFloat(sp.ttnhan?.toString() || '0'),
+            vat: parseFloat(sp.vat?.toString() || '0'),
+            ttsauvat: parseFloat(sp.ttsauvat?.toString() || '0'),
+            ghichu: sp.ghichu || null,
+            order: index + 1,
+            isActive: true
+          })) || []
+        }
+      };
+
+      console.log('Copy Donhang Data:', copyData);
+
+      // Create copy via GraphQL
+      const result = await this._GraphqlService.createOne('donhang', copyData);
+      
+      console.log('Copy Donhang Result:', result);
+      
+      if (result && result.id) {
+        this._snackBar.open('Coppy Đơn Hàng Thành Công', '', {
+          duration: 1000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+        this._router.navigate(['/admin/donhang', result.id]);
+      } else {
+        throw new Error('Không nhận được kết quả từ server');
+      }
+
+    } catch (error: any) {
+      console.error('Lỗi khi copy donhang:', error);
+      
+      let errorMessage = 'Lỗi khi copy đơn hàng';
+      if (error?.message) {
+        errorMessage = error.message.includes('sanpham') 
+          ? 'Lỗi dữ liệu sản phẩm. Vui lòng kiểm tra lại.'
+          : error.message;
+      }
+      
+      this._snackBar.open(errorMessage, '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
   }
 
   printContent() {
@@ -893,7 +1331,9 @@ export class DetailDonhangComponent {
           v.printCount = v.printCount + 1;
           return v;
         });
-        this._DonhangService.updateDonhang(this.DetailDonhang());
+        
+        // Update printCount via GraphQL
+        this.updateDonhang(); // This will update printCount to server
       } else {
         console.error('Không thể mở cửa sổ in');
       }
