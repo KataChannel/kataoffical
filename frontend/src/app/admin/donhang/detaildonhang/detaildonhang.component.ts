@@ -99,13 +99,11 @@ export class DetailDonhangComponent {
       const id = params.get('id');
       this._DonhangService.setDonhangId(id);
     });
-    effect(async () => {
-
-    });
+    effect(async () => {});
   }
   DetailDonhang: any = this._DonhangService.DetailDonhang;
   // ListKhachhang: any = this._KhachhangService.ListKhachhang;
-  ListKhachhang:any[]=[]
+  ListKhachhang: any[] = [];
   ListSanpham: any = this._SanphamService.ListSanpham;
   isEdit = signal(false);
   isDelete = signal(false);
@@ -114,6 +112,30 @@ export class DetailDonhangComponent {
   filterSanpham: any[] = [];
   donhangId: any = this._DonhangService.donhangId;
   permissions: any = [];
+
+  // Getter/Setter for khachhangId to avoid read-only property errors
+  get selectedKhachhangId(): string | null {
+    return this.DetailDonhang()?.khachhangId || null;
+  }
+
+  set selectedKhachhangId(value: string | null) {
+    this.DetailDonhang.update((v: any) => ({
+      ...v,
+      khachhangId: value
+    }));
+  }
+
+  // Getter/Setter for banggiaId to avoid read-only property errors
+  get selectedBanggiaId(): string | null {
+    return this.DetailDonhang()?.banggiaId || null;
+  }
+
+  set selectedBanggiaId(value: string | null) {
+    this.DetailDonhang.update((v: any) => ({
+      ...v,
+      banggiaId: value
+    }));
+  }
   async ngOnInit() {
     await this._UserService.getProfile();
     this.permissions = this._UserService
@@ -121,7 +143,6 @@ export class DetailDonhangComponent {
       .permissions.map((v: any) => v.name);
     await this._BanggiaService.getAllBanggia();
     this.filterBanggia = this._BanggiaService.ListBanggia();
-
 
     const Sanphams = await this._GraphqlService.findAll('sanpham', {
       enableParallelFetch: true,
@@ -145,7 +166,6 @@ export class DetailDonhangComponent {
     });
     this.filterSanpham = Sanphams.data;
 
-
     const Khachhangs = await this._GraphqlService.findAll('khachhang', {
       enableParallelFetch: true,
       maxConcurrency: 4,
@@ -158,14 +178,14 @@ export class DetailDonhangComponent {
         makh: true,
         name: true,
         banggia: {
-            select: {
-              id: true,
-              mabanggia: true,
-              title: true,
-              batdau: true,
-              ketthuc: true,
-            },  
-        }
+          select: {
+            id: true,
+            mabanggia: true,
+            title: true,
+            batdau: true,
+            ketthuc: true,
+          },
+        },
       },
     });
     this.filterKhachhang = Khachhangs.data;
@@ -176,8 +196,16 @@ export class DetailDonhangComponent {
     }
     if (id === 'new') {
       this.DetailDonhang.set({
-        title: 'Đơn Hàng'+ moment().format('DD_MM_YYYY'),
+        title: 'Đơn Hàng' + moment().format('DD_MM_YYYY'),
         ngaygiao: moment().add(1, 'days').format('YYYY-MM-DD'),
+        type: 'donsi',
+        status: 'dadat',
+        isshowvat: false,
+        isActive: true,
+        printCount: 0,
+        tongvat: 0,
+        tongtien: 0,
+        sanpham: []
       });
       this._ListdonhangComponent.drawer.open();
       this.isEdit.set(true);
@@ -235,14 +263,22 @@ export class DetailDonhangComponent {
       return 'Vui lòng thêm ít nhất một sản phẩm';
     }
 
-    // Validate số lượng sản phẩm
+    // Validate số lượng sản phẩm và ID
     for (const sp of donhang.sanpham) {
+      if (!sp.id) {
+        return `Sản phẩm "${sp.title || 'Không xác định'}" thiếu ID`;
+      }
+
       if (!sp.sldat || sp.sldat <= 0) {
         return `Số lượng đặt của sản phẩm "${sp.title}" phải lớn hơn 0`;
       }
 
-      if (sp.slgiao < sp.sldat) {
-        return `Số lượng giao của sản phẩm "${sp.title}" không được nhỏ hơn số lượng đặt`;
+      if (sp.slgiao && sp.slgiao > sp.sldat) {
+        return `Số lượng giao của sản phẩm "${sp.title}" không được lớn hơn số lượng đặt`;
+      }
+
+      if (sp.slnhan && sp.slnhan > sp.slgiao) {
+        return `Số lượng nhận của sản phẩm "${sp.title}" không được lớn hơn số lượng giao`;
       }
     }
 
@@ -260,8 +296,9 @@ export class DetailDonhangComponent {
 
   private async createDonhang() {
     try {
-      console.log(this.DetailDonhang());
-      
+      console.log('Creating Donhang:', this.DetailDonhang());
+
+      // Get max order number for new order
       const maxOrderResult = await this._GraphqlService.findAll('donhang', {
         take: 1,
         orderBy: { order: 'desc' },
@@ -269,72 +306,139 @@ export class DetailDonhangComponent {
       });
       const maxOrder = maxOrderResult.data?.[0]?.order || 0;
       const newOrder = maxOrder + 1;
+    console.log('Max Order:', maxOrder, 'New Order:', newOrder);
+    
+      // Update DetailDonhang with required fields
       this.DetailDonhang.update((v: any) => ({
         ...v,
         type: 'donsi',
         madonhang: DonhangnumberToCode(newOrder),
         status: 'dadat',
         order: newOrder,
-        sanpham: {
-          create: this.DetailDonhang().sanpham.map((sp: any) => ({
-            sanphamId: sp.id,
-            title: sp.title,
-            masp: sp.masp,
-            dvt: sp.dvt,
-            sldat: sp.sldat,
-            slgiao: sp.slgiao,
-            slnhan: sp.slnhan,
-            ghichu: sp.ghichu,
-          })),
-        },
+        isActive: true,
       }));
-      const createData = {
-        title: this.DetailDonhang().title,
-        ngaygiao: this.DetailDonhang().ngaygiao,
-        ghichu: this.DetailDonhang().ghichu,
-        khachhang: {
-          connect: {
-            id: this.DetailDonhang().khachhangId,
-          }
-        },
-        banggia: {
-          connect: {
-            id: this.DetailDonhang().banggiaId,
-          }
-        },
-        sanpham: {
-          create: this.DetailDonhang().sanpham.map((sp: any) => ({
-            sanphamId: sp.id,
-            title: sp.title,
-            masp: sp.masp,
-            dvt: sp.dvt,
-            sldat: sp.sldat,
-            slgiao: sp.slgiao,
-            slnhan: sp.slnhan,
-            ghichu: sp.ghichu,
-          })),
-        },
-      };
-      console.log(createData);
-      await this._GraphqlService
-        .createOne('donhang', createData)
-        .then((data) => {
-          console.log(data);
-          if (data) {
-            this._snackBar.open('Tạo Mới Thành Công', '', {
-              duration: 1000,
-              horizontalPosition: 'end',
-              verticalPosition: 'top',
-              panelClass: ['snackbar-success'],
-            });
-            this._router.navigate(['/admin/donhang', data.id]);
-          }
-        });
 
-      this.isEdit.update((value) => !value);
-    } catch (error) {
+      // Prepare data for GraphQL create mutation
+      const { khachhang, banggia, id, createdAt, updatedAt, ...donhangData } = this.DetailDonhang();
+      
+      // Build correct payload structure for Prisma nested create
+      const createData = {
+        ...donhangData,
+        // Convert Date to ISO string if needed
+        ngaygiao: donhangData.ngaygiao ? new Date(donhangData.ngaygiao).toISOString() : null,
+        // Calculate totals
+        tongvat: this.calculateTotalVat(),
+        tongtien: this.calculateTotalAmount(),
+        // Nested create for sanpham relation
+        sanpham: {
+          create: this.DetailDonhang().sanpham?.map((sp: any, index: number) => ({
+            idSP: sp.id, // Use sp.id as the foreign key to Sanpham table
+            giaban: parseFloat(sp.giaban?.toString() || '0'),
+            sldat: parseFloat(sp.sldat?.toString() || '0'),
+            slgiao: parseFloat(sp.slgiao?.toString() || '0'), 
+            slnhan: parseFloat(sp.slnhan?.toString() || '0'),
+            slhuy: parseFloat(sp.slhuy?.toString() || '0'),
+            ttdat: parseFloat(sp.ttdat?.toString() || '0'),
+            ttgiao: parseFloat(sp.ttgiao?.toString() || '0'),
+            ttnhan: parseFloat(sp.ttnhan?.toString() || '0'),
+            vat: parseFloat(sp.vat?.toString() || '0'),
+            ttsauvat: parseFloat(sp.ttsauvat?.toString() || '0'),
+            ghichu: sp.ghichu || null,
+            order: index + 1,
+            isActive: true
+          })) || []
+        }
+      };
+
+      console.log('GraphQL Create Data:', createData);
+
+      // Create Donhang via GraphQL
+      const result = await this._GraphqlService.createOne('donhang', createData);
+      
+      console.log('Created Donhang Result:', result);
+      
+      if (result && result.id) {
+        this._snackBar.open('Tạo Đơn Hàng Thành Công', '', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+        
+        // Navigate to the new donhang detail page
+        this._router.navigate(['/admin/donhang', result.id]);
+        this.isEdit.set(false);
+      } else {
+        throw new Error('Không nhận được kết quả từ server');
+      }
+
+    } catch (error: any) {
       console.error('Lỗi khi tạo donhang:', error);
+      
+      let errorMessage = 'Lỗi khi tạo đơn hàng';
+      if (error?.message) {
+        errorMessage = error.message.includes('sanpham') 
+          ? 'Lỗi dữ liệu sản phẩm. Vui lòng kiểm tra lại.'
+          : error.message;
+      }
+      
+      this._snackBar.open(errorMessage, '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
     }
+  }
+
+  // Helper methods for calculations
+  private calculateTotalVat(): number {
+    return this.DetailDonhang().sanpham?.reduce((total: number, sp: any) => {
+      return total + (parseFloat(sp.vat?.toString() || '0'));
+    }, 0) || 0;
+  }
+
+  private calculateTotalAmount(): number {
+    return this.DetailDonhang().sanpham?.reduce((total: number, sp: any) => {
+      return total + (parseFloat(sp.ttsauvat?.toString() || '0'));
+    }, 0) || 0;
+  }
+
+  // Debug method to test payload creation
+  debugCreatePayload() {
+    console.log('=== DEBUG CREATE PAYLOAD ===');
+    console.log('Current DetailDonhang:', this.DetailDonhang());
+    
+    const { khachhang, banggia, id, createdAt, updatedAt, ...donhangData } = this.DetailDonhang();
+    
+    const createData = {
+      ...donhangData,
+      ngaygiao: donhangData.ngaygiao ? new Date(donhangData.ngaygiao).toISOString() : null,
+      tongvat: this.calculateTotalVat(),
+      tongtien: this.calculateTotalAmount(),
+      sanpham: {
+        create: this.DetailDonhang().sanpham?.map((sp: any, index: number) => ({
+          idSP: sp.id,
+          giaban: parseFloat(sp.giaban?.toString() || '0'),
+          sldat: parseFloat(sp.sldat?.toString() || '0'),
+          slgiao: parseFloat(sp.slgiao?.toString() || '0'), 
+          slnhan: parseFloat(sp.slnhan?.toString() || '0'),
+          slhuy: parseFloat(sp.slhuy?.toString() || '0'),
+          ttdat: parseFloat(sp.ttdat?.toString() || '0'),
+          ttgiao: parseFloat(sp.ttgiao?.toString() || '0'),
+          ttnhan: parseFloat(sp.ttnhan?.toString() || '0'),
+          vat: parseFloat(sp.vat?.toString() || '0'),
+          ttsauvat: parseFloat(sp.ttsauvat?.toString() || '0'),
+          ghichu: sp.ghichu || null,
+          order: index + 1,
+          isActive: true
+        })) || []
+      }
+    };
+    
+    console.log('Final GraphQL Create Payload:', createData);
+    console.log('=== END DEBUG ===');
+    return createData;
   }
 
   private async updateDonhang(status?: any) {
@@ -528,41 +632,44 @@ export class DetailDonhangComponent {
   }
   private _dialog: MatDialog = inject(MatDialog);
   SelectKhachhang(event: any) {
-    const selectedKhachhang = this.filterKhachhang.find((v: any) => v.id === event.value);
-    console.log(selectedKhachhang);
+    const selectedKhachhang = this.filterKhachhang.find(
+      (v: any) => v.id === event.value
+    );
+    console.log('Selected Khachhang:', selectedKhachhang);
+    
     if (selectedKhachhang) {
-      const isExpired =
-        moment() > moment(selectedKhachhang?.banggia?.batdau) &&
-        moment() < moment(selectedKhachhang.banggia.ketthuc)
-          ? true
-          : false;
-      if (!isExpired) {
+      // Check if banggia is expired
+      const isExpired = selectedKhachhang?.banggia?.ketthuc
+        ? moment().isAfter(moment(selectedKhachhang.banggia.ketthuc))
+        : false;
+        
+      if (isExpired) {
         const dialogRef = this._dialog.open(this.BgHethanDialog, {
           hasBackdrop: true,
           disableClose: true,
         });
+        
         dialogRef.afterClosed().subscribe((result) => {
           if (result === 'true') {
-            this.DetailDonhang.update((v: any) => {
-              // v.khachhang.banggiaId = selectedKhachhang?.banggia?.id;
-              v.banggia = selectedKhachhang?.banggia;
-              return v;
-            });
+            this.updateKhachhangSelection(selectedKhachhang);
           }
         });
       } else {
-        this.DetailDonhang.update((v: any) => {
-          v.khachhang.banggiaId = selectedKhachhang?.banggia?.id;
-          return v;
-        });
+        this.updateKhachhangSelection(selectedKhachhang);
       }
-
-      this.DetailDonhang.update((v: any) => {
-        v.banggiaId = selectedKhachhang?.banggia?.id;
-        v.khachhang = selectedKhachhang;
-        return v;
-      });
     }
+  }
+
+  private updateKhachhangSelection(selectedKhachhang: any) {
+    this.DetailDonhang.update((v: any) => ({
+      ...v,
+      khachhangId: selectedKhachhang.id,
+      banggiaId: selectedKhachhang?.banggia?.id || null,
+      khachhang: selectedKhachhang,
+      banggia: selectedKhachhang?.banggia || null
+    }));
+    
+    console.log('Updated DetailDonhang:', this.DetailDonhang());
   }
 
   displayedColumns: string[] = [
@@ -712,7 +819,8 @@ export class DetailDonhangComponent {
     });
     console.log(this.DetailDonhang());
 
-    this._DonhangService.CreateDonhang(this.DetailDonhang())
+    this._DonhangService
+      .CreateDonhang(this.DetailDonhang())
       .then((data: any) => {
         if (data) {
           this._snackBar.open('Coppy Đơn Hàng Thành Công', '', {
@@ -877,6 +985,8 @@ export class DetailDonhangComponent {
       v.sanpham = this.ListFilter;
       return v;
     });
+    console.log(this.DetailDonhang());
+
     this.dataSource().data = this.ListFilter;
     this.dataSource().data.sort((a, b) => a.order - b.order);
     menu.closeMenu();
