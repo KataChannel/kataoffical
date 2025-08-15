@@ -76,7 +76,6 @@ export class DonhangService {
       newNumbers = 1; // Reset về 00001
       newLetters = this.incrementLetters(letters);
     }
-
     return `${prefix}${newLetters}${newNumbers.toString().padStart(5, '0')}`;
   }
 
@@ -92,7 +91,6 @@ export class DonhangService {
     } else {
       secondChar++;
     }
-
     return String.fromCharCode(firstChar) + String.fromCharCode(secondChar);
   }
 

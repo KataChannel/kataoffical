@@ -139,6 +139,8 @@ model Banggia {
   updatedAt    DateTime @updatedAt
   sanpham      Banggiasanpham[]
   khachhang    Khachhang[] @relation("Banggiakhachhang")
+
+  Donhang Donhang[]
 }
 
 model Khachhang {
@@ -227,8 +229,10 @@ model Donhang {
   ghichu      String?
   isshowvat   Boolean @default(false)
   status      StatusDonhang @default(dadat) // Dùng Enum
-  khachhangId String
-  khachhang   Khachhang @relation(fields: [khachhangId], references: [id])
+  khachhangId String?
+  khachhang   Khachhang? @relation(fields: [khachhangId], references: [id])
+  banggiaId   String?
+  banggia     Banggia? @relation(fields: [banggiaId], references: [id])
   sanpham     Donhangsanpham[]
   printCount  Int? @default(0)
   order       Int?

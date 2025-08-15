@@ -127,7 +127,8 @@
                   </div>
                   }
                   @case ('slgiao') {
-                  @if(DetailPhieugiaohang().status!='dagiao') {
+
+                  <!-- @if(DetailPhieugiaohang().status!='dagiao') { -->
                   <div [contentEditable]="true" (focus)="onInputFocus($event)"
                     (blur)="updateBlurValue($event,idx, row, 'slgiao','number')"
                     (keydown.enter)="updateValue($event,idx, row, 'slgiao','number')"
@@ -136,12 +137,13 @@
                     [attr.data-index]="idx" [attr.data-id]="row.id">
                     {{ row[column]||0|number:'1.0-2' }}
                   </div>
-                  }
+                  <!-- }
+
                   @else {
                   <div class="text-end">
                     {{ row[column]||0|number:'1.0-2' }}
                   </div>
-                  }
+                  } -->
                   }
                   @case ('slnhan') {
                   <div [contentEditable]="true" (focus)="onInputFocus($event)"

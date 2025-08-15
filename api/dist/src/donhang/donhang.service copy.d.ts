@@ -47,9 +47,10 @@ export declare class DonhangService {
             type: string | null;
             status: import(".prisma/client").$Enums.StatusDonhang;
             isshowvat: boolean;
+            banggiaId: string | null;
             madonhang: string;
             ngaygiao: Date | null;
-            khachhangId: string;
+            khachhangId: string | null;
             printCount: number | null;
             tongvat: import("@prisma/client/runtime/library").Decimal;
             tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -76,9 +77,10 @@ export declare class DonhangService {
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
+        banggiaId: string | null;
         madonhang: string;
         ngaygiao: Date | null;
-        khachhangId: string;
+        khachhangId: string | null;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -122,9 +124,10 @@ export declare class DonhangService {
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
+        banggiaId: string | null;
         madonhang: string;
         ngaygiao: Date | null;
-        khachhangId: string;
+        khachhangId: string | null;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -132,7 +135,7 @@ export declare class DonhangService {
     findAll(): Promise<{
         sanpham: any[];
         name: string | null;
-        khachhang: {
+        khachhang: ({
             banggia: ({
                 sanpham: {
                     id: string;
@@ -183,7 +186,7 @@ export declare class DonhangService {
             istitle2: boolean;
             isshowvat: boolean;
             banggiaId: string | null;
-        };
+        }) | null;
         id: string;
         title: string | null;
         ghichu: string | null;
@@ -194,9 +197,10 @@ export declare class DonhangService {
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
+        banggiaId: string | null;
         madonhang: string;
         ngaygiao: Date | null;
-        khachhangId: string;
+        khachhangId: string | null;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -268,9 +272,10 @@ export declare class DonhangService {
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
+        banggiaId: string | null;
         madonhang: string;
         ngaygiao: Date | null;
-        khachhangId: string;
+        khachhangId: string | null;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -306,7 +311,7 @@ export declare class DonhangService {
             createdAt: Date;
             updatedAt: Date;
         }[];
-        khachhang: {
+        khachhang: ({
             banggia: ({
                 sanpham: {
                     id: string;
@@ -357,7 +362,7 @@ export declare class DonhangService {
             istitle2: boolean;
             isshowvat: boolean;
             banggiaId: string | null;
-        };
+        }) | null;
         id: string;
         title: string | null;
         ghichu: string | null;
@@ -368,9 +373,10 @@ export declare class DonhangService {
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
+        banggiaId: string | null;
         madonhang: string;
         ngaygiao: Date | null;
-        khachhangId: string;
+        khachhangId: string | null;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -414,9 +420,10 @@ export declare class DonhangService {
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
+        banggiaId: string | null;
         madonhang: string;
         ngaygiao: Date | null;
-        khachhangId: string;
+        khachhangId: string | null;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -432,9 +439,10 @@ export declare class DonhangService {
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
+        banggiaId: string | null;
         madonhang: string;
         ngaygiao: Date | null;
-        khachhangId: string;
+        khachhangId: string | null;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -469,9 +477,10 @@ export declare class DonhangService {
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
+        banggiaId: string | null;
         madonhang: string;
         ngaygiao: Date | null;
-        khachhangId: string;
+        khachhangId: string | null;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         tongtien: import("@prisma/client/runtime/library").Decimal;
@@ -487,9 +496,10 @@ export declare class DonhangService {
         type: string | null;
         status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
+        banggiaId: string | null;
         madonhang: string;
         ngaygiao: Date | null;
-        khachhangId: string;
+        khachhangId: string | null;
         printCount: number | null;
         tongvat: import("@prisma/client/runtime/library").Decimal;
         tongtien: import("@prisma/client/runtime/library").Decimal;

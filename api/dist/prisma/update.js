@@ -2,9 +2,22 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertData = convertData;
 exports.removeVietnameseAccents = removeVietnameseAccents;
+exports.DonhangcodeToNumber = DonhangcodeToNumber;
+exports.DonhangnumberToCode = DonhangnumberToCode;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 async function main() {
+    const Donhangs = await prisma.donhang.findMany();
+    Donhangs.forEach(async (donhang) => {
+        const number = DonhangcodeToNumber(donhang.madonhang);
+        console.log(`Mã ${donhang.madonhang} chuyển đổi thành số thứ tự: ${number}`);
+        await prisma.donhang.update({
+            where: { id: donhang.id },
+            data: {
+                order: number,
+            },
+        });
+    });
 }
 main()
     .catch((e) => {
@@ -39,5 +52,26 @@ function removeVietnameseAccents(text) {
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-zA-Z0-9]/g, "")
         .toLowerCase();
+}
+function DonhangcodeToNumber(code) {
+    if (!code.match(/^TG-[A-Z]{2}\d{5}$/)) {
+        throw new Error("Mã không đúng định dạng TG-XXYYYYY");
+    }
+    const letters = code.slice(3, 5);
+    const number = parseInt(code.slice(5), 10);
+    const letterValue = (letters.charCodeAt(0) - 65) * 26 + (letters.charCodeAt(1) - 65);
+    return letterValue * 99999 + (number - 1) + 1;
+}
+function DonhangnumberToCode(number) {
+    if (number < 1 || number > 676 * 99999) {
+        throw new Error("Số thứ tự không hợp lệ");
+    }
+    number -= 1;
+    const letterValue = Math.floor(number / 99999);
+    const numValue = (number % 99999) + 1;
+    const firstLetter = String.fromCharCode(65 + Math.floor(letterValue / 26));
+    const secondLetter = String.fromCharCode(65 + (letterValue % 26));
+    const numStr = numValue.toString().padStart(5, '0');
+    return `TG-${firstLetter}${secondLetter}${numStr}`;
 }
 //# sourceMappingURL=update.js.map
