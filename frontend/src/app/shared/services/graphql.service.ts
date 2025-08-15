@@ -225,11 +225,11 @@ export class GraphqlService {
   private cache = new Map<string, CacheEntry>();
   private readonly DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes
   private readonly AGGRESSIVE_TTL = 30 * 60 * 1000; // 30 minutes for findAll
-  private readonly MAX_CACHE_SIZE = 1000;
+  private readonly MAX_CACHE_SIZE = 999999;
   private readonly CLEANUP_INTERVAL = 60 * 1000; // 1 minute
   private readonly REQUEST_TIMEOUT = 30000; // 30 seconds
   private readonly MAX_RETRIES = 3;
-  private readonly DEFAULT_BATCH_SIZE = 1000;
+  private readonly DEFAULT_BATCH_SIZE = 999999;
   private readonly MAX_PARALLEL_REQUESTS = 5;
 
   // Performance monitoring

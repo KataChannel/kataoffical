@@ -28,15 +28,10 @@ async function cleanupBeforeRestore() {
     console.log('🧹 Dọn dẹp dữ liệu cũ trước khi restore...');
     try {
         const cleanupOrder = [
-            'dathangsanpham',
-            'donhangsanpham',
-            'phieugiaohangsanpham',
-            'phieunhapkhosanpham',
-            'dathang',
-            'donhang',
-            'phieugiaohang',
-            'phieunhapkho',
-            'tonkho'
+            'Dathangsanpham',
+            'Donhangsanpham',
+            'Donhang',
+            'Dathang',
         ];
         let totalDeleted = 0;
         for (const table of cleanupOrder) {
@@ -70,6 +65,160 @@ async function getTables() {
     }
     catch (error) {
         console.error(`⚠️ Không thể lấy danh sách bảng: ${error}`);
+        return [];
+    }
+}
+async function validateForeignKeys(table, data) {
+    console.log(`🔍 Validating foreign keys cho bảng ${table}...`);
+    try {
+        switch (table) {
+            case 'Profile':
+                const existingUserIds = await prisma.user.findMany({ select: { id: true } });
+                const validUserIds = new Set(existingUserIds.map(u => u.id));
+                return data.filter(record => !record.userId || validUserIds.has(record.userId));
+            case 'UserRole':
+                const [users, roles] = await Promise.all([
+                    prisma.user.findMany({ select: { id: true } }),
+                    prisma.role.findMany({ select: { id: true } })
+                ]);
+                const validUserIds2 = new Set(users.map(u => u.id));
+                const validRoleIds = new Set(roles.map(r => r.id));
+                return data.filter(record => validUserIds2.has(record.userId) && validRoleIds.has(record.roleId));
+            case 'RolePermission':
+                const [roles2, permissions] = await Promise.all([
+                    prisma.role.findMany({ select: { id: true } }),
+                    prisma.permission.findMany({ select: { id: true } })
+                ]);
+                const validRoleIds2 = new Set(roles2.map(r => r.id));
+                const validPermissionIds = new Set(permissions.map(p => p.id));
+                return data.filter(record => validRoleIds2.has(record.roleId) && validPermissionIds.has(record.permissionId));
+            case 'AuditLog':
+                const existingUserIds3 = await prisma.user.findMany({ select: { id: true } });
+                const validUserIds3 = new Set(existingUserIds3.map(u => u.id));
+                return data.filter(record => !record.userId || validUserIds3.has(record.userId));
+            case 'Banggiasanpham':
+                const [banggia, sanpham] = await Promise.all([
+                    prisma.banggia.findMany({ select: { id: true } }),
+                    prisma.sanpham.findMany({ select: { id: true } })
+                ]);
+                const validBanggiaIds = new Set(banggia.map(b => b.id));
+                const validSanphamIds = new Set(sanpham.map(s => s.id));
+                return data.filter(record => validBanggiaIds.has(record.banggiaId) && validSanphamIds.has(record.sanphamId));
+            case 'Khachhang':
+                const [banggia2, nhomkh] = await Promise.all([
+                    prisma.banggia.findMany({ select: { id: true } }),
+                    prisma.nhomkhachhang.findMany({ select: { id: true } })
+                ]);
+                const validBanggiaIds2 = new Set(banggia2.map(b => b.id));
+                const validNhomIds = new Set(nhomkh.map(n => n.id));
+                return data.filter(record => {
+                    const banggiaValid = !record.banggiaId || validBanggiaIds2.has(record.banggiaId);
+                    return banggiaValid;
+                });
+            case 'SanphamKho':
+                const [sanpham2, kho] = await Promise.all([
+                    prisma.sanpham.findMany({ select: { id: true } }),
+                    prisma.kho.findMany({ select: { id: true } })
+                ]);
+                const validSanphamIds2 = new Set(sanpham2.map(s => s.id));
+                const validKhoIds = new Set(kho.map(k => k.id));
+                return data.filter(record => validSanphamIds2.has(record.sanphamId) && validKhoIds.has(record.khoId));
+            case 'TonKho':
+                const sanpham3 = await prisma.sanpham.findMany({ select: { id: true } });
+                const validSanphamIds3 = new Set(sanpham3.map(s => s.id));
+                return data.filter(record => validSanphamIds3.has(record.sanphamId));
+            case 'Donhang':
+                const khachhang = await prisma.khachhang.findMany({ select: { id: true } });
+                const validKhachhangIds = new Set(khachhang.map(k => k.id));
+                return data.filter(record => validKhachhangIds.has(record.khachhangId));
+            case 'Dathang':
+                const [nhacungcap, kho2] = await Promise.all([
+                    prisma.nhacungcap.findMany({ select: { id: true } }),
+                    prisma.kho.findMany({ select: { id: true } })
+                ]);
+                const validNhacungcapIds = new Set(nhacungcap.map(n => n.id));
+                const validKhoIds2 = new Set(kho2.map(k => k.id));
+                return data.filter(record => {
+                    const nhacungcapValid = !record.nhacungcapId || validNhacungcapIds.has(record.nhacungcapId);
+                    const khoValid = !record.khoId || validKhoIds2.has(record.khoId);
+                    return nhacungcapValid && khoValid;
+                });
+            case 'PhieuKho':
+                const [donhang, dathang, kho3] = await Promise.all([
+                    prisma.donhang.findMany({ select: { madonhang: true } }),
+                    prisma.dathang.findMany({ select: { madncc: true } }),
+                    prisma.kho.findMany({ select: { id: true } })
+                ]);
+                const validMadonhang = new Set(donhang.map(d => d.madonhang).filter(Boolean));
+                const validMadncc = new Set(dathang.map(d => d.madncc).filter(Boolean));
+                const validKhoIds3 = new Set(kho3.map(k => k.id));
+                return data.filter(record => {
+                    const donhangValid = !record.madonhang || validMadonhang.has(record.madonhang);
+                    const dathangValid = !record.madncc || validMadncc.has(record.madncc);
+                    const khoValid = !record.khoId || validKhoIds3.has(record.khoId);
+                    return donhangValid && dathangValid && khoValid;
+                });
+            case 'Donhangsanpham':
+                const [donhang2, sanpham4] = await Promise.all([
+                    prisma.donhang.findMany({ select: { id: true } }),
+                    prisma.sanpham.findMany({ select: { id: true } })
+                ]);
+                const validDonhangIds = new Set(donhang2.map(d => d.id));
+                const validSanphamIds4 = new Set(sanpham4.map(s => s.id));
+                return data.filter(record => validDonhangIds.has(record.donhangId) && validSanphamIds4.has(record.idSP));
+            case 'Dathangsanpham':
+                const [dathang2, sanpham5] = await Promise.all([
+                    prisma.dathang.findMany({ select: { id: true } }),
+                    prisma.sanpham.findMany({ select: { id: true } })
+                ]);
+                const validDathangIds = new Set(dathang2.map(d => d.id));
+                const validSanphamIds5 = new Set(sanpham5.map(s => s.id));
+                return data.filter(record => validDathangIds.has(record.dathangId) && validSanphamIds5.has(record.idSP));
+            case 'PhieuKhoSanpham':
+                const [phieukho, sanpham6] = await Promise.all([
+                    prisma.phieuKho.findMany({ select: { id: true } }),
+                    prisma.sanpham.findMany({ select: { id: true } })
+                ]);
+                const validPhieuKhoIds = new Set(phieukho.map(p => p.id));
+                const validSanphamIds6 = new Set(sanpham6.map(s => s.id));
+                return data.filter(record => validPhieuKhoIds.has(record.phieuKhoId) && validSanphamIds6.has(record.sanphamId));
+            case 'Chotkho':
+                const [kho4, sanpham7, tonkho, phieukho2, user] = await Promise.all([
+                    prisma.kho.findMany({ select: { id: true } }),
+                    prisma.sanpham.findMany({ select: { id: true } }),
+                    prisma.tonKho.findMany({ select: { id: true } }),
+                    prisma.phieuKho.findMany({ select: { id: true } }),
+                    prisma.user.findMany({ select: { id: true } })
+                ]);
+                const validKhoIds4 = new Set(kho4.map(k => k.id));
+                const validSanphamIds7 = new Set(sanpham7.map(s => s.id));
+                const validTonkhoIds = new Set(tonkho.map(t => t.id));
+                const validPhieuKhoIds2 = new Set(phieukho2.map(p => p.id));
+                const validUserIds4 = new Set(user.map(u => u.id));
+                return data.filter(record => {
+                    const khoValid = !record.khoId || validKhoIds4.has(record.khoId);
+                    const sanphamValid = !record.sanphamId || validSanphamIds7.has(record.sanphamId);
+                    const tonkhoValid = !record.tonkhoId || validTonkhoIds.has(record.tonkhoId);
+                    const phieukhoValid = !record.phieukhoId || validPhieuKhoIds2.has(record.phieukhoId);
+                    const userValid = !record.userId || validUserIds4.has(record.userId);
+                    return khoValid && sanphamValid && tonkhoValid && phieukhoValid && userValid;
+                });
+            case 'UserguidBlock':
+                const steps = await prisma.userguidStep.findMany({ select: { id: true } });
+                const validStepIds = new Set(steps.map(s => s.id));
+                return data.filter(record => !record.stepId || validStepIds.has(record.stepId));
+            case 'Kho':
+                const congty = await prisma.congty.findMany({ select: { id: true } });
+                const validCongtyIds = new Set(congty.map(c => c.id));
+                return data.filter(record => !record.congtyId || validCongtyIds.has(record.congtyId));
+            default:
+                console.log(`➡️ ${table}: No FK validation needed, returning all ${data.length} records`);
+                return data;
+        }
+    }
+    catch (error) {
+        console.error(`❌ Error validating FK for ${table}:`, error);
+        stats.warnings.push(`FK validation failed for ${table}: ${error}`);
         return [];
     }
 }
@@ -112,8 +261,12 @@ async function validateBackupData(data, table) {
             return null;
         }
     }).filter(item => item !== null);
-    console.log(`🔍 Đã validate ${data.length} records cho bảng ${table}, ${cleanedData.length} records hợp lệ`);
-    return cleanedData;
+    const validatedData = await validateForeignKeys(table, cleanedData);
+    console.log(`🔍 Đã validate ${data.length} records cho bảng ${table}, ${validatedData.length} records hợp lệ`);
+    if (validatedData.length !== data.length) {
+        stats.warnings.push(`${table}: Filtered out ${data.length - validatedData.length} invalid FK records`);
+    }
+    return validatedData;
 }
 async function restoreTableFromJson(table, backupFolder) {
     try {
@@ -249,6 +402,7 @@ async function restoreAllTablesFromJson() {
     console.log(`📂 Đang restore từ thư mục: ${backupFolder}`);
     console.log(`📁 Đường dẫn đầy đủ: ${path.join(BACKUP_ROOT_DIR, backupFolder)}`);
     const tables = await getTables();
+    console.log(tables);
     if (tables.length === 0) {
         console.log('⚠️ Không thể lấy danh sách bảng - Tiếp tục với danh sách mặc định');
     }
@@ -256,24 +410,46 @@ async function restoreAllTablesFromJson() {
         console.log(`📊 Tìm thấy ${tables.length} bảng trong cơ sở dữ liệu.`);
     }
     const tableOrder = [
-        'khachhang',
-        'nhacungcap',
-        'sanpham',
-        'users',
-        'kho',
-        'tonkho',
-        'dathang',
-        'donhang',
-        'phieugiaohang',
-        'phieunhapkho',
-        'dathangsanpham',
-        'donhangsanpham',
-        'phieugiaohangsanpham',
-        'phieunhapkhosanpham',
+        'Role',
+        'Permission',
+        'Menu',
+        'Congty',
+        'Nhomkhachhang',
+        'ErrorLog',
+        'FileManager',
+        'ChatAIMessage',
+        'ChatAIHistory',
+        'File',
+        'ImportHistory',
+        'UserguidStep',
+        'User',
+        'Profile',
+        'UserRole',
+        'RolePermission',
+        'AuditLog',
+        'Banggia',
+        'Sanpham',
+        'Nhacungcap',
+        'Kho',
+        'Banggiasanpham',
+        'Khachhang',
+        'SanphamKho',
+        'TonKho',
+        'Donhang',
+        'Dathang',
+        'PhieuKho',
+        'Donhangsanpham',
+        'Dathangsanpham',
+        'PhieuKhoSanpham',
+        'Chotkho',
+        'UserguidBlock',
         ...tables.filter(t => ![
-            'khachhang', 'nhacungcap', 'sanpham', 'users', 'kho', 'tonkho',
-            'dathang', 'donhang', 'phieugiaohang', 'phieunhapkho',
-            'dathangsanpham', 'donhangsanpham', 'phieugiaohangsanpham', 'phieunhapkhosanpham'
+            'Role', 'Permission', 'Menu', 'Congty', 'Nhomkhachhang', 'ErrorLog',
+            'FileManager', 'ChatAIMessage', 'ChatAIHistory', 'File', 'ImportHistory',
+            'UserguidStep', 'User', 'Profile', 'UserRole', 'RolePermission', 'AuditLog',
+            'Banggia', 'Sanpham', 'Nhacungcap', 'Kho', 'Banggiasanpham', 'Khachhang',
+            'SanphamKho', 'TonKho', 'Donhang', 'Dathang', 'PhieuKho', 'Donhangsanpham',
+            'Dathangsanpham', 'PhieuKhoSanpham', 'Chotkho', 'UserguidBlock'
         ].includes(t))
     ];
     const orderedTables = tables.length > 0

@@ -201,11 +201,11 @@ export declare class SanphamService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            tenfile: string | null;
+            email: string | null;
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            email: string | null;
+            tenfile: string | null;
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;

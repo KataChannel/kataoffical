@@ -60,7 +60,7 @@ type Query {
     """Records to skip for pagination"""
     skip: Float = 0
 
-    """Maximum records to return (max 1000)"""
+    """Maximum records to return (max 999999)"""
     take: Float = 50
 
     """Relations to include"""

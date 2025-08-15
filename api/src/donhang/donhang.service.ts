@@ -107,7 +107,6 @@ export class DonhangService {
   }
 
   async search(params: any) {
-
     const {
       Batdau,
       Ketthuc,
@@ -117,10 +116,13 @@ export class DonhangService {
       query,
     } = params;
 
-    const ngaygiao = (Batdau || Ketthuc) ? {
-      ...(Batdau && { gte: new Date(Batdau) }),
-      ...(Ketthuc && { lte: new Date(Ketthuc) })
-    } : undefined;
+    const ngaygiao =
+      Batdau || Ketthuc
+        ? {
+            ...(Batdau && { gte: new Date(Batdau) }),
+            ...(Ketthuc && { lte: new Date(Ketthuc) }),
+          }
+        : undefined;
 
     const where: any = {
       ...(ngaygiao && { ngaygiao }),
@@ -842,7 +844,7 @@ export class DonhangService {
           ghichu: dto.ghichu,
           isshowvat: khachhang.isshowvat, // Set isshowvat from khachhang
           sanpham: {
-            create: dto?.sanpham?.map((sp: any) => ({
+            create: dto?.sanpham?.map((sp) => ({
               idSP: sp.id,
               ghichu: sp.ghichu,
               sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
@@ -852,7 +854,7 @@ export class DonhangService {
               ttdat: parseFloat((sp.ttdat ?? 0).toFixed(2)),
               ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
               ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
-              vat: parseFloat((sp.vat ?? 0).toFixed(2)),
+              vat: parseFloat(Number(sp.vat ?? 0).toFixed(2)),
             })),
           },
         },

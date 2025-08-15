@@ -39,6 +39,7 @@ import { TrangThaiDon } from '../../../shared/utils/trangthai';
 import { SharepaginationComponent } from '../../../shared/common/sharepagination/sharepagination.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 @Component({
   selector: 'app-listdonhang',
   templateUrl: './listdonhang.component.html',
@@ -102,9 +103,10 @@ export class ListDonhangComponent {
   private _KhachhangService: KhachhangService = inject(KhachhangService);
   private _BanggiaService: BanggiaService = inject(BanggiaService);
   private _SanphamService: SanphamService = inject(SanphamService);
+  private _GraphqlService = inject(GraphqlService);
   private _router: Router = inject(Router);
   Listdonhang: any = signal<any>({});
-  dataSource = new MatTableDataSource([]);
+  dataSource = new MatTableDataSource<any>([]);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   Trangthaidon: any = TrangThaiDon;
   SearchParams: any = {
@@ -123,6 +125,7 @@ export class ListDonhangComponent {
     this.displayedColumns.forEach((column) => {
       this.filterValues[column] = '';
     });
+    this.LoadData()
   }
   async onPageChange(event: any): Promise<void> {
     console.log('Page change event:', event);
@@ -147,36 +150,72 @@ export class ListDonhangComponent {
   async LoadData() {
     this.isLoading.set(true);
     try {
-      // Load customers in background if needed
-      if (!this._KhachhangService.ListKhachhang()?.length) {
-        await this._KhachhangService.getKhachhangBy({
-          page: 1,
-          pageSize: 9999,
-        });
-      }
-
-      // Fetch paginated data from server
-      const data = await this._DonhangService.searchDonhang(this.SearchParams);
-      this.Listdonhang.set(data);
-
-      if (data && data.data) {
-        this.total.set(Number(data.total || 0));
-        this.pageSize.set(Number(data.pageSize || 10));
-        this.page.set(Number(data.pageNumber || 1));
-        this.pageCount.set(Number(data.totalPages || 1));
-
-        // Set data to table without client-side pagination since we're using server-side
-        this.dataSource = new MatTableDataSource(data.data);
-        // Disable client-side pagination/sorting since we're using server-side
-        this.dataSource.paginator = null;
-        this.dataSource.sort = null;
+       this._GraphqlService.clearCache('donhang');
+       const result =  await this._GraphqlService.findAll('donhang', {
+          enableParallelFetch:true,
+          maxConcurrency: 4,
+          batchSize: 3000,
+          take: 999999,
+          enableStreaming:true,
+          aggressiveCache: true,
+          orderBy: { createdAt: 'desc' },
+          where: {
+            ngaygiao: {
+              gte: this.SearchParams.Batdau,
+              lte: this.SearchParams.Ketthuc,
+            },
+          },
+          select: {
+            id: true,
+            madonhang: true,
+            ngaygiao: true,
+            ghichu:true,
+            isshowvat: true,
+            status: true,
+            createdAt: true,
+            tongvat: true,
+            tongtien: true,
+            type: true,
+            sanpham: {
+              select: {
+                sanpham: { select: { masp: true } },
+              },
+            },
+            khachhang:{
+              select: {
+                makh: true,
+                name: true,
+              },
+            }
+          },
+        })
+        console.log(result);
+        
+      const donhangs = result.data.map((v: any) => ({
+          id: v.id,
+          madonhang: v.madonhang,
+          name: v.khachhang?.name || '',
+          sanpham: v.sanpham?.length,
+          ngaygiao: v.ngaygiao,
+          ghichu: v.ghichu || '',
+          status: v.status,
+          createdAt: v.createdAt,
+          updatedAt: v.updatedAt || v.createdAt,
+        }));
+      this.Listdonhang.set(donhangs);
+      if (donhangs) {
+        this.dataSource = new MatTableDataSource(donhangs);
+        this.dataSource.sort = this.sort;
+        this.dataSource.filterPredicate = this.createFilter();
+        this.total.set(donhangs.length);
+        this.pageCount.set(Math.ceil(donhangs.length / this.pageSize()));
       } else {
         // Handle empty or invalid response
         this.total.set(0);
         this.pageSize.set(10);
         this.page.set(1);
         this.pageCount.set(0);
-        this.dataSource = new MatTableDataSource([]);
+        this.dataSource = new MatTableDataSource<any>([]);
       }
     } catch (error) {
       console.error('Error loading data:', error);
@@ -186,14 +225,13 @@ export class ListDonhangComponent {
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
       });
-      // Reset data on error
       this.total.set(0);
       this.pageCount.set(0);
-      this.dataSource = new MatTableDataSource([]);
+       this.dataSource = new MatTableDataSource<any>([]);
     } finally {
       this.isLoading.set(false);
     }
-  }
+  }  
   async onSelectionChange(event: MatSelectChange): Promise<void> {
     // Show loading indicator during time frame change
     this.isLoading.set(true);
@@ -285,31 +323,58 @@ export class ListDonhangComponent {
       return isMatch;
     };
   }
-  @Debounce(500)
+  @Debounce(100)
   async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    console.log('filterValue', filterValue);
-
-    // Show loading indicator while filtering
+    
+    // Clear filter if search is empty
+    if (filterValue.length === 0) {
+      this.dataSource.filter = '';
+      return;
+    }
+    
+    // Show loading indicator
     this.isLoading.set(true);
-
+    
     try {
-      // Reset to first page when searching
-      this.SearchParams.pageNumber = 1;
-      this.SearchParams.query = filterValue.trim();
-
-      // Load data from server with search query
-      await this.LoadData();
+      // Use setTimeout to ensure UI updates before heavy computation
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      const normalizedFilter = removeVietnameseAccents(filterValue.trim().toLowerCase());
+      
+      // Custom filter predicate to handle Vietnamese text search
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        const dataStr = Object.keys(data).reduce((currentTerm: string, key: string) => {
+          return currentTerm + (data[key] ? data[key].toString().toLowerCase() : '') + '◬';
+        }, '').toLowerCase();
+        
+        const normalizedDataStr = removeVietnameseAccents(dataStr);
+        
+        // Search in both original and normalized text
+        return dataStr.includes(filter) || normalizedDataStr.includes(filter);
+      };
+      
+      this.dataSource.filter = normalizedFilter;
+      
+      // Reset to first page when filtering
+      if (this.paginator) {
+        this.paginator.firstPage();
+      }
+      
     } catch (error) {
       console.error('Error applying filter:', error);
-      this._snackBar.open('Lỗi tìm kiếm dữ liệu', '', {
+      this._snackBar.open('Lỗi khi tìm kiếm', '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
       });
+    } finally {
+      // Hide loading indicator after filter is applied
+      this.isLoading.set(false);
     }
   }
+
   async ngOnInit(): Promise<void> {
     this.isLoading.set(true);
     try {
@@ -453,8 +518,8 @@ export class ListDonhangComponent {
     });
   }
   ResetFilter() {
-    this.ListFilter = this.Listdonhang().data || [];
-    this.dataSource.data = this.Listdonhang().data || [];
+    this.ListFilter = this.Listdonhang() || [];
+    this.dataSource.data = this.Listdonhang() || [];
   }
   EmptyFiter() {
     this.ListFilter = [];
@@ -463,7 +528,7 @@ export class ListDonhangComponent {
     return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
   ApplyFilterColum(menu: any) {
-    this.dataSource.data = this.Listdonhang().data.filter((v: any) =>
+    this.dataSource.data = this.Listdonhang().filter((v: any) =>
       this.ListFilter.some((v1) => v1.id === v.id)
     );
     menu.closeMenu();
@@ -480,6 +545,7 @@ export class ListDonhangComponent {
   }
 
   async Dongbogia() {
+    this.isLoading.set(true);
     try {
       const result = await this._DonhangService.DongboGia(this.EditList);
 
@@ -510,6 +576,8 @@ export class ListDonhangComponent {
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
       });
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
@@ -519,38 +587,40 @@ export class ListDonhangComponent {
   EditList: any[] = [];
 
   async ImporExcel(event: any) {
+    this.isLoading.set(true);
     const files = Array.from(event.target.files) as File[];
     let processedCount = 0;
     let skippedCount = 0;
     let errorCount = 0;
 
-    // Process files sequentially
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
+    try {
+      // Process files sequentially
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
 
-      // Skip files with "~$" in the filename
-      if (file.name.includes('~$')) {
-        console.log(`Skipping temporary file: ${file.name}`);
-        this._snackBar.open(`Bỏ qua file tạm: ${file.name}`, '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-warning'],
-        });
-        skippedCount++;
-        this.statusDetails.push({
-          fileName: file.name,
-          tenkhongdau: removeVietnameseAccents(file.name.replace('.xlsx', '')),
-          status: 'Skipped',
-          message: 'File tạm thời, không xử lý',
-        });
-        continue;
-      }
-      try {
-        this._snackBar.open(`Đang xử lý file: ${file.name}`, '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
+        // Skip files with "~$" in the filename
+        if (file.name.includes('~$')) {
+          console.log(`Skipping temporary file: ${file.name}`);
+          this._snackBar.open(`Bỏ qua file tạm: ${file.name}`, '', {
+            duration: 1000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-warning'],
+          });
+          skippedCount++;
+          this.statusDetails.push({
+            fileName: file.name,
+            tenkhongdau: removeVietnameseAccents(file.name.replace('.xlsx', '')),
+            status: 'Skipped',
+            message: 'File tạm thời, không xử lý',
+          });
+          continue;
+        }
+        try {
+          this._snackBar.open(`Đang xử lý file: ${file.name}`, '', {
+            duration: 1000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
         });
         const TenKH = removeVietnameseAccents(file.name.replace('.xlsx', ''));
@@ -632,11 +702,22 @@ export class ListDonhangComponent {
       return 0;
     });
 
-    // Auto-select customers based on filename matching
-    this.autoSelectCustomersFromFilename();
+      // Auto-select customers based on filename matching
+      this.autoSelectCustomersFromFilename();
 
-    console.log('Status Details:', this.statusDetails);
-    console.log('List Import Data:', this.ListImportData);
+      console.log('Status Details:', this.statusDetails);
+      console.log('List Import Data:', this.ListImportData);
+    } catch (error) {
+      console.error('Error processing Excel files:', error);
+      this._snackBar.open('Lỗi khi xử lý file Excel', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isLoading.set(false);
+    }
   }
   removeItemImport(item: any) {
     this.statusDetails = this.statusDetails.filter(
@@ -648,6 +729,7 @@ export class ListDonhangComponent {
   }
 
   async DoImportKhachhangCu(ListImportData: any[]) {
+    this.isLoading.set(true);
     try {
       console.log('ListImportData', ListImportData);
       const invalidItems = ListImportData.filter(
@@ -692,6 +774,8 @@ export class ListDonhangComponent {
         panelClass: ['snackbar-error'],
       });
       return;
+    } finally {
+      this.isLoading.set(false);
     }
     setTimeout(() => {
       window.location.reload();
@@ -711,6 +795,7 @@ export class ListDonhangComponent {
     }
     console.log('Importing items:', items);
 
+    this.isLoading.set(true);
     try {
       // Validate required field in first item
       const firstItem = items[0];
@@ -784,6 +869,8 @@ export class ListDonhangComponent {
           panelClass: ['snackbar-error'],
         }
       );
+    } finally {
+      this.isLoading.set(false);
     }
   }
   async ExportExcel(data: any, title: any) {
@@ -1206,6 +1293,7 @@ export class ListDonhangComponent {
       return;
     }
 
+    this.isLoading.set(true);
     try {
       const result: any = await this._DonhangService.DeleteBulkDonhang(
         this.EditList.map((v: any) => v.id)
@@ -1230,6 +1318,8 @@ export class ListDonhangComponent {
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
       });
+    } finally {
+      this.isLoading.set(false);
     }
   }
 

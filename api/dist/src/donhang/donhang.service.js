@@ -96,10 +96,12 @@ let DonhangService = class DonhangService {
     }
     async search(params) {
         const { Batdau, Ketthuc, Type, pageSize = 10, pageNumber = 1, query, } = params;
-        const ngaygiao = (Batdau || Ketthuc) ? {
-            ...(Batdau && { gte: new Date(Batdau) }),
-            ...(Ketthuc && { lte: new Date(Ketthuc) })
-        } : undefined;
+        const ngaygiao = Batdau || Ketthuc
+            ? {
+                ...(Batdau && { gte: new Date(Batdau) }),
+                ...(Ketthuc && { lte: new Date(Ketthuc) }),
+            }
+            : undefined;
         const where = {
             ...(ngaygiao && { ngaygiao }),
             status: Array.isArray(params.Status)
@@ -711,7 +713,7 @@ let DonhangService = class DonhangService {
                             ttdat: parseFloat((sp.ttdat ?? 0).toFixed(2)),
                             ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
                             ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
-                            vat: parseFloat((sp.vat ?? 0).toFixed(2)),
+                            vat: parseFloat(Number(sp.vat ?? 0).toFixed(2)),
                         })),
                     },
                 },

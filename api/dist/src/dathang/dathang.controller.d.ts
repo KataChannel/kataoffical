@@ -128,11 +128,11 @@ export declare class DathangController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                tenfile: string | null;
+                email: string | null;
                 name: string | null;
                 diachi: string | null;
                 sdt: string | null;
-                email: string | null;
+                tenfile: string | null;
                 isshowvat: boolean;
                 mancc: string;
                 manccold: string | null;
@@ -144,9 +144,9 @@ export declare class DathangController {
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
+                makho: string | null;
                 diachi: string | null;
                 sdt: string | null;
-                makho: string | null;
                 congtyId: string | null;
             } | null;
         } & {
@@ -179,11 +179,11 @@ export declare class DathangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            tenfile: string | null;
+            email: string | null;
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            email: string | null;
+            tenfile: string | null;
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;
@@ -195,9 +195,9 @@ export declare class DathangController {
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            makho: string | null;
             diachi: string | null;
             sdt: string | null;
-            makho: string | null;
             congtyId: string | null;
         } | null;
         id: string;
@@ -262,11 +262,11 @@ export declare class DathangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            tenfile: string | null;
+            email: string | null;
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            email: string | null;
+            tenfile: string | null;
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;
@@ -278,9 +278,9 @@ export declare class DathangController {
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            makho: string | null;
             diachi: string | null;
             sdt: string | null;
-            makho: string | null;
             congtyId: string | null;
         } | null;
     } & {
@@ -346,11 +346,11 @@ export declare class DathangController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                tenfile: string | null;
+                email: string | null;
                 name: string | null;
                 diachi: string | null;
                 sdt: string | null;
-                email: string | null;
+                tenfile: string | null;
                 isshowvat: boolean;
                 mancc: string;
                 manccold: string | null;
@@ -362,9 +362,9 @@ export declare class DathangController {
                 createdAt: Date;
                 updatedAt: Date;
                 name: string;
+                makho: string | null;
                 diachi: string | null;
                 sdt: string | null;
-                makho: string | null;
                 congtyId: string | null;
             } | null;
         } & {
@@ -404,10 +404,10 @@ export declare class DathangController {
             ghichu: string | null;
             TonKho: {
                 id: string;
+                sanphamId: string;
                 slton: import("@prisma/client/runtime/library").Decimal;
                 slchogiao: import("@prisma/client/runtime/library").Decimal;
                 slchonhap: import("@prisma/client/runtime/library").Decimal;
-                sanphamId: string;
             }[];
             id: string;
             title: string;
@@ -435,11 +435,11 @@ export declare class DathangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            tenfile: string | null;
+            email: string | null;
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            email: string | null;
+            tenfile: string | null;
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;
@@ -451,9 +451,9 @@ export declare class DathangController {
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            makho: string | null;
             diachi: string | null;
             sdt: string | null;
-            makho: string | null;
             congtyId: string | null;
         } | null;
         id: string;
@@ -518,11 +518,11 @@ export declare class DathangController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            tenfile: string | null;
+            email: string | null;
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            email: string | null;
+            tenfile: string | null;
             isshowvat: boolean;
             mancc: string;
             manccold: string | null;
@@ -534,9 +534,9 @@ export declare class DathangController {
             createdAt: Date;
             updatedAt: Date;
             name: string;
+            makho: string | null;
             diachi: string | null;
             sdt: string | null;
-            makho: string | null;
             congtyId: string | null;
         } | null;
         id: string;

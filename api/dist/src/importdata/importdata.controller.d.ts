@@ -8,10 +8,10 @@ export declare class ImportdataController {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         codeId: string | null;
-        importTime: Date;
+        type: string | null;
         status: string | null;
+        importTime: Date;
         createdBy: string | null;
         caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
@@ -21,10 +21,10 @@ export declare class ImportdataController {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         codeId: string | null;
-        importTime: Date;
+        type: string | null;
         status: string | null;
+        importTime: Date;
         createdBy: string | null;
         caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
     } | {
@@ -34,10 +34,10 @@ export declare class ImportdataController {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            type: string | null;
             codeId: string | null;
-            importTime: Date;
+            type: string | null;
             status: string | null;
+            importTime: Date;
             createdBy: string | null;
             caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
@@ -52,10 +52,10 @@ export declare class ImportdataController {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            type: string | null;
             codeId: string | null;
-            importTime: Date;
+            type: string | null;
             status: string | null;
+            importTime: Date;
             createdBy: string | null;
             caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
         }[];
@@ -72,10 +72,10 @@ export declare class ImportdataController {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         codeId: string | null;
-        importTime: Date;
+        type: string | null;
         status: string | null;
+        importTime: Date;
         createdBy: string | null;
         caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
@@ -86,10 +86,10 @@ export declare class ImportdataController {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        type: string | null;
         codeId: string | null;
-        importTime: Date;
+        type: string | null;
         status: string | null;
+        importTime: Date;
         createdBy: string | null;
         caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
     }>;
