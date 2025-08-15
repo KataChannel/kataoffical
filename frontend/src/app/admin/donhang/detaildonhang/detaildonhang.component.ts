@@ -304,11 +304,17 @@ export class DetailDonhangComponent {
         orderBy: { order: 'desc' },
         select: { order: true },
       });
-      console.log('Max Order Result:', maxOrderResult);
 
-      const maxOrder = maxOrderResult.data?.[0]?.order || 0;
+      console.log('Max Order Result:', maxOrderResult);
+      
+      // Safely extract max order value with proper fallback
+      let maxOrder = 0;
+      if (maxOrderResult?.data && Array.isArray(maxOrderResult.data) && maxOrderResult.data.length > 0) {
+        maxOrder = maxOrderResult.data[0]?.order || 0;
+      }
+      
       const newOrder = maxOrder + 1;
-    console.log('Max Order:', maxOrder, 'New Order:', newOrder);
+      console.log('Max Order:', maxOrder, 'New Order:', newOrder);
     
       // Update DetailDonhang with required fields
       this.DetailDonhang.update((v: any) => ({
