@@ -304,6 +304,8 @@ export class DetailDonhangComponent {
         orderBy: { order: 'desc' },
         select: { order: true },
       });
+      console.log('Max Order Result:', maxOrderResult);
+
       const maxOrder = maxOrderResult.data?.[0]?.order || 0;
       const newOrder = maxOrder + 1;
     console.log('Max Order:', maxOrder, 'New Order:', newOrder);
