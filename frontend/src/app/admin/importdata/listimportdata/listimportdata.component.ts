@@ -803,6 +803,9 @@ export class ListImportdataComponent implements OnInit {
   }
 
   async ImportExcel(event: any) {
+    console.log(event);
+    console.log(this.isImporting());
+    
     if (this.isImporting()) return;
     
     this.isImporting.set(true);
