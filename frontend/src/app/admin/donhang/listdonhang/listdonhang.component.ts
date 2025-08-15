@@ -147,8 +147,63 @@ export class ListDonhangComponent {
       });
     }
   }
+  ListKhachhang:any[] =[]
+  async LoadListKhachhang(){
+      const result = await this._GraphqlService.findAll('khachhang', {
+        enableParallelFetch: true,
+        take: 999999,
+        enableStreaming: true,
+        aggressiveCache: true,
+        select: {
+          id: true,
+          tenfile: true,
+          tenkh: true,
+          name: true,
+          namenn: true,
+          subtitle: true,
+          makh: true,
+          makhold: true,
+          diachi: true,
+          sdt: true,
+          mst: true,
+          gionhanhang: true,
+          quan: true,
+          email: true,
+          phone: true,
+          address: true,
+          loaikh: true,
+          ghichu: true,
+          hiengia: true,
+          isActive: true,
+          istitle2: true,
+          isshowvat: true,
+          banggiaId: true,
+          createdAt: true,
+          updatedAt: true,
+          banggia: {
+            select: {
+              id: true,
+              title: true,
+              mabanggia: true,
+              type: true,
+              batdau: true,
+              ketthuc: true,
+              order: true,
+              ghichu: true,
+              status: true,
+              isActive: true,
+              isDefault: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+          },
+        },
+      });
+      this.ListKhachhang = result.data;
+  }
   async LoadData() {
     await this._KhachhangService.getAllKhachhang();
+    this.LoadListKhachhang();
     this.isLoading.set(true);
     try {
        this._GraphqlService.clearCache('donhang');
@@ -653,7 +708,7 @@ export class ListDonhangComponent {
       disableClose: true,
     });
     this.statusDetails.forEach((v: any, k: any) => {
-      this.FilterKhachhang[k] = this._KhachhangService.ListKhachhang();
+      this.FilterKhachhang[k] = this.ListKhachhang;
     });
     // Sort to put 'Processed' status items at the top
     this.statusDetails.sort((a, b) => {
@@ -664,9 +719,6 @@ export class ListDonhangComponent {
 
       // Auto-select customers based on filename matching
       this.autoSelectCustomersFromFilename();
-
-      console.log('Status Details:', this.statusDetails);
-      console.log('List Import Data:', this.ListImportData);
     } catch (error) {
       console.error('Error processing Excel files:', error);
       this._snackBar.open('Lỗi khi xử lý file Excel', '', {
@@ -837,7 +889,7 @@ export class ListDonhangComponent {
     await this._KhachhangService.getAllKhachhang();
     await this._SanphamService.getAllSanpham();
     await this._BanggiaService.getAllBanggia();
-    const KH = this._KhachhangService.ListKhachhang().map((v: any) => ({
+    const KH = this.ListKhachhang.map((v: any) => ({
       makhold: v.makhold,
       name: v.name,
       makh: v.makh,
@@ -899,12 +951,14 @@ export class ListDonhangComponent {
   autoSelectCustomersFromFilename(): void {
     if (
       !this.statusDetails?.length ||
-      !this._KhachhangService.ListKhachhang()?.length
+      !this.ListKhachhang?.length
     ) {
       return;
     }
 
-    const customers = this._KhachhangService.ListKhachhang();
+    const customers = this.ListKhachhang;
+    console.log(customers);
+    
     let matchedCount = 0;
     let skippedCount = 0;
 
@@ -1013,13 +1067,13 @@ export class ListDonhangComponent {
 
         // Mark as auto-selected for visual indication
         detail.autoSelected = true;
-
         matchedCount++;
         console.log(
           `Auto-selected customer "${matchedCustomer.name}" for file "${detail.fileName}"`
         );
       }
     });
+    console.log(matchedCount, skippedCount);
 
     // Show notification about auto-selection results
     if (matchedCount > 0 || skippedCount > 0) {
@@ -1052,9 +1106,7 @@ export class ListDonhangComponent {
       return null;
     }
 
-    return this._KhachhangService
-      .ListKhachhang()
-      .find((customer: any) => customer.id === importData.khachhangId);
+    return this.ListKhachhang.find((customer: any) => customer.id === importData.khachhangId);
   }
 
   /**
@@ -1341,12 +1393,12 @@ export class ListDonhangComponent {
   async DoFindKhachhang(event: any, index: any) {
     const value = event.target.value;
     if (!value) {
-      this.FilterKhachhang[index] = this._KhachhangService.ListKhachhang();
+      this.FilterKhachhang[index] = this.ListKhachhang;
       return;
     }
-    this.FilterKhachhang[index] = this._KhachhangService
-      .ListKhachhang()
-      .filter((v: any) => v.subtitle.includes(removeVietnameseAccents(value)));
+    this.FilterKhachhang[index] = this.ListKhachhang.filter((v: any) =>
+      v.subtitle.includes(removeVietnameseAccents(value))
+    );
   }
 
   DoChonNgaygiao(event: any, item: any) {
