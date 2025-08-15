@@ -11,9 +11,9 @@ export declare class UserService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
+        providerId: string | null;
         password: string;
         provider: string | null;
-        providerId: string | null;
     }>;
     getUsers(): Promise<{
         roles: {
@@ -38,8 +38,8 @@ export declare class UserService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
-        provider: string | null;
         providerId: string | null;
+        provider: string | null;
     }[]>;
     findAll(): Promise<{
         roles: {
@@ -64,8 +64,8 @@ export declare class UserService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
-        provider: string | null;
         providerId: string | null;
+        provider: string | null;
     }[]>;
     findOne(id: string): Promise<{
         roles: string[];
@@ -85,8 +85,8 @@ export declare class UserService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
-        provider: string | null;
         providerId: string | null;
+        provider: string | null;
     }>;
     update(id: string, data: any): Promise<{
         id: string;
@@ -95,9 +95,9 @@ export declare class UserService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
+        providerId: string | null;
         password: string;
         provider: string | null;
-        providerId: string | null;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -106,9 +106,9 @@ export declare class UserService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
+        providerId: string | null;
         password: string;
         provider: string | null;
-        providerId: string | null;
     }>;
     assignRoleToUser(data: {
         userId: string;

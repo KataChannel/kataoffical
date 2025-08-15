@@ -8,16 +8,32 @@ const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 async function main() {
     const Donhangs = await prisma.donhang.findMany();
-    Donhangs.forEach(async (donhang) => {
-        const number = DonhangcodeToNumber(donhang.madonhang);
-        console.log(`Mã ${donhang.madonhang} chuyển đổi thành số thứ tự: ${number}`);
-        await prisma.donhang.update({
-            where: { id: donhang.id },
-            data: {
-                order: number,
-            },
-        });
-    });
+    for (const donhang of Donhangs) {
+        try {
+            if (donhang.order) {
+                console.log(`Đơn hàng ${donhang.madonhang} đã có order: ${donhang.order}, bỏ qua`);
+                continue;
+            }
+            const number = DonhangcodeToNumber(donhang.madonhang);
+            const existingOrder = await prisma.donhang.findFirst({
+                where: { order: number }
+            });
+            if (existingOrder) {
+                console.log(`Order ${number} đã tồn tại cho đơn hàng ${existingOrder.madonhang}, bỏ qua ${donhang.madonhang}`);
+                continue;
+            }
+            console.log(`Mã ${donhang.madonhang} chuyển đổi thành số thứ tự: ${number}`);
+            await prisma.donhang.update({
+                where: { id: donhang.id },
+                data: {
+                    order: number,
+                },
+            });
+        }
+        catch (error) {
+            console.error(`Lỗi khi xử lý đơn hàng ${donhang.madonhang}:`, error);
+        }
+    }
 }
 main()
     .catch((e) => {

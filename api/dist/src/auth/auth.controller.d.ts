@@ -19,9 +19,9 @@ export declare class AuthController {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
+        providerId: string | null;
         password: string;
         provider: string | null;
-        providerId: string | null;
     }>;
     login(body: {
         SDT: string;
@@ -41,9 +41,9 @@ export declare class AuthController {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
+        providerId: string | null;
         password: string;
         provider: string | null;
-        providerId: string | null;
     }>;
     randomPassword(req: any): Promise<{
         newPassword: string;
