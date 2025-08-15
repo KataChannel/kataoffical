@@ -110,8 +110,8 @@ export class ListDonhangComponent {
   _snackBar: MatSnackBar = inject(MatSnackBar);
   Trangthaidon: any = TrangThaiDon;
   SearchParams: any = {
-    Batdau: moment().toDate(),
-    Ketthuc: moment().toDate(),
+    Batdau: moment().startOf('day').toDate(),
+    Ketthuc: moment().endOf('day').toDate(),
     Type: 'donsi',
     pageSize: 10,
     pageNumber: 1,
@@ -164,6 +164,7 @@ export class ListDonhangComponent {
               gte: this.SearchParams.Batdau,
               lte: this.SearchParams.Ketthuc,
             },
+            type: this.SearchParams.Type,
           },
           select: {
             id: true,
@@ -233,52 +234,10 @@ export class ListDonhangComponent {
     }
   }  
   async onSelectionChange(event: MatSelectChange): Promise<void> {
-    // Show loading indicator during time frame change
     this.isLoading.set(true);
-
     try {
-      const timeFrames: { [key: string]: () => void } = {
-        day: () => {
-          this.SearchParams.Batdau = moment()
-            .startOf('day')
-            .format('YYYY-MM-DD');
-          this.SearchParams.Ketthuc = moment()
-            .endOf('day')
-            .format('YYYY-MM-DD');
-        },
-        week: () => {
-          this.SearchParams.Batdau = moment()
-            .startOf('week')
-            .format('YYYY-MM-DD');
-          this.SearchParams.Ketthuc = moment()
-            .endOf('week')
-            .format('YYYY-MM-DD');
-        },
-        month: () => {
-          this.SearchParams.Batdau = moment()
-            .startOf('month')
-            .format('YYYY-MM-DD');
-          this.SearchParams.Ketthuc = moment()
-            .endOf('month')
-            .format('YYYY-MM-DD');
-        },
-        year: () => {
-          this.SearchParams.Batdau = moment()
-            .startOf('year')
-            .format('YYYY-MM-DD');
-          this.SearchParams.Ketthuc = moment()
-            .endOf('year')
-            .format('YYYY-MM-DD');
-        },
-      };
-
-      const selectedTimeFrame = timeFrames[event.value];
-      if (selectedTimeFrame) {
-        selectedTimeFrame();
-        // Reset to first page when changing time frame
-        this.SearchParams.pageNumber = 1;
-        await this.LoadData();
-      }
+      this.SearchParams.Type = event.value;
+      await this.LoadData();
     } catch (error) {
       console.error('Error changing time selection:', error);
       this._snackBar.open('Lỗi khi thay đổi thời gian', '', {
