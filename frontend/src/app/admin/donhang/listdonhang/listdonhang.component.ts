@@ -148,6 +148,7 @@ export class ListDonhangComponent {
     }
   }
   async LoadData() {
+    await this._KhachhangService.getAllKhachhang();
     this.isLoading.set(true);
     try {
        this._GraphqlService.clearCache('donhang');
@@ -190,7 +191,7 @@ export class ListDonhangComponent {
             }
           },
         })
-        console.log(result);
+
         
       const donhangs = result.data.map((v: any) => ({
           id: v.id,

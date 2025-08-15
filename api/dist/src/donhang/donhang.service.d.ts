@@ -14,34 +14,8 @@ export declare class DonhangService {
     search(params: any): Promise<{
         data: {
             sanpham: any[];
-            khachhang: {
-                id: string;
-                ghichu: string | null;
-                isshowvat: boolean;
-                banggiaId: string | null;
-                isActive: boolean;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string | null;
-                tenfile: string | null;
-                tenkh: string | null;
-                namenn: string | null;
-                subtitle: string | null;
-                makh: string;
-                makhold: string | null;
-                diachi: string | null;
-                sdt: string | null;
-                mst: string | null;
-                gionhanhang: string | null;
-                quan: string | null;
-                email: string | null;
-                phone: string | null;
-                address: string | null;
-                loaikh: string | null;
-                hiengia: boolean;
-                istitle2: boolean;
-            };
-            name: string | null;
+            khachhang: any;
+            name: string | null | undefined;
             id: string;
             title: string | null;
             type: string | null;
@@ -77,10 +51,10 @@ export declare class DonhangService {
         message: string;
     }>;
     phieuchuyen(params: any): Promise<{
-        name: string | null;
-        diachi: string | null;
-        sdt: string | null;
-        gionhanhang: string | null;
+        name: string | null | undefined;
+        diachi: string | null | undefined;
+        sdt: string | null | undefined;
+        gionhanhang: string | null | undefined;
         tongsomon: number;
         soluongtt: number;
         id: string;
@@ -103,33 +77,7 @@ export declare class DonhangService {
     }[]>;
     phieugiao(params: any): Promise<{
         sanpham: any[];
-        khachhang: {
-            id: string;
-            ghichu: string | null;
-            isshowvat: boolean;
-            banggiaId: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string | null;
-            tenfile: string | null;
-            tenkh: string | null;
-            namenn: string | null;
-            subtitle: string | null;
-            makh: string;
-            makhold: string | null;
-            diachi: string | null;
-            sdt: string | null;
-            mst: string | null;
-            gionhanhang: string | null;
-            quan: string | null;
-            email: string | null;
-            phone: string | null;
-            address: string | null;
-            loaikh: string | null;
-            hiengia: boolean;
-            istitle2: boolean;
-        };
+        khachhang: any;
         id: string;
         title: string | null;
         type: string | null;
@@ -150,7 +98,7 @@ export declare class DonhangService {
     }>;
     findAll(): Promise<{
         sanpham: any[];
-        name: string | null;
+        name: string | null | undefined;
         khachhang: ({
             banggia: ({
                 sanpham: {
@@ -251,33 +199,7 @@ export declare class DonhangService {
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: number;
         }[];
-        khachhang: {
-            id: string;
-            ghichu: string | null;
-            isshowvat: boolean;
-            banggiaId: string | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string | null;
-            tenfile: string | null;
-            tenkh: string | null;
-            namenn: string | null;
-            subtitle: string | null;
-            makh: string;
-            makhold: string | null;
-            diachi: string | null;
-            sdt: string | null;
-            mst: string | null;
-            gionhanhang: string | null;
-            quan: string | null;
-            email: string | null;
-            phone: string | null;
-            address: string | null;
-            loaikh: string | null;
-            hiengia: boolean;
-            istitle2: boolean;
-        };
+        khachhang: any;
         id: string;
         title: string | null;
         type: string | null;

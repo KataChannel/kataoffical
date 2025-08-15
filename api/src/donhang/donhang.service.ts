@@ -76,7 +76,6 @@ export class DonhangService {
       newNumbers = 1; // Reset về 00001
       newLetters = this.incrementLetters(letters);
     }
-
     return `${prefix}${newLetters}${newNumbers.toString().padStart(5, '0')}`;
   }
 
@@ -92,7 +91,6 @@ export class DonhangService {
     } else {
       secondChar++;
     }
-
     return String.fromCharCode(firstChar) + String.fromCharCode(secondChar);
   }
 
@@ -158,7 +156,7 @@ export class DonhangService {
     const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
       ...donhang,
       sanpham: sanpham.map((item: any) => {
-        const priceFromBanggia = khachhang.banggia
+        const priceFromBanggia = khachhang?.banggia
           ? khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)
               ?.giaban
           : 0;
@@ -178,8 +176,8 @@ export class DonhangService {
           ghichu: item.ghichu,
         };
       }),
-      khachhang: (({ banggia, ...rest }) => rest)(khachhang), // Xóa banggia
-      name: khachhang.name,
+      khachhang: khachhang ? (({ banggia, ...rest }) => rest)(khachhang as any) : null, // Xóa banggia
+      name: khachhang?.name,
     }));
 
     return {
@@ -367,9 +365,9 @@ export class DonhangService {
           }
 
           // 2. Kiểm tra khách hàng có bảng giá không
-          if (!donhang.khachhang.banggia) {
+          if (!donhang.khachhang?.banggia) {
             console.warn(
-              `Khách hàng ${donhang.khachhang.name} không có bảng giá`,
+              `Khách hàng ${donhang.khachhang?.name} không có bảng giá`,
             );
             continue;
           }
@@ -381,7 +379,7 @@ export class DonhangService {
 
           for (const donhangSanpham of donhang.sanpham) {
             // Tìm giá từ bảng giá của khách hàng
-            const giaSanpham = donhang.khachhang.banggia.sanpham.find(
+            const giaSanpham = donhang.khachhang?.banggia?.sanpham.find(
               (sp) => sp.sanphamId === donhangSanpham.idSP,
             );
             // console.log('giaSanpham', giaSanpham);
@@ -451,10 +449,10 @@ export class DonhangService {
     });
     return result.map(({ khachhang, sanpham, ...donhang }) => ({
       ...donhang,
-      name: khachhang.name,
-      diachi: khachhang.diachi,
-      sdt: khachhang.sdt,
-      gionhanhang: khachhang.gionhanhang,
+      name: khachhang?.name,
+      diachi: khachhang?.diachi,
+      sdt: khachhang?.sdt,
+      gionhanhang: khachhang?.gionhanhang,
       tongsomon: sanpham.length,
       soluongtt: parseFloat(
         sanpham
@@ -482,7 +480,7 @@ export class DonhangService {
     return {
       ...result,
       sanpham: result.sanpham.map((item: any) => {
-        const priceFromBanggia = result.khachhang.banggia
+        const priceFromBanggia = result.khachhang?.banggia
           ? result.khachhang.banggia.sanpham.find(
               (sp) => sp.sanphamId === item.idSP,
             )?.giaban
@@ -506,7 +504,7 @@ export class DonhangService {
           ghichu: item.ghichu,
         };
       }),
-      khachhang: (({ banggia, ...rest }) => rest)(result.khachhang), // Xóa banggia
+      khachhang: result.khachhang ? (({ banggia, ...rest }) => rest)(result.khachhang as any) : null, // Xóa banggia
     };
   }
 
@@ -525,7 +523,7 @@ export class DonhangService {
     const result = donhangs.map((donhang) => ({
       ...donhang,
       sanpham: donhang.sanpham.map((item: any) => {
-        const priceFromBanggia = donhang.khachhang.banggia
+        const priceFromBanggia = donhang.khachhang?.banggia
           ? donhang.khachhang.banggia.sanpham.find(
               (sp) => sp.sanphamId === item.idSP,
             )?.giaban
@@ -545,7 +543,7 @@ export class DonhangService {
           ghichu: item.ghichu,
         };
       }),
-      name: donhang.khachhang.name,
+      name: donhang.khachhang?.name,
     }));
     return result;
   }
@@ -589,7 +587,7 @@ export class DonhangService {
     return {
       ...donhang,
       sanpham: donhang.sanpham.map((item) => {
-        const priceFromBanggia = donhang.khachhang.banggia
+        const priceFromBanggia = donhang.khachhang?.banggia
           ? donhang.khachhang.banggia.sanpham.find(
               (sp) => sp.sanphamId === item.idSP,
             )?.giaban
@@ -609,7 +607,7 @@ export class DonhangService {
           ghichu: item.ghichu,
         };
       }),
-      khachhang: (({ banggia, ...rest }) => rest)(donhang.khachhang), // Xóa banggia
+      khachhang: donhang.khachhang ? (({ banggia, ...rest }) => rest)(donhang.khachhang as any) : null, // Xóa banggia
     };
   }
   async findOne(id: string) {
@@ -628,7 +626,7 @@ export class DonhangService {
     const result = {
       ...donhang,
       sanpham: donhang.sanpham.map((item) => {
-        const priceFromBanggia = donhang.khachhang.banggia
+        const priceFromBanggia = donhang.khachhang?.banggia
           ? donhang.khachhang.banggia.sanpham.find(
               (sp) => sp.sanphamId === item.idSP,
             )?.giaban
@@ -1163,7 +1161,7 @@ export class DonhangService {
           if (receivedQty < shippedQty) {
             const shortage = shippedQty - receivedQty;
             await prisma.tonKho.update({
-              where: { sanphamId: item.idSP ?? item.id },
+              where: { sanphamId: item.id },
               data: { slton: { increment: shortage } },
             });
             shortageItems.push({
@@ -1175,7 +1173,7 @@ export class DonhangService {
             });
           } else if (receivedQty === shippedQty) {
             await prisma.tonKho.update({
-              where: { sanphamId: item.idSP ?? item.id },
+              where: { sanphamId: item.id },
               data: { slton: { decrement: receivedQty } },
             });
           }
@@ -1384,7 +1382,7 @@ export class DonhangService {
           if (receivedQty < shippedQty) {
             const shortage = shippedQty - receivedQty;
             await prisma.tonKho.update({
-              where: { sanphamId: item.idSP ?? item.id },
+              where: { sanphamId: item.id },
               data: { slton: { increment: shortage } },
             });
             shortageItems.push({

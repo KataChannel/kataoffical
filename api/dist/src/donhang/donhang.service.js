@@ -134,7 +134,7 @@ let DonhangService = class DonhangService {
         const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
             ...donhang,
             sanpham: sanpham.map((item) => {
-                const priceFromBanggia = khachhang.banggia
+                const priceFromBanggia = khachhang?.banggia
                     ? khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)
                         ?.giaban
                     : 0;
@@ -152,8 +152,8 @@ let DonhangService = class DonhangService {
                     ghichu: item.ghichu,
                 };
             }),
-            khachhang: (({ banggia, ...rest }) => rest)(khachhang),
-            name: khachhang.name,
+            khachhang: khachhang ? (({ banggia, ...rest }) => rest)(khachhang) : null,
+            name: khachhang?.name,
         }));
         return {
             data: result,
@@ -299,13 +299,13 @@ let DonhangService = class DonhangService {
                         console.warn(`Đơn hàng ${donhangId} không tồn tại`);
                         continue;
                     }
-                    if (!donhang.khachhang.banggia) {
-                        console.warn(`Khách hàng ${donhang.khachhang.name} không có bảng giá`);
+                    if (!donhang.khachhang?.banggia) {
+                        console.warn(`Khách hàng ${donhang.khachhang?.name} không có bảng giá`);
                         continue;
                     }
                     console.log(`Cập nhật giá cho đơn hàng ${donhangId} của khách hàng ${donhang.sanpham}`);
                     for (const donhangSanpham of donhang.sanpham) {
-                        const giaSanpham = donhang.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === donhangSanpham.idSP);
+                        const giaSanpham = donhang.khachhang?.banggia?.sanpham.find((sp) => sp.sanphamId === donhangSanpham.idSP);
                         if (giaSanpham) {
                             const giaban = giaSanpham.giaban;
                             const sldat = Number(donhangSanpham.sldat);
@@ -363,10 +363,10 @@ let DonhangService = class DonhangService {
         });
         return result.map(({ khachhang, sanpham, ...donhang }) => ({
             ...donhang,
-            name: khachhang.name,
-            diachi: khachhang.diachi,
-            sdt: khachhang.sdt,
-            gionhanhang: khachhang.gionhanhang,
+            name: khachhang?.name,
+            diachi: khachhang?.diachi,
+            sdt: khachhang?.sdt,
+            gionhanhang: khachhang?.gionhanhang,
             tongsomon: sanpham.length,
             soluongtt: parseFloat(sanpham
                 .reduce((total, item) => total + Number(item.slgiao || 0), 0)
@@ -391,7 +391,7 @@ let DonhangService = class DonhangService {
         return {
             ...result,
             sanpham: result.sanpham.map((item) => {
-                const priceFromBanggia = result.khachhang.banggia
+                const priceFromBanggia = result.khachhang?.banggia
                     ? result.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
                     : 0;
                 const giaban = priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
@@ -410,7 +410,7 @@ let DonhangService = class DonhangService {
                     ghichu: item.ghichu,
                 };
             }),
-            khachhang: (({ banggia, ...rest }) => rest)(result.khachhang),
+            khachhang: result.khachhang ? (({ banggia, ...rest }) => rest)(result.khachhang) : null,
         };
     }
     async findAll() {
@@ -428,7 +428,7 @@ let DonhangService = class DonhangService {
         const result = donhangs.map((donhang) => ({
             ...donhang,
             sanpham: donhang.sanpham.map((item) => {
-                const priceFromBanggia = donhang.khachhang.banggia
+                const priceFromBanggia = donhang.khachhang?.banggia
                     ? donhang.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
                     : 0;
                 const giaban = priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
@@ -445,7 +445,7 @@ let DonhangService = class DonhangService {
                     ghichu: item.ghichu,
                 };
             }),
-            name: donhang.khachhang.name,
+            name: donhang.khachhang?.name,
         }));
         return result;
     }
@@ -486,7 +486,7 @@ let DonhangService = class DonhangService {
         return {
             ...donhang,
             sanpham: donhang.sanpham.map((item) => {
-                const priceFromBanggia = donhang.khachhang.banggia
+                const priceFromBanggia = donhang.khachhang?.banggia
                     ? donhang.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
                     : 0;
                 const giaban = priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
@@ -503,7 +503,7 @@ let DonhangService = class DonhangService {
                     ghichu: item.ghichu,
                 };
             }),
-            khachhang: (({ banggia, ...rest }) => rest)(donhang.khachhang),
+            khachhang: donhang.khachhang ? (({ banggia, ...rest }) => rest)(donhang.khachhang) : null,
         };
     }
     async findOne(id) {
@@ -523,7 +523,7 @@ let DonhangService = class DonhangService {
         const result = {
             ...donhang,
             sanpham: donhang.sanpham.map((item) => {
-                const priceFromBanggia = donhang.khachhang.banggia
+                const priceFromBanggia = donhang.khachhang?.banggia
                     ? donhang.khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)?.giaban
                     : 0;
                 const giaban = priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
@@ -992,7 +992,7 @@ let DonhangService = class DonhangService {
                     if (receivedQty < shippedQty) {
                         const shortage = shippedQty - receivedQty;
                         await prisma.tonKho.update({
-                            where: { sanphamId: item.idSP ?? item.id },
+                            where: { sanphamId: item.id },
                             data: { slton: { increment: shortage } },
                         });
                         shortageItems.push({
@@ -1005,7 +1005,7 @@ let DonhangService = class DonhangService {
                     }
                     else if (receivedQty === shippedQty) {
                         await prisma.tonKho.update({
-                            where: { sanphamId: item.idSP ?? item.id },
+                            where: { sanphamId: item.id },
                             data: { slton: { decrement: receivedQty } },
                         });
                     }
@@ -1195,7 +1195,7 @@ let DonhangService = class DonhangService {
                     if (receivedQty < shippedQty) {
                         const shortage = shippedQty - receivedQty;
                         await prisma.tonKho.update({
-                            where: { sanphamId: item.idSP ?? item.id },
+                            where: { sanphamId: item.id },
                             data: { slton: { increment: shortage } },
                         });
                         shortageItems.push({
