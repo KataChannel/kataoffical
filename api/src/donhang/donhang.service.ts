@@ -237,18 +237,11 @@ export class DonhangService {
     const { Batdau, Ketthuc, query } = params;
 
     // ✅ Sử dụng TimezoneUtilService cho date range
-<<<<<<< HEAD
-    const dateRange ={
-        gte: Batdau ? new Date(Batdau) : undefined,
-        lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      }
-=======
     const dateRange =  {
         gte: Batdau ? new Date(Batdau) : undefined,
         lte: Ketthuc ? new Date(Ketthuc) : undefined,
       }
 
->>>>>>> dev5.1
     const where: any = {
       ngaygiao: dateRange,
       // type: Type,
