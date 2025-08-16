@@ -191,7 +191,7 @@ export class DetailDonhangComponent {
         },
       },
     });
-    this.filterKhachhang = Khachhangs.data;
+    this.ListKhachhang = this.filterKhachhang = Khachhangs.data;
     const id = this._DonhangService.donhangId();
     if (!id) {
       this._router.navigate(['/admin/donhang']);
@@ -881,21 +881,18 @@ export class DetailDonhangComponent {
   }
   searchInput$ = new Subject<string>();
   isLoadingKhachhang = signal(false);
+  @Debounce(100)
   async DoFindKhachhang(event: any) {
-    const value = event.target.value.trim().toLowerCase();
+    const value = event.target.value    
     try {
-      this.isLoadingKhachhang.set(true);
-
-      if (value.length < 2) {
+      if (value.length < 1) {
         this.filterKhachhang = this.ListKhachhang;
         return;
       }
       this.filterKhachhang = this.ListKhachhang.filter(
         (v: any) =>
-          v.makh.toLowerCase().includes(value) ||
-          v.name.toLowerCase().includes(value) ||
-          removeVietnameseAccents(v.makh.toLowerCase()).includes(value) ||
-          removeVietnameseAccents(v.name.toLowerCase()).includes(value)
+          removeVietnameseAccents(v.makh.toLowerCase()).includes(removeVietnameseAccents(value)) ||
+          removeVietnameseAccents(v.name.toLowerCase()).includes(removeVietnameseAccents(value))
       );
     } catch (error) {
       console.error('Lỗi khi tìm kiếm khách hàng:', error);

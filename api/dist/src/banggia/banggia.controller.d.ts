@@ -22,11 +22,11 @@ export declare class BanggiaController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: string | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
         isDefault: boolean;
     }>;
     findAll(): Promise<{
@@ -43,11 +43,11 @@ export declare class BanggiaController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: string | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
         isDefault: boolean;
     }[]>;
     getbgsp(): Promise<{
@@ -71,11 +71,11 @@ export declare class BanggiaController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: string | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
         isDefault: boolean;
     }>;
     removeKHfromBG(data: any): Promise<{
@@ -86,11 +86,11 @@ export declare class BanggiaController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: string | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
         isDefault: boolean;
     }>;
     findOne(id: string): Promise<{
@@ -150,11 +150,11 @@ export declare class BanggiaController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: string | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
         isDefault: boolean;
     }>;
     update(id: string, updateBanggiaDto: any): Promise<{
@@ -174,11 +174,11 @@ export declare class BanggiaController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: string | null;
         mabanggia: string | null;
         type: string | null;
         batdau: Date | null;
         ketthuc: Date | null;
+        status: string | null;
         isDefault: boolean;
     }>;
     remove(id: string): void;

@@ -11,9 +11,9 @@ export declare class AuthService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
-        providerId: string | null;
         password: string;
         provider: string | null;
+        providerId: string | null;
     }>;
     login(SDT: string, email: string, password: string): Promise<{
         access_token: string;
@@ -26,9 +26,9 @@ export declare class AuthService {
         updatedAt: Date;
         email: string | null;
         SDT: string | null;
-        providerId: string | null;
         password: string;
         provider: string | null;
+        providerId: string | null;
     }>;
     generateRandomPassword(userId: string): Promise<{
         newPassword: string;
@@ -42,9 +42,9 @@ export declare class AuthService {
             updatedAt: Date;
             email: string | null;
             SDT: string | null;
-            providerId: string | null;
             password: string;
             provider: string | null;
+            providerId: string | null;
         };
     }>;
     getUserRoles(userId: string): Promise<({

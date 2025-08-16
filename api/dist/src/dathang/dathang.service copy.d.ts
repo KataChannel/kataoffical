@@ -31,8 +31,8 @@ export declare class DathangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -92,8 +92,8 @@ export declare class DathangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -126,8 +126,8 @@ export declare class DathangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -160,8 +160,8 @@ export declare class DathangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -194,8 +194,8 @@ export declare class DathangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;
@@ -211,8 +211,8 @@ export declare class DathangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         printCount: number | null;
         madncc: string | null;
         ngaynhan: Date | null;

@@ -43,7 +43,6 @@ export declare class KhachhangService {
     findAllForSelect(): Promise<{
         data: {
             id: string;
-            name: string | null;
             banggia: {
                 id: string;
                 title: string | null;
@@ -51,6 +50,7 @@ export declare class KhachhangService {
                 batdau: Date | null;
                 ketthuc: Date | null;
             } | null;
+            name: string | null;
             makh: string;
         }[];
     }>;
@@ -64,11 +64,11 @@ export declare class KhachhangService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                status: string | null;
                 mabanggia: string | null;
                 type: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
+                status: string | null;
                 isDefault: boolean;
             } | null;
         } & {
@@ -112,11 +112,11 @@ export declare class KhachhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            status: string | null;
             mabanggia: string | null;
             type: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
+            status: string | null;
             isDefault: boolean;
         } | null;
     } & {
@@ -155,11 +155,11 @@ export declare class KhachhangService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                status: string | null;
                 mabanggia: string | null;
                 type: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
+                status: string | null;
                 isDefault: boolean;
             } | null;
         } & {
@@ -203,11 +203,11 @@ export declare class KhachhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            status: string | null;
             mabanggia: string | null;
             type: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
+            status: string | null;
             isDefault: boolean;
         } | null;
     } & {
@@ -246,11 +246,11 @@ export declare class KhachhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            status: string | null;
             mabanggia: string | null;
             type: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
+            status: string | null;
             isDefault: boolean;
         } | null;
     } & {
@@ -289,11 +289,11 @@ export declare class KhachhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            status: string | null;
             mabanggia: string | null;
             type: string | null;
             batdau: Date | null;
             ketthuc: Date | null;
+            status: string | null;
             isDefault: boolean;
         } | null;
     } & {

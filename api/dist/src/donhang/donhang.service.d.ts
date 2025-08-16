@@ -25,8 +25,8 @@ export declare class DonhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            status: import(".prisma/client").$Enums.StatusDonhang;
             type: string | null;
+            status: import(".prisma/client").$Enums.StatusDonhang;
             isshowvat: boolean;
             banggiaId: string | null;
             madonhang: string;
@@ -66,8 +66,8 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
         banggiaId: string | null;
         madonhang: string;
@@ -87,8 +87,8 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
         banggiaId: string | null;
         madonhang: string;
@@ -119,11 +119,11 @@ export declare class DonhangService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                status: string | null;
                 mabanggia: string | null;
                 type: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
+                status: string | null;
                 isDefault: boolean;
             }) | null;
         } & {
@@ -160,8 +160,8 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
         banggiaId: string | null;
         madonhang: string;
@@ -209,8 +209,8 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
         banggiaId: string | null;
         madonhang: string;
@@ -269,11 +269,11 @@ export declare class DonhangService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
-                status: string | null;
                 mabanggia: string | null;
                 type: string | null;
                 batdau: Date | null;
                 ketthuc: Date | null;
+                status: string | null;
                 isDefault: boolean;
             }) | null;
         } & {
@@ -310,8 +310,8 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
         banggiaId: string | null;
         madonhang: string;
@@ -359,8 +359,8 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
         banggiaId: string | null;
         madonhang: string;
@@ -378,8 +378,8 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
         banggiaId: string | null;
         madonhang: string;
@@ -397,8 +397,8 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
         banggiaId: string | null;
         madonhang: string;
@@ -423,8 +423,8 @@ export declare class DonhangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            status: import(".prisma/client").$Enums.StatusDonhang;
             type: string | null;
+            status: import(".prisma/client").$Enums.StatusDonhang;
             isshowvat: boolean;
             banggiaId: string | null;
             madonhang: string;
@@ -462,8 +462,8 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
         banggiaId: string | null;
         madonhang: string;
@@ -558,8 +558,8 @@ export declare class DonhangService {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        status: import(".prisma/client").$Enums.StatusDonhang;
         type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
         isshowvat: boolean;
         banggiaId: string | null;
         madonhang: string;

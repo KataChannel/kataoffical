@@ -16,9 +16,9 @@ export declare class ImportdataService {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        status: string | null;
         codeId: string | null;
         type: string | null;
+        status: string | null;
         importTime: Date;
         createdBy: string | null;
         caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
@@ -29,9 +29,9 @@ export declare class ImportdataService {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        status: string | null;
         codeId: string | null;
         type: string | null;
+        status: string | null;
         importTime: Date;
         createdBy: string | null;
         caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
@@ -42,9 +42,9 @@ export declare class ImportdataService {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            status: string | null;
             codeId: string | null;
             type: string | null;
+            status: string | null;
             importTime: Date;
             createdBy: string | null;
             caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
@@ -60,9 +60,9 @@ export declare class ImportdataService {
             order: number | null;
             createdAt: Date;
             updatedAt: Date;
-            status: string | null;
             codeId: string | null;
             type: string | null;
+            status: string | null;
             importTime: Date;
             createdBy: string | null;
             caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
@@ -77,9 +77,9 @@ export declare class ImportdataService {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        status: string | null;
         codeId: string | null;
         type: string | null;
+        status: string | null;
         importTime: Date;
         createdBy: string | null;
         caseDetail: import("@prisma/client/runtime/library").JsonValue | null;
@@ -91,9 +91,9 @@ export declare class ImportdataService {
         order: number | null;
         createdAt: Date;
         updatedAt: Date;
-        status: string | null;
         codeId: string | null;
         type: string | null;
+        status: string | null;
         importTime: Date;
         createdBy: string | null;
         caseDetail: import("@prisma/client/runtime/library").JsonValue | null;

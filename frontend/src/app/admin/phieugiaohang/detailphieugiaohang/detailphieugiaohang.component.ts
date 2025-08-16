@@ -124,7 +124,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
       this._PhieugiaohangService.setDonhangId(id);
-      await this._SanphamService.getAllSanpham();
+      await this._SanphamService.getAllSanpham({pageSize:99999});
       this.filterSanpham = this._SanphamService.ListSanpham();
     });
 

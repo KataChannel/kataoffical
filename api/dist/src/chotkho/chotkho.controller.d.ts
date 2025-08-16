@@ -98,10 +98,10 @@ export declare class ChotkhoController {
         data: ({
             user: {
                 id: string;
-                email: string | null;
                 profile: {
                     name: string;
                 } | null;
+                email: string | null;
             } | null;
         } & {
             id: string;
@@ -111,11 +111,11 @@ export declare class ChotkhoController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            userId: string | null;
             codeId: string | null;
             khoId: string | null;
             ngay: Date;
             sanphamId: string | null;
+            userId: string | null;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -133,10 +133,10 @@ export declare class ChotkhoController {
     findOne(id: string): Promise<{
         user: {
             id: string;
-            email: string | null;
             profile: {
                 name: string;
             } | null;
+            email: string | null;
         } | null;
     } & {
         id: string;
@@ -146,11 +146,11 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         codeId: string | null;
         khoId: string | null;
         ngay: Date;
         sanphamId: string | null;
+        userId: string | null;
         tonkhoId: string | null;
         phieukhoId: string | null;
         slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -160,10 +160,10 @@ export declare class ChotkhoController {
     update(id: string, data: any): Promise<{
         user: {
             id: string;
-            email: string | null;
             profile: {
                 name: string;
             } | null;
+            email: string | null;
         } | null;
     } & {
         id: string;
@@ -173,11 +173,11 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         codeId: string | null;
         khoId: string | null;
         ngay: Date;
         sanphamId: string | null;
+        userId: string | null;
         tonkhoId: string | null;
         phieukhoId: string | null;
         slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -192,11 +192,11 @@ export declare class ChotkhoController {
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
-        userId: string | null;
         codeId: string | null;
         khoId: string | null;
         ngay: Date;
         sanphamId: string | null;
+        userId: string | null;
         tonkhoId: string | null;
         phieukhoId: string | null;
         slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -207,10 +207,10 @@ export declare class ChotkhoController {
         data: ({
             user: {
                 id: string;
-                email: string | null;
                 profile: {
                     name: string;
                 } | null;
+                email: string | null;
             } | null;
             sanpham: {
                 id: string;
@@ -254,11 +254,11 @@ export declare class ChotkhoController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            userId: string | null;
             codeId: string | null;
             khoId: string | null;
             ngay: Date;
             sanphamId: string | null;
+            userId: string | null;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -275,10 +275,10 @@ export declare class ChotkhoController {
         data: ({
             user: {
                 id: string;
-                email: string | null;
                 profile: {
                     name: string;
                 } | null;
+                email: string | null;
             } | null;
             sanpham: {
                 id: string;
@@ -322,11 +322,11 @@ export declare class ChotkhoController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            userId: string | null;
             codeId: string | null;
             khoId: string | null;
             ngay: Date;
             sanphamId: string | null;
+            userId: string | null;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -358,10 +358,10 @@ export declare class ChotkhoController {
         records: ({
             user: {
                 id: string;
-                email: string | null;
                 profile: {
                     name: string;
                 } | null;
+                email: string | null;
             } | null;
             sanpham: {
                 id: string;
@@ -428,11 +428,11 @@ export declare class ChotkhoController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            userId: string | null;
             codeId: string | null;
             khoId: string | null;
             ngay: Date;
             sanphamId: string | null;
+            userId: string | null;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -462,10 +462,10 @@ export declare class ChotkhoController {
         records: ({
             user: {
                 id: string;
-                email: string | null;
                 profile: {
                     name: string;
                 } | null;
+                email: string | null;
             } | null;
             sanpham: {
                 id: string;
@@ -532,11 +532,11 @@ export declare class ChotkhoController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            userId: string | null;
             codeId: string | null;
             khoId: string | null;
             ngay: Date;
             sanphamId: string | null;
+            userId: string | null;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -571,10 +571,10 @@ export declare class ChotkhoController {
         records: ({
             user: {
                 id: string;
-                email: string | null;
                 profile: {
                     name: string;
                 } | null;
+                email: string | null;
             } | null;
             sanpham: {
                 id: string;
@@ -641,11 +641,11 @@ export declare class ChotkhoController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            userId: string | null;
             codeId: string | null;
             khoId: string | null;
             ngay: Date;
             sanphamId: string | null;
+            userId: string | null;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;
@@ -675,10 +675,10 @@ export declare class ChotkhoController {
         records: ({
             user: {
                 id: string;
-                email: string | null;
                 profile: {
                     name: string;
                 } | null;
+                email: string | null;
             } | null;
             sanpham: {
                 id: string;
@@ -745,11 +745,11 @@ export declare class ChotkhoController {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            userId: string | null;
             codeId: string | null;
             khoId: string | null;
             ngay: Date;
             sanphamId: string | null;
+            userId: string | null;
             tonkhoId: string | null;
             phieukhoId: string | null;
             slthucte: import("@prisma/client/runtime/library").Decimal;
