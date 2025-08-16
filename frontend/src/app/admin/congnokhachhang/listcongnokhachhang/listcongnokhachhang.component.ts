@@ -209,7 +209,7 @@ onKhachhangChange(event: MatAutocompleteSelectedEvent){
     // Reset to show all data
     this.dataSource.data = this.ListExport = this.ListCongno;
   }
-  this.dataSource.paginator = this.paginator;
+  // this.dataSource.paginator = this.paginator;
   this.dataSource.sort = this.sort;
 }
 filterListKhachhang:any = []
@@ -238,7 +238,7 @@ doFilterKhachhang(event: Event){
       // Tính tổng tiền sau thuế cho từng khách hàng
       this.ListCongno = this.Listdonhang()
       this.dataSource = new MatTableDataSource(this.ListCongno);
-      this.dataSource.paginator = this.paginator;
+      // this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.dataSource.filterPredicate = this.createFilter();
       this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
