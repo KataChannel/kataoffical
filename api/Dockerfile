@@ -15,7 +15,7 @@ COPY . .
 
 # Install Prisma globally and use db push instead of migrate
 RUN bun install -g prisma
-RUN bun prisma db push
+RUN bun prisma db push --accept-data-loss
 RUN bun prisma generate
 
 # Use a smaller runtime image
