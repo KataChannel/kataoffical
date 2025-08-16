@@ -12,7 +12,7 @@
     "db:generate": "cd api && npx prisma generate",
     "db:migrate": "cd api && npx bun prisma migrate dev --name tenfile",
     "db:reset": "cd api && npx bun prisma migrate reset",
-    "db:push": "cd api && npx bun prisma db push",
+    "db:push": "cd api && npx bun prisma db push --accept-data-loss",
     "db:studio": "cd api && npx bun prisma studio"
   }
 }
