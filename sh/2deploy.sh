@@ -9,7 +9,7 @@ git push
 ssh root@116.118.49.243 << 'EOF'
 cd rausach
 git pull
-docker builder prune -af
 docker compose -f 'docker-compose.yml' build --no-cache berausach
 docker compose -f 'docker-compose.yml' up -d
+docker builder prune -af
 EOF
