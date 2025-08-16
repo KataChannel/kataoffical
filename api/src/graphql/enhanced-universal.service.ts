@@ -634,4 +634,41 @@ export class EnhancedUniversalService {
 
     return normalizedWhere;
   }
+
+  /**
+   * Dynamic aggregate operations for statistical calculations
+   */
+  async aggregate(
+    modelName: string,
+    aggregations: any,
+    where?: any
+  ): Promise<any> {
+    try {
+      // Get the model
+      const model = this.getModel(modelName);
+      
+      // Normalize date filters in where conditions
+      const normalizedWhere = where ? this.normalizeDateFilters(modelName, where) : undefined;
+      
+      // Execute aggregate query
+      const startTime = Date.now();
+      const result = await model.aggregate({
+        ...aggregations,
+        ...(normalizedWhere && { where: normalizedWhere })
+      });
+      const queryTime = Date.now() - startTime;
+      
+      console.log(`🔢 ${modelName} aggregate completed:`, {
+        operations: Object.keys(aggregations),
+        queryTime: `${queryTime}ms`,
+        hasWhere: !!normalizedWhere
+      });
+
+      return result;
+      
+    } catch (error) {
+      console.error(`❌ Enhanced aggregate error for ${modelName}:`, error);
+      throw new Error(`Aggregate operation failed: ${error.message}`);
+    }
+  }
 }

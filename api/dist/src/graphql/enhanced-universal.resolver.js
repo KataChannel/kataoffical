@@ -148,6 +148,20 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
             throw error;
         }
     }
+    async aggregate(modelName, aggregations, where) {
+        console.log(`🔢 Enhanced aggregate query:`, {
+            model: modelName,
+            aggregations: Object.keys(aggregations || {}),
+            hasWhere: !!where,
+        });
+        try {
+            return await this.enhancedService.aggregate(modelName, aggregations, where);
+        }
+        catch (error) {
+            console.error(`❌ Enhanced aggregate error:`, error);
+            throw error;
+        }
+    }
     async clearDataLoaderCache(modelName) {
         console.log(`🗑️ Clearing DataLoader cache${modelName ? ` for ${modelName}` : ' (all)'}`);
         try {
@@ -406,6 +420,28 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], EnhancedUniversalResolver.prototype, "modelMetadata", null);
+__decorate([
+    (0, graphql_1.Query)(() => graphql_type_json_1.GraphQLJSON, {
+        name: 'aggregate',
+        description: 'Enhanced aggregate operations for statistical calculations',
+    }),
+    __param(0, (0, graphql_1.Args)('modelName', {
+        type: () => String,
+        description: 'Model name (case-insensitive)',
+    })),
+    __param(1, (0, graphql_1.Args)('aggregations', {
+        type: () => graphql_type_json_1.GraphQLJSON,
+        description: 'Aggregation operations to perform (e.g., { _max: { order: true } })',
+    })),
+    __param(2, (0, graphql_1.Args)('where', {
+        type: () => graphql_type_json_1.GraphQLJSON,
+        nullable: true,
+        description: 'Filter conditions for aggregation',
+    })),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", Promise)
+], EnhancedUniversalResolver.prototype, "aggregate", null);
 __decorate([
     (0, graphql_1.Mutation)(() => graphql_type_json_1.GraphQLJSON, {
         name: 'clearDataLoaderCache',

@@ -301,73 +301,16 @@ export class DetailDonhangComponent {
 
   private async createDonhang() {
     try {
-      console.log('Creating Donhang:', this.DetailDonhang());
-
-      // Get max order number for new order
-      const maxOrderResult = await this._GraphqlService.findAll('donhang', {
-        take: 1,
-        orderBy: { order: 'desc' },
-        select: { order: true },
-      });
-
-      console.log('Max Order Result:', maxOrderResult);
-      
-      // Safely extract max order value with proper fallback
-      let maxOrder = 0;
-      if (maxOrderResult?.data && Array.isArray(maxOrderResult.data) && maxOrderResult.data.length > 0) {
-        maxOrder = maxOrderResult.data[0]?.order || 0;
-      }
-      
-      const newOrder = maxOrder + 1;
-      console.log('Max Order:', maxOrder, 'New Order:', newOrder);
-    
-      // Update DetailDonhang with required fields
       this.DetailDonhang.update((v: any) => ({
         ...v,
         type: 'donsi',
-        madonhang: DonhangnumberToCode(newOrder),
         status: 'dadat',
-        order: newOrder,
-        isActive: true,
-      }));
-
-      // Prepare data for GraphQL create mutation
-      const { khachhang, banggia, id, createdAt, updatedAt, ...donhangData } = this.DetailDonhang();
-      
-      // Build correct payload structure for Prisma nested create
-      const createData = {
-        ...donhangData,
-        // Convert Date to ISO string if needed
-        ngaygiao: donhangData.ngaygiao,
-        // Calculate totals
         tongvat: this.calculateTotalVat(),
         tongtien: this.calculateTotalAmount(),
-        // Nested create for sanpham relation
-        sanpham: {
-          create: this.DetailDonhang().sanpham?.map((sp: any, index: number) => ({
-            idSP: sp.id, // Use sp.id as the foreign key to Sanpham table
-            giaban: parseFloat(sp.giaban?.toString() || '0'),
-            sldat: parseFloat(sp.sldat?.toString() || '0'),
-            slgiao: parseFloat(sp.slgiao?.toString() || '0'), 
-            slnhan: parseFloat(sp.slnhan?.toString() || '0'),
-            slhuy: parseFloat(sp.slhuy?.toString() || '0'),
-            ttdat: parseFloat(sp.ttdat?.toString() || '0'),
-            ttgiao: parseFloat(sp.ttgiao?.toString() || '0'),
-            ttnhan: parseFloat(sp.ttnhan?.toString() || '0'),
-            vat: parseFloat(sp.vat?.toString() || '0'),
-            ttsauvat: parseFloat(sp.ttsauvat?.toString() || '0'),
-            ghichu: sp.ghichu || null,
-            order: index + 1,
-            isActive: true
-          })) || []
-        }
-      };
-      console.log('GraphQL Create Data:', createData);
-      // Create Donhang via GraphQL
-      const result = await this._GraphqlService.createOne('donhang', createData);
-      
-      console.log('Created Donhang Result:', result);
-      
+        isActive: true,
+      }));
+      const result = await this._DonhangService.CreateDonhang(this.DetailDonhang());
+
       if (result && result.id) {
         this._snackBar.open('Tạo Đơn Hàng Thành Công', '', {
           duration: 2000,
@@ -1243,19 +1186,29 @@ export class DetailDonhangComponent {
     });
 
     try {
-      // Get max order number for new order
-      const maxOrderResult = await this._GraphqlService.findAll('donhang', {
-        take: 1,
-        orderBy: { order: 'desc' },
-        select: { order: true },
+      // Get max order number using aggregate for better performance  
+      const maxOrderResult = await this._GraphqlService.aggregate('donhang', {
+        _max: { order: true }
       });
 
-      let maxOrder = 0;
-      if (maxOrderResult?.data && Array.isArray(maxOrderResult.data) && maxOrderResult.data.length > 0) {
-        maxOrder = maxOrderResult.data[0]?.order || 0;
-      }
+      // Extract max order value from aggregate result
+      let maxOrder = maxOrderResult._max?.order || 0;
+      let newOrder = maxOrder + 1;
+      let madonhang = DonhangnumberToCode(newOrder);
       
-      const newOrder = maxOrder + 1;
+      // Check for duplicate madonhang like backend implementation
+      let existingDonhang = await this._GraphqlService.findUnique('donhang', {
+        where: { madonhang }
+      });
+      
+      // If madonhang already exists, increment order until we find an unused one
+      while (existingDonhang) {
+        newOrder++;
+        madonhang = DonhangnumberToCode(newOrder);
+        existingDonhang = await this._GraphqlService.findUnique('donhang', {
+          where: { madonhang }
+        });
+      }
 
       // Prepare copy data
       const originalDonhang = this.DetailDonhang();
@@ -1264,7 +1217,7 @@ export class DetailDonhangComponent {
       const copyData = {
         ...donhangData,
         title: `${originalDonhang.title} - Copy`,
-        madonhang: DonhangnumberToCode(newOrder),
+        madonhang: madonhang,
         order: newOrder,
         type: 'donsi',
         status: 'dadat',

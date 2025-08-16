@@ -47,4 +47,5 @@ export declare class EnhancedUniversalService {
     batchOperation(modelName: string, operation: 'create' | 'update' | 'delete', items: any[]): Promise<any>;
     private normalizeDateFieldsForModel;
     private normalizeDateFilters;
+    aggregate(modelName: string, aggregations: any, where?: any): Promise<any>;
 }

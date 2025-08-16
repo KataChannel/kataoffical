@@ -216,6 +216,20 @@ const MODEL_METADATA_QUERY = gql`
   }
 `;
 
+const AGGREGATE_QUERY = gql`
+  query Aggregate(
+    $modelName: String!
+    $aggregations: JSON!
+    $where: JSON
+  ) {
+    aggregate(
+      modelName: $modelName
+      aggregations: $aggregations
+      where: $where
+    )
+  }
+`;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -700,6 +714,53 @@ export class GraphqlService {
       return deletedData;
     } catch (error) {
       this.trackError(error, 'batchDelete');
+      throw error;
+    } finally {
+      this.setLoading(loadingKey, false);
+    }
+  }
+
+  // ========================= AGGREGATE OPERATIONS =========================
+
+  async aggregate<T = any>(
+    modelName: string,
+    aggregations: any,
+    where?: any
+  ): Promise<T> {
+    const startTime = Date.now();
+    const loadingKey = `aggregate_${modelName}`;
+    const cacheKey = this.generateCacheKey('aggregate', { modelName, aggregations, where });
+
+    // Check cache first
+    const cachedData = this.getFromCache<T>(cacheKey);
+    if (cachedData) {
+      this.trackPerformance('aggregate', startTime, true, 1, modelName);
+      return cachedData;
+    }
+
+    this.setLoading(loadingKey, true);
+
+    const variables = {
+      modelName,
+      aggregations,
+      where
+    };
+
+    try {
+      const result = await firstValueFrom(
+        this.apollo.query<{ aggregate: T }>({
+          query: AGGREGATE_QUERY,
+          variables,
+          fetchPolicy: 'cache-first'
+        })
+      );
+
+      const aggregateResult = result.data.aggregate;
+      this.setCache(cacheKey, aggregateResult, this.DEFAULT_TTL);
+      this.trackPerformance('aggregate', startTime, false, 1, modelName);
+      return aggregateResult;
+    } catch (error) {
+      this.trackError(error, 'aggregate');
       throw error;
     } finally {
       this.setLoading(loadingKey, false);

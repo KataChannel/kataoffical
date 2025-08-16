@@ -1224,10 +1224,10 @@ export class DonhangService {
     let madonhang = await this.DonhangnumberToCode(maxOrder + 1);
     
     // Kiểm tra mã đơn hàng đã tồn tại chưa
-    let existingDonhang = await this.prisma.donhang.findUnique({
-      where: { madonhang },
-    });
-    
+    let existingDonhang = await this.prisma.donhang.findUnique(
+      { where: { madonhang } }
+    );
+
     // Nếu mã đã tồn tại, tăng maxOrder cho đến khi tìm được mã chưa tồn tại
     while (existingDonhang) {
       maxOrder++;
@@ -1236,6 +1236,9 @@ export class DonhangService {
       where: { madonhang },
       });
     }    
+
+
+
     return this.prisma.$transaction(async (prisma) => {
       // Get khachhang data
       const khachhang = await prisma.khachhang.findUnique({

@@ -13,6 +13,7 @@ export declare class EnhancedUniversalResolver {
     batchCreate(modelName: string, data: any[]): Promise<any>;
     batchDelete(modelName: string, ids: string[]): Promise<any>;
     modelMetadata(modelName: string): Promise<any>;
+    aggregate(modelName: string, aggregations: any, where?: any): Promise<any>;
     clearDataLoaderCache(modelName?: string): Promise<{
         success: boolean;
         message: string;

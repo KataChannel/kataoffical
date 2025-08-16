@@ -400,6 +400,28 @@ let EnhancedUniversalService = class EnhancedUniversalService {
         });
         return normalizedWhere;
     }
+    async aggregate(modelName, aggregations, where) {
+        try {
+            const model = this.getModel(modelName);
+            const normalizedWhere = where ? this.normalizeDateFilters(modelName, where) : undefined;
+            const startTime = Date.now();
+            const result = await model.aggregate({
+                ...aggregations,
+                ...(normalizedWhere && { where: normalizedWhere })
+            });
+            const queryTime = Date.now() - startTime;
+            console.log(`🔢 ${modelName} aggregate completed:`, {
+                operations: Object.keys(aggregations),
+                queryTime: `${queryTime}ms`,
+                hasWhere: !!normalizedWhere
+            });
+            return result;
+        }
+        catch (error) {
+            console.error(`❌ Enhanced aggregate error for ${modelName}:`, error);
+            throw new Error(`Aggregate operation failed: ${error.message}`);
+        }
+    }
 };
 exports.EnhancedUniversalService = EnhancedUniversalService;
 exports.EnhancedUniversalService = EnhancedUniversalService = __decorate([

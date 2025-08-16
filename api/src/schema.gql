@@ -94,6 +94,18 @@ type Query {
     """Model name to get metadata for"""
     modelName: String!
   ): JSON!
+
+  """Enhanced aggregate operations for statistical calculations"""
+  aggregate(
+    """Model name (case-insensitive)"""
+    modelName: String!
+
+    """Aggregation operations to perform (e.g., { _max: { order: true } })"""
+    aggregations: JSON!
+
+    """Filter conditions for aggregation"""
+    where: JSON
+  ): JSON!
   aggregateDonhang(batdau: String, ketthuc: String): AggregateResult!
   aggregateDathang(batdau: String, ketthuc: String): AggregateResult!
   aggregateSanpham: AggregateResult!

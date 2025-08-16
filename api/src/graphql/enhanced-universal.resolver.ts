@@ -400,6 +400,44 @@ export class EnhancedUniversalResolver {
     }
   }
 
+  @Query(() => GraphQLJSON, {
+    name: 'aggregate',
+    description: 'Enhanced aggregate operations for statistical calculations',
+  })
+  async aggregate(
+    @Args('modelName', {
+      type: () => String,
+      description: 'Model name (case-insensitive)',
+    })
+    modelName: string,
+
+    @Args('aggregations', {
+      type: () => GraphQLJSON,
+      description: 'Aggregation operations to perform (e.g., { _max: { order: true } })',
+    })
+    aggregations: any,
+
+    @Args('where', {
+      type: () => GraphQLJSON,
+      nullable: true,
+      description: 'Filter conditions for aggregation',
+    })
+    where?: any,
+  ) {
+    console.log(`🔢 Enhanced aggregate query:`, {
+      model: modelName,
+      aggregations: Object.keys(aggregations || {}),
+      hasWhere: !!where,
+    });
+
+    try {
+      return await this.enhancedService.aggregate(modelName, aggregations, where);
+    } catch (error) {
+      console.error(`❌ Enhanced aggregate error:`, error);
+      throw error;
+    }
+  }
+
   @Mutation(() => GraphQLJSON, {
     name: 'clearDataLoaderCache',
     description: 'Clear DataLoader cache for better performance testing',

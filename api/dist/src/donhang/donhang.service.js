@@ -985,9 +985,7 @@ let DonhangService = class DonhangService {
         });
         let maxOrder = maxOrderResult._max.order || 0;
         let madonhang = await this.DonhangnumberToCode(maxOrder + 1);
-        let existingDonhang = await this.prisma.donhang.findUnique({
-            where: { madonhang },
-        });
+        let existingDonhang = await this.prisma.donhang.findUnique({ where: { madonhang } });
         while (existingDonhang) {
             maxOrder++;
             madonhang = await this.DonhangnumberToCode(maxOrder + 1);
