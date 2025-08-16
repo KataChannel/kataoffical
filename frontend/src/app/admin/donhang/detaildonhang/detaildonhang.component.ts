@@ -276,13 +276,13 @@ export class DetailDonhangComponent {
         return `Số lượng đặt của sản phẩm "${sp.title}" phải lớn hơn 0`;
       }
 
-      if (sp.slgiao && sp.slgiao > sp.sldat) {
-        return `Số lượng giao của sản phẩm "${sp.title}" không được lớn hơn số lượng đặt`;
-      }
+      // if (sp.slgiao && sp.slgiao > sp.sldat) {
+      //   return `Số lượng giao của sản phẩm "${sp.title}" không được lớn hơn số lượng đặt`;
+      // }
 
-      if (sp.slnhan && sp.slnhan > sp.slgiao) {
-        return `Số lượng nhận của sản phẩm "${sp.title}" không được lớn hơn số lượng giao`;
-      }
+      // if (sp.slnhan && sp.slnhan > sp.slgiao) {
+      //   return `Số lượng nhận của sản phẩm "${sp.title}" không được lớn hơn số lượng giao`;
+      // }
     }
 
     // Validate ngày giao không được trong quá khứ cho đơn hàng mới

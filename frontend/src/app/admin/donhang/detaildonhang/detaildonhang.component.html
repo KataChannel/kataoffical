@@ -11,7 +11,7 @@
     <!-- <button mat-icon-button color="primary" (click)="printContent()">
       <mat-icon>print</mat-icon>
     </button> -->
-    @if(!DetailDonhang().status || DetailDonhang().status === 'dadat') {
+    @if(!DetailDonhang().status || DetailDonhang().status === 'dadat' || DetailDonhang().status === 'dagiao') {
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleDonhangAction()">
       <mat-icon>save</mat-icon>
     </button>

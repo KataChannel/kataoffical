@@ -48,6 +48,45 @@ export class DonhangService {
     return d;
   }
 
+  /**
+   * Helper method to safely update TonKho, creating record if not exists
+   */
+  private async updateTonKhoSafe(
+    prisma: any,
+    sanphamId: string,
+    updateData: {
+      slton?: { increment?: number; decrement?: number };
+      slchogiao?: { increment?: number; decrement?: number };
+      slchonhap?: { increment?: number; decrement?: number };
+    }
+  ) {
+    try {
+      await prisma.tonKho.upsert({
+        where: { sanphamId },
+        create: {
+          sanphamId,
+          slton: this.getCreateValue(updateData.slton),
+          slchogiao: this.getCreateValue(updateData.slchogiao),
+          slchonhap: this.getCreateValue(updateData.slchonhap),
+        },
+        update: updateData,
+      });
+    } catch (error) {
+      console.error(`Error updating TonKho for sanphamId ${sanphamId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Helper to calculate initial value for TonKho creation
+   */
+  private getCreateValue(operation?: { increment?: number; decrement?: number }): number {
+    if (!operation) return 0;
+    if (operation.increment) return operation.increment;
+    if (operation.decrement) return -operation.decrement;
+    return 0;
+  }
+
   async generateNextOrderCode(): Promise<string> {
     // Lấy mã đơn hàng gần nhất
     const lastOrder = await this.prisma.donhang.findFirst({
@@ -1046,12 +1085,9 @@ export class DonhangService {
       if (oldDonhang.status === 'dadat' && data.status === 'dagiao') {
         for (const sp of data.sanpham) {
           const decValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
-          await prisma.tonKho.update({
-            where: { sanphamId: sp.id },
-            data: {
-              slchogiao: { decrement: decValue },
-              slton: { decrement: decValue },
-            },
+          await this.updateTonKhoSafe(prisma, sp.id, {
+            slchogiao: { decrement: decValue },
+            slton: { decrement: decValue },
           });
         }
         const maphieuNew = `PX-${data.madonhang}`;
@@ -1140,7 +1176,9 @@ export class DonhangService {
                 where: { idSP: sp.id },
                 data: {
                   ghichu: sp.ghichu,
+                  sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
                   slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                  slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
                 },
               })),
             },

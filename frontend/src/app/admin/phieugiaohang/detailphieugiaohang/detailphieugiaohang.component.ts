@@ -245,20 +245,17 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
 
   async handlePhieugiaohangAction() {
     if (this.phieugiaohangId() === '0') {
-      await this.createPhieugiaohang();
+      // await this.createPhieugiaohang();
     } else {
       await this.updatePhieugiaohang();
     }
-  }
-  private async createPhieugiaohang() {
-
   }
 
   private async updatePhieugiaohang() {
     try {
       this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang().sanpham.map((v:any)=>{
         v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
-        return {id:v.id,ttgiao:v.ttgiao,slgiao:v.slgiao,slnhan:v.slnhan,ghichu:v.ghichu};
+        return v
       })
       await this._PhieugiaohangService.updatePhieugiao(this.DetailPhieugiaohang());
       this._snackBar.open('Cập Nhật Thành Công', '', {
@@ -272,6 +269,7 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
       console.error('Lỗi khi cập nhật phieugiaohang:', error);
     }
   }
+
   async DeleteData() {
 
   }

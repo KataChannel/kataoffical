@@ -7,6 +7,8 @@ export declare class DonhangService {
     private convertDateFilters;
     private getStartOfDay;
     private getEndOfDay;
+    private updateTonKhoSafe;
+    private getCreateValue;
     generateNextOrderCode(): Promise<string>;
     private incrementOrderCode;
     private incrementLetters;
