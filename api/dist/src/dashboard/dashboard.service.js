@@ -182,11 +182,11 @@ let DashboardService = class DashboardService {
         });
         const donhangPercentageChange = previousDonhangCount > 0
             ? (((donhangCount - previousDonhangCount) / previousDonhangCount) *
-                100).toFixed(2)
+                100).toFixed(3)
             : 0;
         const dathangPercentageChange = previousDathangCount > 0
             ? (((dathangCount - previousDathangCount) / previousDathangCount) *
-                100).toFixed(2)
+                100).toFixed(3)
             : 0;
         return {
             donhang: {

@@ -301,7 +301,7 @@
 //           const existingItemIndex =  this.Donhang.Giohangs?.findIndex((v: any) => v.MaSP === data.MaSP);
 //           if (existingItemIndex !== -1) {
 //                  this.Donhang.Giohangs[existingItemIndex].Soluong += Number(item.Soluong);
-//                  this.Donhang.Giohangs[existingItemIndex].SLTT += Number(item.Soluong) * parseFloat(Number(item.khoiluong).toFixed(2));
+//                  this.Donhang.Giohangs[existingItemIndex].SLTT += Number(item.Soluong) * parseFloat(Number(item.khoiluong).toFixed(3));
 //                  this.Donhang.Giohangs[existingItemIndex].Tongtien = this.Donhang.Giohangs[existingItemIndex].SLTT*this.Donhang.Giohangs[existingItemIndex].GiaCoSo
 //            } else {
 //                  item.SLTT = Number(item.khoiluong)

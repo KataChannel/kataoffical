@@ -78,37 +78,23 @@ export class ListcongnokhachhangComponent {
   
   displayedColumns: string[] = [
     'ngaygiao',
-    'makhachhang',
-    'tenkhachhang',
     'madonhang',
-    'mahang',
-    'tenhang',
-    'dvt',
+    'makh',
+    'name',
     'soluong',
-    'dongia',
-    'thanhtientruocvat',
-    'vat',
-    'dongiavathoadon',
-    'thanhtiensauvat',
-    'ghichu',
-    'tongtiensauvat',
+    'tong',
+    'tongvat',
+    'tongtien',
   ];
   ColumnName: any = {
     ngaygiao: 'Ngày Giao',
-    makhachhang: 'Mã Khách Hàng',
-    tenkhachhang: 'Tên Khách Hàng',
     madonhang: 'Mã Đơn Hàng',
-    mahang: 'Mã Hàng',
-    tenhang: 'Tên Hàng',
-    dvt: 'ĐVT',
+    makh: 'Mã Khách Hàng',
+    name: 'Tên Khách Hàng',
     soluong: 'Số Lượng',
-    dongia: 'Đơn Giá',
-    thanhtientruocvat: 'Thành Tiền Trước VAT',
-    vat: 'VAT',
-    dongiavathoadon: 'Đơn Giá VAT',
-    thanhtiensauvat: 'Thành Tiền Sau VAT',
-    ghichu: 'Ghi Chú',
-    tongtiensauvat: 'Tổng Tiền Sau Thuế',
+    tong: 'Tổng',
+    tongvat: 'Tổng VAT',
+    tongtien: 'Tổng Tiền',
   };
 
 
@@ -569,8 +555,40 @@ doFilterKhachhang(event: Event){
     this.DoImportData(data);
   }  
   async ExportExcel(data: any, title: any) {
-
     this.isExporting = true;
+    try {
+      // Sử dụng service để download file Excel từ API
+      await this._DonhangService.downloadCongno(this.SearchParams);
+      
+      // Hiển thị thông báo thành công
+      this._snackBar.open('Tải file Excel thành công!', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+    } catch (error) {
+      console.error('Error exporting Excel:', error);
+      
+      // Hiển thị thông báo lỗi
+      this._snackBar.open('Lỗi khi tải file Excel!', 'Đóng', {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+      
+      // Fallback to old method if API fails
+      await this.ExportExcelFallback(data, title);
+    } finally {
+      this.isExporting = false;
+    }
+  }
+
+  /**
+   * Fallback method for Excel export using client-side generation
+   */
+  private async ExportExcelFallback(data: any, title: any) {
     try {
       const columns = [
         'Ngày',
@@ -596,11 +614,11 @@ doFilterKhachhang(event: Event){
         groupedData = this.groupDataByCustomer(data);
       }
       else {
-        groupedData = this.groupDataByCustomer(this.Listdonhang());
+        groupedData = this.groupDataByCustomer(this.ListCongno);
       }
       this.writeExcelFileWithMergedCells(groupedData, title, columns);
-    } finally {
-      this.isExporting = false;
+    } catch (error) {
+      console.error('Error in fallback Excel export:', error);
     }
   }
 

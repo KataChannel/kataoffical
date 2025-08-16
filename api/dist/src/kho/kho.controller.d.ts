@@ -23,7 +23,7 @@ export declare class khoController {
             dvt: string | null;
             title: string;
             subtitle: string;
-            haohut: number;
+            haohut: import("@prisma/client/runtime/library").Decimal;
             goiy: number;
             id: string;
             sanphamId: string;

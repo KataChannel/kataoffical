@@ -129,7 +129,7 @@ export class DetailSanphamComponent implements OnInit {
     // let item:any={}
     // item = data
     // item.Giachon = this.Giachon
-    // item.Giachon.SLTT = (Number(this.Soluong)*Number(this.Giachon.khoiluong)).toFixed(2)
+    // item.Giachon.SLTT = (Number(this.Soluong)*Number(this.Giachon.khoiluong)).toFixed(3)
     // item.Soluong=this.Soluong   
 
     let item:any={}

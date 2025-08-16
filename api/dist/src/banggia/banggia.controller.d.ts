@@ -8,9 +8,9 @@ export declare class BanggiaController {
     create(createBanggiaDto: any): Promise<{
         sanpham: {
             id: string;
-            giaban: number;
             order: number | null;
             isActive: boolean;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             banggiaId: string;
             sanphamId: string;
         }[];
@@ -102,19 +102,19 @@ export declare class BanggiaController {
             slug: string | null;
             masp: string;
             subtitle: string | null;
-            giagoc: number;
+            giagoc: import("@prisma/client/runtime/library").Decimal;
             dvt: string | null;
             hinhanh: string | null;
-            loadpoint: number | null;
-            vat: import("@prisma/client/runtime/library").Decimal | null;
+            loadpoint: import("@prisma/client/runtime/library").Decimal | null;
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
-            haohut: number;
+            haohut: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            vat: import("@prisma/client/runtime/library").Decimal | null;
         }[];
         khachhang: {
             id: string;
@@ -127,8 +127,6 @@ export declare class BanggiaController {
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            tenfile: string | null;
-            tenkh: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -140,8 +138,10 @@ export declare class BanggiaController {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
-            isshowvat: boolean;
+            tenfile: string | null;
+            tenkh: string | null;
             banggiaId: string | null;
+            isshowvat: boolean;
         }[];
         id: string;
         title: string | null;
@@ -160,9 +160,9 @@ export declare class BanggiaController {
     update(id: string, updateBanggiaDto: any): Promise<{
         sanpham: {
             id: string;
-            giaban: number;
             order: number | null;
             isActive: boolean;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             banggiaId: string;
             sanphamId: string;
         }[];

@@ -242,7 +242,7 @@ export class DonhangsService {
 
       //  if (existingItemIndex !== -1) {
       //         Donhang.Giohangs[existingItemIndex].Soluong += Number(item.Soluong);
-      //         Donhang.Giohangs[existingItemIndex].SLTT += Number(item.Soluong) * parseFloat(Number(item.khoiluong).toFixed(2));
+      //         Donhang.Giohangs[existingItemIndex].SLTT += Number(item.Soluong) * parseFloat(Number(item.khoiluong).toFixed(3));
       //   } else {
       //         item.SLTT = Number(item.khoiluong)
       //         Donhang.Giohangs.push(item);
@@ -251,10 +251,10 @@ export class DonhangsService {
 
         if (existingItemIndex !== -1) {
           Donhang.Giohangs[existingItemIndex].Soluong += Number(item.Soluong);
-          Donhang.Giohangs[existingItemIndex].SLTT += Number(item.Soluong) * parseFloat(Number(item.khoiluong).toFixed(2));
+          Donhang.Giohangs[existingItemIndex].SLTT += Number(item.Soluong) * parseFloat(Number(item.khoiluong).toFixed(3));
           Donhang.Giohangs[existingItemIndex].Tongtien = Donhang.Giohangs[existingItemIndex].SLTT*Donhang.Giohangs[existingItemIndex].GiaCoSo
       } else {
-          item.SLTT = parseFloat(Number(item.khoiluong).toFixed(2))
+          item.SLTT = parseFloat(Number(item.khoiluong).toFixed(3))
           item.Tongtien = item.SLTT*item.GiaCoSo
           item.SLTG = 0
           item.TongtienG = 0

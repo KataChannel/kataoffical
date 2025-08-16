@@ -331,7 +331,7 @@ export class ListChotkhoComponent implements OnInit {
         Tổng số: ${stats.total}
         Đang hoạt động: ${stats.active}
         Không hoạt động: ${stats.inactive}
-        Chênh lệch trung bình: ${stats.averageChenhLech?.toFixed(2) || 0}
+        Chênh lệch trung bình: ${stats.averageChenhLech?.toFixed(3) || 0}
       `;
       
       this._snackBar.open(message, 'Đóng', {

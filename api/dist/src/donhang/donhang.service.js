@@ -170,12 +170,12 @@ let DonhangService = class DonhangService {
                     ...item.sanpham,
                     idSP: item.idSP,
                     giaban: giaban,
-                    sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
-                    slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
-                    slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
-                    ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
-                    ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
-                    ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
+                    sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+                    slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+                    slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+                    ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+                    ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+                    ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
                     ghichu: item.ghichu,
                 };
             }),
@@ -222,6 +222,59 @@ let DonhangService = class DonhangService {
             },
             orderBy: { createdAt: 'desc' },
         });
+        const result = donhangs.map((v) => {
+            const [tong, soluong] = v.sanpham.reduce((acc, item) => {
+                const slnhan = parseFloat((item.slnhan || 0).toString());
+                const giaban = parseFloat((item.sanpham?.giaban || 0).toString());
+                return [
+                    acc[0] + (slnhan * giaban),
+                    acc[1] + slnhan
+                ];
+            }, [0, 0]);
+            return {
+                madonhang: v.madonhang,
+                ngaygiao: v.ngaygiao,
+                tong: tong.toFixed(3),
+                soluong: soluong.toFixed(3),
+                tongtien: v.tongtien,
+                tongvat: v.tongvat,
+                name: v.khachhang?.name,
+                makh: v.khachhang?.makh,
+            };
+        });
+        return result || [];
+    }
+    async downloadcongnokhachhang(params) {
+        const { Batdau, Ketthuc, query } = params;
+        const dateRange = {
+            gte: Batdau ? new Date(Batdau) : undefined,
+            lte: Ketthuc ? new Date(Ketthuc) : undefined,
+        };
+        const where = {
+            ngaygiao: dateRange,
+            status: Array.isArray(params.Status)
+                ? { in: params.Status }
+                : params.Status,
+        };
+        if (query) {
+            where.OR = [
+                { madonhang: { contains: query, mode: 'insensitive' } },
+                { khachhang: { name: { contains: query, mode: 'insensitive' } } },
+            ];
+        }
+        console.log('where', where);
+        const donhangs = await this.prisma.donhang.findMany({
+            where,
+            include: {
+                sanpham: {
+                    include: {
+                        sanpham: true,
+                    },
+                },
+                khachhang: { include: { banggia: { include: { sanpham: true } } } },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
         const Sanphams = await this.prisma.sanpham.findMany();
         const result = donhangs.flatMap((v) => {
             const orderItems = v.sanpham.map((v1) => {
@@ -256,7 +309,129 @@ let DonhangService = class DonhangService {
                 tongtiensauvat: tongtiensauvat,
             }));
         });
-        return result || [];
+        return this.createCongnoExcelFile(result || [], params);
+    }
+    async createCongnoExcelFile(data, params) {
+        const ExcelJS = require('exceljs');
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Công Nợ Khách Hàng');
+        const columns = [
+            { key: 'ngaygiao', header: 'Ngày Giao', width: 15 },
+            { key: 'makhachhang', header: 'Mã Khách Hàng', width: 15 },
+            { key: 'tenkhachhang', header: 'Tên Khách Hàng', width: 25 },
+            { key: 'madonhang', header: 'Mã Đơn Hàng', width: 15 },
+            { key: 'mahang', header: 'Mã Hàng', width: 15 },
+            { key: 'tenhang', header: 'Tên Hàng', width: 30 },
+            { key: 'dvt', header: 'ĐVT', width: 10 },
+            { key: 'soluong', header: 'Số Lượng', width: 12 },
+            { key: 'dongia', header: 'Đơn Giá', width: 15 },
+            { key: 'thanhtientruocvat', header: 'Thành Tiền Trước VAT', width: 20 },
+            { key: 'vat', header: 'VAT (%)', width: 10 },
+            { key: 'dongiavathoadon', header: 'Đơn Giá VAT', width: 15 },
+            { key: 'thanhtiensauvat', header: 'Thành Tiền Sau VAT', width: 20 },
+            { key: 'ghichu', header: 'Ghi Chú', width: 20 },
+            { key: 'tongtiensauvat', header: 'Tổng Tiền Sau Thuế', width: 20 }
+        ];
+        worksheet.columns = columns;
+        const headerRow = worksheet.getRow(1);
+        headerRow.font = { bold: true, color: { argb: 'FFFFFF' } };
+        headerRow.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: '366092' }
+        };
+        headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+        headerRow.height = 25;
+        const groupedData = this.groupDataByCustomer(data);
+        let currentRow = 2;
+        const mergeRanges = [];
+        for (const customerData of groupedData) {
+            const startRow = currentRow;
+            for (const item of customerData.items) {
+                const row = worksheet.getRow(currentRow);
+                const ngaygiao = item.ngaygiao ? new Date(item.ngaygiao) : null;
+                row.values = {
+                    ngaygiao: ngaygiao ? ngaygiao.toLocaleDateString('vi-VN') : '',
+                    makhachhang: item.makhachhang || '',
+                    tenkhachhang: item.tenkhachhang || '',
+                    madonhang: item.madonhang || '',
+                    mahang: item.mahang || '',
+                    tenhang: item.tenhang || '',
+                    dvt: item.dvt || '',
+                    soluong: Number(item.soluong) || 0,
+                    dongia: Number(item.dongia) || 0,
+                    thanhtientruocvat: Number(item.thanhtientruocvat) || 0,
+                    vat: Number(item.vat) || 0,
+                    dongiavathoadon: Number(item.dongiavathoadon) || 0,
+                    thanhtiensauvat: Number(item.thanhtiensauvat) || 0,
+                    ghichu: item.ghichu || '',
+                    tongtiensauvat: Number(item.tongtiensauvat) || 0
+                };
+                ['soluong', 'dongia', 'thanhtientruocvat', 'dongiavathoadon', 'thanhtiensauvat', 'tongtiensauvat'].forEach(col => {
+                    const cell = row.getCell(col);
+                    cell.numFmt = '#,##0.00';
+                    cell.alignment = { horizontal: 'right' };
+                });
+                ['vat'].forEach(col => {
+                    const cell = row.getCell(col);
+                    cell.numFmt = '0.00%';
+                    cell.alignment = { horizontal: 'right' };
+                });
+                currentRow++;
+            }
+            const endRow = currentRow - 1;
+            if (endRow > startRow) {
+                ['makhachhang', 'tenkhachhang', 'tongtiensauvat'].forEach(col => {
+                    const colIndex = columns.findIndex(c => c.key === col) + 1;
+                    mergeRanges.push({
+                        range: `${String.fromCharCode(64 + colIndex)}${startRow}:${String.fromCharCode(64 + colIndex)}${endRow}`,
+                        value: customerData.items[0][col]
+                    });
+                });
+            }
+        }
+        mergeRanges.forEach(merge => {
+            worksheet.mergeCells(merge.range);
+            const cell = worksheet.getCell(merge.range.split(':')[0]);
+            cell.alignment = { horizontal: 'center', vertical: 'middle' };
+            cell.font = { bold: true };
+        });
+        worksheet.eachRow((row, rowNumber) => {
+            row.eachCell((cell) => {
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+            });
+        });
+        const dateStr = this.formatDateForFilename();
+        const filename = `CongNoKhachHang_${dateStr}.xlsx`;
+        const buffer = await workbook.xlsx.writeBuffer();
+        return {
+            buffer: buffer,
+            filename: filename,
+            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        };
+    }
+    groupDataByCustomer(data) {
+        const customerMap = new Map();
+        data.forEach(item => {
+            const customerKey = item.makhachhang || 'unknown';
+            if (!customerMap.has(customerKey)) {
+                customerMap.set(customerKey, {
+                    makhachhang: item.makhachhang,
+                    tenkhachhang: item.tenkhachhang,
+                    tongtiensauvat: 0,
+                    items: []
+                });
+            }
+            const customer = customerMap.get(customerKey);
+            customer.items.push(item);
+            customer.tongtiensauvat += Number(item.thanhtiensauvat) || 0;
+        });
+        return Array.from(customerMap.values()).sort((a, b) => (a.tenkhachhang || '').localeCompare(b.tenkhachhang || ''));
     }
     async getchogiao(params) {
         const { Batdau, Ketthuc, Type } = params;
@@ -297,85 +472,130 @@ let DonhangService = class DonhangService {
             idSP,
             title: value.title,
             masp: value.masp,
-            slchogiaott: parseFloat(value.sldat.toFixed(2)),
+            slchogiaott: parseFloat(value.sldat.toFixed(3)),
         }));
     }
     async dongbogia(listdonhang) {
-        return this.prisma.$transaction(async (prisma) => {
-            let updatedCount = 0;
-            for (const donhangId of listdonhang) {
-                try {
-                    const donhang = await prisma.donhang.findUnique({
-                        where: { id: donhangId },
-                        include: {
-                            khachhang: {
+        console.log('Đồng bộ giá cho danh sách đơn hàng:', listdonhang);
+        let totalUpdatedCount = 0;
+        let totalErrorCount = 0;
+        const batchSize = 5;
+        for (let i = 0; i < listdonhang.length; i += batchSize) {
+            const batch = listdonhang.slice(i, i + batchSize);
+            console.log(`Xử lý batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(listdonhang.length / batchSize)} với ${batch.length} đơn hàng`);
+            try {
+                const batchResult = await this.prisma.$transaction(async (prisma) => {
+                    let updatedCount = 0;
+                    let errorCount = 0;
+                    for (const donhangId of batch) {
+                        try {
+                            const donhang = await prisma.donhang.findUnique({
+                                where: { id: donhangId },
                                 include: {
                                     banggia: {
                                         include: {
-                                            sanpham: true,
+                                            sanpham: {
+                                                include: {
+                                                    sanpham: true
+                                                }
+                                            },
                                         },
                                     },
-                                },
-                            },
-                            sanpham: true,
-                        },
-                    });
-                    if (!donhang) {
-                        console.warn(`Đơn hàng ${donhangId} không tồn tại`);
-                        continue;
-                    }
-                    if (!donhang.khachhang?.banggia) {
-                        console.warn(`Khách hàng ${donhang.khachhang?.name} không có bảng giá`);
-                        continue;
-                    }
-                    console.log(`Cập nhật giá cho đơn hàng ${donhangId} của khách hàng ${donhang.sanpham}`);
-                    for (const donhangSanpham of donhang.sanpham) {
-                        const giaSanpham = donhang.khachhang?.banggia?.sanpham.find((sp) => sp.sanphamId === donhangSanpham.idSP);
-                        if (giaSanpham) {
-                            const giaban = giaSanpham.giaban;
-                            const sldat = Number(donhangSanpham.sldat);
-                            const slgiao = Number(donhangSanpham.slgiao);
-                            const slnhan = Number(donhangSanpham.slnhan);
-                            const vat = Number(donhangSanpham.vat) || 0;
-                            await prisma.donhangsanpham.update({
-                                where: { id: donhangSanpham.id },
-                                data: {
-                                    giaban: giaban,
-                                    ttdat: giaban * sldat,
-                                    ttgiao: giaban * slgiao,
-                                    ttnhan: giaban * slnhan,
-                                    ttsauvat: giaban * slnhan * (1 + vat / 100),
+                                    khachhang: true,
+                                    sanpham: {
+                                        include: {
+                                            sanpham: true
+                                        }
+                                    },
                                 },
                             });
+                            if (!donhang) {
+                                console.warn(`Đơn hàng ${donhangId} không tồn tại`);
+                                errorCount++;
+                                continue;
+                            }
+                            if (!donhang.banggia) {
+                                console.warn(`Đơn hàng ${donhang.madonhang} không có bảng giá được chỉ định`);
+                                errorCount++;
+                                continue;
+                            }
+                            console.log(`Cập nhật giá cho đơn hàng ${donhang.madonhang} từ bảng giá ${donhang.banggia.mabanggia}`);
+                            let tongchua = 0;
+                            let hasUpdates = false;
+                            for (const donhangSanpham of donhang.sanpham) {
+                                const giaSanpham = donhang.banggia.sanpham.find((bgsp) => bgsp.sanphamId === donhangSanpham.idSP);
+                                if (giaSanpham) {
+                                    const giaban = Number(giaSanpham.giaban);
+                                    const sldat = Number(donhangSanpham.sldat) || 0;
+                                    const slgiao = Number(donhangSanpham.slgiao) || 0;
+                                    const slnhan = Number(donhangSanpham.slnhan) || 0;
+                                    const vat = Number(donhangSanpham.vat) || 0;
+                                    const ttdat = giaban * sldat;
+                                    const ttgiao = giaban * slgiao;
+                                    const ttnhan = giaban * slnhan;
+                                    const ttsauvat = ttnhan * (1 + vat / 100);
+                                    await prisma.donhangsanpham.update({
+                                        where: { id: donhangSanpham.id },
+                                        data: {
+                                            giaban: giaban,
+                                            ttdat: ttdat,
+                                            ttgiao: ttgiao,
+                                            ttnhan: ttnhan,
+                                            ttsauvat: ttsauvat,
+                                        },
+                                    });
+                                    tongchua += ttnhan;
+                                    hasUpdates = true;
+                                    console.log(`Cập nhật sản phẩm ${donhangSanpham.sanpham?.title} - Giá mới: ${giaban}`);
+                                }
+                                else {
+                                    console.warn(`Không tìm thấy giá cho sản phẩm ${donhangSanpham.sanpham?.title} trong bảng giá ${donhang.banggia.mabanggia}`);
+                                }
+                            }
+                            if (hasUpdates) {
+                                const vatRate = Number(donhang.vat) || 0;
+                                const tongvat = tongchua * (vatRate / 100);
+                                const tongtien = tongchua + tongvat;
+                                await prisma.donhang.update({
+                                    where: { id: donhangId },
+                                    data: {
+                                        tongvat: tongvat,
+                                        tongtien: tongtien,
+                                    },
+                                });
+                                console.log(`Cập nhật tổng tiền đơn hàng ${donhang.madonhang}: Tổng chưa VAT: ${tongchua}, VAT: ${tongvat}, Tổng tiền: ${tongtien}`);
+                            }
+                            updatedCount++;
+                        }
+                        catch (error) {
+                            console.error(`Lỗi khi cập nhật đơn hàng ${donhangId}:`, error);
+                            errorCount++;
                         }
                     }
-                    const sanphamForCalculation = donhang.sanpham.map(sp => {
-                        const giaSanpham = donhang.khachhang?.banggia?.sanpham.find((gsp) => gsp.sanphamId === sp.idSP);
-                        return {
-                            giaban: giaSanpham ? giaSanpham.giaban : parseFloat(sp.giaban.toString()),
-                            slnhan: parseFloat(sp.slnhan.toString()),
-                        };
-                    });
-                    const vatRate = parseFloat(donhang.vat.toString()) || 0.05;
-                    const { tongvat, tongtien } = this.calculateDonhangTotals(sanphamForCalculation, vatRate);
-                    await prisma.donhang.update({
-                        where: { id: donhangId },
-                        data: {
-                            tongvat,
-                            tongtien,
-                        },
-                    });
-                    updatedCount++;
-                }
-                catch (error) {
-                    console.error(`Lỗi khi cập nhật đơn hàng ${donhangId}:`, error);
+                    return { updatedCount, errorCount };
+                }, {
+                    maxWait: 15000,
+                    timeout: 12000,
+                });
+                totalUpdatedCount += batchResult.updatedCount;
+                totalErrorCount += batchResult.errorCount;
+                console.log(`Hoàn thành batch: ${batchResult.updatedCount} thành công, ${batchResult.errorCount} lỗi`);
+                if (i + batchSize < listdonhang.length) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
                 }
             }
-            return {
-                status: 'success',
-                message: `Đồng bộ giá thành công cho ${updatedCount}/${listdonhang.length} đơn hàng`,
-            };
-        });
+            catch (error) {
+                console.error(`Lỗi khi xử lý batch từ ${i} đến ${i + batchSize - 1}:`, error);
+                totalErrorCount += batch.length;
+            }
+        }
+        return {
+            status: 'success',
+            message: `Đã đồng bộ giá thành công cho ${totalUpdatedCount} đơn hàng${totalErrorCount > 0 ? `, ${totalErrorCount} đơn hàng lỗi` : ''}`,
+            updatedCount: totalUpdatedCount,
+            errorCount: totalErrorCount,
+            totalProcessed: listdonhang.length,
+        };
     }
     async phieuchuyen(params) {
         const { Batdau, Ketthuc, Type } = params;
@@ -409,7 +629,7 @@ let DonhangService = class DonhangService {
             tongsomon: sanpham.length,
             soluongtt: parseFloat(sanpham
                 .reduce((total, item) => total + Number(item.slgiao || 0), 0)
-                .toFixed(2)),
+                .toFixed(3)),
         }));
     }
     async phieugiao(params) {
@@ -438,14 +658,14 @@ let DonhangService = class DonhangService {
                     ...item.sanpham,
                     idSP: item.idSP,
                     giaban: giaban,
-                    sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
-                    slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
-                    slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
-                    ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
-                    ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
-                    ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
-                    vat: parseFloat((item.vat ?? 0).toFixed(2)),
-                    ttsauvat: parseFloat((item.ttnhan * (1 + (item.vat || 0) / 100)).toFixed(2)),
+                    sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+                    slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+                    slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+                    ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+                    ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+                    ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
+                    vat: parseFloat((item.vat ?? 0).toFixed(3)),
+                    ttsauvat: parseFloat((item.ttnhan * (1 + (item.vat || 0) / 100)).toFixed(3)),
                     ghichu: item.ghichu,
                 };
             }),
@@ -477,12 +697,12 @@ let DonhangService = class DonhangService {
                     ...item.sanpham,
                     idSP: item.idSP,
                     giaban: giaban,
-                    sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
-                    slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
-                    slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
-                    ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
-                    ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
-                    ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
+                    sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+                    slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+                    slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+                    ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+                    ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+                    ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
                     ghichu: item.ghichu,
                 };
             }),
@@ -535,12 +755,12 @@ let DonhangService = class DonhangService {
                     ...item.sanpham,
                     idSP: item.idSP,
                     giaban: giaban,
-                    sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
-                    slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
-                    slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
-                    ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
-                    ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
-                    ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
+                    sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+                    slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+                    slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+                    ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+                    ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+                    ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
                     ghichu: item.ghichu,
                 };
             }),
@@ -574,13 +794,13 @@ let DonhangService = class DonhangService {
                     ...item.sanpham,
                     idSP: item.idSP,
                     giaban: giaban,
-                    sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
-                    slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
-                    slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
-                    slhuy: parseFloat((item.slhuy ?? 0).toFixed(2)),
-                    ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
-                    ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
-                    ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
+                    sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+                    slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+                    slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+                    slhuy: parseFloat((item.slhuy ?? 0).toFixed(3)),
+                    ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+                    ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+                    ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
                     ghichu: item.ghichu,
                 };
             }),
@@ -601,9 +821,9 @@ let DonhangService = class DonhangService {
                         }
                         return {
                             id: sp.id,
-                            sldat: parseFloat((item.Quantity ?? 0).toFixed(2)),
-                            slgiao: parseFloat((item.Quantity ?? 0).toFixed(2)),
-                            slnhan: parseFloat((item.Quantity ?? 0).toFixed(2)),
+                            sldat: parseFloat((item.Quantity ?? 0).toFixed(3)),
+                            slgiao: parseFloat((item.Quantity ?? 0).toFixed(3)),
+                            slnhan: parseFloat((item.Quantity ?? 0).toFixed(3)),
                             slhuy: 0,
                             ttdat: 0,
                             ttgiao: 0,
@@ -817,7 +1037,7 @@ let DonhangService = class DonhangService {
                 },
             });
             for (const sp of dto.sanpham) {
-                const incrementValue = parseFloat((sp.sldat ?? 0).toFixed(2));
+                const incrementValue = parseFloat((sp.sldat ?? 0).toFixed(3));
                 await prisma.tonKho.upsert({
                     where: { sanphamId: sp.id },
                     update: {
@@ -843,7 +1063,7 @@ let DonhangService = class DonhangService {
             }
             if (oldDonhang.status === 'dagiao' && data.status === 'dadat') {
                 for (const sp of oldDonhang.sanpham) {
-                    const incValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
+                    const incValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
                     await prisma.tonKho.update({
                         where: { sanphamId: sp.idSP },
                         data: {
@@ -882,7 +1102,7 @@ let DonhangService = class DonhangService {
                                         where: { idSP: sp.id },
                                         data: {
                                             ghichu: sp.ghichu,
-                                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                                         },
                                     })),
                                 },
@@ -891,10 +1111,10 @@ let DonhangService = class DonhangService {
                     },
                 });
                 for (const sp of data.sanpham) {
-                    const newSlgiao = parseFloat((sp.slgiao ?? 0).toFixed(2));
+                    const newSlgiao = parseFloat((sp.slgiao ?? 0).toFixed(3));
                     const oldItem = oldDonhang.sanpham.find((o) => o.idSP === sp.id);
                     const oldSlgiao = oldItem
-                        ? parseFloat((oldItem.slgiao ?? 0).toFixed(2))
+                        ? parseFloat((oldItem.slgiao ?? 0).toFixed(3))
                         : 0;
                     const difference = newSlgiao - oldSlgiao;
                     if (difference !== 0) {
@@ -915,10 +1135,10 @@ let DonhangService = class DonhangService {
             }
             if (oldDonhang.status === 'dadat' && data.status === 'dadat') {
                 for (const sp of data.sanpham) {
-                    const newSldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+                    const newSldat = parseFloat((sp.sldat ?? 0).toFixed(3));
                     const oldItem = oldDonhang.sanpham.find((o) => o.idSP === sp.id);
                     if (oldItem) {
-                        const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(2));
+                        const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(3));
                         const difference = newSldat - oldSldat;
                         if (difference !== 0) {
                             await prisma.tonKho.update({
@@ -943,7 +1163,7 @@ let DonhangService = class DonhangService {
                 for (const oldItem of oldDonhang.sanpham) {
                     const exists = data.sanpham.find((sp) => sp.id === oldItem.idSP);
                     if (!exists) {
-                        const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(2));
+                        const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(3));
                         await prisma.tonKho.update({
                             where: { sanphamId: oldItem.idSP },
                             data: {
@@ -970,10 +1190,10 @@ let DonhangService = class DonhangService {
                                         data: data.sanpham.map((sp) => ({
                                             idSP: sp.id,
                                             ghichu: sp.ghichu,
-                                            sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-                                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
-                                            ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
+                                            sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                                            ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
                                         })),
                                     },
                                 },
@@ -984,7 +1204,7 @@ let DonhangService = class DonhangService {
             }
             if (oldDonhang.status === 'dadat' && data.status === 'dagiao') {
                 for (const sp of data.sanpham) {
-                    const decValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
+                    const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
                     await this.updateTonKhoSafe(prisma, sp.id, {
                         slchogiao: { decrement: decValue },
                         slton: { decrement: decValue },
@@ -1000,7 +1220,7 @@ let DonhangService = class DonhangService {
                     sanpham: {
                         create: data.sanpham.map((sp) => ({
                             sanphamId: sp.id,
-                            soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                            soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                             ghichu: sp.ghichu,
                         })),
                     },
@@ -1024,7 +1244,7 @@ let DonhangService = class DonhangService {
                             sanpham: {
                                 create: data.sanpham.map((sp) => ({
                                     sanphamId: sp.id,
-                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                                     ghichu: sp.ghichu,
                                 })),
                             },
@@ -1035,12 +1255,12 @@ let DonhangService = class DonhangService {
                     const uniqueSanpham = data.sanpham.reduce((acc, sp) => {
                         const existing = acc.find((item) => item.sanphamId === sp.id);
                         if (existing) {
-                            existing.soluong += parseFloat((sp.slgiao ?? 0).toFixed(2));
+                            existing.soluong += parseFloat((sp.slgiao ?? 0).toFixed(3));
                         }
                         else {
                             acc.push({
                                 sanphamId: sp.id,
-                                soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                                 ghichu: sp.ghichu,
                             });
                         }
@@ -1069,9 +1289,9 @@ let DonhangService = class DonhangService {
                                 where: { idSP: sp.id },
                                 data: {
                                     ghichu: sp.ghichu,
-                                    sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                                    slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-                                    slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
+                                    sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                                    slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                                    slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
                                 },
                             })),
                         },
@@ -1081,8 +1301,8 @@ let DonhangService = class DonhangService {
             if (oldDonhang.status === 'dagiao' && data.status === 'danhan') {
                 const shortageItems = [];
                 for (const item of data.sanpham) {
-                    const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(2));
-                    const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(2));
+                    const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(3));
+                    const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(3));
                     if (receivedQty < shippedQty) {
                         const shortage = shippedQty - receivedQty;
                         await prisma.tonKho.update({
@@ -1093,8 +1313,8 @@ let DonhangService = class DonhangService {
                             sanphamId: item.id,
                             soluong: shortage,
                             ghichu: item.ghichu
-                                ? `${item.ghichu}; thiếu ${shortage.toFixed(2)}`
-                                : `Thiếu ${shortage.toFixed(2)}`,
+                                ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
+                                : `Thiếu ${shortage.toFixed(3)}`,
                         });
                     }
                     else if (receivedQty === shippedQty) {
@@ -1129,12 +1349,12 @@ let DonhangService = class DonhangService {
                         status: 'danhan',
                         sanpham: {
                             updateMany: data.sanpham.map((item) => {
-                                const delivered = parseFloat((item.slgiao ?? 0).toFixed(2));
-                                const received = parseFloat((item.slnhan ?? 0).toFixed(2));
+                                const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
+                                const received = parseFloat((item.slnhan ?? 0).toFixed(3));
                                 const shortageNote = received < delivered
                                     ? item.ghichu
-                                        ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(2)}`
-                                        : `Thiếu ${(delivered - received).toFixed(2)}`
+                                        ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(3)}`
+                                        : `Thiếu ${(delivered - received).toFixed(3)}`
                                     : item.ghichu || '';
                                 return {
                                     where: { idSP: item.id },
@@ -1158,7 +1378,7 @@ let DonhangService = class DonhangService {
             }
             if (oldDonhang.status === 'danhan' && data.status === 'dadat') {
                 for (const sp of oldDonhang.sanpham) {
-                    const incValue = parseFloat((sp.slnhan ?? 0).toFixed(2));
+                    const incValue = parseFloat((sp.slnhan ?? 0).toFixed(3));
                     await prisma.tonKho.update({
                         where: { sanphamId: sp.idSP },
                         data: {
@@ -1197,11 +1417,11 @@ let DonhangService = class DonhangService {
                                         where: { idSP: sp.id },
                                         data: {
                                             ghichu: sp.ghichu,
-                                            sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-                                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
-                                            ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
-                                            ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
+                                            sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                                            ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
+                                            ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(3)),
                                         },
                                     })),
                                 },
@@ -1213,7 +1433,7 @@ let DonhangService = class DonhangService {
             }
             if (oldDonhang.status === 'dadat' && data.status === 'danhan') {
                 for (const sp of data.sanpham) {
-                    const decValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
+                    const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
                     await prisma.tonKho.update({
                         where: { sanphamId: sp.id },
                         data: {
@@ -1232,7 +1452,7 @@ let DonhangService = class DonhangService {
                     sanpham: {
                         create: data.sanpham.map((sp) => ({
                             sanphamId: sp.id,
-                            soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                            soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                             ghichu: sp.ghichu,
                         })),
                     },
@@ -1256,7 +1476,7 @@ let DonhangService = class DonhangService {
                             sanpham: {
                                 create: data.sanpham.map((sp) => ({
                                     sanphamId: sp.id,
-                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                                     ghichu: sp.ghichu,
                                 })),
                             },
@@ -1275,7 +1495,7 @@ let DonhangService = class DonhangService {
                             sanpham: {
                                 create: data.sanpham.map((sp) => ({
                                     sanphamId: sp.id,
-                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                                     ghichu: sp.ghichu,
                                 })),
                             },
@@ -1284,8 +1504,8 @@ let DonhangService = class DonhangService {
                 }
                 const shortageItems = [];
                 for (const item of data.sanpham) {
-                    const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(2));
-                    const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(2));
+                    const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(3));
+                    const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(3));
                     if (receivedQty < shippedQty) {
                         const shortage = shippedQty - receivedQty;
                         await prisma.tonKho.update({
@@ -1296,8 +1516,8 @@ let DonhangService = class DonhangService {
                             sanphamId: item.id,
                             soluong: shortage,
                             ghichu: item.ghichu
-                                ? `${item.ghichu}; thiếu ${shortage.toFixed(2)}`
-                                : `Thiếu ${shortage.toFixed(2)}`,
+                                ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
+                                : `Thiếu ${shortage.toFixed(3)}`,
                         });
                     }
                 }
@@ -1326,12 +1546,12 @@ let DonhangService = class DonhangService {
                         status: 'danhan',
                         sanpham: {
                             updateMany: data.sanpham.map((item) => {
-                                const delivered = parseFloat((item.slgiao ?? 0).toFixed(2));
-                                const received = parseFloat((item.slnhan ?? 0).toFixed(2));
+                                const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
+                                const received = parseFloat((item.slnhan ?? 0).toFixed(3));
                                 const shortageNote = received < delivered
                                     ? item.ghichu
-                                        ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(2)}`
-                                        : `Thiếu ${(delivered - received).toFixed(2)}`
+                                        ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(3)}`
+                                        : `Thiếu ${(delivered - received).toFixed(3)}`
                                     : item.ghichu || '';
                                 return {
                                     where: { idSP: item.id },
@@ -1393,7 +1613,7 @@ let DonhangService = class DonhangService {
             }
             if (oldDonhang.status === 'dagiao' && data.status === 'dadat') {
                 for (const sp of oldDonhang.sanpham) {
-                    const incValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
+                    const incValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
                     await prisma.tonKho.update({
                         where: { sanphamId: sp.idSP },
                         data: {
@@ -1438,7 +1658,7 @@ let DonhangService = class DonhangService {
                                         where: { idSP: sp.id },
                                         data: {
                                             ghichu: sp.ghichu,
-                                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                                         },
                                     })),
                                 },
@@ -1447,10 +1667,10 @@ let DonhangService = class DonhangService {
                     },
                 });
                 for (const sp of data.sanpham) {
-                    const newSlgiao = parseFloat((sp.slgiao ?? 0).toFixed(2));
+                    const newSlgiao = parseFloat((sp.slgiao ?? 0).toFixed(3));
                     const oldItem = oldDonhang.sanpham.find((o) => o.idSP === sp.id);
                     const oldSlgiao = oldItem
-                        ? parseFloat((oldItem.slgiao ?? 0).toFixed(2))
+                        ? parseFloat((oldItem.slgiao ?? 0).toFixed(3))
                         : 0;
                     const difference = newSlgiao - oldSlgiao;
                     if (difference !== 0) {
@@ -1471,10 +1691,10 @@ let DonhangService = class DonhangService {
             }
             if (oldDonhang.status === 'dadat' && data.status === 'dadat') {
                 for (const sp of data.sanpham) {
-                    const newSldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+                    const newSldat = parseFloat((sp.sldat ?? 0).toFixed(3));
                     const oldItem = oldDonhang.sanpham.find((o) => o.idSP === sp.id);
                     if (oldItem) {
-                        const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(2));
+                        const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(3));
                         const difference = newSldat - oldSldat;
                         if (difference !== 0) {
                             await prisma.tonKho.update({
@@ -1499,7 +1719,7 @@ let DonhangService = class DonhangService {
                 for (const oldItem of oldDonhang.sanpham) {
                     const exists = data.sanpham.find((sp) => sp.id === oldItem.idSP);
                     if (!exists) {
-                        const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(2));
+                        const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(3));
                         await prisma.tonKho.update({
                             where: { sanphamId: oldItem.idSP },
                             data: {
@@ -1526,9 +1746,9 @@ let DonhangService = class DonhangService {
                                         data: data.sanpham.map((sp) => ({
                                             idSP: sp.id,
                                             ghichu: sp.ghichu,
-                                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-                                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
-                                            ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
+                                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                                            ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
                                         })),
                                     },
                                 },
@@ -1539,7 +1759,7 @@ let DonhangService = class DonhangService {
             }
             if (data.status === 'dagiao') {
                 for (const sp of data.sanpham) {
-                    const decValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
+                    const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
                     await prisma.tonKho.update({
                         where: { sanphamId: sp.id },
                         data: {
@@ -1558,7 +1778,7 @@ let DonhangService = class DonhangService {
                     sanpham: {
                         create: data.sanpham.map((sp) => ({
                             sanphamId: sp.id,
-                            soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                            soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                             ghichu: sp.ghichu,
                         })),
                     },
@@ -1582,7 +1802,7 @@ let DonhangService = class DonhangService {
                             sanpham: {
                                 create: data.sanpham.map((sp) => ({
                                     sanphamId: sp.id,
-                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                                     ghichu: sp.ghichu,
                                 })),
                             },
@@ -1601,7 +1821,7 @@ let DonhangService = class DonhangService {
                             sanpham: {
                                 create: data.sanpham.map((sp) => ({
                                     sanphamId: sp.id,
-                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                                     ghichu: sp.ghichu,
                                 })),
                             },
@@ -1617,7 +1837,7 @@ let DonhangService = class DonhangService {
                                 where: { idSP: sp.id },
                                 data: {
                                     ghichu: sp.ghichu,
-                                    slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                                 },
                             })),
                         },
@@ -1627,8 +1847,8 @@ let DonhangService = class DonhangService {
             if (data.status === 'danhan') {
                 const shortageItems = [];
                 for (const item of data.sanpham) {
-                    const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(2));
-                    const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(2));
+                    const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(3));
+                    const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(3));
                     if (receivedQty < shippedQty) {
                         const shortage = shippedQty - receivedQty;
                         await prisma.tonKho.update({
@@ -1639,8 +1859,8 @@ let DonhangService = class DonhangService {
                             sanphamId: item.id,
                             soluong: shortage,
                             ghichu: item.ghichu
-                                ? `${item.ghichu}; thiếu ${shortage.toFixed(2)}`
-                                : `Thiếu ${shortage.toFixed(2)}`,
+                                ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
+                                : `Thiếu ${shortage.toFixed(3)}`,
                         });
                     }
                     else if (receivedQty === shippedQty) {
@@ -1677,12 +1897,12 @@ let DonhangService = class DonhangService {
                         status: 'danhan',
                         sanpham: {
                             updateMany: data.sanpham.map((item) => {
-                                const delivered = parseFloat((item.slgiao ?? 0).toFixed(2));
-                                const received = parseFloat((item.slnhan ?? 0).toFixed(2));
+                                const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
+                                const received = parseFloat((item.slnhan ?? 0).toFixed(3));
                                 const shortageNote = received < delivered
                                     ? item.ghichu
-                                        ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(2)}`
-                                        : `Thiếu ${(delivered - received).toFixed(2)}`
+                                        ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(3)}`
+                                        : `Thiếu ${(delivered - received).toFixed(3)}`
                                     : item.ghichu || '';
                                 return {
                                     where: { idSP: item.id },
@@ -1721,7 +1941,7 @@ let DonhangService = class DonhangService {
             }
             if (data.status === 'dagiao') {
                 for (const sp of data.sanpham) {
-                    const decValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
+                    const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
                     await prisma.tonKho.update({
                         where: { sanphamId: sp.id },
                         data: {
@@ -1740,7 +1960,7 @@ let DonhangService = class DonhangService {
                     sanpham: {
                         create: data.sanpham.map((sp) => ({
                             sanphamId: sp.id,
-                            soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                            soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                             ghichu: sp.ghichu,
                         })),
                     },
@@ -1764,7 +1984,7 @@ let DonhangService = class DonhangService {
                             sanpham: {
                                 create: data.sanpham.map((sp) => ({
                                     sanphamId: sp.id,
-                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                                     ghichu: sp.ghichu,
                                 })),
                             },
@@ -1783,7 +2003,7 @@ let DonhangService = class DonhangService {
                             sanpham: {
                                 create: data.sanpham.map((sp) => ({
                                     sanphamId: sp.id,
-                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                                     ghichu: sp.ghichu,
                                 })),
                             },
@@ -1799,7 +2019,7 @@ let DonhangService = class DonhangService {
                                 where: { idSP: sp.id },
                                 data: {
                                     ghichu: sp.ghichu,
-                                    slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                                    slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                                 },
                             })),
                         },
@@ -1840,14 +2060,14 @@ let DonhangService = class DonhangService {
                             create: data.sanpham.map((sp) => ({
                                 idSP: sp.id,
                                 ghichu: sp.ghichu,
-                                sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                                slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-                                slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
-                                ttdat: parseFloat((sp.ttdat ?? 0).toFixed(2)),
-                                ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
-                                ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
-                                vat: parseFloat((sp.vat ?? 0).toFixed(2)),
-                                ttsauvat: parseFloat((sp.ttsauvat ?? 0).toFixed(2)),
+                                sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                                slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                                slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                                ttdat: parseFloat((sp.ttdat ?? 0).toFixed(3)),
+                                ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
+                                ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(3)),
+                                vat: parseFloat((sp.vat ?? 0).toFixed(3)),
+                                ttsauvat: parseFloat((sp.ttsauvat ?? 0).toFixed(3)),
                             })),
                         },
                     },
@@ -1879,7 +2099,7 @@ let DonhangService = class DonhangService {
                     }
                     if (oldDonhang.status === 'dadat' && status === 'danhan') {
                         for (const sp of oldDonhang.sanpham) {
-                            const decValue = parseFloat((sp.sldat ?? 0).toFixed(2));
+                            const decValue = parseFloat((sp.sldat ?? 0).toFixed(3));
                             await prisma.tonKho.update({
                                 where: { sanphamId: sp.idSP },
                                 data: {
@@ -1891,12 +2111,12 @@ let DonhangService = class DonhangService {
                         const uniqueSanpham = oldDonhang.sanpham.reduce((acc, sp) => {
                             const existing = acc.find((item) => item.sanphamId === sp.idSP);
                             if (existing) {
-                                existing.soluong += parseFloat((sp.sldat ?? 0).toFixed(2));
+                                existing.soluong += parseFloat((sp.sldat ?? 0).toFixed(3));
                             }
                             else {
                                 acc.push({
                                     sanphamId: sp.idSP,
-                                    soluong: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                                    soluong: parseFloat((sp.sldat ?? 0).toFixed(3)),
                                     ghichu: sp.ghichu,
                                 });
                             }
@@ -1957,8 +2177,8 @@ let DonhangService = class DonhangService {
                                     updateMany: oldDonhang.sanpham.map((sp) => ({
                                         where: { idSP: sp.idSP },
                                         data: {
-                                            slgiao: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                                            slnhan: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                                            slgiao: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                                            slnhan: parseFloat((sp.sldat ?? 0).toFixed(3)),
                                         },
                                     })),
                                 },
@@ -1995,9 +2215,9 @@ let DonhangService = class DonhangService {
                         continue;
                     }
                     for (const sp of donhang.sanpham) {
-                        const sldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+                        const sldat = parseFloat((sp.sldat ?? 0).toFixed(3));
                         if (donhang.status === 'dagiao' || donhang.status === 'danhan') {
-                            const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(2));
+                            const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(3));
                             await prisma.tonKho.update({
                                 where: { sanphamId: sp.idSP },
                                 data: {

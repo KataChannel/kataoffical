@@ -156,7 +156,7 @@ export class DathangService {
           where: { id: sp.id },
           data: {
             soluong: {
-              decrement: parseFloat((sp.sldat ?? 0).toFixed(2))
+              decrement: parseFloat((sp.sldat ?? 0).toFixed(3))
             },
           },
         });
@@ -229,7 +229,7 @@ export class DathangService {
           where: { id: sp.id },
           data: {
             soluong: {
-              decrement: parseFloat((sp.sldat ?? 0).toFixed(2)),
+              decrement: parseFloat((sp.sldat ?? 0).toFixed(3)),
             },
           },
         });

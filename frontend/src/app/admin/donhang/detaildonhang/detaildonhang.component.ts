@@ -1387,7 +1387,7 @@ export class DetailDonhangComponent {
   GetGoiy(item: any) {
     return parseFloat(
       ((item.soluongkho - item.soluong) * (1 + item.haohut / 100)).toString()
-    ).toFixed(2);
+    ).toFixed(3);
   }
 
   async doFilterSanpham(event: any): Promise<void> {

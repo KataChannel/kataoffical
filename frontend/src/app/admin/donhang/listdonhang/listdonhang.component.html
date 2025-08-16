@@ -53,11 +53,11 @@
                 <span (click)="ToggleAll()" class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">
                     {{Listdonhang().length}} Đơn Hàng
                 </span>
-                <button mat-flat-button color="primary" (click)="Dongbogia()" [disabled]="isLoading()">
-                    @if (isLoading()) {
-                    <mat-icon class="animate-spin">autorenew</mat-icon>
-                    }
-                    <span class="whitespace-nowrap"> Giá Bán</span>
+                <button mat-icon-button color="primary" 
+                        (click)="Dongbogia()" 
+                        [disabled]="isLoading() || Listdonhang().length === 0"
+                        matTooltip="Đồng bộ giá từ bảng giá cho tất cả đơn hàng">
+                    <mat-icon>currency_exchange</mat-icon>
                 </button>
                 <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
                     class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button [disabled]="isLoading()">

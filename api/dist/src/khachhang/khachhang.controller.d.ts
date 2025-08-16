@@ -16,8 +16,6 @@ export declare class KhachhangController {
         name: string | null;
         diachi: string | null;
         sdt: string | null;
-        tenfile: string | null;
-        tenkh: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -29,8 +27,10 @@ export declare class KhachhangController {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
-        isshowvat: boolean;
+        tenfile: string | null;
+        tenkh: string | null;
         banggiaId: string | null;
+        isshowvat: boolean;
     }>;
     import(data: any): Promise<{
         message: string;
@@ -63,8 +63,6 @@ export declare class KhachhangController {
         name: string | null;
         diachi: string | null;
         sdt: string | null;
-        tenfile: string | null;
-        tenkh: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -76,8 +74,10 @@ export declare class KhachhangController {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
-        isshowvat: boolean;
+        tenfile: string | null;
+        tenkh: string | null;
         banggiaId: string | null;
+        isshowvat: boolean;
     }) | {
         data: ({
             banggia: {
@@ -106,8 +106,6 @@ export declare class KhachhangController {
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            tenfile: string | null;
-            tenkh: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -119,8 +117,10 @@ export declare class KhachhangController {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
-            isshowvat: boolean;
+            tenfile: string | null;
+            tenkh: string | null;
             banggiaId: string | null;
+            isshowvat: boolean;
         })[];
         page: any;
         pageSize: any;
@@ -154,8 +154,6 @@ export declare class KhachhangController {
         name: string | null;
         diachi: string | null;
         sdt: string | null;
-        tenfile: string | null;
-        tenkh: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -167,8 +165,10 @@ export declare class KhachhangController {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
-        isshowvat: boolean;
+        tenfile: string | null;
+        tenkh: string | null;
         banggiaId: string | null;
+        isshowvat: boolean;
     }>;
     findAllForSelect(): Promise<{
         data: {
@@ -212,8 +212,6 @@ export declare class KhachhangController {
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            tenfile: string | null;
-            tenkh: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -225,8 +223,10 @@ export declare class KhachhangController {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
-            isshowvat: boolean;
+            tenfile: string | null;
+            tenkh: string | null;
             banggiaId: string | null;
+            isshowvat: boolean;
         })[];
         total: number;
         page: number;
@@ -260,8 +260,6 @@ export declare class KhachhangController {
         name: string | null;
         diachi: string | null;
         sdt: string | null;
-        tenfile: string | null;
-        tenkh: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -273,8 +271,10 @@ export declare class KhachhangController {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
-        isshowvat: boolean;
+        tenfile: string | null;
+        tenkh: string | null;
         banggiaId: string | null;
+        isshowvat: boolean;
     }>;
     update(id: string, updateKhachhangDto: any): Promise<{
         banggia: {
@@ -303,8 +303,6 @@ export declare class KhachhangController {
         name: string | null;
         diachi: string | null;
         sdt: string | null;
-        tenfile: string | null;
-        tenkh: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -316,8 +314,10 @@ export declare class KhachhangController {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
-        isshowvat: boolean;
+        tenfile: string | null;
+        tenkh: string | null;
         banggiaId: string | null;
+        isshowvat: boolean;
     }>;
     remove(id: string): Promise<{
         id: string;
@@ -330,8 +330,6 @@ export declare class KhachhangController {
         name: string | null;
         diachi: string | null;
         sdt: string | null;
-        tenfile: string | null;
-        tenkh: string | null;
         namenn: string | null;
         makh: string;
         makhold: string | null;
@@ -343,7 +341,9 @@ export declare class KhachhangController {
         loaikh: string | null;
         hiengia: boolean;
         istitle2: boolean;
-        isshowvat: boolean;
+        tenfile: string | null;
+        tenkh: string | null;
         banggiaId: string | null;
+        isshowvat: boolean;
     }>;
 }

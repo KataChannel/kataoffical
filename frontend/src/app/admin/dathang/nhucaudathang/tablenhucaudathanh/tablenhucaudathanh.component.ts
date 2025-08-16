@@ -110,7 +110,7 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
         const sp = ncc.sanpham?.find((v: any) => v.id === item.id);
         return acc + (sp?.sldat ? Number(sp.sldat) : 0);
       }, 0);
-    return (Number(item.goiy) - SLDat).toFixed(2);
+    return (Number(item.goiy) - SLDat).toFixed(3);
   }
   trackByFn(index: number, item: any): any {
     return item.id; // Use a unique identifier
@@ -172,7 +172,7 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
           const sp = ncc.sanpham?.find((v: any) => v.id === Sanpham.id);
           return acc + (sp?.sldat ? Number(sp.sldat) : 0);
         }, 0);
-        return (Number(Sanpham.goiy) - SLDat).toFixed(2);
+        return (Number(Sanpham.goiy) - SLDat).toFixed(3);
       })();
 
       if (Number(checkValue) < 0) {
@@ -254,7 +254,7 @@ export class TablenhucaudathanhComponent implements AfterViewInit {
         const sp = ncc.sanpham?.find((v: any) => v.id === Sanpham.id);
         return acc + (sp?.sldat ? Number(sp.sldat) : 0);
       }, 0);
-      return (Number(Sanpham.goiy) - SLDat).toFixed(2);
+      return (Number(Sanpham.goiy) - SLDat).toFixed(3);
     })();
 
     if (Number(checkValue) < 0) {

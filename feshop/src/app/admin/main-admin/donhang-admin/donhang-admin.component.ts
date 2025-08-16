@@ -97,7 +97,7 @@ this._UsersService.getProfile().then((data) => {
     // Giohang.forEach((v:any) => {
     //   v.Sanpham.forEach((v1:any) => {
     //     v1.Giachon.GiaCoSo = (v1.Giachon.gia/v1.Giachon.khoiluong).toFixed(0)
-    //     v1.Giachon.SLTT = (v1.Giachon.khoiluong).toFixed(2)
+    //     v1.Giachon.SLTT = (v1.Giachon.khoiluong).toFixed(3)
     //   });
     // });
     // Giohang.forEach((v:any) => {

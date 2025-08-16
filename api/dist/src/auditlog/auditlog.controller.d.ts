@@ -22,8 +22,8 @@ export declare class AuditLogController {
         ipAddress: string | null;
         userAgent: string | null;
         sessionId: string | null;
-        errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
         metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
         userId: string | null;
     }) | {
         data: ({
@@ -46,8 +46,8 @@ export declare class AuditLogController {
             ipAddress: string | null;
             userAgent: string | null;
             sessionId: string | null;
-            errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
             metadata: import("@prisma/client/runtime/library").JsonValue | null;
+            errorDetails: import("@prisma/client/runtime/library").JsonValue | null;
             userId: string | null;
         })[];
         page: any;

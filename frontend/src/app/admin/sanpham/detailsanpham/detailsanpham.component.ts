@@ -74,7 +74,7 @@ import { ListSanphamComponent } from '../listsanpham/listsanpham.component';
             this._router.navigate(['/admin/sanpham', id]);
             this.ChosenListNCC = this.DetailSanpham().Nhacungcap||[];
             this.DetailSanpham.update((v:any)=>{
-                v.soluong = Number(parseFloat(v.soluong).toFixed(2))
+                v.soluong = Number(parseFloat(v.soluong).toFixed(3))
                 return v
             })
         }
