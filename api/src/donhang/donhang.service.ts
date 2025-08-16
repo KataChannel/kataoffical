@@ -1090,6 +1090,8 @@ export class DonhangService {
         await this.create(order);
         success++;
       } catch (error) {
+        console.log(error);
+        
         fail++;
       }
     }
@@ -1212,13 +1214,28 @@ export class DonhangService {
     return { tong, tongvat, tongtien };
   }
   async create(dto: any) {
+
     const maxOrderResult = await this.prisma.donhang.aggregate({
       _max: {
       order: true,
       },
     });
-    const maxOrder = maxOrderResult._max.order || 0;
-    const madonhang = await this.DonhangnumberToCode(maxOrder + 1);
+    let maxOrder = maxOrderResult._max.order || 0;
+    let madonhang = await this.DonhangnumberToCode(maxOrder + 1);
+    
+    // Kiểm tra mã đơn hàng đã tồn tại chưa
+    let existingDonhang = await this.prisma.donhang.findUnique({
+      where: { madonhang },
+    });
+    
+    // Nếu mã đã tồn tại, tăng maxOrder cho đến khi tìm được mã chưa tồn tại
+    while (existingDonhang) {
+      maxOrder++;
+      madonhang = await this.DonhangnumberToCode(maxOrder + 1);
+      existingDonhang = await this.prisma.donhang.findUnique({
+      where: { madonhang },
+      });
+    }    
     return this.prisma.$transaction(async (prisma) => {
       // Get khachhang data
       const khachhang = await prisma.khachhang.findUnique({
@@ -1237,7 +1254,7 @@ export class DonhangService {
           banggiaId: dto.banggiaId,
           vat: parseFloat((dto.vat || 0.05).toString()), // Default 5% VAT
           isActive: dto.isActive,
-          order: dto.order,
+          order: maxOrder + 1,
           ghichu: dto.ghichu,
           isshowvat: khachhang.isshowvat, // Set isshowvat from khachhang
           sanpham: {

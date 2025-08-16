@@ -20,13 +20,13 @@ export class EnhancedUniversalService {
   private synchronizeDateField(fieldName: string, value: any): Date | null {
     if (!value) return null;
     
-    console.log(`🔄 GraphQL synchronizing ${fieldName}: ${value} (type: ${typeof value})`);
+    // console.log(`🔄 GraphQL synchronizing ${fieldName}: ${value} (type: ${typeof value})`);
     
     try {
       // Frontend đã gửi UTC, chỉ cần parse trực tiếp
       return new Date(value);
     } catch (error) {
-      console.error(`❌ GraphQL error synchronizing ${fieldName}:`, error);
+      // console.error(`❌ GraphQL error synchronizing ${fieldName}:`, error);
       return null;
     }
   }
@@ -62,15 +62,15 @@ export class EnhancedUniversalService {
     },
     info?: GraphQLResolveInfo
   ) {
-    console.log(`🚀 Enhanced findMany for ${modelName}:`, {
-      hasWhere: !!args.where,
-      hasOrderBy: !!args.orderBy,
-      skip: args.skip,
-      take: args.take,
-      hasCustomSelect: !!args.select,
-      hasCustomInclude: !!args.include,
-      hasGraphQLInfo: !!info
-    });
+    // console.log(`🚀 Enhanced findMany for ${modelName}:`, {
+    //   hasWhere: !!args.where,
+    //   hasOrderBy: !!args.orderBy,
+    //   skip: args.skip,
+    //   take: args.take,
+    //   hasCustomSelect: !!args.select,
+    //   hasCustomInclude: !!args.include,
+    //   hasGraphQLInfo: !!info
+    // });
 
     try {
       // Get the model
@@ -134,10 +134,10 @@ export class EnhancedUniversalService {
       const result = await model.findUnique(queryOptions);
       const queryTime = Date.now() - startTime;
       
-      console.log(`✅ ${modelName} findUnique completed:`, {
-        found: !!result,
-        queryTime: `${queryTime}ms`
-      });
+      // console.log(`✅ ${modelName} findUnique completed:`, {
+      //   found: !!result,
+      //   queryTime: `${queryTime}ms`
+      // });
 
       return result;
       
@@ -184,10 +184,10 @@ export class EnhancedUniversalService {
       // Clear related caches
       this.dataLoader.clearLoaderCache(modelName);
       
-      console.log(`✅ ${modelName} create completed:`, {
-        id: result.id,
-        queryTime: `${queryTime}ms`
-      });
+      // console.log(`✅ ${modelName} create completed:`, {
+      //   id: result.id,
+      //   queryTime: `${queryTime}ms`
+      // });
 
       return result;
       
@@ -237,10 +237,10 @@ export class EnhancedUniversalService {
       // Clear related caches
       this.dataLoader.clearLoaderCache(modelName);
       
-      console.log(`✅ ${modelName} update completed:`, {
-        id: result.id,
-        queryTime: `${queryTime}ms`
-      });
+      // console.log(`✅ ${modelName} update completed:`, {
+      //   id: result.id,
+      //   queryTime: `${queryTime}ms`
+      // });
 
       return result;
       
@@ -275,10 +275,10 @@ export class EnhancedUniversalService {
       // Clear related caches
       this.dataLoader.clearLoaderCache(modelName);
       
-      console.log(`✅ ${modelName} delete completed:`, {
-        id: result.id,
-        queryTime: `${queryTime}ms`
-      });
+      // console.log(`✅ ${modelName} delete completed:`, {
+      //   id: result.id,
+      //   queryTime: `${queryTime}ms`
+      // });
 
       return result;
       
@@ -424,7 +424,7 @@ export class EnhancedUniversalService {
       throw new Error(`Model ${modelName} (${prismaProperty}) not found in Prisma client`);
     }
     
-    console.log(`✅ Model resolved: ${modelName} -> ${prismaProperty}`);
+    // console.log(`✅ Model resolved: ${modelName} -> ${prismaProperty}`);
     return model;
   }
 
@@ -575,7 +575,7 @@ export class EnhancedUniversalService {
       }
     });
 
-    console.log(`✅ Date normalization completed for ${modelName}`);
+    // console.log(`✅ Date normalization completed for ${modelName}`);
     return normalizedData;
   }
 

@@ -22,16 +22,6 @@ let UniversalResolver = class UniversalResolver {
         this.universalService = universalService;
     }
     async findMany(modelName, where, orderBy, skip, take, include, select) {
-        console.log(`🔍 GraphQL findMany called with select support:`, {
-            modelName,
-            where: where ? Object.keys(where) : null,
-            orderBy: orderBy ? Object.keys(orderBy) : null,
-            skip,
-            take,
-            include: include ? Object.keys(include) : null,
-            select: select ? Object.keys(select) : null,
-            selectEnabled: !!select
-        });
         try {
             const result = await this.universalService.findMany(modelName, {
                 where,
@@ -41,13 +31,6 @@ let UniversalResolver = class UniversalResolver {
                 include,
                 select
             });
-            console.log(`✅ findMany result for ${modelName}:`, {
-                dataCount: result.data?.length || 0,
-                total: result.total,
-                page: result.page,
-                selectUsed: !!select,
-                firstItemFields: result.data?.[0] ? Object.keys(result.data[0]) : []
-            });
             return result;
         }
         catch (error) {
@@ -56,7 +39,6 @@ let UniversalResolver = class UniversalResolver {
         }
     }
     async findUnique(modelName, where, include, select) {
-        console.log(`🔍 GraphQL findUnique called for ${modelName} with select:`, !!select);
         const args = { where };
         if (select) {
             args.select = select;
@@ -67,7 +49,6 @@ let UniversalResolver = class UniversalResolver {
         return this.universalService.findUnique(modelName, args);
     }
     async testSelectQuery(modelName) {
-        console.log(`🧪 Testing select functionality for ${modelName}`);
         const resultWithSelect = await this.universalService.findMany(modelName, {
             select: { title: true, id: true },
             take: 3

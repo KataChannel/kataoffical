@@ -35,16 +35,16 @@ export class UniversalResolver {
     @Args('select', { type: () => GraphQLJSON, nullable: true, description: 'Specific fields to select - SUPPORTS FIELD SELECTION' }) 
     select?: any
   ) {
-    console.log(`🔍 GraphQL findMany called with select support:`, {
-      modelName,
-      where: where ? Object.keys(where) : null,
-      orderBy: orderBy ? Object.keys(orderBy) : null,
-      skip,
-      take,
-      include: include ? Object.keys(include) : null,
-      select: select ? Object.keys(select) : null, // ✅ LOG SELECT
-      selectEnabled: !!select
-    });
+    // console.log(`🔍 GraphQL findMany called with select support:`, {
+    //   modelName,
+    //   where: where ? Object.keys(where) : null,
+    //   orderBy: orderBy ? Object.keys(orderBy) : null,
+    //   skip,
+    //   take,
+    //   include: include ? Object.keys(include) : null,
+    //   select: select ? Object.keys(select) : null, // ✅ LOG SELECT
+    //   selectEnabled: !!select
+    // });
 
     try {
       const result = await this.universalService.findMany(modelName, {
@@ -56,13 +56,13 @@ export class UniversalResolver {
         select // ✅ PASS SELECT TO SERVICE
       });
 
-      console.log(`✅ findMany result for ${modelName}:`, {
-        dataCount: result.data?.length || 0,
-        total: result.total,
-        page: result.page,
-        selectUsed: !!select,
-        firstItemFields: result.data?.[0] ? Object.keys(result.data[0]) : []
-      });
+      // console.log(`✅ findMany result for ${modelName}:`, {
+      //   dataCount: result.data?.length || 0,
+      //   total: result.total,
+      //   page: result.page,
+      //   selectUsed: !!select,
+      //   firstItemFields: result.data?.[0] ? Object.keys(result.data[0]) : []
+      // });
 
       return result;
     } catch (error) {
@@ -81,7 +81,7 @@ export class UniversalResolver {
     @Args('include', { type: () => GraphQLJSON, nullable: true }) include?: any,
     @Args('select', { type: () => GraphQLJSON, nullable: true }) select?: any // ✅ SELECT SUPPORT
   ) {
-    console.log(`🔍 GraphQL findUnique called for ${modelName} with select:`, !!select);
+    // console.log(`🔍 GraphQL findUnique called for ${modelName} with select:`, !!select);
     
     const args: any = { where };
     if (select) {
@@ -101,7 +101,7 @@ export class UniversalResolver {
   async testSelectQuery(
     @Args('modelName', { type: () => String, defaultValue: 'dathang' }) modelName: string
   ) {
-    console.log(`🧪 Testing select functionality for ${modelName}`);
+    // console.log(`🧪 Testing select functionality for ${modelName}`);
     
     // Test 1: With select (only specific fields)
     const resultWithSelect = await this.universalService.findMany(modelName, {

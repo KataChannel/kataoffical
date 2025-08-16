@@ -85,15 +85,15 @@ export class EnhancedUniversalResolver {
       select,
     });
 
-    console.log(`🚀 Enhanced findMany query:`, {
-      model: modelName,
-      args: {
-        ...sanitizedArgs,
-        take: sanitizedArgs.take,
-        skip: sanitizedArgs.skip,
-      },
-      hasGraphQLInfo: !!info,
-    });
+    // console.log(`🚀 Enhanced findMany query:`, {
+    //   model: modelName,
+    //   args: {
+    //     ...sanitizedArgs,
+    //     take: sanitizedArgs.take,
+    //     skip: sanitizedArgs.skip,
+    //   },
+    //   hasGraphQLInfo: !!info,
+    // });
 
     try {
       return await this.enhancedService.findMany(
@@ -102,7 +102,7 @@ export class EnhancedUniversalResolver {
         info,
       );
     } catch (error) {
-      console.error(`❌ Enhanced findMany error:`, error);
+      // console.error(`❌ Enhanced findMany error:`, error);
       throw error;
     }
   }

@@ -60,12 +60,10 @@ let EnhancedUniversalService = class EnhancedUniversalService {
     synchronizeDateField(fieldName, value) {
         if (!value)
             return null;
-        console.log(`🔄 GraphQL synchronizing ${fieldName}: ${value} (type: ${typeof value})`);
         try {
             return new Date(value);
         }
         catch (error) {
-            console.error(`❌ GraphQL error synchronizing ${fieldName}:`, error);
             return null;
         }
     }
@@ -84,15 +82,6 @@ let EnhancedUniversalService = class EnhancedUniversalService {
         return this.toUTC(value);
     }
     async findMany(modelName, args, info) {
-        console.log(`🚀 Enhanced findMany for ${modelName}:`, {
-            hasWhere: !!args.where,
-            hasOrderBy: !!args.orderBy,
-            skip: args.skip,
-            take: args.take,
-            hasCustomSelect: !!args.select,
-            hasCustomInclude: !!args.include,
-            hasGraphQLInfo: !!info
-        });
         try {
             const model = this.getModel(modelName);
             const normalizedWhere = this.normalizeDateFilters(modelName, args.where);
@@ -127,10 +116,6 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             const startTime = Date.now();
             const result = await model.findUnique(queryOptions);
             const queryTime = Date.now() - startTime;
-            console.log(`✅ ${modelName} findUnique completed:`, {
-                found: !!result,
-                queryTime: `${queryTime}ms`
-            });
             return result;
         }
         catch (error) {
@@ -155,10 +140,6 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             const result = await model.create(createOptions);
             const queryTime = Date.now() - startTime;
             this.dataLoader.clearLoaderCache(modelName);
-            console.log(`✅ ${modelName} create completed:`, {
-                id: result.id,
-                queryTime: `${queryTime}ms`
-            });
             return result;
         }
         catch (error) {
@@ -185,10 +166,6 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             const result = await model.update(updateOptions);
             const queryTime = Date.now() - startTime;
             this.dataLoader.clearLoaderCache(modelName);
-            console.log(`✅ ${modelName} update completed:`, {
-                id: result.id,
-                queryTime: `${queryTime}ms`
-            });
             return result;
         }
         catch (error) {
@@ -208,10 +185,6 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             });
             const queryTime = Date.now() - startTime;
             this.dataLoader.clearLoaderCache(modelName);
-            console.log(`✅ ${modelName} delete completed:`, {
-                id: result.id,
-                queryTime: `${queryTime}ms`
-            });
             return result;
         }
         catch (error) {
@@ -275,7 +248,6 @@ let EnhancedUniversalService = class EnhancedUniversalService {
             console.error(`❌ Prisma model not found for property: ${prismaProperty}`);
             throw new Error(`Model ${modelName} (${prismaProperty}) not found in Prisma client`);
         }
-        console.log(`✅ Model resolved: ${modelName} -> ${prismaProperty}`);
         return model;
     }
     async getModelMetadata(modelName) {
@@ -384,7 +356,6 @@ let EnhancedUniversalService = class EnhancedUniversalService {
                 }
             }
         });
-        console.log(`✅ Date normalization completed for ${modelName}`);
         return normalizedData;
     }
     normalizeDateFilters(modelName, where) {

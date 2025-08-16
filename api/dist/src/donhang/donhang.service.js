@@ -877,6 +877,7 @@ let DonhangService = class DonhangService {
                 success++;
             }
             catch (error) {
+                console.log(error);
                 fail++;
             }
         }
@@ -982,8 +983,18 @@ let DonhangService = class DonhangService {
                 order: true,
             },
         });
-        const maxOrder = maxOrderResult._max.order || 0;
-        const madonhang = await this.DonhangnumberToCode(maxOrder + 1);
+        let maxOrder = maxOrderResult._max.order || 0;
+        let madonhang = await this.DonhangnumberToCode(maxOrder + 1);
+        let existingDonhang = await this.prisma.donhang.findUnique({
+            where: { madonhang },
+        });
+        while (existingDonhang) {
+            maxOrder++;
+            madonhang = await this.DonhangnumberToCode(maxOrder + 1);
+            existingDonhang = await this.prisma.donhang.findUnique({
+                where: { madonhang },
+            });
+        }
         return this.prisma.$transaction(async (prisma) => {
             const khachhang = await prisma.khachhang.findUnique({
                 where: { id: dto.khachhangId },
@@ -1001,7 +1012,7 @@ let DonhangService = class DonhangService {
                     banggiaId: dto.banggiaId,
                     vat: parseFloat((dto.vat || 0.05).toString()),
                     isActive: dto.isActive,
-                    order: dto.order,
+                    order: maxOrder + 1,
                     ghichu: dto.ghichu,
                     isshowvat: khachhang.isshowvat,
                     sanpham: {

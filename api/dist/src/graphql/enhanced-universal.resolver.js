@@ -32,20 +32,10 @@ let EnhancedUniversalResolver = class EnhancedUniversalResolver {
             include,
             select,
         });
-        console.log(`🚀 Enhanced findMany query:`, {
-            model: modelName,
-            args: {
-                ...sanitizedArgs,
-                take: sanitizedArgs.take,
-                skip: sanitizedArgs.skip,
-            },
-            hasGraphQLInfo: !!info,
-        });
         try {
             return await this.enhancedService.findMany(modelName, sanitizedArgs, info);
         }
         catch (error) {
-            console.error(`❌ Enhanced findMany error:`, error);
             throw error;
         }
     }
