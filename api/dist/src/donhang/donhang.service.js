@@ -179,7 +179,9 @@ let DonhangService = class DonhangService {
                     ghichu: item.ghichu,
                 };
             }),
-            khachhang: khachhang ? (({ banggia, ...rest }) => rest)(khachhang) : null,
+            khachhang: khachhang
+                ? (({ banggia, ...rest }) => rest)(khachhang)
+                : null,
             name: khachhang?.name,
         }));
         return {
@@ -437,7 +439,9 @@ let DonhangService = class DonhangService {
                     ghichu: item.ghichu,
                 };
             }),
-            khachhang: result.khachhang ? (({ banggia, ...rest }) => rest)(result.khachhang) : null,
+            khachhang: result.khachhang
+                ? (({ banggia, ...rest }) => rest)(result.khachhang)
+                : null,
         };
     }
     async findAll() {
@@ -530,7 +534,9 @@ let DonhangService = class DonhangService {
                     ghichu: item.ghichu,
                 };
             }),
-            khachhang: donhang.khachhang ? (({ banggia, ...rest }) => rest)(donhang.khachhang) : null,
+            khachhang: donhang.khachhang
+                ? (({ banggia, ...rest }) => rest)(donhang.khachhang)
+                : null,
         };
     }
     async findOne(id) {
@@ -709,8 +715,35 @@ let DonhangService = class DonhangService {
             fail,
         };
     }
+    async DonhangcodeToNumber(code) {
+        if (!code.match(/^TG-[A-Z]{2}\d{5}$/)) {
+            throw new Error('Mã không đúng định dạng TG-XXYYYYY');
+        }
+        const letters = code.slice(3, 5);
+        const number = parseInt(code.slice(5), 10);
+        const letterValue = (letters.charCodeAt(0) - 65) * 26 + (letters.charCodeAt(1) - 65);
+        return letterValue * 99999 + (number - 1) + 1;
+    }
+    async DonhangnumberToCode(number) {
+        if (number < 1 || number > 676 * 99999) {
+            throw new Error('Số thứ tự không hợp lệ');
+        }
+        number -= 1;
+        const letterValue = Math.floor(number / 99999);
+        const numValue = (number % 99999) + 1;
+        const firstLetter = String.fromCharCode(65 + Math.floor(letterValue / 26));
+        const secondLetter = String.fromCharCode(65 + (letterValue % 26));
+        const numStr = numValue.toString().padStart(5, '0');
+        return `TG-${firstLetter}${secondLetter}${numStr}`;
+    }
     async create(dto) {
-        const madonhang = await this.generateNextOrderCode();
+        const maxOrderResult = await this.prisma.donhang.aggregate({
+            _max: {
+                order: true,
+            },
+        });
+        const maxOrder = maxOrderResult._max.order || 0;
+        const madonhang = await this.DonhangnumberToCode(maxOrder + 1);
         return this.prisma.$transaction(async (prisma) => {
             const khachhang = await prisma.khachhang.findUnique({
                 where: { id: dto.khachhangId },

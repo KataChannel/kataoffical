@@ -330,6 +330,8 @@ export declare class DonhangService {
         success: number;
         fail: number;
     }>;
+    DonhangcodeToNumber(code: any): Promise<number>;
+    DonhangnumberToCode(number: any): Promise<string>;
     create(dto: any): Promise<{
         sanpham: {
             id: string;
