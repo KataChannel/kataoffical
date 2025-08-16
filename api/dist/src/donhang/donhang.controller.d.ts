@@ -26,6 +26,7 @@ export declare class DonhangController {
     } & {
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -58,6 +59,7 @@ export declare class DonhangController {
             name: string | null | undefined;
             id: string;
             title: string | null;
+            vat: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
@@ -89,6 +91,7 @@ export declare class DonhangController {
         soluongtt: number;
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -120,6 +123,7 @@ export declare class DonhangController {
         khachhang: any;
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -169,6 +173,7 @@ export declare class DonhangController {
         khachhang: any;
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -242,6 +247,7 @@ export declare class DonhangController {
         }) | null;
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -329,6 +335,7 @@ export declare class DonhangController {
         } | null;
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -430,6 +437,7 @@ export declare class DonhangController {
         }) | null;
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -468,6 +476,7 @@ export declare class DonhangController {
     } & {
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -491,6 +500,7 @@ export declare class DonhangController {
     update(id: string, updateDonhangDto: any): Promise<{
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -525,6 +535,7 @@ export declare class DonhangController {
         result: {
             id: string;
             title: string | null;
+            vat: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
@@ -545,6 +556,7 @@ export declare class DonhangController {
     danhan(id: string, data: any): Promise<{
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;

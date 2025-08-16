@@ -20,6 +20,7 @@ export declare class DonhangService {
             name: string | null | undefined;
             id: string;
             title: string | null;
+            vat: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
@@ -61,6 +62,7 @@ export declare class DonhangService {
         soluongtt: number;
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -82,6 +84,7 @@ export declare class DonhangService {
         khachhang: any;
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -155,6 +158,7 @@ export declare class DonhangService {
         }) | null;
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -204,6 +208,7 @@ export declare class DonhangService {
         khachhang: any;
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -305,6 +310,7 @@ export declare class DonhangService {
         }) | null;
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -332,6 +338,7 @@ export declare class DonhangService {
     }>;
     DonhangcodeToNumber(code: any): Promise<number>;
     DonhangnumberToCode(number: any): Promise<string>;
+    private calculateDonhangTotals;
     create(dto: any): Promise<{
         sanpham: {
             id: string;
@@ -354,6 +361,7 @@ export declare class DonhangService {
     } & {
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -373,6 +381,7 @@ export declare class DonhangService {
     update(id: string, data: any): Promise<{
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -392,6 +401,7 @@ export declare class DonhangService {
     danhan(id: string, data: any): Promise<{
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -418,6 +428,7 @@ export declare class DonhangService {
         result: {
             id: string;
             title: string | null;
+            vat: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
@@ -457,6 +468,7 @@ export declare class DonhangService {
     } & {
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;
@@ -553,6 +565,7 @@ export declare class DonhangService {
         } | null;
         id: string;
         title: string | null;
+        vat: import("@prisma/client/runtime/library").Decimal;
         ghichu: string | null;
         order: number | null;
         isActive: boolean;

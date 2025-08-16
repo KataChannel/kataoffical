@@ -240,6 +240,7 @@ model Donhang {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   PhieuKho PhieuKho[]
+  vat        Decimal @postgres.Decimal(20, 2) @default(0.05)
   tongvat    Decimal @postgres.Decimal(20, 2) @default(0)
   tongtien   Decimal @postgres.Decimal(20, 2) @default(0)
 }

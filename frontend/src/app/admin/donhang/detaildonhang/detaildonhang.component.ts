@@ -206,6 +206,7 @@ export class DetailDonhangComponent {
         isshowvat: false,
         isActive: true,
         printCount: 0,
+        vat: 0.05, // Default 10% VAT rate
         tongvat: 0,
         tongtien: 0,
         sanpham: []
@@ -404,16 +405,45 @@ export class DetailDonhangComponent {
 
 
   // Helper methods for calculations
-  private calculateTotalVat(): number {
+  private calculateTotal(): number {
+    // tong = sum (sanpham.giaban * sanpham.slnhan)
     return this.DetailDonhang().sanpham?.reduce((total: number, sp: any) => {
-      return total + (parseFloat(sp.vat?.toString() || '0'));
+      const giaban = parseFloat(sp.giaban?.toString() || '0');
+      const slnhan = parseFloat(sp.slnhan?.toString() || '0');
+      return total + (giaban * slnhan);
     }, 0) || 0;
   }
 
+  private calculateTotalVat(): number {
+    // tongvat = tong * donhang.vat
+    const tong = this.calculateTotal();
+    const vatRate = parseFloat(this.DetailDonhang().vat?.toString() || '0.05'); // Default 10% if not set
+    return tong * vatRate;
+  }
+
   private calculateTotalAmount(): number {
-    return this.DetailDonhang().sanpham?.reduce((total: number, sp: any) => {
-      return total + (parseFloat(sp.ttsauvat?.toString() || '0'));
-    }, 0) || 0;
+    // tongtien = tong + tongvat
+    const tong = this.calculateTotal();
+    const tongvat = this.calculateTotalVat();
+    return tong + tongvat;
+  }
+
+  // Method to recalculate and update totals in DetailDonhang
+  private updateTotals(): void {
+    this.DetailDonhang.update((v: any) => ({
+      ...v,
+      tongvat: this.calculateTotalVat(),
+      tongtien: this.calculateTotalAmount()
+    }));
+  }
+
+  // Method to update VAT rate and recalculate totals
+  updateVatRate(newVatRate: number): void {
+    this.DetailDonhang.update((v: any) => ({
+      ...v,
+      vat: newVatRate
+    }));
+    this.updateTotals();
   }
 
   // Debug method to test payload creation
@@ -965,6 +995,12 @@ export class DetailDonhangComponent {
 
     // Mark that sanpham data has changed
     this.sanphamDataChanged = true;
+    
+    // Auto-calculate totals when giaban or slnhan changes
+    if (field === 'giaban' || field === 'slnhan') {
+      this.updateTotals();
+    }
+    
     console.log('Sanpham data changed, will be updated on next save');
   }
 
@@ -988,6 +1024,12 @@ export class DetailDonhangComponent {
 
     // Mark that sanpham data has changed
     this.sanphamDataChanged = true;
+    
+    // Auto-calculate totals when giaban or slnhan changes
+    if (field === 'giaban' || field === 'slnhan') {
+      this.updateTotals();
+    }
+    
     console.log('Sanpham data changed (blur event), will be updated on next save');
 
     // Update dataSource to reflect changes
@@ -1186,6 +1228,9 @@ export class DetailDonhangComponent {
       return v;
     });
     this.ListFilter = this.dataSource().data = this.DetailDonhang().sanpham;
+    
+    // Auto-calculate totals after removing product
+    this.updateTotals();
   }
 
   async CoppyDon() {
@@ -1431,6 +1476,10 @@ export class DetailDonhangComponent {
       v.sanpham = this.ListFilter;
       return v;
     });
+    
+    // Auto-calculate totals when products are applied
+    this.updateTotals();
+    
     console.log(this.DetailDonhang());
 
     this.dataSource().data = this.ListFilter;
@@ -1480,6 +1529,9 @@ export class DetailDonhangComponent {
       v.sanpham = this.ListFilter;
       return v;
     });
+
+    // Auto-calculate totals after import
+    this.updateTotals();
 
     this._snackBar.open('Cập Nhật Thành Công', '', {
       duration: 1000,

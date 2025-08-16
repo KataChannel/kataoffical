@@ -449,6 +449,29 @@ export class DonhangService {
             }
           }
 
+          // 5. Tính lại tổng tiền cho đơn hàng theo công thức mới
+          const sanphamForCalculation = donhang.sanpham.map(sp => {
+            const giaSanpham = donhang.khachhang?.banggia?.sanpham.find(
+              (gsp) => gsp.sanphamId === sp.idSP,
+            );
+            return {
+              giaban: giaSanpham ? giaSanpham.giaban : parseFloat(sp.giaban.toString()),
+              slnhan: parseFloat(sp.slnhan.toString()),
+            };
+          });
+
+          const vatRate = parseFloat(donhang.vat.toString()) || 0.05;
+          const { tongvat, tongtien } = this.calculateDonhangTotals(sanphamForCalculation, vatRate);
+
+          // 6. Cập nhật tổng tiền cho đơn hàng
+          await prisma.donhang.update({
+            where: { id: donhangId },
+            data: {
+              tongvat,
+              tongtien,
+            },
+          });
+
           updatedCount++;
         } catch (error) {
           console.error(`Lỗi khi cập nhật đơn hàng ${donhangId}:`, error);
@@ -900,6 +923,24 @@ export class DonhangService {
 
     return `TG-${firstLetter}${secondLetter}${numStr}`;
   }
+
+  // Helper method to calculate totals based on new formula
+  private calculateDonhangTotals(sanpham: any[], vatRate: number = 0.05) {
+    // tong = sum(sanpham.giaban * sanpham.slnhan)
+    const tong = sanpham.reduce((total, sp) => {
+      const giaban = parseFloat((sp.giaban || 0).toString());
+      const slnhan = parseFloat((sp.slnhan || 0).toString());
+      return total + (giaban * slnhan);
+    }, 0);
+
+    // tongvat = tong * donhang.vat
+    const tongvat = tong * vatRate;
+
+    // tongtien = tong + tongvat
+    const tongtien = tong + tongvat;
+
+    return { tong, tongvat, tongtien };
+  }
   async create(dto: any) {
     const maxOrderResult = await this.prisma.donhang.aggregate({
       _max: {
@@ -923,27 +964,46 @@ export class DonhangService {
           madonhang: madonhang,
           ngaygiao: new Date(dto.ngaygiao),
           khachhangId: dto.khachhangId,
+          banggiaId: dto.banggiaId,
+          vat: parseFloat((dto.vat || 0.05).toString()), // Default 5% VAT
           isActive: dto.isActive,
           order: dto.order,
           ghichu: dto.ghichu,
           isshowvat: khachhang.isshowvat, // Set isshowvat from khachhang
           sanpham: {
             create: dto?.sanpham?.map((sp) => ({
-              idSP: sp.id,
+              idSP: sp.idSP || sp.id,
+              giaban: parseFloat((sp.giaban || 0).toString()),
               ghichu: sp.ghichu,
-              sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
-              slgiao: parseFloat((sp.sldat ?? 0).toFixed(2)),
-              slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
-              slhuy: parseFloat((sp.slhuy ?? 0).toFixed(2)),
-              ttdat: parseFloat((sp.ttdat ?? 0).toFixed(2)),
-              ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
-              ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
-              vat: parseFloat(Number(sp.vat ?? 0).toFixed(2)),
-            })),
+              sldat: parseFloat((sp.sldat ?? 0).toString()),
+              slgiao: parseFloat((sp.slgiao ?? 0).toString()),
+              slnhan: parseFloat((sp.slnhan ?? 0).toString()),
+              slhuy: parseFloat((sp.slhuy ?? 0).toString()),
+              ttdat: parseFloat((sp.ttdat ?? 0).toString()),
+              ttgiao: parseFloat((sp.ttgiao ?? 0).toString()),
+              ttnhan: parseFloat((sp.ttnhan ?? 0).toString()),
+              vat: parseFloat((sp.vat ?? 0).toString()),
+              ttsauvat: parseFloat((sp.ttsauvat ?? 0).toString()),
+              order: sp.order || 1,
+              isActive: sp.isActive !== undefined ? sp.isActive : true,
+            })) || [],
           },
         },
         include: {
           sanpham: true,
+        },
+      });
+
+      // Calculate totals using new formula and helper method
+      const vatRate = parseFloat((dto.vat || 0.05).toString());
+      const { tongvat, tongtien } = this.calculateDonhangTotals(dto.sanpham || [], vatRate);
+
+      // Update donhang with calculated totals
+      await prisma.donhang.update({
+        where: { id: newDonhang.id },
+        data: {
+          tongvat: tongvat,
+          tongtien: tongtien,
         },
       });
 
@@ -1527,19 +1587,45 @@ export class DonhangService {
       }
 
       // 9. Nếu trạng thái không thuộc các trường hợp trên, chỉ cập nhật thông tin cơ bản
-      return prisma.donhang.update({
+      const updatedDonhang = await prisma.donhang.update({
         where: { id },
         data: {
           title: data.title,
           type: data.type,
           ngaygiao: new Date(data.ngaygiao),
           khachhangId: data.khachhangId,
+          banggiaId: data.banggiaId,
+          vat: data.vat ? parseFloat(data.vat.toString()) : undefined,
           isActive: data.isActive,
           order: data.order,
           ghichu: data.ghichu,
           status: data.status,
         },
+        include: {
+          sanpham: true,
+        },
       });
+
+      // Recalculate totals if sanpham data is provided or VAT rate changed
+      if (data.sanpham || data.vat) {
+        const sanphamForCalculation = data.sanpham || updatedDonhang.sanpham.map(sp => ({
+          giaban: sp.giaban,
+          slnhan: sp.slnhan
+        }));
+        
+        const vatRate = data.vat ? parseFloat(data.vat.toString()) : parseFloat(updatedDonhang.vat.toString());
+        const { tongvat, tongtien } = this.calculateDonhangTotals(sanphamForCalculation, vatRate);
+
+        await prisma.donhang.update({
+          where: { id },
+          data: {
+            tongvat,
+            tongtien,
+          },
+        });
+      }
+
+      return updatedDonhang;
     });
   }
 

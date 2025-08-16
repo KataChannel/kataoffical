@@ -353,6 +353,22 @@ let DonhangService = class DonhangService {
                             });
                         }
                     }
+                    const sanphamForCalculation = donhang.sanpham.map(sp => {
+                        const giaSanpham = donhang.khachhang?.banggia?.sanpham.find((gsp) => gsp.sanphamId === sp.idSP);
+                        return {
+                            giaban: giaSanpham ? giaSanpham.giaban : parseFloat(sp.giaban.toString()),
+                            slnhan: parseFloat(sp.slnhan.toString()),
+                        };
+                    });
+                    const vatRate = parseFloat(donhang.vat.toString()) || 0.05;
+                    const { tongvat, tongtien } = this.calculateDonhangTotals(sanphamForCalculation, vatRate);
+                    await prisma.donhang.update({
+                        where: { id: donhangId },
+                        data: {
+                            tongvat,
+                            tongtien,
+                        },
+                    });
                     updatedCount++;
                 }
                 catch (error) {
@@ -736,6 +752,16 @@ let DonhangService = class DonhangService {
         const numStr = numValue.toString().padStart(5, '0');
         return `TG-${firstLetter}${secondLetter}${numStr}`;
     }
+    calculateDonhangTotals(sanpham, vatRate = 0.05) {
+        const tong = sanpham.reduce((total, sp) => {
+            const giaban = parseFloat((sp.giaban || 0).toString());
+            const slnhan = parseFloat((sp.slnhan || 0).toString());
+            return total + (giaban * slnhan);
+        }, 0);
+        const tongvat = tong * vatRate;
+        const tongtien = tong + tongvat;
+        return { tong, tongvat, tongtien };
+    }
     async create(dto) {
         const maxOrderResult = await this.prisma.donhang.aggregate({
             _max: {
@@ -758,27 +784,42 @@ let DonhangService = class DonhangService {
                     madonhang: madonhang,
                     ngaygiao: new Date(dto.ngaygiao),
                     khachhangId: dto.khachhangId,
+                    banggiaId: dto.banggiaId,
+                    vat: parseFloat((dto.vat || 0.05).toString()),
                     isActive: dto.isActive,
                     order: dto.order,
                     ghichu: dto.ghichu,
                     isshowvat: khachhang.isshowvat,
                     sanpham: {
                         create: dto?.sanpham?.map((sp) => ({
-                            idSP: sp.id,
+                            idSP: sp.idSP || sp.id,
+                            giaban: parseFloat((sp.giaban || 0).toString()),
                             ghichu: sp.ghichu,
-                            sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                            slgiao: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
-                            slhuy: parseFloat((sp.slhuy ?? 0).toFixed(2)),
-                            ttdat: parseFloat((sp.ttdat ?? 0).toFixed(2)),
-                            ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
-                            ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
-                            vat: parseFloat(Number(sp.vat ?? 0).toFixed(2)),
-                        })),
+                            sldat: parseFloat((sp.sldat ?? 0).toString()),
+                            slgiao: parseFloat((sp.slgiao ?? 0).toString()),
+                            slnhan: parseFloat((sp.slnhan ?? 0).toString()),
+                            slhuy: parseFloat((sp.slhuy ?? 0).toString()),
+                            ttdat: parseFloat((sp.ttdat ?? 0).toString()),
+                            ttgiao: parseFloat((sp.ttgiao ?? 0).toString()),
+                            ttnhan: parseFloat((sp.ttnhan ?? 0).toString()),
+                            vat: parseFloat((sp.vat ?? 0).toString()),
+                            ttsauvat: parseFloat((sp.ttsauvat ?? 0).toString()),
+                            order: sp.order || 1,
+                            isActive: sp.isActive !== undefined ? sp.isActive : true,
+                        })) || [],
                     },
                 },
                 include: {
                     sanpham: true,
+                },
+            });
+            const vatRate = parseFloat((dto.vat || 0.05).toString());
+            const { tongvat, tongtien } = this.calculateDonhangTotals(dto.sanpham || [], vatRate);
+            await prisma.donhang.update({
+                where: { id: newDonhang.id },
+                data: {
+                    tongvat: tongvat,
+                    tongtien: tongtien,
                 },
             });
             for (const sp of dto.sanpham) {
@@ -1311,19 +1352,40 @@ let DonhangService = class DonhangService {
                     },
                 });
             }
-            return prisma.donhang.update({
+            const updatedDonhang = await prisma.donhang.update({
                 where: { id },
                 data: {
                     title: data.title,
                     type: data.type,
                     ngaygiao: new Date(data.ngaygiao),
                     khachhangId: data.khachhangId,
+                    banggiaId: data.banggiaId,
+                    vat: data.vat ? parseFloat(data.vat.toString()) : undefined,
                     isActive: data.isActive,
                     order: data.order,
                     ghichu: data.ghichu,
                     status: data.status,
                 },
+                include: {
+                    sanpham: true,
+                },
             });
+            if (data.sanpham || data.vat) {
+                const sanphamForCalculation = data.sanpham || updatedDonhang.sanpham.map(sp => ({
+                    giaban: sp.giaban,
+                    slnhan: sp.slnhan
+                }));
+                const vatRate = data.vat ? parseFloat(data.vat.toString()) : parseFloat(updatedDonhang.vat.toString());
+                const { tongvat, tongtien } = this.calculateDonhangTotals(sanphamForCalculation, vatRate);
+                await prisma.donhang.update({
+                    where: { id },
+                    data: {
+                        tongvat,
+                        tongtien,
+                    },
+                });
+            }
+            return updatedDonhang;
         });
     }
     async danhan(id, data) {
