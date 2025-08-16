@@ -104,12 +104,13 @@ export class DetailDonhangComponent {
   DetailDonhang: any = this._DonhangService.DetailDonhang;
   // ListKhachhang: any = this._KhachhangService.ListKhachhang;
   ListKhachhang: any[] = [];
-  ListSanpham: any = this._SanphamService.ListSanpham;
+  // ListSanpham: any = this._SanphamService.ListSanpham;
   isEdit = signal(false);
   isDelete = signal(false);
   filterKhachhang: any = [];
   filterBanggia: any[] = [];
   filterSanpham: any[] = [];
+  ListSanpham:any [] = []
   donhangId: any = this._DonhangService.donhangId;
   permissions: any = [];
 
@@ -164,7 +165,7 @@ export class DetailDonhangComponent {
         order: true,
       },
     });
-    this.filterSanpham = Sanphams.data;
+    this.filterSanpham = this.ListSanpham = Sanphams.data;
 
     const Khachhangs = await this._GraphqlService.findAll('khachhang', {
       enableParallelFetch: true,
@@ -951,7 +952,7 @@ export class DetailDonhangComponent {
     //         gia: valueMap.get(item.MaSP)?? item.gia, // Cập nhật giá trị value từ data2
     //         Tongtien: valueMap.get(item.MaSP)?? item.gia // Cập nhật giá trị value từ data2
     //     }));
-    //     this.UpdateListSanpham()
+    //     this.UpdateListSanpham
     // console.log(this.Detail.Giohangs);
   }
   SelectBanggia(event: any) {
@@ -1140,7 +1141,7 @@ export class DetailDonhangComponent {
         v1.ttdat = Number(v1.ttdat) || 0;
         v1.ttgiao = Number(v1.ttgiao) || 0;
         v1.ttnhan = Number(v1.ttnhan) || 0;
-        const item = this.ListSanpham().find((v2: any) => v2.masp === v1.masp);
+        const item = this.ListSanpham.find((v2: any) => v2.masp === v1.masp);
         console.log(item);
         if (item) {
           return { ...item, ...v1 };
@@ -1155,7 +1156,7 @@ export class DetailDonhangComponent {
     //   const listdata = data.map((item:any) => {
     //     item.masp = item.masp?.trim()||'';
     //     item.giaban = Number(item.giaban)||0;
-    //     const item1 = this._SanphamService.ListSanpham().find((v1) => v1.masp === item.masp);
+    //     const item1 = this._SanphamService.ListSanpham.find((v1) => v1.masp === item.masp);
     //     if (item1) {
     //       return { ...item1, ...item };
     //     }
@@ -1186,7 +1187,7 @@ export class DetailDonhangComponent {
   }
 
   reloadfilter() {
-    this.filterSanpham = this.ListSanpham().filter(
+    this.filterSanpham = this.ListSanpham.filter(
       (v: any) =>
         !this.DetailDonhang().sanpham.some((v2: any) => v2.id === v.id)
     );
@@ -1204,7 +1205,7 @@ export class DetailDonhangComponent {
 
   // SelectSanpham(event:any){
   //   const value = event.value;
-  //   const item = this.ListSanpham().find((v:any) => v.id === value);
+  //   const item = this.ListSanpham.find((v:any) => v.id === value);
   //   this.DetailDonhang.update((v:any)=>{
   //     if(!v.sanpham){
   //       v.sanpham = [];
@@ -1394,13 +1395,13 @@ export class DetailDonhangComponent {
     const value = event.target.value.trim().toLowerCase();
 
     if (value.length < 2) {
-      this.filterSanpham = [...this.ListSanpham()];
+      this.filterSanpham = [...this.ListSanpham];
       return;
     }
 
     const normalizedValue = removeVietnameseAccents(value);
 
-    this.filterSanpham = this.ListSanpham()
+    this.filterSanpham = this.ListSanpham
       .filter((product: any) => {
         const normalizedTitle = removeVietnameseAccents(
           product.title?.toLowerCase() || ''
@@ -1435,7 +1436,7 @@ export class DetailDonhangComponent {
     if (event.key === 'Enter') {
       if (this.filterSanpham.length > 0) {
         this.ChosenItem(this.filterSanpham[0]);
-        // this.filterSanpham = [...this._SanphamService.ListSanpham()];
+        // this.filterSanpham = [...this._SanphamService.ListSanpham];
       }
     }
   }
@@ -1456,7 +1457,7 @@ export class DetailDonhangComponent {
     this.ListFilter = list;
   }
   ResetFilter() {
-    this.ListFilter = this.ListSanpham();
+    this.ListFilter = this.ListSanpham;
     this.dataSource().data = this.filterSanpham;
   }
   EmptyFiter() {
@@ -1518,7 +1519,7 @@ export class DetailDonhangComponent {
       ghichu: v.ghichu?.trim() || '',
     }));
     this.ListFilter = transformedData.map((item: any) => {
-      const item1 = this.ListSanpham().find((v1: any) => v1.masp === item.masp);
+      const item1 = this.ListSanpham.find((v1: any) => v1.masp === item.masp);
       if (item1) {
         return { ...item1, ...item };
       }
