@@ -194,14 +194,12 @@ let DonhangService = class DonhangService {
     }
     async congnokhachhang(params) {
         const { Batdau, Ketthuc, query } = params;
-        const dateRange = this.convertDateFilters({
-            ngaygiao: {
-                gte: Batdau ? new Date(Batdau) : undefined,
-                lte: Ketthuc ? new Date(Ketthuc) : undefined,
-            },
-        });
+        const dateRange = {
+            gte: Batdau ? new Date(Batdau) : undefined,
+            lte: Ketthuc ? new Date(Ketthuc) : undefined,
+        };
         const where = {
-            ngaygiao: dateRange.ngaygiao,
+            ngaygiao: dateRange,
             status: Array.isArray(params.Status)
                 ? { in: params.Status }
                 : params.Status,
@@ -262,15 +260,13 @@ let DonhangService = class DonhangService {
     }
     async getchogiao(params) {
         const { Batdau, Ketthuc, Type } = params;
-        const dateRange = this.convertDateFilters({
-            ngaygiao: {
-                gte: Batdau ? new Date(Batdau) : undefined,
-                lte: Ketthuc ? new Date(Ketthuc) : undefined,
-            },
-        });
+        const dateRange = {
+            gte: Batdau ? new Date(Batdau) : undefined,
+            lte: Ketthuc ? new Date(Ketthuc) : undefined,
+        };
         const donhangs = await this.prisma.donhang.findMany({
             where: {
-                ngaygiao: dateRange.ngaygiao,
+                ngaygiao: dateRange,
             },
             include: {
                 sanpham: {
@@ -383,15 +379,13 @@ let DonhangService = class DonhangService {
     }
     async phieuchuyen(params) {
         const { Batdau, Ketthuc, Type } = params;
-        const dateRange = this.convertDateFilters({
-            ngaygiao: {
-                gte: Batdau ? new Date(Batdau) : undefined,
-                lte: Ketthuc ? new Date(Ketthuc) : undefined,
-            },
-        });
+        const dateRange = {
+            gte: Batdau ? new Date(Batdau) : undefined,
+            lte: Ketthuc ? new Date(Ketthuc) : undefined,
+        };
         const result = await this.prisma.donhang.findMany({
             where: {
-                ngaygiao: dateRange.ngaygiao,
+                ngaygiao: dateRange,
                 status: Array.isArray(params.Status)
                     ? { in: params.Status }
                     : params.Status,

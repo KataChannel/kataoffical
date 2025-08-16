@@ -237,15 +237,12 @@ export class DonhangService {
     const { Batdau, Ketthuc, query } = params;
 
     // ✅ Sử dụng TimezoneUtilService cho date range
-    const dateRange = this.convertDateFilters({
-      ngaygiao: {
+    const dateRange ={
         gte: Batdau ? new Date(Batdau) : undefined,
         lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      },
-    });
-
+      }
     const where: any = {
-      ngaygiao: dateRange.ngaygiao,
+      ngaygiao: dateRange,
       // type: Type,
       status: Array.isArray(params.Status)
         ? { in: params.Status }
@@ -325,17 +322,15 @@ export class DonhangService {
     const { Batdau, Ketthuc, Type } = params;
 
     // ✅ Sử dụng TimezoneUtilService cho date range
-    const dateRange = this.convertDateFilters({
-      ngaygiao: {
+    const dateRange = {
         gte: Batdau ? new Date(Batdau) : undefined,
         lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      },
-    });
+      }
 
     // Lấy danh sách đơn hàng theo điều kiện lọc
     const donhangs = await this.prisma.donhang.findMany({
       where: {
-        ngaygiao: dateRange.ngaygiao,
+        ngaygiao: dateRange,
         // type: Type,
         // Có thể bổ sung điều kiện status nếu cần
       },
@@ -489,16 +484,14 @@ export class DonhangService {
     const { Batdau, Ketthuc, Type } = params;
 
     // ✅ Sử dụng TimezoneUtilService cho date range
-    const dateRange = this.convertDateFilters({
-      ngaygiao: {
+    const dateRange = {
         gte: Batdau ? new Date(Batdau) : undefined,
         lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      },
-    });
+      }
 
     const result = await this.prisma.donhang.findMany({
       where: {
-        ngaygiao: dateRange.ngaygiao,
+        ngaygiao: dateRange,
         // type: Type,
         status: Array.isArray(params.Status)
           ? { in: params.Status }
