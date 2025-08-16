@@ -840,9 +840,9 @@ export class ListDonhangComponent {
 
           return {
             ...sp,
-            sldat: parseFloat(Number(item.sldat).toFixed(2)) || 0,
-            slgiao: parseFloat(Number(item.sldat).toFixed(2)) || 0,
-            slnhan: parseFloat(Number(item.sldat).toFixed(2)) || 0,
+            sldat: parseFloat(Number(item.sldat).toFixed(3)) || 0,
+            slgiao: parseFloat(Number(item.sldat).toFixed(3)) || 0,
+            slnhan: parseFloat(Number(item.sldat).toFixed(3)) || 0,
           };
         })
       );

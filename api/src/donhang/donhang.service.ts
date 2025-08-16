@@ -209,12 +209,12 @@ export class DonhangService {
           ...item.sanpham,
           idSP: item.idSP,
           giaban: giaban,
-          sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
-          slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
-          slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
-          ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
-          ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
-          ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
+          sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+          slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+          slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+          ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+          ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+          ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
           ghichu: item.ghichu,
         };
       }),
@@ -269,49 +269,29 @@ export class DonhangService {
       },
       orderBy: { createdAt: 'desc' },
     });
-    const Sanphams = await this.prisma.sanpham.findMany();
-    const result = donhangs.flatMap((v: any) => {
-      const orderItems = v.sanpham.map((v1: any) => {
-        const product = Sanphams.find((sp: any) => sp.id === v1.idSP);
-        const giaban =
-          v?.khachhang?.banggia?.sanpham.find((sp: any) => sp.id === v1.idSP)
-            ?.giaban ||
-          product?.giaban ||
-          0;
-        const vat: any = product?.vat || 0;
-        const thanhtiensauvat = v1.slgiao * giaban * (1 + vat / 100);
-        return {
-          id: v.id,
-          ngaygiao: v.ngaygiao,
-          tenkhachhang: v.khachhang?.name,
-          makhachhang: v.khachhang?.makh,
-          madonhang: v.madonhang,
-          tenhang: product?.title || '',
-          mahang: product?.masp || '',
-          dvt: product?.dvt || '',
-          soluong: v1.slgiao,
-          dongia: giaban,
-          thanhtientruocvat: v1.slgiao * giaban,
-          vat: vat,
-          dongiavathoadon: giaban * (1 + vat / 100),
-          thanhtiensauvat: thanhtiensauvat,
-          ghichu: v1.ghichu,
-        };
-      });
-
-      // Calculate tongtiensauvat for the entire order
-      const tongtiensauvat = orderItems.reduce(
-        (sum, item) => sum + item.thanhtiensauvat,
-        0,
-      );
-
-      // Add tongtiensauvat to each item
-      return orderItems.map((item) => ({
-        ...item,
-        tongtiensauvat: tongtiensauvat,
-      }));
-    });
-
+    const result = donhangs.map((v: any) => {
+      const [tong, soluong] = v.sanpham.reduce(
+        (acc: [number, number], item: any) => {
+          const slnhan = parseFloat((item.slnhan || 0).toString());
+          const giaban = parseFloat((item.sanpham?.giaban || 0).toString());
+          return [
+            acc[0] + (slnhan * giaban),
+            acc[1] + slnhan
+          ];
+        },
+        [0, 0]
+      );      
+      return {
+        madonhang: v.madonhang,
+        ngaygiao: v.ngaygiao,
+        tong:tong.toFixed(3),
+        soluong:soluong.toFixed(3),
+        tongtien: v.tongtien,
+        tongvat: v.tongvat,
+        name: v.khachhang?.name,
+        makh: v.khachhang?.makh,
+      }
+    })
     return result || [];
   }
   async downloadcongnokhachhang(params: any) {
@@ -572,17 +552,15 @@ export class DonhangService {
     const { Batdau, Ketthuc, Type } = params;
 
     // ✅ Sử dụng TimezoneUtilService cho date range
-    const dateRange = this.convertDateFilters({
-      ngaygiao: {
+    const dateRange = {
         gte: Batdau ? new Date(Batdau) : undefined,
         lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      },
-    });
+      }
 
     // Lấy danh sách đơn hàng theo điều kiện lọc
     const donhangs = await this.prisma.donhang.findMany({
       where: {
-        ngaygiao: dateRange.ngaygiao,
+        ngaygiao: dateRange,
         // type: Type,
         // Có thể bổ sung điều kiện status nếu cần
       },
@@ -621,7 +599,7 @@ export class DonhangService {
       idSP,
       title: value.title,
       masp: value.masp,
-      slchogiaott: parseFloat(value.sldat.toFixed(2)),
+      slchogiaott: parseFloat(value.sldat.toFixed(3)),
     }));
   }
 
@@ -676,7 +654,7 @@ export class DonhangService {
             // console.log('giaSanpham', giaSanpham);
 
             if (giaSanpham) {
-              const giaban = giaSanpham.giaban;
+              const giaban = Number(giaSanpham.giaban);
               const sldat = Number(donhangSanpham.sldat);
               const slgiao = Number(donhangSanpham.slgiao);
               const slnhan = Number(donhangSanpham.slnhan);
@@ -736,16 +714,14 @@ export class DonhangService {
     const { Batdau, Ketthuc, Type } = params;
 
     // ✅ Sử dụng TimezoneUtilService cho date range
-    const dateRange = this.convertDateFilters({
-      ngaygiao: {
+    const dateRange = {
         gte: Batdau ? new Date(Batdau) : undefined,
         lte: Ketthuc ? new Date(Ketthuc) : undefined,
-      },
-    });
+      }
 
     const result = await this.prisma.donhang.findMany({
       where: {
-        ngaygiao: dateRange.ngaygiao,
+        ngaygiao: dateRange,
         // type: Type,
         status: Array.isArray(params.Status)
           ? { in: params.Status }
@@ -771,7 +747,7 @@ export class DonhangService {
       soluongtt: parseFloat(
         sanpham
           .reduce((total, item: any) => total + Number(item.slgiao || 0), 0)
-          .toFixed(2),
+          .toFixed(3),
       ),
     }));
   }
@@ -805,15 +781,15 @@ export class DonhangService {
           ...item.sanpham,
           idSP: item.idSP,
           giaban: giaban,
-          sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
-          slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
-          slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
-          ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
-          ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
-          ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
-          vat: parseFloat((item.vat ?? 0).toFixed(2)),
+          sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+          slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+          slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+          ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+          ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+          ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
+          vat: parseFloat((item.vat ?? 0).toFixed(3)),
           ttsauvat: parseFloat(
-            (item.ttnhan * (1 + (item.vat || 0) / 100)).toFixed(2),
+            (item.ttnhan * (1 + (item.vat || 0) / 100)).toFixed(3),
           ),
           ghichu: item.ghichu,
         };
@@ -850,12 +826,12 @@ export class DonhangService {
           ...item.sanpham,
           idSP: item.idSP,
           giaban: giaban,
-          sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
-          slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
-          slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
-          ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
-          ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
-          ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
+          sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+          slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+          slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+          ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+          ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+          ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
           ghichu: item.ghichu,
         };
       }),
@@ -914,12 +890,12 @@ export class DonhangService {
           ...item.sanpham,
           idSP: item.idSP,
           giaban: giaban,
-          sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
-          slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
-          slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
-          ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
-          ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
-          ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
+          sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+          slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+          slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+          ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+          ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+          ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
           ghichu: item.ghichu,
         };
       }),
@@ -955,13 +931,13 @@ export class DonhangService {
           ...item.sanpham,
           idSP: item.idSP,
           giaban: giaban,
-          sldat: parseFloat((item.sldat ?? 0).toFixed(2)),
-          slgiao: parseFloat((item.slgiao ?? 0).toFixed(2)),
-          slnhan: parseFloat((item.slnhan ?? 0).toFixed(2)),
-          slhuy: parseFloat((item.slhuy ?? 0).toFixed(2)),
-          ttdat: parseFloat((item.ttdat ?? 0).toFixed(2)),
-          ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(2)),
-          ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(2)),
+          sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
+          slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
+          slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
+          slhuy: parseFloat((item.slhuy ?? 0).toFixed(3)),
+          ttdat: parseFloat((item.ttdat ?? 0).toFixed(3)),
+          ttgiao: parseFloat((item.ttgiao ?? 0).toFixed(3)),
+          ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
           ghichu: item.ghichu,
         };
       }),
@@ -990,9 +966,9 @@ export class DonhangService {
 
                 return {
                   id: sp.id,
-                  sldat: parseFloat((item.Quantity ?? 0).toFixed(2)),
-                  slgiao: parseFloat((item.Quantity ?? 0).toFixed(2)),
-                  slnhan: parseFloat((item.Quantity ?? 0).toFixed(2)),
+                  sldat: parseFloat((item.Quantity ?? 0).toFixed(3)),
+                  slgiao: parseFloat((item.Quantity ?? 0).toFixed(3)),
+                  slnhan: parseFloat((item.Quantity ?? 0).toFixed(3)),
                   slhuy: 0,
                   ttdat: 0,
                   ttgiao: 0,
@@ -1255,7 +1231,7 @@ export class DonhangService {
       });
 
       for (const sp of dto.sanpham) {
-        const incrementValue = parseFloat((sp.sldat ?? 0).toFixed(2));
+        const incrementValue = parseFloat((sp.sldat ?? 0).toFixed(3));
         await prisma.tonKho.upsert({
           where: { sanphamId: sp.id },
           update: {
@@ -1286,7 +1262,7 @@ export class DonhangService {
       if (oldDonhang.status === 'dagiao' && data.status === 'dadat') {
         // Rollback tồn kho
         for (const sp of oldDonhang.sanpham) {
-          const incValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
+          const incValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
           await prisma.tonKho.update({
             where: { sanphamId: sp.idSP },
             data: {
@@ -1327,7 +1303,7 @@ export class DonhangService {
                       where: { idSP: sp.id },
                       data: {
                         ghichu: sp.ghichu,
-                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                       },
                     })),
                   },
@@ -1337,10 +1313,10 @@ export class DonhangService {
         });
         // Cập nhật tồn kho theo chênh lệch số lượng giao mới/cũ
         for (const sp of data.sanpham) {
-          const newSlgiao = parseFloat((sp.slgiao ?? 0).toFixed(2));
+          const newSlgiao = parseFloat((sp.slgiao ?? 0).toFixed(3));
           const oldItem = oldDonhang.sanpham.find((o: any) => o.idSP === sp.id);
           const oldSlgiao = oldItem
-            ? parseFloat((oldItem.slgiao ?? 0).toFixed(2))
+            ? parseFloat((oldItem.slgiao ?? 0).toFixed(3))
             : 0;
           const difference = newSlgiao - oldSlgiao;
           if (difference !== 0) {
@@ -1366,10 +1342,10 @@ export class DonhangService {
       if (oldDonhang.status === 'dadat' && data.status === 'dadat') {
         // Cập nhật tồn kho cho các sản phẩm có trong cả đơn hàng cũ và mới
         for (const sp of data.sanpham) {
-          const newSldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+          const newSldat = parseFloat((sp.sldat ?? 0).toFixed(3));
           const oldItem = oldDonhang.sanpham.find((o: any) => o.idSP === sp.id);
           if (oldItem) {
-            const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(2));
+            const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(3));
             const difference = newSldat - oldSldat;
             if (difference !== 0) {
               await prisma.tonKho.update({
@@ -1395,7 +1371,7 @@ export class DonhangService {
         for (const oldItem of oldDonhang.sanpham) {
           const exists = data.sanpham.find((sp: any) => sp.id === oldItem.idSP);
           if (!exists) {
-            const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(2));
+            const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(3));
             await prisma.tonKho.update({
               where: { sanphamId: oldItem.idSP },
               data: {
@@ -1422,10 +1398,10 @@ export class DonhangService {
                       data: data.sanpham.map((sp: any) => ({
                         idSP: sp.id,
                         ghichu: sp.ghichu,
-                        sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-                        slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
-                        ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
+                        sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                        slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                        ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
                       })),
                     },
                   },
@@ -1438,7 +1414,7 @@ export class DonhangService {
       // 4. Chuyển sang 'dagiao'
       if (oldDonhang.status === 'dadat' && data.status === 'dagiao') {
         for (const sp of data.sanpham) {
-          const decValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
+          const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
           await this.updateTonKhoSafe(prisma, sp.id, {
             slchogiao: { decrement: decValue },
             slton: { decrement: decValue },
@@ -1454,7 +1430,7 @@ export class DonhangService {
           sanpham: {
             create: data.sanpham.map((sp: any) => ({
               sanphamId: sp.id,
-              soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+              soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
               ghichu: sp.ghichu,
             })),
           },
@@ -1484,7 +1460,7 @@ export class DonhangService {
               sanpham: {
                 create: data.sanpham.map((sp: any) => ({
                   sanphamId: sp.id,
-                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                   ghichu: sp.ghichu,
                 })),
               },
@@ -1495,11 +1471,11 @@ export class DonhangService {
           const uniqueSanpham = data.sanpham.reduce((acc: any[], sp: any) => {
             const existing = acc.find((item) => item.sanphamId === sp.id);
             if (existing) {
-              existing.soluong += parseFloat((sp.slgiao ?? 0).toFixed(2));
+              existing.soluong += parseFloat((sp.slgiao ?? 0).toFixed(3));
             } else {
               acc.push({
                 sanphamId: sp.id,
-                soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                 ghichu: sp.ghichu,
               });
             }
@@ -1530,9 +1506,9 @@ export class DonhangService {
                 where: { idSP: sp.id },
                 data: {
                   ghichu: sp.ghichu,
-                  sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                  slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-                  slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
+                  sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                  slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                  slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
                 },
               })),
             },
@@ -1548,8 +1524,8 @@ export class DonhangService {
           ghichu?: string;
         }[] = [];
         for (const item of data.sanpham) {
-          const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(2));
-          const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(2));
+          const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(3));
+          const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(3));
           if (receivedQty < shippedQty) {
             const shortage = shippedQty - receivedQty;
             await prisma.tonKho.update({
@@ -1560,8 +1536,8 @@ export class DonhangService {
               sanphamId: item.id,
               soluong: shortage,
               ghichu: item.ghichu
-                ? `${item.ghichu}; thiếu ${shortage.toFixed(2)}`
-                : `Thiếu ${shortage.toFixed(2)}`,
+                ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
+                : `Thiếu ${shortage.toFixed(3)}`,
             });
           } else if (receivedQty === shippedQty) {
             await prisma.tonKho.update({
@@ -1595,13 +1571,13 @@ export class DonhangService {
             status: 'danhan',
             sanpham: {
               updateMany: data.sanpham.map((item: any) => {
-                const delivered = parseFloat((item.slgiao ?? 0).toFixed(2));
-                const received = parseFloat((item.slnhan ?? 0).toFixed(2));
+                const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
+                const received = parseFloat((item.slnhan ?? 0).toFixed(3));
                 const shortageNote =
                   received < delivered
                     ? item.ghichu
-                      ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(2)}`
-                      : `Thiếu ${(delivered - received).toFixed(2)}`
+                      ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(3)}`
+                      : `Thiếu ${(delivered - received).toFixed(3)}`
                     : item.ghichu || '';
                 return {
                   where: { idSP: item.id },
@@ -1629,7 +1605,7 @@ export class DonhangService {
       // 7. Chuyển từ 'danhan' về 'dadat'
       if (oldDonhang.status === 'danhan' && data.status === 'dadat') {
         for (const sp of oldDonhang.sanpham) {
-          const incValue = parseFloat((sp.slnhan ?? 0).toFixed(2));
+          const incValue = parseFloat((sp.slnhan ?? 0).toFixed(3));
           await prisma.tonKho.update({
             where: { sanphamId: sp.idSP },
             data: {
@@ -1668,11 +1644,11 @@ export class DonhangService {
                       where: { idSP: sp.id },
                       data: {
                         ghichu: sp.ghichu,
-                        sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-                        slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
-                        ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
-                        ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
+                        sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                        slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                        ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
+                        ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(3)),
                       },
                     })),
                   },
@@ -1686,7 +1662,7 @@ export class DonhangService {
       // 8. Chuyển trực tiếp từ 'dadat' sang 'danhan'
       if (oldDonhang.status === 'dadat' && data.status === 'danhan') {
         for (const sp of data.sanpham) {
-          const decValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
+          const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
           await prisma.tonKho.update({
             where: { sanphamId: sp.id },
             data: {
@@ -1705,7 +1681,7 @@ export class DonhangService {
           sanpham: {
             create: data.sanpham.map((sp: any) => ({
               sanphamId: sp.id,
-              soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+              soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
               ghichu: sp.ghichu,
             })),
           },
@@ -1735,7 +1711,7 @@ export class DonhangService {
               sanpham: {
                 create: data.sanpham.map((sp: any) => ({
                   sanphamId: sp.id,
-                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                   ghichu: sp.ghichu,
                 })),
               },
@@ -1754,7 +1730,7 @@ export class DonhangService {
               sanpham: {
                 create: data.sanpham.map((sp: any) => ({
                   sanphamId: sp.id,
-                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                   ghichu: sp.ghichu,
                 })),
               },
@@ -1769,8 +1745,8 @@ export class DonhangService {
           ghichu?: string;
         }[] = [];
         for (const item of data.sanpham) {
-          const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(2));
-          const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(2));
+          const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(3));
+          const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(3));
           if (receivedQty < shippedQty) {
             const shortage = shippedQty - receivedQty;
             await prisma.tonKho.update({
@@ -1781,8 +1757,8 @@ export class DonhangService {
               sanphamId: item.id,
               soluong: shortage,
               ghichu: item.ghichu
-                ? `${item.ghichu}; thiếu ${shortage.toFixed(2)}`
-                : `Thiếu ${shortage.toFixed(2)}`,
+                ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
+                : `Thiếu ${shortage.toFixed(3)}`,
             });
           }
         }
@@ -1811,13 +1787,13 @@ export class DonhangService {
             status: 'danhan',
             sanpham: {
               updateMany: data.sanpham.map((item: any) => {
-                const delivered = parseFloat((item.slgiao ?? 0).toFixed(2));
-                const received = parseFloat((item.slnhan ?? 0).toFixed(2));
+                const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
+                const received = parseFloat((item.slnhan ?? 0).toFixed(3));
                 const shortageNote =
                   received < delivered
                     ? item.ghichu
-                      ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(2)}`
-                      : `Thiếu ${(delivered - received).toFixed(2)}`
+                      ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(3)}`
+                      : `Thiếu ${(delivered - received).toFixed(3)}`
                     : item.ghichu || '';
                 return {
                   where: { idSP: item.id },
@@ -1891,7 +1867,7 @@ export class DonhangService {
       if (oldDonhang.status === 'dagiao' && data.status === 'dadat') {
         // 2.1. Rollback tồn kho: tăng lại slchogiao và slton theo slgiao cũ
         for (const sp of oldDonhang.sanpham) {
-          const incValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
+          const incValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
           await prisma.tonKho.update({
             where: { sanphamId: sp.idSP },
             data: {
@@ -1939,7 +1915,7 @@ export class DonhangService {
                       where: { idSP: sp.id },
                       data: {
                         ghichu: sp.ghichu,
-                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                       },
                     })),
                   },
@@ -1950,10 +1926,10 @@ export class DonhangService {
 
         // 2.4. Cập nhật tồn kho theo chênh lệch giữa số lượng giao mới và cũ
         for (const sp of data.sanpham) {
-          const newSlgiao = parseFloat((sp.slgiao ?? 0).toFixed(2));
+          const newSlgiao = parseFloat((sp.slgiao ?? 0).toFixed(3));
           const oldItem = oldDonhang.sanpham.find((o: any) => o.idSP === sp.id);
           const oldSlgiao = oldItem
-            ? parseFloat((oldItem.slgiao ?? 0).toFixed(2))
+            ? parseFloat((oldItem.slgiao ?? 0).toFixed(3))
             : 0;
           const difference = newSlgiao - oldSlgiao;
           if (difference !== 0) {
@@ -1980,10 +1956,10 @@ export class DonhangService {
       if (oldDonhang.status === 'dadat' && data.status === 'dadat') {
         // Cập nhật tồn kho cho các sản phẩm có trong cả đơn hàng cũ và mới
         for (const sp of data.sanpham) {
-          const newSldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+          const newSldat = parseFloat((sp.sldat ?? 0).toFixed(3));
           const oldItem = oldDonhang.sanpham.find((o: any) => o.idSP === sp.id);
           if (oldItem) {
-            const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(2));
+            const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(3));
             const difference = newSldat - oldSldat;
             if (difference !== 0) {
               await prisma.tonKho.update({
@@ -2011,7 +1987,7 @@ export class DonhangService {
         for (const oldItem of oldDonhang.sanpham) {
           const exists = data.sanpham.find((sp: any) => sp.id === oldItem.idSP);
           if (!exists) {
-            const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(2));
+            const oldSldat = parseFloat((oldItem.sldat ?? 0).toFixed(3));
             await prisma.tonKho.update({
               where: { sanphamId: oldItem.idSP },
               data: {
@@ -2039,9 +2015,9 @@ export class DonhangService {
                       data: data.sanpham.map((sp: any) => ({
                         idSP: sp.id,
                         ghichu: sp.ghichu,
-                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-                        slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
-                        ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
+                        slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                        slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                        ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
                       })),
                     },
                   },
@@ -2053,7 +2029,7 @@ export class DonhangService {
       if (data.status === 'dagiao') {
         // 3.1. Giảm tồn kho
         for (const sp of data.sanpham) {
-          const decValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
+          const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
           await prisma.tonKho.update({
             where: { sanphamId: sp.id },
             data: {
@@ -2073,7 +2049,7 @@ export class DonhangService {
           sanpham: {
             create: data.sanpham.map((sp: any) => ({
               sanphamId: sp.id,
-              soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+              soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
               ghichu: sp.ghichu,
             })),
           },
@@ -2103,7 +2079,7 @@ export class DonhangService {
               sanpham: {
                 create: data.sanpham.map((sp: any) => ({
                   sanphamId: sp.id,
-                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                   ghichu: sp.ghichu,
                 })),
               },
@@ -2122,7 +2098,7 @@ export class DonhangService {
               sanpham: {
                 create: data.sanpham.map((sp: any) => ({
                   sanphamId: sp.id,
-                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                   ghichu: sp.ghichu,
                 })),
               },
@@ -2140,7 +2116,7 @@ export class DonhangService {
                 where: { idSP: sp.id },
                 data: {
                   ghichu: sp.ghichu,
-                  slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                  slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                 },
               })),
             },
@@ -2158,8 +2134,8 @@ export class DonhangService {
         }[] = [];
 
         for (const item of data.sanpham) {
-          const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(2));
-          const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(2));
+          const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(3));
+          const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(3));
           if (receivedQty < shippedQty) {
             const shortage = shippedQty - receivedQty;
             // Cập nhật tồn kho: hoàn lại số lượng chưa nhận
@@ -2172,8 +2148,8 @@ export class DonhangService {
               sanphamId: item.id,
               soluong: shortage,
               ghichu: item.ghichu
-                ? `${item.ghichu}; thiếu ${shortage.toFixed(2)}`
-                : `Thiếu ${shortage.toFixed(2)}`,
+                ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
+                : `Thiếu ${shortage.toFixed(3)}`,
             });
           } else if (receivedQty === shippedQty) {
             // Trường hợp nhận đủ số lượng: cập nhật tồn kho (mặc định không thay đổi giá trị)
@@ -2215,13 +2191,13 @@ export class DonhangService {
             status: 'danhan',
             sanpham: {
               updateMany: data.sanpham.map((item: any) => {
-                const delivered = parseFloat((item.slgiao ?? 0).toFixed(2));
-                const received = parseFloat((item.slnhan ?? 0).toFixed(2));
+                const delivered = parseFloat((item.slgiao ?? 0).toFixed(3));
+                const received = parseFloat((item.slnhan ?? 0).toFixed(3));
                 const shortageNote =
                   received < delivered
                     ? item.ghichu
-                      ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(2)}`
-                      : `Thiếu ${(delivered - received).toFixed(2)}`
+                      ? `${item.ghichu}; thiếu ${(delivered - received).toFixed(3)}`
+                      : `Thiếu ${(delivered - received).toFixed(3)}`
                     : item.ghichu || '';
                 return {
                   where: { idSP: item.id },
@@ -2266,7 +2242,7 @@ export class DonhangService {
       if (data.status === 'dagiao') {
         // 3.1. Giảm tồn kho
         for (const sp of data.sanpham) {
-          const decValue = parseFloat((sp.slgiao ?? 0).toFixed(2));
+          const decValue = parseFloat((sp.slgiao ?? 0).toFixed(3));
           await prisma.tonKho.update({
             where: { sanphamId: sp.id },
             data: {
@@ -2286,7 +2262,7 @@ export class DonhangService {
           sanpham: {
             create: data.sanpham.map((sp: any) => ({
               sanphamId: sp.id,
-              soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+              soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
               ghichu: sp.ghichu,
             })),
           },
@@ -2316,7 +2292,7 @@ export class DonhangService {
               sanpham: {
                 create: data.sanpham.map((sp: any) => ({
                   sanphamId: sp.id,
-                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                   ghichu: sp.ghichu,
                 })),
               },
@@ -2335,7 +2311,7 @@ export class DonhangService {
               sanpham: {
                 create: data.sanpham.map((sp: any) => ({
                   sanphamId: sp.id,
-                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                  soluong: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                   ghichu: sp.ghichu,
                 })),
               },
@@ -2353,7 +2329,7 @@ export class DonhangService {
                 where: { idSP: sp.id },
                 data: {
                   ghichu: sp.ghichu,
-                  slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
+                  slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
                 },
               })),
             },
@@ -2397,14 +2373,14 @@ export class DonhangService {
               create: data.sanpham.map((sp: any) => ({
                 idSP: sp.id,
                 ghichu: sp.ghichu,
-                sldat: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                slgiao: parseFloat((sp.slgiao ?? 0).toFixed(2)),
-                slnhan: parseFloat((sp.slnhan ?? 0).toFixed(2)),
-                ttdat: parseFloat((sp.ttdat ?? 0).toFixed(2)),
-                ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(2)),
-                ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(2)),
-                vat: parseFloat((sp.vat ?? 0).toFixed(2)),
-                ttsauvat: parseFloat((sp.ttsauvat ?? 0).toFixed(2)),
+                sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                ttdat: parseFloat((sp.ttdat ?? 0).toFixed(3)),
+                ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
+                ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(3)),
+                vat: parseFloat((sp.vat ?? 0).toFixed(3)),
+                ttsauvat: parseFloat((sp.ttsauvat ?? 0).toFixed(3)),
               })),
             },
           },
@@ -2443,7 +2419,7 @@ export class DonhangService {
           if (oldDonhang.status === 'dadat' && status === 'danhan') {
             // Giảm tồn kho cho từng sản phẩm
             for (const sp of oldDonhang.sanpham) {
-              const decValue = parseFloat((sp.sldat ?? 0).toFixed(2));
+              const decValue = parseFloat((sp.sldat ?? 0).toFixed(3));
               await prisma.tonKho.update({
                 where: { sanphamId: sp.idSP },
                 data: {
@@ -2458,11 +2434,11 @@ export class DonhangService {
               (acc: any[], sp: any) => {
                 const existing = acc.find((item) => item.sanphamId === sp.idSP);
                 if (existing) {
-                  existing.soluong += parseFloat((sp.sldat ?? 0).toFixed(2));
+                  existing.soluong += parseFloat((sp.sldat ?? 0).toFixed(3));
                 } else {
                   acc.push({
                     sanphamId: sp.idSP,
-                    soluong: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                    soluong: parseFloat((sp.sldat ?? 0).toFixed(3)),
                     ghichu: sp.ghichu,
                   });
                 }
@@ -2535,8 +2511,8 @@ export class DonhangService {
                   updateMany: oldDonhang.sanpham.map((sp: any) => ({
                     where: { idSP: sp.idSP },
                     data: {
-                      slgiao: parseFloat((sp.sldat ?? 0).toFixed(2)),
-                      slnhan: parseFloat((sp.sldat ?? 0).toFixed(2)),
+                      slgiao: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                      slnhan: parseFloat((sp.sldat ?? 0).toFixed(3)),
                     },
                   })),
                 },
@@ -2569,9 +2545,9 @@ export class DonhangService {
     //   }
     //   // 2. Cập nhật TONKHO cho từng sản phẩm theo trạng thái đơn hàng
     //   for (const sp of donhang.sanpham) {
-    //     const sldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+    //     const sldat = parseFloat((sp.sldat ?? 0).toFixed(3));
     //     if (donhang.status === 'dagiao' || donhang.status === 'danhan') {
-    //       const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(2));
+    //       const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(3));
     //       await prisma.tonKho.update({
     //         where: { sanphamId: sp.idSP },
     //         data: {
@@ -2613,9 +2589,9 @@ export class DonhangService {
 
           // 2. Cập nhật TONKHO cho từng sản phẩm theo trạng thái đơn hàng
           for (const sp of donhang.sanpham) {
-            const sldat = parseFloat((sp.sldat ?? 0).toFixed(2));
+            const sldat = parseFloat((sp.sldat ?? 0).toFixed(3));
             if (donhang.status === 'dagiao' || donhang.status === 'danhan') {
-              const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(2));
+              const slgiao = parseFloat((sp.slgiao ?? 0).toFixed(3));
               await prisma.tonKho.update({
                 where: { sanphamId: sp.idSP },
                 data: {

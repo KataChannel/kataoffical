@@ -90,19 +90,19 @@ export declare class NhacungcapService {
             slug: string | null;
             masp: string;
             subtitle: string | null;
-            giagoc: number;
+            giagoc: import("@prisma/client/runtime/library").Decimal;
             dvt: string | null;
             hinhanh: string | null;
-            loadpoint: number | null;
+            loadpoint: import("@prisma/client/runtime/library").Decimal | null;
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
-            haohut: number;
+            haohut: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            giaban: number;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             vat: import("@prisma/client/runtime/library").Decimal | null;
         }[];
     } & {
@@ -158,19 +158,19 @@ export declare class NhacungcapService {
             slug: string | null;
             masp: string;
             subtitle: string | null;
-            giagoc: number;
+            giagoc: import("@prisma/client/runtime/library").Decimal;
             dvt: string | null;
             hinhanh: string | null;
-            loadpoint: number | null;
+            loadpoint: import("@prisma/client/runtime/library").Decimal | null;
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
-            haohut: number;
+            haohut: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
-            giaban: number;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             vat: import("@prisma/client/runtime/library").Decimal | null;
         }[];
     } & {

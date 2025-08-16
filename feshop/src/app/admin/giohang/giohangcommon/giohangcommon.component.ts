@@ -348,7 +348,7 @@ export class GiohangcommonComponent implements OnInit {
           item.Soluong
         );
         this.Donhang.Giohangs[existingItemIndex].SLTT +=
-          Number(item.Soluong) * parseFloat(Number(item.khoiluong).toFixed(2));
+          Number(item.Soluong) * parseFloat(Number(item.khoiluong).toFixed(3));
         this.Donhang.Giohangs[existingItemIndex].Tongtien =
           this.Donhang.Giohangs[existingItemIndex].SLTT *
           this.Donhang.Giohangs[existingItemIndex].giagoc;

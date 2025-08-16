@@ -45,7 +45,7 @@
         <div class="w-4/6 px-2">
           {{$index+1}}/{{item.Title}}
         </div>
-        <span class="text-center w-1/6 px-2">{{(item.Giachon.SLTT*1).toFixed(2)| number:'1.2-2'}}{{item.Giachon.dvt}}</span>
+        <span class="text-center w-1/6 px-2">{{(item.Giachon.SLTT*1).toFixed(3)| number:'1.2-2'}}{{item.Giachon.dvt}}</span>
         <span class="text-right w-1/6 px-2">{{((item.Giachon.SLTT*item.Giachon.GiaCoSo)| number:'1.0-0')||'0'}}đ</span>
       </div>
       }

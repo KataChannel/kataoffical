@@ -39,7 +39,7 @@ export class khoService {
       title: sanpham?.title ?? '',
       subtitle: sanpham?.subtitle ?? '',
       haohut: sanpham?.haohut ?? false,
-      goiy: valueCalculation < 0 ? parseFloat(Math.abs(valueCalculation).toFixed(2)) : 0,
+      goiy: valueCalculation < 0 ? parseFloat(Math.abs(valueCalculation).toFixed(3)) : 0,
       };
     });
    

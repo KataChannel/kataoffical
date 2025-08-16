@@ -78,7 +78,7 @@ export class SharedInputService {
         focusNext: true,
         calculateFields: {
           'ttnhan': (item: any, newValue: any) => {
-            return parseFloat((item.gianhap * parseFloat(newValue.toString())).toFixed(2)) || 0;
+            return parseFloat((item.gianhap * parseFloat(newValue.toString())).toFixed(3)) || 0;
           }
         }
       },
@@ -88,7 +88,7 @@ export class SharedInputService {
         focusNext: true,
         calculateFields: {
           'ttnhan': (item: any, newValue: any) => {
-            return parseFloat((parseFloat(newValue.toString()) * item.slnhan).toFixed(2)) || 0;
+            return parseFloat((parseFloat(newValue.toString()) * item.slnhan).toFixed(3)) || 0;
           }
         }
       },

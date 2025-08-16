@@ -10,7 +10,7 @@ export declare class BanggiaController {
             id: string;
             order: number | null;
             isActive: boolean;
-            giaban: number;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             banggiaId: string;
             sanphamId: string;
         }[];
@@ -102,13 +102,13 @@ export declare class BanggiaController {
             slug: string | null;
             masp: string;
             subtitle: string | null;
-            giagoc: number;
+            giagoc: import("@prisma/client/runtime/library").Decimal;
             dvt: string | null;
             hinhanh: string | null;
-            loadpoint: number | null;
+            loadpoint: import("@prisma/client/runtime/library").Decimal | null;
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
-            haohut: number;
+            haohut: import("@prisma/client/runtime/library").Decimal;
             ghichu: string | null;
             order: number | null;
             isActive: boolean;
@@ -162,7 +162,7 @@ export declare class BanggiaController {
             id: string;
             order: number | null;
             isActive: boolean;
-            giaban: number;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             banggiaId: string;
             sanphamId: string;
         }[];

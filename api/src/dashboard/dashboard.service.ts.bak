@@ -209,7 +209,7 @@ export class DashboardService {
         ? (
             ((donhangCount - previousDonhangCount) / previousDonhangCount) *
             100
-          ).toFixed(2)
+          ).toFixed(3)
         : 0;
 
     const dathangPercentageChange =
@@ -217,7 +217,7 @@ export class DashboardService {
         ? (
             ((dathangCount - previousDathangCount) / previousDathangCount) *
             100
-          ).toFixed(2)
+          ).toFixed(3)
         : 0;
 
     return {
@@ -322,7 +322,7 @@ export class DashboardService {
 
   //   // Calculate percentage change
   //   const percentageChange = previousCount > 0
-  //     ? ((totalCount - previousCount) / previousCount * 100).toFixed(2)
+  //     ? ((totalCount - previousCount) / previousCount * 100).toFixed(3)
   //     : 0;
 
   //   return {

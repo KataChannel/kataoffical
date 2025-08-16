@@ -135,7 +135,7 @@
                       <button (click)="Tanggiatri($index,'Soluong')" type="button"
                         class="plus flex-shrink-0 bg-default-200 text-default-800 rounded-full h-6 w-6 text-sm inline-flex items-center justify-center">+</button>
                     </div>
-                    <strong>{{(item.Soluong*item?.Giachon?.khoiluong).toFixed(2)}}{{item?.Giachon?.dvt}}</strong>
+                    <strong>{{(item.Soluong*item?.Giachon?.khoiluong).toFixed(3)}}{{item?.Giachon?.dvt}}</strong>
                   </td>
                   <td class="px-5 py-3 whitespace-nowrap text-sm text-center text-default-800">
                     {{(item.Soluong*item.Giachon.gia| number:'1.0-0')||'0'}}đ

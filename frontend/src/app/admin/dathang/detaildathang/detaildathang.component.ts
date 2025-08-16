@@ -615,7 +615,7 @@ export class DetailDathangComponent {
   GetGoiy(item: any) {
     const result = parseFloat(
       ((item.soluongkho - item.soluong) * (1 + item.haohut / 100)).toString()
-    ).toFixed(2);
+    ).toFixed(3);
     if (Number(result) < 0) {
       return 0;
     }
@@ -746,7 +746,7 @@ export class DetailDathangComponent {
 
   // ✅ Method to format decimal display
   formatDecimalDisplay(value: number): string {
-    return value % 1 === 0 ? value.toString() : value.toFixed(2);
+    return value % 1 === 0 ? value.toString() : value.toFixed(3);
   }
 
   // ✅ Method to normalize decimal input (convert comma to dot for consistency)

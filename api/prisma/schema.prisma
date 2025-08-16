@@ -177,20 +177,20 @@ model Sanpham {
   slug            String?           @unique
   masp            String            @unique
   subtitle        String?
-  giagoc          Float             @default(0)
+  giagoc          Decimal           @default(0) @postgres.Decimal(20, 3)
   dvt             String?
   hinhanh         String?
-  loadpoint       Float?            @default(0)
-  soluong         Decimal?          @default(0) @postgres.Decimal(20, 2)
-  soluongkho      Decimal?          @default(0) @postgres.Decimal(20, 2)
-  haohut          Float             @default(0)
+  loadpoint       Decimal?          @default(0) @postgres.Decimal(20, 3)
+  soluong         Decimal?          @default(0) @postgres.Decimal(20, 3)
+  soluongkho      Decimal?          @default(0) @postgres.Decimal(20, 3)
+  haohut          Decimal           @default(0) @postgres.Decimal(20, 3)
   ghichu          String?
   order           Int?              @default(1)
   isActive        Boolean           @default(false)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
-  giaban          Float             @default(0)
-  vat             Decimal?          @default(0) @postgres.Decimal(20, 2)
+  giaban          Decimal           @default(0) @postgres.Decimal(20, 3)
+  vat             Decimal?          @default(0) @postgres.Decimal(20, 3)
   banggia         Banggiasanpham[]
   Chotkho         Chotkho[]
   Dathangsanpham  Dathangsanpham[]
@@ -216,10 +216,10 @@ model Donhang {
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
   isshowvat   Boolean          @default(false)
-  tongtien    Decimal          @default(0) @postgres.Decimal(20, 2)
-  tongvat     Decimal          @default(0) @postgres.Decimal(20, 2)
+  tongtien    Decimal          @default(0) @postgres.Decimal(20, 3)
+  tongvat     Decimal          @default(0) @postgres.Decimal(20, 3)
   banggiaId   String?
-  vat         Decimal          @default(0.5) @postgres.Decimal(20, 2)
+  vat         Decimal          @default(0.5) @postgres.Decimal(20, 3)
   banggia     Banggia?         @relation(fields: [banggiaId], references: [id])
   khachhang   Khachhang?       @relation(fields: [khachhangId], references: [id])
   sanpham     Donhangsanpham[]
@@ -229,27 +229,27 @@ model Donhang {
 model Donhangsanpham {
   id        String   @id @default(uuid())
   idSP      String
-  sldat     Decimal  @default(0) @postgres.Decimal(20, 2)
-  slgiao    Decimal  @default(0) @postgres.Decimal(20, 2)
-  slnhan    Decimal  @default(0) @postgres.Decimal(20, 2)
-  slhuy     Decimal  @default(0) @postgres.Decimal(20, 2)
-  ttdat     Decimal  @default(0) @postgres.Decimal(20, 2)
-  ttgiao    Decimal  @default(0) @postgres.Decimal(20, 2)
-  ttnhan    Decimal  @default(0) @postgres.Decimal(20, 2)
+  sldat     Decimal  @default(0) @postgres.Decimal(20, 3)
+  slgiao    Decimal  @default(0) @postgres.Decimal(20, 3)
+  slnhan    Decimal  @default(0) @postgres.Decimal(20, 3)
+  slhuy     Decimal  @default(0) @postgres.Decimal(20, 3)
+  ttdat     Decimal  @default(0) @postgres.Decimal(20, 3)
+  ttgiao    Decimal  @default(0) @postgres.Decimal(20, 3)
+  ttnhan    Decimal  @default(0) @postgres.Decimal(20, 3)
   ghichu    String?
   donhangId String
   order     Int?
   isActive  Boolean? @default(false)
-  giaban    Decimal  @default(0) @postgres.Decimal(20, 2)
-  ttsauvat  Decimal  @default(0) @postgres.Decimal(20, 2)
-  vat       Decimal  @default(0) @postgres.Decimal(20, 2)
+  giaban    Decimal  @default(0) @postgres.Decimal(20, 3)
+  ttsauvat  Decimal  @default(0) @postgres.Decimal(20, 3)
+  vat       Decimal  @default(0) @postgres.Decimal(20, 3)
   donhang   Donhang  @relation(fields: [donhangId], references: [id], onDelete: Cascade)
   sanpham   Sanpham  @relation(fields: [idSP], references: [id])
 }
 
 model Banggiasanpham {
   id        String  @id @default(uuid())
-  giaban    Float   @default(0)
+  giaban    Decimal  @default(0) @postgres.Decimal(20, 3)
   sanphamId String
   banggiaId String
   order     Int?
@@ -301,18 +301,18 @@ model Dathang {
 model Dathangsanpham {
   id        String  @id @default(uuid())
   idSP      String
-  sldat     Decimal @default(0) @postgres.Decimal(20, 2)
-  slgiao    Decimal @default(0) @postgres.Decimal(20, 2)
-  slnhan    Decimal @default(0) @postgres.Decimal(20, 2)
-  slhuy     Decimal @default(0) @postgres.Decimal(20, 2)
-  ttdat     Decimal @default(0) @postgres.Decimal(20, 2)
-  ttgiao    Decimal @default(0) @postgres.Decimal(20, 2)
-  ttnhan    Decimal @default(0) @postgres.Decimal(20, 2)
+  sldat     Decimal @default(0) @postgres.Decimal(20, 3)
+  slgiao    Decimal @default(0) @postgres.Decimal(20, 3)
+  slnhan    Decimal @default(0) @postgres.Decimal(20, 3)
+  slhuy     Decimal @default(0) @postgres.Decimal(20, 3)
+  ttdat     Decimal @default(0) @postgres.Decimal(20, 3)
+  ttgiao    Decimal @default(0) @postgres.Decimal(20, 3)
+  ttnhan    Decimal @default(0) @postgres.Decimal(20, 3)
   ghichu    String?
   dathangId String
   order     Int?
   isActive  Boolean @default(false)
-  gianhap   Decimal @default(0) @postgres.Decimal(20, 2)
+  gianhap   Decimal @default(0) @postgres.Decimal(20, 3)
   dathang   Dathang @relation(fields: [dathangId], references: [id], onDelete: Cascade)
   sanpham   Sanpham @relation(fields: [idSP], references: [id])
 }
@@ -351,7 +351,7 @@ model SanphamKho {
   id        String   @id @default(uuid())
   khoId     String
   sanphamId String
-  soluong   Decimal  @default(0) @postgres.Decimal(20, 2)
+  soluong   Decimal  @default(0) @postgres.Decimal(20, 3)
   ghichu    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -385,7 +385,7 @@ model PhieuKhoSanpham {
   id         String   @id @default(uuid())
   phieuKhoId String
   sanphamId  String
-  soluong    Decimal  @default(0) @postgres.Decimal(20, 2)
+  soluong    Decimal  @default(0) @postgres.Decimal(20, 3)
   ghichu     String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -398,9 +398,9 @@ model PhieuKhoSanpham {
 model TonKho {
   id        String    @id @default(uuid())
   sanphamId String    @unique
-  slton     Decimal   @default(0) @postgres.Decimal(20, 2)
-  slchogiao Decimal   @default(0) @postgres.Decimal(20, 2)
-  slchonhap Decimal   @default(0) @postgres.Decimal(20, 2)
+  slton     Decimal   @default(0) @postgres.Decimal(20, 3)
+  slchogiao Decimal   @default(0) @postgres.Decimal(20, 3)
+  slchonhap Decimal   @default(0) @postgres.Decimal(20, 3)
   Chotkho   Chotkho[]
   sanpham   Sanpham   @relation(fields: [sanphamId], references: [id])
 }
@@ -412,9 +412,9 @@ model Chotkho {
   tonkhoId   String?
   phieukhoId String?
   ngay       DateTime  @default(now())
-  slthucte   Decimal   @postgres.Decimal(20, 2)
-  slhethong  Decimal   @postgres.Decimal(20, 2)
-  chenhlech  Decimal?  @postgres.Decimal(20, 2)
+  slthucte   Decimal   @postgres.Decimal(20, 3)
+  slhethong  Decimal   @postgres.Decimal(20, 3)
+  chenhlech  Decimal?  @postgres.Decimal(20, 3)
   ghichu     String?
   isActive   Boolean   @default(true)
   createdAt  DateTime  @default(now())

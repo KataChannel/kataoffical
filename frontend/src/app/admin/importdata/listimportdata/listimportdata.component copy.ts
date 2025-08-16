@@ -329,9 +329,9 @@
 //     // const ListSPBG = (data.SPBG || []).map((v: any) => ({
 //     //   idSP: v.idSP?.trim() || '',
 //     //   ghichu: v.ghichu?.trim() || '',
-//     //   sldat: parseFloat((v.sldat ?? 0).toFixed(2)),
-//     //   slgiao: parseFloat((v.slgiao ?? 0).toFixed(2)),
-//     //   slnhan: parseFloat((v.slnhan ?? 0).toFixed(2)),
+//     //   sldat: parseFloat((v.sldat ?? 0).toFixed(3)),
+//     //   slgiao: parseFloat((v.slgiao ?? 0).toFixed(3)),
+//     //   slnhan: parseFloat((v.slnhan ?? 0).toFixed(3)),
 //     // }));
 //     // const ListBGKH = (data.BGKH || []).map((v: any) => ({
 //     //   mabanggia: v.mabanggia?.trim() || '',

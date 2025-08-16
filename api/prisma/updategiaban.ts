@@ -85,7 +85,7 @@ async function updateDonhangGiaban(donhangId: string): Promise<void> {
     
     // Tạo map từ sanphamId -> giaban từ bảng giá
     donhang.khachhang.banggia.sanpham.forEach(bgs => {
-      banggiaSanphamMap.set(bgs.sanphamId, bgs.giaban);
+      banggiaSanphamMap.set(bgs.sanphamId, parseFloat(bgs.giaban.toString()));
     });
 
     // Cập nhật giá cho từng sản phẩm trong đơn hàng

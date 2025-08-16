@@ -275,7 +275,7 @@ export class GiohangService {
             console.log(existingItemIndex);
             if (existingItemIndex !== -1) {
                 this.Donhang.Giohangs.Sanpham[existingItemIndex].Soluong += Number(item.Soluong);
-                this.Donhang.Giohangs.Sanpham[existingItemIndex].Giachon.SLTT += (Number(item.Soluong) * Number(item.Giachon.khoiluong)).toFixed(2);
+                this.Donhang.Giohangs.Sanpham[existingItemIndex].Giachon.SLTT += (Number(item.Soluong) * Number(item.Giachon.khoiluong)).toFixed(3);
             } else {
                 this.Donhang.Giohangs.Sanpham.push(item);
             }
@@ -299,7 +299,7 @@ export class GiohangService {
             const existingItemIndex = this.Donhang.Giohangs.Sanpham.findIndex((v: any) => v.id === item.id && v.Giachon?.id == item?.Giachon?.id);
             if (existingItemIndex !== -1) {
                 this.Donhang.Giohangs.Sanpham[existingItemIndex].Soluong = Number(item.Soluong);
-                this.Donhang.Giohangs.Sanpham[existingItemIndex].Giachon.SLTT = (Number(item.Soluong) * Number(item.Giachon.khoiluong)).toFixed(2);
+                this.Donhang.Giohangs.Sanpham[existingItemIndex].Giachon.SLTT = (Number(item.Soluong) * Number(item.Giachon.khoiluong)).toFixed(3);
             } else {
                 this.Donhang.Giohangs.Sanpham.push(item);
             }

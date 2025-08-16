@@ -78,37 +78,23 @@ export class ListcongnokhachhangComponent {
   
   displayedColumns: string[] = [
     'ngaygiao',
-    'makhachhang',
-    'tenkhachhang',
     'madonhang',
-    'mahang',
-    'tenhang',
-    'dvt',
+    'makh',
+    'name',
     'soluong',
-    'dongia',
-    'thanhtientruocvat',
-    'vat',
-    'dongiavathoadon',
-    'thanhtiensauvat',
-    'ghichu',
-    'tongtiensauvat',
+    'tong',
+    'tongvat',
+    'tongtien',
   ];
   ColumnName: any = {
     ngaygiao: 'Ngày Giao',
-    makhachhang: 'Mã Khách Hàng',
-    tenkhachhang: 'Tên Khách Hàng',
     madonhang: 'Mã Đơn Hàng',
-    mahang: 'Mã Hàng',
-    tenhang: 'Tên Hàng',
-    dvt: 'ĐVT',
+    makh: 'Mã Khách Hàng',
+    name: 'Tên Khách Hàng',
     soluong: 'Số Lượng',
-    dongia: 'Đơn Giá',
-    thanhtientruocvat: 'Thành Tiền Trước VAT',
-    vat: 'VAT',
-    dongiavathoadon: 'Đơn Giá VAT',
-    thanhtiensauvat: 'Thành Tiền Sau VAT',
-    ghichu: 'Ghi Chú',
-    tongtiensauvat: 'Tổng Tiền Sau Thuế',
+    tong: 'Tổng',
+    tongvat: 'Tổng VAT',
+    tongtien: 'Tổng Tiền',
   };
 
 
@@ -251,7 +237,6 @@ doFilterKhachhang(event: Event){
       const customerTotals = new Map();
       // Tính tổng tiền sau thuế cho từng khách hàng
       this.ListCongno = this.Listdonhang()
-      this.ListCongno = []
       this.dataSource = new MatTableDataSource(this.ListCongno);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;

@@ -64,7 +64,7 @@ async function updateDonhangGiaban(donhangId) {
         let hasUpdates = false;
         const banggiaSanphamMap = new Map();
         donhang.khachhang.banggia.sanpham.forEach(bgs => {
-            banggiaSanphamMap.set(bgs.sanphamId, bgs.giaban);
+            banggiaSanphamMap.set(bgs.sanphamId, parseFloat(bgs.giaban.toString()));
         });
         for (const donhangsanpham of donhang.sanpham) {
             stats.totalSanpham++;

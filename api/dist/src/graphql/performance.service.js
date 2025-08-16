@@ -207,8 +207,8 @@ let GraphQLPerformanceService = class GraphQLPerformanceService {
         if (totalSize < 1024)
             return `${totalSize} bytes`;
         if (totalSize < 1024 * 1024)
-            return `${(totalSize / 1024).toFixed(2)} KB`;
-        return `${(totalSize / (1024 * 1024)).toFixed(2)} MB`;
+            return `${(totalSize / 1024).toFixed(3)} KB`;
+        return `${(totalSize / (1024 * 1024)).toFixed(3)} MB`;
     }
     getTopCachedQueries() {
         return Array.from(this.queryCache.entries())

@@ -525,6 +525,6 @@ export class DetailXuatnhaptonComponent {
 
   // Add a utility method for displaying numbers consistently
   formatNumber(value: number): string {
-    return this.roundToDecimal(value, 2).toFixed(2);
+    return this.roundToDecimal(value, 2).toFixed(3);
   }
 }
