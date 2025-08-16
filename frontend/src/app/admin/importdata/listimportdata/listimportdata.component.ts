@@ -61,11 +61,11 @@ import {
   ImportConfirmationData,
 } from '../import-confirmation-dialog.component';
 import {
-  MatDatepickerModule, 
-  MatDateRangeInput, 
+  MatDatepickerModule,
+  MatDateRangeInput,
   MatDateRangePicker,
   MatDatepickerToggle,
-  MatDatepickerActions
+  MatDatepickerActions,
 } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ImportDataValidationService } from '../../../shared/services/import-data-validation.service';
@@ -133,17 +133,17 @@ export class ListImportdataComponent implements OnInit {
   private _ImportdataService: ImportdataService = inject(ImportdataService);
   private _dialog: MatDialog = inject(MatDialog);
   private _snackBar: MatSnackBar = inject(MatSnackBar);
-  
+
   // Loading states using signals
   isLoading = signal<boolean>(false);
   isImporting = signal<boolean>(false);
   isExporting = signal<boolean>(false);
   loadingMessage = signal<string>('');
-  
+
   // Date range properties
   batdau: Date = new Date();
   ketthuc: Date = new Date();
-  
+
   ListImportType = signal<any[]>([
     { id: 1, title: 'Sản Phẩm', value: 'sanpham', status: true },
     { id: 2, title: 'Khách Hàng', value: 'khachhang', status: true },
@@ -189,17 +189,17 @@ export class ListImportdataComponent implements OnInit {
     const today = new Date();
     this.ketthuc = new Date(today);
     this.batdau = new Date(today);
-    
+
     effect(async () => {
       this.isLoading.set(true);
       this.loadingMessage.set('Đang tải dữ liệu...');
-      
+
       try {
         await this._ImportdataService.getAllImportdata(1000, true);
-        
+
         // Load data with date parameters
         await this.loadDataWithDateRange();
-        
+
         this.loadingMessage.set('Đang kiểm tra quyền...');
         await this._UserService.getProfile();
         const permissions =
@@ -234,54 +234,53 @@ export class ListImportdataComponent implements OnInit {
       const dateParams = {
         Batdau: this.batdau,
         Ketthuc: this.ketthuc,
-        pageSize: 9999
+        pageSize: 9999,
       };
-      
+
       this.loadingMessage.set('Đang tải danh sách sản phẩm...');
-      await this._SanphamService.getSanphamBy({pageSize: 99999});
+      await this._SanphamService.getSanphamBy({ pageSize: 99999 });
       this.rawListSP = this._SanphamService.ListSanpham();
-      
+
       this.loadingMessage.set('Đang tải danh sách khách hàng...');
-      await this._KhachhangService.getKhachhangBy({pageSize: 99999});
+      await this._KhachhangService.getKhachhangBy({ pageSize: 99999 });
       this.rawListKH = this._KhachhangService.ListKhachhang();
-      
+
       this.loadingMessage.set('Đang tải danh sách nhà cung cấp...');
-      await this._NhacungcapService.getNhacungcapBy({pageSize: 99999});
+      await this._NhacungcapService.getNhacungcapBy({ pageSize: 99999 });
       this.rawListNCC = this._NhacungcapService.ListNhacungcap();
-      
+
       this.loadingMessage.set('Đang tải bảng giá...');
       await this._BanggiaService.getAllBanggia();
       this.rawListBG = this._BanggiaService.ListBanggia();
-      
+
       this.loadingMessage.set('Đang tải đơn hàng...');
       await this._DonhangService.searchDonhang(dateParams);
       this.rawListDH = this._DonhangService.ListDonhang();
-      
+
       this.loadingMessage.set('Đang tải đặt hàng...');
       await this._DathangService.searchDathang(dateParams);
       this.rawListDathang = this._DathangService.ListDathang();
-      
+
       this.loadingMessage.set('Đang tải tồn kho...');
       await this._KhoService.getTonKho('1', '1000').then((res: any) => {
         this.rawListTonkho = res.data;
       });
-      
+
       this.loadingMessage.set('Đang tải danh sách kho...');
       await this._KhoService.getAllKho();
       this.rawListKho = this._KhoService.ListKho();
-      
     } catch (error) {
       console.error('Error loading data with date range:', error);
       throw error;
     }
   }
-  
+
   // Date change handler
   async onDateChange() {
     if (!this.isLoading()) {
       this.isLoading.set(true);
       this.loadingMessage.set('Đang cập nhật dữ liệu theo ngày...');
-      
+
       try {
         await this.loadDataWithDateRange();
       } catch (error) {
@@ -298,16 +297,16 @@ export class ListImportdataComponent implements OnInit {
       }
     }
   }
-  
+
   // Apply date filter
   async applyDateFilter() {
     await this.onDateChange();
   }
-  
+
   // Quick date range methods
   async setDateRange(range: string) {
     const today = new Date();
-    
+
     switch (range) {
       case 'today':
         this.batdau = new Date(today);
@@ -334,7 +333,11 @@ export class ListImportdataComponent implements OnInit {
         this.ketthuc = new Date(today);
         break;
       case 'lastMonth':
-        const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const lastMonth = new Date(
+          today.getFullYear(),
+          today.getMonth() - 1,
+          1
+        );
         this.batdau = new Date(lastMonth);
         this.ketthuc = new Date(today.getFullYear(), today.getMonth(), 0);
         break;
@@ -345,12 +348,12 @@ export class ListImportdataComponent implements OnInit {
         this.ketthuc = new Date(today);
         break;
     }
-    
+
     await this.applyDateFilter();
   }
 
   async ngOnInit(): Promise<void> {
-      this.loadDataWithDateRange();
+    this.loadDataWithDateRange();
   }
 
   applyFilter(event: Event) {}
@@ -385,317 +388,328 @@ export class ListImportdataComponent implements OnInit {
   }
   async ExportExcel(title: any) {
     if (this.isExporting()) return;
-    
+
     this.isExporting.set(true);
-    this.loadingMessage.set('Đang chuẩn bị dữ liệu xuất theo khoảng thời gian...');
-    
+    this.loadingMessage.set(
+      'Đang chuẩn bị dữ liệu xuất theo khoảng thời gian...'
+    );
+
     try {
       // Get filtered data based on date range
       const filteredData = this.getFilteredExportData();
-      
+
       const ListSP =
         Array.isArray(filteredData.ListSP) && filteredData.ListSP.length
-        ? filteredData.ListSP.map((item: any) => ({
-            masp: item.masp,
-            subtitle: item.subtitle,
-            title: item.title,
-            title2: item.title2,
-            giaban: item.giaban,
-            giagoc: item.giagoc,
-            vat: item.vat,
-            dvt: item.dvt,
-            haohut: item.haohut,
-            ghichu: item.ghichu,
-          }))
-        : [
-            {
-              masp: '',
-              subtitle: '',
-              title: '',
-              title2: '',
-              giaban: '',
-              giagoc: '',
-              vat: '',
-              dvt: '',
-              haohut: '',
-              ghichu: '',
-            },
-          ];
-    const ListKH =
-      Array.isArray(filteredData.ListKH) && filteredData.ListKH.length
-        ? filteredData.ListKH.map((v: any) => ({
-            name: v.name?.trim() || '',
-            tenfile: v.tenfile?.trim() || '',
-            makh: v.makh?.trim() || '',
-            namenn: v.namenn?.trim() || '',
-            mabanggia: v.banggia?.mabanggia?.trim() || '',
-            diachi: v.diachi?.trim() || '',
-            quan: v.quan?.trim() || '',
-            email: v.email?.trim() || '',
-            sdt: v.sdt?.toString().trim() || '',
-            mst: v.mst?.toString().trim() || '',
-            gionhanhang: v.gionhanhang?.toString().trim() || '',
-            loaikh: v.loaikh?.toString().trim() || 'khachsi',
-            hiengia: v.hiengia || true,
-            ghichu: v.ghichu?.toString().trim() || '',
-          }))
-        : [
-            {
-              name: '',
-              tenfile: '',
-              makh: '',
-              namenn: '',
-              diachi: '',
-              quan: '',
-              email: '',
-              sdt: '',
-              mst: '',
-              gionhanhang: '',
-              loaikh: 'khachsi',
-              hiengia: true,
-              ghichu: '',
-            },
-          ];
+          ? filteredData.ListSP.map((item: any) => ({
+              masp: item.masp,
+              subtitle: item.subtitle,
+              title: item.title,
+              title2: item.title2,
+              giaban: item.giaban,
+              giagoc: item.giagoc,
+              vat: item.vat,
+              dvt: item.dvt,
+              haohut: item.haohut,
+              ghichu: item.ghichu,
+            }))
+          : [
+              {
+                masp: '',
+                subtitle: '',
+                title: '',
+                title2: '',
+                giaban: '',
+                giagoc: '',
+                vat: '',
+                dvt: '',
+                haohut: '',
+                ghichu: '',
+              },
+            ];
+      const ListKH =
+        Array.isArray(filteredData.ListKH) && filteredData.ListKH.length
+          ? filteredData.ListKH.map((v: any) => ({
+              name: v.name?.trim() || '',
+              tenfile: v.tenfile?.trim() || '',
+              makh: v.makh?.trim() || '',
+              namenn: v.namenn?.trim() || '',
+              mabanggia: v.banggia?.mabanggia?.trim() || '',
+              diachi: v.diachi?.trim() || '',
+              quan: v.quan?.trim() || '',
+              email: v.email?.trim() || '',
+              sdt: v.sdt?.toString().trim() || '',
+              mst: v.mst?.toString().trim() || '',
+              gionhanhang: v.gionhanhang?.toString().trim() || '',
+              loaikh: v.loaikh?.toString().trim() || 'khachsi',
+              hiengia: v.hiengia || true,
+              ghichu: v.ghichu?.toString().trim() || '',
+            }))
+          : [
+              {
+                name: '',
+                tenfile: '',
+                makh: '',
+                namenn: '',
+                diachi: '',
+                quan: '',
+                email: '',
+                sdt: '',
+                mst: '',
+                gionhanhang: '',
+                loaikh: 'khachsi',
+                hiengia: true,
+                ghichu: '',
+              },
+            ];
 
-    const ListNCC =
-      Array.isArray(filteredData.ListNCC) && filteredData.ListNCC.length > 0
-        ? filteredData.ListNCC.map((v: any) => ({
-            name: v.name?.trim() || '',
-            tenfile: v.tenfile?.trim() || '',
-            mancc: v.mancc?.trim() || '',
-            diachi: v.diachi?.trim() || '',
-            email: v.email?.trim() || '',
-            sdt: v.sdt?.toString().trim() || '',
-            ghichu: v.ghichu?.toString().trim() || '',
-          }))
-        : [
-            {
-              name: '',
-              tenfile: '',
-              mancc: '',
-              diachi: '',
-              email: '',
-              sdt: '',
-              ghichu: '',
-            },
-          ];
+      const ListNCC =
+        Array.isArray(filteredData.ListNCC) && filteredData.ListNCC.length > 0
+          ? filteredData.ListNCC.map((v: any) => ({
+              name: v.name?.trim() || '',
+              tenfile: v.tenfile?.trim() || '',
+              mancc: v.mancc?.trim() || '',
+              diachi: v.diachi?.trim() || '',
+              email: v.email?.trim() || '',
+              sdt: v.sdt?.toString().trim() || '',
+              ghichu: v.ghichu?.toString().trim() || '',
+            }))
+          : [
+              {
+                name: '',
+                tenfile: '',
+                mancc: '',
+                diachi: '',
+                email: '',
+                sdt: '',
+                ghichu: '',
+              },
+            ];
 
-    const ListBG =
-      Array.isArray(filteredData.ListBG) && filteredData.ListBG.length > 0
-        ? filteredData.ListBG.map((v: any) => ({
-            title: v.title?.trim() || '',
-            mabanggia: v.mabanggia?.trim() || '',
-            type: v.type?.trim() || '',
-            batdau: moment(v.batdau).format('DD/MM/YYYY') || '',
-            ketthuc: moment(v.ketthuc).format('DD/MM/YYYY') || '',
-            ghichu: v.ghichu?.trim() || '',
-            status: v.status?.trim() || '',
-          }))
-        : [
-            {
-              title: '',
-              mabanggia: '',
-              type: '',
-              batdau: '',
-              ketthuc: '',
-              ghichu: '',
-              status: '',
-            },
-          ];
+      const ListBG =
+        Array.isArray(filteredData.ListBG) && filteredData.ListBG.length > 0
+          ? filteredData.ListBG.map((v: any) => ({
+              title: v.title?.trim() || '',
+              mabanggia: v.mabanggia?.trim() || '',
+              type: v.type?.trim() || '',
+              batdau: moment(v.batdau).format('DD/MM/YYYY') || '',
+              ketthuc: moment(v.ketthuc).format('DD/MM/YYYY') || '',
+              ghichu: v.ghichu?.trim() || '',
+              status: v.status?.trim() || '',
+            }))
+          : [
+              {
+                title: '',
+                mabanggia: '',
+                type: '',
+                batdau: '',
+                ketthuc: '',
+                ghichu: '',
+                status: '',
+              },
+            ];
 
-    // Flatten donhang items from nested 'sanpham' with date filtering applied
-    const ListDH =
-      Array.isArray(filteredData.ListDH) && filteredData.ListDH.length > 0
-        ? filteredData.ListDH.flatMap((record: any) => {
-            if (!Array.isArray(record.sanpham)) return [];
-            return record.sanpham.map((sp: any) => ({
-              ngaygiao: moment(record.ngaygiao).format('DD/MM/YYYY'),
-              makh: record.khachhang?.makh,
-              name: record.khachhang?.name,
-              mabanggia: record.khachhang?.banggia?.[0]?.mabanggia,
-              masp: sp.masp,
-              tensp: sp.title,
-              sldat: sp.sldat,
-              slgiao: sp.slgiao,
-              slnhan: sp.slnhan,
-              ghichu: sp.ghichu,
-            }));
-          })
-        : [
-            {
-              ngaygiao: moment().format('DD/MM/YYYY'),
-              makh: '',
-              mabanggia: '',
-              masp: '',
-              tensp: '',
-              sldat: 0,
-              slgiao: 0,
-              slnhan: 0,
-              ghichu: '',
-            },
-          ];
-    const ListDathang =
-      Array.isArray(filteredData.ListDathang) && filteredData.ListDathang.length > 0
-        ? filteredData.ListDathang.flatMap((record: any) => {
-            if (!Array.isArray(record.sanpham)) return [];
-            return record.sanpham.map((sp: any) => ({
-              ngaynhan: moment(record.ngaynhan).format('DD/MM/YYYY'),
-              mancc: record.nhacungcap?.mancc,
-              name: record.nhacungcap?.name,
-              mabanggia: record.banggia?.[0]?.mabanggia,
-              masp: sp.masp,
-              tensp: sp.title,
-              sldat: Number(sp.sldat) || 0,
-              slgiao: Number(sp.slgiao) || 0,
-              slnhan: Number(sp.slnhan) || 0,
-              ghichu: sp.ghichu,
-              makho: record?.kho?.makho || '',
-            }));
-          })
-        : [
-            {
-              ngaynhan: moment().format('DD/MM/YYYY'),
-              mancc: '',
-              name: '',
-              mabanggia: '',
-              masp: '',
-              tensp: '',
-              sldat: 0,
-              slgiao: 0,
-              slnhan: 0,
-              ghichu: '',
-              makho: '',
-            },
-          ];
+      // Flatten donhang items from nested 'sanpham' with date filtering applied
+      const ListDH =
+        Array.isArray(filteredData.ListDH) && filteredData.ListDH.length > 0
+          ? filteredData.ListDH.flatMap((record: any) => {
+              if (!Array.isArray(record.sanpham)) return [];
+              return record.sanpham.map((sp: any) => ({
+                ngaygiao: moment(record.ngaygiao).format('DD/MM/YYYY'),
+                makh: record.khachhang?.makh,
+                name: record.khachhang?.name,
+                mabanggia: record.khachhang?.banggia?.[0]?.mabanggia,
+                masp: sp.masp,
+                tensp: sp.title,
+                sldat: sp.sldat,
+                slgiao: sp.slgiao,
+                slnhan: sp.slnhan,
+                ghichu: sp.ghichu,
+              }));
+            })
+          : [
+              {
+                ngaygiao: moment().format('DD/MM/YYYY'),
+                makh: '',
+                mabanggia: '',
+                masp: '',
+                tensp: '',
+                sldat: 0,
+                slgiao: 0,
+                slnhan: 0,
+                ghichu: '',
+              },
+            ];
+      const ListDathang =
+        Array.isArray(filteredData.ListDathang) &&
+        filteredData.ListDathang.length > 0
+          ? filteredData.ListDathang.flatMap((record: any) => {
+              if (!Array.isArray(record.sanpham)) return [];
+              return record.sanpham.map((sp: any) => ({
+                ngaynhan: moment(record.ngaynhan).format('DD/MM/YYYY'),
+                mancc: record.nhacungcap?.mancc,
+                name: record.nhacungcap?.name,
+                mabanggia: record.banggia?.[0]?.mabanggia,
+                masp: sp.masp,
+                tensp: sp.title,
+                sldat: Number(sp.sldat) || 0,
+                slgiao: Number(sp.slgiao) || 0,
+                slnhan: Number(sp.slnhan) || 0,
+                ghichu: sp.ghichu,
+                makho: record?.kho?.makho || '',
+              }));
+            })
+          : [
+              {
+                ngaynhan: moment().format('DD/MM/YYYY'),
+                mancc: '',
+                name: '',
+                mabanggia: '',
+                masp: '',
+                tensp: '',
+                sldat: 0,
+                slgiao: 0,
+                slnhan: 0,
+                ghichu: '',
+                makho: '',
+              },
+            ];
 
-    const ListBGSP = this.convertBGSPToExport(filteredData.ListBG, filteredData.ListSP);
+      const ListBGSP = this.convertBGSPToExport(
+        filteredData.ListBG,
+        filteredData.ListSP
+      );
 
-    const ListBGKH: any[] = filteredData.ListKH.map((v: any) => {
-      const result: any = {
-        makh: v.makh || '',
-        name: v.name || '',
-        mabanggia: v.banggia?.mabanggia || '',
-      };
-      return result;
-    });
+      const ListBGKH: any[] = filteredData.ListKH.map((v: any) => {
+        const result: any = {
+          makh: v.makh || '',
+          name: v.name || '',
+          mabanggia: v.banggia?.mabanggia || '',
+        };
+        return result;
+      });
 
-    const dynamicKeys = filteredData.ListSP.reduce(
-      (acc: Record<string, string>, v: any) => {
-        if (v && v.masp) {
-          acc[v.masp] = '';
+      const dynamicKeys = filteredData.ListSP.reduce(
+        (acc: Record<string, string>, v: any) => {
+          if (v && v.masp) {
+            acc[v.masp] = '';
+          }
+          return acc;
+        },
+        {}
+      );
+      // Build ListNCCSP dynamically using filtered NCC data and up to 5 product codes from dynamicKeys.
+      const ListNCCSP: any[] = filteredData.ListNCC.map((supplier: any) => {
+        const result: any = {
+          mancc: supplier.mancc || '',
+          name: supplier.name || '',
+        };
+        let i = 1;
+        for (const masp of Object.keys(dynamicKeys)) {
+          const productExists = supplier.Sanpham?.some(
+            (sp: any) => sp.masp === masp
+          );
+          if (productExists) {
+            result[i] = masp;
+            i++;
+          }
         }
-        return acc;
-      },
-      {}
-    );
-    // Build ListNCCSP dynamically using filtered NCC data and up to 5 product codes from dynamicKeys.
-    const ListNCCSP: any[] = filteredData.ListNCC.map((supplier: any) => {
-      const result: any = {
-        mancc: supplier.mancc || '',
-        name: supplier.name || '',
-      };
-      let i = 1;
-      for (const masp of Object.keys(dynamicKeys)) {
-        const productExists = supplier.Sanpham?.some(
-          (sp: any) => sp.masp === masp
-        );
-        if (productExists) {
-          result[i] = masp;
-          i++;
-        }
+        return result;
+      });
+
+      const ListTonkho = filteredData.ListTonkho.map((v: any) => ({
+        masp: v.masp,
+        title: v.title,
+        dvt: v.dvt,
+        slton: v.slton,
+      }));
+
+      const ListKho =
+        Array.isArray(filteredData.ListKho) && filteredData.ListKho.length
+          ? filteredData.ListKho.map((item: any) => ({
+              makho: item.makho || '',
+              tenkho: item.tenkho || '',
+              diachi: item.diachi || '',
+              ghichu: item.ghichu || '',
+              status: item.status || 'active',
+            }))
+          : [
+              {
+                makho: '',
+                tenkho: '',
+                diachi: '',
+                ghichu: '',
+                status: 'active',
+              },
+            ];
+
+      const Exportdata: any = {};
+      if (this.ListEdit().some((item: any) => item.value === 'sanpham')) {
+        Exportdata['sanpham'] = { data: ListSP };
       }
-      return result;
-    });
+      if (this.ListEdit().some((item: any) => item.value === 'khachhang')) {
+        Exportdata['khachhang'] = { data: ListKH };
+      }
+      if (this.ListEdit().some((item: any) => item.value === 'nhacungcap')) {
+        Exportdata['nhacungcap'] = { data: ListNCC };
+      }
+      if (this.ListEdit().some((item: any) => item.value === 'banggia')) {
+        Exportdata['banggia'] = { data: ListBG };
+      }
+      if (this.ListEdit().some((item: any) => item.value === 'donhang')) {
+        Exportdata['donhang'] = { data: ListDH };
+      }
+      if (this.ListEdit().some((item: any) => item.value === 'dathang')) {
+        Exportdata['dathang'] = { data: ListDathang };
+      }
+      if (
+        this.ListEdit().some((item: any) => item.value === 'banggiasanpham')
+      ) {
+        Exportdata['banggiasanpham'] = { data: ListBGSP };
+      }
+      if (
+        this.ListEdit().some((item: any) => item.value === 'banggiakhachhang')
+      ) {
+        Exportdata['banggiakhachhang'] = { data: ListBGKH };
+      }
+      if (
+        this.ListEdit().some((item: any) => item.value === 'nhacungcapsanpham')
+      ) {
+        Exportdata['nhacungcapsanpham'] = { data: ListNCCSP };
+      }
+      if (this.ListEdit().some((item: any) => item.value === 'xuatnhapton')) {
+        Exportdata['xuatnhapton'] = { data: ListTonkho };
+      }
+      if (this.ListEdit().some((item: any) => item.value === 'kho')) {
+        Exportdata['kho'] = { data: ListKho };
+      }
+      if (Object.keys(Exportdata).length === 0) {
+        this._snackBar.open('Không có dữ liệu để xuất', '', {
+          duration: 1000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning'],
+        });
+        return;
+      }
 
-    const ListTonkho = filteredData.ListTonkho.map((v: any) => ({
-      masp: v.masp,
-      title: v.title,
-      dvt: v.dvt,
-      slton: v.slton,
-    }));
+      this.loadingMessage.set('Đang tạo file Excel...');
 
-    const ListKho =
-      Array.isArray(filteredData.ListKho) && filteredData.ListKho.length
-        ? filteredData.ListKho.map((item: any) => ({
-            makho: item.makho || '',
-            tenkho: item.tenkho || '',
-            diachi: item.diachi || '',
-            ghichu: item.ghichu || '',
-            status: item.status || 'active',
-          }))
-        : [
-            {
-              makho: '',
-              tenkho: '',
-              diachi: '',
-              ghichu: '',
-              status: 'active',
-            },
-          ];
+      // Include date range in filename
+      const dateRangeStr = `${this.batdau
+        .toLocaleDateString('vi-VN')
+        .replace(/\//g, '-')}_${this.ketthuc
+        .toLocaleDateString('vi-VN')
+        .replace(/\//g, '-')}`;
+      const exportFileName = `${title}_${dateRangeStr}`;
 
-    const Exportdata: any = {};
-    if (this.ListEdit().some((item: any) => item.value === 'sanpham')) {
-      Exportdata['sanpham'] = { data: ListSP };
-    }
-    if (this.ListEdit().some((item: any) => item.value === 'khachhang')) {
-      Exportdata['khachhang'] = { data: ListKH };
-    }
-    if (this.ListEdit().some((item: any) => item.value === 'nhacungcap')) {
-      Exportdata['nhacungcap'] = { data: ListNCC };
-    }
-    if (this.ListEdit().some((item: any) => item.value === 'banggia')) {
-      Exportdata['banggia'] = { data: ListBG };
-    }
-    if (this.ListEdit().some((item: any) => item.value === 'donhang')) {
-      Exportdata['donhang'] = { data: ListDH };
-    }
-    if (this.ListEdit().some((item: any) => item.value === 'dathang')) {
-      Exportdata['dathang'] = { data: ListDathang };
-    }
-    if (this.ListEdit().some((item: any) => item.value === 'banggiasanpham')) {
-      Exportdata['banggiasanpham'] = { data: ListBGSP };
-    }
-    if (
-      this.ListEdit().some((item: any) => item.value === 'banggiakhachhang')
-    ) {
-      Exportdata['banggiakhachhang'] = { data: ListBGKH };
-    }
-    if (
-      this.ListEdit().some((item: any) => item.value === 'nhacungcapsanpham')
-    ) {
-      Exportdata['nhacungcapsanpham'] = { data: ListNCCSP };
-    }
-    if (this.ListEdit().some((item: any) => item.value === 'xuatnhapton')) {
-      Exportdata['xuatnhapton'] = { data: ListTonkho };
-    }
-    if (this.ListEdit().some((item: any) => item.value === 'kho')) {
-      Exportdata['kho'] = { data: ListKho };
-    }
-    if (Object.keys(Exportdata).length === 0) {
-      this._snackBar.open('Không có dữ liệu để xuất', '', {
-        duration: 1000,
+      writeExcelFileSheets(Exportdata, exportFileName);
+
+      this._snackBar.open('Xuất dữ liệu thành công!', '', {
+        duration: 2000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['snackbar-warning'],
+        panelClass: ['snackbar-success'],
       });
-      return;
-    }
-    
-    this.loadingMessage.set('Đang tạo file Excel...');
-    
-    // Include date range in filename
-    const dateRangeStr = `${this.batdau.toLocaleDateString('vi-VN').replace(/\//g, '-')}_${this.ketthuc.toLocaleDateString('vi-VN').replace(/\//g, '-')}`;
-    const exportFileName = `${title}_${dateRangeStr}`;
-    
-    writeExcelFileSheets(Exportdata, exportFileName);
-    
-    this._snackBar.open('Xuất dữ liệu thành công!', '', {
-      duration: 2000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-success'],
-    });
-    
     } catch (error) {
       console.error('Error exporting Excel:', error);
       this._snackBar.open('Có lỗi xảy ra khi xuất dữ liệu', '', {
@@ -805,12 +819,12 @@ export class ListImportdataComponent implements OnInit {
   async ImportExcel(event: any) {
     console.log(event);
     console.log(this.isImporting());
-    
+
     if (this.isImporting()) return;
-    
+
     this.isImporting.set(true);
     this.loadingMessage.set('Đang đọc file Excel...');
-    
+
     try {
       const data = await readExcelFileNoWorker(event);
       this.loadingMessage.set('Đang xử lý dữ liệu...');
@@ -884,11 +898,12 @@ export class ListImportdataComponent implements OnInit {
       this.ListEdit().some((item: any) => item.value === 'sanpham')
     ) {
       // Transform and validate data
-      const transformedData = ImportDataValidationService.transformDataForImport(
-        data.sanpham,
-        'sanpham'
-      );
-      
+      const transformedData =
+        ImportDataValidationService.transformDataForImport(
+          data.sanpham,
+          'sanpham'
+        );
+
       const validData = ImportDataValidationService.filterValidData(
         transformedData,
         ImportDataValidationService.getRequiredFields('sanpham')
@@ -968,11 +983,12 @@ export class ListImportdataComponent implements OnInit {
       this.ListEdit().some((item: any) => item.value === 'khachhang')
     ) {
       // Transform and validate data
-      const transformedData = ImportDataValidationService.transformDataForImport(
-        data.khachhang,
-        'khachhang'
-      );
-      
+      const transformedData =
+        ImportDataValidationService.transformDataForImport(
+          data.khachhang,
+          'khachhang'
+        );
+
       const validData = ImportDataValidationService.filterValidData(
         transformedData,
         ImportDataValidationService.getRequiredFields('khachhang')
@@ -1237,7 +1253,8 @@ export class ListImportdataComponent implements OnInit {
           status: v.status?.toString().trim() || 'active',
         }))
         .filter(
-          (v: any) => v.makho !== undefined && v.makho !== null && v.makho !== ''
+          (v: any) =>
+            v.makho !== undefined && v.makho !== null && v.makho !== ''
         );
 
       // Kiểm tra trùng lặp
@@ -1283,7 +1300,9 @@ export class ListImportdataComponent implements OnInit {
       try {
         // Process warehouse data using individual create/update operations
         const createUpdatePromises = finalData.map(async (v: any) => {
-          const existingItem = this.rawListKho.find((v1: any) => v1.makho === v.makho);
+          const existingItem = this.rawListKho.find(
+            (v1: any) => v1.makho === v.makho
+          );
           if (existingItem) {
             const updatedItem = { ...existingItem, ...v };
             await this._KhoService.updateKho(updatedItem);
@@ -1291,13 +1310,13 @@ export class ListImportdataComponent implements OnInit {
             await this._KhoService.CreateKho(v);
           }
         });
-        
+
         await Promise.all(createUpdatePromises);
-        
+
         // Refresh the warehouse list
         await this._KhoService.getAllKho();
         this.rawListKho = this._KhoService.ListKho();
-        
+
         importSnackbar.dismiss();
         this._snackBar.open(
           `Import thành công ${finalData.length} kho${
@@ -1626,20 +1645,20 @@ export class ListImportdataComponent implements OnInit {
   trackByFn(index: number, item: any): any {
     return item.id || index;
   }
-  
+
   // Filter data based on selected date range
   filterDataByDateRange(data: any[], dateField: string = 'createdAt'): any[] {
     if (!data || !Array.isArray(data)) return [];
-    
+
     const startDate = new Date(this.batdau);
     startDate.setHours(0, 0, 0, 0);
-    
+
     const endDate = new Date(this.ketthuc);
     endDate.setHours(23, 59, 59, 999);
-    
-    return data.filter(item => {
+
+    return data.filter((item) => {
       if (!item[dateField]) return true; // Include items without date
-      
+
       let itemDate: Date;
       if (typeof item[dateField] === 'string') {
         itemDate = new Date(item[dateField]);
@@ -1648,19 +1667,21 @@ export class ListImportdataComponent implements OnInit {
       } else {
         return true; // Include items with invalid date format
       }
-      
+
       return itemDate >= startDate && itemDate <= endDate;
     });
   }
-  
+
   // Get filtered export data with date range applied
   getFilteredExportData() {
     const dateInfo = {
       batdau: this.batdau,
       ketthuc: this.ketthuc,
-      dateRange: `${this.batdau.toLocaleDateString('vi-VN')} - ${this.ketthuc.toLocaleDateString('vi-VN')}`
+      dateRange: `${this.batdau.toLocaleDateString(
+        'vi-VN'
+      )} - ${this.ketthuc.toLocaleDateString('vi-VN')}`,
     };
-    
+
     return {
       ListSP: this.rawListSP,
       ListKH: this.rawListKH,
@@ -1670,7 +1691,7 @@ export class ListImportdataComponent implements OnInit {
       ListDathang: this.filterDataByDateRange(this.rawListDathang, 'ngaynhan'),
       ListTonkho: this.filterDataByDateRange(this.rawListTonkho, 'createdAt'),
       ListKho: this.filterDataByDateRange(this.rawListKho, 'createdAt'),
-      dateInfo
+      dateInfo,
     };
   }
 }

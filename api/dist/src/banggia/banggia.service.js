@@ -32,88 +32,176 @@ let BanggiaService = class BanggiaService {
     }
     async importSPBG(listBanggia) {
         try {
+            console.log(`Starting import of ${listBanggia.length} price lists`);
+            if (!listBanggia || !Array.isArray(listBanggia)) {
+                throw new common_1.InternalServerErrorException('Invalid data format: listBanggia must be an array');
+            }
+            if (listBanggia.length > 200) {
+                throw new common_1.InternalServerErrorException(`Data too large: ${listBanggia.length} items. Maximum recommended: 200 items per request. Please split your data into smaller batches.`);
+            }
+            const invalidBanggias = listBanggia.filter((bg, index) => {
+                if (!bg || typeof bg !== 'object') {
+                    console.warn(`Invalid banggia at index ${index}:`, bg);
+                    return true;
+                }
+                if (!bg.mabanggia || bg.mabanggia.trim() === '') {
+                    console.warn(`Empty mabanggia at index ${index}:`, bg);
+                    return true;
+                }
+                return false;
+            });
+            if (invalidBanggias.length > 0) {
+                throw new common_1.InternalServerErrorException(`Found ${invalidBanggias.length} invalid banggia records. Please check your data format.`);
+            }
             console.log(listBanggia[0]);
             const banggiagoc = listBanggia.find(bg => bg.mabanggia === 'giaban');
-            if (banggiagoc) {
-                await Promise.all(banggiagoc.sanpham.map(async (sp) => {
-                    await this.prisma.sanpham.updateMany({
-                        where: { masp: sp.masp },
-                        data: { giaban: Number(sp.giaban) }
-                    });
-                }));
+            if (banggiagoc && banggiagoc.sanpham && Array.isArray(banggiagoc.sanpham)) {
+                const validSanpham = banggiagoc.sanpham.filter((sp) => {
+                    if (!sp.masp || sp.masp.trim() === '') {
+                        console.warn(`Skipping product with empty masp in banggiagoc:`, sp);
+                        return false;
+                    }
+                    return true;
+                });
+                console.log(`Updating giaban for ${validSanpham.length} valid products`);
+                const sanphamBatchSize = 50;
+                for (let i = 0; i < validSanpham.length; i += sanphamBatchSize) {
+                    const batch = validSanpham.slice(i, i + sanphamBatchSize);
+                    await Promise.all(batch.map(async (sp) => {
+                        try {
+                            await this.prisma.sanpham.updateMany({
+                                where: { masp: sp.masp },
+                                data: { giaban: Number(sp.giaban) || 0 }
+                            });
+                        }
+                        catch (updateError) {
+                            console.log(`Failed to update sanpham ${sp.masp}:`, updateError);
+                        }
+                    }));
+                    if (i + sanphamBatchSize < validSanpham.length) {
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                    }
+                }
             }
-            const productIds = Array.from(listBanggia.flatMap(bg => bg?.sanpham?.map((sp) => sp.masp) || []));
-            const products = await this.prisma.sanpham.findMany({
-                where: { masp: { in: productIds } },
-            });
-            const productMap = new Map(products.map(p => [p.masp, p]));
+            const allProductIds = Array.from(new Set(listBanggia
+                .flatMap(bg => bg?.sanpham?.map((sp) => sp.masp) || [])
+                .filter(masp => masp && masp.trim() !== '')));
+            console.log(`Found ${allProductIds.length} unique product IDs to validate`);
+            const productChunkSize = 100;
+            const productMap = new Map();
+            for (let i = 0; i < allProductIds.length; i += productChunkSize) {
+                const chunk = allProductIds.slice(i, i + productChunkSize);
+                const chunkProducts = await this.prisma.sanpham.findMany({
+                    where: { masp: { in: chunk } },
+                });
+                chunkProducts.forEach(p => productMap.set(p.masp, p));
+                if (i + productChunkSize < allProductIds.length) {
+                    await new Promise(resolve => setTimeout(resolve, 10));
+                }
+            }
             for (const bg of listBanggia) {
+                if (!bg.sanpham || !Array.isArray(bg.sanpham))
+                    continue;
+                bg.sanpham = bg.sanpham.filter((sp) => {
+                    if (!sp.masp || sp.masp.trim() === '') {
+                        console.warn(`Skipping product with empty masp in banggia ${bg.mabanggia}:`, sp);
+                        return false;
+                    }
+                    return true;
+                });
                 for (const sp of bg.sanpham) {
                     if (!productMap.has(sp.masp)) {
                         await this._ImportdataService.create({
                             caseDetail: {
-                                errorMessage: `Sanpham with ID "${sp.masp}" not found`,
+                                errorMessage: `Sanpham with ID "${sp.masp}" not found in banggia "${bg.mabanggia}"`,
                                 errorStack: '',
-                                additionalInfo: 'Error during import process',
+                                additionalInfo: 'Error during import process - product validation',
                             },
                             order: 1,
                             createdBy: 'system',
                             title: `Import Sản Phẩm Bảng giá ${new Date().toLocaleString('vi-VN')} `,
                             type: 'banggia',
                         });
-                        throw new common_1.NotFoundException(`Sanpham with ID "${sp.masp}" not found`);
+                        throw new common_1.NotFoundException(`Sanpham with ID "${sp.masp}" not found in banggia "${bg.mabanggia}"`);
                     }
                     sp.id = productMap.get(sp.masp).id;
                 }
             }
             const mabanggiaList = listBanggia.map(bg => bg.mabanggia);
+            console.log(`Loading existing banggias for: ${mabanggiaList.length} items`);
             const existingBanggias = await this.prisma.banggia.findMany({
                 where: { mabanggia: { in: mabanggiaList } },
             });
             const banggiaMap = new Map(existingBanggias.map(bg => [bg.mabanggia, bg]));
-            const batchSize = 10;
+            const batchSize = 3;
+            console.log(`Processing ${listBanggia.length} banggias in batches of ${batchSize}`);
             for (let i = 0; i < listBanggia.length; i += batchSize) {
                 const batch = listBanggia.slice(i, i + batchSize);
-                await Promise.all(batch.map(async (bg) => {
+                console.log(`Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(listBanggia.length / batchSize)} (items ${i + 1}-${Math.min(i + batchSize, listBanggia.length)})`);
+                for (const bg of batch) {
                     const now = new Date();
-                    if (banggiaMap.has(bg.mabanggia)) {
-                        if (!bg.batdau && !bg.ketthuc) {
-                            bg.batdau = new Date(now.getFullYear(), now.getMonth(), 1);
-                            bg.ketthuc = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                    try {
+                        if (banggiaMap.has(bg.mabanggia)) {
+                            if (!bg.batdau && !bg.ketthuc) {
+                                bg.batdau = new Date(now.getFullYear(), now.getMonth(), 1);
+                                bg.ketthuc = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                            }
+                            const existing = banggiaMap.get(bg.mabanggia);
+                            await this.update(existing.id, bg);
                         }
-                        const existing = banggiaMap.get(bg.mabanggia);
-                        await this.update(existing.id, bg);
+                        else {
+                            bg.batdau = bg.batdau || new Date(now.getFullYear(), now.getMonth(), 1);
+                            bg.ketthuc = bg.ketthuc || new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                            await this.createBanggia(bg);
+                        }
                     }
-                    else {
-                        bg.batdau = bg.batdau || new Date(now.getFullYear(), now.getMonth(), 1);
-                        bg.ketthuc = bg.ketthuc || new Date(now.getFullYear(), now.getMonth() + 1, 0);
-                        await this.createBanggia(bg);
+                    catch (itemError) {
+                        console.log(`Error processing banggia ${bg.mabanggia}:`, itemError);
+                        await this._ImportdataService.create({
+                            caseDetail: {
+                                errorMessage: `Failed to process banggia ${bg.mabanggia}: ${itemError.message}`,
+                                errorStack: itemError.stack,
+                                additionalInfo: `Error processing individual banggia during batch import`,
+                            },
+                            order: 1,
+                            createdBy: 'system',
+                            title: `Import Sản Phẩm Bảng giá - Individual Error ${new Date().toLocaleString('vi-VN')}`,
+                            type: 'banggia',
+                        });
                     }
-                }));
+                }
+                if (i + batchSize < listBanggia.length) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
             }
+            console.log(`Successfully completed import of ${listBanggia.length} price lists`);
             return {};
         }
         catch (error) {
             console.log('Error importing san pham bang gia:', error);
-            if (error.code === 'ECONNRESET' || error.message?.includes('413') || error.message?.includes('Content Too Large')) {
+            if (error.code === 'ECONNRESET' ||
+                error.message?.includes('413') ||
+                error.message?.includes('Content Too Large') ||
+                error.message?.includes('request entity too large') ||
+                error.name === 'PayloadTooLargeError') {
                 await this._ImportdataService.create({
                     caseDetail: {
-                        errorMessage: 'Content too large - try reducing batch size or splitting the import',
+                        errorMessage: `Content too large - Data contains ${listBanggia?.length || 0} price lists. Try splitting into smaller batches (max 50-100 items per request).`,
                         errorStack: error.stack,
-                        additionalInfo: 'Error 413: Content Too Large during import process',
+                        additionalInfo: 'Error 413: Content Too Large during import process. Consider reducing batch size or splitting data.',
                     },
                     order: 1,
                     createdBy: 'system',
                     title: `Import Sản Phẩm Bảng giá (413 Error) ${new Date().toLocaleString('vi-VN')} `,
                     type: 'banggia',
                 });
-                throw new common_1.InternalServerErrorException('Content too large. Please reduce the amount of data and try again.');
+                throw new common_1.InternalServerErrorException(`Content too large. Your data contains ${listBanggia?.length || 0} price lists. Please split into smaller batches (recommended: 50-100 items per request) and try again.`);
             }
             await this._ImportdataService.create({
                 caseDetail: {
                     errorMessage: error.message,
                     errorStack: error.stack,
-                    additionalInfo: 'Error during import process',
+                    additionalInfo: `Error during import process. Data size: ${listBanggia?.length || 0} items`,
                 },
                 order: 1,
                 createdBy: 'system',
@@ -267,6 +355,9 @@ let BanggiaService = class BanggiaService {
     async createBanggia(data) {
         try {
             this._SocketGateway.sendBanggiaUpdate();
+            const validSanpham = data.sanpham?.filter((sp) => {
+                return sp && sp.id && (sp.giaban !== undefined && sp.giaban !== null);
+            }) || [];
             const result = await this.prisma.banggia.create({
                 data: {
                     title: data.title,
@@ -276,12 +367,12 @@ let BanggiaService = class BanggiaService {
                     batdau: data.batdau ? new Date(data.batdau) : null,
                     ketthuc: data.ketthuc ? new Date(data.ketthuc) : null,
                     isActive: data.isActive ?? false,
-                    sanpham: {
-                        create: data.sanpham?.map((sp) => ({
+                    sanpham: validSanpham.length > 0 ? {
+                        create: validSanpham.map((sp) => ({
                             sanphamId: sp.id,
                             giaban: Number(sp.giaban) || 0,
                         })),
-                    },
+                    } : undefined,
                 },
                 include: { sanpham: true },
             });
