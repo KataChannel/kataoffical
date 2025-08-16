@@ -606,124 +606,155 @@ export class DonhangService {
   async dongbogia(listdonhang: any) {
     console.log('Đồng bộ giá cho danh sách đơn hàng:', listdonhang);
 
-    return this.prisma.$transaction(async (prisma) => {
-      let updatedCount = 0;
-      let errorCount = 0;
+    let totalUpdatedCount = 0;
+    let totalErrorCount = 0;
+    const batchSize = 5; // Giảm batch size để tránh timeout
 
-      for (const donhangId of listdonhang) {
-        try {
-          // 1. Tìm đơn hàng với bảng giá và sản phẩm
-          const donhang = await prisma.donhang.findUnique({
-            where: { id: donhangId },
-            include: {
-              banggia: {
+    // Chia danh sách đơn hàng thành các batch nhỏ
+    for (let i = 0; i < listdonhang.length; i += batchSize) {
+      const batch = listdonhang.slice(i, i + batchSize);
+      console.log(`Xử lý batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(listdonhang.length / batchSize)} với ${batch.length} đơn hàng`);
+
+      try {
+        const batchResult = await this.prisma.$transaction(async (prisma) => {
+          let updatedCount = 0;
+          let errorCount = 0;
+
+          for (const donhangId of batch) {
+            try {
+              // 1. Tìm đơn hàng với bảng giá và sản phẩm
+              const donhang = await prisma.donhang.findUnique({
+                where: { id: donhangId },
                 include: {
+                  banggia: {
+                    include: {
+                      sanpham: {
+                        include: {
+                          sanpham: true
+                        }
+                      },
+                    },
+                  },
+                  khachhang: true,
                   sanpham: {
                     include: {
                       sanpham: true
                     }
                   },
                 },
-              },
-              khachhang: true,
-              sanpham: {
-                include: {
-                  sanpham: true
-                }
-              },
-            },
-          });
-
-          if (!donhang) {
-            console.warn(`Đơn hàng ${donhangId} không tồn tại`);
-            errorCount++;
-            continue;
-          }
-
-          // 2. Kiểm tra đơn hàng có bảng giá không
-          if (!donhang.banggia) {
-            console.warn(`Đơn hàng ${donhang.madonhang} không có bảng giá được chỉ định`);
-            errorCount++;
-            continue;
-          }
-
-          console.log(`Cập nhật giá cho đơn hàng ${donhang.madonhang} từ bảng giá ${donhang.banggia.mabanggia}`);
-
-          let tongchua = 0; // Tổng tiền chưa VAT
-          let hasUpdates = false;
-
-          // 3. Cập nhật giá cho từng sản phẩm trong đơn hàng
-          for (const donhangSanpham of donhang.sanpham) {
-            // Tìm giá từ bảng giá của đơn hàng
-            const giaSanpham = donhang.banggia.sanpham.find(
-              (bgsp) => bgsp.sanphamId === donhangSanpham.idSP,
-            );
-
-            if (giaSanpham) {
-              const giaban = Number(giaSanpham.giaban);
-              const sldat = Number(donhangSanpham.sldat) || 0;
-              const slgiao = Number(donhangSanpham.slgiao) || 0;
-              const slnhan = Number(donhangSanpham.slnhan) || 0;
-              const vat = Number(donhangSanpham.vat) || 0;
-
-              // 4. Cập nhật giá và tính toán lại các giá trị
-              const ttdat = giaban * sldat;
-              const ttgiao = giaban * slgiao;
-              const ttnhan = giaban * slnhan;
-              const ttsauvat = ttnhan * (1 + vat / 100);
-
-              await prisma.donhangsanpham.update({
-                where: { id: donhangSanpham.id },
-                data: {
-                  giaban: giaban,
-                  ttdat: ttdat,
-                  ttgiao: ttgiao,
-                  ttnhan: ttnhan,
-                  ttsauvat: ttsauvat,
-                },
               });
 
-              tongchua += ttnhan;
-              hasUpdates = true;
+              if (!donhang) {
+                console.warn(`Đơn hàng ${donhangId} không tồn tại`);
+                errorCount++;
+                continue;
+              }
 
-              console.log(`Cập nhật sản phẩm ${donhangSanpham.sanpham?.title} - Giá mới: ${giaban}`);
-            } else {
-              console.warn(`Không tìm thấy giá cho sản phẩm ${donhangSanpham.sanpham?.title} trong bảng giá ${donhang.banggia.mabanggia}`);
+              // 2. Kiểm tra đơn hàng có bảng giá không
+              if (!donhang.banggia) {
+                console.warn(`Đơn hàng ${donhang.madonhang} không có bảng giá được chỉ định`);
+                errorCount++;
+                continue;
+              }
+
+              console.log(`Cập nhật giá cho đơn hàng ${donhang.madonhang} từ bảng giá ${donhang.banggia.mabanggia}`);
+
+              let tongchua = 0; // Tổng tiền chưa VAT
+              let hasUpdates = false;
+
+              // 3. Cập nhật giá cho từng sản phẩm trong đơn hàng
+              for (const donhangSanpham of donhang.sanpham) {
+                // Tìm giá từ bảng giá của đơn hàng
+                const giaSanpham = donhang.banggia.sanpham.find(
+                  (bgsp) => bgsp.sanphamId === donhangSanpham.idSP,
+                );
+
+                if (giaSanpham) {
+                  const giaban = Number(giaSanpham.giaban);
+                  const sldat = Number(donhangSanpham.sldat) || 0;
+                  const slgiao = Number(donhangSanpham.slgiao) || 0;
+                  const slnhan = Number(donhangSanpham.slnhan) || 0;
+                  const vat = Number(donhangSanpham.vat) || 0;
+
+                  // 4. Cập nhật giá và tính toán lại các giá trị
+                  const ttdat = giaban * sldat;
+                  const ttgiao = giaban * slgiao;
+                  const ttnhan = giaban * slnhan;
+                  const ttsauvat = ttnhan * (1 + vat / 100);
+
+                  await prisma.donhangsanpham.update({
+                    where: { id: donhangSanpham.id },
+                    data: {
+                      giaban: giaban,
+                      ttdat: ttdat,
+                      ttgiao: ttgiao,
+                      ttnhan: ttnhan,
+                      ttsauvat: ttsauvat,
+                    },
+                  });
+
+                  tongchua += ttnhan;
+                  hasUpdates = true;
+
+                  console.log(`Cập nhật sản phẩm ${donhangSanpham.sanpham?.title} - Giá mới: ${giaban}`);
+                } else {
+                  console.warn(`Không tìm thấy giá cho sản phẩm ${donhangSanpham.sanpham?.title} trong bảng giá ${donhang.banggia.mabanggia}`);
+                }
+              }
+
+              // 5. Tính lại tổng tiền cho đơn hàng
+              if (hasUpdates) {
+                const vatRate = Number(donhang.vat) || 0;
+                const tongvat = tongchua * (vatRate / 100);
+                const tongtien = tongchua + tongvat;
+
+                await prisma.donhang.update({
+                  where: { id: donhangId },
+                  data: {
+                    tongvat: tongvat,
+                    tongtien: tongtien,
+                  },
+                });
+
+                console.log(`Cập nhật tổng tiền đơn hàng ${donhang.madonhang}: Tổng chưa VAT: ${tongchua}, VAT: ${tongvat}, Tổng tiền: ${tongtien}`);
+              }
+
+              updatedCount++;
+            } catch (error) {
+              console.error(`Lỗi khi cập nhật đơn hàng ${donhangId}:`, error);
+              errorCount++;
             }
           }
 
-          // 5. Tính lại tổng tiền cho đơn hàng
-          if (hasUpdates) {
-            const vatRate = Number(donhang.vat) || 0;
-            const tongvat = tongchua * (vatRate / 100);
-            const tongtien = tongchua + tongvat;
+          return { updatedCount, errorCount };
+        }, {
+          maxWait: 15000, // Tăng thời gian chờ tối đa lên 15 giây
+          timeout: 12000,  // Tăng timeout cho mỗi transaction lên 12 giây
+        });
 
-            await prisma.donhang.update({
-              where: { id: donhangId },
-              data: {
-                tongvat: tongvat,
-                tongtien: tongtien,
-              },
-            });
+        totalUpdatedCount += batchResult.updatedCount;
+        totalErrorCount += batchResult.errorCount;
 
-            console.log(`Cập nhật tổng tiền đơn hàng ${donhang.madonhang}: Tổng chưa VAT: ${tongchua}, VAT: ${tongvat}, Tổng tiền: ${tongtien}`);
-          }
-
-          updatedCount++;
-        } catch (error) {
-          console.error(`Lỗi khi cập nhật đơn hàng ${donhangId}:`, error);
-          errorCount++;
+        console.log(`Hoàn thành batch: ${batchResult.updatedCount} thành công, ${batchResult.errorCount} lỗi`);
+        
+        // Thêm delay nhỏ giữa các batch để tránh quá tải
+        if (i + batchSize < listdonhang.length) {
+          await new Promise(resolve => setTimeout(resolve, 100));
         }
-      }
 
-      return {
-        status: 'success',
-        message: `Đã đồng bộ giá thành công cho ${updatedCount} đơn hàng${errorCount > 0 ? `, ${errorCount} đơn hàng lỗi` : ''}`,
-        updatedCount,
-        errorCount,
-        totalProcessed: listdonhang.length,
-      };
-    });
+      } catch (error) {
+        console.error(`Lỗi khi xử lý batch từ ${i} đến ${i + batchSize - 1}:`, error);
+        totalErrorCount += batch.length; // Đếm toàn bộ batch này là lỗi
+      }
+    }
+
+    return {
+      status: 'success',
+      message: `Đã đồng bộ giá thành công cho ${totalUpdatedCount} đơn hàng${totalErrorCount > 0 ? `, ${totalErrorCount} đơn hàng lỗi` : ''}`,
+      updatedCount: totalUpdatedCount,
+      errorCount: totalErrorCount,
+      totalProcessed: listdonhang.length,
+    };
   }
 
   async phieuchuyen(params: any) {

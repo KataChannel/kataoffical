@@ -571,30 +571,47 @@ export class ListDonhangComponent {
       return;
     }
 
-    // Hiển thị dialog xác nhận
-    const confirmDialog = confirm(`Bạn có chắc chắn muốn đồng bộ giá cho ${this.Listdonhang().length} đơn hàng không?\n\nLưu ý: Thao tác này sẽ cập nhật giá bán từ bảng giá tương ứng và tính lại tổng tiền của tất cả đơn hàng.`);
+    // Hiển thị dialog xác nhận với thông tin về batch processing
+    const batchSize = 5;
+    const totalBatches = Math.ceil(this.Listdonhang().length / batchSize);
+    
+    const confirmDialog = confirm(`Bạn có chắc chắn muốn đồng bộ giá cho ${this.Listdonhang().length} đơn hàng không?\n\nThao tác sẽ được thực hiện theo ${totalBatches} lần (mỗi lần ${batchSize} đơn hàng) để đảm bảo hiệu suất.\n\nLưu ý: Thao tác này sẽ cập nhật giá bán từ bảng giá tương ứng và tính lại tổng tiền của tất cả đơn hàng.`);
     
     if (!confirmDialog) {
       return;
     }
 
     this.isLoading.set(true);
+    
+    // Hiển thị progress snackbar
+    let progressSnackbar = this._snackBar.open(`Đang đồng bộ giá cho ${this.Listdonhang().length} đơn hàng...`, 'Đang xử lý', {
+      duration: 0, // Không tự động đóng
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+
     try {
       const result = await this._DonhangService.DongboGia(this.Listdonhang());
+
+      // Đóng progress snackbar
+      progressSnackbar.dismiss();
 
       if (result && result.status === 'success') {
         let message = result.message || 'Đồng bộ giá thành công';
         
         // Thêm thông tin chi tiết nếu có
         if (result.updatedCount !== undefined) {
-          message += `\n- Cập nhật thành công: ${result.updatedCount} đơn hàng`;
+          const successRate = Math.round((result.updatedCount / result.totalProcessed) * 100);
+          message = `✅ Đồng bộ giá hoàn tất!\n📊 Kết quả: ${result.updatedCount}/${result.totalProcessed} đơn hàng (${successRate}%)`;
+          
           if (result.errorCount > 0) {
-            message += `\n- Lỗi: ${result.errorCount} đơn hàng`;
+            message += `\n⚠️ Lỗi: ${result.errorCount} đơn hàng không thể cập nhật`;
           }
         }
 
-        this._snackBar.open(message, '', {
-          duration: 5000,
+        this._snackBar.open(message, '✅ Thành công', {
+          duration: 6000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
@@ -604,8 +621,8 @@ export class ListDonhangComponent {
         await this.LoadData();
         this.EditList = [];
       } else {
-        this._snackBar.open(result?.message || 'Đồng bộ giá thất bại', '', {
-          duration: 3000,
+        this._snackBar.open(result?.message || 'Đồng bộ giá thất bại', '❌ Lỗi', {
+          duration: 4000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-error'],
@@ -614,15 +631,26 @@ export class ListDonhangComponent {
     } catch (error: any) {
       console.error('Error syncing prices:', error);
       
+      // Đóng progress snackbar nếu còn mở
+      progressSnackbar.dismiss();
+      
       let errorMessage = 'Lỗi khi đồng bộ giá';
+      
+      // Xử lý các loại lỗi phổ biến
       if (error?.error?.message) {
         errorMessage = error.error.message;
+        if (error.error.message.includes('Transaction already closed')) {
+          errorMessage = '⏱️ Thao tác mất quá nhiều thời gian. Vui lòng thử lại với ít đơn hàng hơn.';
+        }
       } else if (error?.message) {
         errorMessage = error.message;
+        if (error.message.includes('timeout')) {
+          errorMessage = '⏱️ Hết thời gian chờ. Hệ thống đang xử lý quá nhiều đơn hàng cùng lúc.';
+        }
       }
 
-      this._snackBar.open(errorMessage, '', {
-        duration: 5000,
+      this._snackBar.open(`❌ ${errorMessage}`, 'Đóng', {
+        duration: 6000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
