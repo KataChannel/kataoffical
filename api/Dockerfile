@@ -13,6 +13,7 @@ RUN bun install --no-cache
 # Copy the entire source code into the container
 COPY . .
 
+# Force Docker cache invalidation - 2025-08-16T15:32
 # Install Prisma globally and use db push instead of migrate
 RUN bun install -g prisma
 # Force rebuild with accept-data-loss flag - 2025-08-16 15:28
