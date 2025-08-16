@@ -7,6 +7,7 @@
     "autorun": "./autorun.sh",
     "db:backup": "cd api && npx ts-node prisma/backup.ts",
     "db:restore": "cd api && npx ts-node prisma/restore.ts",
+    "db:restore:audit": "cd api && npx ts-node prisma/restore.ts --fix-audit-log",
     "db:update": "cd api && npx ts-node prisma/update.ts",
     "db:generate": "cd api && npx prisma generate",
     "db:migrate": "cd api && npx bun prisma migrate dev --name tenfile",

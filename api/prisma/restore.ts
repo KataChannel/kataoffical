@@ -359,6 +359,12 @@ async function restoreTableFromJson(table: string, backupFolder: string): Promis
       return;
     }
     
+    // Special handling for AuditLog table
+    if (table === 'AuditLog') {
+      await restoreAuditLogWithFix(rawData);
+      return;
+    }
+    
     // Validate and clean data
     const processedData = await validateBackupData(rawData, table);
     
@@ -397,6 +403,82 @@ async function restoreTableFromJson(table: string, backupFolder: string): Promis
     const errorMsg = `Lỗi khôi phục bảng ${table}: ${error}`;
     console.error(`⚠️ ${errorMsg} - Bỏ qua và tiếp tục`);
     stats.warnings.push(errorMsg);
+  }
+}
+
+async function restoreAuditLogWithFix(auditLogs: any[]): Promise<void> {
+  console.log('🔧 Đang sửa lỗi fields trong bảng AuditLog...');
+  
+  console.log(`📊 Tìm thấy ${auditLogs.length} records AuditLog`);
+  
+  // Clear existing AuditLog data
+  console.log('🗑️ Xóa dữ liệu AuditLog hiện tại...');
+  await prisma.auditLog.deleteMany({});
+  
+  let successCount = 0;
+  let errorCount = 0;
+  
+  console.log('💾 Đang insert dữ liệu đã fix...');
+  
+  for (let i = 0; i < auditLogs.length; i++) {
+    try {
+      const record = auditLogs[i];
+      
+      // Transform the data to match Prisma schema
+      const transformedRecord = {
+        id: record.id,
+        entityName: record.entityName,
+        entityId: record.entityId,
+        action: record.action,
+        userEmail: record.userEmail,
+        oldValues: record.oldValues,
+        newValues: record.newValues,
+        changedFields: record.changedFields || [],
+        ipAddress: record.ipAddress,
+        userAgent: record.userAgent,
+        sessionId: record.sessionId,
+        status: record.status || 'SUCCESS',
+        errorDetails: record.error_details, // Map error_details to errorDetails
+        metadata: record.metadata,
+        createdAt: record.createdAt ? new Date(record.createdAt) : new Date(),
+        updatedAt: record.updatedAt ? new Date(record.updatedAt) : new Date(),
+        // Handle user relation - only set if userId exists and is valid
+        ...(record.userId && record.userId.trim() !== '' ? {
+          user: {
+            connect: { id: record.userId }
+          }
+        } : {})
+      };
+      
+      await prisma.auditLog.create({
+        data: transformedRecord
+      });
+      
+      successCount++;
+      
+      if (i % 100 === 0 && i > 0) {
+        console.log(`   Progress: ${i}/${auditLogs.length} processed...`);
+      }
+      
+    } catch (error: any) {
+      errorCount++;
+      
+      // Only log first 5 errors to avoid spam
+      if (errorCount <= 5) {
+        console.log(`   ⚠️  Error at record ${i}: ${error.message}`);
+      }
+    }
+  }
+  
+  console.log(`✅ AuditLog fix hoàn thành:`);
+  console.log(`   - Thành công: ${successCount} records`);
+  console.log(`   - Lỗi: ${errorCount} records`);
+  
+  stats.recordsRestored += successCount;
+  stats.tablesProcessed++;
+  
+  if (errorCount > 0) {
+    stats.warnings.push(`AuditLog: ${errorCount} records không thể restore`);
   }
 }
 
@@ -618,6 +700,16 @@ async function main(): Promise<void> {
   console.log(`⏰ Thời gian bắt đầu: ${new Date().toLocaleString()}`);
   console.log('📌 Chế độ: Bỏ qua lỗi và tiếp tục xử lý');
   
+  // Check for command line arguments
+  const args = process.argv.slice(2);
+  const fixAuditLogOnly = args.includes('--fix-audit-log');
+  
+  if (fixAuditLogOnly) {
+    console.log('🔧 CHẠY CHẾ ĐỘ FIX AUDITLOG');
+    await runAuditLogFixOnly();
+    return;
+  }
+  
   try {
     // Step 1: Clean up existing data
     await cleanupBeforeRestore();
@@ -633,6 +725,36 @@ async function main(): Promise<void> {
   const duration = Math.round((Date.now() - startTime) / 1000);
   console.log(`\n🎉 HOÀN THÀNH RESTORE! (${duration}s)`);
   printFinalStats();
+}
+
+async function runAuditLogFixOnly(): Promise<void> {
+  try {
+    const backupFolder = getLatestBackupFolder();
+    if (!backupFolder) {
+      console.error('❌ Không tìm thấy thư mục backup nào!');
+      return;
+    }
+    
+    const auditLogFile = path.join(BACKUP_ROOT_DIR, backupFolder, 'AuditLog.json');
+    
+    if (!fs.existsSync(auditLogFile)) {
+      console.error('❌ Không tìm thấy file AuditLog.json!');
+      return;
+    }
+    
+    console.log(`📂 Đọc dữ liệu từ: ${auditLogFile}`);
+    const rawData = fs.readFileSync(auditLogFile, 'utf8');
+    const auditLogs = JSON.parse(rawData);
+    
+    await restoreAuditLogWithFix(auditLogs);
+    
+    console.log('\n✅ Fix AuditLog hoàn thành!');
+    console.log(`📊 Kết quả: ${stats.recordsRestored} records restored`);
+    
+  } catch (error) {
+    console.error(`❌ Lỗi khi fix AuditLog: ${error}`);
+    stats.errors.push(`AuditLog fix error: ${error}`);
+  }
 }
 
 main()

@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { log } from 'nexus/dist/utils';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -14,6 +15,7 @@ async function main() {
           sldat: donhang.slgiao
         }
       });
+      log(`✅ Đã cập nhật sldat cho đơn hàng ${donhang.idSP} thành ${donhang.sldat}`);
     } catch (error) {
       console.error(`Lỗi khi xử lý đơn hàng ${donhang.idSP}:`, error);
     }

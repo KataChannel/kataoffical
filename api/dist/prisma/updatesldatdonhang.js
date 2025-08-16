@@ -5,6 +5,7 @@ exports.removeVietnameseAccents = removeVietnameseAccents;
 exports.DonhangcodeToNumber = DonhangcodeToNumber;
 exports.DonhangnumberToCode = DonhangnumberToCode;
 const client_1 = require("@prisma/client");
+const utils_1 = require("nexus/dist/utils");
 const prisma = new client_1.PrismaClient();
 async function main() {
     const Donhangs = await prisma.donhangsanpham.findMany();
@@ -18,6 +19,7 @@ async function main() {
                     sldat: donhang.slgiao
                 }
             });
+            (0, utils_1.log)(`✅ Đã cập nhật sldat cho đơn hàng ${donhang.idSP} thành ${donhang.sldat}`);
         }
         catch (error) {
             console.error(`Lỗi khi xử lý đơn hàng ${donhang.idSP}:`, error);
