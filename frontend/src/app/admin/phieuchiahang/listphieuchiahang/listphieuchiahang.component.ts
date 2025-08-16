@@ -116,7 +116,7 @@ export class ListPhieuchiahangComponent {
     Ketthuc: moment().toDate(),
     Type: 'donsi',
     Status:'dadat',
-    pageSize: 100,
+    pageSize: 1000,
   };
   ListDate: any[] = [
     { id: 1, Title: '1 Ngày', value: 'day' },
@@ -393,8 +393,8 @@ export class ListPhieuchiahangComponent {
   getUniqueProducts(list:any[]): string[] {
     const products = new Set<string>();
     list.forEach(kh => kh.sanpham.forEach((sp: { title: string; masp: string }) => 
-      products.add(sp.title)));
-    return Array.from(products);
+     products.add(sp.title)));
+    return Array.from(products).sort((a, b) => a.localeCompare(b, 'vi'));
   }
 
   getProductQuantity(list:any[],product: string, makh: string) {
@@ -524,13 +524,22 @@ export class ListPhieuchiahangComponent {
           <title>In Bảng</title>
                  ${tailwindCSS}
           <style>
-            body { font-size: 12px; font-family: Arial, sans-serif; }
+            body { font-size: 10px!important; font-family: Arial, sans-serif; }
             table { width: auto;
+            padding: 1px !important;
     border-collapse: collapse;
     margin-left: auto;
     margin-right: auto; }
-            th, td { border: 1px solid #000; padding: 4px; text-align: left; }
-            @media print { body { margin: 0; } }
+            th, td { border: 1px solid #000; padding: 1px!important; text-align: left; }
+            @media print { 
+            body { margin: 0; } 
+          table { width: auto;
+            padding: 1px !important;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto; }
+            th, td { border: 1px solid #000; padding: 1px!important; text-align: left; }
+            }
           </style>
         </head>
         <body>

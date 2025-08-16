@@ -248,7 +248,7 @@
                 </tr>
             </table>
         </div>
-         <mat-paginator [pageSizeOptions]="[10,dataSource.data.length]" [pageSize]="10"></mat-paginator>
+         <mat-paginator [pageSizeOptions]="[100,dataSource.data.length]" [pageSize]="100"></mat-paginator>
     </div>
 </mat-drawer-container>
 
@@ -256,16 +256,14 @@
 
 <ng-template #dialogCreateTemplate>
     <div class="relative flex flex-col !w-screen !h-screen">
-            <div class="relative flex flex-row space-x-2 items-center font-bold p-4 justify-between">
-                <div></div>
-                <span>Phiếu Chia Hàng</span>     
+            <div class="relative flex flex-row space-x-2 items-center font-bold p-4">Phiếu Chia Hàng     
                 <button mat-icon-button color="primary" (click)="printContent()">
                 <mat-icon>print</mat-icon>
             </button>
             </div>
             <div class="w-full h-full flex flex-col space-y-8 items-center p-4 relative overflow-x-auto ">
                     <table id="printContent" class="text-left rtl:text-right leading-none p-4">
-                        <thead class="p-2 border uppercase text-center text-[12px]">
+                        <thead class="p-2 border uppercase text-center text-[10px]">
                             <tr>
                                 <th scope="col" class="w-5 px-2 border">
                                    STT
