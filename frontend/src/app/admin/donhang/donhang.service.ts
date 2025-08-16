@@ -71,28 +71,43 @@ export class DonhangService {
     }
   }
 
-  async DongboGia(list:any){
-    const dulieu = list.map((item:any) => item.id);
+  async DongboGia(list: any) {
+    const dulieu = list.map((item: any) => item.id);
+    
+    if (dulieu.length === 0) {
+      return {
+        status: 'error',
+        message: 'Không có đơn hàng nào được chọn để đồng bộ giá'
+      };
+    }
+
     try {
       const options = {
-          method:'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(dulieu),
-        };
-        const response = await fetch(`${environment.APIURL}/donhang/dongbogia`, options);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        if (!response.ok) {
-
-        }
-        this.getAllDonhang()
-        return data;
-    } catch (error) {
-        return console.error(error);
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dulieu),
+      };
+      
+      const response = await fetch(`${environment.APIURL}/donhang/dongbogia`, options);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      // Refresh danh sách đơn hàng sau khi đồng bộ
+      this.getAllDonhang();
+      
+      return data;
+    } catch (error: any) {
+      console.error('Lỗi khi đồng bộ giá:', error);
+      return {
+        status: 'error',
+        message: error.message || 'Lỗi khi đồng bộ giá từ server'
+      };
     }
   }
   async CreateDonhang(dulieu: any) {

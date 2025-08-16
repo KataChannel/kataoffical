@@ -218,8 +218,8 @@ model Donhang {
   isshowvat   Boolean          @default(false)
   tongtien    Decimal          @default(0) @postgres.Decimal(20, 3)
   tongvat     Decimal          @default(0) @postgres.Decimal(20, 3)
-  banggiaId   String?
   vat         Decimal          @default(0.5) @postgres.Decimal(20, 3)
+  banggiaId   String?
   banggia     Banggia?         @relation(fields: [banggiaId], references: [id])
   khachhang   Khachhang?       @relation(fields: [khachhangId], references: [id])
   sanpham     Donhangsanpham[]

@@ -560,33 +560,69 @@ export class ListDonhangComponent {
   }
 
   async Dongbogia() {
+    // Kiểm tra có đơn hàng nào được chọn không
+    if (this.Listdonhang().length === 0) {
+      this._snackBar.open('Không có đơn hàng nào để đồng bộ giá', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning'],
+      });
+      return;
+    }
+
+    // Hiển thị dialog xác nhận
+    const confirmDialog = confirm(`Bạn có chắc chắn muốn đồng bộ giá cho ${this.Listdonhang().length} đơn hàng không?\n\nLưu ý: Thao tác này sẽ cập nhật giá bán từ bảng giá tương ứng và tính lại tổng tiền của tất cả đơn hàng.`);
+    
+    if (!confirmDialog) {
+      return;
+    }
+
     this.isLoading.set(true);
     try {
-      const result = await this._DonhangService.DongboGia(this.EditList);
+      const result = await this._DonhangService.DongboGia(this.Listdonhang());
 
-      if (result.status === 'success') {
-        this._snackBar.open(result.message || 'Đồng bộ giá thành công', '', {
-          duration: 3000,
+      if (result && result.status === 'success') {
+        let message = result.message || 'Đồng bộ giá thành công';
+        
+        // Thêm thông tin chi tiết nếu có
+        if (result.updatedCount !== undefined) {
+          message += `\n- Cập nhật thành công: ${result.updatedCount} đơn hàng`;
+          if (result.errorCount > 0) {
+            message += `\n- Lỗi: ${result.errorCount} đơn hàng`;
+          }
+        }
+
+        this._snackBar.open(message, '', {
+          duration: 5000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
         });
+
+        // Reload data sau khi sync thành công
+        await this.LoadData();
+        this.EditList = [];
       } else {
-        this._snackBar.open(result.message || 'Đồng bộ giá thất bại', '', {
+        this._snackBar.open(result?.message || 'Đồng bộ giá thất bại', '', {
           duration: 3000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-error'],
         });
       }
-
-      // Reload data after sync
-      await this.LoadData();
-      this.EditList = [];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error syncing prices:', error);
-      this._snackBar.open('Lỗi khi đồng bộ giá', '', {
-        duration: 3000,
+      
+      let errorMessage = 'Lỗi khi đồng bộ giá';
+      if (error?.error?.message) {
+        errorMessage = error.error.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      this._snackBar.open(errorMessage, '', {
+        duration: 5000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
