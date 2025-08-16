@@ -13,11 +13,9 @@ export declare class PhieukhoController {
                 masp: string;
                 subtitle: string | null;
                 giagoc: number;
-                giaban: number;
                 dvt: string | null;
                 hinhanh: string | null;
                 loadpoint: number | null;
-                vat: import("@prisma/client/runtime/library").Decimal | null;
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: number;
@@ -26,6 +24,8 @@ export declare class PhieukhoController {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                giaban: number;
+                vat: import("@prisma/client/runtime/library").Decimal | null;
             };
             id: string;
             soluong: import("@prisma/client/runtime/library").Decimal;

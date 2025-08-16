@@ -38,6 +38,23 @@ let DonhangController = class DonhangController {
     async congnokhachhang(params) {
         return this.donhangService.congnokhachhang(params);
     }
+    async downloadcongnokhachhang(params, res) {
+        try {
+            const result = await this.donhangService.downloadcongnokhachhang(params);
+            res.setHeader('Content-Type', result.contentType);
+            res.setHeader('Content-Disposition', `attachment; filename="${result.filename}"`);
+            res.setHeader('Content-Length', result.buffer.length);
+            return res.end(result.buffer);
+        }
+        catch (error) {
+            console.error('Error downloading congno:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Lỗi khi tải file công nợ',
+                error: error.message
+            });
+        }
+    }
     async phieuchuyen(params) {
         return this.donhangService.phieuchuyen(params);
     }
@@ -163,6 +180,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], DonhangController.prototype, "congnokhachhang", null);
+__decorate([
+    (0, common_1.Post)('downloadcongnokhachhang'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], DonhangController.prototype, "downloadcongnokhachhang", null);
 __decorate([
     (0, common_1.Post)('phieuchuyen'),
     __param(0, (0, common_1.Body)()),

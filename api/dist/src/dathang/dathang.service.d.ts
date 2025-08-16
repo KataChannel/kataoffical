@@ -74,7 +74,7 @@ export declare class DathangService {
                 slton: import("@prisma/client/runtime/library").Decimal;
                 slchogiao: import("@prisma/client/runtime/library").Decimal;
                 slchonhap: import("@prisma/client/runtime/library").Decimal;
-            }[];
+            } | null;
             id: string;
             title: string;
             title2: string | null;
@@ -82,11 +82,9 @@ export declare class DathangService {
             masp: string;
             subtitle: string | null;
             giagoc: number;
-            giaban: number;
             dvt: string | null;
             hinhanh: string | null;
             loadpoint: number | null;
-            vat: import("@prisma/client/runtime/library").Decimal | null;
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: number;
@@ -94,6 +92,8 @@ export declare class DathangService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            giaban: number;
+            vat: import("@prisma/client/runtime/library").Decimal | null;
         }[];
         nhacungcap: {
             id: string;
@@ -155,11 +155,9 @@ export declare class DathangService {
                     masp: string;
                     subtitle: string | null;
                     giagoc: number;
-                    giaban: number;
                     dvt: string | null;
                     hinhanh: string | null;
                     loadpoint: number | null;
-                    vat: import("@prisma/client/runtime/library").Decimal | null;
                     soluong: import("@prisma/client/runtime/library").Decimal | null;
                     soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                     haohut: number;
@@ -168,6 +166,8 @@ export declare class DathangService {
                     isActive: boolean;
                     createdAt: Date;
                     updatedAt: Date;
+                    giaban: number;
+                    vat: import("@prisma/client/runtime/library").Decimal | null;
                 };
             } & {
                 id: string;
@@ -182,8 +182,8 @@ export declare class DathangService {
                 ttdat: import("@prisma/client/runtime/library").Decimal;
                 ttgiao: import("@prisma/client/runtime/library").Decimal;
                 ttnhan: import("@prisma/client/runtime/library").Decimal;
-                gianhap: import("@prisma/client/runtime/library").Decimal;
                 dathangId: string;
+                gianhap: import("@prisma/client/runtime/library").Decimal;
             })[];
             nhacungcap: {
                 id: string;
@@ -250,11 +250,9 @@ export declare class DathangService {
                 masp: string;
                 subtitle: string | null;
                 giagoc: number;
-                giaban: number;
                 dvt: string | null;
                 hinhanh: string | null;
                 loadpoint: number | null;
-                vat: import("@prisma/client/runtime/library").Decimal | null;
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: number;
@@ -263,6 +261,8 @@ export declare class DathangService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                giaban: number;
+                vat: import("@prisma/client/runtime/library").Decimal | null;
             };
         } & {
             id: string;
@@ -277,8 +277,8 @@ export declare class DathangService {
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
-            gianhap: import("@prisma/client/runtime/library").Decimal;
             dathangId: string;
+            gianhap: import("@prisma/client/runtime/library").Decimal;
         })[];
         nhacungcap: {
             id: string;
@@ -334,11 +334,9 @@ export declare class DathangService {
                     masp: string;
                     subtitle: string | null;
                     giagoc: number;
-                    giaban: number;
                     dvt: string | null;
                     hinhanh: string | null;
                     loadpoint: number | null;
-                    vat: import("@prisma/client/runtime/library").Decimal | null;
                     soluong: import("@prisma/client/runtime/library").Decimal | null;
                     soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                     haohut: number;
@@ -347,6 +345,8 @@ export declare class DathangService {
                     isActive: boolean;
                     createdAt: Date;
                     updatedAt: Date;
+                    giaban: number;
+                    vat: import("@prisma/client/runtime/library").Decimal | null;
                 };
             } & {
                 id: string;
@@ -361,8 +361,8 @@ export declare class DathangService {
                 ttdat: import("@prisma/client/runtime/library").Decimal;
                 ttgiao: import("@prisma/client/runtime/library").Decimal;
                 ttnhan: import("@prisma/client/runtime/library").Decimal;
-                gianhap: import("@prisma/client/runtime/library").Decimal;
                 dathangId: string;
+                gianhap: import("@prisma/client/runtime/library").Decimal;
             })[];
             nhacungcap: {
                 id: string;
@@ -427,8 +427,8 @@ export declare class DathangService {
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
-            gianhap: import("@prisma/client/runtime/library").Decimal;
             dathangId: string;
+            gianhap: import("@prisma/client/runtime/library").Decimal;
         }[];
     } & {
         id: string;
@@ -461,8 +461,8 @@ export declare class DathangService {
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
-            gianhap: import("@prisma/client/runtime/library").Decimal;
             dathangId: string;
+            gianhap: import("@prisma/client/runtime/library").Decimal;
         }[];
     } & {
         id: string;
@@ -525,11 +525,9 @@ export declare class DathangService {
                 masp: string;
                 subtitle: string | null;
                 giagoc: number;
-                giaban: number;
                 dvt: string | null;
                 hinhanh: string | null;
                 loadpoint: number | null;
-                vat: import("@prisma/client/runtime/library").Decimal | null;
                 soluong: import("@prisma/client/runtime/library").Decimal | null;
                 soluongkho: import("@prisma/client/runtime/library").Decimal | null;
                 haohut: number;
@@ -538,6 +536,8 @@ export declare class DathangService {
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
+                giaban: number;
+                vat: import("@prisma/client/runtime/library").Decimal | null;
             };
         } & {
             id: string;
@@ -552,8 +552,8 @@ export declare class DathangService {
             ttdat: import("@prisma/client/runtime/library").Decimal;
             ttgiao: import("@prisma/client/runtime/library").Decimal;
             ttnhan: import("@prisma/client/runtime/library").Decimal;
-            gianhap: import("@prisma/client/runtime/library").Decimal;
             dathangId: string;
+            gianhap: import("@prisma/client/runtime/library").Decimal;
         }) | undefined;
         nhacungcap: {
             id: string;

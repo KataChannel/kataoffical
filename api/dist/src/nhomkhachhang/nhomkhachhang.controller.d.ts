@@ -21,8 +21,6 @@ export declare class NhomkhachhangController {
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            tenfile: string | null;
-            tenkh: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -34,8 +32,10 @@ export declare class NhomkhachhangController {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
-            isshowvat: boolean;
+            tenfile: string | null;
+            tenkh: string | null;
             banggiaId: string | null;
+            isshowvat: boolean;
         }[];
     } & {
         id: string;
@@ -70,8 +70,6 @@ export declare class NhomkhachhangController {
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            tenfile: string | null;
-            tenkh: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -83,8 +81,10 @@ export declare class NhomkhachhangController {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
-            isshowvat: boolean;
+            tenfile: string | null;
+            tenkh: string | null;
             banggiaId: string | null;
+            isshowvat: boolean;
         }[];
     } & {
         id: string;

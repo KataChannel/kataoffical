@@ -194,14 +194,12 @@ let DonhangService = class DonhangService {
     }
     async congnokhachhang(params) {
         const { Batdau, Ketthuc, query } = params;
-        const dateRange = this.convertDateFilters({
-            ngaygiao: {
-                gte: Batdau ? new Date(Batdau) : undefined,
-                lte: Ketthuc ? new Date(Ketthuc) : undefined,
-            },
-        });
+        const dateRange = {
+            gte: Batdau ? new Date(Batdau) : undefined,
+            lte: Ketthuc ? new Date(Ketthuc) : undefined,
+        };
         const where = {
-            ngaygiao: dateRange.ngaygiao,
+            ngaygiao: dateRange,
             status: Array.isArray(params.Status)
                 ? { in: params.Status }
                 : params.Status,
@@ -259,6 +257,195 @@ let DonhangService = class DonhangService {
             }));
         });
         return result || [];
+    }
+    async downloadcongnokhachhang(params) {
+        const { Batdau, Ketthuc, query } = params;
+        const dateRange = {
+            gte: Batdau ? new Date(Batdau) : undefined,
+            lte: Ketthuc ? new Date(Ketthuc) : undefined,
+        };
+        const where = {
+            ngaygiao: dateRange,
+            status: Array.isArray(params.Status)
+                ? { in: params.Status }
+                : params.Status,
+        };
+        if (query) {
+            where.OR = [
+                { madonhang: { contains: query, mode: 'insensitive' } },
+                { khachhang: { name: { contains: query, mode: 'insensitive' } } },
+            ];
+        }
+        console.log('where', where);
+        const donhangs = await this.prisma.donhang.findMany({
+            where,
+            include: {
+                sanpham: {
+                    include: {
+                        sanpham: true,
+                    },
+                },
+                khachhang: { include: { banggia: { include: { sanpham: true } } } },
+            },
+            orderBy: { createdAt: 'desc' },
+        });
+        const Sanphams = await this.prisma.sanpham.findMany();
+        const result = donhangs.flatMap((v) => {
+            const orderItems = v.sanpham.map((v1) => {
+                const product = Sanphams.find((sp) => sp.id === v1.idSP);
+                const giaban = v?.khachhang?.banggia?.sanpham.find((sp) => sp.id === v1.idSP)
+                    ?.giaban ||
+                    product?.giaban ||
+                    0;
+                const vat = product?.vat || 0;
+                const thanhtiensauvat = v1.slgiao * giaban * (1 + vat / 100);
+                return {
+                    id: v.id,
+                    ngaygiao: v.ngaygiao,
+                    tenkhachhang: v.khachhang?.name,
+                    makhachhang: v.khachhang?.makh,
+                    madonhang: v.madonhang,
+                    tenhang: product?.title || '',
+                    mahang: product?.masp || '',
+                    dvt: product?.dvt || '',
+                    soluong: v1.slgiao,
+                    dongia: giaban,
+                    thanhtientruocvat: v1.slgiao * giaban,
+                    vat: vat,
+                    dongiavathoadon: giaban * (1 + vat / 100),
+                    thanhtiensauvat: thanhtiensauvat,
+                    ghichu: v1.ghichu,
+                };
+            });
+            const tongtiensauvat = orderItems.reduce((sum, item) => sum + item.thanhtiensauvat, 0);
+            return orderItems.map((item) => ({
+                ...item,
+                tongtiensauvat: tongtiensauvat,
+            }));
+        });
+        return this.createCongnoExcelFile(result || [], params);
+    }
+    async createCongnoExcelFile(data, params) {
+        const ExcelJS = require('exceljs');
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Công Nợ Khách Hàng');
+        const columns = [
+            { key: 'ngaygiao', header: 'Ngày Giao', width: 15 },
+            { key: 'makhachhang', header: 'Mã Khách Hàng', width: 15 },
+            { key: 'tenkhachhang', header: 'Tên Khách Hàng', width: 25 },
+            { key: 'madonhang', header: 'Mã Đơn Hàng', width: 15 },
+            { key: 'mahang', header: 'Mã Hàng', width: 15 },
+            { key: 'tenhang', header: 'Tên Hàng', width: 30 },
+            { key: 'dvt', header: 'ĐVT', width: 10 },
+            { key: 'soluong', header: 'Số Lượng', width: 12 },
+            { key: 'dongia', header: 'Đơn Giá', width: 15 },
+            { key: 'thanhtientruocvat', header: 'Thành Tiền Trước VAT', width: 20 },
+            { key: 'vat', header: 'VAT (%)', width: 10 },
+            { key: 'dongiavathoadon', header: 'Đơn Giá VAT', width: 15 },
+            { key: 'thanhtiensauvat', header: 'Thành Tiền Sau VAT', width: 20 },
+            { key: 'ghichu', header: 'Ghi Chú', width: 20 },
+            { key: 'tongtiensauvat', header: 'Tổng Tiền Sau Thuế', width: 20 }
+        ];
+        worksheet.columns = columns;
+        const headerRow = worksheet.getRow(1);
+        headerRow.font = { bold: true, color: { argb: 'FFFFFF' } };
+        headerRow.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: '366092' }
+        };
+        headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+        headerRow.height = 25;
+        const groupedData = this.groupDataByCustomer(data);
+        let currentRow = 2;
+        const mergeRanges = [];
+        for (const customerData of groupedData) {
+            const startRow = currentRow;
+            for (const item of customerData.items) {
+                const row = worksheet.getRow(currentRow);
+                const ngaygiao = item.ngaygiao ? new Date(item.ngaygiao) : null;
+                row.values = {
+                    ngaygiao: ngaygiao ? ngaygiao.toLocaleDateString('vi-VN') : '',
+                    makhachhang: item.makhachhang || '',
+                    tenkhachhang: item.tenkhachhang || '',
+                    madonhang: item.madonhang || '',
+                    mahang: item.mahang || '',
+                    tenhang: item.tenhang || '',
+                    dvt: item.dvt || '',
+                    soluong: Number(item.soluong) || 0,
+                    dongia: Number(item.dongia) || 0,
+                    thanhtientruocvat: Number(item.thanhtientruocvat) || 0,
+                    vat: Number(item.vat) || 0,
+                    dongiavathoadon: Number(item.dongiavathoadon) || 0,
+                    thanhtiensauvat: Number(item.thanhtiensauvat) || 0,
+                    ghichu: item.ghichu || '',
+                    tongtiensauvat: Number(item.tongtiensauvat) || 0
+                };
+                ['soluong', 'dongia', 'thanhtientruocvat', 'dongiavathoadon', 'thanhtiensauvat', 'tongtiensauvat'].forEach(col => {
+                    const cell = row.getCell(col);
+                    cell.numFmt = '#,##0.00';
+                    cell.alignment = { horizontal: 'right' };
+                });
+                ['vat'].forEach(col => {
+                    const cell = row.getCell(col);
+                    cell.numFmt = '0.00%';
+                    cell.alignment = { horizontal: 'right' };
+                });
+                currentRow++;
+            }
+            const endRow = currentRow - 1;
+            if (endRow > startRow) {
+                ['makhachhang', 'tenkhachhang', 'tongtiensauvat'].forEach(col => {
+                    const colIndex = columns.findIndex(c => c.key === col) + 1;
+                    mergeRanges.push({
+                        range: `${String.fromCharCode(64 + colIndex)}${startRow}:${String.fromCharCode(64 + colIndex)}${endRow}`,
+                        value: customerData.items[0][col]
+                    });
+                });
+            }
+        }
+        mergeRanges.forEach(merge => {
+            worksheet.mergeCells(merge.range);
+            const cell = worksheet.getCell(merge.range.split(':')[0]);
+            cell.alignment = { horizontal: 'center', vertical: 'middle' };
+            cell.font = { bold: true };
+        });
+        worksheet.eachRow((row, rowNumber) => {
+            row.eachCell((cell) => {
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+            });
+        });
+        const dateStr = this.formatDateForFilename();
+        const filename = `CongNoKhachHang_${dateStr}.xlsx`;
+        const buffer = await workbook.xlsx.writeBuffer();
+        return {
+            buffer: buffer,
+            filename: filename,
+            contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        };
+    }
+    groupDataByCustomer(data) {
+        const customerMap = new Map();
+        data.forEach(item => {
+            const customerKey = item.makhachhang || 'unknown';
+            if (!customerMap.has(customerKey)) {
+                customerMap.set(customerKey, {
+                    makhachhang: item.makhachhang,
+                    tenkhachhang: item.tenkhachhang,
+                    tongtiensauvat: 0,
+                    items: []
+                });
+            }
+            const customer = customerMap.get(customerKey);
+            customer.items.push(item);
+            customer.tongtiensauvat += Number(item.thanhtiensauvat) || 0;
+        });
+        return Array.from(customerMap.values()).sort((a, b) => (a.tenkhachhang || '').localeCompare(b.tenkhachhang || ''));
     }
     async getchogiao(params) {
         const { Batdau, Ketthuc, Type } = params;

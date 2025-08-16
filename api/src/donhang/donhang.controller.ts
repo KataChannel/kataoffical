@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, Query, Res } from '@nestjs/common';
+import { Response } from 'express';
 import { DonhangService } from './donhang.service';
 import { AuditAction } from '@prisma/client';
 import { Audit } from 'src/auditlog/audit.decorator';
@@ -32,6 +33,25 @@ export class DonhangController {
   @Post('congnokhachhang')
   async congnokhachhang(@Body() params: any) {
     return this.donhangService.congnokhachhang(params);
+  }
+  @Post('downloadcongnokhachhang')
+  async downloadcongnokhachhang(@Body() params: any, @Res() res: Response) {
+    try {
+      const result = await this.donhangService.downloadcongnokhachhang(params);
+      
+      res.setHeader('Content-Type', result.contentType);
+      res.setHeader('Content-Disposition', `attachment; filename="${result.filename}"`);
+      res.setHeader('Content-Length', result.buffer.length);
+      
+      return res.end(result.buffer);
+    } catch (error) {
+      console.error('Error downloading congno:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Lỗi khi tải file công nợ',
+        error: error.message
+      });
+    }
   }
   @Post('phieuchuyen')
   async phieuchuyen(@Body() params: any) {

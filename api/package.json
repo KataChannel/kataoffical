@@ -43,6 +43,7 @@
     "class-validator": "^0.14.1",
     "crypto": "^1.0.1",
     "dataloader": "^2.2.3",
+    "exceljs": "^4.4.0",
     "googleapis": "^146.0.0",
     "graphql": "^16.11.0",
     "graphql-fields": "^2.0.3",

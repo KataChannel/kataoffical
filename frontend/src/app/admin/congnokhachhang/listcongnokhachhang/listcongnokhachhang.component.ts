@@ -251,6 +251,7 @@ doFilterKhachhang(event: Event){
       const customerTotals = new Map();
       // Tính tổng tiền sau thuế cho từng khách hàng
       this.ListCongno = this.Listdonhang()
+      this.ListCongno = []
       this.dataSource = new MatTableDataSource(this.ListCongno);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -569,8 +570,40 @@ doFilterKhachhang(event: Event){
     this.DoImportData(data);
   }  
   async ExportExcel(data: any, title: any) {
-
     this.isExporting = true;
+    try {
+      // Sử dụng service để download file Excel từ API
+      await this._DonhangService.downloadCongno(this.SearchParams);
+      
+      // Hiển thị thông báo thành công
+      this._snackBar.open('Tải file Excel thành công!', 'Đóng', {
+        duration: 3000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success']
+      });
+    } catch (error) {
+      console.error('Error exporting Excel:', error);
+      
+      // Hiển thị thông báo lỗi
+      this._snackBar.open('Lỗi khi tải file Excel!', 'Đóng', {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+      
+      // Fallback to old method if API fails
+      await this.ExportExcelFallback(data, title);
+    } finally {
+      this.isExporting = false;
+    }
+  }
+
+  /**
+   * Fallback method for Excel export using client-side generation
+   */
+  private async ExportExcelFallback(data: any, title: any) {
     try {
       const columns = [
         'Ngày',
@@ -596,11 +629,11 @@ doFilterKhachhang(event: Event){
         groupedData = this.groupDataByCustomer(data);
       }
       else {
-        groupedData = this.groupDataByCustomer(this.Listdonhang());
+        groupedData = this.groupDataByCustomer(this.ListCongno);
       }
       this.writeExcelFileWithMergedCells(groupedData, title, columns);
-    } finally {
-      this.isExporting = false;
+    } catch (error) {
+      console.error('Error in fallback Excel export:', error);
     }
   }
 

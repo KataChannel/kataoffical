@@ -209,6 +209,7 @@ export class DonhangService {
       return console.error(error);
     }
   }
+
   async searchCongno(SearchParams: any) {
     const payload = {...SearchParams}
     // ✅ Sử dụng getAPIDateRange để đảm bảo consistent date handling
@@ -235,6 +236,61 @@ export class DonhangService {
       return data
     } catch (error) {
       return console.error(error);
+    }
+  }
+  async downloadCongno(SearchParams: any) {
+    const payload = {...SearchParams}
+    // ✅ Sử dụng getAPIDateRange để đảm bảo consistent date handling
+    if (payload.Batdau || payload.Ketthuc) {
+      const dateRange = this.timezoneService.getAPIDateRange(payload.Batdau, payload.Ketthuc);
+      payload.Batdau = dateRange.Batdau;
+      payload.Ketthuc = dateRange.Ketthuc;
+    }
+    try {
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer '+this._StorageService.getItem('token')
+        },
+        body: JSON.stringify(payload),
+      };
+      const response = await fetch(`${environment.APIURL}/donhang/downloadcongnokhachhang`, options);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Get filename from Content-Disposition header
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'CongNoKhachHang.xlsx';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, '');
+        }
+      }
+
+      // Get blob data
+      const blob = await response.blob();
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      return { success: true, filename };
+    } catch (error) {
+      console.error('Error downloading congno:', error);
+      throw error;
     }
   }
 

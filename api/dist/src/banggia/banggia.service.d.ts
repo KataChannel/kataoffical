@@ -28,9 +28,9 @@ export declare class BanggiaService {
     createBanggia(data: any): Promise<{
         sanpham: {
             id: string;
-            giaban: number;
             order: number | null;
             isActive: boolean;
+            giaban: number;
             banggiaId: string;
             sanphamId: string;
         }[];
@@ -94,7 +94,6 @@ export declare class BanggiaService {
             dvt: string | null;
             hinhanh: string | null;
             loadpoint: number | null;
-            vat: import("@prisma/client/runtime/library").Decimal | null;
             soluong: import("@prisma/client/runtime/library").Decimal | null;
             soluongkho: import("@prisma/client/runtime/library").Decimal | null;
             haohut: number;
@@ -103,6 +102,7 @@ export declare class BanggiaService {
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
+            vat: import("@prisma/client/runtime/library").Decimal | null;
         }[];
         khachhang: {
             id: string;
@@ -115,8 +115,6 @@ export declare class BanggiaService {
             name: string | null;
             diachi: string | null;
             sdt: string | null;
-            tenfile: string | null;
-            tenkh: string | null;
             namenn: string | null;
             makh: string;
             makhold: string | null;
@@ -128,8 +126,10 @@ export declare class BanggiaService {
             loaikh: string | null;
             hiengia: boolean;
             istitle2: boolean;
-            isshowvat: boolean;
+            tenfile: string | null;
+            tenkh: string | null;
             banggiaId: string | null;
+            isshowvat: boolean;
         }[];
         id: string;
         title: string | null;
@@ -148,9 +148,9 @@ export declare class BanggiaService {
     update(id: string, data: any): Promise<{
         sanpham: {
             id: string;
-            giaban: number;
             order: number | null;
             isActive: boolean;
+            giaban: number;
             banggiaId: string;
             sanphamId: string;
         }[];
