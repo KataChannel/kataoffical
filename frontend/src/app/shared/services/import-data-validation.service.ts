@@ -425,6 +425,7 @@ export class ImportDataValidationService {
       vat: Number(item.vat) || 0,
       dvt: item.dvt?.toString().trim() || '',
       haohut: Number(item.haohut) || 0,
+      loadpoint: Number(item.loadpoint) || '',
       ghichu: item.ghichu?.toString().trim() || '',
     }));
   }

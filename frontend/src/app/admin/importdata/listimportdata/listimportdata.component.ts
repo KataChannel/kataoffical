@@ -410,6 +410,7 @@ export class ListImportdataComponent implements OnInit {
               vat: item.vat,
               dvt: item.dvt,
               haohut: item.haohut,
+              loadpoint: item.loadpoint,
               ghichu: item.ghichu,
             }))
           : [
