@@ -398,10 +398,10 @@ export class DonhangService {
       { key: 'soluong', header: 'Số Lượng', width: 12 },
       { key: 'dongia', header: 'Đơn Giá', width: 15 },
       { key: 'thanhtientruocvat', header: 'Thành Tiền Trước VAT', width: 20 },
+      { key: 'ghichu', header: 'Ghi Chú', width: 20 },
       { key: 'vat', header: 'VAT (%)', width: 10 },
       { key: 'dongiavathoadon', header: 'Đơn Giá VAT', width: 15 },
       { key: 'thanhtiensauvat', header: 'Thành Tiền Sau VAT', width: 20 },
-      { key: 'ghichu', header: 'Ghi Chú', width: 20 },
       { key: 'tongtiensauvat', header: 'Tổng Tiền Sau Thuế', width: 20 }
     ];
 
@@ -1242,10 +1242,12 @@ export class DonhangService {
       // Get khachhang data
       const khachhang = await prisma.khachhang.findUnique({
         where: { id: dto.khachhangId },
+        include: { banggia: true },
       });
       if (!khachhang) {
         throw new NotFoundException('Khách hàng không tồn tại');
       }
+
       const newDonhang = await prisma.donhang.create({
         data: {
           title: dto.title,
@@ -1253,7 +1255,7 @@ export class DonhangService {
           madonhang: madonhang,
           ngaygiao: new Date(dto.ngaygiao),
           khachhangId: dto.khachhangId,
-          banggiaId: dto.banggiaId,
+          banggiaId: dto.banggiaId||khachhang.banggiaId,
           vat: parseFloat((dto.vat || 0.05).toString()), // Default 5% VAT
           isActive: dto.isActive,
           order: maxOrder + 1,

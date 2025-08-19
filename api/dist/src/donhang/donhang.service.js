@@ -327,10 +327,10 @@ let DonhangService = class DonhangService {
             { key: 'soluong', header: 'Số Lượng', width: 12 },
             { key: 'dongia', header: 'Đơn Giá', width: 15 },
             { key: 'thanhtientruocvat', header: 'Thành Tiền Trước VAT', width: 20 },
+            { key: 'ghichu', header: 'Ghi Chú', width: 20 },
             { key: 'vat', header: 'VAT (%)', width: 10 },
             { key: 'dongiavathoadon', header: 'Đơn Giá VAT', width: 15 },
             { key: 'thanhtiensauvat', header: 'Thành Tiền Sau VAT', width: 20 },
-            { key: 'ghichu', header: 'Ghi Chú', width: 20 },
             { key: 'tongtiensauvat', header: 'Tổng Tiền Sau Thuế', width: 20 }
         ];
         worksheet.columns = columns;
@@ -996,6 +996,7 @@ let DonhangService = class DonhangService {
         return this.prisma.$transaction(async (prisma) => {
             const khachhang = await prisma.khachhang.findUnique({
                 where: { id: dto.khachhangId },
+                include: { banggia: true },
             });
             if (!khachhang) {
                 throw new common_1.NotFoundException('Khách hàng không tồn tại');
@@ -1007,7 +1008,7 @@ let DonhangService = class DonhangService {
                     madonhang: madonhang,
                     ngaygiao: new Date(dto.ngaygiao),
                     khachhangId: dto.khachhangId,
-                    banggiaId: dto.banggiaId,
+                    banggiaId: dto.banggiaId || khachhang.banggiaId,
                     vat: parseFloat((dto.vat || 0.05).toString()),
                     isActive: dto.isActive,
                     order: maxOrder + 1,
