@@ -233,7 +233,7 @@ export class XuatnhaptonComponent {
 
   // Method to delete chot kho
   async deleteChotkho(row: any) {
-    if (confirm('Bạn có chắc chắn muốn xóa chốt kho này?')) {
+    // if (confirm('Bạn có chắc chắn muốn xóa chốt kho này?')) {
       try {
         await this._ChotkhoService.DeleteChotkho(row);
         this._snackBar.open('Xóa chốt kho thành công', '', {
@@ -243,7 +243,7 @@ export class XuatnhaptonComponent {
           panelClass: ['snackbar-success'],
         });
         // Reload data
-        await this.LoadDondathang();
+        // await this.LoadDondathang();
       } catch (error) {
         console.error('Error deleting chot kho:', error);
         this._snackBar.open('Lỗi khi xóa chốt kho', '', {
@@ -253,7 +253,7 @@ export class XuatnhaptonComponent {
           panelClass: ['snackbar-error'],
         });
       }
-    }
+    // }
   }
 
   private initializeColumns(): void {

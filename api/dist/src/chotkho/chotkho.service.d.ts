@@ -144,6 +144,35 @@ export declare class ChotkhoService {
             } | null;
             email: string | null;
         } | null;
+        sanpham: {
+            id: string;
+            title: string;
+            title2: string | null;
+            slug: string | null;
+            masp: string;
+            subtitle: string | null;
+            giagoc: import("@prisma/client/runtime/library").Decimal;
+            dvt: string | null;
+            hinhanh: string | null;
+            loadpoint: import("@prisma/client/runtime/library").Decimal | null;
+            soluong: import("@prisma/client/runtime/library").Decimal | null;
+            soluongkho: import("@prisma/client/runtime/library").Decimal | null;
+            haohut: import("@prisma/client/runtime/library").Decimal;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            giaban: import("@prisma/client/runtime/library").Decimal;
+            vat: import("@prisma/client/runtime/library").Decimal | null;
+        } | null;
+        tonkho: {
+            id: string;
+            sanphamId: string;
+            slton: import("@prisma/client/runtime/library").Decimal;
+            slchogiao: import("@prisma/client/runtime/library").Decimal;
+            slchonhap: import("@prisma/client/runtime/library").Decimal;
+        } | null;
     } & {
         id: string;
         title: string | null;
@@ -164,23 +193,33 @@ export declare class ChotkhoService {
         chenhlech: import("@prisma/client/runtime/library").Decimal | null;
     }>;
     remove(id: string): Promise<{
-        id: string;
-        title: string | null;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        codeId: string | null;
-        khoId: string | null;
-        ngay: Date;
-        sanphamId: string | null;
-        userId: string | null;
-        tonkhoId: string | null;
-        phieukhoId: string | null;
-        slthucte: import("@prisma/client/runtime/library").Decimal;
-        slhethong: import("@prisma/client/runtime/library").Decimal;
-        chenhlech: import("@prisma/client/runtime/library").Decimal | null;
+        deleted: {
+            id: string;
+            title: string | null;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            codeId: string | null;
+            khoId: string | null;
+            ngay: Date;
+            sanphamId: string | null;
+            userId: string | null;
+            tonkhoId: string | null;
+            phieukhoId: string | null;
+            slthucte: import("@prisma/client/runtime/library").Decimal;
+            slhethong: import("@prisma/client/runtime/library").Decimal;
+            chenhlech: import("@prisma/client/runtime/library").Decimal | null;
+        };
+        restoredInventory: boolean;
+        deletedPhieukho: boolean;
+    }>;
+    bulkDelete(ids: string[]): Promise<{
+        deleted: number;
+        failed: number;
+        errors: any[];
+        status: string;
     }>;
     findByDateRange(startDate: string, endDate?: string, page?: number, limit?: number): Promise<{
         data: {

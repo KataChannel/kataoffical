@@ -531,27 +531,71 @@ let ChotkhoService = class ChotkhoService {
     }
     async update(id, data) {
         try {
-            const updated = await this.prisma.chotkho.update({
-                where: { id },
-                data: {
-                    ...data,
-                    updatedAt: new Date(),
-                },
-                include: {
-                    user: {
-                        select: {
-                            id: true,
-                            email: true,
-                            profile: {
-                                select: {
-                                    name: true,
+            const result = await this.prisma.$transaction(async (prisma) => {
+                const currentChotkho = await prisma.chotkho.findUnique({
+                    where: { id },
+                    include: {
+                        tonkho: true,
+                        sanpham: true,
+                    }
+                });
+                if (!currentChotkho) {
+                    throw new common_1.NotFoundException(`Chotkho with ID ${id} not found`);
+                }
+                let updatedData = { ...data };
+                if (data.slthucte !== undefined || data.slhethong !== undefined) {
+                    const newSlthucte = Number(data.slthucte ?? currentChotkho.slthucte);
+                    const newSlhethong = Number(data.slhethong ?? currentChotkho.slhethong);
+                    updatedData.chenhlech = Number((newSlthucte - newSlhethong).toFixed(3));
+                }
+                if (data.isCompleted || data.isDeliveryCompleted || data.isReceiptCompleted) {
+                    updatedData.slchogiao = 0;
+                    updatedData.slchonhap = 0;
+                }
+                if (currentChotkho.tonkhoId && updatedData.chenhlech !== undefined) {
+                    const oldChenhlech = Number(currentChotkho.chenhlech);
+                    const newChenhlech = Number(updatedData.chenhlech);
+                    const chenhlechDiff = newChenhlech - oldChenhlech;
+                    if (Math.abs(chenhlechDiff) > 0.001) {
+                        const currentTonkho = await prisma.tonKho.findUnique({
+                            where: { id: currentChotkho.tonkhoId }
+                        });
+                        if (currentTonkho) {
+                            const newSlton = Number(currentTonkho.slton) + chenhlechDiff;
+                            await prisma.tonKho.update({
+                                where: { id: currentChotkho.tonkhoId },
+                                data: {
+                                    slton: Math.max(0, Number(newSlton.toFixed(3)))
+                                }
+                            });
+                        }
+                    }
+                }
+                const updated = await prisma.chotkho.update({
+                    where: { id },
+                    data: {
+                        ...updatedData,
+                        updatedAt: new Date(),
+                    },
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                email: true,
+                                profile: {
+                                    select: {
+                                        name: true,
+                                    },
                                 },
                             },
                         },
+                        sanpham: true,
+                        tonkho: true,
                     },
-                },
+                });
+                return updated;
             });
-            return updated;
+            return result;
         }
         catch (error) {
             console.log('Error updating chotkho:', error);
@@ -560,11 +604,105 @@ let ChotkhoService = class ChotkhoService {
     }
     async remove(id) {
         try {
-            const deleted = await this.prisma.chotkho.delete({ where: { id } });
-            return deleted;
+            const result = await this.prisma.$transaction(async (prisma) => {
+                const chotkho = await prisma.chotkho.findUnique({
+                    where: { id },
+                    include: {
+                        phieukho: true,
+                        tonkho: true,
+                    }
+                });
+                if (!chotkho) {
+                    throw new common_1.NotFoundException(`Chotkho with ID ${id} not found`);
+                }
+                if (chotkho.phieukhoId) {
+                    await prisma.phieuKho.delete({
+                        where: { id: chotkho.phieukhoId }
+                    });
+                }
+                if (chotkho.tonkhoId && Number(chotkho.chenhlech) !== 0) {
+                    const currentTonkho = await prisma.tonKho.findUnique({
+                        where: { id: chotkho.tonkhoId }
+                    });
+                    if (currentTonkho) {
+                        const restoredSlton = Number(currentTonkho.slton) - Number(chotkho.chenhlech);
+                        await prisma.tonKho.update({
+                            where: { id: chotkho.tonkhoId },
+                            data: {
+                                slton: Math.max(0, restoredSlton)
+                            }
+                        });
+                    }
+                }
+                const deleted = await prisma.chotkho.delete({ where: { id } });
+                return {
+                    deleted,
+                    restoredInventory: chotkho.tonkhoId ? true : false,
+                    deletedPhieukho: chotkho.phieukhoId ? true : false
+                };
+            });
+            return result;
         }
         catch (error) {
             console.log('Error removing chotkho:', error);
+            throw error;
+        }
+    }
+    async bulkDelete(ids) {
+        try {
+            const result = await this.prisma.$transaction(async (prisma) => {
+                const deletedRecords = [];
+                const errors = [];
+                for (const id of ids) {
+                    try {
+                        const chotkho = await prisma.chotkho.findUnique({
+                            where: { id },
+                            include: {
+                                phieukho: true,
+                                tonkho: true,
+                            }
+                        });
+                        if (!chotkho) {
+                            errors.push({ id, error: 'Record not found' });
+                            continue;
+                        }
+                        if (chotkho.phieukhoId) {
+                            await prisma.phieuKho.delete({
+                                where: { id: chotkho.phieukhoId }
+                            });
+                        }
+                        if (chotkho.tonkhoId && Number(chotkho.chenhlech) !== 0) {
+                            const currentTonkho = await prisma.tonKho.findUnique({
+                                where: { id: chotkho.tonkhoId }
+                            });
+                            if (currentTonkho) {
+                                const restoredSlton = Number(currentTonkho.slton) - Number(chotkho.chenhlech);
+                                await prisma.tonKho.update({
+                                    where: { id: chotkho.tonkhoId },
+                                    data: {
+                                        slton: Math.max(0, restoredSlton)
+                                    }
+                                });
+                            }
+                        }
+                        const deleted = await prisma.chotkho.delete({ where: { id } });
+                        deletedRecords.push(deleted);
+                    }
+                    catch (error) {
+                        errors.push({ id, error: error.message });
+                    }
+                }
+                return {
+                    deleted: deletedRecords.length,
+                    failed: errors.length,
+                    errors,
+                    status: errors.length === 0 ? 'success' : (deletedRecords.length > 0 ? 'partial' : 'failed')
+                };
+            });
+            return result;
+        }
+        catch (error) {
+            console.log('Error bulk deleting chotkho:', error);
             throw error;
         }
     }

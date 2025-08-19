@@ -97,6 +97,14 @@ let ChotkhoController = class ChotkhoController {
             throw new common_1.HttpException(error.message || 'Delete failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async bulkDelete(data) {
+        try {
+            return await this.chotkhoService.bulkDelete(data.ids);
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Bulk delete failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async findByKho(khoId, page = '1', limit = '20') {
         try {
             const pageNum = parseInt(page, 10);
@@ -265,6 +273,26 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ChotkhoController.prototype, "remove", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Bulk delete chotkho records' }),
+    (0, swagger_1.ApiBody)({
+        type: Object,
+        description: 'Array of chotkho IDs to delete',
+        schema: {
+            properties: {
+                ids: { type: 'array', items: { type: 'string' } }
+            }
+        }
+    }),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Delete)('bulk-delete'),
+    (0, audit_decorator_1.Audit)({ entity: 'Chotkho', action: client_1.AuditAction.DELETE, includeResponse: true }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "bulkDelete", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get chotkho records by kho ID' }),
     (0, swagger_1.ApiParam)({ name: 'khoId', type: String, description: 'ID of the kho (warehouse)' }),

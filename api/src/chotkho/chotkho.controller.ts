@@ -135,6 +135,28 @@ export class ChotkhoController {
     }
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Bulk delete chotkho records' })
+  @ApiBody({ 
+    type: Object,
+    description: 'Array of chotkho IDs to delete',
+    schema: {
+      properties: {
+        ids: { type: 'array', items: { type: 'string' } }
+      }
+    }
+  })
+  @UseGuards(JwtAuthGuard)
+  @Delete('bulk-delete')
+  @Audit({ entity: 'Chotkho', action: AuditAction.DELETE, includeResponse: true })
+  async bulkDelete(@Body() data: { ids: string[] }) {
+    try {
+      return await this.chotkhoService.bulkDelete(data.ids);
+    } catch (error) {
+      throw new HttpException(error.message || 'Bulk delete failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   // NEW ENDPOINTS BELOW
 
   @ApiOperation({ summary: 'Get chotkho records by kho ID' })

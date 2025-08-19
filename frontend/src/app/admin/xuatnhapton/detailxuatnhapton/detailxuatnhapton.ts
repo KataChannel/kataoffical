@@ -258,6 +258,17 @@ export class DetailXuatnhaptonComponent {
 
       // Prepare updated data
       const chotkhoData = this.prepareChotkhoData();
+      const currentId = this._ChotkhoService.chotkhoId();
+      
+      if (!currentId || currentId === 'new') {
+        this._snackBar.open('❌ Không thể cập nhật: Không tìm thấy ID chốt kho', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+        return;
+      }
       
       // Show progress notification
       this._snackBar.open('Đang cập nhật chốt kho...', '', {
@@ -267,7 +278,7 @@ export class DetailXuatnhaptonComponent {
         panelClass: ['snackbar-info'],
       });
 
-      const result = await this._ChotkhoService.updateChotkho(chotkhoData);
+      const result = await this._ChotkhoService.updateChotkho(currentId, chotkhoData);
       
       // Dismiss progress notification
       this._snackBar.dismiss();
@@ -328,7 +339,7 @@ export class DetailXuatnhaptonComponent {
       }
       
       // Show confirmation for dangerous operation
-      const confirmDelete = confirm('⚠️ Bạn có chắc chắn muốn xóa chốt kho này? Thao tác này không thể hoàn tác.');
+      const confirmDelete = confirm('⚠️ Bạn có chắc chắn muốn xóa chốt kho này? Thao tác này sẽ hoàn tác các thay đổi tồn kho và không thể khôi phục.');
       if (!confirmDelete) {
         return;
       }
@@ -340,22 +351,56 @@ export class DetailXuatnhaptonComponent {
         verticalPosition: 'top',
         panelClass: ['snackbar-info'],
       });
-
-      const result = await this._ChotkhoService.DeleteChotkho(chotkhoData);
+      
+      const currentId = this._ChotkhoService.chotkhoId();
+      
+      // 🎯 Enhanced delete with bulk operation if multiple records
+      let result;
+      if (Array.isArray(chotkhoData) && chotkhoData.length > 1) {
+        // Bulk delete for multiple records
+        const ids = chotkhoData.map((item: any) => item.id).filter(Boolean);
+        if (ids.length > 0) {
+          result = await this._ChotkhoService.bulkDeleteChotkho(ids);
+        } else {
+          // Fallback to delete by date
+          result = await this._ChotkhoService.DeleteChotkho(currentId);
+        }
+      } else {
+        // Single delete
+        result = await this._ChotkhoService.DeleteChotkho(currentId);
+      }
       
       // Dismiss progress notification
       this._snackBar.dismiss();
 
       if (result) {
-        this._snackBar.open('✅ Xóa Chốt Kho Thành Công', '', {
-          duration: 2000,
+        let message = '✅ Xóa Chốt Kho Thành Công';
+        
+        // Enhanced success message based on result type
+        if (result.deleted !== undefined) {
+          message += ` - Đã xóa ${result.deleted} bản ghi`;
+          if (result.failed > 0) {
+            message += `, ${result.failed} lỗi`;
+          }
+          if (result.restoredInventory || result.deletedPhieukho) {
+            message += ' | Đã hoàn tác thay đổi tồn kho';
+          }
+        }
+
+        this._snackBar.open(message, '', {
+          duration: 4000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
         });
 
-        // Navigate back to list
+        // Navigate back to list and refresh
         this._router.navigate(['/admin/xuatnhapton']);
+        this._XuatnhaptonComponent.drawer.close();
+        
+        // Refresh the main list
+        await this.refreshChotkhoData();
+        
       } else {
         this._snackBar.open('❌ Không thể xóa chốt kho', '', {
           duration: 3000,
@@ -375,7 +420,7 @@ export class DetailXuatnhaptonComponent {
         : 'Lỗi hệ thống khi xóa chốt kho';
         
       this._snackBar.open(`❌ ${errorMessage}`, '', {
-        duration: 4000,
+        duration: 5000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
