@@ -743,24 +743,18 @@ let DathangService = class DathangService {
                 for (const item of data.sanpham) {
                     const receivedQty = parseFloat((Number(item.slnhan) ?? 0).toFixed(3));
                     const shippedQty = parseFloat((Number(item.slgiao) ?? 0).toFixed(3));
+                    await prisma.tonKho.update({
+                        where: { sanphamId: item.idSP },
+                        data: { slton: { increment: receivedQty } },
+                    });
                     if (receivedQty < shippedQty) {
                         const shortage = shippedQty - receivedQty;
-                        await prisma.tonKho.update({
-                            where: { sanphamId: item.idSP },
-                            data: { slton: { increment: shortage } },
-                        });
                         shortageItems.push({
-                            sanphamId: item.id,
+                            sanphamId: item.idSP,
                             soluong: shortage,
                             ghichu: item.ghichu
                                 ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
                                 : `Thiếu ${shortage.toFixed(3)}`,
-                        });
-                    }
-                    else if (receivedQty === shippedQty) {
-                        await prisma.tonKho.update({
-                            where: { sanphamId: item.idSP },
-                            data: { slton: { increment: receivedQty } },
                         });
                     }
                 }

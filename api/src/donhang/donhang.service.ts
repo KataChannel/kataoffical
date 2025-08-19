@@ -1175,18 +1175,16 @@ export class DonhangService {
     const letterValue =
       (letters.charCodeAt(0) - 65) * 26 + (letters.charCodeAt(1) - 65);
 
-    return letterValue * 99999 + (number - 1) + 1;
+    return letterValue * 100000 + number;
   }
 
   async DonhangnumberToCode(number: any) {
-    if (number < 1 || number > 676 * 99999) {
+    if (number < 1 || number > 676 * 100000) {
       throw new Error('Số thứ tự không hợp lệ');
     }
 
-    number -= 1;
-
-    const letterValue = Math.floor(number / 99999);
-    const numValue = (number % 99999) + 1;
+    const letterValue = Math.floor(number / 100000);
+    const numValue = number % 100000;
 
     const firstLetter = String.fromCharCode(65 + Math.floor(letterValue / 26));
     const secondLetter = String.fromCharCode(65 + (letterValue % 26));
@@ -1590,15 +1588,19 @@ export class DonhangService {
           soluong: number;
           ghichu?: string;
         }[] = [];
+        
         for (const item of data.sanpham) {
           const receivedQty = parseFloat((item.slnhan ?? 0).toFixed(3));
           const shippedQty = parseFloat((item.slgiao ?? 0).toFixed(3));
+          
           if (receivedQty < shippedQty) {
+            // Xử lý hao hụt: hoàn lại tồn kho cho phần thiếu
             const shortage = shippedQty - receivedQty;
             await prisma.tonKho.update({
               where: { sanphamId: item.id },
-              data: { slton: { increment: shortage } },
+              data: { slton: { increment: shortage } }, // Hoàn lại số lượng thiếu vào tồn kho
             });
+            
             shortageItems.push({
               sanphamId: item.id,
               soluong: shortage,
@@ -1606,12 +1608,8 @@ export class DonhangService {
                 ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
                 : `Thiếu ${shortage.toFixed(3)}`,
             });
-          } else if (receivedQty === shippedQty) {
-            await prisma.tonKho.update({
-              where: { sanphamId: item.id },
-              data: { slton: { decrement: receivedQty } },
-            });
           }
+          // Không cần làm gì thêm nếu slnhan === slgiao vì tồn kho đã được giảm ở bước DAGIAO
         }
         if (shortageItems.length > 0) {
           const maphieuNhap = `PN-${data.madonhang}-RET-${this.formatDateForFilename()}`;

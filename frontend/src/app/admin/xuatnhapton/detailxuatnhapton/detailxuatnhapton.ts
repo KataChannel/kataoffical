@@ -112,49 +112,105 @@ export class DetailXuatnhaptonComponent {
   private async createXuatnhapton() {
     try {
       this.isSaving.set(true);
-      const result = await this._ChotkhoService.CreateChotkho(this.ListChotkho());
       
-      // Check if result has the expected structure
+      // Validate data before creating
+      const validationResult = this.validateChotkhoData();
+      if (!validationResult.isValid) {
+        this._snackBar.open(`Dữ liệu không hợp lệ: ${validationResult.errors.join(', ')}`, '', {
+          duration: 4000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+        return;
+      }
+
+      // Prepare data with enhanced metadata
+      const chotkhoData = this.prepareChotkhoData();
+      
+      // Show progress notification
+      this._snackBar.open('Đang xử lý chốt kho...', '', {
+        duration: 0,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-warning'],
+      });
+
+      const result = await this._ChotkhoService.CreateChotkho(chotkhoData);
+      
+      // Dismiss progress notification
+      this._snackBar.dismiss();
+      
+      // Enhanced result handling with detailed feedback
       if (result && result.status === 'success') {
         const { created, updated, failed, summary } = result;
         
-        let message = 'Tạo Mới Thành Công';
-        if (summary) {
-          message += ` - Đã xử lý: ${summary.totalProcessed || 0} bản ghi`;
-          if (created > 0) message += `, Tạo mới: ${created}`;
-          if (updated > 0) message += `, Cập nhật: ${updated}`;
-          if (failed > 0) message += `, Lỗi: ${failed}`;
-        } else if (created || updated) {
-          message += ` - Tạo mới: ${created || 0}, Cập nhật: ${updated || 0}`;
-          if (failed > 0) message += `, Lỗi: ${failed}`;
+        let message = '✅ Chốt Kho Thành Công';
+        const details = [];
+        
+        if (summary?.totalProcessed) {
+          details.push(`Xử lý: ${summary.totalProcessed} bản ghi`);
         }
+        if (created > 0) details.push(`Tạo mới: ${created}`);
+        if (updated > 0) details.push(`Cập nhật: ${updated}`);
+        if (summary?.phieukhoCreated) details.push(`Phiếu kho: ${summary.phieukhoCreated}`);
+        if (summary?.tonkhoUpdated) details.push(`Cập nhật tồn: ${summary.tonkhoUpdated}`);
+        if (failed > 0) details.push(`❌ Lỗi: ${failed}`);
         
-        this._snackBar.open(message, '', {
-          duration: 3000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
-        
-        this.isEdit.update(value => !value);
-      } else if (result && result.status === 'partial') {
-        // Handle partial success
-        const { created, updated, failed, errors } = result;
-        let message = `Hoàn thành một phần - Tạo mới: ${created || 0}, Cập nhật: ${updated || 0}`;
-        if (failed > 0) message += `, Lỗi: ${failed}`;
+        if (details.length > 0) {
+          message += ` | ${details.join(', ')}`;
+        }
         
         this._snackBar.open(message, '', {
           duration: 4000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+        
+        // Auto-refresh and update UI state
+        await this.refreshChotkhoData();
+        this.isEdit.update(value => !value);
+        
+      } else if (result && result.status === 'partial') {
+        // Enhanced partial success handling
+        const { created, updated, failed, errors } = result;
+        let message = `⚠️ Hoàn thành một phần: Tạo mới ${created || 0}, Cập nhật ${updated || 0}`;
+        if (failed > 0) message += `, Lỗi ${failed}`;
+        
+        // Show detailed errors if available
+        if (errors && errors.length > 0) {
+          console.warn('Chi tiết lỗi chốt kho:', errors);
+          const errorSummary = errors.slice(0, 3).map((e: any) => e.error || e.message).join('; ');
+          message += `. Chi tiết: ${errorSummary}`;
+        }
+        
+        this._snackBar.open(message, '', {
+          duration: 6000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
           panelClass: ['snackbar-warning'],
         });
         
+        await this.refreshChotkhoData();
         this.isEdit.update(value => !value);
+        
+      } else if (result && result.status === 'failed') {
+        // Enhanced failure handling
+        const errorMessage = result.errors && result.errors.length > 0 
+          ? result.errors[0].error || 'Lỗi không xác định'
+          : 'Không thể tạo chốt kho';
+          
+        this._snackBar.open(`❌ Tạo chốt kho thất bại: ${errorMessage}`, '', {
+          duration: 5000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
       } else {
-        // Handle unexpected response format
-        this._snackBar.open('Tạo Mới Thành Công', '', {
-          duration: 1000,
+        // Fallback for unexpected response format
+        this._snackBar.open('✅ Tạo Chốt Kho Thành Công', '', {
+          duration: 2000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
@@ -163,9 +219,18 @@ export class DetailXuatnhaptonComponent {
         this.isEdit.update(value => !value);
       }
     } catch (error) {
-      console.error('Lỗi khi tạo xuatnhapton:', error);
-      this._snackBar.open('Lỗi khi tạo chốt kho', '', {
-        duration: 3000,
+      console.error('Lỗi tạo chốt kho:', error);
+      
+      // Dismiss any existing notifications
+      this._snackBar.dismiss();
+      
+      // Enhanced error message
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Lỗi hệ thống khi tạo chốt kho';
+        
+      this._snackBar.open(`❌ ${errorMessage}`, '', {
+        duration: 5000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
@@ -178,18 +243,66 @@ export class DetailXuatnhaptonComponent {
   private async updateXuatnhapton() {
     try {
       this.isSaving.set(true);
-      await this._ChotkhoService.updateChotkho(this.ListChotkho());
-      this._snackBar.open('Cập Nhật Thành Công', '', {
-        duration: 1000,
+      
+      // Validate data before updating
+      const validationResult = this.validateChotkhoData();
+      if (!validationResult.isValid) {
+        this._snackBar.open(`Dữ liệu không hợp lệ: ${validationResult.errors.join(', ')}`, '', {
+          duration: 4000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+        return;
+      }
+
+      // Prepare updated data
+      const chotkhoData = this.prepareChotkhoData();
+      
+      // Show progress notification
+      this._snackBar.open('Đang cập nhật chốt kho...', '', {
+        duration: 0,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
+        panelClass: ['snackbar-info'],
       });
-      this.isEdit.update(value => !value);
+
+      const result = await this._ChotkhoService.updateChotkho(chotkhoData);
+      
+      // Dismiss progress notification
+      this._snackBar.dismiss();
+      
+      if (result) {
+        this._snackBar.open('✅ Cập Nhật Chốt Kho Thành Công', '', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+        
+        // Auto-refresh and update UI state
+        await this.refreshChotkhoData();
+        this.isEdit.update(value => !value);
+      } else {
+        this._snackBar.open('❌ Không thể cập nhật chốt kho', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
     } catch (error) {
-      console.error('Lỗi khi cập nhật xuatnhapton:', error);
-      this._snackBar.open('Lỗi khi cập nhật chốt kho', '', {
-        duration: 3000,
+      console.error('Lỗi cập nhật chốt kho:', error);
+      
+      // Dismiss any existing notifications
+      this._snackBar.dismiss();
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Lỗi hệ thống khi cập nhật chốt kho';
+        
+      this._snackBar.open(`❌ ${errorMessage}`, '', {
+        duration: 4000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
@@ -202,20 +315,67 @@ export class DetailXuatnhaptonComponent {
   async DeleteData() {
     try {
       this.isSaving.set(true);
-      await this._ChotkhoService.DeleteChotkho(this.ListChotkho());
-
-      this._snackBar.open('Xóa Thành Công', '', {
-        duration: 1000,
+      
+      const chotkhoData = this.ListChotkho();
+      if (!chotkhoData || (Array.isArray(chotkhoData) && chotkhoData.length === 0)) {
+        this._snackBar.open('❌ Không có dữ liệu để xóa', '', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning'],
+        });
+        return;
+      }
+      
+      // Show confirmation for dangerous operation
+      const confirmDelete = confirm('⚠️ Bạn có chắc chắn muốn xóa chốt kho này? Thao tác này không thể hoàn tác.');
+      if (!confirmDelete) {
+        return;
+      }
+      
+      // Show progress notification
+      this._snackBar.open('Đang xóa chốt kho...', '', {
+        duration: 0,
         horizontalPosition: 'end',
         verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
+        panelClass: ['snackbar-info'],
       });
 
-      this._router.navigate(['/admin/xuatnhapton']);
+      const result = await this._ChotkhoService.DeleteChotkho(chotkhoData);
+      
+      // Dismiss progress notification
+      this._snackBar.dismiss();
+
+      if (result) {
+        this._snackBar.open('✅ Xóa Chốt Kho Thành Công', '', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+
+        // Navigate back to list
+        this._router.navigate(['/admin/xuatnhapton']);
+      } else {
+        this._snackBar.open('❌ Không thể xóa chốt kho', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
     } catch (error) {
-      console.error('Lỗi khi xóa xuatnhapton:', error);
-      this._snackBar.open('Lỗi khi xóa chốt kho', '', {
-        duration: 3000,
+      console.error('Lỗi xóa chốt kho:', error);
+      
+      // Dismiss any existing notifications
+      this._snackBar.dismiss();
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Lỗi hệ thống khi xóa chốt kho';
+        
+      this._snackBar.open(`❌ ${errorMessage}`, '', {
+        duration: 4000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
@@ -254,105 +414,159 @@ export class DetailXuatnhaptonComponent {
     return Math.round((num + Number.EPSILON) * Math.pow(10, decimals)) / Math.pow(10, decimals);
   }
 
+  // Enhanced file validation method
+  private validateExcelFile(file: File): { isValid: boolean; error?: string } {
+    // Validate file type
+    const validTypes = [
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 
+      'application/vnd.ms-excel',
+      'application/wps-office.xlsx'
+    ];
+    
+    if (!validTypes.includes(file.type)) {
+      return { isValid: false, error: 'Chỉ hỗ trợ file Excel (.xlsx, .xls)' };
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      return { isValid: false, error: 'File quá lớn. Vui lòng chọn file nhỏ hơn 10MB' };
+    }
+
+    // Validate file name
+    if (!file.name || file.name.trim() === '') {
+      return { isValid: false, error: 'Tên file không hợp lệ' };
+    }
+
+    return { isValid: true };
+  }
+
+  // Enhanced number parsing with validation
+  private parseAndValidateNumber(value: any, fieldName: string): number {
+    const parsed = parseFloat(value?.toString() || '0');
+    if (isNaN(parsed)) {
+      console.warn(`${fieldName} không hợp lệ:`, value);
+      return 0;
+    }
+    return this.roundToDecimal(parsed, 3);
+  }
+
   async uploadExcelFile(file: File) {    
     try {
       this.isUploading.set(true);
       this.uploadResult.set(null);
 
+      // Enhanced file validation
+      const validationResult = this.validateExcelFile(file);
+      if (!validationResult.isValid) {
+        throw new Error(validationResult.error!);
+      }
+
       // Show loading notification
-      this._snackBar.open('Đang xử lý file Excel...', '', {
-        duration: 0, // Keep open until manually dismissed
+      this._snackBar.open('🔄 Đang xử lý file Excel...', '', {
+        duration: 0,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-info'],
       });
 
-      // Validate file type
-      const validTypes = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel','application/wps-office.xlsx'];
-      if (!validTypes.includes(file.type)) {
-        throw new Error('Chỉ hỗ trợ file Excel (.xlsx, .xls)');
-      }
-
-      // Validate file size (max 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        throw new Error('File quá lớn. Vui lòng chọn file nhỏ hơn 10MB');
-      }
-
       const data = await this.readExcelFile(file);
       const processedData = this.processExcelData(data).filter(item => item.masp && item.slton >= 0);
       
-      // Validate processed data
+      // Enhanced validation
       if (processedData.length === 0) {
-        throw new Error('File Excel không có dữ liệu hợp lệ');
+        throw new Error('File Excel không có dữ liệu hợp lệ. Vui lòng kiểm tra định dạng file.');
       }
 
-      // Upload to backend
-      const result: any = processedData;
+      // Get inventory data
       const Listmasp = processedData.map((item: any) => item.masp);
       const Listtonkho = await this._ChotkhoService.getListSanphamTonKho(Listmasp);
       
-      console.log('List sản phẩm tồn kho:', Listtonkho);
-      console.log('Processed Data:', result);
+      console.log('📊 Dữ liệu tồn kho đã tải:', Listtonkho);
+      console.log('📋 Dữ liệu Excel đã xử lý:', processedData);
       
-      const Chotkho = result.map((item: any) => {
+      // Enhanced data mapping
+      const Chotkho = processedData.map((item: any) => {
         const sanpham = Listtonkho.find((sp: any) => sp.sanpham?.masp === item.masp);
-        console.log('sanpham:', sanpham);
         
-        // Use proper number handling to avoid floating point issues
-        const slthucte = this.roundToDecimal(Number(item.slton), 2);
-        const slhethong = sanpham ? this.roundToDecimal(Number(sanpham.slton), 2) : 0;
-        const chenhlech = this.roundToDecimal(slthucte - slhethong, 2);
+        // Enhanced number handling with validation
+        const slthucte = this.parseAndValidateNumber(item.slton, 'Số lượng thực tế');
+        const slhethong = sanpham ? this.parseAndValidateNumber(sanpham.slton, 'Số lượng hệ thống') : 0;
+        const chenhlech = this.roundToDecimal(slthucte - slhethong, 3);
         
         return {
           khoId: sanpham ? sanpham.khoId : null,
-          sanphamId: sanpham ? sanpham.sanphamId : null, // Fixed: should be sanphamId not id
+          sanphamId: sanpham ? sanpham.sanphamId : null,
           masp: item.masp,
-          tonkhoId: sanpham ? sanpham.id : null, // This should be the tonkho record ID
+          tonkhoId: sanpham ? sanpham.id : null,
           phieukhoId: null,
           ngay: this._timezoneService.nowUTC(),
           slthucte: slthucte,
           slhethong: slhethong,
           chenhlech: chenhlech,
-          ghichu: item.ghichu || '',
-          title: this.Title || '',
+          ghichu: item.ghichu || `Import từ Excel - ${this._timezoneService.nowLocal('DD/MM/YYYY HH:mm')}`,
+          title: this.Title || `Chốt kho ngày ${this._timezoneService.nowLocal('DD/MM/YYYY')}`,
           dvt: item.dvt || '',
-          // Add product details for display
-        sanpham: sanpham ? {
-        id: sanpham.sanphamId,
-        masp: sanpham.sanpham?.masp,
-        title: sanpham.sanpham?.title,
-        dvt: sanpham.sanpham?.dvt
-          } : null
+          
+          // Enhanced product details for display
+          sanpham: sanpham ? {
+            id: sanpham.sanphamId,
+            masp: sanpham.sanpham?.masp,
+            title: sanpham.sanpham?.title,
+            dvt: sanpham.sanpham?.dvt
+          } : {
+            id: null,
+            masp: item.masp,
+            title: item.title || 'Sản phẩm không tồn tại',
+            dvt: item.dvt || ''
+          },
+          
+          // Status indicators
+          hasInventoryData: !!sanpham,
+          importedFromExcel: true
         };
-      }).filter((item:any) => item.slthucte !== 0);
-
-      // Fix the update method - should update the array properly
-      this.ListChotkho.update((v: any) => {
-        v = Chotkho
-        return v
       });
 
-      console.log('Chốt kho data:', this.ListChotkho());
+      // Update the list
+      this.ListChotkho.update((v: any) => {
+        return Chotkho;
+      });
+
+      // Enhanced statistics
+      const stats = {
+        total: Chotkho.length,
+        withInventoryData: Chotkho.filter(item => item.hasInventoryData).length,
+        withoutInventoryData: Chotkho.filter(item => !item.hasInventoryData).length,
+        hasDiscrepancy: Chotkho.filter(item => Math.abs(item.chenhlech) > 0).length
+      };
+
+      console.log('📈 Thống kê chốt kho:', stats);
+      console.log('✅ Dữ liệu chốt kho cuối cùng:', this.ListChotkho());
       
       this.uploadResult.set({
         success: true,
-        message: 'Upload thành công',
+        message: 'Upload Excel thành công',
         importedCount: processedData.length,
-        data: result
+        statistics: stats,
+        data: processedData
       });
 
       // Dismiss loading notification
       this._snackBar.dismiss();
 
-      this._snackBar.open(`Upload Excel thành công - ${processedData.length} bản ghi`, '', {
-        duration: 3000,
+      // Enhanced success message
+      const successMessage = `✅ Upload Excel thành công - ${stats.total} bản ghi` +
+        (stats.withoutInventoryData > 0 ? ` (${stats.withoutInventoryData} sản phẩm chưa có trong kho)` : '') +
+        (stats.hasDiscrepancy > 0 ? ` | ${stats.hasDiscrepancy} có chênh lệch` : '');
+
+      this._snackBar.open(successMessage, '', {
+        duration: 4000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-success'],
       });
 
     } catch (error: any) {
-      console.error('Error uploading Excel:', error);
+      console.error('❌ Lỗi upload Excel:', error);
       
       // Dismiss loading notification
       this._snackBar.dismiss();
@@ -360,11 +574,11 @@ export class DetailXuatnhaptonComponent {
       this.uploadResult.set({
         success: false,
         message: error.message || 'Có lỗi xảy ra khi upload file',
-        errors: Array.isArray(error.details) ? error.details : []
+        errors: [error.message]
       });
 
-      this._snackBar.open('Lỗi upload Excel: ' + error.message, '', {
-        duration: 5000,
+      this._snackBar.open(`❌ Lỗi upload Excel: ${error.message}`, '', {
+        duration: 6000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
         panelClass: ['snackbar-error'],
@@ -526,5 +740,220 @@ export class DetailXuatnhaptonComponent {
   // Add a utility method for displaying numbers consistently
   formatNumber(value: number): string {
     return this.roundToDecimal(value, 2).toFixed(3);
+  }
+
+  // Enhanced method for batch operations
+  async batchCreateChotkho() {
+    try {
+      this.isSaving.set(true);
+      
+      const data = this.ListChotkho();
+      if (!data || data.length === 0) {
+        this._snackBar.open('❌ Không có dữ liệu để xử lý', '', {
+          duration: 2000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning'],
+        });
+        return;
+      }
+
+      // Show progress
+      this._snackBar.open(`🔄 Đang xử lý ${data.length} bản ghi chốt kho...`, '', {
+        duration: 0,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-info'],
+      });
+
+      const result = await this._ChotkhoService.bulkCreateChotkho(data);
+      
+      this._snackBar.dismiss();
+      
+      if (result) {
+        this._snackBar.open(`✅ Xử lý hàng loạt thành công - ${result.data?.length || 0} bản ghi`, '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+        
+        await this.refreshChotkhoData();
+      } else {
+        this._snackBar.open('❌ Không thể xử lý hàng loạt', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+      }
+    } catch (error) {
+      console.error('Lỗi xử lý hàng loạt:', error);
+      this._snackBar.dismiss();
+      
+      const errorMessage = error instanceof Error ? error.message : 'Lỗi hệ thống';
+      this._snackBar.open(`❌ ${errorMessage}`, '', {
+        duration: 4000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      this.isSaving.set(false);
+    }
+  }
+
+  // Enhanced validation and calculation method  
+  recalculateAllDiscrepancies() {
+    this.ListChotkho.update((items: any[]) => {
+      return items.map(item => ({
+        ...item,
+        chenhlech: this.roundToDecimal(
+          Number(item.slthucte || 0) - Number(item.slhethong || 0), 
+          3
+        )
+      }));
+    });
+    
+    this._snackBar.open('✅ Đã tính lại tất cả chênh lệch', '', {
+      duration: 1500,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-info'],
+    });
+  }
+
+  // Get statistics for current chotkho data
+  getChotkhoStatistics() {
+    const data = this.ListChotkho();
+    if (!data || data.length === 0) {
+      return {
+        total: 0,
+        withDiscrepancy: 0,
+        positiveDiscrepancy: 0,
+        negativeDiscrepancy: 0,
+        zeroDiscrepancy: 0,
+        totalValue: 0
+      };
+    }
+
+    const stats = {
+      total: data.length,
+      withDiscrepancy: data.filter((item: any) => Math.abs(item.chenhlech || 0) > 0).length,
+      positiveDiscrepancy: data.filter((item: any) => (item.chenhlech || 0) > 0).length,
+      negativeDiscrepancy: data.filter((item: any) => (item.chenhlech || 0) < 0).length,
+      zeroDiscrepancy: data.filter((item: any) => (item.chenhlech || 0) === 0).length,
+      totalValue: data.reduce((sum: number, item: any) => sum + (item.slthucte || 0), 0)
+    };
+
+    return stats;
+  }
+
+  // Display current statistics
+  showStatistics() {
+    const stats = this.getChotkhoStatistics();
+    
+    const message = `📊 Thống kê chốt kho:
+    • Tổng: ${stats.total} bản ghi
+    • Có chênh lệch: ${stats.withDiscrepancy}
+    • Thừa: ${stats.positiveDiscrepancy}
+    • Thiếu: ${stats.negativeDiscrepancy}
+    • Khớp: ${stats.zeroDiscrepancy}
+    • Tổng giá trị: ${this.formatNumber(stats.totalValue)}`;
+
+    this._snackBar.open(message, 'Đóng', {
+      duration: 8000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-info'],
+    });
+  }
+
+  // Enhanced validation method for chotkho data
+  private validateChotkhoData(): { isValid: boolean; errors: string[] } {
+    const errors: string[] = [];
+    const data = this.ListChotkho();
+    
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      errors.push('Không có dữ liệu chốt kho để xử lý');
+      return { isValid: false, errors };
+    }
+
+    // Validate each chotkho record
+    data.forEach((item: any, index: number) => {
+      const rowNum = index + 1;
+      
+      if (!item.masp || item.masp.trim() === '') {
+        errors.push(`Dòng ${rowNum}: Thiếu mã sản phẩm`);
+      }
+      
+      if (item.slthucte === undefined || item.slthucte === null) {
+        errors.push(`Dòng ${rowNum}: Thiếu số lượng thực tế`);
+      } else if (item.slthucte < 0) {
+        errors.push(`Dòng ${rowNum}: Số lượng thực tế không được âm`);
+      }
+      
+      if (item.slhethong === undefined || item.slhethong === null) {
+        errors.push(`Dòng ${rowNum}: Thiếu số lượng hệ thống`);
+      }
+      
+      // Business rule: Check for extreme differences
+      if (item.chenhlech && Math.abs(item.chenhlech) > 5000) {
+        errors.push(`Dòng ${rowNum}: Chênh lệch quá lớn (${item.chenhlech}), vui lòng kiểm tra lại`);
+      }
+    });
+
+    // Limit displayed errors for better UX
+    const displayErrors = errors.length > 5 ? 
+      [...errors.slice(0, 5), `...và ${errors.length - 5} lỗi khác`] : 
+      errors;
+
+    return {
+      isValid: errors.length === 0,
+      errors: displayErrors
+    };
+  }
+
+  // Enhanced data preparation method
+  private prepareChotkhoData(): any[] {
+    const data = this.ListChotkho();
+    const currentDate = this._timezoneService.nowUTC();
+    
+    return data.map((item: any) => ({
+      ...item,
+      // Ensure proper data types
+      slthucte: this.roundToDecimal(Number(item.slthucte || 0), 3),
+      slhethong: this.roundToDecimal(Number(item.slhethong || 0), 3),
+      chenhlech: this.roundToDecimal(
+        Number(item.slthucte || 0) - Number(item.slhethong || 0), 
+        3
+      ),
+      // Add metadata
+      ngay: item.ngay || currentDate,
+      title: item.title || this.Title,
+      ghichu: item.ghichu || `Chốt kho tự động - ${this._timezoneService.nowLocal('DD/MM/YYYY HH:mm')}`,
+      // Add user context if available
+      userId: item.userId || null,
+      khoId: item.khoId || null,
+      isActive: item.isActive !== undefined ? item.isActive : true
+    }));
+  }
+
+  // Enhanced refresh method
+  private async refreshChotkhoData(): Promise<void> {
+    try {
+      // Refresh the current chotkho data if we have an ID
+      const currentId = this.xuatnhaptonId();
+      if (currentId && currentId !== 'new') {
+        await this._ChotkhoService.getChotkhoBy({ ngay: currentId });
+      }
+      
+      // Optionally refresh the main list
+      await this._ChotkhoService.getAllChotkho();
+      
+    } catch (error) {
+      console.warn('Warning: Could not refresh chotkho data:', error);
+      // Don't throw here to avoid interrupting the main flow
+    }
   }
 }

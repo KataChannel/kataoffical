@@ -70,8 +70,10 @@ export class NhucaudathangComponent {
     'mancc',
     'name',
     'slchonhap',
+    'SLDat',
     'goiy',
     'slchogiao',
+    'SLGiao',
     'sltontt',
     'slton',
     'kho1',
@@ -90,8 +92,10 @@ export class NhucaudathangComponent {
       mancc: 'Mã NCC',
       name: 'Tên Nhà Cung Cấp',
       slchonhap: 'SL Đặt (Chờ Nhập)',
+      SLDat: 'SL Đặt (Nhà CC)',
       goiy: 'SL Cần Đặt (Gợi Ý)',
       slchogiao: 'SL Bán (Chờ Giao)',
+      SLGiao: 'SL Giao (Khách)',
       sltontt: 'Tồn Kho (Thực Tế)',
       slton: 'Tồn Kho',
       kho1: 'TG-LONG AN',
@@ -279,7 +283,7 @@ export class NhucaudathangComponent {
             },
           },
         }),
-
+        
         this._GraphqlService.findAll('dathang', {
           enableParallelFetch: true,
           batchSize: 1000,
@@ -341,6 +345,9 @@ export class NhucaudathangComponent {
           },
         }),
       ]);
+      console.log('Donhangs:', Donhangs);
+      console.log('Dathangs:', Dathangs);
+      console.log('Tonkhos:', Tonkhos);
 
       const DonhangsTranfer = Donhangs.data.flatMap((order: any) =>
         order.sanpham.map((sp: any) => ({

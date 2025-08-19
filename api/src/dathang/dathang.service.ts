@@ -859,27 +859,23 @@ async convertDathangImportToTransfer(
         for (const item of data.sanpham) {
           const receivedQty = parseFloat((Number(item.slnhan) ?? 0).toFixed(3));
           const shippedQty = parseFloat((Number(item.slgiao) ?? 0).toFixed(3));
+          
+          // Tăng tồn kho theo số lượng thực nhận
+          await prisma.tonKho.update({
+            where: { sanphamId: item.idSP },
+            data: { slton: { increment: receivedQty } },
+          });
+          
+          // Nếu thiếu hàng, tạo phiếu xuất trả về cho phần thiếu
           if (receivedQty < shippedQty) {
-        const shortage = shippedQty - receivedQty;
-        // Cập nhật tồn kho: hoàn lại số lượng chưa nhận
-        await prisma.tonKho.update({
-          where: { sanphamId: item.idSP },
-          data: { slton: { increment: shortage } },
-        });
-        // Thu thập thông tin sản phẩm thiếu
-        shortageItems.push({
-          sanphamId: item.id,
-          soluong: shortage,
-          ghichu: item.ghichu
-            ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
-            : `Thiếu ${shortage.toFixed(3)}`,
-        });
-          } else if (receivedQty === shippedQty) {
-        // Nếu số lượng nhận bằng số lượng giao, cập nhật tồn kho (không thay đổi số lượng)
-        await prisma.tonKho.update({
-          where: { sanphamId: item.idSP },
-          data: { slton: { increment: receivedQty} },
-        });
+            const shortage = shippedQty - receivedQty;
+            shortageItems.push({
+              sanphamId: item.idSP,
+              soluong: shortage,
+              ghichu: item.ghichu
+                ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
+                : `Thiếu ${shortage.toFixed(3)}`,
+            });
           }
         }
 

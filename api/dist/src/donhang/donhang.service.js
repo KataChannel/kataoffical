@@ -953,15 +953,14 @@ let DonhangService = class DonhangService {
         const letters = code.slice(3, 5);
         const number = parseInt(code.slice(5), 10);
         const letterValue = (letters.charCodeAt(0) - 65) * 26 + (letters.charCodeAt(1) - 65);
-        return letterValue * 99999 + (number - 1) + 1;
+        return letterValue * 100000 + number;
     }
     async DonhangnumberToCode(number) {
-        if (number < 1 || number > 676 * 99999) {
+        if (number < 1 || number > 676 * 100000) {
             throw new Error('Số thứ tự không hợp lệ');
         }
-        number -= 1;
-        const letterValue = Math.floor(number / 99999);
-        const numValue = (number % 99999) + 1;
+        const letterValue = Math.floor(number / 100000);
+        const numValue = number % 100000;
         const firstLetter = String.fromCharCode(65 + Math.floor(letterValue / 26));
         const secondLetter = String.fromCharCode(65 + (letterValue % 26));
         const numStr = numValue.toString().padStart(5, '0');
@@ -1324,12 +1323,6 @@ let DonhangService = class DonhangService {
                             ghichu: item.ghichu
                                 ? `${item.ghichu}; thiếu ${shortage.toFixed(3)}`
                                 : `Thiếu ${shortage.toFixed(3)}`,
-                        });
-                    }
-                    else if (receivedQty === shippedQty) {
-                        await prisma.tonKho.update({
-                            where: { sanphamId: item.id },
-                            data: { slton: { decrement: receivedQty } },
                         });
                     }
                 }
