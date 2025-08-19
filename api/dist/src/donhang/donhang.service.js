@@ -232,6 +232,7 @@ let DonhangService = class DonhangService {
                 ];
             }, [0, 0]);
             return {
+                id: v.id,
                 madonhang: v.madonhang,
                 ngaygiao: v.ngaygiao,
                 tong: tong.toFixed(3),
@@ -245,7 +246,7 @@ let DonhangService = class DonhangService {
         return result || [];
     }
     async downloadcongnokhachhang(params) {
-        const { Batdau, Ketthuc, query } = params;
+        const { Batdau, Ketthuc, query, ids } = params;
         const dateRange = {
             gte: Batdau ? new Date(Batdau) : undefined,
             lte: Ketthuc ? new Date(Ketthuc) : undefined,
@@ -256,13 +257,15 @@ let DonhangService = class DonhangService {
                 ? { in: params.Status }
                 : params.Status,
         };
+        if (ids.length > 0) {
+            where.id = { in: ids };
+        }
         if (query) {
             where.OR = [
                 { madonhang: { contains: query, mode: 'insensitive' } },
                 { khachhang: { name: { contains: query, mode: 'insensitive' } } },
             ];
         }
-        console.log('where', where);
         const donhangs = await this.prisma.donhang.findMany({
             where,
             include: {
@@ -279,12 +282,9 @@ let DonhangService = class DonhangService {
         const result = donhangs.flatMap((v) => {
             const orderItems = v.sanpham.map((v1) => {
                 const product = Sanphams.find((sp) => sp.id === v1.idSP);
-                const giaban = v?.khachhang?.banggia?.sanpham.find((sp) => sp.id === v1.idSP)
-                    ?.giaban ||
-                    product?.giaban ||
-                    0;
+                const giaban = v1.giaban || 0;
                 const vat = product?.vat || 0;
-                const thanhtiensauvat = v1.slgiao * giaban * (1 + vat / 100);
+                const thanhtiensauvat = v1.slnhan * giaban * (1 + vat);
                 return {
                     id: v.id,
                     ngaygiao: v.ngaygiao,
@@ -294,11 +294,11 @@ let DonhangService = class DonhangService {
                     tenhang: product?.title || '',
                     mahang: product?.masp || '',
                     dvt: product?.dvt || '',
-                    soluong: v1.slgiao,
+                    soluong: v1.slnhan,
                     dongia: giaban,
-                    thanhtientruocvat: v1.slgiao * giaban,
+                    thanhtientruocvat: v1.slnhan * giaban,
                     vat: vat,
-                    dongiavathoadon: giaban * (1 + vat / 100),
+                    dongiavathoadon: giaban * (1 + vat),
                     thanhtiensauvat: thanhtiensauvat,
                     ghichu: v1.ghichu,
                 };
@@ -309,6 +309,7 @@ let DonhangService = class DonhangService {
                 tongtiensauvat: tongtiensauvat,
             }));
         });
+        console.log('result', result);
         return this.createCongnoExcelFile(result || [], params);
     }
     async createCongnoExcelFile(data, params) {
@@ -533,7 +534,7 @@ let DonhangService = class DonhangService {
                                     const ttdat = giaban * sldat;
                                     const ttgiao = giaban * slgiao;
                                     const ttnhan = giaban * slnhan;
-                                    const ttsauvat = ttnhan * (1 + vat / 100);
+                                    const ttsauvat = ttnhan * (1 + vat);
                                     await prisma.donhangsanpham.update({
                                         where: { id: donhangSanpham.id },
                                         data: {

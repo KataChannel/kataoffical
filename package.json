@@ -9,6 +9,7 @@
     "db:restore": "cd api && npx ts-node prisma/restore.ts",
     "db:restore:audit": "cd api && npx ts-node prisma/restore.ts --fix-audit-log",
     "db:update": "cd api && npx ts-node prisma/update.ts",
+    "db:updatevat": "cd api && npx ts-node prisma/updatevatsanpham.ts",
     "db:generate": "cd api && npx prisma generate",
     "db:migrate": "cd api && npx bun prisma migrate dev --name tenfile",
     "db:reset": "cd api && npx bun prisma migrate reset",

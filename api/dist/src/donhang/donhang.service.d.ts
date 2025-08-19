@@ -43,6 +43,7 @@ export declare class DonhangService {
         totalPages: number;
     }>;
     congnokhachhang(params: any): Promise<{
+        id: any;
         madonhang: any;
         ngaygiao: any;
         tong: any;

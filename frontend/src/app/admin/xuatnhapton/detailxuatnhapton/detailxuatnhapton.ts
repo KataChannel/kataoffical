@@ -503,7 +503,10 @@ export class DetailXuatnhaptonComponent {
           slthucte: slthucte,
           slhethong: slhethong,
           chenhlech: chenhlech,
-          ghichu: item.ghichu || `Import từ Excel - ${this._timezoneService.nowLocal('DD/MM/YYYY HH:mm')}`,
+          // 🎯 NEW LOGIC: Reset slchogiao và slchonhap về 0 (đã hoàn tất giao/nhập hàng)
+          slchogiao: 0,
+          slchonhap: 0,
+          ghichu: item.ghichu || `Import từ Excel - ${this._timezoneService.nowLocal('DD/MM/YYYY HH:mm')} | Đã hoàn tất giao/nhập hàng`,
           title: this.Title || `Chốt kho ngày ${this._timezoneService.nowLocal('DD/MM/YYYY')}`,
           dvt: item.dvt || '',
           
@@ -520,9 +523,13 @@ export class DetailXuatnhaptonComponent {
             dvt: item.dvt || ''
           },
           
-          // Status indicators
+          // Status indicators  
           hasInventoryData: !!sanpham,
-          importedFromExcel: true
+          importedFromExcel: true,
+          // Add completion status indicators
+          isDeliveryCompleted: true,
+          isReceiptCompleted: true,
+          completedAt: this._timezoneService.nowUTC()
         };
       });
 
@@ -803,6 +810,63 @@ export class DetailXuatnhaptonComponent {
     }
   }
 
+  // 🎯 NEW METHOD: Specialized method for completing delivery and receipt
+  completeDeliveryAndReceipt() {
+    this.ListChotkho.update((items: any[]) => {
+      return items.map(item => ({
+        ...item,
+        // Reset pending quantities to 0 (completed)
+        slchogiao: 0,
+        slchonhap: 0,
+        // Update status flags
+        isDeliveryCompleted: true,
+        isReceiptCompleted: true,
+        completedAt: this._timezoneService.nowUTC(),
+        // Update notes
+        ghichu: (item.ghichu || '') + ` | Hoàn tất giao/nhập hàng lúc ${this._timezoneService.nowLocal('DD/MM/YYYY HH:mm')}`
+      }));
+    });
+    
+    this._snackBar.open('✅ Đã đánh dấu hoàn tất giao hàng và nhập hàng cho tất cả sản phẩm', '', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+  }
+
+  // 🎯 NEW METHOD: Reset pending quantities for specific items
+  resetPendingQuantities(indices?: number[]) {
+    this.ListChotkho.update((items: any[]) => {
+      return items.map((item, index) => {
+        // If indices specified, only update those items, otherwise update all
+        if (indices && !indices.includes(index)) {
+          return item;
+        }
+        
+        return {
+          ...item,
+          slchogiao: 0,
+          slchonhap: 0,
+          isDeliveryCompleted: true,
+          isReceiptCompleted: true,
+          completedAt: this._timezoneService.nowUTC()
+        };
+      });
+    });
+    
+    const message = indices 
+      ? `✅ Đã reset ${indices.length} sản phẩm về trạng thái hoàn tất`
+      : '✅ Đã reset tất cả sản phẩm về trạng thái hoàn tất';
+      
+    this._snackBar.open(message, '', {
+      duration: 2000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-info'],
+    });
+  }
+
   // Enhanced validation and calculation method  
   recalculateAllDiscrepancies() {
     this.ListChotkho.update((items: any[]) => {
@@ -833,7 +897,13 @@ export class DetailXuatnhaptonComponent {
         positiveDiscrepancy: 0,
         negativeDiscrepancy: 0,
         zeroDiscrepancy: 0,
-        totalValue: 0
+        totalValue: 0,
+        // 🎯 NEW STATS: Completion status
+        deliveryCompleted: 0,
+        receiptCompleted: 0,
+        fullyCompleted: 0,
+        pendingDelivery: 0,
+        pendingReceipt: 0
       };
     }
 
@@ -843,7 +913,13 @@ export class DetailXuatnhaptonComponent {
       positiveDiscrepancy: data.filter((item: any) => (item.chenhlech || 0) > 0).length,
       negativeDiscrepancy: data.filter((item: any) => (item.chenhlech || 0) < 0).length,
       zeroDiscrepancy: data.filter((item: any) => (item.chenhlech || 0) === 0).length,
-      totalValue: data.reduce((sum: number, item: any) => sum + (item.slthucte || 0), 0)
+      totalValue: data.reduce((sum: number, item: any) => sum + (item.slthucte || 0), 0),
+      // 🎯 NEW STATS: Completion status tracking
+      deliveryCompleted: data.filter((item: any) => (item.slchogiao || 0) === 0).length,
+      receiptCompleted: data.filter((item: any) => (item.slchonhap || 0) === 0).length,
+      fullyCompleted: data.filter((item: any) => (item.slchogiao || 0) === 0 && (item.slchonhap || 0) === 0).length,
+      pendingDelivery: data.filter((item: any) => (item.slchogiao || 0) > 0).length,
+      pendingReceipt: data.filter((item: any) => (item.slchonhap || 0) > 0).length
     };
 
     return stats;
@@ -928,14 +1004,21 @@ export class DetailXuatnhaptonComponent {
         Number(item.slthucte || 0) - Number(item.slhethong || 0), 
         3
       ),
+      // 🎯 NEW LOGIC: Reset slchogiao và slchonhap về 0 (đã giao hàng và nhập hàng xong)
+      slchogiao: 0,
+      slchonhap: 0,
       // Add metadata
       ngay: item.ngay || currentDate,
       title: item.title || this.Title,
-      ghichu: item.ghichu || `Chốt kho tự động - ${this._timezoneService.nowLocal('DD/MM/YYYY HH:mm')}`,
+      ghichu: item.ghichu || `Chốt kho tự động - ${this._timezoneService.nowLocal('DD/MM/YYYY HH:mm')} | Đã hoàn tất giao/nhập hàng`,
       // Add user context if available
       userId: item.userId || null,
       khoId: item.khoId || null,
-      isActive: item.isActive !== undefined ? item.isActive : true
+      isActive: item.isActive !== undefined ? item.isActive : true,
+      // Add completion status
+      isDeliveryCompleted: true,
+      isReceiptCompleted: true,
+      completedAt: currentDate
     }));
   }
 
@@ -955,5 +1038,46 @@ export class DetailXuatnhaptonComponent {
       console.warn('Warning: Could not refresh chotkho data:', error);
       // Don't throw here to avoid interrupting the main flow
     }
+  }
+
+  // 🎯 NEW: Check completion status for specific item
+  isItemFullyCompleted(item: any): boolean {
+    return (item.slchogiao || 0) === 0 && (item.slchonhap || 0) === 0;
+  }
+
+  // 🎯 NEW: Check if there are pending changes to save
+  hasDataChanges(): boolean {
+    const data = this.ListChotkho();
+    if (!data || data.length === 0) return false;
+
+    // Check for any items with discrepancies that need to be addressed
+    const hasDiscrepancy = data.some((item: any) => Math.abs(item.chenhlech || 0) > 0);
+    
+    // Check for pending deliveries or receipts that need completion
+    const hasPendingOperations = data.some((item: any) => 
+      (item.slchogiao || 0) > 0 || (item.slchonhap || 0) > 0
+    );
+
+    // Check for edited items that haven't been saved
+    const hasEditedItems = data.some((item: any) => item.isEdited === true);
+
+    return hasDiscrepancy || hasPendingOperations || hasEditedItems;
+  }
+
+  // 🎯 NEW: Get completion rate percentage
+  getCompletionRate(): number {
+    const data = this.ListChotkho();
+    if (!data || data.length === 0) return 100;
+
+    const completed = data.filter((item: any) => this.isItemFullyCompleted(item)).length;
+    return Math.round((completed / data.length) * 100);
+  }
+
+  // 🎯 NEW: Get summary of completion status
+  getCompletionSummary(): string {
+    const stats = this.getChotkhoStatistics();
+    const rate = this.getCompletionRate();
+    
+    return `Hoàn tất: ${stats.fullyCompleted}/${stats.total} sản phẩm (${rate}%) | Chờ giao: ${stats.pendingDelivery} | Chờ nhập: ${stats.pendingReceipt}`;
   }
 }

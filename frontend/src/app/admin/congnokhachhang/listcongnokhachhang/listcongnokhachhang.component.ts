@@ -556,6 +556,13 @@ doFilterKhachhang(event: Event){
   }  
   async ExportExcel(data: any, title: any) {
     this.isExporting = true;
+    if( this.editDonhang.length>0) {
+      this.SearchParams.ids = this.editDonhang.map((v: any) => v.id);
+    }
+    else {
+      this.SearchParams.ids = data.map((v: any) => v.id);
+    }
+
     try {
       // Sử dụng service để download file Excel từ API
       await this._DonhangService.downloadCongno(this.SearchParams);

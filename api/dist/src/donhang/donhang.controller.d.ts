@@ -83,6 +83,7 @@ export declare class DonhangController {
         totalPages: number;
     }>;
     congnokhachhang(params: any): Promise<{
+        id: any;
         madonhang: any;
         ngaygiao: any;
         tong: any;
