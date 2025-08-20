@@ -34,7 +34,6 @@ import { AuditInterceptor } from './auditlog/audit.interceptor';
 import { AuditService } from './auditlog/auditlog.service';
 import { AuditLogModule } from './auditlog/auditlog.module';
 import { AuditMiddleware } from './auditlog/audit.middleware';
-import { ChotkhoModule } from './chotkho/chotkho.module';
 // import { UploadModule } from './upload/upload.module';
 import { MinioModule } from './minio/minio.module';
 import { GraphQLUniversalModule } from './graphql/graphql.module';
@@ -89,7 +88,7 @@ import { GraphQLUniversalModule } from './graphql/graphql.module';
     UserguideModule,
     ImportdataModule,    
     AuditLogModule,
-    ChotkhoModule,
+    // ChotkhoModule,
     // UploadModule,
     MinioModule,
     GraphQLUniversalModule,

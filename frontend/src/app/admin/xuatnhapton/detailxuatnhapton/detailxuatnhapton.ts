@@ -125,8 +125,19 @@ export class DetailXuatnhaptonComponent {
         return;
       }
 
-      // Prepare data with enhanced metadata
+      // Prepare data with enhanced metadata for new master-detail structure
       const chotkhoData = this.prepareChotkhoData();
+      if (!chotkhoData) {
+        this._snackBar.open('❌ Không có dữ liệu để tạo chốt kho', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error'],
+        });
+        return;
+      }
+      
+      console.log('chotkhoData',chotkhoData);
       
       // Show progress notification
       this._snackBar.open('Đang xử lý chốt kho...', '', {
@@ -141,8 +152,29 @@ export class DetailXuatnhaptonComponent {
       // Dismiss progress notification
       this._snackBar.dismiss();
       
-      // Enhanced result handling with detailed feedback
-      if (result && result.status === 'success') {
+      // Enhanced result handling for new master-detail structure
+      if (result && result.id) {
+        // Single chotkho creation success
+        const detailsCount = result.details ? result.details.length : 0;
+        
+        let message = '✅ Chốt Kho Thành Công';
+        if (detailsCount > 0) {
+          message += ` - ${detailsCount} chi tiết`;
+        }
+        
+        this._snackBar.open(message, '', {
+          duration: 4000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-success'],
+        });
+        
+        // Auto-refresh and update UI state
+        await this.refreshChotkhoData();
+        this.isEdit.update(value => !value);
+        
+      } else if (result && result.status === 'success') {
+        // Legacy response format handling
         const { created, updated, failed, summary } = result;
         
         let message = '✅ Chốt Kho Thành Công';
@@ -524,9 +556,11 @@ export class DetailXuatnhaptonComponent {
 
       // Get inventory data
       const Listmasp = processedData.map((item: any) => item.masp);
-      const Listtonkho = await this._ChotkhoService.getListSanphamTonKho(Listmasp);
-      
-      console.log('📊 Dữ liệu tồn kho đã tải:', Listtonkho);
+      const ListSanpham = await this._ChotkhoService.getListSanphamByMasp(Listmasp);
+      const ListIds = ListSanpham.map((sp: any) => sp.id)
+      const Listtonkho = await this._ChotkhoService.getListSanphamTonKho(ListIds);
+      console.log('📊 Dữ liệu sản phẩm đã tải:', ListSanpham);
+        console.log('📊 Dữ liệu tồn kho đã tải:', Listtonkho);
       console.log('📋 Dữ liệu Excel đã xử lý:', processedData);
       
       // Enhanced data mapping
@@ -1035,36 +1069,39 @@ export class DetailXuatnhaptonComponent {
     };
   }
 
-  // Enhanced data preparation method
-  private prepareChotkhoData(): any[] {
+  // Enhanced data preparation method for new master-detail schema
+  private prepareChotkhoData(): any {
     const data = this.ListChotkho();
     const currentDate = this._timezoneService.nowUTC();
     
-    return data.map((item: any) => ({
-      ...item,
-      // Ensure proper data types
-      slthucte: this.roundToDecimal(Number(item.slthucte || 0), 3),
-      slhethong: this.roundToDecimal(Number(item.slhethong || 0), 3),
-      chenhlech: this.roundToDecimal(
-        Number(item.slthucte || 0) - Number(item.slhethong || 0), 
-        3
-      ),
-      // 🎯 NEW LOGIC: Reset slchogiao và slchonhap về 0 (đã giao hàng và nhập hàng xong)
-      slchogiao: 0,
-      slchonhap: 0,
-      // Add metadata
-      ngay: item.ngay || currentDate,
-      title: item.title || this.Title,
-      ghichu: item.ghichu || `Chốt kho tự động - ${this._timezoneService.nowLocal('DD/MM/YYYY HH:mm')} | Đã hoàn tất giao/nhập hàng`,
-      // Add user context if available
-      userId: item.userId || null,
-      khoId: item.khoId || null,
-      isActive: item.isActive !== undefined ? item.isActive : true,
-      // Add completion status
-      isDeliveryCompleted: true,
-      isReceiptCompleted: true,
-      completedAt: currentDate
-    }));
+    if (!data || data.length === 0) {
+      return null;
+    }
+
+    // Prepare the master Chotkho record
+    const masterChotkho = {
+      khoId: data[0]?.khoId || null,
+      ngay: currentDate,
+      title: this.Title || `Chốt kho ngày ${this._timezoneService.nowLocal('DD/MM/YYYY')}`,
+      ghichu: `Chốt kho tự động - ${this._timezoneService.nowLocal('DD/MM/YYYY HH:mm')} | Đã hoàn tất giao/nhập hàng`,
+      isActive: true,
+      userId: data[0]?.userId || null,
+      // Prepare the detail records
+      details: data.map((item: any) => ({
+        sanphamId: item.sanphamId || null,
+        tonkhoId: item.tonkhoId || null,
+        slthucte: this.roundToDecimal(Number(item.slthucte || 0), 3),
+        slhethong: this.roundToDecimal(Number(item.slhethong || 0), 3),
+        chenhlech: this.roundToDecimal(
+          Number(item.slthucte || 0) - Number(item.slhethong || 0), 
+          3
+        ),
+        ghichu: item.ghichu || `Chi tiết chốt kho - ${item.masp || 'N/A'}`,
+        isActive: item.isActive !== undefined ? item.isActive : true
+      }))
+    };
+
+    return masterChotkho;
   }
 
   // Enhanced refresh method

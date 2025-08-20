@@ -3,6 +3,89 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { StorageService } from '../../shared/utils/storage.service';
 import { GraphqlService } from '../../shared/services/graphql.service';
 
+/**
+ * ChotkhoService - Updated to align with new Prisma schema (Chotkho + ChotkhoDetail)
+ * 
+ * Key Schema Updates:
+ * - Chotkho: Header record with kho, user, date, title, ghichu
+ * - ChotkhoDetail: Line items with sanpham, quantities (slthucte, slhethong, chenhlech)
+ * - Proper relations: Chotkho -> ChotkhoDetail (one-to-many)
+ * - ChotkhoDetail relations to sanpham, tonkho, phieukho
+ * - Type-safe interfaces and validation methods
+ * 
+ * Based on new Prisma schema structure
+ */
+
+// Type interfaces based on new schema
+export interface ChotkhoData {
+  id?: string;
+  khoId?: string;
+  ngay?: Date;
+  title?: string;
+  ghichu?: string;
+  isActive?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  codeId?: string;
+  order?: number;
+  userId?: string;
+  // Relations
+  kho?: any;
+  user?: any;
+  details?: ChotkhoDetailData[];
+}
+
+export interface ChotkhoDetailData {
+  id?: string;
+  chotkhoId?: string;
+  sanphamId?: string;
+  tonkhoId?: string;
+  phieukhoId?: string;
+  slthucte: number;    // Actual quantity
+  slhethong: number;   // System quantity  
+  chenhlech?: number;  // Difference
+  ghichu?: string;
+  isActive?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  order?: number;
+  // Relations
+  chotkho?: any;
+  sanpham?: any;
+  tonkho?: any;
+  phieukho?: any;
+}
+
+export interface ChotkhoSearchParams {
+  startDate?: string;
+  endDate?: string;
+  khoId?: string;
+  sanphamId?: string;
+  userId?: string;
+  searchText?: string;
+  ngay?: Date;
+}
+
+export interface ChotkhoCreateData {
+  khoId?: string;
+  ngay?: Date;
+  title?: string;
+  ghichu?: string;
+  userId?: string;
+  details: ChotkhoDetailCreateData[];
+}
+
+export interface ChotkhoDetailCreateData {
+  sanphamId?: string;
+  tonkhoId?: string;
+  phieukhoId?: string;
+  slthucte: number;
+  slhethong: number;
+  chenhlech?: number;
+  ghichu?: string;
+  order?: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,14 +97,14 @@ export class ChotkhoService {
   // Model name for GraphQL operations
   private readonly modelName = 'chotkho';
 
-  // Reactive state signals
-  chotkhos: WritableSignal<any[]> = signal([]);
+  // Reactive state signals - Updated with proper types
+  chotkhos: WritableSignal<ChotkhoData[]> = signal([]);
   isLoading: WritableSignal<boolean> = signal(false);
-  selectedChotkho: WritableSignal<any | null> = signal(null);
+  selectedChotkho: WritableSignal<ChotkhoData | null> = signal(null);
   
   // Additional signals for component compatibility
-  ListChotkho: WritableSignal<any[]> = signal([]);
-  DetailChotkho: WritableSignal<any | null> = signal(null);
+  ListChotkho: WritableSignal<ChotkhoData[]> = signal([]);
+  DetailChotkho: WritableSignal<ChotkhoData | null> = signal(null);
   page: WritableSignal<number> = signal(1);
   totalPages: WritableSignal<number> = signal(1);
   total: WritableSignal<number> = signal(0);
@@ -50,9 +133,43 @@ export class ChotkhoService {
               }
             }
           },
-          kho: true,
-          sanpham: true,
-          tonkho: true
+          kho: {
+            select: {
+              id: true,
+              name: true,
+              makho: true,
+              diachi: true
+            }
+          },
+          details: {
+            include: {
+              sanpham: {
+                select: {
+                  id: true,
+                  title: true,
+                  masp: true,
+                  dvt: true,
+                  giagoc: true
+                }
+              },
+              tonkho: {
+                select: {
+                  id: true,
+                  slton: true,
+                  slchogiao: true,
+                  slchonhap: true
+                }
+              },
+              phieukho: {
+                select: {
+                  id: true,
+                  maphieu: true,
+                  ngay: true,
+                  type: true
+                }
+              }
+            }
+          }
         },
         orderBy: { order: 'asc' }
       });
@@ -71,7 +188,7 @@ export class ChotkhoService {
     }
   }
 
-  async getAllChotkho(searchParam?: any): Promise<void> {
+  async getAllChotkho(searchParam?: ChotkhoSearchParams): Promise<void> {
     try {
       this.isLoading.set(true);
       this.isRefreshing.set(true);
@@ -92,7 +209,11 @@ export class ChotkhoService {
         }
         
         if (searchParam.sanphamId) {
-          where.sanphamId = searchParam.sanphamId;
+          where.details = {
+            some: {
+              sanphamId: searchParam.sanphamId
+            }
+          };
         }
         
         if (searchParam.userId) {
@@ -103,7 +224,7 @@ export class ChotkhoService {
           where.OR = [
             { title: { contains: searchParam.searchText, mode: 'insensitive' } },
             { ghichu: { contains: searchParam.searchText, mode: 'insensitive' } },
-            { sanpham: { ten: { contains: searchParam.searchText, mode: 'insensitive' } } }
+            { details: { some: { sanpham: { title: { contains: searchParam.searchText, mode: 'insensitive' } } } } }
           ];
         }
       }
@@ -124,9 +245,35 @@ export class ChotkhoService {
               }
             }
           },
-          kho: true,
-          sanpham: true,
-          tonkho: true
+          kho: {
+            select: {
+              id: true,
+              name: true,
+              makho: true,
+              diachi: true
+            }
+          },
+          details: {
+            include: {
+              sanpham: {
+                select: {
+                  id: true,
+                  title: true,
+                  masp: true,
+                  dvt: true,
+                  giagoc: true
+                }
+              },
+              tonkho: {
+                select: {
+                  id: true,
+                  slton: true,
+                  slchogiao: true,
+                  slchonhap: true
+                }
+              },
+            }
+          }
         },
         orderBy: { order: 'asc' },
         skip,
@@ -154,7 +301,7 @@ export class ChotkhoService {
     }
   }
 
-  async getChotkhoById(id: string): Promise<any> {
+  async getChotkhoById(id: string): Promise<ChotkhoData | null> {
     try {
       const data = await this.graphqlService.findUnique(this.modelName, 
         { id },
@@ -171,9 +318,43 @@ export class ChotkhoService {
                 }
               }
             },
-            kho: true,
-            sanpham: true,
-            tonkho: true
+            kho: {
+              select: {
+                id: true,
+                name: true,
+                makho: true,
+                diachi: true
+              }
+            },
+            details: {
+              include: {
+                sanpham: {
+                  select: {
+                    id: true,
+                    title: true,
+                    masp: true,
+                    dvt: true,
+                    giagoc: true
+                  }
+                },
+                tonkho: {
+                  select: {
+                    id: true,
+                    slton: true,
+                    slchogiao: true,
+                    slchonhap: true
+                  }
+                },
+                phieukho: {
+                  select: {
+                    id: true,
+                    maphieu: true,
+                    ngay: true,
+                    type: true
+                  }
+                }
+              }
+            }
           }
         }
       );
@@ -190,7 +371,7 @@ export class ChotkhoService {
     }
   }
 
-  async createChotkho(data: any): Promise<any> {
+  async createChotkho(data: ChotkhoCreateData | ChotkhoCreateData[]): Promise<any> {
     try {
       this.isLoading.set(true);
       
@@ -199,7 +380,12 @@ export class ChotkhoService {
         return await this.bulkCreateChotkho(data);
       }
       
-      const result = await this.graphqlService.createOne(this.modelName, data, {
+      const result = await this.graphqlService.createOne(this.modelName, {
+        ...data,
+        details: {
+          create: data.details
+        }
+      }, {
         include: {
           user: {
             select: {
@@ -212,9 +398,43 @@ export class ChotkhoService {
               }
             }
           },
-          kho: true,
-          sanpham: true,
-          tonkho: true
+          kho: {
+            select: {
+              id: true,
+              name: true,
+              makho: true,
+              diachi: true
+            }
+          },
+          details: {
+            include: {
+              sanpham: {
+                select: {
+                  id: true,
+                  title: true,
+                  masp: true,
+                  dvt: true,
+                  giagoc: true
+                }
+              },
+              tonkho: {
+                select: {
+                  id: true,
+                  slton: true,
+                  slchogiao: true,
+                  slchonhap: true
+                }
+              },
+              phieukho: {
+                select: {
+                  id: true,
+                  maphieu: true,
+                  ngay: true,
+                  type: true
+                }
+              }
+            }
+          }
         }
       });
       
@@ -272,9 +492,39 @@ export class ChotkhoService {
                 }
               }
             },
-            kho: true,
-            sanpham: true,
-            tonkho: true
+            kho: {
+              select: {
+                id: true,
+                name: true,
+                makho: true,
+                diachi: true
+              }
+            },
+            sanpham: {
+              select: {
+                id: true,
+                title: true,
+                masp: true,
+                dvt: true,
+                giagoc: true
+              }
+            },
+            tonkho: {
+              select: {
+                id: true,
+                slton: true,
+                slchogiao: true,
+                slchonhap: true
+              }
+            },
+            phieukho: {
+              select: {
+                id: true,
+                maphieu: true,
+                ngay: true,
+                type: true
+              }
+            }
           }
         }
       );
@@ -321,6 +571,164 @@ export class ChotkhoService {
       return false;
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  // ========================= CHOTKHO DETAIL OPERATIONS =========================
+
+  async createChotkhoDetail(chotkhoId: string, detailData: ChotkhoDetailCreateData): Promise<any> {
+    try {
+      this.isLoading.set(true);
+      
+      const result = await this.graphqlService.createOne('chotkhodetail', {
+        ...detailData,
+        chotkhoId,
+        chenhlech: this.calculateChenhLech(detailData.slthucte, detailData.slhethong)
+      }, {
+        include: {
+          sanpham: {
+            select: {
+              id: true,
+              title: true,
+              masp: true,
+              dvt: true,
+              giagoc: true
+            }
+          },
+          tonkho: {
+            select: {
+              id: true,
+              slton: true,
+              slchogiao: true,
+              slchonhap: true
+            }
+          },
+          phieukho: {
+            select: {
+              id: true,
+              maphieu: true,
+              ngay: true,
+              type: true
+            }
+          }
+        }
+      });
+      
+      if (result) {
+        this.showSuccessMessage('Tạo chi tiết chốt kho thành công');
+        return { success: true, data: result };
+      } else {
+        this.showErrorMessage('Lỗi khi tạo chi tiết chốt kho');
+        return { success: false };
+      }
+    } catch (error: any) {
+      console.error('Error creating chotkho detail:', error);
+      this.showErrorMessage(error?.message || 'Lỗi khi tạo chi tiết chốt kho');
+      return { success: false, message: error?.message };
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async updateChotkhoDetail(detailId: string, detailData: Partial<ChotkhoDetailCreateData>): Promise<boolean> {
+    try {
+      this.isLoading.set(true);
+      
+      // Calculate chenhlech if quantities are provided
+      const updateData = { ...detailData };
+      if (updateData.slthucte !== undefined && updateData.slhethong !== undefined) {
+        updateData.chenhlech = this.calculateChenhLech(updateData.slthucte, updateData.slhethong);
+      }
+      
+      const result = await this.graphqlService.updateOne('chotkhodetail', 
+        { id: detailId }, 
+        updateData,
+        {
+          include: {
+            sanpham: true,
+            tonkho: true,
+            phieukho: true
+          }
+        }
+      );
+      
+      if (result) {
+        this.showSuccessMessage('Cập nhật chi tiết chốt kho thành công');
+        return true;
+      } else {
+        this.showErrorMessage('Lỗi khi cập nhật chi tiết chốt kho');
+        return false;
+      }
+    } catch (error: any) {
+      console.error('Error updating chotkho detail:', error);
+      this.showErrorMessage(error?.message || 'Lỗi khi cập nhật chi tiết chốt kho');
+      return false;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async deleteChotkhoDetail(detailId: string): Promise<boolean> {
+    try {
+      this.isLoading.set(true);
+      
+      const result = await this.graphqlService.deleteOne('chotkhodetail', { id: detailId });
+      
+      if (result) {
+        this.showSuccessMessage('Xóa chi tiết chốt kho thành công');
+        return true;
+      } else {
+        this.showErrorMessage('Lỗi khi xóa chi tiết chốt kho');
+        return false;
+      }
+    } catch (error: any) {
+      console.error('Error deleting chotkho detail:', error);
+      this.showErrorMessage(error?.message || 'Lỗi khi xóa chi tiết chốt kho');
+      return false;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async getChotkhoDetailsByChotkhoId(chotkhoId: string): Promise<ChotkhoDetailData[]> {
+    try {
+      const data = await this.graphqlService.findMany('chotkhodetail', {
+        where: { chotkhoId },
+        include: {
+          sanpham: {
+            select: {
+              id: true,
+              title: true,
+              masp: true,
+              dvt: true,
+              giagoc: true
+            }
+          },
+          tonkho: {
+            select: {
+              id: true,
+              slton: true,
+              slchogiao: true,
+              slchonhap: true
+            }
+          },
+          phieukho: {
+            select: {
+              id: true,
+              maphieu: true,
+              ngay: true,
+              type: true
+            }
+          }
+        },
+        orderBy: { order: 'asc' }
+      });
+      
+      return data || [];
+    } catch (error) {
+      console.error('Error getting chotkho details:', error);
+      this.showErrorMessage('Lỗi khi tải chi tiết chốt kho');
+      return [];
     }
   }
 
@@ -375,10 +783,25 @@ export class ChotkhoService {
       const data = await this.graphqlService.findMany(this.modelName, {
         where,
         include: {
-          user: true,
-          kho: true,
-          sanpham: true,
-          tonkho: true
+          user: {
+            select: {
+              id: true,
+              email: true,
+              profile: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          },
+          kho: {
+            select: {
+              id: true,
+              name: true,
+              makho: true,
+              diachi: true
+            }
+          }
         },
         orderBy: { ngay: 'desc' }
       });
@@ -413,10 +836,50 @@ export class ChotkhoService {
       const data = await this.graphqlService.findMany(this.modelName, {
         where,
         include: {
-          user: true,
-          kho: true,
-          sanpham: true,
-          tonkho: true
+          user: {
+            select: {
+              id: true,
+              email: true,
+              profile: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          },
+          kho: {
+            select: {
+              id: true,
+              name: true,
+              makho: true,
+              diachi: true
+            }
+          },
+          sanpham: {
+            select: {
+              id: true,
+              title: true,
+              masp: true,
+              dvt: true,
+              giagoc: true
+            }
+          },
+          tonkho: {
+            select: {
+              id: true,
+              slton: true,
+              slchogiao: true,
+              slchonhap: true
+            }
+          },
+          phieukho: {
+            select: {
+              id: true,
+              maphieu: true,
+              ngay: true,
+              type: true
+            }
+          }
         },
         orderBy: { order: 'asc' }
       });
@@ -453,9 +916,33 @@ export class ChotkhoService {
             in: productIds
           }
         },
+        take: 99999,
         include: {
           sanpham: true,
-          kho: true
+        }
+      });
+      
+      return data || [];
+    } catch (error) {
+      console.error('Error getting sanpham tonkho:', error);
+      this.showErrorMessage('Lỗi khi tải dữ liệu tồn kho sản phẩm');
+      return [];
+    }
+  }
+  async getListSanphamByMasp(listmasp: string[]): Promise<any[]> {
+    try {
+      const data = await this.graphqlService.findMany('sanpham', {
+        where: {
+          masp: {
+            in: listmasp
+          }
+        },
+        take:99999,
+        select:{
+          id: true,
+          title: true,
+          masp: true,
+          dvt: true
         }
       });
       
@@ -470,6 +957,7 @@ export class ChotkhoService {
   async bulkCreateChotkho(dataList: any[]): Promise<any> {
     try {
       this.isLoading.set(true);
+      console.log('Bulk creating chotkho with data:', dataList);
       
       const result = await this.graphqlService.batchCreate(this.modelName, dataList);
       
@@ -506,7 +994,7 @@ export class ChotkhoService {
 
   // ========================= UTILITY METHODS =========================
 
-  setSelectedChotkho(chotkho: any): void {
+  setSelectedChotkho(chotkho: ChotkhoData): void {
     this.selectedChotkho.set(chotkho);
     this.DetailChotkho.set(chotkho);
   }
@@ -518,6 +1006,104 @@ export class ChotkhoService {
 
   setChotkhoId(id: string | null): void {
     this.chotkhoId.set(id);
+  }
+
+  // ========================= SCHEMA-BASED HELPER METHODS =========================
+
+  /**
+   * Calculate chenhlech (difference) based on schema fields for detail
+   */
+  calculateChenhLech(slthucte: number, slhethong: number): number {
+    return slthucte - slhethong;
+  }
+
+  /**
+   * Create a chotkho data object with proper schema fields
+   */
+  createChotkhoData(params: {
+    khoId?: string;
+    title?: string;
+    ghichu?: string;
+    userId?: string;
+    details: Array<{
+      sanphamId?: string;
+      tonkhoId?: string;
+      phieukhoId?: string;
+      slthucte: number;
+      slhethong: number;
+      ghichu?: string;
+    }>;
+  }): ChotkhoCreateData {
+    const detailsWithChenhlech = params.details.map(detail => ({
+      ...detail,
+      chenhlech: this.calculateChenhLech(detail.slthucte, detail.slhethong)
+    }));
+    
+    return {
+      khoId: params.khoId,
+      ngay: new Date(),
+      title: params.title,
+      ghichu: params.ghichu,
+      userId: params.userId,
+      details: detailsWithChenhlech
+    };
+  }
+
+  /**
+   * Validate chotkho data according to schema requirements
+   */
+  validateChotkhoData(data: ChotkhoCreateData): { isValid: boolean; errors: string[] } {
+    const errors: string[] = [];
+
+    if (!data.details || data.details.length === 0) {
+      errors.push('Chi tiết chốt kho là bắt buộc');
+    }
+
+    data.details?.forEach((detail, index) => {
+      if (detail.slthucte === undefined || detail.slthucte === null) {
+        errors.push(`Dòng ${index + 1}: Số lượng thực tế (slthucte) là bắt buộc`);
+      }
+
+      if (detail.slhethong === undefined || detail.slhethong === null) {
+        errors.push(`Dòng ${index + 1}: Số lượng hệ thống (slhethong) là bắt buộc`);
+      }
+
+      if (typeof detail.slthucte !== 'number' || detail.slthucte < 0) {
+        errors.push(`Dòng ${index + 1}: Số lượng thực tế phải là số không âm`);
+      }
+
+      if (typeof detail.slhethong !== 'number' || detail.slhethong < 0) {
+        errors.push(`Dòng ${index + 1}: Số lượng hệ thống phải là số không âm`);
+      }
+    });
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }
+
+  /**
+   * Format chotkho data for display
+   */
+  formatChotkhoForDisplay(chotkho: ChotkhoData): any {
+    const totalSlthucte = chotkho.details?.reduce((sum, detail) => sum + (detail.slthucte || 0), 0) || 0;
+    const totalSlhethong = chotkho.details?.reduce((sum, detail) => sum + (detail.slhethong || 0), 0) || 0;
+    const totalChenhlech = totalSlthucte - totalSlhethong;
+
+    return {
+      id: chotkho.id,
+      title: chotkho.title || 'Chưa có tiêu đề',
+      ngay: chotkho.ngay ? new Date(chotkho.ngay).toLocaleDateString('vi-VN') : '',
+      totalSlthucte: totalSlthucte.toLocaleString('vi-VN'),
+      totalSlhethong: totalSlhethong.toLocaleString('vi-VN'),
+      totalChenhlech: totalChenhlech.toLocaleString('vi-VN'),
+      detailCount: chotkho.details?.length || 0,
+      ghichu: chotkho.ghichu || '',
+      khoName: chotkho.kho?.name || '',
+      userName: chotkho.user?.profile?.name || chotkho.user?.email || '',
+      isActive: chotkho.isActive ? 'Hoạt động' : 'Không hoạt động'
+    };
   }
 
   async getUpdatedCodeIds(): Promise<void> {
@@ -580,9 +1166,39 @@ export class ChotkhoService {
               }
             }
           },
-          kho: true,
-          sanpham: true,
-          tonkho: true
+          kho: {
+            select: {
+              id: true,
+              name: true,
+              makho: true,
+              diachi: true
+            }
+          },
+          sanpham: {
+            select: {
+              id: true,
+              title: true,
+              masp: true,
+              dvt: true,
+              giagoc: true
+            }
+          },
+          tonkho: {
+            select: {
+              id: true,
+              slton: true,
+              slchogiao: true,
+              slchonhap: true
+            }
+          },
+          phieukho: {
+            select: {
+              id: true,
+              maphieu: true,
+              ngay: true,
+              type: true
+            }
+          }
         },
         orderBy: { ngay: 'desc' }
       });
@@ -720,7 +1336,6 @@ export class ChotkhoService {
         include: {
           user: true,
           kho: true,
-          sanpham: true,
           tonkho: true
         }
       });
@@ -841,10 +1456,50 @@ export class ChotkhoService {
       const data = await this.graphqlService.findMany(this.modelName, {
         where,
         include: {
-          user: true,
-          kho: true,
-          sanpham: true,
-          tonkho: true
+          user: {
+            select: {
+              id: true,
+              email: true,
+              profile: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          },
+          kho: {
+            select: {
+              id: true,
+              name: true,
+              makho: true,
+              diachi: true
+            }
+          },
+          sanpham: {
+            select: {
+              id: true,
+              title: true,
+              masp: true,
+              dvt: true,
+              giagoc: true
+            }
+          },
+          tonkho: {
+            select: {
+              id: true,
+              slton: true,
+              slchogiao: true,
+              slchonhap: true
+            }
+          },
+          phieukho: {
+            select: {
+              id: true,
+              maphieu: true,
+              ngay: true,
+              type: true
+            }
+          }
         }
       });
       
@@ -880,22 +1535,46 @@ export class ChotkhoService {
       const data = await this.graphqlService.findMany(this.modelName, {
         where,
         include: {
-          tonkho: true,
-          sanpham: true,
-          kho: true
+          tonkho: {
+            select: {
+              id: true,
+              slton: true,
+              slchogiao: true,
+              slchonhap: true
+            }
+          },
+          sanpham: {
+            select: {
+              id: true,
+              title: true,
+              masp: true,
+              dvt: true,
+              giagoc: true
+            }
+          },
+          kho: {
+            select: {
+              id: true,
+              name: true,
+              makho: true,
+              diachi: true
+            }
+          }
         }
       });
       
-      // Calculate differences
+      // Calculate differences using schema field names
       const differences = data?.map((item: any) => {
-        const expectedQty = item.tonkho?.soluong || 0;
-        const actualQty = item.soluong || 0;
-        const difference = actualQty - expectedQty;
+        const expectedQty = item.tonkho?.slton || 0; // slton from TonKho model
+        const actualQty = item.slthucte || 0;        // slthucte from Chotkho model
+        const systemQty = item.slhethong || 0;       // slhethong from Chotkho model
+        const difference = actualQty - systemQty;    // chenhlech calculation
         
         return {
           ...item,
           expectedQty,
           actualQty,
+          systemQty,
           difference,
           hasDifference: Math.abs(difference) > 0
         };

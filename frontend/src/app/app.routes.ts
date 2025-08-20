@@ -492,13 +492,13 @@ export const routes: Routes = [
           },
         ],
       },
-      //  {
-      //       path: 'chotkho',
-      //       canActivate: [PermissionGuard],
-      //       data: { permission: 'chotkho.view' },
-      //       loadChildren: () =>
-      //         import('./admin/chotkho/chotkho.route').then(m => m.ChotkhoRoutingModule),
-      // },
+       {
+            path: 'chotkho',
+            canActivate: [PermissionGuard],
+            data: { permission: 'chotkho.view' },
+            loadChildren: () =>
+              import('./admin/chotkho/chotkho.route').then(m => m.ChotkhoRoutingModule),
+      },
       {
         path: 'congnokhachhang',
         canActivate: [PermissionGuard],
