@@ -74,7 +74,7 @@ export class DetailXuatnhaptonComponent {
 
       // Handle new chotkho creation
       if (id === 'new') {
-        console.log('Creating new chotkho');
+        // console.log('Creating new chotkho');
         this.ListChotkho.set([]); // Reset data for new entry
         this.isEdit.set(true); // Enable edit mode for new entry
         this._XuatnhaptonComponent.drawer.open();
@@ -650,7 +650,7 @@ export class DetailXuatnhaptonComponent {
         );
       }
 
-      console.log('📊 Processed Excel data:', processedData);
+      // console.log('📊 Processed Excel data:', processedData);
 
       // 🎯 BƯỚC 1: XỬ LÝ ĐƠN HÀNG TỒN ĐỌNG TRƯỚC
       await this.processOutstandingOrders();
@@ -687,7 +687,7 @@ export class DetailXuatnhaptonComponent {
       this._snackBar.dismiss();
       this._snackBar.open('🔄 Đang kiểm tra và xử lý đơn hàng tồn đọng...', '', {
         duration: 0,
-        panelClass: ['snackbar-info']
+        panelClass: ['snackbar-warning']
       });
 
       // 1. Lấy danh sách tồn kho có slchogiao > 0 hoặc slchonhap > 0
@@ -702,7 +702,7 @@ export class DetailXuatnhaptonComponent {
         return;
       }
 
-      console.log('📊 Tồn kho có số lượng chờ:', tonkhoWithPending);
+      // console.log('📊 Tồn kho có số lượng chờ:', tonkhoWithPending);
 
       // 2. Xử lý từng sản phẩm có slchogiao > 0
       const deliveryResults = await this.processOutstandingDeliveries(tonkhoWithPending);
@@ -799,17 +799,17 @@ export class DetailXuatnhaptonComponent {
 
       // Lấy dữ liệu tồn kho mới nhất (sau khi đã xử lý đơn hàng)
       const Listmasp = processedData.map((item: any) => item.masp);
-      console.log('📋 List masp:', Listmasp);
+      // console.log('📋 List masp:', Listmasp);
 
       const ListSanpham = await this._ChotkhoService.getListSanphamByMasp(Listmasp);
-      console.log('🏷️ Found products:', ListSanpham);
+      // console.log('🏷️ Found products:', ListSanpham);
 
       const ListIds = ListSanpham.map((sp: any) => sp.id);
-      console.log('🆔 Product IDs for inventory:', ListIds);
+      // console.log('🆔 Product IDs for inventory:', ListIds);
 
       // 🎯 QUAN TRỌNG: Lấy tồn kho đã được cập nhật (slchogiao=0, slchonhap=0)
       const Listtonkho = await this._ChotkhoService.getListSanphamTonKho(ListIds);
-      console.log('📦 Updated inventory (after processing orders):', Listtonkho);
+      // console.log('📦 Updated inventory (after processing orders):', Listtonkho);
 
       // Map Excel data với tồn kho đã được cập nhật
       const Chotkho = processedData.map((item: any) => {
@@ -1317,14 +1317,15 @@ export class DetailXuatnhaptonComponent {
       errors.push('Không có dữ liệu chốt kho để xử lý');
       return { isValid: false, errors };
     }
-
+    console.log(data);
+    
     // Validate each chotkho record
     data.forEach((item: any, index: number) => {
       const rowNum = index + 1;
 
-      if (!item.masp || item.masp.trim() === '') {
-        errors.push(`Dòng ${rowNum}: Thiếu mã sản phẩm`);
-      }
+      // if (!item.masp || item.masp.trim() === '') {
+      //   errors.push(`Dòng ${rowNum}: Thiếu mã sản phẩm`);
+      // }
 
       if (item.slthucte === undefined || item.slthucte === null) {
         errors.push(`Dòng ${rowNum}: Thiếu số lượng thực tế`);

@@ -171,4 +171,19 @@ export class DonhangController {
       };
     }
   }
+
+  @Post('complete-pending-deliveries/:sanphamId')
+  @Audit({entity: 'Complete Pending Deliveries', action: AuditAction.UPDATE, includeResponse: true})
+  async completePendingDeliveries(@Param('sanphamId') sanphamId: string) {
+    try {
+      const result = await this.donhangService.completePendingDeliveriesForProduct(sanphamId);
+      return result;
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Failed to complete pending deliveries',
+        error: error.message
+      };
+    }
+  }
 }

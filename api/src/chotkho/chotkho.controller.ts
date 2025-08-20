@@ -85,6 +85,26 @@ export class ChotkhoController {
     }
   }
 
+  @ApiOperation({ summary: 'Complete chotkho workflow - close with phieukho creation' })
+  @Post(':id/complete')
+  async completeChotkhoWorkflow(@Param('id') chotkhoId: string) {
+    try {
+      const result = await this.chotkhoService.updateTonkhoAfterClose(chotkhoId);
+      
+      if (result.success) {
+        return {
+          success: true,
+          message: 'Chốt kho hoàn tất với phiếu kho điều chỉnh',
+          data: result
+        };
+      } else {
+        throw new HttpException(result.message || 'Chốt kho thất bại', HttpStatus.BAD_REQUEST);
+      }
+    } catch (error) {
+      throw new HttpException(error.message || 'Complete chotkho failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   @ApiOperation({ summary: 'Get last updated chotkho timestamp' })
   @Get('last-updated')
   async getLastUpdatedChotkho() {

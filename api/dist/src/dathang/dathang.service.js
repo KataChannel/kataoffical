@@ -1174,26 +1174,41 @@ let DathangService = class DathangService {
     }
     async completePendingReceiptsForProduct(sanphamId) {
         try {
-            return await this.prisma.$transaction(async (prisma) => {
-                const pendingOrders = await prisma.dathang.findMany({
-                    where: {
-                        status: { in: ['dadat', 'dagiao'] },
-                        sanpham: {
-                            some: {
-                                idSP: sanphamId,
-                                slgiao: { gt: 0 }
-                            }
-                        }
-                    },
-                    include: {
-                        sanpham: {
-                            where: { idSP: sanphamId }
+            const pendingOrders = await this.prisma.dathang.findMany({
+                where: {
+                    status: { in: ['dadat', 'dagiao'] },
+                    sanpham: {
+                        some: {
+                            idSP: sanphamId,
+                            slgiao: { gt: 0 }
                         }
                     }
-                });
-                let completedCount = 0;
-                for (const order of pendingOrders) {
-                    for (const sp of order.sanpham) {
+                },
+                include: {
+                    sanpham: {
+                        where: { idSP: sanphamId }
+                    }
+                }
+            });
+            if (pendingOrders.length === 0) {
+                return {
+                    success: true,
+                    count: 0,
+                    message: 'Không có đặt hàng chờ nhập nào'
+                };
+            }
+            const batchSize = 10;
+            let totalCompleted = 0;
+            for (let i = 0; i < pendingOrders.length; i += batchSize) {
+                const batch = pendingOrders.slice(i, i + batchSize);
+                const batchResult = await this.prisma.$transaction(async (prisma) => {
+                    let batchCount = 0;
+                    for (const order of batch) {
+                        const sanphamUpdates = order.sanpham.map(sp => ({
+                            id: sp.id,
+                            slnhan: parseFloat(sp.slgiao.toString()),
+                            ghichu: (sp.ghichu || '') + ' | Auto-completed for inventory close'
+                        }));
                         await prisma.dathang.update({
                             where: { id: order.id },
                             data: {
@@ -1202,27 +1217,38 @@ let DathangService = class DathangService {
                                 updatedAt: new Date()
                             }
                         });
-                        const slgiaoValue = parseFloat(sp.slgiao.toString());
-                        await prisma.dathangsanpham.update({
-                            where: { id: sp.id },
-                            data: {
-                                slnhan: slgiaoValue,
-                                ghichu: (sp.ghichu || '') + ' | Auto-completed for inventory close'
-                            }
-                        });
-                        await this.updateTonKhoSafely(sp.idSP, {
-                            slchonhap: { decrement: slgiaoValue },
-                            slton: { increment: slgiaoValue }
-                        });
-                        completedCount++;
+                        for (const update of sanphamUpdates) {
+                            await prisma.dathangsanpham.update({
+                                where: { id: update.id },
+                                data: {
+                                    slnhan: update.slnhan,
+                                    ghichu: update.ghichu
+                                }
+                            });
+                        }
+                        for (const sp of order.sanpham) {
+                            const slgiaoValue = parseFloat(sp.slgiao.toString());
+                            await this.tonkhoManager.updateTonkhoAtomic([{
+                                    sanphamId: sp.idSP,
+                                    operation: 'increment',
+                                    slton: slgiaoValue,
+                                    slchonhap: -slgiaoValue,
+                                    reason: `Auto-complete pending receipt for order ${order.madncc}`
+                                }]);
+                        }
+                        batchCount += order.sanpham.length;
                     }
-                }
-                return {
-                    success: true,
-                    count: completedCount,
-                    message: `Đã hoàn tất ${completedCount} đặt hàng chờ nhập`
-                };
-            });
+                    return batchCount;
+                }, {
+                    timeout: 30000
+                });
+                totalCompleted += batchResult;
+            }
+            return {
+                success: true,
+                count: totalCompleted,
+                message: `Đã hoàn tất ${totalCompleted} đặt hàng chờ nhập`
+            };
         }
         catch (error) {
             console.error('Error completing pending receipts:', error);

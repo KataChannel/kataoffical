@@ -180,7 +180,7 @@ export class XuatnhaptonComponent {
     try {
       // Load initial chot kho data
       const result = await this._ChotkhoService.getChotkhoByDateRange(this.SearchParams);
-      console.log('Initial chot kho result:', result);
+      // console.log('Initial chot kho result:', result);
       
       if (result && result.data) {
         this.ListChotkho.set(result.data);

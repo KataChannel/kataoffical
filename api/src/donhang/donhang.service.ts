@@ -2498,30 +2498,51 @@ export class DonhangService {
    */
   async completePendingDeliveriesForProduct(sanphamId: string): Promise<{ success: boolean; count: number; message?: string }> {
     try {
-      return await this.prisma.$transaction(async (prisma) => {
-        // Tìm các đơn hàng chờ giao
-        const pendingOrders = await prisma.donhang.findMany({
-          where: {
-            status: { in: ['dadat', 'dagiao'] },
-            sanpham: {
-              some: {
-                idSP: sanphamId,
-                slgiao: { gt: 0 }
-              }
-            }
-          },
-          include: {
-            sanpham: {
-              where: { idSP: sanphamId }
+      // First, find all pending orders without transaction to avoid timeout
+      const pendingOrders = await this.prisma.donhang.findMany({
+        where: {
+          status: { in: ['dadat', 'dagiao'] },
+          sanpham: {
+            some: {
+              idSP: sanphamId,
+              slgiao: { gt: 0 }
             }
           }
-        });
+        },
+        include: {
+          sanpham: {
+            where: { idSP: sanphamId }
+          }
+        }
+      });
 
-        let completedCount = 0;
+      if (pendingOrders.length === 0) {
+        return {
+          success: true,
+          count: 0,
+          message: 'Không có đơn hàng chờ giao nào'
+        };
+      }
 
-        for (const order of pendingOrders) {
-          for (const sp of order.sanpham) {
-            // Cập nhật trạng thái đơn hàng
+      // Process in smaller batches to avoid transaction timeout
+      const batchSize = 10;
+      let totalCompleted = 0;
+
+      for (let i = 0; i < pendingOrders.length; i += batchSize) {
+        const batch = pendingOrders.slice(i, i + batchSize);
+        
+        const batchResult = await this.prisma.$transaction(async (prisma) => {
+          let batchCount = 0;
+          
+          for (const order of batch) {
+            // Collect all sanpham updates for this order
+            const sanphamUpdates = order.sanpham.map(sp => ({
+              id: sp.id,
+              slnhan: sp.slgiao,
+              ghichu: (sp.ghichu || '') + ' | Auto-completed for inventory close'
+            }));
+
+            // Update order status
             await prisma.donhang.update({
               where: { id: order.id },
               data: {
@@ -2531,30 +2552,43 @@ export class DonhangService {
               }
             });
 
-            // Cập nhật số lượng nhận = số lượng giao
-            await prisma.donhangsanpham.update({
-              where: { id: sp.id },
-              data: {
-                slnhan: sp.slgiao,
-                ghichu: (sp.ghichu || '') + ' | Auto-completed for inventory close'
-              }
-            });
+            // Batch update all sanpham for this order
+            for (const update of sanphamUpdates) {
+              await prisma.donhangsanpham.update({
+                where: { id: update.id },
+                data: {
+                  slnhan: update.slnhan,
+                  ghichu: update.ghichu
+                }
+              });
+            }
 
-            // Cập nhật TonKho: chuyển slchogiao về 0
-            await this.updateTonKhoSafely(sp.idSP, {
-              slchogiao: { decrement: parseFloat(sp.slgiao.toString()) }
-            });
+            // Update TonKho using atomic operations
+            for (const sp of order.sanpham) {
+              await this.tonkhoManager.updateTonkhoAtomic([{
+                sanphamId: sp.idSP,
+                operation: 'decrement',
+                slchogiao: parseFloat(sp.slgiao.toString()),
+                reason: `Auto-complete pending delivery for order ${order.madonhang}`
+              }]);
+            }
 
-            completedCount++;
+            batchCount += order.sanpham.length;
           }
-        }
+          
+          return batchCount;
+        }, {
+          timeout: 30000 // Increase timeout to 30 seconds
+        });
 
-        return {
-          success: true,
-          count: completedCount,
-          message: `Đã hoàn tất ${completedCount} đơn hàng chờ giao`
-        };
-      });
+        totalCompleted += batchResult;
+      }
+
+      return {
+        success: true,
+        count: totalCompleted,
+        message: `Đã hoàn tất ${totalCompleted} đơn hàng chờ giao`
+      };
     } catch (error) {
       console.error('Error completing pending deliveries:', error);
       return {

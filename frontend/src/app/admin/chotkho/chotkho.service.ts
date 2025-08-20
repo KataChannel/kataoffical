@@ -1,7 +1,9 @@
 import { Injectable, WritableSignal, signal, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { StorageService } from '../../shared/utils/storage.service';
 import { GraphqlService } from '../../shared/services/graphql.service';
+import { environment } from '../../../environments/environment.development';
 
 /**
  * ChotkhoService - Updated to align with new Prisma schema (Chotkho + ChotkhoDetail)
@@ -93,6 +95,10 @@ export class ChotkhoService {
   private graphqlService = inject(GraphqlService);
   private storageService = inject(StorageService);
   private snackBar = inject(MatSnackBar);
+  private http = inject(HttpClient);
+
+  // API Configuration
+  private apiUrl = environment.APIURL;
 
   // Model name for GraphQL operations
   private readonly modelName = 'chotkho';
@@ -1612,6 +1618,7 @@ export class ChotkhoService {
             { slchonhap: { gt: 0 } }
           ]
         },
+        take: 99999,
         include: {
           sanpham: {
             select: {
@@ -1634,22 +1641,19 @@ export class ChotkhoService {
   // Hoàn tất các đơn hàng chờ giao cho sản phẩm
   async completePendingDeliveries(sanphamId: string): Promise<{ success: boolean; count?: number; message?: string }> {
     try {
-      // Sử dụng mutation có sẵn để cập nhật đơn hàng
-      const response = await this.graphqlService.createOne('donhang_complete_pending', {
-        sanphamId: sanphamId,
-        type: 'delivery'
-      });
+      // Sử dụng REST API endpoint mới
+      const response = await this.http.post<any>(`${environment.APIURL}/donhang/complete-pending-deliveries/${sanphamId}`, {}).toPromise();
       
       return {
-        success: true,
-        count: response?.completedCount || 0,
+        success: response?.success || true,
+        count: response?.count || 0,
         message: response?.message || 'Hoàn tất giao hàng thành công'
       };
     } catch (error: any) {
       console.error('Error completing pending deliveries:', error);
       return {
         success: false,
-        message: error.message || 'Lỗi khi hoàn tất giao hàng'
+        message: error.error?.message || error.message || 'Lỗi khi hoàn tất giao hàng'
       };
     }
   }
@@ -1657,22 +1661,19 @@ export class ChotkhoService {
   // Hoàn tất các đơn đặt hàng chờ nhập cho sản phẩm
   async completePendingReceipts(sanphamId: string): Promise<{ success: boolean; count?: number; message?: string }> {
     try {
-      // Sử dụng mutation có sẵn để cập nhật đặt hàng
-      const response = await this.graphqlService.createOne('dathang_complete_pending', {
-        sanphamId: sanphamId,
-        type: 'receipt'
-      });
+      // Sử dụng REST API endpoint mới
+      const response = await this.http.post<any>(`${environment.APIURL}/dathang/complete-pending-receipts/${sanphamId}`, {}).toPromise();
       
       return {
-        success: true,
-        count: response?.completedCount || 0,
+        success: response?.success || true,
+        count: response?.count || 0,
         message: response?.message || 'Hoàn tất nhập hàng thành công'
       };
     } catch (error: any) {
       console.error('Error completing pending receipts:', error);
       return {
         success: false,
-        message: error.message || 'Lỗi khi hoàn tất nhập hàng'
+        message: error.error?.message || error.message || 'Lỗi khi hoàn tất nhập hàng'
       };
     }
   }
@@ -1727,6 +1728,31 @@ export class ChotkhoService {
     }
   }
 
+  // Chốt kho hoàn tất với tạo phiếu kho điều chỉnh
+  async completeChotkhoWorkflow(chotkhoId: string): Promise<any> {
+    try {
+      this.isLoading.set(true);
+      
+      const result = await this.http.post(
+        `${this.apiUrl}/chotkho/${chotkhoId}/complete`,
+        {}
+      ).toPromise();
+
+      if (result) {
+        this.showSuccessMessage('Chốt kho hoàn tất với phiếu kho điều chỉnh');
+        await this.getAllChotkho(); // Reload data
+      }
+
+      return result;
+    } catch (error: any) {
+      console.error('Error completing chotkho workflow:', error);
+      this.showErrorMessage(`Lỗi chốt kho: ${error.message}`);
+      throw error;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
   // Cập nhật số lượng tồn kho
   async updateTonkhoSlton(tonkhoId: string, data: {
     slton: number;
@@ -1735,18 +1761,19 @@ export class ChotkhoService {
     updatedBy?: string;
   }): Promise<any> {
     try {
+      // Only update fields that exist in the TonKho schema
       const updateData = {
-        slton: data.slton,
-        // Có thể thêm metadata về điều chỉnh vào ghichu hoặc fields khác
-        ...(data.adjustmentReason && {
-          adjustmentReason: data.adjustmentReason,
-          adjustmentValue: data.adjustmentValue,
-          adjustmentUpdatedBy: data.updatedBy,
-          adjustmentUpdatedAt: new Date()
-        })
+        slton: data.slton
+        // Note: TonKho model only has id, sanphamId, slton, slchogiao, slchonhap fields
+        // Adjustment metadata should be stored in a separate adjustment log table if needed
       };
 
-      const result = await this.graphqlService.updateOne('tonkho', tonkhoId, updateData);
+      const result = await this.graphqlService.updateOne('tonkho', { id: tonkhoId }, updateData);
+
+      // If adjustment metadata is needed, log it separately
+      if (data.adjustmentReason) {
+        console.log(`TonKho adjustment logged: ${data.adjustmentReason}, value: ${data.adjustmentValue}, by: ${data.updatedBy}`);
+      }
 
       return result;
     } catch (error: any) {

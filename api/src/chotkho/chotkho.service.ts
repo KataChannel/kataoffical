@@ -321,12 +321,94 @@ export class ChotkhoService {
         // Lấy tất cả chi tiết chốt kho
         const details = await prisma.chotkhoDetail.findMany({
           where: { chotkhoId },
-          include: { sanpham: true }
+          include: { 
+            sanpham: true,
+            chotkho: true 
+          }
         });
 
+        if (details.length === 0) {
+          return {
+            success: false,
+            message: 'Không tìm thấy chi tiết chốt kho'
+          };
+        }
+
+        // Phân loại chênh lệch
+        const positiveDiscrepancies = details.filter(d => {
+          const chenhlech = Number(d.chenhlech || 0);
+          return chenhlech > 0;
+        });
+        const negativeDiscrepancies = details.filter(d => {
+          const chenhlech = Number(d.chenhlech || 0);
+          return chenhlech < 0;
+        });
+        
+        // 1. Tạo phiếu xuất điều chỉnh cho chênh lệch dương (thừa hàng)
+        if (positiveDiscrepancies.length > 0) {
+          const maphieuXuat = await this.generateNextOrderCode('xuat');
+          const phieuXuat = await prisma.phieuKho.create({
+            data: {
+              maphieu: maphieuXuat,
+              title: `Phiếu xuất điều chỉnh - ${details[0].chotkho.codeId}`,
+              type: 'xuat',
+              ngay: new Date(),
+              ghichu: `Điều chỉnh chốt kho ${details[0].chotkho.codeId} - Xử lý hàng thừa`,
+              khoId: details[0].chotkho.khoId,
+              isActive: true,
+              isChotkho: true
+            }
+          });
+
+          // Tạo chi tiết phiếu xuất
+          for (const detail of positiveDiscrepancies) {
+            if (detail.sanphamId && detail.chenhlech) {
+              await prisma.phieuKhoSanpham.create({
+                data: {
+                  phieuKhoId: phieuXuat.id,
+                  sanphamId: detail.sanphamId,
+                  soluong: Math.abs(Number(detail.chenhlech)),
+                  ghichu: `Điều chỉnh thừa: ${detail.sanpham?.masp || 'N/A'}`
+                }
+              });
+            }
+          }
+        }
+
+        // 2. Tạo phiếu nhập điều chỉnh cho chênh lệch âm (thiếu hàng)
+        if (negativeDiscrepancies.length > 0) {
+          const maphieuNhap = await this.generateNextOrderCode('nhap');
+          const phieuNhap = await prisma.phieuKho.create({
+            data: {
+              maphieu: maphieuNhap,
+              title: `Phiếu nhập điều chỉnh - ${details[0].chotkho.codeId}`,
+              type: 'nhap',
+              ngay: new Date(),
+              ghichu: `Điều chỉnh chốt kho ${details[0].chotkho.codeId} - Xử lý hàng thiếu`,
+              khoId: details[0].chotkho.khoId,
+              isActive: true,
+              isChotkho: true
+            }
+          });
+
+          // Tạo chi tiết phiếu nhập
+          for (const detail of negativeDiscrepancies) {
+            if (detail.sanphamId && detail.chenhlech) {
+              await prisma.phieuKhoSanpham.create({
+                data: {
+                  phieuKhoId: phieuNhap.id,
+                  sanphamId: detail.sanphamId,
+                  soluong: Math.abs(Number(detail.chenhlech)),
+                  ghichu: `Điều chỉnh thiếu: ${detail.sanpham?.masp || 'N/A'}`
+                }
+              });
+            }
+          }
+        }
+
+        // 3. Cập nhật TonKho với số lượng thực tế
         for (const detail of details) {
           if (detail.sanphamId) {
-            // Cập nhật TonKho với số lượng thực tế
             await prisma.tonKho.upsert({
               where: { sanphamId: detail.sanphamId },
               update: {
@@ -344,7 +426,7 @@ export class ChotkhoService {
           }
         }
 
-        // Cập nhật trạng thái chốt kho (chỉ cập nhật updatedAt vì không có status field)
+        // 4. Cập nhật trạng thái chốt kho
         await prisma.chotkho.update({
           where: { id: chotkhoId },
           data: {
@@ -352,9 +434,18 @@ export class ChotkhoService {
           }
         });
 
+        const summary = {
+          totalDetails: details.length,
+          positiveDiscrepancies: positiveDiscrepancies.length,
+          negativeDiscrepancies: negativeDiscrepancies.length,
+          phieuXuatCreated: positiveDiscrepancies.length > 0,
+          phieuNhapCreated: negativeDiscrepancies.length > 0
+        };
+
         return {
           success: true,
-          message: `Đã cập nhật ${details.length} TonKho thành công`
+          message: `Chốt kho hoàn tất: ${details.length} TonKho, ${positiveDiscrepancies.length} phiếu xuất, ${negativeDiscrepancies.length} phiếu nhập`,
+          summary
         };
       });
     } catch (error) {
@@ -363,6 +454,40 @@ export class ChotkhoService {
         success: false,
         message: error.message || 'Lỗi cập nhật TonKho'
       };
+    }
+  }
+
+  /**
+   * Generate next order code for phieukho
+   */
+  private async generateNextOrderCode(type: 'nhap' | 'xuat'): Promise<string> {
+    try {
+      const prefix = type === 'nhap' ? 'PN' : 'PX';
+      const today = new Date();
+      const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+      
+      // Tìm mã phiếu cao nhất trong ngày
+      const lastPhieu = await this.prisma.phieuKho.findFirst({
+        where: {
+          maphieu: {
+            startsWith: `${prefix}-${dateStr}`
+          }
+        },
+        orderBy: {
+          maphieu: 'desc'
+        }
+      });
+
+      let nextNumber = 1;
+      if (lastPhieu && lastPhieu.maphieu) {
+        const lastNumber = parseInt(lastPhieu.maphieu.split('-').pop() || '0');
+        nextNumber = lastNumber + 1;
+      }
+
+      return `${prefix}-${dateStr}-${nextNumber.toString().padStart(3, '0')}`;
+    } catch (error) {
+      console.error('Error generating order code:', error);
+      return `${type === 'nhap' ? 'PN' : 'PX'}-${Date.now()}`;
     }
   }
 }

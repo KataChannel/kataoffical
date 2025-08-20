@@ -121,6 +121,14 @@ export declare class ChotkhoController {
         success: boolean;
         message?: string;
     }>;
+    completeChotkhoWorkflow(chotkhoId: string): Promise<{
+        success: boolean;
+        message: string;
+        data: {
+            success: boolean;
+            message?: string;
+        };
+    }>;
     getLastUpdatedChotkho(): Promise<{
         updatedAt: number;
     }>;

@@ -600,4 +600,13 @@ export declare class DathangController {
         errors: any[];
         message: string;
     }>;
+    completePendingReceipts(sanphamId: string): Promise<{
+        success: boolean;
+        count: number;
+        message?: string;
+    } | {
+        success: boolean;
+        message: string;
+        error: any;
+    }>;
 }

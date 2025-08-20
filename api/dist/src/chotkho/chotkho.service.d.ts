@@ -126,4 +126,5 @@ export declare class ChotkhoService {
         success: boolean;
         message?: string;
     }>;
+    private generateNextOrderCode;
 }

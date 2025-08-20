@@ -594,4 +594,13 @@ export declare class DonhangController {
     manualAutoComplete(body: {
         date?: string;
     }): Promise<any>;
+    completePendingDeliveries(sanphamId: string): Promise<{
+        success: boolean;
+        count: number;
+        message?: string;
+    } | {
+        success: boolean;
+        message: string;
+        error: any;
+    }>;
 }

@@ -13,6 +13,7 @@
     "db:updatevat": "cd api && npx ts-node prisma/updatevat.ts",
     "db:updatevatsanpham": "cd api && npx ts-node prisma/updatevatsanpham.ts",
     "db:updatebanggiadonhang": "cd api && npx ts-node prisma/updatebanggiadonhang.ts",
+    "db:updatetonkho": "cd api && npx ts-node prisma/updatetonkho.ts",
     "db:generate": "cd api && npx prisma generate",
     "db:migrate": "cd api && npx bun prisma migrate dev --name tenfile",
     "db:reset": "cd api && npx bun prisma migrate reset",

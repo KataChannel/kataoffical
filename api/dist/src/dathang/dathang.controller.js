@@ -63,6 +63,19 @@ let DathangController = class DathangController {
     deletebulk(data) {
         return this.dathangService.deletebulk(data);
     }
+    async completePendingReceipts(sanphamId) {
+        try {
+            const result = await this.dathangService.completePendingReceiptsForProduct(sanphamId);
+            return result;
+        }
+        catch (error) {
+            return {
+                success: false,
+                message: 'Failed to complete pending receipts',
+                error: error.message
+            };
+        }
+    }
 };
 exports.DathangController = DathangController;
 __decorate([
@@ -170,6 +183,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DathangController.prototype, "deletebulk", null);
+__decorate([
+    (0, common_1.Post)('complete-pending-receipts/:sanphamId'),
+    (0, audit_decorator_1.Audit)({ entity: 'Complete Pending Receipts', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    __param(0, (0, common_1.Param)('sanphamId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], DathangController.prototype, "completePendingReceipts", null);
 exports.DathangController = DathangController = __decorate([
     (0, common_1.Controller)('dathang'),
     __metadata("design:paramtypes", [dathang_service_1.DathangService])

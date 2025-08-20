@@ -71,6 +71,24 @@ let ChotkhoController = class ChotkhoController {
             throw new common_1.HttpException(error.message || 'Close inventory failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async completeChotkhoWorkflow(chotkhoId) {
+        try {
+            const result = await this.chotkhoService.updateTonkhoAfterClose(chotkhoId);
+            if (result.success) {
+                return {
+                    success: true,
+                    message: 'Chốt kho hoàn tất với phiếu kho điều chỉnh',
+                    data: result
+                };
+            }
+            else {
+                throw new common_1.HttpException(result.message || 'Chốt kho thất bại', common_1.HttpStatus.BAD_REQUEST);
+            }
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message || 'Complete chotkho failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async getLastUpdatedChotkho() {
         try {
             return await this.chotkhoService.getLastUpdatedChotkho();
@@ -140,6 +158,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ChotkhoController.prototype, "updateTonkhoAfterClose", null);
+__decorate([
+    (0, swagger_1.ApiOperation)({ summary: 'Complete chotkho workflow - close with phieukho creation' }),
+    (0, common_1.Post)(':id/complete'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ChotkhoController.prototype, "completeChotkhoWorkflow", null);
 __decorate([
     (0, swagger_1.ApiOperation)({ summary: 'Get last updated chotkho timestamp' }),
     (0, common_1.Get)('last-updated'),

@@ -140,6 +140,19 @@ let DonhangController = class DonhangController {
             };
         }
     }
+    async completePendingDeliveries(sanphamId) {
+        try {
+            const result = await this.donhangService.completePendingDeliveriesForProduct(sanphamId);
+            return result;
+        }
+        catch (error) {
+            return {
+                success: false,
+                message: 'Failed to complete pending deliveries',
+                error: error.message
+            };
+        }
+    }
 };
 exports.DonhangController = DonhangController;
 __decorate([
@@ -325,6 +338,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], DonhangController.prototype, "manualAutoComplete", null);
+__decorate([
+    (0, common_1.Post)('complete-pending-deliveries/:sanphamId'),
+    (0, audit_decorator_1.Audit)({ entity: 'Complete Pending Deliveries', action: client_1.AuditAction.UPDATE, includeResponse: true }),
+    __param(0, (0, common_1.Param)('sanphamId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], DonhangController.prototype, "completePendingDeliveries", null);
 exports.DonhangController = DonhangController = __decorate([
     (0, common_1.Controller)('donhang'),
     __metadata("design:paramtypes", [donhang_service_1.DonhangService,

@@ -279,8 +279,79 @@ let ChotkhoService = class ChotkhoService {
             return await this.prisma.$transaction(async (prisma) => {
                 const details = await prisma.chotkhoDetail.findMany({
                     where: { chotkhoId },
-                    include: { sanpham: true }
+                    include: {
+                        sanpham: true,
+                        chotkho: true
+                    }
                 });
+                if (details.length === 0) {
+                    return {
+                        success: false,
+                        message: 'Không tìm thấy chi tiết chốt kho'
+                    };
+                }
+                const positiveDiscrepancies = details.filter(d => {
+                    const chenhlech = Number(d.chenhlech || 0);
+                    return chenhlech > 0;
+                });
+                const negativeDiscrepancies = details.filter(d => {
+                    const chenhlech = Number(d.chenhlech || 0);
+                    return chenhlech < 0;
+                });
+                if (positiveDiscrepancies.length > 0) {
+                    const maphieuXuat = await this.generateNextOrderCode('xuat');
+                    const phieuXuat = await prisma.phieuKho.create({
+                        data: {
+                            maphieu: maphieuXuat,
+                            title: `Phiếu xuất điều chỉnh - ${details[0].chotkho.codeId}`,
+                            type: 'xuat',
+                            ngay: new Date(),
+                            ghichu: `Điều chỉnh chốt kho ${details[0].chotkho.codeId} - Xử lý hàng thừa`,
+                            khoId: details[0].chotkho.khoId,
+                            isActive: true,
+                            isChotkho: true
+                        }
+                    });
+                    for (const detail of positiveDiscrepancies) {
+                        if (detail.sanphamId && detail.chenhlech) {
+                            await prisma.phieuKhoSanpham.create({
+                                data: {
+                                    phieuKhoId: phieuXuat.id,
+                                    sanphamId: detail.sanphamId,
+                                    soluong: Math.abs(Number(detail.chenhlech)),
+                                    ghichu: `Điều chỉnh thừa: ${detail.sanpham?.masp || 'N/A'}`
+                                }
+                            });
+                        }
+                    }
+                }
+                if (negativeDiscrepancies.length > 0) {
+                    const maphieuNhap = await this.generateNextOrderCode('nhap');
+                    const phieuNhap = await prisma.phieuKho.create({
+                        data: {
+                            maphieu: maphieuNhap,
+                            title: `Phiếu nhập điều chỉnh - ${details[0].chotkho.codeId}`,
+                            type: 'nhap',
+                            ngay: new Date(),
+                            ghichu: `Điều chỉnh chốt kho ${details[0].chotkho.codeId} - Xử lý hàng thiếu`,
+                            khoId: details[0].chotkho.khoId,
+                            isActive: true,
+                            isChotkho: true
+                        }
+                    });
+                    for (const detail of negativeDiscrepancies) {
+                        if (detail.sanphamId && detail.chenhlech) {
+                            await prisma.phieuKhoSanpham.create({
+                                data: {
+                                    phieuKhoId: phieuNhap.id,
+                                    sanphamId: detail.sanphamId,
+                                    soluong: Math.abs(Number(detail.chenhlech)),
+                                    ghichu: `Điều chỉnh thiếu: ${detail.sanpham?.masp || 'N/A'}`
+                                }
+                            });
+                        }
+                    }
+                }
                 for (const detail of details) {
                     if (detail.sanphamId) {
                         await prisma.tonKho.upsert({
@@ -305,9 +376,17 @@ let ChotkhoService = class ChotkhoService {
                         updatedAt: new Date()
                     }
                 });
+                const summary = {
+                    totalDetails: details.length,
+                    positiveDiscrepancies: positiveDiscrepancies.length,
+                    negativeDiscrepancies: negativeDiscrepancies.length,
+                    phieuXuatCreated: positiveDiscrepancies.length > 0,
+                    phieuNhapCreated: negativeDiscrepancies.length > 0
+                };
                 return {
                     success: true,
-                    message: `Đã cập nhật ${details.length} TonKho thành công`
+                    message: `Chốt kho hoàn tất: ${details.length} TonKho, ${positiveDiscrepancies.length} phiếu xuất, ${negativeDiscrepancies.length} phiếu nhập`,
+                    summary
                 };
             });
         }
@@ -317,6 +396,33 @@ let ChotkhoService = class ChotkhoService {
                 success: false,
                 message: error.message || 'Lỗi cập nhật TonKho'
             };
+        }
+    }
+    async generateNextOrderCode(type) {
+        try {
+            const prefix = type === 'nhap' ? 'PN' : 'PX';
+            const today = new Date();
+            const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '');
+            const lastPhieu = await this.prisma.phieuKho.findFirst({
+                where: {
+                    maphieu: {
+                        startsWith: `${prefix}-${dateStr}`
+                    }
+                },
+                orderBy: {
+                    maphieu: 'desc'
+                }
+            });
+            let nextNumber = 1;
+            if (lastPhieu && lastPhieu.maphieu) {
+                const lastNumber = parseInt(lastPhieu.maphieu.split('-').pop() || '0');
+                nextNumber = lastNumber + 1;
+            }
+            return `${prefix}-${dateStr}-${nextNumber.toString().padStart(3, '0')}`;
+        }
+        catch (error) {
+            console.error('Error generating order code:', error);
+            return `${type === 'nhap' ? 'PN' : 'PX'}-${Date.now()}`;
         }
     }
 };
