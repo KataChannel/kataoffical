@@ -283,6 +283,103 @@ let PhieukhoService = class PhieukhoService {
             return prisma.phieuKho.delete({ where: { id } });
         });
     }
+    async createAdjustmentPhieuKho(data) {
+        try {
+            return await this.prisma.$transaction(async (prisma) => {
+                const maphieu = await this.generateNextOrderCode(data.type);
+                const phieukho = await prisma.phieuKho.create({
+                    data: {
+                        maphieu,
+                        type: data.type,
+                        ngay: new Date(),
+                        ghichu: data.ghichu,
+                        khoId: data.khoId,
+                        isActive: true
+                    }
+                });
+                await prisma.phieuKhoSanpham.create({
+                    data: {
+                        phieuKhoId: phieukho.id,
+                        sanphamId: data.sanphamId,
+                        soluong: data.soluong,
+                        ghichu: data.ghichu
+                    }
+                });
+                const tonkhoUpdate = data.type === 'nhap'
+                    ? { slton: { increment: data.soluong } }
+                    : { slton: { decrement: data.soluong } };
+                await this.updateTonKhoSafely(data.sanphamId, tonkhoUpdate);
+                if (data.chothkhoId) {
+                    await prisma.chotkhoDetail.create({
+                        data: {
+                            chotkhoId: data.chothkhoId,
+                            sanphamId: data.sanphamId,
+                            slthucte: 0,
+                            slhethong: 0,
+                            chenhlech: data.type === 'nhap' ? data.soluong : -data.soluong,
+                            ghichu: `Phiếu điều chỉnh: ${maphieu}`,
+                            phieukhoId: phieukho.id
+                        }
+                    });
+                }
+                return {
+                    success: true,
+                    phieukho,
+                    message: `Đã tạo phiếu ${data.type} điều chỉnh: ${maphieu}`
+                };
+            });
+        }
+        catch (error) {
+            console.error('Error creating adjustment phieukho:', error);
+            return {
+                success: false,
+                message: error.message || 'Lỗi tạo phiếu điều chỉnh'
+            };
+        }
+    }
+    async updateTonKhoSafely(sanphamId, updateData) {
+        try {
+            const existingTonKho = await this.prisma.tonKho.findUnique({
+                where: { sanphamId }
+            });
+            if (existingTonKho) {
+                await this.prisma.tonKho.update({
+                    where: { sanphamId },
+                    data: updateData
+                });
+            }
+            else {
+                const initialValue = this.calculateInitialTonKhoValue(updateData);
+                await this.prisma.tonKho.create({
+                    data: {
+                        sanphamId,
+                        slton: initialValue.slton,
+                        slchogiao: 0,
+                        slchonhap: 0
+                    }
+                });
+            }
+        }
+        catch (error) {
+            console.error(`Error updating TonKho for product ${sanphamId}:`, error);
+            throw error;
+        }
+    }
+    calculateInitialTonKhoValue(updateData) {
+        let slton = 0;
+        if (updateData.slton) {
+            if (typeof updateData.slton === 'object' && updateData.slton.increment) {
+                slton = updateData.slton.increment;
+            }
+            else if (typeof updateData.slton === 'object' && updateData.slton.decrement) {
+                slton = -updateData.slton.decrement;
+            }
+            else {
+                slton = updateData.slton;
+            }
+        }
+        return { slton };
+    }
 };
 exports.PhieukhoService = PhieukhoService;
 exports.PhieukhoService = PhieukhoService = __decorate([

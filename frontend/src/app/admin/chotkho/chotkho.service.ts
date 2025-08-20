@@ -1599,4 +1599,273 @@ export class ChotkhoService {
       this.isLoading.set(false);
     }
   }
+
+  // 🎯 NEW METHODS: Xử lý workflow đơn hàng tồn đọng và chenhlech
+
+  // Lấy tồn kho có số lượng chờ giao/nhập
+  async getTonkhoWithPendingQuantities(): Promise<any[]> {
+    try {
+      const data = await this.graphqlService.findMany('tonkho', {
+        where: {
+          OR: [
+            { slchogiao: { gt: 0 } },
+            { slchonhap: { gt: 0 } }
+          ]
+        },
+        include: {
+          sanpham: {
+            select: {
+              id: true,
+              masp: true,
+              title: true,
+              dvt: true
+            }
+          }
+        }
+      });
+      
+      return data || [];
+    } catch (error) {
+      console.error('Error getting tonkho with pending quantities:', error);
+      return [];
+    }
+  }
+
+  // Hoàn tất các đơn hàng chờ giao cho sản phẩm
+  async completePendingDeliveries(sanphamId: string): Promise<{ success: boolean; count?: number; message?: string }> {
+    try {
+      // Sử dụng mutation có sẵn để cập nhật đơn hàng
+      const response = await this.graphqlService.createOne('donhang_complete_pending', {
+        sanphamId: sanphamId,
+        type: 'delivery'
+      });
+      
+      return {
+        success: true,
+        count: response?.completedCount || 0,
+        message: response?.message || 'Hoàn tất giao hàng thành công'
+      };
+    } catch (error: any) {
+      console.error('Error completing pending deliveries:', error);
+      return {
+        success: false,
+        message: error.message || 'Lỗi khi hoàn tất giao hàng'
+      };
+    }
+  }
+
+  // Hoàn tất các đơn đặt hàng chờ nhập cho sản phẩm
+  async completePendingReceipts(sanphamId: string): Promise<{ success: boolean; count?: number; message?: string }> {
+    try {
+      // Sử dụng mutation có sẵn để cập nhật đặt hàng
+      const response = await this.graphqlService.createOne('dathang_complete_pending', {
+        sanphamId: sanphamId,
+        type: 'receipt'
+      });
+      
+      return {
+        success: true,
+        count: response?.completedCount || 0,
+        message: response?.message || 'Hoàn tất nhập hàng thành công'
+      };
+    } catch (error: any) {
+      console.error('Error completing pending receipts:', error);
+      return {
+        success: false,
+        message: error.message || 'Lỗi khi hoàn tất nhập hàng'
+      };
+    }
+  }
+
+  // Tạo phiếu kho (xuất/nhập điều chỉnh)
+  async createPhieuKho(data: {
+    title: string;
+    type: string;
+    ngay: Date;
+    ghichu: string;
+    khoId?: string;
+    isChotkho: boolean;
+    sanpham: Array<{
+      sanphamId: string;
+      soluong: number;
+      ghichu: string;
+    }>;
+  }): Promise<any> {
+    try {
+      const phieuKhoData = {
+        title: data.title,
+        type: data.type,
+        ngay: data.ngay,
+        ghichu: data.ghichu,
+        khoId: data.khoId,
+        isChotkho: data.isChotkho,
+        sanpham: {
+          create: data.sanpham.map(sp => ({
+            sanphamId: sp.sanphamId,
+            soluong: sp.soluong,
+            ghichu: sp.ghichu
+          }))
+        }
+      };
+
+      const result = await this.graphqlService.createOne('phieukho', phieuKhoData, {
+        include: {
+          sanpham: true,
+          kho: true
+        }
+      });
+
+      if (result) {
+        this.showSuccessMessage(`Tạo phiếu kho ${data.type.toLowerCase()} thành công`);
+      }
+
+      return result;
+    } catch (error: any) {
+      console.error('Error creating phieu kho:', error);
+      this.showErrorMessage(`Lỗi tạo phiếu kho: ${error.message}`);
+      throw error;
+    }
+  }
+
+  // Cập nhật số lượng tồn kho
+  async updateTonkhoSlton(tonkhoId: string, data: {
+    slton: number;
+    adjustmentReason?: string;
+    adjustmentValue?: number;
+    updatedBy?: string;
+  }): Promise<any> {
+    try {
+      const updateData = {
+        slton: data.slton,
+        // Có thể thêm metadata về điều chỉnh vào ghichu hoặc fields khác
+        ...(data.adjustmentReason && {
+          adjustmentReason: data.adjustmentReason,
+          adjustmentValue: data.adjustmentValue,
+          adjustmentUpdatedBy: data.updatedBy,
+          adjustmentUpdatedAt: new Date()
+        })
+      };
+
+      const result = await this.graphqlService.updateOne('tonkho', tonkhoId, updateData);
+
+      return result;
+    } catch (error: any) {
+      console.error('Error updating tonkho slton:', error);
+      this.showErrorMessage(`Lỗi cập nhật tồn kho: ${error.message}`);
+      throw error;
+    }
+  }
+
+  // Tạo mutation tùy chỉnh cho xử lý workflow
+  async executeCustomWorkflow(workflowType: string, data: any): Promise<any> {
+    try {
+      // Sử dụng createOne với modelName tùy chỉnh
+      const result = await this.graphqlService.createOne(workflowType, data);
+      return result;
+    } catch (error: any) {
+      console.error(`Error executing ${workflowType} workflow:`, error);
+      throw error;
+    }
+  }
+
+  // Thống kê chốt kho với completion status
+  async getChotkhoStatistics(): Promise<any> {
+    try {
+      // Sử dụng findMany để tính toán thống kê
+      const response = await this.graphqlService.findMany('chotkho', {
+        include: {
+          details: {
+            select: {
+              chenhlech: true,
+              slchogiao: true,
+              slchonhap: true
+            }
+          }
+        }
+      });
+      
+      if (!response || response.length === 0) {
+        return {
+          total: 0,
+          withDiscrepancy: 0,
+          fullyCompleted: 0,
+          pendingDelivery: 0,
+          pendingReceipt: 0
+        };
+      }
+
+      // Tính toán thống kê từ dữ liệu
+      const stats = response.reduce((acc: any, chotkho: any) => {
+        acc.total += chotkho.details?.length || 0;
+        
+        chotkho.details?.forEach((detail: any) => {
+          if (Math.abs(detail.chenhlech || 0) > 0) {
+            acc.withDiscrepancy++;
+          }
+          if ((detail.slchogiao || 0) === 0 && (detail.slchonhap || 0) === 0) {
+            acc.fullyCompleted++;
+          }
+          if ((detail.slchogiao || 0) > 0) {
+            acc.pendingDelivery++;
+          }
+          if ((detail.slchonhap || 0) > 0) {
+            acc.pendingReceipt++;
+          }
+        });
+        
+        return acc;
+      }, {
+        total: 0,
+        withDiscrepancy: 0,
+        fullyCompleted: 0,
+        pendingDelivery: 0,
+        pendingReceipt: 0
+      });
+
+      return stats;
+    } catch (error) {
+      console.error('Error getting chotkho statistics:', error);
+      return {
+        total: 0,
+        withDiscrepancy: 0,
+        fullyCompleted: 0,
+        pendingDelivery: 0,
+        pendingReceipt: 0
+      };
+    }
+  }
+
+  // Validate workflow data
+  validateWorkflowData(data: any[]): { isValid: boolean; errors: string[] } {
+    const errors: string[] = [];
+
+    if (!data || data.length === 0) {
+      errors.push('Không có dữ liệu để xử lý');
+      return { isValid: false, errors };
+    }
+
+    data.forEach((item: any, index: number) => {
+      if (!item.sanphamId) {
+        errors.push(`Dòng ${index + 1}: Thiếu thông tin sản phẩm`);
+      }
+      
+      if (item.slthucte === undefined || item.slthucte === null) {
+        errors.push(`Dòng ${index + 1}: Thiếu số lượng thực tế`);
+      }
+      
+      if (item.slhethong === undefined || item.slhethong === null) {
+        errors.push(`Dòng ${index + 1}: Thiếu số lượng hệ thống`);
+      }
+
+      if (item.slchogiao !== undefined && item.slchogiao < 0) {
+        errors.push(`Dòng ${index + 1}: Số lượng chờ giao không được âm`);
+      }
+
+      if (item.slchonhap !== undefined && item.slchonhap < 0) {
+        errors.push(`Dòng ${index + 1}: Số lượng chờ nhập không được âm`);
+      }
+    });
+
+    return { isValid: errors.length === 0, errors };
+  }
 }

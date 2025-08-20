@@ -1,53 +1,100 @@
-// import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
-// import { ChotkhoService } from './chotkho.service'; 
-// import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-// import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
-// import { Audit } from 'src/auditlog/audit.decorator';
-// import { AuditAction } from '@prisma/client';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards, HttpException, HttpStatus, Query } from '@nestjs/common';
+import { ChotkhoService } from './chotkho.service'; 
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiBody, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; 
+import { Audit } from 'src/auditlog/audit.decorator';
+import { AuditAction } from '@prisma/client';
 
-// @ApiTags('chotkho') 
-// @Controller('chotkho') 
-// export class ChotkhoController { 
-//   constructor(private readonly chotkhoService: ChotkhoService) {} 
+@ApiTags('chotkho') 
+@Controller('chotkho') 
+export class ChotkhoController { 
+  constructor(private readonly chotkhoService: ChotkhoService) {} 
 
-//   @ApiBearerAuth() 
-//   @ApiOperation({ summary: 'Create a new chotkho' }) 
-//   @ApiBody({ type: Object }) 
-//   @UseGuards(JwtAuthGuard) 
-//   @Post('create')
-//   @Audit({ entity: 'Chotkho', action: AuditAction.CREATE, includeResponse: true })
-//   async create(@Body() data: any) { 
-//     try {
-//       return await this.chotkhoService.create(data);
-//     } catch (error) {
-//       throw new HttpException(error.message || 'Create failed', HttpStatus.INTERNAL_SERVER_ERROR);
-//     }
-//   }
+  @ApiBearerAuth() 
+  @ApiOperation({ summary: 'Create a new chotkho' }) 
+  @ApiBody({ type: Object }) 
+  @UseGuards(JwtAuthGuard) 
+  @Post('create')
+  @Audit({ entity: 'Chotkho', action: AuditAction.CREATE, includeResponse: true })
+  async create(@Body() data: any) { 
+    try {
+      return await this.chotkhoService.create(data);
+    } catch (error) {
+      throw new HttpException(error.message || 'Create failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
-//   @ApiOperation({ summary: 'Find chotkhos by parameters' })
-//   @ApiBody({ type: Object }) 
-//   @Post('findby')
-//   async findby(@Body() param: any) {
-//     try {
-//       return await this.chotkhoService.findBy(param);
-//     } catch (error) {
-//       throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
-//     }
-//   }
+  @ApiOperation({ summary: 'Find chotkho by ID' })
+  @ApiParam({ name: 'id', type: String }) 
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    try {
+      return await this.chotkhoService.findOne(id);
+    } catch (error) {
+      throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
-  
-//   @ApiOperation({ summary: 'Get chotkho records by date range' })
-//   @ApiQuery({ name: 'startDate', required: true, type: String, description: 'Start date in YYYY-MM-DD format' })
-//   @ApiQuery({ name: 'endDate', required: true, type: String, description: 'End date in YYYY-MM-DD format' })
-//   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number' })
-//   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
-//   @ApiResponse({ status: 200, description: 'List of chotkho records for the specified date range' })
-//   @Get('bydate')
-//   async findByDateRange(
-//     @Query('startDate') startDate: string,
-//     @Query('endDate') endDate: string,
-//     @Query('page') page: string = '1',
-//     @Query('limit') limit: string = '20'
+  @ApiOperation({ summary: 'Get all chotkho records' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'khoId', required: false, type: String })
+  @Get()
+  async findAll(@Query() query: any) {
+    try {
+      return await this.chotkhoService.findAll(query);
+    } catch (error) {
+      throw new HttpException(error.message || 'Find failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // 🎯 NEW ENDPOINTS: Workflow chốt kho
+
+  @ApiOperation({ summary: 'Get TonKho with pending order information' })
+  @ApiQuery({ name: 'khoId', required: false, type: String })
+  @Get('tonkho-pending')
+  async getTonkhoWithPendingQuantities(@Query('khoId') khoId?: string) {
+    try {
+      return await this.chotkhoService.getTonkhoWithPendingQuantities(khoId);
+    } catch (error) {
+      throw new HttpException(error.message || 'Get tonkho failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @ApiOperation({ summary: 'Create chotkho details from Excel data' })
+  @ApiBody({ type: Object })
+  @Post(':id/details')
+  async createChotkhoDetails(
+    @Param('id') chotkhoId: string,
+    @Body() data: { excelData: any[] }
+  ) {
+    try {
+      return await this.chotkhoService.createChotkhoDetails(chotkhoId, data.excelData);
+    } catch (error) {
+      throw new HttpException(error.message || 'Create details failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @ApiOperation({ summary: 'Update TonKho after closing inventory' })
+  @Patch(':id/close')
+  async updateTonkhoAfterClose(@Param('id') chotkhoId: string) {
+    try {
+      return await this.chotkhoService.updateTonkhoAfterClose(chotkhoId);
+    } catch (error) {
+      throw new HttpException(error.message || 'Close inventory failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @ApiOperation({ summary: 'Get last updated chotkho timestamp' })
+  @Get('last-updated')
+  async getLastUpdatedChotkho() {
+    try {
+      return await this.chotkhoService.getLastUpdatedChotkho();
+    } catch (error) {
+      throw new HttpException(error.message || 'Get last updated failed', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+}
 //   ) {
 //     try {
 //       const pageNum = parseInt(page, 10);

@@ -1556,15 +1556,18 @@ export class ListDonhangComponent {
     await this.DoImportKhachhangCu(confirmedOrders);
   }
 
-  @Debounce(500)
+  @Debounce(100)
   async DoFindKhachhang(event: any, index: any) {
     const value = event.target.value;
+
     if (!value) {
       this.FilterKhachhang[index] = this.ListKhachhang;
       return;
     }
+    console.log(this.ListKhachhang);
+
     this.FilterKhachhang[index] = this.ListKhachhang.filter((v: any) =>
-      v.subtitle.includes(removeVietnameseAccents(value))
+      v?.subtitle?.includes(removeVietnameseAccents(value))
     );
   }
 

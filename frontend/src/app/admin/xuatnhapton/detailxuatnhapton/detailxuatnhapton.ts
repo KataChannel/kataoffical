@@ -184,6 +184,9 @@ export class DetailXuatnhaptonComponent {
         return;
       }
 
+      // 🎯 BƯỚC 1: XỬ LÝ CHENHLECH TRƯỚC KHI TẠO CHOTKHO
+      await this.processChenhlech();
+
       // Prepare data with enhanced metadata for new master-detail structure
       const chotkhoData = this.prepareChotkhoData();
       if (!chotkhoData) {
@@ -615,6 +618,7 @@ export class DetailXuatnhaptonComponent {
     return this.roundToDecimal(parsed, 3);
   }
 
+  // 🎯 WORKFLOW 2 BƯỚC: XỬ LÝ ĐƠN HÀNG TỒN ĐỌNG → CHỐT KHO
   async uploadExcelFile(file: File) {
     try {
       this.isUploading.set(true);
@@ -646,129 +650,14 @@ export class DetailXuatnhaptonComponent {
         );
       }
 
-      // Get inventory data
-      const Listmasp = processedData.map((item: any) => item.masp);
-      const ListSanpham = await this._ChotkhoService.getListSanphamByMasp(
-        Listmasp
-      );
-      const ListIds = ListSanpham.map((sp: any) => sp.id);
-      const Listtonkho = await this._ChotkhoService.getListSanphamTonKho(
-        ListIds
-      );
-      console.log('📊 Dữ liệu sản phẩm đã tải:', ListSanpham);
-      console.log('📊 Dữ liệu tồn kho đã tải:', Listtonkho);
-      console.log('📋 Dữ liệu Excel đã xử lý:', processedData);
+      console.log('📊 Processed Excel data:', processedData);
 
-      // Enhanced data mapping
-      const Chotkho = processedData.map((item: any) => {
-        const sanpham = Listtonkho.find(
-          (sp: any) => sp.sanpham?.masp === item.masp
-        );
+      // 🎯 BƯỚC 1: XỬ LÝ ĐƠN HÀNG TỒN ĐỌNG TRƯỚC
+      await this.processOutstandingOrders();
 
-        // Enhanced number handling with validation
-        const slthucte = this.parseAndValidateNumber(
-          item.slton,
-          'Số lượng thực tế'
-        );
-        const slhethong = sanpham
-          ? this.parseAndValidateNumber(sanpham.slton, 'Số lượng hệ thống')
-          : 0;
-        const chenhlech = this.roundToDecimal(slthucte - slhethong, 3);
+      // 🎯 BƯỚC 2: SAU ĐÓ MỚI XỬ LÝ CHỐT KHO
+      await this.processInventoryClose(processedData);
 
-        return {
-          khoId: sanpham ? sanpham.khoId : null,
-          sanphamId: sanpham ? sanpham.sanphamId : null,
-          masp: item.masp,
-          tonkhoId: sanpham ? sanpham.id : null,
-          phieukhoId: null,
-          ngay: this._timezoneService.nowUTC(),
-          slthucte: slthucte,
-          slhethong: slhethong,
-          chenhlech: chenhlech,
-          // 🎯 NEW LOGIC: Reset slchogiao và slchonhap về 0 (đã hoàn tất giao/nhập hàng)
-          slchogiao: 0,
-          slchonhap: 0,
-          ghichu:
-            item.ghichu ||
-            `Import từ Excel - ${this._timezoneService.nowLocal(
-              'DD/MM/YYYY HH:mm'
-            )} | Đã hoàn tất giao/nhập hàng`,
-          title:
-            this.Title ||
-            `Chốt kho ngày ${this._timezoneService.nowLocal('DD/MM/YYYY')}`,
-          dvt: item.dvt || '',
-
-          // Enhanced product details for display
-          sanpham: sanpham
-            ? {
-                id: sanpham.sanphamId,
-                masp: sanpham.sanpham?.masp,
-                title: sanpham.sanpham?.title,
-                dvt: sanpham.sanpham?.dvt,
-              }
-            : {
-                id: null,
-                masp: item.masp,
-                title: item.title || 'Sản phẩm không tồn tại',
-                dvt: item.dvt || '',
-              },
-
-          // Status indicators
-          hasInventoryData: !!sanpham,
-          importedFromExcel: true,
-          // Add completion status indicators
-          isDeliveryCompleted: true,
-          isReceiptCompleted: true,
-          completedAt: this._timezoneService.nowUTC(),
-        };
-      });
-
-      // Update the list
-      this.ListChotkho.update((v: any) => {
-        return Chotkho;
-      });
-
-      // Enhanced statistics
-      const stats = {
-        total: Chotkho.length,
-        withInventoryData: Chotkho.filter((item) => item.hasInventoryData)
-          .length,
-        withoutInventoryData: Chotkho.filter((item) => !item.hasInventoryData)
-          .length,
-        hasDiscrepancy: Chotkho.filter((item) => Math.abs(item.chenhlech) > 0)
-          .length,
-      };
-
-      console.log('📈 Thống kê chốt kho:', stats);
-      console.log('✅ Dữ liệu chốt kho cuối cùng:', this.ListChotkho());
-
-      this.uploadResult.set({
-        success: true,
-        message: 'Upload Excel thành công',
-        importedCount: processedData.length,
-        statistics: stats,
-        data: processedData,
-      });
-
-      // Dismiss loading notification
-      this._snackBar.dismiss();
-
-      // Enhanced success message
-      const successMessage =
-        `✅ Upload Excel thành công - ${stats.total} bản ghi` +
-        (stats.withoutInventoryData > 0
-          ? ` (${stats.withoutInventoryData} sản phẩm chưa có trong kho)`
-          : '') +
-        (stats.hasDiscrepancy > 0
-          ? ` | ${stats.hasDiscrepancy} có chênh lệch`
-          : '');
-
-      this._snackBar.open(successMessage, '', {
-        duration: 4000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
     } catch (error: any) {
       console.error('❌ Lỗi upload Excel:', error);
 
@@ -789,6 +678,243 @@ export class DetailXuatnhaptonComponent {
       });
     } finally {
       this.isUploading.set(false);
+    }
+  }
+
+  // 🎯 BƯỚC 1: XỬ LÝ ĐƠN HÀNG TỒN ĐỌNG
+  private async processOutstandingOrders(): Promise<void> {
+    try {
+      this._snackBar.dismiss();
+      this._snackBar.open('🔄 Đang kiểm tra và xử lý đơn hàng tồn đọng...', '', {
+        duration: 0,
+        panelClass: ['snackbar-info']
+      });
+
+      // 1. Lấy danh sách tồn kho có slchogiao > 0 hoặc slchonhap > 0
+      const tonkhoWithPending = await this._ChotkhoService.getTonkhoWithPendingQuantities();
+      
+      if (tonkhoWithPending.length === 0) {
+        this._snackBar.dismiss();
+        this._snackBar.open('✅ Không có đơn hàng tồn đọng cần xử lý', '', {
+          duration: 2000,
+          panelClass: ['snackbar-success']
+        });
+        return;
+      }
+
+      console.log('📊 Tồn kho có số lượng chờ:', tonkhoWithPending);
+
+      // 2. Xử lý từng sản phẩm có slchogiao > 0
+      const deliveryResults = await this.processOutstandingDeliveries(tonkhoWithPending);
+      
+      // 3. Xử lý từng sản phẩm có slchonhap > 0  
+      const receiptResults = await this.processOutstandingReceipts(tonkhoWithPending);
+
+      this._snackBar.dismiss();
+
+      // 4. Thông báo kết quả xử lý
+      const totalProcessed = deliveryResults.completed + receiptResults.completed;
+      const totalFailed = deliveryResults.failed + receiptResults.failed;
+
+      if (totalProcessed > 0) {
+        this._snackBar.open(
+          `✅ Đã xử lý ${totalProcessed} đơn hàng/đặt hàng` + 
+          (totalFailed > 0 ? `, ${totalFailed} lỗi` : ''), '', {
+          duration: 4000,
+          panelClass: ['snackbar-success']
+        });
+      }
+
+    } catch (error: any) {
+      console.error('❌ Lỗi xử lý đơn hàng tồn đọng:', error);
+      this._snackBar.dismiss();
+      throw new Error(`Lỗi xử lý đơn hàng tồn đọng: ${error.message}`);
+    }
+  }
+
+  // Xử lý đơn hàng có slchogiao > 0 (chuyển về danhan)
+  private async processOutstandingDeliveries(tonkhoList: any[]): Promise<{completed: number, failed: number}> {
+    const pendingDeliveries = tonkhoList.filter(tk => (tk.slchogiao || 0) > 0);
+    
+    if (pendingDeliveries.length === 0) {
+      return { completed: 0, failed: 0 };
+    }
+
+    let completed = 0, failed = 0;
+
+    for (const tonkho of pendingDeliveries) {
+      try {
+        // Gọi API xử lý đơn hàng chờ giao cho sản phẩm này
+        const result = await this._ChotkhoService.completePendingDeliveries(tonkho.sanphamId);
+        if (result && result.success) {
+          completed += result.count || 1;
+        } else {
+          failed++;
+        }
+      } catch (error) {
+        console.error(`Lỗi xử lý giao hàng cho sản phẩm ${tonkho.sanphamId}:`, error);
+        failed++;
+      }
+    }
+
+    return { completed, failed };
+  }
+
+  // Xử lý đặt hàng có slchonhap > 0 (chuyển về danhan)  
+  private async processOutstandingReceipts(tonkhoList: any[]): Promise<{completed: number, failed: number}> {
+    const pendingReceipts = tonkhoList.filter(tk => (tk.slchonhap || 0) > 0);
+    
+    if (pendingReceipts.length === 0) {
+      return { completed: 0, failed: 0 };
+    }
+
+    let completed = 0, failed = 0;
+
+    for (const tonkho of pendingReceipts) {
+      try {
+        // Gọi API xử lý đặt hàng chờ nhập cho sản phẩm này
+        const result = await this._ChotkhoService.completePendingReceipts(tonkho.sanphamId);
+        if (result && result.success) {
+          completed += result.count || 1;
+        } else {
+          failed++;
+        }
+      } catch (error) {
+        console.error(`Lỗi xử lý nhập hàng cho sản phẩm ${tonkho.sanphamId}:`, error);
+        failed++;
+      }
+    }
+
+    return { completed, failed };
+  }
+
+  // 🎯 BƯỚC 2: XỬ LÝ CHỐT KHO SAU KHI ĐÃ CLEAN DỮ LIỆU
+  private async processInventoryClose(processedData: any[]): Promise<void> {
+    try {
+      this._snackBar.dismiss();
+      this._snackBar.open('🔄 Đang xử lý chốt kho...', '', {
+        duration: 0,
+        panelClass: ['snackbar-info']
+      });
+
+      // Lấy dữ liệu tồn kho mới nhất (sau khi đã xử lý đơn hàng)
+      const Listmasp = processedData.map((item: any) => item.masp);
+      console.log('📋 List masp:', Listmasp);
+
+      const ListSanpham = await this._ChotkhoService.getListSanphamByMasp(Listmasp);
+      console.log('🏷️ Found products:', ListSanpham);
+
+      const ListIds = ListSanpham.map((sp: any) => sp.id);
+      console.log('🆔 Product IDs for inventory:', ListIds);
+
+      // 🎯 QUAN TRỌNG: Lấy tồn kho đã được cập nhật (slchogiao=0, slchonhap=0)
+      const Listtonkho = await this._ChotkhoService.getListSanphamTonKho(ListIds);
+      console.log('📦 Updated inventory (after processing orders):', Listtonkho);
+
+      // Map Excel data với tồn kho đã được cập nhật
+      const Chotkho = processedData.map((item: any) => {
+        const sanpham = Listtonkho.find(sp => sp.sanpham?.masp === item.masp);
+
+        const slthucte = this.parseAndValidateNumber(item.slton, 'Số lượng thực tế');
+        const slhethong = sanpham ? this.parseAndValidateNumber(sanpham.slton, 'Số lượng hệ thống') : 0;
+        const chenhlech = this.roundToDecimal(slthucte - slhethong, 3);
+
+        // console.log(
+        //   `📊 Product ${item.masp}: slthucte=${slthucte}, slhethong=${slhethong}, chenhlech=${chenhlech}`
+        // );
+
+        return {
+          // Core chotkho detail data
+          sanphamId: sanpham ? sanpham.sanphamId : null,
+          tonkhoId: sanpham ? sanpham.id : null,
+          slthucte: slthucte,
+          slhethong: slhethong,
+          chenhlech: chenhlech,
+          phieukhoId: null, // Will be set during save if needed
+          
+          // 🎯 LÚC NÀY slchogiao VÀ slchonhap ĐÃ ĐƯỢC ĐẢM BẢO = 0
+          slchogiao: 0,  // Đã hoàn tất giao hàng ở bước 1
+          slchonhap: 0,  // Đã hoàn tất nhập hàng ở bước 1
+          
+          // Metadata
+          ghichu: `Chốt kho sau xử lý đơn hàng - ${this._timezoneService.nowLocal('DD/MM/YYYY HH:mm')}`,
+          isDeliveryCompleted: true,
+          isReceiptCompleted: true,
+          completedAt: this._timezoneService.nowUTC(),
+          importedFromExcel: true,
+
+          // Enhanced product details for display
+          sanpham: sanpham
+            ? {
+                id: sanpham.sanphamId,
+                masp: sanpham.sanpham?.masp,
+                title: sanpham.sanpham?.title,
+                dvt: sanpham.sanpham?.dvt,
+              }
+            : {
+                id: null,
+                masp: item.masp,
+                title: item.title || 'Sản phẩm không tồn tại',
+                dvt: item.dvt || '',
+              },
+
+          // Status indicators
+          hasInventoryData: !!sanpham,
+        };
+      });
+
+      // Update the list
+      this.ListChotkho.update((v: any) => {
+        return Chotkho;
+      });
+
+      // Enhanced statistics
+      const stats = {
+        total: Chotkho.length,
+        withInventoryData: Chotkho.filter((item) => item.hasInventoryData).length,
+        withoutInventoryData: Chotkho.filter((item) => !item.hasInventoryData).length,
+        hasDiscrepancy: Chotkho.filter((item) => Math.abs(item.chenhlech) > 0).length,
+        // 🎯 THỐNG KÊ TRẠNG THÁI HOÀN TẤT
+        fullyCompleted: Chotkho.filter(item => 
+          (item.slchogiao || 0) === 0 && (item.slchonhap || 0) === 0
+        ).length,
+      };
+
+      // console.log('📈 Thống kê chốt kho:', stats);
+      // console.log('✅ Dữ liệu chốt kho cuối cùng:', this.ListChotkho());
+
+      this.uploadResult.set({
+        success: true,
+        message: 'Upload Excel và chốt kho thành công',
+        importedCount: processedData.length,
+        statistics: stats,
+        data: processedData,
+      });
+
+      // Dismiss loading notification
+      this._snackBar.dismiss();
+
+      // Enhanced success message với thống kê đầy đủ
+      const successMessage =
+        `✅ Chốt kho hoàn tất - ${stats.total} sản phẩm` +
+        (stats.withoutInventoryData > 0
+          ? ` (${stats.withoutInventoryData} sản phẩm chưa có trong kho)`
+          : '') +
+        (stats.hasDiscrepancy > 0
+          ? ` | ${stats.hasDiscrepancy} có chênh lệch`
+          : '') +
+        ` | ${stats.fullyCompleted} đã hoàn tất giao/nhập`;
+
+      this._snackBar.open(successMessage, '', {
+        duration: 4000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+
+    } catch (error: any) {
+      this._snackBar.dismiss();
+      throw error;
     }
   }
 
@@ -1329,5 +1455,137 @@ export class DetailXuatnhaptonComponent {
     const rate = this.getCompletionRate();
 
     return `Hoàn tất: ${stats.fullyCompleted}/${stats.total} sản phẩm (${rate}%) | Chờ giao: ${stats.pendingDelivery} | Chờ nhập: ${stats.pendingReceipt}`;
+  }
+
+  // 🎯 NEW METHOD: Xử lý chenhlech trước khi tạo chotkho
+  private async processChenhlech(): Promise<void> {
+    try {
+      this._snackBar.open('🔄 Đang xử lý chênh lệch...', '', {
+        duration: 0,
+        panelClass: ['snackbar-info']
+      });
+
+      const data = this.ListChotkho();
+      if (!data || data.length === 0) {
+        this._snackBar.dismiss();
+        return;
+      }
+
+      // Phân loại sản phẩm theo chênh lệch
+      const itemsWithDiscrepancy = data.filter((item: any) => Math.abs(item.chenhlech || 0) > 0);
+      const positiveDiscrepancy = itemsWithDiscrepancy.filter((item: any) => (item.chenhlech || 0) > 0);
+      const negativeDiscrepancy = itemsWithDiscrepancy.filter((item: any) => (item.chenhlech || 0) < 0);
+
+      // console.log('📊 Phân tích chênh lệch:', {
+      //   total: data.length,
+      //   withDiscrepancy: itemsWithDiscrepancy.length,
+      //   positive: positiveDiscrepancy.length,
+      //   negative: negativeDiscrepancy.length
+      // });
+
+      // 1. Xử lý chênh lệch dương (thừa hàng) - tạo phiếu xuất điều chỉnh
+      if (positiveDiscrepancy.length > 0) {
+        await this.createAdjustmentPhieuXuat(positiveDiscrepancy);
+      }
+
+      // 2. Xử lý chênh lệch âm (thiếu hàng) - tạo phiếu nhập điều chỉnh  
+      if (negativeDiscrepancy.length > 0) {
+        await this.createAdjustmentPhieuNhap(negativeDiscrepancy);
+      }
+
+      // 3. Cập nhật tồn kho theo chênh lệch
+      await this.updateTonkhoFromChenhlech(itemsWithDiscrepancy);
+
+      this._snackBar.dismiss();
+
+      if (itemsWithDiscrepancy.length > 0) {
+        this._snackBar.open(
+          `✅ Đã xử lý ${itemsWithDiscrepancy.length} chênh lệch` +
+          (positiveDiscrepancy.length > 0 ? ` | ${positiveDiscrepancy.length} thừa` : '') +
+          (negativeDiscrepancy.length > 0 ? ` | ${negativeDiscrepancy.length} thiếu` : ''), '', {
+          duration: 4000,
+          panelClass: ['snackbar-success']
+        });
+      }
+
+    } catch (error: any) {
+      this._snackBar.dismiss();
+      console.error('❌ Lỗi xử lý chênh lệch:', error);
+      throw new Error(`Lỗi xử lý chênh lệch: ${error.message}`);
+    }
+  }
+
+  // Tạo phiếu xuất điều chỉnh cho chênh lệch dương (thừa hàng)
+  private async createAdjustmentPhieuXuat(items: any[]): Promise<void> {
+    try {
+      const phieuXuatData = {
+        title: `Phiếu xuất điều chỉnh - ${this._timezoneService.nowLocal('DD/MM/YYYY')}`,
+        type: 'DIEU_CHINH',
+        ngay: new Date(),
+        ghichu: 'Phiếu xuất điều chỉnh từ chốt kho - xử lý hàng thừa',
+        khoId: items[0]?.khoId,
+        isChotkho: true,
+        sanpham: items.map(item => ({
+          sanphamId: item.sanphamId,
+          soluong: Math.abs(item.chenhlech),
+          ghichu: `Điều chỉnh thừa: ${item.sanpham?.masp || 'N/A'}`
+        }))
+      };
+
+      const result = await this._ChotkhoService.createPhieuKho(phieuXuatData);
+      if (result && result.id) {
+        console.log('✅ Tạo phiếu xuất điều chỉnh thành công:', result.id);
+      }
+    } catch (error) {
+      console.error('❌ Lỗi tạo phiếu xuất điều chỉnh:', error);
+      throw error;
+    }
+  }
+
+  // Tạo phiếu nhập điều chỉnh cho chênh lệch âm (thiếu hàng)
+  private async createAdjustmentPhieuNhap(items: any[]): Promise<void> {
+    try {
+      const phieuNhapData = {
+        title: `Phiếu nhập điều chỉnh - ${this._timezoneService.nowLocal('DD/MM/YYYY')}`,
+        type: 'DIEU_CHINH',
+        ngay: new Date(),
+        ghichu: 'Phiếu nhập điều chỉnh từ chốt kho - xử lý hàng thiếu',
+        khoId: items[0]?.khoId,
+        isChotkho: true,
+        sanpham: items.map(item => ({
+          sanphamId: item.sanphamId,
+          soluong: Math.abs(item.chenhlech),
+          ghichu: `Điều chỉnh thiếu: ${item.sanpham?.masp || 'N/A'}`
+        }))
+      };
+
+      const result = await this._ChotkhoService.createPhieuKho(phieuNhapData);
+      if (result && result.id) {
+        console.log('✅ Tạo phiếu nhập điều chỉnh thành công:', result.id);
+      }
+    } catch (error) {
+      console.error('❌ Lỗi tạo phiếu nhập điều chỉnh:', error);
+      throw error;
+    }
+  }
+
+  // Cập nhật tồn kho theo chênh lệch
+  private async updateTonkhoFromChenhlech(items: any[]): Promise<void> {
+    try {
+      for (const item of items) {
+        if (item.tonkhoId && Math.abs(item.chenhlech || 0) > 0) {
+          await this._ChotkhoService.updateTonkhoSlton(item.tonkhoId, {
+            slton: item.slthucte, // Cập nhật thành số lượng thực tế
+            adjustmentReason: 'CHOTKHO_ADJUSTMENT',
+            adjustmentValue: item.chenhlech,
+            updatedBy: 'chotkho_system'
+          });
+        }
+      }
+      console.log('✅ Cập nhật tồn kho hoàn tất');
+    } catch (error) {
+      console.error('❌ Lỗi cập nhật tồn kho:', error);
+      throw error;
+    }
   }
 }

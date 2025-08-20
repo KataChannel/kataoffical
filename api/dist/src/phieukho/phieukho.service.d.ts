@@ -159,4 +159,18 @@ export declare class PhieukhoService {
         ngay: Date | null;
         isChotkho: boolean;
     }>;
+    createAdjustmentPhieuKho(data: {
+        type: 'nhap' | 'xuat';
+        sanphamId: string;
+        soluong: number;
+        ghichu: string;
+        khoId: string;
+        chothkhoId?: string;
+    }): Promise<{
+        success: boolean;
+        phieukho?: any;
+        message?: string;
+    }>;
+    private updateTonKhoSafely;
+    private calculateInitialTonKhoValue;
 }

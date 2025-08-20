@@ -315,4 +315,136 @@ export class PhieukhoService {
       return prisma.phieuKho.delete({ where: { id } });
     });
   }
+
+  // 🎯 NEW METHODS: Hỗ trợ workflow chốt kho với chenhlech
+
+  /**
+   * Tạo phiếu kho điều chỉnh (nhập hoặc xuất) cho chenhlech
+   */
+  async createAdjustmentPhieuKho(data: {
+    type: 'nhap' | 'xuat';
+    sanphamId: string;
+    soluong: number;
+    ghichu: string;
+    khoId: string;
+    chothkhoId?: string;
+  }): Promise<{ success: boolean; phieukho?: any; message?: string }> {
+    try {
+      return await this.prisma.$transaction(async (prisma) => {
+        // Generate mã phiếu tự động
+        const maphieu = await this.generateNextOrderCode(data.type);
+
+        // Tạo phiếu kho
+        const phieukho = await prisma.phieuKho.create({
+          data: {
+            maphieu,
+            type: data.type,
+            ngay: new Date(),
+            ghichu: data.ghichu,
+            khoId: data.khoId,
+            isActive: true
+          }
+        });
+
+        // Tạo chi tiết phiếu kho
+        await prisma.phieuKhoSanpham.create({
+          data: {
+            phieuKhoId: phieukho.id,
+            sanphamId: data.sanphamId,
+            soluong: data.soluong,
+            ghichu: data.ghichu
+          }
+        });
+
+        // Cập nhật TonKho
+        const tonkhoUpdate = data.type === 'nhap' 
+          ? { slton: { increment: data.soluong } }
+          : { slton: { decrement: data.soluong } };
+
+        await this.updateTonKhoSafely(data.sanphamId, tonkhoUpdate);
+
+        // Ghi log vào chotkho nếu có chothkhoId
+        if (data.chothkhoId) {
+          await prisma.chotkhoDetail.create({
+            data: {
+              chotkhoId: data.chothkhoId,
+              sanphamId: data.sanphamId,
+              slthucte: 0, // Điều chỉnh không có trong Excel
+              slhethong: 0, // Sẽ được cập nhật sau
+              chenhlech: data.type === 'nhap' ? data.soluong : -data.soluong,
+              ghichu: `Phiếu điều chỉnh: ${maphieu}`,
+              phieukhoId: phieukho.id
+            }
+          });
+        }
+
+        return { 
+          success: true, 
+          phieukho,
+          message: `Đã tạo phiếu ${data.type} điều chỉnh: ${maphieu}` 
+        };
+      });
+    } catch (error) {
+      console.error('Error creating adjustment phieukho:', error);
+      return { 
+        success: false, 
+        message: error.message || 'Lỗi tạo phiếu điều chỉnh' 
+      };
+    }
+  }
+
+  /**
+   * Helper method to safely update TonKho, creating record if not exists
+   */
+  private async updateTonKhoSafely(sanphamId: string, updateData: any): Promise<void> {
+    try {
+      // Kiểm tra TonKho có tồn tại không
+      const existingTonKho = await this.prisma.tonKho.findUnique({
+        where: { sanphamId }
+      });
+
+      if (existingTonKho) {
+        // Update existing record
+        await this.prisma.tonKho.update({
+          where: { sanphamId },
+          data: updateData
+        });
+      } else {
+        // Create new record với giá trị mặc định
+        const initialValue = this.calculateInitialTonKhoValue(updateData);
+        await this.prisma.tonKho.create({
+          data: {
+            sanphamId,
+            slton: initialValue.slton,
+            slchogiao: 0,
+            slchonhap: 0
+          }
+        });
+      }
+    } catch (error) {
+      console.error(`Error updating TonKho for product ${sanphamId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Helper to calculate initial value for TonKho creation
+   */
+  private calculateInitialTonKhoValue(updateData: any): {
+    slton: number;
+  } {
+    let slton = 0;
+
+    if (updateData.slton) {
+      if (typeof updateData.slton === 'object' && updateData.slton.increment) {
+        slton = updateData.slton.increment;
+      } else if (typeof updateData.slton === 'object' && updateData.slton.decrement) {
+        slton = -updateData.slton.decrement;
+      } else {
+        slton = updateData.slton;
+      }
+    }
+
+    return { slton };
+  }
 }

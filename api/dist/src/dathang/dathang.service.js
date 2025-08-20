@@ -1090,6 +1090,241 @@ let DathangService = class DathangService {
             throw error;
         }
     }
+    async findOrdersByStatus(params) {
+        try {
+            const data = await this.prisma.dathang.findMany({
+                where: {
+                    status: { in: params.status },
+                    sanpham: {
+                        some: {
+                            idSP: params.sanphamId
+                        }
+                    }
+                },
+                include: {
+                    sanpham: {
+                        where: { idSP: params.sanphamId }
+                    },
+                    nhacungcap: {
+                        select: {
+                            id: true,
+                            name: true,
+                            mancc: true
+                        }
+                    }
+                }
+            });
+            return data || [];
+        }
+        catch (error) {
+            console.error('Error finding dathang by status:', error);
+            return [];
+        }
+    }
+    async completeDathang(id, data) {
+        try {
+            return await this.prisma.$transaction(async (prisma) => {
+                const dathang = await prisma.dathang.findUnique({
+                    where: { id },
+                    include: { sanpham: true }
+                });
+                if (!dathang) {
+                    return { success: false, message: 'Đặt hàng không tồn tại' };
+                }
+                await prisma.dathang.update({
+                    where: { id },
+                    data: {
+                        status: 'danhan',
+                        ghichu: data.ghichu,
+                        updatedAt: new Date()
+                    }
+                });
+                for (const sp of dathang.sanpham) {
+                    await prisma.dathangsanpham.update({
+                        where: { id: sp.id },
+                        data: {
+                            slnhan: data.slnhan,
+                            ghichu: data.ghichu
+                        }
+                    });
+                    const oldSlchonhap = parseFloat((sp.slgiao || 0).toString());
+                    const newSlnhan = parseFloat(data.slnhan.toString());
+                    await this.updateTonKhoSafely(sp.idSP, {
+                        slchonhap: { decrement: oldSlchonhap },
+                        slton: { increment: newSlnhan }
+                    });
+                }
+                return { success: true, message: 'Hoàn tất đặt hàng thành công' };
+            });
+        }
+        catch (error) {
+            console.error('Error completing dathang:', error);
+            return { success: false, message: error.message };
+        }
+    }
+    async completePendingReceiptsForProduct(sanphamId) {
+        try {
+            return await this.prisma.$transaction(async (prisma) => {
+                const pendingOrders = await prisma.dathang.findMany({
+                    where: {
+                        status: { in: ['dadat', 'dagiao'] },
+                        sanpham: {
+                            some: {
+                                idSP: sanphamId,
+                                slgiao: { gt: 0 }
+                            }
+                        }
+                    },
+                    include: {
+                        sanpham: {
+                            where: { idSP: sanphamId }
+                        }
+                    }
+                });
+                let completedCount = 0;
+                for (const order of pendingOrders) {
+                    for (const sp of order.sanpham) {
+                        await prisma.dathang.update({
+                            where: { id: order.id },
+                            data: {
+                                status: 'danhan',
+                                ghichu: (order.ghichu || '') + ' | Tự động hoàn tất trước chốt kho',
+                                updatedAt: new Date()
+                            }
+                        });
+                        const slgiaoValue = parseFloat(sp.slgiao.toString());
+                        await prisma.dathangsanpham.update({
+                            where: { id: sp.id },
+                            data: {
+                                slnhan: slgiaoValue,
+                                ghichu: (sp.ghichu || '') + ' | Auto-completed for inventory close'
+                            }
+                        });
+                        await this.updateTonKhoSafely(sp.idSP, {
+                            slchonhap: { decrement: slgiaoValue },
+                            slton: { increment: slgiaoValue }
+                        });
+                        completedCount++;
+                    }
+                }
+                return {
+                    success: true,
+                    count: completedCount,
+                    message: `Đã hoàn tất ${completedCount} đặt hàng chờ nhập`
+                };
+            });
+        }
+        catch (error) {
+            console.error('Error completing pending receipts:', error);
+            return {
+                success: false,
+                count: 0,
+                message: error.message || 'Lỗi khi hoàn tất đặt hàng chờ nhập'
+            };
+        }
+    }
+    async updateTonKhoSafely(sanphamId, updateData) {
+        try {
+            const existingTonKho = await this.prisma.tonKho.findUnique({
+                where: { sanphamId }
+            });
+            if (existingTonKho) {
+                await this.prisma.tonKho.update({
+                    where: { sanphamId },
+                    data: updateData
+                });
+            }
+            else {
+                const initialValue = this.calculateInitialTonKhoValue(updateData);
+                await this.prisma.tonKho.create({
+                    data: {
+                        sanphamId,
+                        slton: initialValue.slton,
+                        slchogiao: initialValue.slchogiao,
+                        slchonhap: initialValue.slchonhap
+                    }
+                });
+            }
+        }
+        catch (error) {
+            console.error(`Error updating TonKho for product ${sanphamId}:`, error);
+            throw error;
+        }
+    }
+    calculateInitialTonKhoValue(updateData) {
+        let slton = 0;
+        let slchogiao = 0;
+        let slchonhap = 0;
+        if (updateData.slton) {
+            if (typeof updateData.slton === 'object' && updateData.slton.increment) {
+                slton = updateData.slton.increment;
+            }
+            else {
+                slton = updateData.slton;
+            }
+        }
+        if (updateData.slchogiao) {
+            if (typeof updateData.slchogiao === 'object' && updateData.slchogiao.increment) {
+                slchogiao = updateData.slchogiao.increment;
+            }
+            else if (typeof updateData.slchogiao === 'object' && updateData.slchogiao.decrement) {
+                slchogiao = -updateData.slchogiao.decrement;
+            }
+            else {
+                slchogiao = updateData.slchogiao;
+            }
+        }
+        if (updateData.slchonhap) {
+            if (typeof updateData.slchonhap === 'object' && updateData.slchonhap.increment) {
+                slchonhap = updateData.slchonhap.increment;
+            }
+            else if (typeof updateData.slchonhap === 'object' && updateData.slchonhap.decrement) {
+                slchonhap = -updateData.slchonhap.decrement;
+            }
+            else {
+                slchonhap = updateData.slchonhap;
+            }
+        }
+        return { slton, slchogiao, slchonhap };
+    }
+    async getPendingReceiptsForProduct(sanphamId) {
+        try {
+            const orders = await this.prisma.dathang.findMany({
+                where: {
+                    status: { in: ['dadat', 'dagiao'] },
+                    sanpham: {
+                        some: {
+                            idSP: sanphamId,
+                            slgiao: { gt: 0 }
+                        }
+                    }
+                },
+                include: {
+                    sanpham: {
+                        where: { idSP: sanphamId }
+                    },
+                    nhacungcap: {
+                        select: {
+                            id: true,
+                            name: true,
+                            mancc: true
+                        }
+                    }
+                }
+            });
+            return orders.map(order => ({
+                id: order.id,
+                status: order.status,
+                nhacungcap: order.nhacungcap,
+                sanpham: order.sanpham[0],
+                createdAt: order.createdAt
+            }));
+        }
+        catch (error) {
+            console.error('Error getting pending receipts for product:', error);
+            return [];
+        }
+    }
 };
 exports.DathangService = DathangService;
 exports.DathangService = DathangService = __decorate([

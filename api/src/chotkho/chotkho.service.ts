@@ -1,103 +1,371 @@
-// import { Injectable, NotFoundException } from '@nestjs/common';
-// import { PrismaService } from 'prisma/prisma.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'prisma/prisma.service';
 
-// @Injectable()
-// export class ChotkhoService {
-//   constructor(
-//     private readonly prisma: PrismaService,
-//   ) {}
+@Injectable()
+export class ChotkhoService {
+  constructor(
+    private readonly prisma: PrismaService,
+  ) {}
 
-//   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
-//   private convertDateFilters(filters: any): any {
-//     // ✅ Frontend đã gửi UTC, chỉ cần parse trực tiếp
-//     const result: any = {};
+  // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
+  private convertDateFilters(filters: any): any {
+    // ✅ Frontend đã gửi UTC, chỉ cần parse trực tiếp
+    const result: any = {};
     
-//     if (filters.fromDate) {
-//       result.fromDate = new Date(filters.fromDate);
-//     }
+    if (filters.fromDate) {
+      result.fromDate = new Date(filters.fromDate);
+    }
     
-//     if (filters.toDate) {
-//       result.toDate = new Date(filters.toDate);
-//     }
+    if (filters.toDate) {
+      result.toDate = new Date(filters.toDate);
+    }
     
-//     return result;
-//   }
+    return result;
+  }
 
-//   private getStartOfDay(date: any): Date {
-//     const d = new Date(date);
-//     d.setUTCHours(0, 0, 0, 0);
-//     return d;
-//   }
+  private getStartOfDay(date: any): Date {
+    const d = new Date(date);
+    d.setUTCHours(0, 0, 0, 0);
+    return d;
+  }
 
-//   private getEndOfDay(date: any): Date {
-//     const d = new Date(date);
-//     d.setUTCHours(23, 59, 59, 999);
-//     return d;
-//   }
+  private getEndOfDay(date: any): Date {
+    const d = new Date(date);
+    d.setUTCHours(23, 59, 59, 999);
+    return d;
+  }
 
-//   async getLastUpdatedChotkho(): Promise<{ updatedAt: number }> {
-//     try {
-//       const item = await this.prisma.chotkho.findFirst({
-//         orderBy: { updatedAt: 'desc' },
-//       });
-//       return { updatedAt: item ? item.updatedAt.getTime() : 0 };
-//     } catch (error) {
-//       console.log('Error getting last updated chotkho:', error);
-//       throw error;
-//     }
-//   }
-//   async generateCodeId(): Promise<string> {
-//     try {
-//       const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
-//       const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
-//       return `CK-${timestamp}-${randomPart}`;
-//     } catch (error) {
-//       console.log('Error generating codeId:', error);
-//       throw error;
-//     }
-//   } 
+  async getLastUpdatedChotkho(): Promise<{ updatedAt: number }> {
+    try {
+      const item = await this.prisma.chotkho.findFirst({
+        orderBy: { updatedAt: 'desc' },
+      });
+      return { updatedAt: item ? item.updatedAt.getTime() : 0 };
+    } catch (error) {
+      console.log('Error getting last updated chotkho:', error);
+      throw error;
+    }
+  }
 
+  async generateCodeId(): Promise<string> {
+    try {
+      const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
+      const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+      return `CK-${timestamp}-${randomPart}`;
+    } catch (error) {
+      console.log('Error generating codeId:', error);
+      throw error;
+    }
+  }
 
-
-//   async create(data: any) {    
-//     try {
-//       // Handle both single object and array of objects
-//       const dataArray = Array.isArray(data) ? data : [data];
+  async create(data: any) {
+    try {
+      // Generate unique codeId
+      const codeId = await this.generateCodeId();
       
-//       return await this.prisma.$transaction(async (prisma) => {
-//         // Initialize result tracking
-//         const result = {
-//           status: 'success',
-//           created: 0,
-//           updated: 0,
-//           failed: 0,
-//           errors: [] as any[],
-//           data: [] as any[],
-//           summary: {
-//             totalProcessed: dataArray.length,
-//             phieukhoCreated: 0,
-//             tonkhoUpdated: 0,
-//           }
-//         };
+      return await this.prisma.$transaction(async (prisma) => {
+        // Create main chotkho record
+        const chotkho = await prisma.chotkho.create({
+          data: {
+            codeId,
+            title: data.title || `Chốt kho ${new Date().toLocaleDateString('vi-VN')}`,
+            ghichu: data.ghichu || '',
+            ngay: data.ngay ? new Date(data.ngay) : new Date(),
+            khoId: data.khoId,
+            isActive: true
+          }
+        });
 
-//         try {
-//           // Pre-fetch required data in batch
-//           const sanphamIds = dataArray
-//             .filter(item => item.sanphamId)
-//             .map(item => item.sanphamId);
-          
-//           const tonkhoMap = new Map();
-//           if (sanphamIds.length > 0) {
-//             const tonkhos = await prisma.tonKho.findMany({
-//               where: { sanphamId: { in: sanphamIds } },
-//               select: { sanphamId: true, slton: true }
-//             });
-//             tonkhos.forEach(tk => tonkhoMap.set(tk.sanphamId, tk.slton));
-//           }
+        return {
+          success: true,
+          data: chotkho,
+          message: 'Tạo chốt kho thành công'
+        };
+      });
+    } catch (error) {
+      console.error('Error creating chotkho:', error);
+      throw error;
+    }
+  }
 
-//           // Get max order once
-//           const maxOrder = await prisma.chotkho.aggregate({
-//             _max: { order: true },
+  async findOne(id: string) {
+    try {
+      const chotkho = await this.prisma.chotkho.findUnique({
+        where: { id },
+        include: {
+          details: {
+            include: {
+              sanpham: {
+                select: {
+                  id: true,
+                  title: true,
+                  masp: true
+                }
+              },
+              phieukho: true
+            },
+            orderBy: { order: 'asc' }
+          },
+          kho: true
+        }
+      });
+
+      if (!chotkho) {
+        throw new NotFoundException('Không tìm thấy chốt kho');
+      }
+
+      return chotkho;
+    } catch (error) {
+      console.error('Error finding chotkho:', error);
+      throw error;
+    }
+  }
+
+  async findAll(query: any) {
+    try {
+      const { page = 1, limit = 20, khoId, fromDate, toDate } = query;
+      const skip = (page - 1) * limit;
+
+      const where: any = {};
+      
+      if (khoId) {
+        where.khoId = khoId;
+      }
+
+      if (fromDate || toDate) {
+        where.ngay = {};
+        if (fromDate) {
+          where.ngay.gte = this.getStartOfDay(fromDate);
+        }
+        if (toDate) {
+          where.ngay.lte = this.getEndOfDay(toDate);
+        }
+      }
+
+      const [data, total] = await Promise.all([
+        this.prisma.chotkho.findMany({
+          where,
+          include: {
+            kho: {
+              select: {
+                id: true,
+                name: true
+              }
+            },
+            details: {
+              select: {
+                id: true
+              }
+            }
+          },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit
+        }),
+        this.prisma.chotkho.count({ where })
+      ]);
+
+      return {
+        data: data.map(item => ({
+          ...item,
+          detailCount: item.details.length
+        })),
+        total,
+        page,
+        limit,
+        pageCount: Math.ceil(total / limit)
+      };
+    } catch (error) {
+      console.error('Error finding all chotkho:', error);
+      throw error;
+    }
+  }
+
+  // 🎯 NEW METHODS: Hỗ trợ workflow chốt kho
+
+  /**
+   * Lấy danh sách TonKho với thông tin đơn hàng tồn đọng
+   */
+  async getTonkhoWithPendingQuantities(khoId?: string): Promise<any[]> {
+    try {
+      const where: any = {};
+      if (khoId) {
+        where.khoId = khoId;
+      }
+
+      const tonkhos = await this.prisma.tonKho.findMany({
+        where,
+        include: {
+          sanpham: {
+            select: {
+              id: true,
+              title: true,
+              masp: true
+            }
+          }
+        }
+      });
+
+      // Thêm thông tin đơn hàng tồn đọng
+      const result = await Promise.all(
+        tonkhos.map(async (tonkho) => {
+          // Đếm đơn hàng chờ giao
+          const pendingDeliveryCount = await this.prisma.donhang.count({
+            where: {
+              status: { in: ['dadat', 'dagiao'] },
+              sanpham: {
+                some: {
+                  idSP: tonkho.sanphamId,
+                  slgiao: { gt: 0 }
+                }
+              }
+            }
+          });
+
+          // Đếm đặt hàng chờ nhập
+          const pendingReceiptCount = await this.prisma.dathang.count({
+            where: {
+              status: { in: ['dadat', 'dagiao'] },
+              sanpham: {
+                some: {
+                  idSP: tonkho.sanphamId,
+                  slgiao: { gt: 0 }
+                }
+              }
+            }
+          });
+
+          return {
+            ...tonkho,
+            pendingDeliveries: pendingDeliveryCount,
+            pendingReceipts: pendingReceiptCount,
+            hasPendingOrders: pendingDeliveryCount > 0 || pendingReceiptCount > 0
+          };
+        })
+      );
+
+      return result;
+    } catch (error) {
+      console.error('Error getting tonkho with pending quantities:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Tạo ChotkhoDetail từ dữ liệu Excel và TonKho
+   */
+  async createChotkhoDetails(chotkhoId: string, excelData: any[]): Promise<{ success: boolean; count: number; message?: string }> {
+    try {
+      return await this.prisma.$transaction(async (prisma) => {
+        let createdCount = 0;
+
+        for (const item of excelData) {
+          // Tìm sản phẩm theo mã
+          const sanpham = await prisma.sanpham.findFirst({
+            where: { masp: item.masp }
+          });
+
+          if (!sanpham) {
+            console.warn(`Không tìm thấy sản phẩm với mã: ${item.masp}`);
+            continue;
+          }
+
+          // Lấy TonKho hiện tại
+          const tonkho = await prisma.tonKho.findUnique({
+            where: { sanphamId: sanpham.id }
+          });
+
+          const slhethong = Number(tonkho?.slton || 0);
+          const slthucte = Number(item.soluong || 0);
+          const chenhlech = slthucte - slhethong;
+
+          // Tạo ChotkhoDetail
+          await prisma.chotkhoDetail.create({
+            data: {
+              chotkhoId,
+              sanphamId: sanpham.id,
+              tonkhoId: tonkho?.id,
+              slthucte,
+              slhethong,
+              chenhlech,
+              ghichu: item.ghichu || '',
+              order: createdCount + 1
+            }
+          });
+
+          createdCount++;
+        }
+
+        return {
+          success: true,
+          count: createdCount,
+          message: `Đã tạo ${createdCount} chi tiết chốt kho`
+        };
+      });
+    } catch (error) {
+      console.error('Error creating chotkho details:', error);
+      return {
+        success: false,
+        count: 0,
+        message: error.message || 'Lỗi tạo chi tiết chốt kho'
+      };
+    }
+  }
+
+  /**
+   * Cập nhật TonKho sau khi chốt kho
+   */
+  async updateTonkhoAfterClose(chotkhoId: string): Promise<{ success: boolean; message?: string }> {
+    try {
+      return await this.prisma.$transaction(async (prisma) => {
+        // Lấy tất cả chi tiết chốt kho
+        const details = await prisma.chotkhoDetail.findMany({
+          where: { chotkhoId },
+          include: { sanpham: true }
+        });
+
+        for (const detail of details) {
+          if (detail.sanphamId) {
+            // Cập nhật TonKho với số lượng thực tế
+            await prisma.tonKho.upsert({
+              where: { sanphamId: detail.sanphamId },
+              update: {
+                slton: detail.slthucte,
+                slchogiao: 0, // Reset về 0 sau khi hoàn tất đơn hàng
+                slchonhap: 0  // Reset về 0 sau khi hoàn tất đặt hàng
+              },
+              create: {
+                sanphamId: detail.sanphamId,
+                slton: detail.slthucte,
+                slchogiao: 0,
+                slchonhap: 0
+              }
+            });
+          }
+        }
+
+        // Cập nhật trạng thái chốt kho (chỉ cập nhật updatedAt vì không có status field)
+        await prisma.chotkho.update({
+          where: { id: chotkhoId },
+          data: {
+            updatedAt: new Date()
+          }
+        });
+
+        return {
+          success: true,
+          message: `Đã cập nhật ${details.length} TonKho thành công`
+        };
+      });
+    } catch (error) {
+      console.error('Error updating tonkho after close:', error);
+      return {
+        success: false,
+        message: error.message || 'Lỗi cập nhật TonKho'
+      };
+    }
+  }
+}
 //           });
 //           let currentOrder = (maxOrder._max?.order || 0);
 

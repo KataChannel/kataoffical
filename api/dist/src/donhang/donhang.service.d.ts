@@ -602,4 +602,26 @@ export declare class DonhangService {
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
     }[]>;
+    findOrdersByStatus(params: {
+        sanphamId: string;
+        status: string[];
+    }): Promise<any[]>;
+    completeDonhang(id: string, data: {
+        status: string;
+        slnhan: number;
+        completedBy?: string;
+        completedAt?: Date;
+        ghichu?: string;
+    }): Promise<{
+        success: boolean;
+        message?: string;
+    }>;
+    completePendingDeliveriesForProduct(sanphamId: string): Promise<{
+        success: boolean;
+        count: number;
+        message?: string;
+    }>;
+    private updateTonKhoSafely;
+    private calculateInitialTonKhoValue;
+    getPendingOrdersForProduct(sanphamId: string): Promise<any[]>;
 }

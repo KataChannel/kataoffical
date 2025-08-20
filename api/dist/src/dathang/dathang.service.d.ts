@@ -606,4 +606,26 @@ export declare class DathangService {
         errors: any[];
         message: string;
     }>;
+    findOrdersByStatus(params: {
+        sanphamId: string;
+        status: string[];
+    }): Promise<any[]>;
+    completeDathang(id: string, data: {
+        status: string;
+        slnhan: number;
+        completedBy?: string;
+        completedAt?: Date;
+        ghichu?: string;
+    }): Promise<{
+        success: boolean;
+        message?: string;
+    }>;
+    completePendingReceiptsForProduct(sanphamId: string): Promise<{
+        success: boolean;
+        count: number;
+        message?: string;
+    }>;
+    private updateTonKhoSafely;
+    private calculateInitialTonKhoValue;
+    getPendingReceiptsForProduct(sanphamId: string): Promise<any[]>;
 }
