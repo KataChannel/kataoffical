@@ -341,7 +341,7 @@ export class DonhangService {
       const orderItems = v.sanpham.map((v1: any) => {
         const product = Sanphams.find((sp: any) => sp.id === v1.idSP);
         const giaban = v1.giaban || 0;
-        const vat: any = product?.vat || 0;
+        const vat: any = Number(product?.vat) || 0;
         const thanhtiensauvat = v1.slnhan * giaban * (1 + vat);
         return {
           id: v.id,

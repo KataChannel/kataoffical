@@ -280,7 +280,7 @@ let DonhangService = class DonhangService {
             const orderItems = v.sanpham.map((v1) => {
                 const product = Sanphams.find((sp) => sp.id === v1.idSP);
                 const giaban = v1.giaban || 0;
-                const vat = product?.vat || 0;
+                const vat = Number(product?.vat) || 0;
                 const thanhtiensauvat = v1.slnhan * giaban * (1 + vat);
                 return {
                     id: v.id,
