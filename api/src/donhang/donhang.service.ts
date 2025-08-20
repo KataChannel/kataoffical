@@ -706,7 +706,7 @@ export class DonhangService {
               // 5. Tính lại tổng tiền cho đơn hàng
               if (hasUpdates) {
                 const vatRate = Number(donhang.vat) || 0;
-                const tongvat = tongchua * (vatRate / 100);
+                const tongvat = tongchua * (vatRate);
                 const tongtien = tongchua + tongvat;
 
                 await prisma.donhang.update({
@@ -837,7 +837,7 @@ export class DonhangService {
           ttnhan: parseFloat((item.ttnhan ?? 0).toFixed(3)),
           vat: parseFloat((item.vat ?? 0).toFixed(3)),
           ttsauvat: parseFloat(
-            (item.ttnhan * (1 + (item.vat || 0) / 100)).toFixed(3),
+            (item.ttnhan * (1 + (item.vat || 0))).toFixed(3),
           ),
           ghichu: item.ghichu,
         };
