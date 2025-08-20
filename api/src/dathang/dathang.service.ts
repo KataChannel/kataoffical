@@ -1,12 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
+import { StatusMachineService } from 'src/common/status-machine.service';
+import { TonkhoManagerService } from 'src/common/tonkho-manager.service';
 
 @Injectable()
 export class DathangService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly _ImportdataService: ImportdataService,
+    private readonly statusMachine: StatusMachineService,
+    private readonly tonkhoManager: TonkhoManagerService,
   ) {}
 
   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
@@ -629,6 +633,18 @@ async convertDathangImportToTransfer(
       });
       if (!oldDathang) {
         throw new NotFoundException('Đơn đặt hàng không tồn tại');
+      }
+
+      // 1.1. Validate status transition if status is changing
+      if (data.status && data.status !== oldDathang.status) {
+        const transition = this.statusMachine.validateTransition(
+          oldDathang.status as any,
+          data.status as any,
+          'dathang'
+        );
+        if (!transition.isValid) {
+          throw new Error(`Invalid status transition: ${transition.reason}`);
+        }
       }
 
       // Validate kho if changed

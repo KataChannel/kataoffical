@@ -13,10 +13,14 @@ exports.DathangService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const importdata_service_1 = require("../importdata/importdata.service");
+const status_machine_service_1 = require("../common/status-machine.service");
+const tonkho_manager_service_1 = require("../common/tonkho-manager.service");
 let DathangService = class DathangService {
-    constructor(prisma, _ImportdataService) {
+    constructor(prisma, _ImportdataService, statusMachine, tonkhoManager) {
         this.prisma = prisma;
         this._ImportdataService = _ImportdataService;
+        this.statusMachine = statusMachine;
+        this.tonkhoManager = tonkhoManager;
     }
     formatDateForFilename() {
         const now = new Date();
@@ -548,6 +552,12 @@ let DathangService = class DathangService {
             });
             if (!oldDathang) {
                 throw new common_1.NotFoundException('Đơn đặt hàng không tồn tại');
+            }
+            if (data.status && data.status !== oldDathang.status) {
+                const transition = this.statusMachine.validateTransition(oldDathang.status, data.status, 'dathang');
+                if (!transition.isValid) {
+                    throw new Error(`Invalid status transition: ${transition.reason}`);
+                }
             }
             if (data.khoId && data.khoId !== oldDathang.khoId) {
                 const kho = await prisma.kho.findUnique({
@@ -1330,6 +1340,8 @@ exports.DathangService = DathangService;
 exports.DathangService = DathangService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        importdata_service_1.ImportdataService])
+        importdata_service_1.ImportdataService,
+        status_machine_service_1.StatusMachineService,
+        tonkho_manager_service_1.TonkhoManagerService])
 ], DathangService);
 //# sourceMappingURL=dathang.service.js.map

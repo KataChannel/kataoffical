@@ -541,32 +541,24 @@ export declare class DonhangController {
         donhangIds: string[];
     }): Promise<void>;
     dagiao(id: string, data: any): Promise<{
-        message: string;
-        code: string;
-        result: null;
-    } | {
-        message: string;
-        code: string;
-        result: {
-            id: string;
-            title: string | null;
-            ghichu: string | null;
-            order: number | null;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            vat: import("@prisma/client/runtime/library").Decimal;
-            type: string | null;
-            status: import(".prisma/client").$Enums.StatusDonhang;
-            banggiaId: string | null;
-            isshowvat: boolean;
-            madonhang: string;
-            ngaygiao: Date | null;
-            khachhangId: string | null;
-            printCount: number | null;
-            tongtien: import("@prisma/client/runtime/library").Decimal;
-            tongvat: import("@prisma/client/runtime/library").Decimal;
-        };
+        id: string;
+        title: string | null;
+        ghichu: string | null;
+        order: number | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        vat: import("@prisma/client/runtime/library").Decimal;
+        type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        banggiaId: string | null;
+        isshowvat: boolean;
+        madonhang: string;
+        ngaygiao: Date | null;
+        khachhangId: string | null;
+        printCount: number | null;
+        tongtien: import("@prisma/client/runtime/library").Decimal;
+        tongvat: import("@prisma/client/runtime/library").Decimal;
     }>;
     danhan(id: string, data: any): Promise<{
         id: string;
@@ -587,7 +579,7 @@ export declare class DonhangController {
         printCount: number | null;
         tongtien: import("@prisma/client/runtime/library").Decimal;
         tongvat: import("@prisma/client/runtime/library").Decimal;
-    } | undefined>;
+    }>;
     autoCompleteOrdersDaily(): Promise<{
         success: boolean;
         message: string;

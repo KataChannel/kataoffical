@@ -1,9 +1,13 @@
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
+import { StatusMachineService } from 'src/common/status-machine.service';
+import { TonkhoManagerService } from 'src/common/tonkho-manager.service';
 export declare class DathangService {
     private readonly prisma;
     private readonly _ImportdataService;
-    constructor(prisma: PrismaService, _ImportdataService: ImportdataService);
+    private readonly statusMachine;
+    private readonly tonkhoManager;
+    constructor(prisma: PrismaService, _ImportdataService: ImportdataService, statusMachine: StatusMachineService, tonkhoManager: TonkhoManagerService);
     private formatDateForFilename;
     private convertDateFilters;
     generateNextOrderCode(): Promise<string>;
