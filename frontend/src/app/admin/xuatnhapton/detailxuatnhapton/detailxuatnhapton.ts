@@ -1211,7 +1211,7 @@ export class DetailXuatnhaptonComponent {
       }
 
       // Business rule: Check for extreme differences
-      if (item.chenhlech && Math.abs(item.chenhlech) > 5000) {
+      if (item.chenhlech && Math.abs(item.chenhlech) > 100000) {
         errors.push(
           `Dòng ${rowNum}: Chênh lệch quá lớn (${item.chenhlech}), vui lòng kiểm tra lại`
         );

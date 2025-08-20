@@ -437,7 +437,7 @@ export class DonhangService {
         const ngaygiao = item.ngaygiao ? new Date(item.ngaygiao) : null;
         
         row.values = {
-          ngaygiao: ngaygiao ? moment(ngaygiao).format("DD/MM/YYYY") : '',
+          ngaygiao: ngaygiao ? moment(ngaygiao).tz('Asia/Ho_Chi_Minh').format("DD/MM/YYYY") : '',
           makhachhang: item.makhachhang || '',
           tenkhachhang: item.tenkhachhang || '',
           madonhang: item.madonhang || '',
