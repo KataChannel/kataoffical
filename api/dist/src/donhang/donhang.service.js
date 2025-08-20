@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DonhangService = void 0;
 const common_1 = require("@nestjs/common");
+const moment = require("moment-timezone");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
 const DEFAUL_BANGGIA_ID = '84a62698-5784-4ac3-b506-5e662d1511cb';
@@ -348,7 +349,7 @@ let DonhangService = class DonhangService {
                 const row = worksheet.getRow(currentRow);
                 const ngaygiao = item.ngaygiao ? new Date(item.ngaygiao) : null;
                 row.values = {
-                    ngaygiao: ngaygiao ? ngaygiao.toLocaleDateString('vi-VN') : '',
+                    ngaygiao: ngaygiao ? moment(ngaygiao).format("DD/MM/YYYY") : '',
                     makhachhang: item.makhachhang || '',
                     tenkhachhang: item.tenkhachhang || '',
                     madonhang: item.madonhang || '',
@@ -958,121 +959,124 @@ let DonhangService = class DonhangService {
         return { tong, tongvat, tongtien };
     }
     async create(dto) {
-        return this.prisma.$transaction(async (prisma) => {
-            const orderCode = await this.generateUniqueOrderCode(prisma);
-            const khachhang = await this.validateCustomer(prisma, dto.khachhangId);
-            const banggiaId = dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID;
-            const banggia = await this.getBanggia(prisma, banggiaId);
-            const processedProducts = await this.processProducts(dto.sanpham || [], banggia);
-            const vatRate = this.parseVatRate(dto.vat);
-            const { tongvat, tongtien } = this.calculateDonhangTotals(processedProducts, vatRate);
-            const newDonhang = await this.createDonhangRecord(prisma, {
-                ...dto,
-                madonhang: orderCode.madonhang,
-                order: orderCode.order,
-                banggiaId,
-                vatRate,
-                tongvat,
-                tongtien,
-                isshowvat: khachhang.isshowvat,
-                sanpham: processedProducts,
+        const maxOrderResult = await this.prisma.donhang.aggregate({
+            _max: {
+                order: true,
+            },
+        });
+        let maxOrder = maxOrderResult._max.order || 0;
+        let madonhang = await this.DonhangnumberToCode(maxOrder + 1);
+        let existingDonhang = await this.prisma.donhang.findUnique({ where: { madonhang } });
+        while (existingDonhang) {
+            maxOrder++;
+            madonhang = await this.DonhangnumberToCode(maxOrder + 1);
+            existingDonhang = await this.prisma.donhang.findUnique({
+                where: { madonhang },
             });
-            await this.updateInventoryForNewOrder(prisma, processedProducts);
+        }
+        return this.prisma.$transaction(async (prisma) => {
+            const khachhang = await prisma.khachhang.findUnique({
+                where: { id: dto.khachhangId },
+                include: { banggia: true },
+            });
+            if (!khachhang) {
+                throw new common_1.NotFoundException('Khách hàng không tồn tại');
+            }
+            const newDonhang = await prisma.donhang.create({
+                data: {
+                    title: dto.title,
+                    type: dto.type || 'donsi',
+                    madonhang: madonhang,
+                    ngaygiao: new Date(dto.ngaygiao),
+                    khachhangId: dto.khachhangId,
+                    banggiaId: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID,
+                    vat: parseFloat((dto.vat || 0.05).toString()),
+                    isActive: dto.isActive,
+                    order: maxOrder + 1,
+                    ghichu: dto.ghichu,
+                    isshowvat: khachhang.isshowvat,
+                    sanpham: {
+                        create: dto?.sanpham?.map((sp) => ({
+                            idSP: sp.idSP || sp.id,
+                            giaban: parseFloat((sp.giaban || 0).toString()),
+                            ghichu: sp.ghichu,
+                            sldat: parseFloat((sp.sldat ?? 0).toString()),
+                            slgiao: parseFloat((sp.slgiao ?? 0).toString()),
+                            slnhan: parseFloat((sp.slnhan ?? 0).toString()),
+                            slhuy: parseFloat((sp.slhuy ?? 0).toString()),
+                            ttdat: parseFloat((sp.ttdat ?? 0).toString()),
+                            ttgiao: parseFloat((sp.ttgiao ?? 0).toString()),
+                            ttnhan: parseFloat((sp.ttnhan ?? 0).toString()),
+                            vat: parseFloat((sp.vat ?? 0).toString()),
+                            ttsauvat: parseFloat((sp.ttsauvat ?? 0).toString()),
+                            order: sp.order || 1,
+                            isActive: sp.isActive !== undefined ? sp.isActive : true,
+                        })) || [],
+                    },
+                },
+                include: {
+                    sanpham: true,
+                },
+            });
+            const vatRate = parseFloat((dto.vat || 0.05).toString());
+            const banggia = await prisma.banggia.findUnique({
+                where: { id: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID },
+                include: { sanpham: true },
+            });
+            const updatedSanpham = dto?.sanpham?.map((sp) => {
+                const giaSanpham = banggia?.sanpham.find(bgsp => bgsp.sanphamId === (sp.idSP || sp.id));
+                const giaban = giaSanpham ? parseFloat(giaSanpham.giaban.toString()) : parseFloat((sp.giaban || 0).toString());
+                const slnhan = parseFloat((sp.slnhan ?? 0).toString());
+                const vat = parseFloat((sp.vat ?? 0).toString());
+                return {
+                    ...sp,
+                    giaban: giaban,
+                    ttdat: giaban * parseFloat((sp.sldat ?? 0).toString()),
+                    ttgiao: giaban * parseFloat((sp.slgiao ?? 0).toString()),
+                    ttnhan: giaban * slnhan,
+                    ttsauvat: (giaban * slnhan) * (1 + vat),
+                };
+            }) || [];
+            if (updatedSanpham.length > 0) {
+                await Promise.all(updatedSanpham.map(async (sp) => {
+                    await prisma.donhangsanpham.updateMany({
+                        where: {
+                            donhangId: newDonhang.id,
+                            idSP: sp.idSP || sp.id
+                        },
+                        data: {
+                            giaban: sp.giaban,
+                            ttdat: sp.ttdat,
+                            ttgiao: sp.ttgiao,
+                            ttnhan: sp.ttnhan,
+                            ttsauvat: sp.ttsauvat,
+                        },
+                    });
+                }));
+            }
+            const { tongvat, tongtien } = this.calculateDonhangTotals(updatedSanpham, vatRate);
+            await prisma.donhang.update({
+                where: { id: newDonhang.id },
+                data: {
+                    tongvat: tongvat,
+                    tongtien: tongtien,
+                },
+            });
+            for (const sp of dto.sanpham) {
+                const incrementValue = parseFloat((sp.sldat ?? 0).toFixed(3));
+                await prisma.tonKho.upsert({
+                    where: { sanphamId: sp.id },
+                    update: {
+                        slchogiao: { increment: incrementValue },
+                    },
+                    create: {
+                        sanphamId: sp.id,
+                        slchogiao: incrementValue,
+                    },
+                });
+            }
             return newDonhang;
         });
-    }
-    async generateUniqueOrderCode(prisma) {
-        const maxOrderResult = await prisma.donhang.aggregate({
-            _max: { order: true },
-        });
-        let order = (maxOrderResult._max.order || 0) + 1;
-        let madonhang = await this.DonhangnumberToCode(order);
-        while (await prisma.donhang.findUnique({ where: { madonhang } })) {
-            order++;
-            madonhang = await this.DonhangnumberToCode(order);
-        }
-        return { madonhang, order };
-    }
-    async validateCustomer(prisma, khachhangId) {
-        const khachhang = await prisma.khachhang.findUnique({
-            where: { id: khachhangId },
-            include: { banggia: true },
-        });
-        if (!khachhang) {
-            throw new common_1.NotFoundException('Khách hàng không tồn tại');
-        }
-        return khachhang;
-    }
-    async getBanggia(prisma, banggiaId) {
-        return await prisma.banggia.findUnique({
-            where: { id: banggiaId },
-            include: { sanpham: true },
-        });
-    }
-    async processProducts(sanpham, banggia) {
-        return sanpham.map(sp => {
-            const giaSanpham = banggia?.sanpham.find(bgsp => bgsp.sanphamId === (sp.idSP || sp.id));
-            const giaban = giaSanpham ? parseFloat(giaSanpham.giaban.toString()) : parseFloat((sp.giaban || 0).toString());
-            const sldat = this.parseDecimal(sp.sldat);
-            const slgiao = this.parseDecimal(sp.slgiao);
-            const slnhan = this.parseDecimal(sp.slnhan);
-            const vat = this.parseDecimal(sp.vat);
-            return {
-                idSP: sp.idSP || sp.id,
-                giaban,
-                ghichu: sp.ghichu,
-                sldat,
-                slgiao,
-                slnhan,
-                slhuy: this.parseDecimal(sp.slhuy),
-                ttdat: giaban * sldat,
-                ttgiao: giaban * slgiao,
-                ttnhan: giaban * slnhan,
-                vat,
-                ttsauvat: (giaban * slnhan) * (1 + vat),
-                order: sp.order || 1,
-                isActive: sp.isActive !== undefined ? sp.isActive : true,
-            };
-        });
-    }
-    parseDecimal(value, defaultValue = 0) {
-        return parseFloat((value ?? defaultValue).toString());
-    }
-    parseVatRate(vat) {
-        return parseFloat((vat || 0.05).toString());
-    }
-    async createDonhangRecord(prisma, data) {
-        return await prisma.donhang.create({
-            data: {
-                title: data.title,
-                type: data.type || 'donsi',
-                madonhang: data.madonhang,
-                ngaygiao: new Date(data.ngaygiao),
-                khachhangId: data.khachhangId,
-                banggiaId: data.banggiaId,
-                vat: data.vatRate,
-                tongvat: data.tongvat,
-                tongtien: data.tongtien,
-                isActive: data.isActive,
-                order: data.order,
-                ghichu: data.ghichu,
-                isshowvat: data.isshowvat,
-                sanpham: {
-                    create: data.sanpham,
-                },
-            },
-            include: {
-                sanpham: true,
-            },
-        });
-    }
-    async updateInventoryForNewOrder(prisma, sanpham) {
-        await Promise.all(sanpham.map(async (sp) => {
-            const incrementValue = sp.sldat;
-            await this.updateTonKhoSafe(prisma, sp.idSP, {
-                slchogiao: { increment: incrementValue },
-            });
-        }));
     }
     async update(id, data) {
         return this.prisma.$transaction(async (prisma) => {

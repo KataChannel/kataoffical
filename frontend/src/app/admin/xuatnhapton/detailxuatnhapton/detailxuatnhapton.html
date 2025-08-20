@@ -195,20 +195,20 @@
               <tbody class="bg-white divide-y divide-gray-200">
                 <tr *ngFor="let item of ListChotkho(); trackBy: trackByFn">
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {{ item.masp || 'N/A' }}
+                    {{ item?.sanpham?.masp || 'N/A' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {{ item?.sanpham?.title || 'N/A' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {{ formatNumber(item.slhethong || 0) }}
+                    {{ item.slhethong || 0 |number: '1.0-3' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {{ formatNumber(item.slthucte || 0) }}
+                    {{ item.slthucte || 0 | number: '1.0-3' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <span [class]="getChenhLechClass(item.chenhlech || 0)">
-                      {{ (item.chenhlech || 0) > 0 ? '+' : '' }}{{ formatNumber(item.chenhlech || 0) }}
+                      {{ (item.chenhlech || 0) > 0 ? '+' : '' }}{{ item.chenhlech || 0 | number: '1.0-3' }}
                     </span>
                   </td>
                 </tr>

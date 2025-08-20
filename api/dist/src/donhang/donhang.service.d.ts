@@ -359,15 +359,45 @@ export declare class DonhangService {
     DonhangcodeToNumber(code: any): Promise<number>;
     DonhangnumberToCode(number: any): Promise<string>;
     private calculateDonhangTotals;
-    create(dto: any): Promise<any>;
-    private generateUniqueOrderCode;
-    private validateCustomer;
-    private getBanggia;
-    private processProducts;
-    private parseDecimal;
-    private parseVatRate;
-    private createDonhangRecord;
-    private updateInventoryForNewOrder;
+    create(dto: any): Promise<{
+        sanpham: {
+            id: string;
+            ghichu: string | null;
+            order: number | null;
+            isActive: boolean | null;
+            giaban: import("@prisma/client/runtime/library").Decimal;
+            vat: import("@prisma/client/runtime/library").Decimal;
+            idSP: string;
+            sldat: import("@prisma/client/runtime/library").Decimal;
+            slgiao: import("@prisma/client/runtime/library").Decimal;
+            slnhan: import("@prisma/client/runtime/library").Decimal;
+            slhuy: import("@prisma/client/runtime/library").Decimal;
+            ttdat: import("@prisma/client/runtime/library").Decimal;
+            ttgiao: import("@prisma/client/runtime/library").Decimal;
+            ttnhan: import("@prisma/client/runtime/library").Decimal;
+            donhangId: string;
+            ttsauvat: import("@prisma/client/runtime/library").Decimal;
+        }[];
+    } & {
+        id: string;
+        title: string | null;
+        ghichu: string | null;
+        order: number | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        vat: import("@prisma/client/runtime/library").Decimal;
+        type: string | null;
+        status: import(".prisma/client").$Enums.StatusDonhang;
+        banggiaId: string | null;
+        isshowvat: boolean;
+        madonhang: string;
+        ngaygiao: Date | null;
+        khachhangId: string | null;
+        printCount: number | null;
+        tongtien: import("@prisma/client/runtime/library").Decimal;
+        tongvat: import("@prisma/client/runtime/library").Decimal;
+    }>;
     update(id: string, data: any): Promise<{
         id: string;
         title: string | null;

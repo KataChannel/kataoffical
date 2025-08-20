@@ -384,22 +384,22 @@ export class GraphqlService {
   // ========================= HEALTH CHECK =========================
 
   private async performHealthCheck(): Promise<void> {
-    const startTime = Date.now();
+    // const startTime = Date.now();
     
-    try {
-      const result = await firstValueFrom(
-        this.apollo.query({
-          query: HEALTH_CHECK_QUERY,
-          fetchPolicy: 'no-cache'
-        })
-      );
+    // try {
+    //   const result = await firstValueFrom(
+    //     this.apollo.query({
+    //       query: HEALTH_CHECK_QUERY,
+    //       fetchPolicy: 'no-cache'
+    //     })
+    //   );
       
-      this.isHealthy.set(true);
-      this.trackPerformance('health_check', startTime, false, 1);
-    } catch (error) {
-      this.isHealthy.set(false);
-      this.trackError(error, 'health_check');
-    }
+    //   this.isHealthy.set(true);
+    //   this.trackPerformance('health_check', startTime, false, 1);
+    // } catch (error) {
+    //   this.isHealthy.set(false);
+    //   this.trackError(error, 'health_check');
+    // }
   }
 
   // ========================= CORE QUERY METHODS =========================

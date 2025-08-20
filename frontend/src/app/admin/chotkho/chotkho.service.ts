@@ -823,7 +823,7 @@ export class ChotkhoService {
       let where: any = {};
       
       if (params.ngay) {
-        const searchDate = new Date(params.ngay);
+        const searchDate = new Date(params.ngay) || new Date();
         where.ngay = searchDate;
       }
       
@@ -853,31 +853,6 @@ export class ChotkhoService {
               name: true,
               makho: true,
               diachi: true
-            }
-          },
-          sanpham: {
-            select: {
-              id: true,
-              title: true,
-              masp: true,
-              dvt: true,
-              giagoc: true
-            }
-          },
-          tonkho: {
-            select: {
-              id: true,
-              slton: true,
-              slchogiao: true,
-              slchonhap: true
-            }
-          },
-          phieukho: {
-            select: {
-              id: true,
-              maphieu: true,
-              ngay: true,
-              type: true
             }
           }
         },

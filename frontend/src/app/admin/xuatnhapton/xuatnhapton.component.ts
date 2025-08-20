@@ -220,14 +220,14 @@ export class XuatnhaptonComponent {
   // Method to view chot kho details
   viewChotkhoDetail(row: any) {
     this.drawer.open();
-    window.location.href = `/admin/xuatnhapton/${this._timezoneService.formatForDisplay(row.ngay, 'YYYY-MM-DD')}`;
+    window.location.href = `/admin/xuatnhapton/${row.id}`;
     // this._router.navigate(['admin/xuatnhapton', this._timezoneService.formatForDisplay(row.ngay, 'YYYY-MM-DD')]);
   }
 
   // Method to edit chot kho
   editChotkho(row: any) {
     this.drawer.open();
-    window.location.href = `/admin/xuatnhapton/${this._timezoneService.formatForDisplay(row.ngay, 'YYYY-MM-DD')}`;
+    window.location.href = `/admin/xuatnhapton/${row.id}`;
     // this._router.navigate(['admin/xuatnhapton', this._timezoneService.formatForDisplay(row.ngay, 'YYYY-MM-DD')]);
   }
 
