@@ -5,45 +5,7 @@ export declare class DonhangController {
     private readonly donhangService;
     private readonly donhangCronService;
     constructor(donhangService: DonhangService, donhangCronService: DonhangCronService);
-    create(createDonhangDto: any): Promise<{
-        sanpham: {
-            id: string;
-            ghichu: string | null;
-            order: number | null;
-            isActive: boolean | null;
-            giaban: import("@prisma/client/runtime/library").Decimal;
-            vat: import("@prisma/client/runtime/library").Decimal;
-            idSP: string;
-            sldat: import("@prisma/client/runtime/library").Decimal;
-            slgiao: import("@prisma/client/runtime/library").Decimal;
-            slnhan: import("@prisma/client/runtime/library").Decimal;
-            slhuy: import("@prisma/client/runtime/library").Decimal;
-            ttdat: import("@prisma/client/runtime/library").Decimal;
-            ttgiao: import("@prisma/client/runtime/library").Decimal;
-            ttnhan: import("@prisma/client/runtime/library").Decimal;
-            donhangId: string;
-            ttsauvat: import("@prisma/client/runtime/library").Decimal;
-        }[];
-    } & {
-        id: string;
-        title: string | null;
-        ghichu: string | null;
-        order: number | null;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        vat: import("@prisma/client/runtime/library").Decimal;
-        type: string | null;
-        status: import(".prisma/client").$Enums.StatusDonhang;
-        banggiaId: string | null;
-        isshowvat: boolean;
-        madonhang: string;
-        ngaygiao: Date | null;
-        khachhangId: string | null;
-        printCount: number | null;
-        tongtien: import("@prisma/client/runtime/library").Decimal;
-        tongvat: import("@prisma/client/runtime/library").Decimal;
-    }>;
+    create(createDonhangDto: any): Promise<any>;
     ImportDonhangOld(data: any): Promise<{
         success: number;
         fail: number;
@@ -158,7 +120,7 @@ export declare class DonhangController {
     searchfield(searchParams: Record<string, any>): Promise<{
         sanpham: {
             idSP: string;
-            giaban: import("@prisma/client/runtime/library").Decimal | undefined;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             sldat: number;
             slgiao: number;
             slnhan: number;
@@ -370,7 +332,7 @@ export declare class DonhangController {
     findOne(id: string): Promise<{
         sanpham: {
             idSP: string;
-            giaban: import("@prisma/client/runtime/library").Decimal | undefined;
+            giaban: import("@prisma/client/runtime/library").Decimal;
             sldat: number;
             slgiao: number;
             slnhan: number;

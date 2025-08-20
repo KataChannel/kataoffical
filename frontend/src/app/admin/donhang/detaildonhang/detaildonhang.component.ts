@@ -309,6 +309,7 @@ export class DetailDonhangComponent {
         tongtien: this.calculateTotalAmount(),
         isActive: true,
       }));
+      
       const result = await this._DonhangService.CreateDonhang(this.DetailDonhang());
 
       if (result && result.id) {

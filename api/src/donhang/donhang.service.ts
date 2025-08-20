@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 const DEFAUL_KHO_ID = '4cc01811-61f5-4bdc-83de-a493764e9258';
+const DEFAUL_BANGGIA_ID = '84a62698-5784-4ac3-b506-5e662d1511cb';
 @Injectable()
 export class DonhangService {
   constructor(private readonly prisma: PrismaService) {}
@@ -198,17 +199,17 @@ export class DonhangService {
     const result = donhangs.map(({ khachhang, sanpham, ...donhang }) => ({
       ...donhang,
       sanpham: sanpham.map((item: any) => {
-        const priceFromBanggia = khachhang?.banggia
-          ? khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)
-              ?.giaban
-          : 0;
-        const giaban =
-          priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
+        // const priceFromBanggia = khachhang?.banggia
+        //   ? khachhang.banggia.sanpham.find((sp) => sp.sanphamId === item.idSP)
+        //       ?.giaban
+        //   : 0;
+        // const giaban =
+        //   priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
 
         return {
           ...item.sanpham,
           idSP: item.idSP,
-          giaban: giaban,
+          giaban: item.giaban,
           sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
           slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
           slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
@@ -818,17 +819,16 @@ export class DonhangService {
     return {
       ...result,
       sanpham: result.sanpham.map((item: any) => {
-        const priceFromBanggia = result.khachhang?.banggia
-          ? result.khachhang.banggia.sanpham.find(
-              (sp) => sp.sanphamId === item.idSP,
-            )?.giaban
-          : 0;
-        const giaban =
-          priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
+        // const priceFromBanggia = result.khachhang?.banggia
+        //   ? result.khachhang.banggia.sanpham.find(
+        //       (sp) => sp.sanphamId === item.idSP,
+        //     )?.giaban
+        //   : 0;
+        // const giaban = priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
         return {
           ...item.sanpham,
           idSP: item.idSP,
-          giaban: giaban,
+          giaban: item.giaban,
           sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
           slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
           slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
@@ -863,17 +863,17 @@ export class DonhangService {
     const result = donhangs.map((donhang) => ({
       ...donhang,
       sanpham: donhang.sanpham.map((item: any) => {
-        const priceFromBanggia = donhang.khachhang?.banggia
-          ? donhang.khachhang.banggia.sanpham.find(
-              (sp) => sp.sanphamId === item.idSP,
-            )?.giaban
-          : 0;
-        const giaban =
-          priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
+        // const priceFromBanggia = donhang.khachhang?.banggia
+        //   ? donhang.khachhang.banggia.sanpham.find(
+        //       (sp) => sp.sanphamId === item.idSP,
+        //     )?.giaban
+        //   : 0;
+        // const giaban =
+        //   priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
         return {
           ...item.sanpham,
           idSP: item.idSP,
-          giaban: giaban,
+          giaban: item.giaban,
           sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
           slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
           slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
@@ -927,17 +927,17 @@ export class DonhangService {
     return {
       ...donhang,
       sanpham: donhang.sanpham.map((item) => {
-        const priceFromBanggia = donhang.khachhang?.banggia
-          ? donhang.khachhang.banggia.sanpham.find(
-              (sp) => sp.sanphamId === item.idSP,
-            )?.giaban
-          : 0;
-        const giaban =
-          priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
+        // const priceFromBanggia = donhang.khachhang?.banggia
+        //   ? donhang.khachhang.banggia.sanpham.find(
+        //       (sp) => sp.sanphamId === item.idSP,
+        //     )?.giaban
+        //   : 0;
+        // const giaban =
+        //   priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
         return {
           ...item.sanpham,
           idSP: item.idSP,
-          giaban: giaban,
+          giaban: item.giaban,
           sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
           slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
           slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
@@ -968,17 +968,17 @@ export class DonhangService {
     const result = {
       ...donhang,
       sanpham: donhang.sanpham.map((item) => {
-        const priceFromBanggia = donhang.khachhang?.banggia
-          ? donhang.khachhang.banggia.sanpham.find(
-              (sp) => sp.sanphamId === item.idSP,
-            )?.giaban
-          : 0;
-        const giaban =
-          priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
+        // const priceFromBanggia = donhang.khachhang?.banggia
+        //   ? donhang.khachhang.banggia.sanpham.find(
+        //       (sp) => sp.sanphamId === item.idSP,
+        //     )?.giaban
+        //   : 0;
+        // const giaban =
+        //   priceFromBanggia !== 0 ? priceFromBanggia : item.sanpham.giaban;
         return {
           ...item.sanpham,
           idSP: item.idSP,
-          giaban: giaban,
+          giaban: item.giaban,
           sldat: parseFloat((item.sldat ?? 0).toFixed(3)),
           slgiao: parseFloat((item.slgiao ?? 0).toFixed(3)),
           slnhan: parseFloat((item.slnhan ?? 0).toFixed(3)),
@@ -1213,106 +1213,153 @@ export class DonhangService {
     return { tong, tongvat, tongtien };
   }
   async create(dto: any) {
-
-    const maxOrderResult = await this.prisma.donhang.aggregate({
-      _max: {
-      order: true,
-      },
-    });
-    let maxOrder = maxOrderResult._max.order || 0;
-    let madonhang = await this.DonhangnumberToCode(maxOrder + 1);
-    
-    // Kiểm tra mã đơn hàng đã tồn tại chưa
-    let existingDonhang = await this.prisma.donhang.findUnique(
-      { where: { madonhang } }
-    );
-
-    // Nếu mã đã tồn tại, tăng maxOrder cho đến khi tìm được mã chưa tồn tại
-    while (existingDonhang) {
-      maxOrder++;
-      madonhang = await this.DonhangnumberToCode(maxOrder + 1);
-      existingDonhang = await this.prisma.donhang.findUnique({
-      where: { madonhang },
-      });
-    }    
-
-
-
     return this.prisma.$transaction(async (prisma) => {
-      // Get khachhang data
-      const khachhang = await prisma.khachhang.findUnique({
-        where: { id: dto.khachhangId },
-        include: { banggia: true },
+      // 1. Generate unique order code
+      const orderCode = await this.generateUniqueOrderCode(prisma);
+      
+      // 2. Validate and get customer data
+      const khachhang = await this.validateCustomer(prisma, dto.khachhangId);
+      
+      // 3. Get banggia for price calculation
+      const banggiaId = dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID;
+      const banggia = await this.getBanggia(prisma, banggiaId);
+      
+      // 4. Process and validate products
+      const processedProducts = await this.processProducts(dto.sanpham || [], banggia);
+      
+      // 5. Calculate order totals
+      const vatRate = this.parseVatRate(dto.vat);
+      const { tongvat, tongtien } = this.calculateDonhangTotals(processedProducts, vatRate);
+      
+      // 6. Create order
+      const newDonhang = await this.createDonhangRecord(prisma, {
+        ...dto,
+        madonhang: orderCode.madonhang,
+        order: orderCode.order,
+        banggiaId,
+        vatRate,
+        tongvat,
+        tongtien,
+        isshowvat: khachhang.isshowvat,
+        sanpham: processedProducts,
       });
-      if (!khachhang) {
-        throw new NotFoundException('Khách hàng không tồn tại');
-      }
-
-      const newDonhang = await prisma.donhang.create({
-        data: {
-          title: dto.title,
-          type: dto.type || 'donsi',
-          madonhang: madonhang,
-          ngaygiao: new Date(dto.ngaygiao),
-          khachhangId: dto.khachhangId,
-          banggiaId: dto.banggiaId||khachhang.banggiaId,
-          vat: parseFloat((dto.vat || 0.05).toString()), // Default 5% VAT
-          isActive: dto.isActive,
-          order: maxOrder + 1,
-          ghichu: dto.ghichu,
-          isshowvat: khachhang.isshowvat, // Set isshowvat from khachhang
-          sanpham: {
-            create: dto?.sanpham?.map((sp) => ({
-              idSP: sp.idSP || sp.id,
-              giaban: parseFloat((sp.giaban || 0).toString()),
-              ghichu: sp.ghichu,
-              sldat: parseFloat((sp.sldat ?? 0).toString()),
-              slgiao: parseFloat((sp.slgiao ?? 0).toString()),
-              slnhan: parseFloat((sp.slnhan ?? 0).toString()),
-              slhuy: parseFloat((sp.slhuy ?? 0).toString()),
-              ttdat: parseFloat((sp.ttdat ?? 0).toString()),
-              ttgiao: parseFloat((sp.ttgiao ?? 0).toString()),
-              ttnhan: parseFloat((sp.ttnhan ?? 0).toString()),
-              vat: parseFloat((sp.vat ?? 0).toString()),
-              ttsauvat: parseFloat((sp.ttsauvat ?? 0).toString()),
-              order: sp.order || 1,
-              isActive: sp.isActive !== undefined ? sp.isActive : true,
-            })) || [],
-          },
-        },
-        include: {
-          sanpham: true,
-        },
-      });
-
-      // Calculate totals using new formula and helper method
-      const vatRate = parseFloat((dto.vat || 0.05).toString());
-      const { tongvat, tongtien } = this.calculateDonhangTotals(dto.sanpham || [], vatRate);
-
-      // Update donhang with calculated totals
-      await prisma.donhang.update({
-        where: { id: newDonhang.id },
-        data: {
-          tongvat: tongvat,
-          tongtien: tongtien,
-        },
-      });
-
-      for (const sp of dto.sanpham) {
-        const incrementValue = parseFloat((sp.sldat ?? 0).toFixed(3));
-        await prisma.tonKho.upsert({
-          where: { sanphamId: sp.id },
-          update: {
-            slchogiao: { increment: incrementValue },
-          },
-          create: {
-            sanphamId: sp.id,
-            slchogiao: incrementValue,
-          },
-        });
-      }
+      
+      // 7. Update inventory
+      await this.updateInventoryForNewOrder(prisma, processedProducts);
+      
       return newDonhang;
     });
+  }
+
+  private async generateUniqueOrderCode(prisma: any): Promise<{ madonhang: string; order: number }> {
+    const maxOrderResult = await prisma.donhang.aggregate({
+      _max: { order: true },
+    });
+    
+    let order = (maxOrderResult._max.order || 0) + 1;
+    let madonhang = await this.DonhangnumberToCode(order);
+    
+    // Ensure uniqueness
+    while (await prisma.donhang.findUnique({ where: { madonhang } })) {
+      order++;
+      madonhang = await this.DonhangnumberToCode(order);
+    }
+    
+    return { madonhang, order };
+  }
+
+  private async validateCustomer(prisma: any, khachhangId: string) {
+    const khachhang = await prisma.khachhang.findUnique({
+      where: { id: khachhangId },
+      include: { banggia: true },
+    });
+    
+    if (!khachhang) {
+      throw new NotFoundException('Khách hàng không tồn tại');
+    }
+    
+    return khachhang;
+  }
+
+  private async getBanggia(prisma: any, banggiaId: string) {
+    return await prisma.banggia.findUnique({
+      where: { id: banggiaId },
+      include: { sanpham: true },
+    });
+  }
+
+  private async processProducts(sanpham: any[], banggia: any) {
+    return sanpham.map(sp => {
+      const giaSanpham = banggia?.sanpham.find(bgsp => bgsp.sanphamId === (sp.idSP || sp.id));
+      const giaban = giaSanpham ? parseFloat(giaSanpham.giaban.toString()) : parseFloat((sp.giaban || 0).toString());
+      
+      const sldat = this.parseDecimal(sp.sldat);
+      const slgiao = this.parseDecimal(sp.slgiao);
+      const slnhan = this.parseDecimal(sp.slnhan);
+      const vat = this.parseDecimal(sp.vat);
+      
+      return {
+        idSP: sp.idSP || sp.id,
+        giaban,
+        ghichu: sp.ghichu,
+        sldat,
+        slgiao,
+        slnhan,
+        slhuy: this.parseDecimal(sp.slhuy),
+        ttdat: giaban * sldat,
+        ttgiao: giaban * slgiao,
+        ttnhan: giaban * slnhan,
+        vat,
+        ttsauvat: (giaban * slnhan) * (1 + vat),
+        order: sp.order || 1,
+        isActive: sp.isActive !== undefined ? sp.isActive : true,
+      };
+    });
+  }
+
+  private parseDecimal(value: any, defaultValue: number = 0): number {
+    return parseFloat((value ?? defaultValue).toString());
+  }
+
+  private parseVatRate(vat: any): number {
+    return parseFloat((vat || 0.05).toString());
+  }
+
+  private async createDonhangRecord(prisma: any, data: any) {
+    return await prisma.donhang.create({
+      data: {
+        title: data.title,
+        type: data.type || 'donsi',
+        madonhang: data.madonhang,
+        ngaygiao: new Date(data.ngaygiao),
+        khachhangId: data.khachhangId,
+        banggiaId: data.banggiaId,
+        vat: data.vatRate,
+        tongvat: data.tongvat,
+        tongtien: data.tongtien,
+        isActive: data.isActive,
+        order: data.order,
+        ghichu: data.ghichu,
+        isshowvat: data.isshowvat,
+        sanpham: {
+          create: data.sanpham,
+        },
+      },
+      include: {
+        sanpham: true,
+      },
+    });
+  }
+
+  private async updateInventoryForNewOrder(prisma: any, sanpham: any[]) {
+    await Promise.all(
+      sanpham.map(async (sp) => {
+        const incrementValue = sp.sldat;
+        await this.updateTonKhoSafe(prisma, sp.idSP, {
+          slchogiao: { increment: incrementValue },
+        });
+      })
+    );
   }
 
   async update(id: string, data: any) {
