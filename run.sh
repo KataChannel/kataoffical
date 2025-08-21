@@ -4,15 +4,15 @@ echo "Chọn file để chạy từ thư mục sh/:"
 echo
 
 # Kiểm tra xem thư mục sh/ có tồn tại không
-if [ ! -d "sh" ]; then
-    echo "Thư mục sh/ không tồn tại!"
+if [ ! -d "scripts" ]; then
+    echo "Thư mục scripts/ không tồn tại!"
     exit 1
 fi
 
 # Liệt kê các file .sh trong thư mục sh/
-files=(sh/*.sh)
+files=(scripts/*.sh)
 if [ ${#files[@]} -eq 0 ]; then
-    echo "Không có file .sh nào trong thư mục sh/!"
+    echo "Không có file .sh nào trong thư mục scripts/!"
     exit 1
 fi
 

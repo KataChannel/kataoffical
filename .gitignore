@@ -5,16 +5,41 @@
 /tmp
 /out-tsc
 /bazel-out
-dulieu
-docs
+
 # Node
 /node_modules
 api/node_modules
 api/rausach_json
 frontend/node_modules
-notupload
 npm-debug.log
 yarn-error.log
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# Local data and uploads
+dulieu/
+notupload/
+storage.rausachtrangia.com/
+proxy
+
+# Temporary and test files
+test-*.js
+test-*.sh
+fix-*.js
+fix-*.sh
+replace-*.sh
+FIXED_*.ts
+*.log
+*.tmp
+
+# Documentation and archived files (keep local only)
+archive/
+docs/private/
+snippetcode/
 
 # IDEs and editors
 .idea/
@@ -45,3 +70,11 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+docker-compose.override.yml
