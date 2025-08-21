@@ -1,7 +1,9 @@
 import { PrismaService } from 'prisma/prisma.service';
+import { PhieukhoService } from '../phieukho/phieukho.service';
 export declare class ChotkhoService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly phieukhoService;
+    constructor(prisma: PrismaService, phieukhoService: PhieukhoService);
     private convertDateFilters;
     private getStartOfDay;
     private getEndOfDay;

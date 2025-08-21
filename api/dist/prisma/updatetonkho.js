@@ -42,8 +42,8 @@ class InventoryUpdater {
         await prisma.tonKho.updateMany({
             where: {
                 OR: [
-                    { slchonhap: { gt: 0 } },
-                    { slchogiao: { gt: 0 } },
+                    { slchonhap: { not: 0 } },
+                    { slchogiao: { not: 0 } },
                 ],
             },
             data: {

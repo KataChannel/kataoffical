@@ -12,9 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChotkhoService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const phieukho_service_1 = require("../phieukho/phieukho.service");
 let ChotkhoService = class ChotkhoService {
-    constructor(prisma) {
+    constructor(prisma, phieukhoService) {
         this.prisma = prisma;
+        this.phieukhoService = phieukhoService;
     }
     convertDateFilters(filters) {
         const result = {};
@@ -299,56 +301,44 @@ let ChotkhoService = class ChotkhoService {
                     return chenhlech < 0;
                 });
                 if (positiveDiscrepancies.length > 0) {
-                    const maphieuXuat = await this.generateNextOrderCode('xuat');
-                    const phieuXuat = await prisma.phieuKho.create({
-                        data: {
-                            maphieu: maphieuXuat,
-                            title: `Phiếu xuất điều chỉnh - ${details[0].chotkho.codeId}`,
-                            type: 'xuat',
-                            ngay: new Date(),
-                            ghichu: `Điều chỉnh chốt kho ${details[0].chotkho.codeId} - Xử lý hàng thừa`,
-                            khoId: details[0].chotkho.khoId,
-                            isActive: true,
-                            isChotkho: true
-                        }
-                    });
+                    console.log(`Creating adjustment phieu xuat for ${positiveDiscrepancies.length} positive discrepancies`);
                     for (const detail of positiveDiscrepancies) {
                         if (detail.sanphamId && detail.chenhlech) {
-                            await prisma.phieuKhoSanpham.create({
-                                data: {
-                                    phieuKhoId: phieuXuat.id,
-                                    sanphamId: detail.sanphamId,
-                                    soluong: Math.abs(Number(detail.chenhlech)),
-                                    ghichu: `Điều chỉnh thừa: ${detail.sanpham?.masp || 'N/A'}`
-                                }
+                            const result = await this.phieukhoService.createAdjustmentPhieuKho({
+                                type: 'xuat',
+                                sanphamId: detail.sanphamId,
+                                soluong: Math.abs(Number(detail.chenhlech)),
+                                ghichu: `Điều chỉnh thừa: ${detail.sanpham?.masp || 'N/A'} - Chốt kho ${details[0].chotkho.codeId}`,
+                                khoId: details[0].chotkho.khoId || '4cc01811-61f5-4bdc-83de-a493764e9258',
+                                chothkhoId: chotkhoId
                             });
+                            if (!result.success) {
+                                console.error(`Failed to create phieu xuat for ${detail.sanphamId}:`, result.message);
+                            }
+                            else {
+                                console.log(`✅ Created phieu xuat: ${result.phieukho?.maphieu}`);
+                            }
                         }
                     }
                 }
                 if (negativeDiscrepancies.length > 0) {
-                    const maphieuNhap = await this.generateNextOrderCode('nhap');
-                    const phieuNhap = await prisma.phieuKho.create({
-                        data: {
-                            maphieu: maphieuNhap,
-                            title: `Phiếu nhập điều chỉnh - ${details[0].chotkho.codeId}`,
-                            type: 'nhap',
-                            ngay: new Date(),
-                            ghichu: `Điều chỉnh chốt kho ${details[0].chotkho.codeId} - Xử lý hàng thiếu`,
-                            khoId: details[0].chotkho.khoId,
-                            isActive: true,
-                            isChotkho: true
-                        }
-                    });
+                    console.log(`Creating adjustment phieu nhap for ${negativeDiscrepancies.length} negative discrepancies`);
                     for (const detail of negativeDiscrepancies) {
                         if (detail.sanphamId && detail.chenhlech) {
-                            await prisma.phieuKhoSanpham.create({
-                                data: {
-                                    phieuKhoId: phieuNhap.id,
-                                    sanphamId: detail.sanphamId,
-                                    soluong: Math.abs(Number(detail.chenhlech)),
-                                    ghichu: `Điều chỉnh thiếu: ${detail.sanpham?.masp || 'N/A'}`
-                                }
+                            const result = await this.phieukhoService.createAdjustmentPhieuKho({
+                                type: 'nhap',
+                                sanphamId: detail.sanphamId,
+                                soluong: Math.abs(Number(detail.chenhlech)),
+                                ghichu: `Điều chỉnh thiếu: ${detail.sanpham?.masp || 'N/A'} - Chốt kho ${details[0].chotkho.codeId}`,
+                                khoId: details[0].chotkho.khoId || '4cc01811-61f5-4bdc-83de-a493764e9258',
+                                chothkhoId: chotkhoId
                             });
+                            if (!result.success) {
+                                console.error(`Failed to create phieu nhap for ${detail.sanphamId}:`, result.message);
+                            }
+                            else {
+                                console.log(`✅ Created phieu nhap: ${result.phieukho?.maphieu}`);
+                            }
                         }
                     }
                 }
@@ -429,6 +419,7 @@ let ChotkhoService = class ChotkhoService {
 exports.ChotkhoService = ChotkhoService;
 exports.ChotkhoService = ChotkhoService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        phieukho_service_1.PhieukhoService])
 ], ChotkhoService);
 //# sourceMappingURL=chotkho.service.js.map

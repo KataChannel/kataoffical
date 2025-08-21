@@ -243,7 +243,7 @@ export class XuatnhaptonComponent {
           panelClass: ['snackbar-success'],
         });
         // Reload data
-        // await this.LoadDondathang();
+        await this.LoadDondathang();
       } catch (error) {
         console.error('Error deleting chot kho:', error);
         this._snackBar.open('Lỗi khi xóa chốt kho', '', {

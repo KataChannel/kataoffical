@@ -30,6 +30,9 @@ let PhieukhoController = class PhieukhoController {
     xuatnhapton(query) {
         return this.phieukhoService.xuatnhapton(query);
     }
+    createAdjustment(data) {
+        return this.phieukhoService.createAdjustmentPhieuKho(data);
+    }
     findOne(id) {
         return this.phieukhoService.findOne(id);
     }
@@ -63,6 +66,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], PhieukhoController.prototype, "xuatnhapton", null);
+__decorate([
+    (0, common_1.Post)('adjustment'),
+    (0, audit_decorator_1.Audit)({ entity: 'Create Adjustment Phieukho', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], PhieukhoController.prototype, "createAdjustment", null);
 __decorate([
     (0, common_1.Get)('findid/:id'),
     __param(0, (0, common_1.Param)('id')),

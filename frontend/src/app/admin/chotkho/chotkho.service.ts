@@ -446,6 +446,7 @@ export class ChotkhoService {
       
       if (result) {
         this.showSuccessMessage('Tạo chốt kho thành công');
+        this.chotkhoId.set(result.id);
         await this.getAllChotkho();
         return { success: true, data: result };
       } else {
@@ -1750,6 +1751,38 @@ export class ChotkhoService {
       throw error;
     } finally {
       this.isLoading.set(false);
+    }
+  }
+
+  // Cập nhật TonKho với các field slton, slchogiao, slchonhap
+  async updateTonkhoFields(tonkhoId: string, data: {
+    slton?: number;
+    slchogiao?: number;
+    slchonhap?: number;
+    adjustmentReason?: string;
+    adjustmentValue?: number;
+    updatedBy?: string;
+  }): Promise<any> {
+    try {
+      // Prepare update data with only valid TonKho fields
+      const updateData: any = {};
+      
+      if (data.slton !== undefined) updateData.slton = data.slton;
+      if (data.slchogiao !== undefined) updateData.slchogiao = data.slchogiao;
+      if (data.slchonhap !== undefined) updateData.slchonhap = data.slchonhap;
+
+      const result = await this.graphqlService.updateOne('tonkho', { id: tonkhoId }, updateData);
+
+      // Log adjustment metadata separately
+      if (data.adjustmentReason) {
+        console.log(`TonKho field update logged: ${data.adjustmentReason}, value: ${data.adjustmentValue}, by: ${data.updatedBy}`);
+      }
+
+      return result;
+    } catch (error: any) {
+      console.error('Error updating tonkho fields:', error);
+      this.showErrorMessage(`Lỗi cập nhật TonKho: ${error.message}`);
+      throw error;
     }
   }
 

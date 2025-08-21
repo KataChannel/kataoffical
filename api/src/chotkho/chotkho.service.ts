@@ -1,10 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
+import { PhieukhoService } from '../phieukho/phieukho.service';
 
 @Injectable()
 export class ChotkhoService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly phieukhoService: PhieukhoService,
   ) {}
 
   // ✅ Helper methods để thay thế TimezoneUtilService (vì frontend gửi UTC)
@@ -346,62 +348,48 @@ export class ChotkhoService {
         
         // 1. Tạo phiếu xuất điều chỉnh cho chênh lệch dương (thừa hàng)
         if (positiveDiscrepancies.length > 0) {
-          const maphieuXuat = await this.generateNextOrderCode('xuat');
-          const phieuXuat = await prisma.phieuKho.create({
-            data: {
-              maphieu: maphieuXuat,
-              title: `Phiếu xuất điều chỉnh - ${details[0].chotkho.codeId}`,
-              type: 'xuat',
-              ngay: new Date(),
-              ghichu: `Điều chỉnh chốt kho ${details[0].chotkho.codeId} - Xử lý hàng thừa`,
-              khoId: details[0].chotkho.khoId,
-              isActive: true,
-              isChotkho: true
-            }
-          });
-
-          // Tạo chi tiết phiếu xuất
+          console.log(`Creating adjustment phieu xuat for ${positiveDiscrepancies.length} positive discrepancies`);
+          
           for (const detail of positiveDiscrepancies) {
             if (detail.sanphamId && detail.chenhlech) {
-              await prisma.phieuKhoSanpham.create({
-                data: {
-                  phieuKhoId: phieuXuat.id,
-                  sanphamId: detail.sanphamId,
-                  soluong: Math.abs(Number(detail.chenhlech)),
-                  ghichu: `Điều chỉnh thừa: ${detail.sanpham?.masp || 'N/A'}`
-                }
+              const result = await this.phieukhoService.createAdjustmentPhieuKho({
+                type: 'xuat',
+                sanphamId: detail.sanphamId,
+                soluong: Math.abs(Number(detail.chenhlech)),
+                ghichu: `Điều chỉnh thừa: ${detail.sanpham?.masp || 'N/A'} - Chốt kho ${details[0].chotkho.codeId}`,
+                khoId: details[0].chotkho.khoId || '4cc01811-61f5-4bdc-83de-a493764e9258',
+                chothkhoId: chotkhoId
               });
+              
+              if (!result.success) {
+                console.error(`Failed to create phieu xuat for ${detail.sanphamId}:`, result.message);
+              } else {
+                console.log(`✅ Created phieu xuat: ${result.phieukho?.maphieu}`);
+              }
             }
           }
         }
 
         // 2. Tạo phiếu nhập điều chỉnh cho chênh lệch âm (thiếu hàng)
         if (negativeDiscrepancies.length > 0) {
-          const maphieuNhap = await this.generateNextOrderCode('nhap');
-          const phieuNhap = await prisma.phieuKho.create({
-            data: {
-              maphieu: maphieuNhap,
-              title: `Phiếu nhập điều chỉnh - ${details[0].chotkho.codeId}`,
-              type: 'nhap',
-              ngay: new Date(),
-              ghichu: `Điều chỉnh chốt kho ${details[0].chotkho.codeId} - Xử lý hàng thiếu`,
-              khoId: details[0].chotkho.khoId,
-              isActive: true,
-              isChotkho: true
-            }
-          });
-
-          // Tạo chi tiết phiếu nhập
+          console.log(`Creating adjustment phieu nhap for ${negativeDiscrepancies.length} negative discrepancies`);
+          
           for (const detail of negativeDiscrepancies) {
             if (detail.sanphamId && detail.chenhlech) {
-              await prisma.phieuKhoSanpham.create({
-                data: {
-                  phieuKhoId: phieuNhap.id,
-                  sanphamId: detail.sanphamId,
-                  soluong: Math.abs(Number(detail.chenhlech)),
-                  ghichu: `Điều chỉnh thiếu: ${detail.sanpham?.masp || 'N/A'}`
-                }
+              const result = await this.phieukhoService.createAdjustmentPhieuKho({
+                type: 'nhap',
+                sanphamId: detail.sanphamId,
+                soluong: Math.abs(Number(detail.chenhlech)),
+                ghichu: `Điều chỉnh thiếu: ${detail.sanpham?.masp || 'N/A'} - Chốt kho ${details[0].chotkho.codeId}`,
+                khoId: details[0].chotkho.khoId || '4cc01811-61f5-4bdc-83de-a493764e9258',
+                chothkhoId: chotkhoId
               });
+              
+              if (!result.success) {
+                console.error(`Failed to create phieu nhap for ${detail.sanphamId}:`, result.message);
+              } else {
+                console.log(`✅ Created phieu nhap: ${result.phieukho?.maphieu}`);
+              }
             }
           }
         }

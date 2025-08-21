@@ -22,6 +22,19 @@ export class PhieukhoController {
   xuatnhapton(@Body() query: any) {
     return this.phieukhoService.xuatnhapton(query);
   }
+
+  @Post('adjustment')
+  @Audit({entity: 'Create Adjustment Phieukho', action: AuditAction.CREATE, includeResponse: true})
+  createAdjustment(@Body() data: {
+    type: 'nhap' | 'xuat';
+    sanphamId: string;
+    soluong: number;
+    ghichu: string;
+    khoId: string;
+    chothkhoId?: string;
+  }) {
+    return this.phieukhoService.createAdjustmentPhieuKho(data);
+  }
   
   @Get('findid/:id')
   findOne(@Param('id') id: string) {

@@ -73,6 +73,18 @@ export declare class PhieukhoController {
             title: string;
         }[];
     }[]>;
+    createAdjustment(data: {
+        type: 'nhap' | 'xuat';
+        sanphamId: string;
+        soluong: number;
+        ghichu: string;
+        khoId: string;
+        chothkhoId?: string;
+    }): Promise<{
+        success: boolean;
+        phieukho?: any;
+        message?: string;
+    }>;
     findOne(id: string): Promise<{
         sanpham: {
             id: string;

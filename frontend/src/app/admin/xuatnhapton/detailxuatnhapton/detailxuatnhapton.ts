@@ -690,7 +690,7 @@ export class DetailXuatnhaptonComponent {
         panelClass: ['snackbar-warning']
       });
 
-      // 1. Lấy danh sách tồn kho có slchogiao > 0 hoặc slchonhap > 0
+      // 1. Lấy danh sách tồn kho có slchogiao != 0 hoặc slchonhap != 0 (bao gồm cả âm)
       const tonkhoWithPending = await this._ChotkhoService.getTonkhoWithPendingQuantities();
       
       if (tonkhoWithPending.length === 0) {
@@ -732,9 +732,10 @@ export class DetailXuatnhaptonComponent {
     }
   }
 
-  // Xử lý đơn hàng có slchogiao > 0 (chuyển về danhan)
+  // Xử lý đơn hàng có slchogiao > 0 hoặc slchogiao < 0 (chuyển về danhan hoặc reset về 0)
   private async processOutstandingDeliveries(tonkhoList: any[]): Promise<{completed: number, failed: number}> {
-    const pendingDeliveries = tonkhoList.filter(tk => (tk.slchogiao || 0) > 0);
+    // 🎯 Bao gồm cả trường hợp âm: slchogiao > 0 hoặc slchogiao < 0
+    const pendingDeliveries = tonkhoList.filter(tk => (tk.slchogiao || 0) !== 0);
     
     if (pendingDeliveries.length === 0) {
       return { completed: 0, failed: 0 };
@@ -744,12 +745,26 @@ export class DetailXuatnhaptonComponent {
 
     for (const tonkho of pendingDeliveries) {
       try {
-        // Gọi API xử lý đơn hàng chờ giao cho sản phẩm này
-        const result = await this._ChotkhoService.completePendingDeliveries(tonkho.sanphamId);
-        if (result && result.success) {
-          completed += result.count || 1;
-        } else {
-          failed++;
+        const slchogiao = tonkho.slchogiao || 0;
+        
+        if (slchogiao > 0) {
+          // Trường hợp bình thường: có đơn hàng chờ giao
+          const result = await this._ChotkhoService.completePendingDeliveries(tonkho.sanphamId);
+          if (result && result.success) {
+            completed += result.count || 1;
+          } else {
+            failed++;
+          }
+        } else if (slchogiao < 0) {
+          // 🎯 Trường hợp âm: reset về 0 trực tiếp
+          await this._ChotkhoService.updateTonkhoFields(tonkho.id, {
+            slchogiao: 0, // Reset slchogiao về 0
+            adjustmentReason: 'CHOTKHO_NEGATIVE_RESET',
+            adjustmentValue: Math.abs(slchogiao),
+            updatedBy: 'chotkho_system'
+          });
+          completed++;
+          console.log(`✅ Reset slchogiao âm về 0 cho sản phẩm ${tonkho.sanphamId}: ${slchogiao} → 0`);
         }
       } catch (error) {
         console.error(`Lỗi xử lý giao hàng cho sản phẩm ${tonkho.sanphamId}:`, error);
@@ -762,7 +777,8 @@ export class DetailXuatnhaptonComponent {
 
   // Xử lý đặt hàng có slchonhap > 0 (chuyển về danhan)  
   private async processOutstandingReceipts(tonkhoList: any[]): Promise<{completed: number, failed: number}> {
-    const pendingReceipts = tonkhoList.filter(tk => (tk.slchonhap || 0) > 0);
+    // 🎯 Lọc tất cả sản phẩm có slchonhap !== 0 (bao gồm cả âm và dương)
+    const pendingReceipts = tonkhoList.filter(tk => (tk.slchonhap || 0) !== 0);
     
     if (pendingReceipts.length === 0) {
       return { completed: 0, failed: 0 };
@@ -772,12 +788,26 @@ export class DetailXuatnhaptonComponent {
 
     for (const tonkho of pendingReceipts) {
       try {
-        // Gọi API xử lý đặt hàng chờ nhập cho sản phẩm này
-        const result = await this._ChotkhoService.completePendingReceipts(tonkho.sanphamId);
-        if (result && result.success) {
-          completed += result.count || 1;
-        } else {
-          failed++;
+        const slchonhap = tonkho.slchonhap || 0;
+        
+        if (slchonhap > 0) {
+          // 🎯 Trường hợp dương: xử lý đặt hàng chờ nhập bình thường
+          const result = await this._ChotkhoService.completePendingReceipts(tonkho.sanphamId);
+          if (result && result.success) {
+            completed += result.count || 1;
+          } else {
+            failed++;
+          }
+        } else if (slchonhap < 0) {
+          // 🎯 Trường hợp âm: reset về 0 trực tiếp
+          await this._ChotkhoService.updateTonkhoFields(tonkho.id, {
+            slchonhap: 0, // Reset slchonhap về 0
+            adjustmentReason: 'CHOTKHO_NEGATIVE_RESET',
+            adjustmentValue: Math.abs(slchonhap),
+            updatedBy: 'chotkho_system'
+          });
+          completed++;
+          console.log(`✅ Reset slchonhap âm về 0 cho sản phẩm ${tonkho.sanphamId}: ${slchonhap} → 0`);
         }
       } catch (error) {
         console.error(`Lỗi xử lý nhập hàng cho sản phẩm ${tonkho.sanphamId}:`, error);
@@ -1281,7 +1311,7 @@ export class DetailXuatnhaptonComponent {
       ).length,
       pendingDelivery: data.filter((item: any) => (item.slchogiao || 0) > 0)
         .length,
-      pendingReceipt: data.filter((item: any) => (item.slchonhap || 0) > 0)
+      pendingReceipt: data.filter((item: any) => (item.slchonhap || 0) !== 0)
         .length,
     };
 
@@ -1430,7 +1460,7 @@ export class DetailXuatnhaptonComponent {
 
     // Check for pending deliveries or receipts that need completion
     const hasPendingOperations = data.some(
-      (item: any) => (item.slchogiao || 0) > 0 || (item.slchonhap || 0) > 0
+      (item: any) => (item.slchogiao || 0) !== 0 || (item.slchonhap || 0) !== 0
     );
 
     // Check for edited items that haven't been saved
