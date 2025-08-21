@@ -179,87 +179,81 @@
 <ng-template #DathangDialog>
     <h2 mat-dialog-title>Chi Tiết Đặt Hàng ({{FilteredDathang.length}} mục)</h2>
     <mat-dialog-content class="mat-typography">
-        <!-- Search and Filter Section -->
-        <div class="flex flex-col space-y-4 mb-4">
+        <!-- Compact Search and Filter Section - Optimized to 2 rows -->
+        <div class="flex flex-col space-y-3 mb-4">
+            <!-- Row 1: Search + Quick Actions -->
             <div class="flex flex-row space-x-2 items-center">
                 <div class="relative flex-1">
                     <input type="text" 
                            #dathangSearch
                            (keyup)="filterDathangList($event)" 
                            placeholder="Tìm kiếm đặt hàng..."
-                           class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                           class="block w-full pl-10 pr-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <span class="material-symbols-outlined text-gray-500">search</span>
+                        <span class="material-symbols-outlined text-gray-500 text-sm">search</span>
                     </div>
                 </div>
                 <button mat-icon-button 
                         color="primary" 
                         (click)="clearDathangFilter(); dathangSearch.value = ''"
-                        matTooltip="Xóa bộ lọc">
-                    <mat-icon>clear</mat-icon>
-                </button>
-            </div>
-            
-            <!-- Status Filter -->
-            <div class="flex flex-wrap gap-2">
-                <span class="text-sm font-medium text-gray-700">Lọc theo trạng thái:</span>
-                <button *ngFor="let status of Object.keys(Trangthaidon)" 
-                        mat-stroked-button
-                        [color]="selectedDathangStatus === status ? 'primary' : ''"
-                        (click)="filterDathangByStatus(status)"
-                        class="text-xs">
-                    {{Trangthaidon[status]}}
+                        matTooltip="Xóa bộ lọc"
+                        class="flex-shrink-0">
+                    <mat-icon class="text-lg">clear</mat-icon>
                 </button>
                 <button mat-stroked-button 
-                        (click)="filterDathangByStatus('')"
-                        class="text-xs"
-                        [color]="selectedDathangStatus === '' ? 'primary' : ''">
-                    Tất cả
+                        [matMenuTriggerFor]="dathangQuickDateMenu"
+                        class="text-xs px-3 py-1 flex-shrink-0">
+                    <mat-icon class="text-sm mr-1">date_range</mat-icon>
+                    Ngày
                 </button>
+                <mat-menu #dathangQuickDateMenu="matMenu">
+                    <button mat-menu-item (click)="setDathangDateFilter(1)">Hôm nay</button>
+                    <button mat-menu-item (click)="setDathangDateFilter(7)">7 ngày</button>
+                    <button mat-menu-item (click)="setDathangDateFilter(30)">30 ngày</button>
+                    <button mat-menu-item (click)="clearDathangDateFilter()">Xóa lọc ngày</button>
+                </mat-menu>
             </div>
-
-            <!-- Date Filter -->
-            <div class="flex flex-col space-y-2">
-                <span class="text-sm font-medium text-gray-700">Lọc theo ngày:</span>
-                <div class="flex flex-wrap gap-2">
-                    <button mat-stroked-button 
-                            (click)="setDathangDateFilter(1)"
-                            class="text-xs">
-                        Hôm nay
+            
+            <!-- Row 2: Status Filter + Date Range (Compact) -->
+            <div class="flex flex-row space-x-2 items-center">
+                <!-- Status Filter - Compact -->
+                <div class="flex flex-wrap gap-1 flex-1">
+                    <span class="text-xs font-medium text-gray-600">Trạng thái:</span>
+                    <button *ngFor="let status of Object.keys(Trangthaidon)" 
+                            mat-stroked-button
+                            [color]="selectedDathangStatus === status ? 'primary' : ''"
+                            (click)="filterDathangByStatus(status)"
+                            class="text-xs px-2 py-1 min-w-0">
+                        {{Trangthaidon[status]}}
                     </button>
                     <button mat-stroked-button 
-                            (click)="setDathangDateFilter(7)"
-                            class="text-xs">
-                        7 ngày
-                    </button>
-                    <button mat-stroked-button 
-                            (click)="setDathangDateFilter(30)"
-                            class="text-xs">
-                        30 ngày
-                    </button>
-                    <button mat-stroked-button 
-                            (click)="clearDathangDateFilter()"
-                            class="text-xs">
-                        Xóa lọc ngày
+                            (click)="filterDathangByStatus('')"
+                            class="text-xs px-2 py-1"
+                            [color]="selectedDathangStatus === '' ? 'primary' : ''">
+                        Tất cả
                     </button>
                 </div>
-                <div class="flex flex-row gap-2 items-center">
-                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1">
-                        <mat-label>Từ ngày</mat-label>
+                
+                <!-- Date Range - Compact -->
+                <div class="flex flex-row gap-1 items-center flex-shrink-0">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full text-xs">
+                        <mat-label class="text-xs">Từ</mat-label>
                         <input matInput 
                                [matDatepicker]="dathangStartPicker" 
                                [(ngModel)]="dathangStartDate"
-                               (ngModelChange)="filterDathangByDateRange()">
-                        <mat-datepicker-toggle matIconSuffix [for]="dathangStartPicker"></mat-datepicker-toggle>
+                               (ngModelChange)="filterDathangByDateRange()"
+                               class="text-xs">
+                        <mat-datepicker-toggle matIconSuffix [for]="dathangStartPicker" class="scale-75"></mat-datepicker-toggle>
                         <mat-datepicker #dathangStartPicker></mat-datepicker>
                     </mat-form-field>
-                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1">
-                        <mat-label>Đến ngày</mat-label>
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full text-xs">
+                        <mat-label class="text-xs">Đến</mat-label>
                         <input matInput 
                                [matDatepicker]="dathangEndPicker" 
                                [(ngModel)]="dathangEndDate"
-                               (ngModelChange)="filterDathangByDateRange()">
-                        <mat-datepicker-toggle matIconSuffix [for]="dathangEndPicker"></mat-datepicker-toggle>
+                               (ngModelChange)="filterDathangByDateRange()"
+                               class="text-xs">
+                        <mat-datepicker-toggle matIconSuffix [for]="dathangEndPicker" class="scale-75"></mat-datepicker-toggle>
                         <mat-datepicker #dathangEndPicker></mat-datepicker>
                     </mat-form-field>
                 </div>
@@ -369,87 +363,81 @@
 <ng-template #DonhangDialog>
     <h2 mat-dialog-title>Chi Tiết Đơn Hàng ({{FilteredDonhang.length}} mục)</h2>
     <mat-dialog-content class="mat-typography">
-        <!-- Search and Filter Section -->
-        <div class="flex flex-col space-y-4 mb-4">
+        <!-- Compact Search and Filter Section - Optimized to 2 rows -->
+        <div class="flex flex-col space-y-3 mb-4">
+            <!-- Row 1: Search + Quick Actions -->
             <div class="flex flex-row space-x-2 items-center">
                 <div class="relative flex-1">
                     <input type="text" 
                            #donhangSearch
                            (keyup)="filterDonhangList($event)" 
                            placeholder="Tìm kiếm đơn hàng..."
-                           class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                           class="block w-full pl-10 pr-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <span class="material-symbols-outlined text-gray-500">search</span>
+                        <span class="material-symbols-outlined text-gray-500 text-sm">search</span>
                     </div>
                 </div>
                 <button mat-icon-button 
                         color="primary" 
                         (click)="clearDonhangFilter(); donhangSearch.value = ''"
-                        matTooltip="Xóa bộ lọc">
-                    <mat-icon>clear</mat-icon>
-                </button>
-            </div>
-            
-            <!-- Status Filter -->
-            <div class="flex flex-wrap gap-2">
-                <span class="text-sm font-medium text-gray-700">Lọc theo trạng thái:</span>
-                <button *ngFor="let status of Object.keys(Trangthaidon)" 
-                        mat-stroked-button
-                        [color]="selectedDonhangStatus === status ? 'primary' : ''"
-                        (click)="filterDonhangByStatus(status)"
-                        class="text-xs">
-                    {{Trangthaidon[status]}}
+                        matTooltip="Xóa bộ lọc"
+                        class="flex-shrink-0">
+                    <mat-icon class="text-lg">clear</mat-icon>
                 </button>
                 <button mat-stroked-button 
-                        (click)="filterDonhangByStatus('')"
-                        class="text-xs"
-                        [color]="selectedDonhangStatus === '' ? 'primary' : ''">
-                    Tất cả
+                        [matMenuTriggerFor]="donhangQuickDateMenu"
+                        class="text-xs px-3 py-1 flex-shrink-0">
+                    <mat-icon class="text-sm mr-1">date_range</mat-icon>
+                    Ngày
                 </button>
+                <mat-menu #donhangQuickDateMenu="matMenu">
+                    <button mat-menu-item (click)="setDonhangDateFilter(1)">Hôm nay</button>
+                    <button mat-menu-item (click)="setDonhangDateFilter(7)">7 ngày</button>
+                    <button mat-menu-item (click)="setDonhangDateFilter(30)">30 ngày</button>
+                    <button mat-menu-item (click)="clearDonhangDateFilter()">Xóa lọc ngày</button>
+                </mat-menu>
             </div>
-
-            <!-- Date Filter -->
-            <div class="flex flex-col space-y-2">
-                <span class="text-sm font-medium text-gray-700">Lọc theo ngày:</span>
-                <div class="flex flex-wrap gap-2">
-                    <button mat-stroked-button 
-                            (click)="setDonhangDateFilter(1)"
-                            class="text-xs">
-                        Hôm nay
+            
+            <!-- Row 2: Status Filter + Date Range (Compact) -->
+            <div class="flex flex-row space-x-2 items-center">
+                <!-- Status Filter - Compact -->
+                <div class="flex flex-wrap gap-1 flex-1">
+                    <span class="text-xs font-medium text-gray-600">Trạng thái:</span>
+                    <button *ngFor="let status of Object.keys(Trangthaidon)" 
+                            mat-stroked-button
+                            [color]="selectedDonhangStatus === status ? 'primary' : ''"
+                            (click)="filterDonhangByStatus(status)"
+                            class="text-xs px-2 py-1 min-w-0">
+                        {{Trangthaidon[status]}}
                     </button>
                     <button mat-stroked-button 
-                            (click)="setDonhangDateFilter(7)"
-                            class="text-xs">
-                        7 ngày
-                    </button>
-                    <button mat-stroked-button 
-                            (click)="setDonhangDateFilter(30)"
-                            class="text-xs">
-                        30 ngày
-                    </button>
-                    <button mat-stroked-button 
-                            (click)="clearDonhangDateFilter()"
-                            class="text-xs">
-                        Xóa lọc ngày
+                            (click)="filterDonhangByStatus('')"
+                            class="text-xs px-2 py-1"
+                            [color]="selectedDonhangStatus === '' ? 'primary' : ''">
+                        Tất cả
                     </button>
                 </div>
-                <div class="flex flex-row gap-2 items-center">
-                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1">
-                        <mat-label>Từ ngày</mat-label>
+                
+                <!-- Date Range - Compact -->
+                <div class="flex flex-row gap-1 items-center flex-shrink-0">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full text-xs">
+                        <mat-label class="text-xs">Từ</mat-label>
                         <input matInput 
                                [matDatepicker]="donhangStartPicker" 
                                [(ngModel)]="donhangStartDate"
-                               (ngModelChange)="filterDonhangByDateRange()">
-                        <mat-datepicker-toggle matIconSuffix [for]="donhangStartPicker"></mat-datepicker-toggle>
+                               (ngModelChange)="filterDonhangByDateRange()"
+                               class="text-xs">
+                        <mat-datepicker-toggle matIconSuffix [for]="donhangStartPicker" class="scale-75"></mat-datepicker-toggle>
                         <mat-datepicker #donhangStartPicker></mat-datepicker>
                     </mat-form-field>
-                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1">
-                        <mat-label>Đến ngày</mat-label>
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full text-xs">
+                        <mat-label class="text-xs">Đến</mat-label>
                         <input matInput 
                                [matDatepicker]="donhangEndPicker" 
                                [(ngModel)]="donhangEndDate"
-                               (ngModelChange)="filterDonhangByDateRange()">
-                        <mat-datepicker-toggle matIconSuffix [for]="donhangEndPicker"></mat-datepicker-toggle>
+                               (ngModelChange)="filterDonhangByDateRange()"
+                               class="text-xs">
+                        <mat-datepicker-toggle matIconSuffix [for]="donhangEndPicker" class="scale-75"></mat-datepicker-toggle>
                         <mat-datepicker #donhangEndPicker></mat-datepicker>
                     </mat-form-field>
                 </div>

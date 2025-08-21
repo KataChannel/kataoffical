@@ -1,6 +1,6 @@
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
 import { CommonModule } from "@angular/common";
-import { Component, ViewChild, inject, TemplateRef, EventEmitter, Output } from "@angular/core";
+import { Component, ViewChild, inject, TemplateRef, EventEmitter, Output, OnDestroy } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatDatepickerModule } from "@angular/material/datepicker";
@@ -53,7 +53,7 @@ import { DateHelpers } from '../../../shared/utils/date-helpers';
   ],
   // providers:[provideNativeDateAdapter()]
 })
-export class DetaildexuatComponent {
+export class DetaildexuatComponent implements OnDestroy {
   @Output() DexuatEmit = new EventEmitter<any>();
   Detail: any = {};
   displayedColumns: string[] = [
@@ -421,6 +421,10 @@ export class DetaildexuatComponent {
   donhangStartDate: string = '';
   donhangEndDate: string = '';
   
+  // Debounce timers for optimized search
+  private dathangSearchTimeout: any;
+  private donhangSearchTimeout: any;
+  
   Object = Object; // For template access
   async XemDathang(row: any, template: TemplateRef<any>) {
    this.ListDathang =  await this._DathangService.findbysanpham(row.sanphamId);
@@ -475,11 +479,29 @@ export class DetaildexuatComponent {
     this.DexuatEmit.emit(false);
   }
 
+  ngOnDestroy() {
+    // Clean up debounce timers
+    if (this.dathangSearchTimeout) {
+      clearTimeout(this.dathangSearchTimeout);
+    }
+    if (this.donhangSearchTimeout) {
+      clearTimeout(this.donhangSearchTimeout);
+    }
+  }
+
   // ================== DATHANG FILTERING AND SORTING METHODS ==================
   
   filterDathangList(event: any) {
-    const searchTerm = event.target.value?.toLowerCase() || '';
-    this.applyDathangFilters(searchTerm);
+    // Clear previous timeout
+    if (this.dathangSearchTimeout) {
+      clearTimeout(this.dathangSearchTimeout);
+    }
+    
+    // Debounce search for better performance
+    this.dathangSearchTimeout = setTimeout(() => {
+      const searchTerm = event.target.value?.toLowerCase() || '';
+      this.applyDathangFilters(searchTerm);
+    }, 300);
   }
 
   filterDathangByStatus(status: string) {
@@ -493,6 +515,8 @@ export class DetaildexuatComponent {
     this.selectedDathangStatus = '';
     this.dathangStartDate = '';
     this.dathangEndDate = '';
+    this.dathangSortField = '';
+    this.dathangSortDirection = 'asc';
     this.applyDathangFilters('');
   }
 
@@ -504,42 +528,60 @@ export class DetaildexuatComponent {
       filtered = filtered.filter(item => item.status === this.selectedDathangStatus);
     }
 
-    // Apply date range filter
-    if (this.dathangStartDate) {
-      const startDate = new Date(this.dathangStartDate);
-      startDate.setHours(0, 0, 0, 0);
-      filtered = filtered.filter(item => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate >= startDate;
-      });
+    // Apply date range filter - Optimized
+    if (this.dathangStartDate || this.dathangEndDate) {
+      filtered = this.applyDateRangeFilter(filtered, this.dathangStartDate, this.dathangEndDate);
     }
 
-    if (this.dathangEndDate) {
-      const endDate = new Date(this.dathangEndDate);
-      endDate.setHours(23, 59, 59, 999);
-      filtered = filtered.filter(item => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate <= endDate;
-      });
-    }
-
-    // Apply search filter
+    // Apply search filter - Optimized
     if (searchTerm) {
-      filtered = filtered.filter(item => {
-        const searchableText = [
-          item.title,
-          item.madathang,
-          item.khachhang?.name,
-          item.sanpham?.sanpham?.title,
-          this.Trangthaidon[item.status]
-        ].join(' ').toLowerCase();
-        
-        return searchableText.includes(searchTerm);
-      });
+      filtered = this.applySearchFilter(filtered, searchTerm, 'dathang');
     }
 
     this.FilteredDathang = filtered;
     this.applydathangCurrentSort();
+  }
+
+  // Optimized date range filter method
+  private applyDateRangeFilter(items: any[], startDate: string, endDate: string): any[] {
+    if (!startDate && !endDate) return items;
+    
+    const start = startDate ? new Date(startDate + 'T00:00:00') : null;
+    const end = endDate ? new Date(endDate + 'T23:59:59') : null;
+    
+    return items.filter(item => {
+      const itemDate = new Date(item.createdAt);
+      if (start && itemDate < start) return false;
+      if (end && itemDate > end) return false;
+      return true;
+    });
+  }
+
+  // Optimized search filter method
+  private applySearchFilter(items: any[], searchTerm: string, type: 'dathang' | 'donhang'): any[] {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    
+    return items.filter(item => {
+      const searchableFields = type === 'dathang' 
+        ? [
+            item.title,
+            item.madathang || item.madncc,
+            item.khachhang?.name || item.nhacungcap?.name,
+            item.sanpham?.sanpham?.title,
+            this.Trangthaidon[item.status]
+          ]
+        : [
+            item.title,
+            item.madonhang,
+            item.khachhang?.name,
+            item.sanpham?.sanpham?.title,
+            this.Trangthaidon[item.status]
+          ];
+      
+      return searchableFields.some(field => 
+        field?.toString().toLowerCase().includes(lowerSearchTerm)
+      );
+    });
   }
 
   sortDathangData(field: string) {
@@ -613,8 +655,16 @@ export class DetaildexuatComponent {
   // ================== DONHANG FILTERING AND SORTING METHODS ==================
 
   filterDonhangList(event: any) {
-    const searchTerm = event.target.value?.toLowerCase() || '';
-    this.applyDonhangFilters(searchTerm);
+    // Clear previous timeout
+    if (this.donhangSearchTimeout) {
+      clearTimeout(this.donhangSearchTimeout);
+    }
+    
+    // Debounce search for better performance
+    this.donhangSearchTimeout = setTimeout(() => {
+      const searchTerm = event.target.value?.toLowerCase() || '';
+      this.applyDonhangFilters(searchTerm);
+    }, 300);
   }
 
   filterDonhangByStatus(status: string) {
@@ -628,6 +678,8 @@ export class DetaildexuatComponent {
     this.selectedDonhangStatus = '';
     this.donhangStartDate = '';
     this.donhangEndDate = '';
+    this.donhangSortField = '';
+    this.donhangSortDirection = 'asc';
     this.applyDonhangFilters('');
   }
 
@@ -639,38 +691,14 @@ export class DetaildexuatComponent {
       filtered = filtered.filter(item => item.status === this.selectedDonhangStatus);
     }
 
-    // Apply date range filter
-    if (this.donhangStartDate) {
-      const startDate = new Date(this.donhangStartDate);
-      startDate.setHours(0, 0, 0, 0);
-      filtered = filtered.filter(item => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate >= startDate;
-      });
+    // Apply date range filter - Optimized
+    if (this.donhangStartDate || this.donhangEndDate) {
+      filtered = this.applyDateRangeFilter(filtered, this.donhangStartDate, this.donhangEndDate);
     }
 
-    if (this.donhangEndDate) {
-      const endDate = new Date(this.donhangEndDate);
-      endDate.setHours(23, 59, 59, 999);
-      filtered = filtered.filter(item => {
-        const itemDate = new Date(item.createdAt);
-        return itemDate <= endDate;
-      });
-    }
-
-    // Apply search filter
+    // Apply search filter - Optimized
     if (searchTerm) {
-      filtered = filtered.filter(item => {
-        const searchableText = [
-          item.title,
-          item.madonhang,
-          item.khachhang?.name,
-          item.sanpham?.sanpham?.title,
-          this.Trangthaidon[item.status]
-        ].join(' ').toLowerCase();
-        
-        return searchableText.includes(searchTerm);
-      });
+      filtered = this.applySearchFilter(filtered, searchTerm, 'donhang');
     }
 
     this.FilteredDonhang = filtered;
@@ -762,38 +790,38 @@ export class DetaildexuatComponent {
   clearDathangDateFilter() {
     this.dathangStartDate = '';
     this.dathangEndDate = '';
-    const searchInput = document.querySelector('#dathangSearch') as HTMLInputElement;
-    const searchTerm = searchInput?.value?.toLowerCase() || '';
-    this.applyDathangFilters(searchTerm);
+    this.filterDathangByDateRange();
   }
 
   clearDonhangDateFilter() {
     this.donhangStartDate = '';
     this.donhangEndDate = '';
-    const searchInput = document.querySelector('#donhangSearch') as HTMLInputElement;
-    const searchTerm = searchInput?.value?.toLowerCase() || '';
-    this.applyDonhangFilters(searchTerm);
+    this.filterDonhangByDateRange();
   }
 
-  // Quick date filters for Dathang
+  // Quick date filters for Dathang - Optimized
   setDathangDateFilter(days: number) {
-    const today = new Date();
-    const startDate = new Date();
-    startDate.setDate(today.getDate() - days);
+    const today = DateHelpers.format(DateHelpers.now(), 'YYYY-MM-DD');
+    const startDate = DateHelpers.format(
+      DateHelpers.subtract(DateHelpers.now(), days, 'day'), 
+      'YYYY-MM-DD'
+    );
     
-    this.dathangStartDate = DateHelpers.format(startDate, 'YYYY-MM-DD');
-    this.dathangEndDate = DateHelpers.format(today, 'YYYY-MM-DD');
+    this.dathangStartDate = startDate;
+    this.dathangEndDate = today;
     this.filterDathangByDateRange();
   }
 
-  // Quick date filters for Donhang
+  // Quick date filters for Donhang - Optimized
   setDonhangDateFilter(days: number) {
-    const today = new Date();
-    const startDate = new Date();
-    startDate.setDate(today.getDate() - days);
+    const today = DateHelpers.format(DateHelpers.now(), 'YYYY-MM-DD');
+    const startDate = DateHelpers.format(
+      DateHelpers.subtract(DateHelpers.now(), days, 'day'), 
+      'YYYY-MM-DD'
+    );
     
-    this.donhangStartDate = DateHelpers.format(startDate, 'YYYY-MM-DD');
-    this.donhangEndDate = DateHelpers.format(today, 'YYYY-MM-DD');
+    this.donhangStartDate = startDate;
+    this.donhangEndDate = today;
     this.filterDonhangByDateRange();
   }
 
