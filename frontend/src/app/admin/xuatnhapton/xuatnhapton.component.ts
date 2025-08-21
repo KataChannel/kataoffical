@@ -486,9 +486,24 @@ export class XuatnhaptonComponent {
   Trangthaidon: any = TrangThaiDon;
   ListDathang: any[] = [];
   ListDonhang: any[] = [];
+  FilteredDathang: any[] = [];
+  FilteredDonhang: any[] = [];
+  selectedDathangStatus: string = '';
+  selectedDonhangStatus: string = '';
+  Object = Object;
+  
+  // Sorting properties for Dathang
+  dathangSortColumn: string = '';
+  dathangSortDirection: 'asc' | 'desc' = 'asc';
+  
+  // Sorting properties for Donhang
+  donhangSortColumn: string = '';
+  donhangSortDirection: 'asc' | 'desc' = 'asc';
 
   async XemDathang(row: any, template: TemplateRef<any>) {
     this.ListDathang = await this._DathangService.findbysanpham(row.sanphamId);
+    this.FilteredDathang = [...this.ListDathang];
+    this.selectedDathangStatus = '';
     console.log(this.ListDathang);
 
     const dialogDeleteRef = this._dialog.open(template, {
@@ -504,6 +519,8 @@ export class XuatnhaptonComponent {
 
   async XemDonhang(row: any, template: TemplateRef<any>) {
     this.ListDonhang = await this._DonhangService.findbysanpham(row.sanphamId);
+    this.FilteredDonhang = [...this.ListDonhang];
+    this.selectedDonhangStatus = '';
     console.log(this.ListDonhang);
     const dialogDeleteRef = this._dialog.open(template, {
       hasBackdrop: true,
@@ -516,10 +533,265 @@ export class XuatnhaptonComponent {
     });
   }
 
-  TinhTong(items: any, fieldTong: any) {
-    return (
-      items?.reduce((sum: any, item: any) => sum + (Number(item?.sanpham[fieldTong]) || 0), 0) || 0
-    );
+  // Filter methods for Dathang
+  filterDathangList(event: any): void {
+    const query = removeVietnameseAccents(event.target.value?.toLowerCase() || '');
+    if (!query.trim()) {
+      this.FilteredDathang = [...this.ListDathang];
+      return;
+    }
+    
+    this.FilteredDathang = this.ListDathang.filter((item: any) => {
+      const title = removeVietnameseAccents(item.title?.toString() || '').toLowerCase();
+      const madncc = removeVietnameseAccents(item.madncc?.toString() || '').toLowerCase();
+      const nhacungcap = removeVietnameseAccents(item.nhacungcap?.name?.toString() || '').toLowerCase();
+      const sanpham = removeVietnameseAccents(item.sanpham?.sanpham?.title?.toString() || '').toLowerCase();
+      
+      return title.includes(query) || 
+             madncc.includes(query) || 
+             nhacungcap.includes(query) || 
+             sanpham.includes(query);
+    });
+  }
+
+  filterDathangByStatus(status: string): void {
+    this.selectedDathangStatus = status;
+    if (status === '') {
+      this.FilteredDathang = [...this.ListDathang];
+    } else {
+      this.FilteredDathang = this.ListDathang.filter((item: any) => item.status === status);
+    }
+  }
+
+  clearDathangFilter(): void {
+    this.FilteredDathang = [...this.ListDathang];
+    this.selectedDathangStatus = '';
+    this.dathangSortColumn = '';
+    this.dathangSortDirection = 'asc';
+  }
+
+  // Sort methods for Dathang
+  sortDathangData(column: string): void {
+    if (this.dathangSortColumn === column) {
+      this.dathangSortDirection = this.dathangSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.dathangSortColumn = column;
+      this.dathangSortDirection = 'asc';
+    }
+
+    this.FilteredDathang.sort((a: any, b: any) => {
+      let valueA = this.getNestedProperty(a, column);
+      let valueB = this.getNestedProperty(b, column);
+
+      // Handle null/undefined values
+      if (valueA == null && valueB == null) return 0;
+      if (valueA == null) return 1;
+      if (valueB == null) return -1;
+
+      // Convert to string for comparison if needed
+      if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+      if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+
+      // Handle dates
+      if (column === 'createdAt' || column === 'updatedAt') {
+        valueA = new Date(valueA).getTime();
+        valueB = new Date(valueB).getTime();
+      }
+
+      let result = 0;
+      if (valueA < valueB) result = -1;
+      else if (valueA > valueB) result = 1;
+
+      return this.dathangSortDirection === 'asc' ? result : -result;
+    });
+  }
+
+  getDathangSortIcon(column: string): string {
+    if (this.dathangSortColumn !== column) return 'unfold_more';
+    return this.dathangSortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
+  }
+
+  // Filter methods for Donhang
+  filterDonhangList(event: any): void {
+    const query = removeVietnameseAccents(event.target.value?.toLowerCase() || '');
+    if (!query.trim()) {
+      this.FilteredDonhang = [...this.ListDonhang];
+      return;
+    }
+    
+    this.FilteredDonhang = this.ListDonhang.filter((item: any) => {
+      const title = removeVietnameseAccents(item.title?.toString() || '').toLowerCase();
+      const madonhang = removeVietnameseAccents(item.madonhang?.toString() || '').toLowerCase();
+      const khachhang = removeVietnameseAccents(item.khachhang?.name?.toString() || '').toLowerCase();
+      const sanpham = removeVietnameseAccents(item.sanpham?.sanpham?.title?.toString() || '').toLowerCase();
+      
+      return title.includes(query) || 
+             madonhang.includes(query) || 
+             khachhang.includes(query) || 
+             sanpham.includes(query);
+    });
+  }
+
+  filterDonhangByStatus(status: string): void {
+    this.selectedDonhangStatus = status;
+    if (status === '') {
+      this.FilteredDonhang = [...this.ListDonhang];
+    } else {
+      this.FilteredDonhang = this.ListDonhang.filter((item: any) => item.status === status);
+    }
+  }
+
+  clearDonhangFilter(): void {
+    this.FilteredDonhang = [...this.ListDonhang];
+    this.selectedDonhangStatus = '';
+    this.donhangSortColumn = '';
+    this.donhangSortDirection = 'asc';
+  }
+
+  // Sort methods for Donhang
+  sortDonhangData(column: string): void {
+    if (this.donhangSortColumn === column) {
+      this.donhangSortDirection = this.donhangSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.donhangSortColumn = column;
+      this.donhangSortDirection = 'asc';
+    }
+
+    this.FilteredDonhang.sort((a: any, b: any) => {
+      let valueA = this.getNestedProperty(a, column);
+      let valueB = this.getNestedProperty(b, column);
+
+      // Handle null/undefined values
+      if (valueA == null && valueB == null) return 0;
+      if (valueA == null) return 1;
+      if (valueB == null) return -1;
+
+      // Convert to string for comparison if needed
+      if (typeof valueA === 'string') valueA = valueA.toLowerCase();
+      if (typeof valueB === 'string') valueB = valueB.toLowerCase();
+
+      // Handle dates
+      if (column === 'createdAt' || column === 'updatedAt') {
+        valueA = new Date(valueA).getTime();
+        valueB = new Date(valueB).getTime();
+      }
+
+      let result = 0;
+      if (valueA < valueB) result = -1;
+      else if (valueA > valueB) result = 1;
+
+      return this.donhangSortDirection === 'asc' ? result : -result;
+    });
+  }
+
+  getDonhangSortIcon(column: string): string {
+    if (this.donhangSortColumn !== column) return 'unfold_more';
+    return this.donhangSortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
+  }
+
+  // Helper method to get nested properties
+  private getNestedProperty(obj: any, path: string): any {
+    if (!obj || !path) return null;
+    return path.split('.').reduce((current, prop) => {
+      return current && current[prop] !== undefined ? current[prop] : null;
+    }, obj);
+  }
+
+  // Export methods
+  exportDathangData(): void {
+    try {
+      if (!this.FilteredDathang || this.FilteredDathang.length === 0) {
+        this._snackBar.open('Không có dữ liệu để xuất', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning'],
+        });
+        return;
+      }
+
+      const exportData = this.FilteredDathang.map((item: any) => ({
+        'Tiêu đề': item.title || '',
+        'Mã đặt': item.madncc || '',
+        'Trạng thái': this.Trangthaidon[item.status] || item.status || '',
+        'Nhà cung cấp': item.nhacungcap?.name || 'N/A',
+        'Tên sản phẩm': item.sanpham?.sanpham?.title || 'N/A',
+        'Số lượng đặt': item.sanpham?.sldat || 0,
+        'Số lượng nhận': item.sanpham?.slnhan || 0,
+        'Ngày': this.formatDate(item.createdAt)
+      }));
+      
+      const dataToExport = { 'Đặt hàng': exportData };
+      writeExcelFileWithSheets(dataToExport, `Dathang_${this._timezoneService.nowLocal('YYYY-MM-DD')}`);
+      
+      this._snackBar.open('Xuất Excel thành công', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      console.error('Error exporting Dathang data:', error);
+      this._snackBar.open('Lỗi khi xuất Excel', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+  exportDonhangData(): void {
+    try {
+      if (!this.FilteredDonhang || this.FilteredDonhang.length === 0) {
+        this._snackBar.open('Không có dữ liệu để xuất', '', {
+          duration: 3000,
+          horizontalPosition: 'end',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-warning'],
+        });
+        return;
+      }
+
+      const exportData = this.FilteredDonhang.map((item: any) => ({
+        'Tiêu đề': item.title || '',
+        'Mã đơn': item.madonhang || '',
+        'Trạng thái': this.Trangthaidon[item.status] || item.status || '',
+        'Khách hàng': item.khachhang?.name || 'N/A',
+        'Tên sản phẩm': item.sanpham?.sanpham?.title || 'N/A',
+        'Số lượng đặt': item.sanpham?.sldat || 0,
+        'Số lượng nhận': item.sanpham?.slnhan || 0,
+        'Ngày': this.formatDate(item.createdAt)
+      }));
+      
+      const dataToExport = { 'Đơn hàng': exportData };
+      writeExcelFileWithSheets(dataToExport, `Donhang_${this._timezoneService.nowLocal('YYYY-MM-DD')}`);
+      
+      this._snackBar.open('Xuất Excel thành công', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
+    } catch (error) {
+      console.error('Error exporting Donhang data:', error);
+      this._snackBar.open('Lỗi khi xuất Excel', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    }
+  }
+
+  TinhTong(items: any[], fieldTong: string) {
+    if (!items || !Array.isArray(items) || items.length === 0) return 0;
+    
+    return items.reduce((sum: number, item: any) => {
+      const value = item?.sanpham?.[fieldTong];
+      const numberValue = Number(value);
+      return sum + (isNaN(numberValue) ? 0 : numberValue);
+    }, 0);
   }
 
   // Date formatting helper methods for templates

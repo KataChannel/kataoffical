@@ -177,111 +177,381 @@
 
 
 <ng-template #DathangDialog>
-    <h2 mat-dialog-title>Chi Tiết Đặt Hàng</h2>
+    <h2 mat-dialog-title>Chi Tiết Đặt Hàng ({{FilteredDathang.length}} mục)</h2>
     <mat-dialog-content class="mat-typography">
-        <table class="w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="border border-gray-300 px-4 py-2 text-left">Tiêu đề</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Mã Đặt</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Trạng thái</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Nhà Cung Cấp</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Tên Sản Phẩm</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Số Lượng Đặt</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Số Lượng Nhận</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Ngày</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of ListDathang" class="hover:bg-gray-50">
-                    <td class="border border-gray-300 px-4 py-2">{{item.title}}</td>
-                    <td class="border  px-4 py-2 font-bold">
-                       <a target="_blank" class="text-blue-500" href="/admin/dathang/{{item.id}}"> {{item.madncc}} </a> 
-                    </td>
-                    <td class="border border-gray-300 px-4 py-2">
-                        <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
-                          'text-blue-500': item.status === 'dadat',
-                          'text-yellow-500': item.status === 'dagiao',
-                          'text-green-500': item.status === 'danhan',
-                          'text-purple-500': item.status === 'hoanthanh',
-                          'text-red-500': item.status === 'huy'
-                        }
-                        ">
-                            {{Trangthaidon[item.status]}}
-                        </span>
-                    </td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.nhacungcap.name}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.sanpham.sanpham.title}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.sanpham.sldat}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.sanpham.slnhan}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.createdAt |date:'dd/MM/yyyy'}}</td>
-                </tr>
-                <tr class="bg-gray-100 font-bold">
-                    <td class="border border-gray-300 px-4 py-2" colspan="5">Tổng cộng:</td>
-                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDathang, 'sldat')}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDathang, 'slnhan')}}</td>
-                    <td class="border border-gray-300 px-4 py-2"></td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- Search and Filter Section -->
+        <div class="flex flex-col space-y-4 mb-4">
+            <div class="flex flex-row space-x-2 items-center">
+                <div class="relative flex-1">
+                    <input type="text" 
+                           #dathangSearch
+                           (keyup)="filterDathangList($event)" 
+                           placeholder="Tìm kiếm đặt hàng..."
+                           class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <span class="material-symbols-outlined text-gray-500">search</span>
+                    </div>
+                </div>
+                <button mat-icon-button 
+                        color="primary" 
+                        (click)="clearDathangFilter(); dathangSearch.value = ''"
+                        matTooltip="Xóa bộ lọc">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </div>
+            
+            <!-- Status Filter -->
+            <div class="flex flex-wrap gap-2">
+                <span class="text-sm font-medium text-gray-700">Lọc theo trạng thái:</span>
+                <button *ngFor="let status of Object.keys(Trangthaidon)" 
+                        mat-stroked-button
+                        [color]="selectedDathangStatus === status ? 'primary' : ''"
+                        (click)="filterDathangByStatus(status)"
+                        class="text-xs">
+                    {{Trangthaidon[status]}}
+                </button>
+                <button mat-stroked-button 
+                        (click)="filterDathangByStatus('')"
+                        class="text-xs"
+                        [color]="selectedDathangStatus === '' ? 'primary' : ''">
+                    Tất cả
+                </button>
+            </div>
+
+            <!-- Date Filter -->
+            <div class="flex flex-col space-y-2">
+                <span class="text-sm font-medium text-gray-700">Lọc theo ngày:</span>
+                <div class="flex flex-wrap gap-2">
+                    <button mat-stroked-button 
+                            (click)="setDathangDateFilter(1)"
+                            class="text-xs">
+                        Hôm nay
+                    </button>
+                    <button mat-stroked-button 
+                            (click)="setDathangDateFilter(7)"
+                            class="text-xs">
+                        7 ngày
+                    </button>
+                    <button mat-stroked-button 
+                            (click)="setDathangDateFilter(30)"
+                            class="text-xs">
+                        30 ngày
+                    </button>
+                    <button mat-stroked-button 
+                            (click)="clearDathangDateFilter()"
+                            class="text-xs">
+                        Xóa lọc ngày
+                    </button>
+                </div>
+                <div class="flex flex-row gap-2 items-center">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1">
+                        <mat-label>Từ ngày</mat-label>
+                        <input matInput 
+                               [matDatepicker]="dathangStartPicker" 
+                               [(ngModel)]="dathangStartDate"
+                               (ngModelChange)="filterDathangByDateRange()">
+                        <mat-datepicker-toggle matIconSuffix [for]="dathangStartPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #dathangStartPicker></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1">
+                        <mat-label>Đến ngày</mat-label>
+                        <input matInput 
+                               [matDatepicker]="dathangEndPicker" 
+                               [(ngModel)]="dathangEndDate"
+                               (ngModelChange)="filterDathangByDateRange()">
+                        <mat-datepicker-toggle matIconSuffix [for]="dathangEndPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #dathangEndPicker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table with sorting -->
+        <div class="max-h-96 overflow-auto">
+            <table class="w-full border-collapse border border-gray-300">
+                <thead class="sticky top-0 bg-gray-100 z-10">
+                    <tr>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDathangData('title')">
+                            Tiêu đề
+                            <mat-icon class="text-sm ml-1">{{getDathangSortIcon('title')}}</mat-icon>
+                        </th>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDathangData('madncc')">
+                            Mã Đặt
+                            <mat-icon class="text-sm ml-1">{{getDathangSortIcon('madncc')}}</mat-icon>
+                        </th>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDathangData('status')">
+                            Trạng thái
+                            <mat-icon class="text-sm ml-1">{{getDathangSortIcon('status')}}</mat-icon>
+                        </th>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDathangData('nhacungcap.name')">
+                            Nhà Cung Cấp
+                            <mat-icon class="text-sm ml-1">{{getDathangSortIcon('nhacungcap.name')}}</mat-icon>
+                        </th>
+                        <th class="border border-gray-300 px-4 py-2 text-left">Tên Sản Phẩm</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDathangData('sanpham.sldat')">
+                            Số Lượng Đặt
+                            <mat-icon class="text-sm ml-1">{{getDathangSortIcon('sanpham.sldat')}}</mat-icon>
+                        </th>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDathangData('sanpham.slnhan')">
+                            Số Lượng Nhận
+                            <mat-icon class="text-sm ml-1">{{getDathangSortIcon('sanpham.slnhan')}}</mat-icon>
+                        </th>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDathangData('createdAt')">
+                            Ngày
+                            <mat-icon class="text-sm ml-1">{{getDathangSortIcon('createdAt')}}</mat-icon>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of FilteredDathang" class="hover:bg-gray-50">
+                        <td class="border border-gray-300 px-4 py-2">{{item.title}}</td>
+                        <td class="border border-gray-300 px-4 py-2 font-bold">
+                            <a target="_blank" class="text-blue-500 hover:underline" href="/admin/dathang/{{item.id}}"> 
+                                {{item.madncc}} 
+                            </a>
+                        </td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full" [ngClass]="{
+                              'bg-blue-100 text-blue-800': item.status === 'dadat',
+                              'bg-yellow-100 text-yellow-800': item.status === 'dagiao',
+                              'bg-green-100 text-green-800': item.status === 'danhan',
+                              'bg-purple-100 text-purple-800': item.status === 'hoanthanh',
+                              'bg-red-100 text-red-800': item.status === 'huy'
+                            }">
+                                {{Trangthaidon[item.status]}}
+                            </span>
+                        </td>
+                        <td class="border border-gray-300 px-4 py-2">{{item.nhacungcap?.name || 'N/A'}}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{item.sanpham?.sanpham?.title || 'N/A'}}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-right">{{item.sanpham?.sldat || 0}}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-right">{{item.sanpham?.slnhan || 0}}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{formatDate(item.createdAt)}}</td>
+                    </tr>
+                    @if(FilteredDathang.length === 0) {
+                    <tr>
+                        <td class="border border-gray-300 px-4 py-8 text-center text-gray-500" colspan="8">
+                            <div class="flex flex-col items-center">
+                                <mat-icon class="text-4xl text-gray-400 mb-2">search_off</mat-icon>
+                                <p>Không tìm thấy đặt hàng nào</p>
+                                <p class="text-sm">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                    @if(FilteredDathang.length > 0) {
+                    <tr class="bg-gray-100 font-bold">
+                        <td class="border border-gray-300 px-4 py-2" colspan="5">Tổng cộng:</td>
+                        <td class="border border-gray-300 px-4 py-2 text-right">{{TinhTong(FilteredDathang, 'sldat')}}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-right">{{TinhTong(FilteredDathang, 'slnhan')}}</td>
+                        <td class="border border-gray-300 px-4 py-2"></td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
+        <button mat-button (click)="exportDathangData()" color="primary">
+            <mat-icon>download</mat-icon>
+            Xuất Excel
+        </button>
         <button mat-button mat-dialog-close>Đóng</button>
     </mat-dialog-actions>
-
 </ng-template>
 
 <ng-template #DonhangDialog>
-    <h2 mat-dialog-title>Chi Tiết Đơn Hàng</h2>
+    <h2 mat-dialog-title>Chi Tiết Đơn Hàng ({{FilteredDonhang.length}} mục)</h2>
     <mat-dialog-content class="mat-typography">
-        <table class="w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="border border-gray-300 px-4 py-2 text-left">Tiêu đề</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Mã Đơn</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Trạng thái</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Nhà Cung Cấp</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Tên Sản Phẩm</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Số Lượng Đặt</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Số Lượng Nhận</th>
-                    <th class="border border-gray-300 px-4 py-2 text-left">Ngày</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of ListDonhang" class="hover:bg-gray-50">
-                    <td class="border border-gray-300 px-4 py-2">{{item.title}}</td>
-                    <td class="border  px-4 py-2 font-bold">
-                       <a target="_blank" class="text-blue-500" href="/admin/donhang/{{item.id}}"> {{item.madonhang}} </a> 
-                    </td>
-                    <td class="border border-gray-300 px-4 py-2">
-                        <span class="max-w-40 line-clamp-4 font-bold" [ngClass]="{
-                          'text-blue-500': item.status === 'dadat',
-                          'text-yellow-500': item.status === 'dagiao',
-                          'text-green-500': item.status === 'danhan',
-                          'text-purple-500': item.status === 'hoanthanh',
-                          'text-red-500': item.status === 'huy'
-                        }
-                        ">
-                            {{Trangthaidon[item.status]}}
-                        </span>
-                    </td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.khachhang.name}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.sanpham.sanpham.title}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.sanpham.sldat}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.sanpham.slnhan}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{item.createdAt |date:'dd/MM/yyyy'}}</td>
-                </tr>
-                <tr class="bg-gray-100 font-bold">
-                    <td class="border border-gray-300 px-4 py-2" colspan="5">Tổng cộng:</td>
-                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDonhang, 'sldat')}}</td>
-                    <td class="border border-gray-300 px-4 py-2">{{TinhTong(ListDonhang, 'slnhan')}}</td>
-                    <td class="border border-gray-300 px-4 py-2"></td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- Search and Filter Section -->
+        <div class="flex flex-col space-y-4 mb-4">
+            <div class="flex flex-row space-x-2 items-center">
+                <div class="relative flex-1">
+                    <input type="text" 
+                           #donhangSearch
+                           (keyup)="filterDonhangList($event)" 
+                           placeholder="Tìm kiếm đơn hàng..."
+                           class="block w-full pl-10 pr-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <span class="material-symbols-outlined text-gray-500">search</span>
+                    </div>
+                </div>
+                <button mat-icon-button 
+                        color="primary" 
+                        (click)="clearDonhangFilter(); donhangSearch.value = ''"
+                        matTooltip="Xóa bộ lọc">
+                    <mat-icon>clear</mat-icon>
+                </button>
+            </div>
+            
+            <!-- Status Filter -->
+            <div class="flex flex-wrap gap-2">
+                <span class="text-sm font-medium text-gray-700">Lọc theo trạng thái:</span>
+                <button *ngFor="let status of Object.keys(Trangthaidon)" 
+                        mat-stroked-button
+                        [color]="selectedDonhangStatus === status ? 'primary' : ''"
+                        (click)="filterDonhangByStatus(status)"
+                        class="text-xs">
+                    {{Trangthaidon[status]}}
+                </button>
+                <button mat-stroked-button 
+                        (click)="filterDonhangByStatus('')"
+                        class="text-xs"
+                        [color]="selectedDonhangStatus === '' ? 'primary' : ''">
+                    Tất cả
+                </button>
+            </div>
+
+            <!-- Date Filter -->
+            <div class="flex flex-col space-y-2">
+                <span class="text-sm font-medium text-gray-700">Lọc theo ngày:</span>
+                <div class="flex flex-wrap gap-2">
+                    <button mat-stroked-button 
+                            (click)="setDonhangDateFilter(1)"
+                            class="text-xs">
+                        Hôm nay
+                    </button>
+                    <button mat-stroked-button 
+                            (click)="setDonhangDateFilter(7)"
+                            class="text-xs">
+                        7 ngày
+                    </button>
+                    <button mat-stroked-button 
+                            (click)="setDonhangDateFilter(30)"
+                            class="text-xs">
+                        30 ngày
+                    </button>
+                    <button mat-stroked-button 
+                            (click)="clearDonhangDateFilter()"
+                            class="text-xs">
+                        Xóa lọc ngày
+                    </button>
+                </div>
+                <div class="flex flex-row gap-2 items-center">
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1">
+                        <mat-label>Từ ngày</mat-label>
+                        <input matInput 
+                               [matDatepicker]="donhangStartPicker" 
+                               [(ngModel)]="donhangStartDate"
+                               (ngModelChange)="filterDonhangByDateRange()">
+                        <mat-datepicker-toggle matIconSuffix [for]="donhangStartPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #donhangStartPicker></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1">
+                        <mat-label>Đến ngày</mat-label>
+                        <input matInput 
+                               [matDatepicker]="donhangEndPicker" 
+                               [(ngModel)]="donhangEndDate"
+                               (ngModelChange)="filterDonhangByDateRange()">
+                        <mat-datepicker-toggle matIconSuffix [for]="donhangEndPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #donhangEndPicker></mat-datepicker>
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table with sorting -->
+        <div class="max-h-96 overflow-auto">
+            <table class="w-full border-collapse border border-gray-300">
+                <thead class="sticky top-0 bg-gray-100 z-10">
+                    <tr>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDonhangData('title')">
+                            Tiêu đề
+                            <mat-icon class="text-sm ml-1">{{getDonhangSortIcon('title')}}</mat-icon>
+                        </th>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDonhangData('madonhang')">
+                            Mã Đơn
+                            <mat-icon class="text-sm ml-1">{{getDonhangSortIcon('madonhang')}}</mat-icon>
+                        </th>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDonhangData('status')">
+                            Trạng thái
+                            <mat-icon class="text-sm ml-1">{{getDonhangSortIcon('status')}}</mat-icon>
+                        </th>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDonhangData('khachhang.name')">
+                            Khách Hàng
+                            <mat-icon class="text-sm ml-1">{{getDonhangSortIcon('khachhang.name')}}</mat-icon>
+                        </th>
+                        <th class="border border-gray-300 px-4 py-2 text-left">Tên Sản Phẩm</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDonhangData('sanpham.sldat')">
+                            Số Lượng Đặt
+                            <mat-icon class="text-sm ml-1">{{getDonhangSortIcon('sanpham.sldat')}}</mat-icon>
+                        </th>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDonhangData('sanpham.slnhan')">
+                            Số Lượng Nhận
+                            <mat-icon class="text-sm ml-1">{{getDonhangSortIcon('sanpham.slnhan')}}</mat-icon>
+                        </th>
+                        <th class="border border-gray-300 px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
+                            (click)="sortDonhangData('createdAt')">
+                            Ngày
+                            <mat-icon class="text-sm ml-1">{{getDonhangSortIcon('createdAt')}}</mat-icon>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of FilteredDonhang" class="hover:bg-gray-50">
+                        <td class="border border-gray-300 px-4 py-2">{{item.title}}</td>
+                        <td class="border border-gray-300 px-4 py-2 font-bold">
+                            <a target="_blank" class="text-blue-500 hover:underline" href="/admin/donhang/{{item.id}}"> 
+                                {{item.madonhang}}
+                            </a>
+                        </td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full" [ngClass]="{
+                              'bg-blue-100 text-blue-800': item.status === 'dadat',
+                              'bg-yellow-100 text-yellow-800': item.status === 'dagiao',
+                              'bg-green-100 text-green-800': item.status === 'danhan',
+                              'bg-purple-100 text-purple-800': item.status === 'hoanthanh',
+                              'bg-red-100 text-red-800': item.status === 'huy'
+                            }">
+                                {{Trangthaidon[item.status]}}
+                            </span>
+                        </td>
+                        <td class="border border-gray-300 px-4 py-2">{{item.khachhang?.name || 'N/A'}}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{item.sanpham?.sanpham?.title || 'N/A'}}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-right">{{item.sanpham?.sldat || 0}}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-right">{{item.sanpham?.slnhan || 0}}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{formatDate(item.createdAt)}}</td>
+                    </tr>
+                    @if(FilteredDonhang.length === 0) {
+                    <tr>
+                        <td class="border border-gray-300 px-4 py-8 text-center text-gray-500" colspan="8">
+                            <div class="flex flex-col items-center">
+                                <mat-icon class="text-4xl text-gray-400 mb-2">search_off</mat-icon>
+                                <p>Không tìm thấy đơn hàng nào</p>
+                                <p class="text-sm">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm</p>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                    @if(FilteredDonhang.length > 0) {
+                    <tr class="bg-gray-100 font-bold">
+                        <td class="border border-gray-300 px-4 py-2" colspan="5">Tổng cộng:</td>
+                        <td class="border border-gray-300 px-4 py-2 text-right">{{TinhTong(FilteredDonhang, 'sldat')}}</td>
+                        <td class="border border-gray-300 px-4 py-2 text-right">{{TinhTong(FilteredDonhang, 'slnhan')}}</td>
+                        <td class="border border-gray-300 px-4 py-2"></td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
+        <button mat-button (click)="exportDonhangData()" color="primary">
+            <mat-icon>download</mat-icon>
+            Xuất Excel
+        </button>
         <button mat-button mat-dialog-close>Đóng</button>
     </mat-dialog-actions>
-
 </ng-template>

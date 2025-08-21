@@ -400,9 +400,39 @@ export class DetaildexuatComponent {
   Trangthaidon:any = TrangThaiDon
   ListDathang:any[] = [];
   ListDonhang:any[] = [];
+  
+  // Enhanced filtering and sorting properties
+  FilteredDathang: any[] = [];
+  FilteredDonhang: any[] = [];
+  
+  // Sort properties for Dathang
+  dathangSortField: string = '';
+  dathangSortDirection: 'asc' | 'desc' = 'asc';
+  selectedDathangStatus: string = '';
+  
+  // Sort properties for Donhang
+  donhangSortField: string = '';
+  donhangSortDirection: 'asc' | 'desc' = 'asc';
+  selectedDonhangStatus: string = '';
+  
+  // Date filtering properties
+  dathangStartDate: string = '';
+  dathangEndDate: string = '';
+  donhangStartDate: string = '';
+  donhangEndDate: string = '';
+  
+  Object = Object; // For template access
   async XemDathang(row: any, template: TemplateRef<any>) {
    this.ListDathang =  await this._DathangService.findbysanpham(row.sanphamId);
    console.log(this.ListDathang);
+   
+   // Initialize filtered array and reset filters
+   this.FilteredDathang = [...this.ListDathang];
+   this.selectedDathangStatus = '';
+   this.dathangSortField = '';
+   this.dathangSortDirection = 'asc';
+   this.dathangStartDate = '';
+   this.dathangEndDate = '';
 
     const dialogDeleteRef = this._dialog.open(template, {
       hasBackdrop: true,
@@ -418,6 +448,14 @@ export class DetaildexuatComponent {
   async XemDonhang(row: any, template: TemplateRef<any>) {
     this.ListDonhang =  await this._DonhangService.findbysanpham(row.sanphamId);
     console.log(this.ListDonhang);
+    
+    // Initialize filtered array and reset filters
+    this.FilteredDonhang = [...this.ListDonhang];
+    this.selectedDonhangStatus = '';
+    this.donhangSortField = '';
+    this.donhangSortDirection = 'asc';
+    this.donhangStartDate = '';
+    this.donhangEndDate = '';
     const dialogDeleteRef = this._dialog.open(template, {
       hasBackdrop: true,
       disableClose: true,
@@ -435,6 +473,372 @@ export class DetaildexuatComponent {
   }
   gotoDexuat(){
     this.DexuatEmit.emit(false);
+  }
+
+  // ================== DATHANG FILTERING AND SORTING METHODS ==================
+  
+  filterDathangList(event: any) {
+    const searchTerm = event.target.value?.toLowerCase() || '';
+    this.applyDathangFilters(searchTerm);
+  }
+
+  filterDathangByStatus(status: string) {
+    this.selectedDathangStatus = status;
+    const searchInput = document.querySelector('#dathangSearch') as HTMLInputElement;
+    const searchTerm = searchInput?.value?.toLowerCase() || '';
+    this.applyDathangFilters(searchTerm);
+  }
+
+  clearDathangFilter() {
+    this.selectedDathangStatus = '';
+    this.dathangStartDate = '';
+    this.dathangEndDate = '';
+    this.applyDathangFilters('');
+  }
+
+  private applyDathangFilters(searchTerm: string) {
+    let filtered = [...this.ListDathang];
+
+    // Apply status filter
+    if (this.selectedDathangStatus) {
+      filtered = filtered.filter(item => item.status === this.selectedDathangStatus);
+    }
+
+    // Apply date range filter
+    if (this.dathangStartDate) {
+      const startDate = new Date(this.dathangStartDate);
+      startDate.setHours(0, 0, 0, 0);
+      filtered = filtered.filter(item => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate >= startDate;
+      });
+    }
+
+    if (this.dathangEndDate) {
+      const endDate = new Date(this.dathangEndDate);
+      endDate.setHours(23, 59, 59, 999);
+      filtered = filtered.filter(item => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate <= endDate;
+      });
+    }
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(item => {
+        const searchableText = [
+          item.title,
+          item.madathang,
+          item.khachhang?.name,
+          item.sanpham?.sanpham?.title,
+          this.Trangthaidon[item.status]
+        ].join(' ').toLowerCase();
+        
+        return searchableText.includes(searchTerm);
+      });
+    }
+
+    this.FilteredDathang = filtered;
+    this.applydathangCurrentSort();
+  }
+
+  sortDathangData(field: string) {
+    if (this.dathangSortField === field) {
+      this.dathangSortDirection = this.dathangSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.dathangSortField = field;
+      this.dathangSortDirection = 'asc';
+    }
+    this.applydathangCurrentSort();
+  }
+
+  private applydathangCurrentSort() {
+    if (!this.dathangSortField) return;
+
+    this.FilteredDathang.sort((a, b) => {
+      let aValue: any;
+      let bValue: any;
+
+      // Handle nested properties
+      if (this.dathangSortField.includes('.')) {
+        const keys = this.dathangSortField.split('.');
+        aValue = keys.reduce((obj, key) => obj && obj[key], a);
+        bValue = keys.reduce((obj, key) => obj && obj[key], b);
+      } else {
+        aValue = a[this.dathangSortField];
+        bValue = b[this.dathangSortField];
+      }
+
+      // Handle null/undefined values
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+
+      // Convert to string for comparison
+      aValue = String(aValue).toLowerCase();
+      bValue = String(bValue).toLowerCase();
+
+      const comparison = aValue.localeCompare(bValue, 'vi', { numeric: true });
+      return this.dathangSortDirection === 'asc' ? comparison : -comparison;
+    });
+  }
+
+  getDathangSortIcon(field: string): string {
+    if (this.dathangSortField !== field) {
+      return 'unfold_more';
+    }
+    return this.dathangSortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
+  }
+
+  exportDathangData() {
+    if (this.FilteredDathang.length === 0) {
+      alert('Không có dữ liệu để xuất');
+      return;
+    }
+
+    const dataToExport = this.FilteredDathang.map(item => ({
+      'Tiêu đề': item.title || '',
+      'Mã Đặt Hàng': item.madathang || '',
+      'Trạng thái': this.Trangthaidon[item.status] || '',
+      'Khách Hàng': item.khachhang?.name || '',
+      'Tên Sản Phẩm': item.sanpham?.sanpham?.title || '',
+      'Số Lượng Đặt': item.sanpham?.sldat || 0,
+      'Số Lượng Nhận': item.sanpham?.slnhan || 0,
+      'Ngày': this.formatDate(item.createdAt)
+    }));
+
+    this.exportToExcel(dataToExport, 'dathang-data');
+  }
+
+  // ================== DONHANG FILTERING AND SORTING METHODS ==================
+
+  filterDonhangList(event: any) {
+    const searchTerm = event.target.value?.toLowerCase() || '';
+    this.applyDonhangFilters(searchTerm);
+  }
+
+  filterDonhangByStatus(status: string) {
+    this.selectedDonhangStatus = status;
+    const searchInput = document.querySelector('#donhangSearch') as HTMLInputElement;
+    const searchTerm = searchInput?.value?.toLowerCase() || '';
+    this.applyDonhangFilters(searchTerm);
+  }
+
+  clearDonhangFilter() {
+    this.selectedDonhangStatus = '';
+    this.donhangStartDate = '';
+    this.donhangEndDate = '';
+    this.applyDonhangFilters('');
+  }
+
+  private applyDonhangFilters(searchTerm: string) {
+    let filtered = [...this.ListDonhang];
+
+    // Apply status filter
+    if (this.selectedDonhangStatus) {
+      filtered = filtered.filter(item => item.status === this.selectedDonhangStatus);
+    }
+
+    // Apply date range filter
+    if (this.donhangStartDate) {
+      const startDate = new Date(this.donhangStartDate);
+      startDate.setHours(0, 0, 0, 0);
+      filtered = filtered.filter(item => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate >= startDate;
+      });
+    }
+
+    if (this.donhangEndDate) {
+      const endDate = new Date(this.donhangEndDate);
+      endDate.setHours(23, 59, 59, 999);
+      filtered = filtered.filter(item => {
+        const itemDate = new Date(item.createdAt);
+        return itemDate <= endDate;
+      });
+    }
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(item => {
+        const searchableText = [
+          item.title,
+          item.madonhang,
+          item.khachhang?.name,
+          item.sanpham?.sanpham?.title,
+          this.Trangthaidon[item.status]
+        ].join(' ').toLowerCase();
+        
+        return searchableText.includes(searchTerm);
+      });
+    }
+
+    this.FilteredDonhang = filtered;
+    this.applyDonhangCurrentSort();
+  }
+
+  sortDonhangData(field: string) {
+    if (this.donhangSortField === field) {
+      this.donhangSortDirection = this.donhangSortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.donhangSortField = field;
+      this.donhangSortDirection = 'asc';
+    }
+    this.applyDonhangCurrentSort();
+  }
+
+  private applyDonhangCurrentSort() {
+    if (!this.donhangSortField) return;
+
+    this.FilteredDonhang.sort((a, b) => {
+      let aValue: any;
+      let bValue: any;
+
+      // Handle nested properties
+      if (this.donhangSortField.includes('.')) {
+        const keys = this.donhangSortField.split('.');
+        aValue = keys.reduce((obj, key) => obj && obj[key], a);
+        bValue = keys.reduce((obj, key) => obj && obj[key], b);
+      } else {
+        aValue = a[this.donhangSortField];
+        bValue = b[this.donhangSortField];
+      }
+
+      // Handle null/undefined values
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+
+      // Convert to string for comparison
+      aValue = String(aValue).toLowerCase();
+      bValue = String(bValue).toLowerCase();
+
+      const comparison = aValue.localeCompare(bValue, 'vi', { numeric: true });
+      return this.donhangSortDirection === 'asc' ? comparison : -comparison;
+    });
+  }
+
+  getDonhangSortIcon(field: string): string {
+    if (this.donhangSortField !== field) {
+      return 'unfold_more';
+    }
+    return this.donhangSortDirection === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
+  }
+
+  exportDonhangData() {
+    if (this.FilteredDonhang.length === 0) {
+      alert('Không có dữ liệu để xuất');
+      return;
+    }
+
+    const dataToExport = this.FilteredDonhang.map(item => ({
+      'Tiêu đề': item.title || '',
+      'Mã Đơn Hàng': item.madonhang || '',
+      'Trạng thái': this.Trangthaidon[item.status] || '',
+      'Khách Hàng': item.khachhang?.name || '',
+      'Tên Sản Phẩm': item.sanpham?.sanpham?.title || '',
+      'Số Lượng Đặt': item.sanpham?.sldat || 0,
+      'Số Lượng Nhận': item.sanpham?.slnhan || 0,
+      'Ngày': this.formatDate(item.createdAt)
+    }));
+
+    this.exportToExcel(dataToExport, 'donhang-data');
+  }
+
+  // ================== DATE FILTERING METHODS ==================
+
+  filterDathangByDateRange() {
+    const searchInput = document.querySelector('#dathangSearch') as HTMLInputElement;
+    const searchTerm = searchInput?.value?.toLowerCase() || '';
+    this.applyDathangFilters(searchTerm);
+  }
+
+  filterDonhangByDateRange() {
+    const searchInput = document.querySelector('#donhangSearch') as HTMLInputElement;
+    const searchTerm = searchInput?.value?.toLowerCase() || '';
+    this.applyDonhangFilters(searchTerm);
+  }
+
+  clearDathangDateFilter() {
+    this.dathangStartDate = '';
+    this.dathangEndDate = '';
+    const searchInput = document.querySelector('#dathangSearch') as HTMLInputElement;
+    const searchTerm = searchInput?.value?.toLowerCase() || '';
+    this.applyDathangFilters(searchTerm);
+  }
+
+  clearDonhangDateFilter() {
+    this.donhangStartDate = '';
+    this.donhangEndDate = '';
+    const searchInput = document.querySelector('#donhangSearch') as HTMLInputElement;
+    const searchTerm = searchInput?.value?.toLowerCase() || '';
+    this.applyDonhangFilters(searchTerm);
+  }
+
+  // Quick date filters for Dathang
+  setDathangDateFilter(days: number) {
+    const today = new Date();
+    const startDate = new Date();
+    startDate.setDate(today.getDate() - days);
+    
+    this.dathangStartDate = DateHelpers.format(startDate, 'YYYY-MM-DD');
+    this.dathangEndDate = DateHelpers.format(today, 'YYYY-MM-DD');
+    this.filterDathangByDateRange();
+  }
+
+  // Quick date filters for Donhang
+  setDonhangDateFilter(days: number) {
+    const today = new Date();
+    const startDate = new Date();
+    startDate.setDate(today.getDate() - days);
+    
+    this.donhangStartDate = DateHelpers.format(startDate, 'YYYY-MM-DD');
+    this.donhangEndDate = DateHelpers.format(today, 'YYYY-MM-DD');
+    this.filterDonhangByDateRange();
+  }
+
+  // ================== UTILITY METHODS ==================
+
+  formatDate(date: any): string {
+    if (!date) return '';
+    try {
+      return DateHelpers.format(date, 'DD/MM/YYYY HH:mm');
+    } catch (error) {
+      return '';
+    }
+  }
+
+  private exportToExcel(data: any[], filename: string) {
+    // Simple CSV export implementation
+    const csvContent = this.convertToCSV(data);
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${filename}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  private convertToCSV(data: any[]): string {
+    if (data.length === 0) return '';
+
+    const headers = Object.keys(data[0]);
+    const csvHeaders = headers.join(',');
+    
+    const csvRows = data.map(row => 
+      headers.map(header => {
+        const value = row[header];
+        // Escape commas and quotes in CSV
+        return typeof value === 'string' && (value.includes(',') || value.includes('"')) 
+          ? `"${value.replace(/"/g, '""')}"` 
+          : value;
+      }).join(',')
+    );
+
+    return [csvHeaders, ...csvRows].join('\n');
   }
 
 }
