@@ -69,10 +69,10 @@ export class NhucaudathangComponent {
     'dvt',
     'mancc',
     'name',
-    'slchonhap',
+    // 'slchonhap',
     'SLDat',
     'goiy',
-    'slchogiao',
+    // 'slchogiao',
     'SLGiao',
     'sltontt',
     'slton',
@@ -91,10 +91,10 @@ export class NhucaudathangComponent {
       dvt:'ĐVT',
       mancc: 'Mã NCC',
       name: 'Tên Nhà Cung Cấp',
-      slchonhap: 'SL Đặt (Chờ Nhập)',
+      // slchonhap: 'SL Đặt (Chờ Nhập)',
       SLDat: 'SL Đặt (Nhà CC)',
       goiy: 'SL Cần Đặt (Gợi Ý)',
-      slchogiao: 'SL Bán (Chờ Giao)',
+      // slchogiao: 'SL Bán (Chờ Giao)',
       SLGiao: 'SL Giao (Khách)',
       sltontt: 'Tồn Kho (Thực Tế)',
       slton: 'Tồn Kho',
@@ -198,9 +198,9 @@ export class NhucaudathangComponent {
       case 'kho6':
       case 'haohut':
       case 'slhaohut':
-        return Number(item[property]) || 0;
+      return Number(item[property]) || 0;
       case 'goiy':
-        return parseFloat(this.GetGoiy(item));
+      return parseFloat(this.GetGoiy(item));
       case 'title':
       case 'masp':
       case 'dvt':
