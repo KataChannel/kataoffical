@@ -1490,85 +1490,163 @@ export class ListImportdataComponent implements OnInit {
     ) {
       const phieuNhapDetails: any[] = [];
       const phieuXuatDetails: any[] = [];
+      
+      console.log('Processing xuatnhapton import data:', data.xuatnhapton.length, 'items');
+      
       data.xuatnhapton.forEach((v: any) => {
+        // Validate input data
+        if (!v.masp || v.slton === undefined || v.slton === null) {
+          console.warn('Invalid xuatnhapton item:', v);
+          return;
+        }
+
         const exitItem = this.rawListTonkho.find(
           (item: any) => item.masp === v.masp
         );
+        
         if (exitItem) {
-          if (v.slton > exitItem.slton) {
+          const newQuantity = Number(v.slton) || 0;
+          const currentQuantity = Number(exitItem.slton) || 0;
+          const difference = newQuantity - currentQuantity;
+          
+          if (difference > 0) {
             // Tính chênh lệch cho phiếu nhập
-            phieuNhapDetails.push({
-              sanphamId: this.rawListSP.find(
-                (item: any) => item.masp === v.masp
-              ).id,
-              soluong: v.slton - exitItem.slton,
-              // thêm các trường cần thiết
-            });
-          } else if (v.slton < exitItem.slton) {
+            const sanpham = this.rawListSP.find(
+              (item: any) => item.masp === v.masp
+            );
+            
+            if (sanpham && sanpham.id) {
+              phieuNhapDetails.push({
+                sanphamId: sanpham.id,
+                soluong: difference,
+                ghichu: `Điều chỉnh tăng từ ${currentQuantity} lên ${newQuantity}`,
+              });
+            } else {
+              console.warn(`Sản phẩm không tìm thấy cho mã: ${v.masp}`);
+            }
+          } else if (difference < 0) {
             // Tính chênh lệch cho phiếu xuất
-            phieuXuatDetails.push({
-              sanphamId: this.rawListSP.find(
-                (item: any) => item.masp === v.masp
-              ).id,
-              soluong: exitItem.slton - v.slton,
-              // thêm các trường cần thiết
-            });
+            const sanpham = this.rawListSP.find(
+              (item: any) => item.masp === v.masp
+            );
+            
+            if (sanpham && sanpham.id) {
+              phieuXuatDetails.push({
+                sanphamId: sanpham.id,
+                soluong: Math.abs(difference),
+                ghichu: `Điều chỉnh giảm từ ${currentQuantity} xuống ${newQuantity}`,
+              });
+            } else {
+              console.warn(`Sản phẩm không tìm thấy cho mã: ${v.masp}`);
+            }
           }
+        } else {
+          console.warn(`Tồn kho không tìm thấy cho mã sản phẩm: ${v.masp}`);
         }
       });
 
-      if (phieuNhapDetails.length > 0) {
-        // Tạo phiếu nhập một lần với danh sách chi tiết
-        await this._PhieukhoService.CreatePhieukho({
-          title: `Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`,
-          type: 'nhap',
-          sanpham: phieuNhapDetails,
-          ghichu: `Cập nhật tồn kho lúc ${moment().format(
-            'HH:mm:ss DD/MM/YYYY '
-          )}`,
-          ngay: moment(),
-        });
-        this._snackBar.open(
-          'Cập nhật tồn kho thành công Thêm phiếu Nhập Kho',
-          '',
-          {
-            duration: 1000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['snackbar-success'],
-          }
-        );
-      }
-      if (phieuXuatDetails.length > 0) {
-        // Tạo phiếu xuất một lần với danh sách chi tiết
-        await this._PhieukhoService.CreatePhieukho({
-          title: `Điều Chỉnh Kho Ngày ${moment().format('DD/MM/YYYY ')}`,
-          type: 'xuat',
-          sanpham: phieuXuatDetails,
-          ghichu: `Cập nhật tồn kho lúc ${moment().format(
-            'HH:mm:ss DD/MM/YYYY '
-          )}`,
-          ngay: moment(),
-        });
-        this._snackBar.open(
-          'Cập nhật tồn kho thành công Thêm phiếu Xuất Kho',
-          '',
-          {
-            duration: 1000,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-            panelClass: ['snackbar-success'],
-          }
-        );
-      }
+      console.log(`Phiếu nhập: ${phieuNhapDetails.length} items, Phiếu xuất: ${phieuXuatDetails.length} items`);
 
-      if (phieuNhapDetails.length === 0 && phieuXuatDetails.length === 0) {
-        this._snackBar.open('Kho không thay đổi', '', {
-          duration: 1000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        });
+      try {
+        // Validate phieuNhapDetails and phieuXuatDetails before creating
+        if (phieuNhapDetails.length > 0) {
+          // Validate all sanphamId exist
+          const invalidNhapItems = phieuNhapDetails.filter(item => !item.sanphamId);
+          if (invalidNhapItems.length > 0) {
+            console.warn('Invalid phieuNhapDetails items:', invalidNhapItems);
+            throw new Error(`${invalidNhapItems.length} sản phẩm nhập không hợp lệ`);
+          }
+        }
+        
+        if (phieuXuatDetails.length > 0) {
+          // Validate all sanphamId exist  
+          const invalidXuatItems = phieuXuatDetails.filter(item => !item.sanphamId);
+          if (invalidXuatItems.length > 0) {
+            console.warn('Invalid phieuXuatDetails items:', invalidXuatItems);
+            throw new Error(`${invalidXuatItems.length} sản phẩm xuất không hợp lệ`);
+          }
+        }
+
+        // Tạo phiếu nhập trước nếu có
+        if (phieuNhapDetails.length > 0) {
+          console.log('Creating phieu nhap with details:', phieuNhapDetails);
+          
+          const phieuNhapData = {
+            title: `Điều Chỉnh Nhập Kho ${moment().format('DD/MM/YYYY')}`,
+            type: 'nhap',
+            sanpham: phieuNhapDetails,
+            ghichu: `Cập nhật tồn kho tăng lúc ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+            ngay: moment().toDate(),
+            khoId: '4cc01811-61f5-4bdc-83de-a493764e9258',
+            isActive: true
+          };
+
+          await this._PhieukhoService.CreatePhieukho(phieuNhapData);
+          
+          this._snackBar.open(
+            `Tạo phiếu nhập thành công với ${phieuNhapDetails.length} sản phẩm`,
+            '',
+            {
+              duration: 3000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-success'],
+            }
+          );
+          
+          // Delay để tránh conflict transaction
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+
+        // Tạo phiếu xuất sau nếu có  
+        if (phieuXuatDetails.length > 0) {
+          console.log('Creating phieu xuat with details:', phieuXuatDetails);
+          
+          const phieuXuatData = {
+            title: `Điều Chỉnh Xuất Kho ${moment().format('DD/MM/YYYY')}`,
+            type: 'xuat',
+            sanpham: phieuXuatDetails,
+            ghichu: `Cập nhật tồn kho giảm lúc ${moment().format('HH:mm:ss DD/MM/YYYY')}`,
+            ngay: moment().toDate(),
+            khoId: '4cc01811-61f5-4bdc-83de-a493764e9258',
+            isActive: true
+          };
+
+          await this._PhieukhoService.CreatePhieukho(phieuXuatData);
+          
+          this._snackBar.open(
+            `Tạo phiếu xuất thành công với ${phieuXuatDetails.length} sản phẩm`,
+            '',
+            {
+              duration: 3000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top',
+              panelClass: ['snackbar-success'],
+            }
+          );
+        }
+
+        if (phieuNhapDetails.length === 0 && phieuXuatDetails.length === 0) {
+          this._snackBar.open('Không có thay đổi tồn kho nào cần xử lý', '', {
+            duration: 2000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-info'],
+          });
+        }
+        
+      } catch (error: any) {
+        console.error('Error creating phieukho during xuatnhapton import:', error);
+        this._snackBar.open(
+          `Lỗi khi tạo phiếu kho: ${error?.message || 'Unknown error'}`,
+          '',
+          {
+            duration: 5000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-error'],
+          }
+        );
       }
     }
 

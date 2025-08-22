@@ -29,20 +29,43 @@ let PhieukhoService = class PhieukhoService {
         return `${year}${month}${day}_${hours}${minutes}${seconds}`;
     }
     async generateNextOrderCode(type) {
-        const lastOrder = await this.prisma.phieuKho.findFirst({
-            where: { type },
-            orderBy: { createdAt: 'desc' },
-        });
-        let nextCode = type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
-        if (lastOrder && lastOrder.maphieu) {
-            nextCode = this.incrementOrderCode(lastOrder.maphieu, type);
+        try {
+            if (!type || !['nhap', 'xuat'].includes(type)) {
+                throw new Error(`Invalid type: ${type}`);
+            }
+            const lastOrder = await this.prisma.phieuKho.findFirst({
+                where: { type },
+                orderBy: { createdAt: 'desc' },
+            });
+            let nextCode = type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+            if (lastOrder && lastOrder.maphieu) {
+                console.log(`Last order found: ${lastOrder.maphieu} for type: ${type}`);
+                nextCode = this.incrementOrderCode(lastOrder.maphieu, type);
+                console.log(`Generated next code: ${nextCode}`);
+            }
+            else {
+                console.log(`No previous orders found for type: ${type}, using default: ${nextCode}`);
+            }
+            return nextCode;
         }
-        return nextCode;
+        catch (error) {
+            console.error('Error in generateNextOrderCode:', error);
+            return type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+        }
     }
     incrementOrderCode(orderCode, type) {
         const prefix = type === 'nhap' ? 'PKN' : 'PKX';
+        if (!orderCode || orderCode.length < 8) {
+            console.warn(`Invalid orderCode format: ${orderCode}, using default`);
+            return type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+        }
         const letters = orderCode.slice(3, 5);
-        const numbers = parseInt(orderCode.slice(5), 10);
+        const numberPart = orderCode.slice(5);
+        const numbers = parseInt(numberPart, 10);
+        if (isNaN(numbers) || numbers < 0) {
+            console.warn(`Invalid number part in orderCode: ${orderCode}, numberPart: ${numberPart}, parsed: ${numbers}`);
+            return type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+        }
         let newLetters = letters;
         let newNumbers = numbers + 1;
         if (newNumbers > 99999) {
@@ -52,8 +75,16 @@ let PhieukhoService = class PhieukhoService {
         return `${prefix}${newLetters}${newNumbers.toString().padStart(5, '0')}`;
     }
     incrementLetters(letters) {
+        if (!letters || letters.length !== 2) {
+            console.warn(`Invalid letters format: ${letters}, using default AA`);
+            return 'AA';
+        }
         let firstChar = letters.charCodeAt(0);
         let secondChar = letters.charCodeAt(1);
+        if (firstChar < 65 || firstChar > 90 || secondChar < 65 || secondChar > 90) {
+            console.warn(`Invalid letter characters: ${letters}, using default AA`);
+            return 'AA';
+        }
         if (secondChar === 90) {
             if (firstChar === 90)
                 return 'ZZ';
@@ -125,88 +156,127 @@ let PhieukhoService = class PhieukhoService {
         return phieuKho;
     }
     async create(data) {
-        return this.prisma.$transaction(async (prisma) => {
-            let attempts = 0;
-            let newPhieuKho;
-            while (attempts < 3) {
-                const maphieukho = await this.generateNextOrderCode(data.type);
-                try {
-                    newPhieuKho = await prisma.phieuKho.create({
-                        data: {
-                            title: data.title,
-                            maphieu: maphieukho,
-                            ngay: new Date(data.ngay),
-                            type: data.type,
-                            isChotkho: data.isChotkho || false,
-                            khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
-                            ghichu: data.ghichu,
-                            isActive: data.isActive ?? true,
-                            sanpham: {
-                                create: data.sanpham.map((sp) => ({
-                                    sanphamId: sp.sanphamId,
-                                    soluong: sp.soluong,
-                                    ghichu: sp.ghichu,
-                                })),
-                            },
-                        },
-                        include: { sanpham: true },
-                    });
-                    break;
-                }
-                catch (error) {
-                    await this._ImportdataService.create({
-                        caseDetail: {
-                            errorMessage: error.message,
-                            errorStack: error.stack,
-                            additionalInfo: 'Error during import process',
-                        },
-                        order: 1,
-                        createdBy: 'system',
-                        title: `Import Khách Hàng ${new Date().toLocaleString('vi-VN')}`,
-                        type: 'sanpham',
-                    });
-                    if (error.code === 'P2002' &&
-                        error.meta &&
-                        error.meta.target &&
-                        error.meta.target.includes('maphieu')) {
-                        attempts++;
-                        console.log(`Duplicate maphieu encountered. Retrying attempt ${attempts}...`);
-                        if (attempts >= 3) {
-                            throw error;
-                        }
-                    }
-                    else {
-                        throw error;
-                    }
-                }
+        if (!data.type || !['nhap', 'xuat'].includes(data.type)) {
+            throw new common_1.BadRequestException('Invalid phieukho type. Must be "nhap" or "xuat"');
+        }
+        if (!data.sanpham || !Array.isArray(data.sanpham) || data.sanpham.length === 0) {
+            throw new common_1.BadRequestException('Sanpham array is required and cannot be empty');
+        }
+        for (const sp of data.sanpham) {
+            if (!sp.sanphamId || !sp.soluong) {
+                throw new common_1.BadRequestException('Each sanpham must have sanphamId and soluong');
             }
-            for (const sp of data.sanpham) {
-                await prisma.tonKho.upsert({
-                    where: { sanphamId: sp.sanphamId },
-                    update: data.type === 'nhap'
-                        ? {
-                            slton: { increment: sp.soluong },
-                        }
-                        : {
-                            slton: { decrement: sp.soluong },
+        }
+        let maphieukho = '';
+        let attempts = 0;
+        const maxAttempts = 5;
+        while (attempts < maxAttempts) {
+            try {
+                maphieukho = await this.generateNextOrderCode(data.type);
+                break;
+            }
+            catch (error) {
+                attempts++;
+                console.log(`Error generating maphieu, attempt ${attempts}:`, error.message);
+                if (attempts >= maxAttempts) {
+                    throw new common_1.BadRequestException('Failed to generate unique maphieu after multiple attempts');
+                }
+                await new Promise(resolve => setTimeout(resolve, 100 * attempts));
+            }
+        }
+        try {
+            return await this.prisma.$transaction(async (prisma) => {
+                const existingPhieukho = await prisma.phieuKho.findUnique({
+                    where: { maphieu: maphieukho }
+                });
+                if (existingPhieukho) {
+                    throw new common_1.BadRequestException(`Maphieu ${maphieukho} already exists`);
+                }
+                const newPhieuKho = await prisma.phieuKho.create({
+                    data: {
+                        title: data.title,
+                        maphieu: maphieukho,
+                        ngay: new Date(data.ngay),
+                        type: data.type,
+                        isChotkho: data.isChotkho || false,
+                        khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+                        ghichu: data.ghichu,
+                        isActive: data.isActive ?? true,
+                        sanpham: {
+                            create: data.sanpham.map((sp) => ({
+                                sanphamId: sp.sanphamId,
+                                soluong: Number(sp.soluong) || 0,
+                                ghichu: sp.ghichu || '',
+                            })),
                         },
-                    create: data.type === 'nhap'
-                        ? {
-                            sanphamId: sp.sanphamId,
-                            slton: sp.soluong,
-                            slchogiao: 0,
-                            slchonhap: 0,
+                    },
+                    include: { sanpham: true },
+                });
+                for (const sp of data.sanpham) {
+                    const soluong = Number(sp.soluong) || 0;
+                    if (soluong > 0) {
+                        if (data.type === 'nhap') {
+                            await prisma.tonKho.upsert({
+                                where: { sanphamId: sp.sanphamId },
+                                update: { slton: { increment: soluong } },
+                                create: {
+                                    sanphamId: sp.sanphamId,
+                                    slton: soluong,
+                                    slchogiao: 0,
+                                    slchonhap: 0
+                                }
+                            });
                         }
-                        : {
-                            sanphamId: sp.sanphamId,
-                            slton: -sp.soluong,
-                            slchogiao: 0,
-                            slchonhap: 0,
-                        },
+                        else if (data.type === 'xuat') {
+                            await prisma.tonKho.upsert({
+                                where: { sanphamId: sp.sanphamId },
+                                update: { slton: { decrement: soluong } },
+                                create: {
+                                    sanphamId: sp.sanphamId,
+                                    slton: -soluong,
+                                    slchogiao: 0,
+                                    slchonhap: 0
+                                }
+                            });
+                        }
+                    }
+                }
+                console.log(`✅ Created phieukho: ${maphieukho} with ${data.sanpham.length} items`);
+                return newPhieuKho;
+            });
+        }
+        catch (error) {
+            console.error('Error creating phieukho:', error);
+            try {
+                await this._ImportdataService.create({
+                    caseDetail: {
+                        errorMessage: error.message,
+                        errorStack: error.stack,
+                        additionalInfo: `Error creating phieukho with maphieu: ${maphieukho}`,
+                        inputData: JSON.stringify(data)
+                    },
+                    order: 1,
+                    createdBy: 'system',
+                    title: `Phieukho Creation Error ${new Date().toLocaleString('vi-VN')}`,
+                    type: 'phieukho_error',
                 });
             }
-            return newPhieuKho;
-        });
+            catch (logError) {
+                console.error('Error logging to ImportdataService:', logError);
+            }
+            if (error.code === 'P2002') {
+                throw new common_1.BadRequestException(`Duplicate entry: ${error.meta?.target || 'unknown field'}`);
+            }
+            else if (error.code === 'P2003') {
+                throw new common_1.BadRequestException('Foreign key constraint violation. Check sanphamId validity.');
+            }
+            else if (error.code === '25P02') {
+                throw new common_1.BadRequestException('Transaction was aborted. Please try again.');
+            }
+            else {
+                throw new common_1.BadRequestException(`Failed to create phieukho: ${error.message}`);
+            }
+        }
     }
     async update(id, data) {
         return this.prisma.$transaction(async (prisma) => {

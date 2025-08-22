@@ -2,7 +2,32 @@ import { PhieukhoService } from './phieukho.service';
 export declare class PhieukhoController {
     private readonly phieukhoService;
     constructor(phieukhoService: PhieukhoService);
-    create(createPhieukhoDto: any): Promise<any>;
+    create(createPhieukhoDto: any): Promise<{
+        sanpham: {
+            id: string;
+            soluong: import("@prisma/client/runtime/library").Decimal;
+            ghichu: string | null;
+            createdAt: Date;
+            updatedAt: Date;
+            sanphamId: string;
+            phieuKhoId: string;
+        }[];
+    } & {
+        id: string;
+        title: string | null;
+        ghichu: string | null;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        type: string | null;
+        madonhang: string | null;
+        madncc: string | null;
+        khoId: string | null;
+        maphieu: string | null;
+        madathang: string | null;
+        ngay: Date | null;
+        isChotkho: boolean;
+    }>;
     findAll(): Promise<{
         sanpham: {
             sanpham: {

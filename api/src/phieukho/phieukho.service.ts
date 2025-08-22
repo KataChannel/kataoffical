@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { ImportdataService } from 'src/importdata/importdata.service';
 import { convertXuatnhapton } from 'src/shared/utils/xuatnhapton.utils';
@@ -23,26 +23,57 @@ export class PhieukhoService {
   }
 
   async generateNextOrderCode(type: any): Promise<string> {
-    // Lấy mã đơn hàng gần nhất theo type nhap hoặc xuat
-    const lastOrder = await this.prisma.phieuKho.findFirst({
-      where: { type },
-      orderBy: { createdAt: 'desc' },
-    });
-    // Mã mặc định cho từng loại
-    let nextCode = type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+    try {
+      // Validate type parameter
+      if (!type || !['nhap', 'xuat'].includes(type)) {
+        throw new Error(`Invalid type: ${type}`);
+      }
 
-    if (lastOrder && lastOrder.maphieu) {
-      nextCode = this.incrementOrderCode(lastOrder.maphieu, type);
+      // Lấy mã đơn hàng gần nhất theo type nhap hoặc xuat
+      const lastOrder = await this.prisma.phieuKho.findFirst({
+        where: { type },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      // Mã mặc định cho từng loại
+      let nextCode = type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+
+      if (lastOrder && lastOrder.maphieu) {
+        console.log(`Last order found: ${lastOrder.maphieu} for type: ${type}`);
+        nextCode = this.incrementOrderCode(lastOrder.maphieu, type);
+        console.log(`Generated next code: ${nextCode}`);
+      } else {
+        console.log(`No previous orders found for type: ${type}, using default: ${nextCode}`);
+      }
+
+      return nextCode;
+    } catch (error) {
+      console.error('Error in generateNextOrderCode:', error);
+      // Return safe default in case of any error
+      return type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
     }
-    return nextCode;
   }
 
   private incrementOrderCode(orderCode: string, type: any): string {
     // Sử dụng prefix theo loại: PKN cho nhap, PKX cho xuat
     const prefix = type === 'nhap' ? 'PKN' : 'PKX';
+    
+    // Validate orderCode format
+    if (!orderCode || orderCode.length < 8) {
+      console.warn(`Invalid orderCode format: ${orderCode}, using default`);
+      return type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+    }
+    
     // Với cấu trúc mã: prefix (3 ký tự) + 2 chữ (AA -> ZZ) + 5 số (00001 -> 99999)
     const letters = orderCode.slice(3, 5);
-    const numbers = parseInt(orderCode.slice(5), 10);
+    const numberPart = orderCode.slice(5);
+    const numbers = parseInt(numberPart, 10);
+
+    // Validate parsed numbers
+    if (isNaN(numbers) || numbers < 0) {
+      console.warn(`Invalid number part in orderCode: ${orderCode}, numberPart: ${numberPart}, parsed: ${numbers}`);
+      return type === 'nhap' ? 'PKNAA00001' : 'PKXAA00001';
+    }
 
     let newLetters = letters;
     let newNumbers = numbers + 1;
@@ -56,8 +87,20 @@ export class PhieukhoService {
   }
 
   private incrementLetters(letters: string): string {
+    // Validate input
+    if (!letters || letters.length !== 2) {
+      console.warn(`Invalid letters format: ${letters}, using default AA`);
+      return 'AA';
+    }
+
     let firstChar = letters.charCodeAt(0);
     let secondChar = letters.charCodeAt(1);
+
+    // Validate character codes (A=65, Z=90)
+    if (firstChar < 65 || firstChar > 90 || secondChar < 65 || secondChar > 90) {
+      console.warn(`Invalid letter characters: ${letters}, using default AA`);
+      return 'AA';
+    }
 
     if (secondChar === 90) {
       // 'Z'
@@ -144,90 +187,143 @@ export class PhieukhoService {
 
 
   async create(data: any) {
-    return this.prisma.$transaction(async (prisma) => {
-      let attempts = 0;
-      let newPhieuKho: any;
-      while (attempts < 3) {
-        const maphieukho = await this.generateNextOrderCode(data.type);
-        try {
-          newPhieuKho = await prisma.phieuKho.create({
-            data: {
-              title: data.title,  
-              maphieu: maphieukho,
-              ngay: new Date(data.ngay),
-              type: data.type,
-              isChotkho: data.isChotkho || false,
-              khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
-              ghichu: data.ghichu,
-              isActive: data.isActive ?? true,
-              sanpham: {
-                create: data.sanpham.map((sp: any) => ({
-                  sanphamId: sp.sanphamId,
-                  soluong: sp.soluong,
-                  ghichu: sp.ghichu,
-                })),
-              },
+    // Validate input data first
+    if (!data.type || !['nhap', 'xuat'].includes(data.type)) {
+      throw new BadRequestException('Invalid phieukho type. Must be "nhap" or "xuat"');
+    }
+    
+    if (!data.sanpham || !Array.isArray(data.sanpham) || data.sanpham.length === 0) {
+      throw new BadRequestException('Sanpham array is required and cannot be empty');
+    }
+
+    // Validate all sanpham have required fields
+    for (const sp of data.sanpham) {
+      if (!sp.sanphamId || !sp.soluong) {
+        throw new BadRequestException('Each sanpham must have sanphamId and soluong');
+      }
+    }
+
+    // Generate maphieu outside transaction to avoid nested queries
+    let maphieukho: string = '';
+    let attempts = 0;
+    const maxAttempts = 5;
+
+    while (attempts < maxAttempts) {
+      try {
+        maphieukho = await this.generateNextOrderCode(data.type);
+        break;
+      } catch (error) {
+        attempts++;
+        console.log(`Error generating maphieu, attempt ${attempts}:`, error.message);
+        if (attempts >= maxAttempts) {
+          throw new BadRequestException('Failed to generate unique maphieu after multiple attempts');
+        }
+        // Wait before retry
+        await new Promise(resolve => setTimeout(resolve, 100 * attempts));
+      }
+    }
+
+    // Create phieukho with generated maphieu
+    try {
+      return await this.prisma.$transaction(async (prisma) => {
+        // Double-check maphieu uniqueness within transaction
+        const existingPhieukho = await prisma.phieuKho.findUnique({
+          where: { maphieu: maphieukho }
+        });
+
+        if (existingPhieukho) {
+          throw new BadRequestException(`Maphieu ${maphieukho} already exists`);
+        }
+
+        const newPhieuKho = await prisma.phieuKho.create({
+          data: {
+            title: data.title,  
+            maphieu: maphieukho,
+            ngay: new Date(data.ngay),
+            type: data.type,
+            isChotkho: data.isChotkho || false,
+            khoId: data.khoId || "4cc01811-61f5-4bdc-83de-a493764e9258",
+            ghichu: data.ghichu,
+            isActive: data.isActive ?? true,
+            sanpham: {
+              create: data.sanpham.map((sp: any) => ({
+                sanphamId: sp.sanphamId,
+                soluong: Number(sp.soluong) || 0,
+                ghichu: sp.ghichu || '',
+              })),
             },
-            include: { sanpham: true },
-          });
-          break;
-        } catch (error: any) {
-          await this._ImportdataService.create({
-            caseDetail: {
-              errorMessage: error.message,
-              errorStack: error.stack,
-              additionalInfo: 'Error during import process',
-            },
-            order: 1, // Cập nhật nếu cần theo thứ tự của bạn
-            createdBy: 'system', // Thay bằng ID người dùng thực nếu có
-            title: `Import Khách Hàng ${new Date().toLocaleString('vi-VN')}`,
-            type: 'sanpham',
-          });
-          if (
-            error.code === 'P2002' &&
-            error.meta &&
-            error.meta.target &&
-            error.meta.target.includes('maphieu')
-          ) {
-            attempts++;
-            console.log(`Duplicate maphieu encountered. Retrying attempt ${attempts}...`);
-            if (attempts >= 3) {
-              throw error;
+          },
+          include: { sanpham: true },
+        });
+
+        // Update tonkho for each sanpham
+        for (const sp of data.sanpham) {
+          const soluong = Number(sp.soluong) || 0;
+          if (soluong > 0) {
+            if (data.type === 'nhap') {
+              // Tăng tồn kho
+              await prisma.tonKho.upsert({
+                where: { sanphamId: sp.sanphamId },
+                update: { slton: { increment: soluong } },
+                create: { 
+                  sanphamId: sp.sanphamId, 
+                  slton: soluong,
+                  slchogiao: 0,
+                  slchonhap: 0
+                }
+              });
+            } else if (data.type === 'xuat') {
+              // Giảm tồn kho
+              await prisma.tonKho.upsert({
+                where: { sanphamId: sp.sanphamId },
+                update: { slton: { decrement: soluong } },
+                create: { 
+                  sanphamId: sp.sanphamId, 
+                  slton: -soluong, // Có thể âm nếu xuất trước khi nhập
+                  slchogiao: 0,
+                  slchonhap: 0
+                }
+              });
             }
-          } else {
-            throw error;
           }
         }
-      }
-      for (const sp of data.sanpham) {
-        await prisma.tonKho.upsert({
-          where: { sanphamId: sp.sanphamId },
-          update:
-            data.type === 'nhap'
-              ? {
-                  slton: { increment: sp.soluong },
-                }
-              : {
-                  slton: { decrement: sp.soluong },
-                },
-          create:
-            data.type === 'nhap'
-              ? {
-                  sanphamId: sp.sanphamId,
-                  slton: sp.soluong,
-                  slchogiao: 0,
-                  slchonhap: 0,
-                }
-              : {
-                  sanphamId: sp.sanphamId,
-                  slton: -sp.soluong,
-                  slchogiao: 0,
-                  slchonhap: 0,
-                },
+
+        console.log(`✅ Created phieukho: ${maphieukho} with ${data.sanpham.length} items`);
+        return newPhieuKho;
+      });
+      
+    } catch (error: any) {
+      console.error('Error creating phieukho:', error);
+      
+      // Log error for debugging
+      try {
+        await this._ImportdataService.create({
+          caseDetail: {
+            errorMessage: error.message,
+            errorStack: error.stack,
+            additionalInfo: `Error creating phieukho with maphieu: ${maphieukho}`,
+            inputData: JSON.stringify(data)
+          },
+          order: 1,
+          createdBy: 'system',
+          title: `Phieukho Creation Error ${new Date().toLocaleString('vi-VN')}`,
+          type: 'phieukho_error',
         });
+      } catch (logError) {
+        console.error('Error logging to ImportdataService:', logError);
       }
-      return newPhieuKho;
-    });
+
+      // Re-throw with better error message
+      if (error.code === 'P2002') {
+        throw new BadRequestException(`Duplicate entry: ${error.meta?.target || 'unknown field'}`);
+      } else if (error.code === 'P2003') {
+        throw new BadRequestException('Foreign key constraint violation. Check sanphamId validity.');
+      } else if (error.code === '25P02') {
+        throw new BadRequestException('Transaction was aborted. Please try again.');
+      } else {
+        throw new BadRequestException(`Failed to create phieukho: ${error.message}`);
+      }
+    }
   }
 
   async update(id: string, data: any) {
