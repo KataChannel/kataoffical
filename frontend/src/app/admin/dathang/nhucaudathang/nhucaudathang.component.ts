@@ -219,16 +219,15 @@ export class NhucaudathangComponent {
   }
 
   GetGoiy(item: any) {
-    const currentStock = item.slton || 0;
-    const pendingDelivery = item.slchogiao || 0;
-    const pendingInput = item.slchonhap || 0;
-    const deliveredQuantity = item.SLGiao || 0;
-
-    const suggestion = Math.max(
-      0,
-      deliveredQuantity + pendingDelivery - currentStock - pendingInput
-    );
-    return suggestion.toFixed(0);
+    if(item.SLGiao > item.SLDat) {
+      const demand = item.SLGiao - item.SLDat;
+      const wastageAmount = demand * (item.haohut || 0) / 100;
+      const suggestion = demand + wastageAmount;
+      return suggestion.toFixed(0);
+    }
+    else {
+      return '0';
+    }
   }
 
   async loadDonhangWithRelations() {
@@ -709,8 +708,10 @@ export class NhucaudathangComponent {
       mancc: 'Mã NCC',
       name: 'Tên Nhà Cung Cấp',
       slchonhap: 'SL Đặt (Chờ Nhập)',
+      SLDat:'SL Đặt NCC', 
       goiy: 'SL Cần Đặt (Gợi Ý)',
       slchogiao: 'SL Bán (Chờ Giao)',
+      SLGiao:'SL Giao KH',
       sltontt: 'Tồn Kho (Thực Tế)',
       slton: 'Tồn Kho',
       kho1: 'TG-LONG AN',
@@ -751,7 +752,7 @@ export class NhucaudathangComponent {
       );
       
       if (matchingWarehouse) {
-      newItem[matchingWarehouse.name] = item.slchonhap || '0';
+      newItem[matchingWarehouse.name] = item.SLDat || '0';
       }
       
       return newItem;
