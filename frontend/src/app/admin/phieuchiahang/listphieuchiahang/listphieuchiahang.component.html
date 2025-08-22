@@ -276,12 +276,12 @@
                                 <th scope="col" class="w-20 px-2 border">
                                     Tên SP
                                 </th>
-                                <th scope="col" class="w-20 px-2 border">
+                                <th scope="col" class="!w-10 px-2 border">
                                     ĐVT
                                 </th>
                                 <th *ngFor="let kh of Phieuchia" scope="col" class="px-2 border">
-                                   <div class="!w-16 flex flex-col space-y-1 justify-between">
-                                    <span>{{ kh.name }}</span>
+                                   <div class="!w-20 flex flex-col space-y-1 justify-between">
+                                    <span class="!text-[15px]">{{ kh.name }}</span>
                                     <!-- <span>{{ kh.madonhang }}</span>
                                     <div class="flex justify-between items-center w-full">
                                         <span class="w-1/2 text-center px-2 border rounded-lg">SLDAT</span>
@@ -303,11 +303,11 @@
                                 <td scope="row" class="w-20 px-2 border font-medium text-gray-900 whitespace-nowrap">
                                         {{ product }}
                                 </td>
-                                <td class="w-20 px-2 border text-start">
+                                <td class="w-!10 px-2 border text-start">
                                     {{ getDvtForProduct(Phieuchia,product)?.dvt }}
                                 </td>
                                 <td class="text-end px-2 border" *ngFor="let kh of Phieuchia">
-                                    <div class="!w-16 flex justify-between items-center">
+                                    <div class="!w-20 flex justify-between items-center">
                                         <span class="w-1/2 px-2 h-8"></span>
                                         <span class="w-1/2 flex items-center justify-end px-2 h-8">{{ getProductQuantity(Phieuchia,product, kh.makh)?.slgiao || '' }}</span>
                                       </div>

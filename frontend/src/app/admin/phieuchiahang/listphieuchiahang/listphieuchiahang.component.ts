@@ -93,9 +93,9 @@ export class ListPhieuchiahangComponent {
   FilterColumns: any[] = JSON.parse(
     localStorage.getItem('DonhangColFilter') || '[]'
   );
-  Columns: any[] = [];  
+  Columns: any[] = [];
   isFilter: boolean = false;
-  Trangthaidon:any = TrangThaiDon
+  Trangthaidon: any = TrangThaiDon;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
@@ -115,7 +115,7 @@ export class ListPhieuchiahangComponent {
     Batdau: moment().toDate(),
     Ketthuc: moment().toDate(),
     Type: 'donsi',
-    Status:'dadat',
+    Status: 'dadat',
     pageSize: 1000,
   };
   ListDate: any[] = [
@@ -135,7 +135,10 @@ export class ListPhieuchiahangComponent {
     const timeFrames: { [key: string]: () => void } = {
       day: () => {
         this.SearchParams.Batdau = moment().startOf('day').format('YYYY-MM-DD');
-        this.SearchParams.Ketthuc = moment().endOf('day').add(1, 'day').format('YYYY-MM-DD');
+        this.SearchParams.Ketthuc = moment()
+          .endOf('day')
+          .add(1, 'day')
+          .format('YYYY-MM-DD');
       },
       week: () => {
         this.SearchParams.Batdau = moment()
@@ -163,7 +166,7 @@ export class ListPhieuchiahangComponent {
     this.ngOnInit();
   }
   onDateChange(event: any): void {
-    this.ngOnInit()
+    this.ngOnInit();
   }
   createFilter(): (data: any, filter: string) => boolean {
     return (data, filter) => {
@@ -195,7 +198,7 @@ export class ListPhieuchiahangComponent {
     this.setupDrawer();
     this.dataSource = new MatTableDataSource(this.Listdonhang());
     console.log(this.dataSource.data);
-    
+
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = this.createFilter();
@@ -261,8 +264,6 @@ export class ListPhieuchiahangComponent {
     );
   }
 
-
-
   toggleColumn(item: any): void {
     const column = this.FilterColumns.find((v) => v.key === item.key);
     if (column) {
@@ -271,68 +272,71 @@ export class ListPhieuchiahangComponent {
     }
   }
   @memoize()
-  FilterHederColumn(list:any,column:any)
-  {
-    const uniqueList = list.filter((obj: any, index: number, self: any) => 
-      index === self.findIndex((t: any) => t[column] === obj[column])
+  FilterHederColumn(list: any, column: any) {
+    const uniqueList = list.filter(
+      (obj: any, index: number, self: any) =>
+        index === self.findIndex((t: any) => t[column] === obj[column])
     );
-    return uniqueList
+    return uniqueList;
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listdonhang().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
-    const query = event.target.value.toLowerCase();  
+    this.dataSource.filteredData = this.Listdonhang().filter(
+      (v: any) =>
+        removeVietnameseAccents(v[column]).includes(
+          event.target.value.toLowerCase()
+        ) || v[column].toLowerCase().includes(event.target.value.toLowerCase())
+    );
+    const query = event.target.value.toLowerCase();
   }
-  ListFilter:any[] =[]
-  ChosenItem(item:any,column:any)
-  {
-    const CheckItem = this.dataSource.filteredData.filter((v:any)=>v[column]===item[column]);
-    const CheckItem1 = this.ListFilter.filter((v:any)=>v[column]===item[column]);
-    if(CheckItem1.length>0)
-    {
-      this.ListFilter = this.ListFilter.filter((v) => v[column] !== item[column]);
-    }
-    else{
-      this.ListFilter = [...this.ListFilter,...CheckItem];
+  ListFilter: any[] = [];
+  ChosenItem(item: any, column: any) {
+    const CheckItem = this.dataSource.filteredData.filter(
+      (v: any) => v[column] === item[column]
+    );
+    const CheckItem1 = this.ListFilter.filter(
+      (v: any) => v[column] === item[column]
+    );
+    if (CheckItem1.length > 0) {
+      this.ListFilter = this.ListFilter.filter(
+        (v) => v[column] !== item[column]
+      );
+    } else {
+      this.ListFilter = [...this.ListFilter, ...CheckItem];
     }
   }
-  ChosenAll(list:any)
-  {
-    list.forEach((v:any) => {
-      const CheckItem = this.ListFilter.find((v1)=>v1.id===v.id)?true:false;
-      if(CheckItem)
-        {
-          this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
-        }
-        else{
-          this.ListFilter.push(v);
-        }
+  ChosenAll(list: any) {
+    list.forEach((v: any) => {
+      const CheckItem = this.ListFilter.find((v1) => v1.id === v.id)
+        ? true
+        : false;
+      if (CheckItem) {
+        this.ListFilter = this.ListFilter.filter((v) => v.id !== v.id);
+      } else {
+        this.ListFilter.push(v);
+      }
     });
   }
-  ResetFilter()
-  {
+  ResetFilter() {
     this.ListFilter = this.Listdonhang();
     this.dataSource.data = this.Listdonhang();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-  EmptyFiter()
-  {
+  EmptyFiter() {
     this.ListFilter = [];
   }
-  CheckItem(item:any)
-  {
-    return this.ListFilter.find((v)=>v.id===item.id)?true:false;
+  CheckItem(item: any) {
+    return this.ListFilter.find((v) => v.id === item.id) ? true : false;
   }
-  ApplyFilterColum(menu:any)
-  {    
-
-    this.dataSource.data = this.Listdonhang().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+  ApplyFilterColum(menu: any) {
+    this.dataSource.data = this.Listdonhang().filter((v: any) =>
+      this.ListFilter.some((v1) => v1.id === v.id)
+    );
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     menu.closeMenu();
   }
-
 
   create(): void {
     this.drawer.open();
@@ -355,7 +359,7 @@ export class ListPhieuchiahangComponent {
 
   dialog = inject(MatDialog);
   dialogCreateRef: any;
-  Phieuchia:any[] = [];
+  Phieuchia: any[] = [];
   openCreateDialog(teamplate: TemplateRef<any>) {
     console.log(this.editDonhang);
     this.Phieuchia = this.editDonhang.map((v: any) => ({
@@ -375,12 +379,12 @@ export class ListPhieuchiahangComponent {
       disableClose: true,
     });
   }
-  ListBillXuly:any[] = [];
+  ListBillXuly: any[] = [];
   openXembillDialog(teamplate: TemplateRef<any>) {
-    this.ListBillXuly = this.ListBill
-    this.ListBillXuly.forEach((v:any) => {
-      v.sanpham.forEach((v1:any) => {
-          v1.slgiao = v1.sltt?v1.sltt:v1.sld;
+    this.ListBillXuly = this.ListBill;
+    this.ListBillXuly.forEach((v: any) => {
+      v.sanpham.forEach((v1: any) => {
+        v1.slgiao = v1.sltt ? v1.sltt : v1.sld;
       });
     });
     console.log(this.ListBillXuly);
@@ -390,28 +394,35 @@ export class ListPhieuchiahangComponent {
     });
   }
 
-  getUniqueProducts(list:any[]): string[] {
+  getUniqueProducts(list: any[]): string[] {
     const products = new Set<string>();
-    list.forEach(kh => kh.sanpham.forEach((sp: { title: string; masp: string }) => 
-     products.add(sp.title)));
+    list.forEach((kh) =>
+      kh.sanpham.forEach((sp: { title: string; masp: string }) =>
+        products.add(sp.title)
+      )
+    );
     return Array.from(products).sort((a, b) => a.localeCompare(b, 'vi'));
   }
 
-  getProductQuantity(list:any[],product: string, makh: string) {
-    const customer = list.find(kh => kh.makh === makh);
-    const item = customer?.sanpham.find((sp:any) => sp.title === product);
+  getProductQuantity(list: any[], product: string, makh: string) {
+    const customer = list.find((kh) => kh.makh === makh);
+    const item = customer?.sanpham.find((sp: any) => sp.title === product);
     return item ? item : '';
   }
-  getDvtForProduct(list:any[],product: string) {
+  getDvtForProduct(list: any[], product: string) {
     const uniqueProducts = Array.from(
-      new Map(list.flatMap(c => c.sanpham.map((sp:any) => ({ ...sp, makh: c.makh, name: c.name })))
-          .map(p => [p.title, p])
+      new Map(
+        list
+          .flatMap((c) =>
+            c.sanpham.map((sp: any) => ({ ...sp, makh: c.makh, name: c.name }))
+          )
+          .map((p) => [p.title, p])
       ).values()
-  );
-    const item = uniqueProducts.find((sp:any) => sp.title === product);
+    );
+    const item = uniqueProducts.find((sp: any) => sp.title === product);
     return item ? item : '';
   }
-  
+
   CheckItemInDonhang(item: any): boolean {
     return this.editDonhang.findIndex((v) => v.id === item.id) !== -1;
   }
@@ -504,21 +515,20 @@ export class ListPhieuchiahangComponent {
   ExportExcel(data: any, title: any) {
     writeExcelFile(data, title);
   }
-  printContent()
-  {
-  const printContent = document.getElementById('printContent');
-  if (printContent) {
-    const newWindow = window.open('', '_blank');
-    const tailwindCSS =  `
+  printContent() {
+    const printContent = document.getElementById('printContent');
+    if (printContent) {
+      const newWindow = window.open('', '_blank');
+      const tailwindCSS = `
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: { extend: {} }
       };
     </script>
-  `
-    if (newWindow) {
-      newWindow.document.write(`
+  `;
+      if (newWindow) {
+        newWindow.document.write(`
         <html>
         <head>
           <title>In Bảng</title>
@@ -527,17 +537,17 @@ export class ListPhieuchiahangComponent {
             body { font-size: 10px!important; font-family: Arial, sans-serif; }
             table { width: auto;
             padding: 1px !important;
-    border-collapse: collapse;
-    margin-left: auto;
-    margin-right: auto; }
+              border-collapse: collapse;
+              margin-left: auto;
+              margin-right: auto; }
             th, td { border: 1px solid #000; padding: 1px!important; text-align: left; }
             @media print { 
             body { margin: 0; } 
           table { width: auto;
             padding: 1px !important;
-    border-collapse: collapse;
-    margin-left: auto;
-    margin-right: auto; }
+            border-collapse: collapse;
+            margin-left: auto;
+            margin-right: auto; }
             th, td { border: 1px solid #000; padding: 1px!important; text-align: left; }
             }
           </style>
@@ -550,18 +560,16 @@ export class ListPhieuchiahangComponent {
         </body>
         </html>
       `);
-      newWindow.document.close();
+        newWindow.document.close();
+      } else {
+        console.error('Không thể mở cửa sổ in');
+      }
     } else {
-      console.error('Không thể mở cửa sổ in');
+      console.error('Không tìm thấy phần tử printContent');
     }
-  } else {
-    console.error('Không tìm thấy phần tử printContent');
-  }
 
-
-
-    // html2canvas(element, 
-    //   { 
+    // html2canvas(element,
+    //   {
     //     scale: 1.5,
     //     useCORS: true,
     //     allowTaint: true,
@@ -602,16 +610,14 @@ export class ListPhieuchiahangComponent {
     return item.id; // Use a unique identifier
   }
 
-
-
   selectedFile!: File;
-  ListBill:any =this._StorageService.getItem('ListBill') || [];
+  ListBill: any = this._StorageService.getItem('ListBill') || [];
   isLoading = false; // Biến để kiểm tra trạng thái loading
   uploadMessage = ''; // Hiển thị thông báo sau khi upload
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0]; // Lấy file từ input
     this.uploadMessage = ''; // Reset thông báo cũ
-    this.uploadFile()
+    this.uploadFile();
   }
 
   async uploadFile() {
@@ -624,7 +630,7 @@ export class ListPhieuchiahangComponent {
 
     const formData = new FormData();
     formData.append('file', this.selectedFile); // 'file' phải khớp với tên bên NestJS
-  
+
     try {
       const response = await fetch(`${environment.APIURL}/googledrive/upload`, {
         method: 'POST',
@@ -639,9 +645,9 @@ export class ListPhieuchiahangComponent {
 
       this.ListBill = data.jsonData;
       this._StorageService.setItem('ListBill', this.ListBill);
-    //  const uniqueMadonhang = Array.from(new Set(data.jsonData.map((item:any) => item.madonhang)));
-    //  this.ListBill = await this.GetDonhang(uniqueMadonhang);
-     console.log(this.ListBill);
+      //  const uniqueMadonhang = Array.from(new Set(data.jsonData.map((item:any) => item.madonhang)));
+      //  this.ListBill = await this.GetDonhang(uniqueMadonhang);
+      console.log(this.ListBill);
       this.uploadMessage = 'Upload thành công!';
       console.log('Upload thành công', data);
     } catch (error) {
@@ -653,64 +659,85 @@ export class ListPhieuchiahangComponent {
   }
   async GetDonhang(items: any) {
     const query = {
-      "model": "donhang",
-      "filters": {
-        "madonhang": { "value": items, "type": "in" }
+      model: 'donhang',
+      filters: {
+        madonhang: { value: items, type: 'in' },
       },
-      "relations": {
-        "sanpham": {"include":{"sanpham": true}},
-        "khachhang": {
-          "include": true
-        }
+      relations: {
+        sanpham: { include: { sanpham: true } },
+        khachhang: {
+          include: true,
+        },
       },
-      "orderBy": { "field": "createdAt", "direction": "desc" },
-      "take": 10
+      orderBy: { field: 'createdAt', direction: 'desc' },
+      take: 10,
     };
-    return await this._SearchService.Search(query)
+    return await this._SearchService.Search(query);
   }
 
-updateValue(event: Event,j: any,i: any,field: keyof any,type: 'number' | 'string') {
-  const newValue = type === 'number'? Number((event.target as HTMLElement).innerText.trim()) || 0
-      : (event.target as HTMLElement).innerText.trim();
-      const keyboardEvent = event as KeyboardEvent;
-      if (keyboardEvent.key === "Enter" && !keyboardEvent.shiftKey) {
+  updateValue(
+    event: Event,
+    j: any,
+    i: any,
+    field: keyof any,
+    type: 'number' | 'string'
+  ) {
+    const newValue =
+      type === 'number'
+        ? Number((event.target as HTMLElement).innerText.trim()) || 0
+        : (event.target as HTMLElement).innerText.trim();
+    const keyboardEvent = event as KeyboardEvent;
+    if (keyboardEvent.key === 'Enter' && !keyboardEvent.shiftKey) {
+      event.preventDefault();
+    }
+    if (type === 'number') {
+      const allowedKeys = [
+        'Backspace',
+        'Delete',
+        'ArrowLeft',
+        'ArrowRight',
+        'Tab',
+      ];
+      // Chặn nếu không phải số và không thuộc danh sách phím cho phép
+      if (
+        !/^\d$/.test(keyboardEvent.key) &&
+        !allowedKeys.includes(keyboardEvent.key)
+      ) {
         event.preventDefault();
       }
-      if (type === "number") {
-        const allowedKeys = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
-        // Chặn nếu không phải số và không thuộc danh sách phím cho phép
-        if (!/^\d$/.test(keyboardEvent.key) && !allowedKeys.includes(keyboardEvent.key)) {
-          event.preventDefault();
+    }
+    this.ListBillXuly[j].sanpham[i][field] = newValue;
+    const inputs = document.querySelectorAll(
+      '.slgiao-input-' + j
+    ) as NodeListOf<HTMLInputElement>;
+    console.log(inputs);
+
+    if (i < this.getUniqueProducts(this.ListBillXuly).length - 1) {
+      const nextInput = inputs[i + 1] as HTMLInputElement;
+      if (nextInput) {
+        if (nextInput instanceof HTMLInputElement) {
+          nextInput.focus();
+          nextInput.select();
         }
-      } 
-      this.ListBillXuly[j].sanpham[i][field] = newValue; 
-      const inputs = document.querySelectorAll('.slgiao-input-'+j)as NodeListOf<HTMLInputElement>;
-      console.log(inputs);
-      
-      if (i < this.getUniqueProducts(this.ListBillXuly).length - 1) {
-        const nextInput = inputs[i + 1]as HTMLInputElement
-        if (nextInput) {
-          if (nextInput instanceof HTMLInputElement) {
-            nextInput.focus();
-            nextInput.select();
+        // Then select text using a different method that works on more element types
+        setTimeout(() => {
+          if (document.createRange && window.getSelection) {
+            const range = document.createRange();
+            range.selectNodeContents(nextInput);
+            const selection = window.getSelection();
+            selection?.removeAllRanges();
+            selection?.addRange(range);
           }
-          // Then select text using a different method that works on more element types
-          setTimeout(() => {
-            if (document.createRange && window.getSelection) {
-              const range = document.createRange();
-              range.selectNodeContents(nextInput);
-              const selection = window.getSelection();
-              selection?.removeAllRanges();
-              selection?.addRange(range);
-            }
-          }, 10);
-        }
-      }    
+        }, 10);
+      }
+    }
   }
-  UpdateListBill(){
+  UpdateListBill() {
     console.log(this.ListBillXuly);
     const updatePromises = this.ListBillXuly.map(async (v) => {
-      const v1 = await this._DonhangService.SearchField({ madonhang: v.madonhang });
+      const v1 = await this._DonhangService.SearchField({
+        madonhang: v.madonhang,
+      });
       v1.sanpham.forEach((v2: any) => {
         const item = v.sanpham.find((v3: any) => v3.masp === v2.masp);
         if (item) {
@@ -731,8 +758,6 @@ updateValue(event: Event,j: any,i: any,field: keyof any,type: 'number' | 'string
     });
   }
 }
-
-
 
 function memoize() {
   return function (
@@ -775,5 +800,4 @@ function Debounce(delay: number = 300) {
 
     return descriptor;
   };
-  
 }
