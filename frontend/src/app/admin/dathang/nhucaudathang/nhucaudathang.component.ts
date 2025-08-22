@@ -410,7 +410,7 @@ export class NhucaudathangComponent {
         // console.log(dathang);
         if (tonghopMap.has(dathang.masp)) {
           const item = tonghopMap.get(dathang.masp);
-          item.SLDat += dathang.slnhan;
+          item.SLDat += dathang.sldat;
           item.ngaynhan = dathang.ngaynhan;
           item.mancc = dathang.mancc;
           item.name = dathang.name;
