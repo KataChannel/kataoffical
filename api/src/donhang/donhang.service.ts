@@ -853,20 +853,65 @@ export class DonhangService {
                 continue;
               }
 
+              // Lấy bảng giá mặc định để fallback
+              const banggiaDefault = await prisma.banggia.findUnique({
+                where: { id: DEFAUL_BANGGIA_ID },
+                include: {
+                  sanpham: {
+                    include: {
+                      sanpham: true
+                    }
+                  },
+                },
+              });
+
               console.log(`Cập nhật giá cho đơn hàng ${donhang.madonhang} từ bảng giá ${donhang.banggia.mabanggia}`);
 
               let tongchua = 0; // Tổng tiền chưa VAT
               let hasUpdates = false;
 
-              // 3. Cập nhật giá cho từng sản phẩm trong đơn hàng
+              // 3. Cập nhật giá cho từng sản phẩm trong đơn hàng với logic ưu tiên
               for (const donhangSanpham of donhang.sanpham) {
-                // Tìm giá từ bảng giá của đơn hàng
+                // Tìm giá từ bảng giá chỉ định (ưu tiên 1)
                 const giaSanpham = donhang.banggia.sanpham.find(
                   (bgsp) => bgsp.sanphamId === donhangSanpham.idSP,
                 );
 
+                // Tìm giá từ bảng giá mặc định (ưu tiên 2)
+                const giaSanphamDefault = banggiaDefault?.sanpham.find(
+                  (bgsp) => bgsp.sanphamId === donhangSanpham.idSP,
+                );
+
+                let giaban = 0;
+                let giaSource = 'none';
+
+                // Logic ưu tiên lấy giá
                 if (giaSanpham) {
-                  const giaban = Number(giaSanpham.giaban);
+                  const giabanFromBanggia = Number(giaSanpham.giaban);
+                  if (giabanFromBanggia > 0) {
+                    // Ưu tiên 1: Có giá từ bảng giá chỉ định và > 0
+                    giaban = giabanFromBanggia;
+                    giaSource = `bảng giá ${donhang.banggia.mabanggia}`;
+                  } else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
+                    // Ưu tiên 2: Giá bảng giá chỉ định = 0, lấy từ bảng giá mặc định
+                    giaban = Number(giaSanphamDefault.giaban);
+                    giaSource = 'bảng giá mặc định (fallback do giá = 0)';
+                  } else {
+                    // Ưu tiên 3: Cả 2 đều = 0 hoặc không có, trả về 0
+                    giaban = 0;
+                    giaSource = 'không tìm thấy giá hợp lệ (trả về 0)';
+                  }
+                } else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
+                  // Ưu tiên 2: Không có trong bảng giá chỉ định, lấy từ bảng giá mặc định
+                  giaban = Number(giaSanphamDefault.giaban);
+                  giaSource = 'bảng giá mặc định (không có trong bảng giá chỉ định)';
+                } else {
+                  // Ưu tiên 3: Không tìm thấy ở đâu, trả về 0
+                  giaban = 0;
+                  giaSource = 'không tìm thấy trong cả 2 bảng giá (trả về 0)';
+                }
+
+                if (giaban > 0) {
                   const sldat = Number(donhangSanpham.sldat) || 0;
                   const slgiao = Number(donhangSanpham.slgiao) || 0;
                   const slnhan = Number(donhangSanpham.slnhan) || 0;
@@ -892,9 +937,9 @@ export class DonhangService {
                   tongchua += ttnhan;
                   hasUpdates = true;
 
-                  console.log(`Cập nhật sản phẩm ${donhangSanpham.sanpham?.title} - Giá mới: ${giaban}`);
+                  console.log(`✅ Cập nhật sản phẩm ${donhangSanpham.sanpham?.title} - Giá: ${giaban} (từ ${giaSource})`);
                 } else {
-                  console.warn(`Không tìm thấy giá cho sản phẩm ${donhangSanpham.sanpham?.title} trong bảng giá ${donhang.banggia.mabanggia}`);
+                  console.warn(`⚠️ Sản phẩm ${donhangSanpham.sanpham?.title} - ${giaSource}, giữ nguyên giá cũ`);
                 }
               }
 
@@ -1586,11 +1631,31 @@ export class DonhangService {
         where: { id: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID },
         include: { sanpham: true },
       });
+      const banggiaDefault = await prisma.banggia.findUnique({
+        where: { id: DEFAUL_BANGGIA_ID },
+        include: { sanpham: true },
+      });
 
       // Update product prices from banggia and recalculate totals
       const updatedSanpham = dto?.sanpham?.map((sp) => {
         const giaSanpham = banggia?.sanpham.find(bgsp => bgsp.sanphamId === (sp.idSP || sp.id));
-        const giaban = giaSanpham ? parseFloat(giaSanpham.giaban.toString()) : parseFloat((sp.giaban || 0).toString());
+        const giaSanphamDefault = banggiaDefault?.sanpham.find(bgsp => bgsp.sanphamId === (sp.idSP || sp.id));
+        
+        let giaban = parseFloat((sp.giaban || 0).toString());
+        
+        if (giaSanpham) {
+          const giabanFromBanggia = parseFloat(giaSanpham.giaban.toString());
+          if (giabanFromBanggia === 0 && giaSanphamDefault) {
+        // Nếu giá trong bảng giá hiện tại = 0, lấy giá từ bảng giá mặc định
+        giaban = parseFloat(giaSanphamDefault.giaban.toString());
+          } else {
+        giaban = giabanFromBanggia;
+          }
+        } else if (giaSanphamDefault) {
+          // Nếu không tìm thấy trong bảng giá hiện tại, lấy từ bảng giá mặc định
+          giaban = parseFloat(giaSanphamDefault.giaban.toString());
+        }
+        
         const slnhan = parseFloat((sp.slnhan ?? 0).toString());
         const vat = parseFloat((sp.vat ?? 0).toString());
         

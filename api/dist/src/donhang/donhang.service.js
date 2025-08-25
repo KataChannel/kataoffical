@@ -657,13 +657,48 @@ let DonhangService = class DonhangService {
                                 errorCount++;
                                 continue;
                             }
+                            const banggiaDefault = await prisma.banggia.findUnique({
+                                where: { id: DEFAUL_BANGGIA_ID },
+                                include: {
+                                    sanpham: {
+                                        include: {
+                                            sanpham: true
+                                        }
+                                    },
+                                },
+                            });
                             console.log(`Cập nhật giá cho đơn hàng ${donhang.madonhang} từ bảng giá ${donhang.banggia.mabanggia}`);
                             let tongchua = 0;
                             let hasUpdates = false;
                             for (const donhangSanpham of donhang.sanpham) {
                                 const giaSanpham = donhang.banggia.sanpham.find((bgsp) => bgsp.sanphamId === donhangSanpham.idSP);
+                                const giaSanphamDefault = banggiaDefault?.sanpham.find((bgsp) => bgsp.sanphamId === donhangSanpham.idSP);
+                                let giaban = 0;
+                                let giaSource = 'none';
                                 if (giaSanpham) {
-                                    const giaban = Number(giaSanpham.giaban);
+                                    const giabanFromBanggia = Number(giaSanpham.giaban);
+                                    if (giabanFromBanggia > 0) {
+                                        giaban = giabanFromBanggia;
+                                        giaSource = `bảng giá ${donhang.banggia.mabanggia}`;
+                                    }
+                                    else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
+                                        giaban = Number(giaSanphamDefault.giaban);
+                                        giaSource = 'bảng giá mặc định (fallback do giá = 0)';
+                                    }
+                                    else {
+                                        giaban = 0;
+                                        giaSource = 'không tìm thấy giá hợp lệ (trả về 0)';
+                                    }
+                                }
+                                else if (giaSanphamDefault && Number(giaSanphamDefault.giaban) > 0) {
+                                    giaban = Number(giaSanphamDefault.giaban);
+                                    giaSource = 'bảng giá mặc định (không có trong bảng giá chỉ định)';
+                                }
+                                else {
+                                    giaban = 0;
+                                    giaSource = 'không tìm thấy trong cả 2 bảng giá (trả về 0)';
+                                }
+                                if (giaban > 0) {
                                     const sldat = Number(donhangSanpham.sldat) || 0;
                                     const slgiao = Number(donhangSanpham.slgiao) || 0;
                                     const slnhan = Number(donhangSanpham.slnhan) || 0;
@@ -684,10 +719,10 @@ let DonhangService = class DonhangService {
                                     });
                                     tongchua += ttnhan;
                                     hasUpdates = true;
-                                    console.log(`Cập nhật sản phẩm ${donhangSanpham.sanpham?.title} - Giá mới: ${giaban}`);
+                                    console.log(`✅ Cập nhật sản phẩm ${donhangSanpham.sanpham?.title} - Giá: ${giaban} (từ ${giaSource})`);
                                 }
                                 else {
-                                    console.warn(`Không tìm thấy giá cho sản phẩm ${donhangSanpham.sanpham?.title} trong bảng giá ${donhang.banggia.mabanggia}`);
+                                    console.warn(`⚠️ Sản phẩm ${donhangSanpham.sanpham?.title} - ${giaSource}, giữ nguyên giá cũ`);
                                 }
                             }
                             if (hasUpdates) {
@@ -1256,9 +1291,26 @@ let DonhangService = class DonhangService {
                 where: { id: dto.banggiaId || khachhang.banggiaId || DEFAUL_BANGGIA_ID },
                 include: { sanpham: true },
             });
+            const banggiaDefault = await prisma.banggia.findUnique({
+                where: { id: DEFAUL_BANGGIA_ID },
+                include: { sanpham: true },
+            });
             const updatedSanpham = dto?.sanpham?.map((sp) => {
                 const giaSanpham = banggia?.sanpham.find(bgsp => bgsp.sanphamId === (sp.idSP || sp.id));
-                const giaban = giaSanpham ? parseFloat(giaSanpham.giaban.toString()) : parseFloat((sp.giaban || 0).toString());
+                const giaSanphamDefault = banggiaDefault?.sanpham.find(bgsp => bgsp.sanphamId === (sp.idSP || sp.id));
+                let giaban = parseFloat((sp.giaban || 0).toString());
+                if (giaSanpham) {
+                    const giabanFromBanggia = parseFloat(giaSanpham.giaban.toString());
+                    if (giabanFromBanggia === 0 && giaSanphamDefault) {
+                        giaban = parseFloat(giaSanphamDefault.giaban.toString());
+                    }
+                    else {
+                        giaban = giabanFromBanggia;
+                    }
+                }
+                else if (giaSanphamDefault) {
+                    giaban = parseFloat(giaSanphamDefault.giaban.toString());
+                }
                 const slnhan = parseFloat((sp.slnhan ?? 0).toString());
                 const vat = parseFloat((sp.vat ?? 0).toString());
                 return {
