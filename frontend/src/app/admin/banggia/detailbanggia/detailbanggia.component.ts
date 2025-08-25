@@ -98,15 +98,15 @@ export class DetailBanggiaComponent implements AfterViewInit {
   filterKhachhang: any[] = [];
   CheckListKhachhang: any[] = [];
   constructor() {
+    
     this._route.paramMap.subscribe(async (params) => {
       const id = params.get('id');
       this._BanggiaService.setBanggiaId(id);
     });
-
     effect(async () => {
       const id = this._BanggiaService.banggiaId();
-      await this.LoadListSanpham();
-      await this.LoadListKhachhang();
+      // await this.LoadListSanpham();
+      // await this.LoadListKhachhang();
       console.log('Detected banggiaId change:', id);
       if (!id) {
         this._router.navigate(['/admin/banggia']);
@@ -139,28 +139,29 @@ export class DetailBanggiaComponent implements AfterViewInit {
     await this.LoadListKhachhang();
     await this.LoadListSanpham(); 
   }
-
   async LoadListSanpham(){
     try{
-      const ListSanpham = await this._GraphqlService.findMany('sanpham', {
+      const ListSanpham = await this._GraphqlService.findAll('sanpham', {
         select: {
           id: true,
           title: true,
           masp: true,
           dvt: true,
         },
-        orderBy: { title: 'asc' },
         take: 99999,
+        aggressiveCache: true,
+        enableParallelFetch: true,
+        orderBy: { title: 'asc' },
       });
       console.log('Danh sách sản phẩm từ GraphQL:', ListSanpham);
-      this.ListSanpham = ListSanpham;
+      this.ListSanpham = ListSanpham.data;
     }catch(error){
       console.error('Lỗi load danh sách sản phẩm:', error);
     }
   }
   async LoadListKhachhang(){
     try{
-      const Khachhangs = await this._GraphqlService.findMany('khachhang', {
+      const Khachhangs = await this._GraphqlService.findAll('khachhang', {
         select: {
           id: true,
           name: true,
@@ -174,9 +175,11 @@ export class DetailBanggiaComponent implements AfterViewInit {
         where: { isActive: true },
         orderBy: { name: 'asc' },
         take: 99999,
+        aggressiveCache: true,
+        enableParallelFetch: true,
       });
       console.log('Danh sách khách hàng từ GraphQL:', Khachhangs);
-      this.filterKhachhang = this.ListKhachhang = Khachhangs;
+      this.filterKhachhang = this.ListKhachhang = Khachhangs.data;
     }catch(error){
       console.error('Lỗi load danh sách sản phẩm:', error);
     }

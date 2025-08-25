@@ -443,6 +443,7 @@ export class ListImportdataComponent implements OnInit {
               gionhanhang: v.gionhanhang?.toString().trim() || '',
               loaikh: v.loaikh?.toString().trim() || 'khachsi',
               hiengia: v.hiengia || true,
+              ishowvat: v.ishowvat || false,
               ghichu: v.ghichu?.toString().trim() || '',
             }))
           : [
@@ -459,6 +460,7 @@ export class ListImportdataComponent implements OnInit {
                 gionhanhang: '',
                 loaikh: 'khachsi',
                 hiengia: true,
+                ishowvat: false,
                 ghichu: '',
               },
             ];

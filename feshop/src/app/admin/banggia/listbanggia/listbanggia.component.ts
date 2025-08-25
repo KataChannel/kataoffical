@@ -49,9 +49,7 @@ export class ListBanggiaComponent{
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
-
   private _banggiasService: BanggiasService = inject(BanggiasService);
-
   constructor(
     private _breakpointObserver: BreakpointObserver,
     private _router: Router,

@@ -86,14 +86,8 @@ export class ListBanggiaComponent {
   filterValues: { [key: string]: string } = {};
 
   private _BanggiaGraphqlService: BanggiaGraphqlService = inject(BanggiaGraphqlService);
-  private _SanphamService: SanphamService = inject(SanphamService);
-  private _KhachhangService: KhachhangService = inject(KhachhangService);
-  private _NhacungcapService: NhacungcapService = inject(NhacungcapService);
-  private _DonhangService: DonhangService = inject(DonhangService);
-  private _DathangService: DathangService = inject(DathangService);
   private _GraphqlService: GraphqlService = inject(GraphqlService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
-  private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   dataSource = new MatTableDataSource<any>([]);
   _snackBar: MatSnackBar = inject(MatSnackBar);
@@ -114,34 +108,46 @@ export class ListBanggiaComponent {
   async ngOnInit(): Promise<void> {    
     try {
       // Lấy tất cả bảng giá sử dụng GraphQL
-      const banggiaData = await this._GraphqlService.findMany('banggia', {
-        include: {
-          khachhang: {select : { id: true, name: true }},
+      const banggiaData = await this._GraphqlService.findAll('banggia', {
+        select: {
+          id:true,
+          title: true,
+          mabanggia: true,
+          batdau: true,
+          ketthuc: true,
+          status: true,
+          createdAt: true,
+          khachhang: { select: { id: true, name: true } },
           sanpham: {
-            select : { id: true, sanphamId: true }
+            select: { id: true, sanphamId: true }
           },
         },
-        take:99999,
+        take: 99999,
+        aggressiveCache: true,
+        enableParallelFetch: true,
         orderBy: { createdAt: 'desc' }
       });
-      const result = banggiaData.map((v)=>{
+      console.log(banggiaData);
+
+      const result = banggiaData.data.map((v)=>{
         return {
           ...v,
           sanpham: v.sanpham.length,
           khachhang: v.khachhang.length
         }
       })  
+
       this.CountItem = result.length;
       this.dataSource = new MatTableDataSource(result);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.initializeColumns();
       this.setupDrawer();
-      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-      this.paginator._intl.previousPageLabel = 'Về Trước';
-      this.paginator._intl.firstPageLabel = 'Trang Đầu';
-      this.paginator._intl.lastPageLabel = 'Trang Cuối';
+      // this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+      // this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+      // this.paginator._intl.previousPageLabel = 'Về Trước';
+      // this.paginator._intl.firstPageLabel = 'Trang Đầu';
+      // this.paginator._intl.lastPageLabel = 'Trang Cuối';
 
     } catch (error) {
       console.error('Lỗi khởi tạo danh sách bảng giá:', error);

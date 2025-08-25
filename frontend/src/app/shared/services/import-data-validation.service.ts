@@ -448,7 +448,8 @@ export class ImportDataValidationService {
       mst: item.mst?.toString().trim() || '',
       gionhanhang: item.gionhanhang?.toString().trim() || '',
       loaikh: item.loaikh?.toString().trim() || 'khachsi',
-      hiengia: item.hiengia !== undefined ? Boolean(item.hiengia) : true,
+      hiengia: item.hiengia,
+      isshowvat: item.ishowvat,
       ghichu: item.ghichu?.toString().trim() || '',
       mabanggia: item.mabanggia?.toString().trim() || '',
     }));
