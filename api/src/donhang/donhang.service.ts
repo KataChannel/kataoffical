@@ -481,46 +481,8 @@ export class DonhangService {
 
         const dateEndRow = currentRow - 1;
         
-        // Add daily summary row
-        if (dateGroup.items.length > 0) {
-          const summaryRow = worksheet.getRow(currentRow);
-          summaryRow.values = {
-            ngaygiao: '',
-            makhachhang: '',
-            tenkhachhang: '',
-            madonhang: '',
-            mahang: '',
-            tenhang: `TỔNG NGÀY ${moment(dateGroup.date).format("DD/MM/YYYY")}`,
-            dvt: '',
-            soluong: '',
-            dongia: '',
-            thanhtientruocvat: dateGroup.totalThanhtientruocvat,
-            vat: '',
-            dongiavathoadon: '',
-            thanhtiensauvat: dateGroup.totalThanhtiensauvat,
-            ghichu: '',
-            tongtiensauvat: ''
-          };
-
-          // Style summary row
-          summaryRow.font = { bold: true };
-          summaryRow.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'F0F0F0' }
-          };
-
-          // Format summary numbers
-          ['thanhtientruocvat', 'thanhtiensauvat'].forEach(col => {
-            const cell = summaryRow.getCell(col);
-            cell.numFmt = '#,##0.00';
-            cell.alignment = { horizontal: 'right' };
-            cell.font = { bold: true };
-          });
-
-          currentRow++;
-        }
-
+        // Skip daily summary row - removed as requested
+        
         // Create merge ranges for date grouping (merge ngaygiao column for same date)
         if (dateEndRow > dateStartRow) {
           const ngaygiaoColIndex = columns.findIndex(c => c.key === 'ngaygiao') + 1;
@@ -613,16 +575,12 @@ export class DonhangService {
         if (!dateMap.has(dateKey)) {
           dateMap.set(dateKey, {
             date: item.ngaygiao,
-            items: [],
-            totalThanhtientruocvat: 0,
-            totalThanhtiensauvat: 0
+            items: []
           });
         }
         
         const dateGroup = dateMap.get(dateKey);
         dateGroup.items.push(item);
-        dateGroup.totalThanhtientruocvat += Number(item.thanhtientruocvat) || 0;
-        dateGroup.totalThanhtiensauvat += Number(item.thanhtiensauvat) || 0;
       });
       
       // Sort date groups by date

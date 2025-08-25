@@ -390,6 +390,14 @@ doFilterKhachhang(event: Event){
     this.drawer.open();
     this._router.navigate(['admin/congnokhachhang', item.id]);
   }
+  ToggleAll(): void {
+    if (this.editDonhang.length === this.dataSource.filteredData.length) {
+      this.editDonhang = [];
+    } else {
+      this.editDonhang = [...this.dataSource.filteredData];
+    }
+  }
+
   editDonhang: any[] = [];
   toggleDonhang(item: any): void {
     const index = this.editDonhang.findIndex((v) => v.id === item.id);

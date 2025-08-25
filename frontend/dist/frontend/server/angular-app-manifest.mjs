@@ -1082,8 +1082,8 @@ export default {
 ],
   entryPointToBrowserMapping: undefined,
   assets: {
-    'index.csr.html': {size: 72880, hash: '09ea05fd71a337d95b5a6370ce48bcef0bbd9b864434abaccad0745d60e99b5c', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
-    'index.server.html': {size: 24171, hash: '444bbf8ebea8ac39652bc840c8d24d77145f715fb7212b27ca66053962177423', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
+    'index.csr.html': {size: 72880, hash: 'b8d56769855c497d2ada88d5352957b33f0a644a2c8ed537e0e3996640b9575a', text: () => import('./assets-chunks/index_csr_html.mjs').then(m => m.default)},
+    'index.server.html': {size: 24171, hash: '83a14af5ebc2ba9e139d5bda028cbd97c8a5492e90ab375d6805918e5041b0b2', text: () => import('./assets-chunks/index_server_html.mjs').then(m => m.default)},
     'styles-S4UOB6PI.css': {size: 157031, hash: '1otdGcK5nSs', text: () => import('./assets-chunks/styles-S4UOB6PI_css.mjs').then(m => m.default)}
   },
 };

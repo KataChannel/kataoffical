@@ -28,7 +28,9 @@
           <mat-datepicker-toggle matIconSuffix [for]="pickerKetthuc"></mat-datepicker-toggle>
           <mat-datepicker #pickerKetthuc></mat-datepicker>
         </mat-form-field>
-        <span class="lg:flex hidden whitespace-nowrap p-2 rounded-lg bg-slate-200">{{CountItem}} Đơn Hàng</span>
+        <span (click)="ToggleAll()" class="lg:flex hidden cursor-pointer whitespace-nowrap p-2 rounded-lg bg-slate-200">
+          {{CountItem}} Đơn Hàng
+        </span>
 
        <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(ListExport, 'Congno')" color="primary"
           mat-icon-button class="relative">

@@ -384,39 +384,6 @@ let DonhangService = class DonhangService {
                     currentRow++;
                 }
                 const dateEndRow = currentRow - 1;
-                if (dateGroup.items.length > 0) {
-                    const summaryRow = worksheet.getRow(currentRow);
-                    summaryRow.values = {
-                        ngaygiao: '',
-                        makhachhang: '',
-                        tenkhachhang: '',
-                        madonhang: '',
-                        mahang: '',
-                        tenhang: `TỔNG NGÀY ${moment(dateGroup.date).format("DD/MM/YYYY")}`,
-                        dvt: '',
-                        soluong: '',
-                        dongia: '',
-                        thanhtientruocvat: dateGroup.totalThanhtientruocvat,
-                        vat: '',
-                        dongiavathoadon: '',
-                        thanhtiensauvat: dateGroup.totalThanhtiensauvat,
-                        ghichu: '',
-                        tongtiensauvat: ''
-                    };
-                    summaryRow.font = { bold: true };
-                    summaryRow.fill = {
-                        type: 'pattern',
-                        pattern: 'solid',
-                        fgColor: { argb: 'F0F0F0' }
-                    };
-                    ['thanhtientruocvat', 'thanhtiensauvat'].forEach(col => {
-                        const cell = summaryRow.getCell(col);
-                        cell.numFmt = '#,##0.00';
-                        cell.alignment = { horizontal: 'right' };
-                        cell.font = { bold: true };
-                    });
-                    currentRow++;
-                }
                 if (dateEndRow > dateStartRow) {
                     const ngaygiaoColIndex = columns.findIndex(c => c.key === 'ngaygiao') + 1;
                     mergeRanges.push({
@@ -485,15 +452,11 @@ let DonhangService = class DonhangService {
                 if (!dateMap.has(dateKey)) {
                     dateMap.set(dateKey, {
                         date: item.ngaygiao,
-                        items: [],
-                        totalThanhtientruocvat: 0,
-                        totalThanhtiensauvat: 0
+                        items: []
                     });
                 }
                 const dateGroup = dateMap.get(dateKey);
                 dateGroup.items.push(item);
-                dateGroup.totalThanhtientruocvat += Number(item.thanhtientruocvat) || 0;
-                dateGroup.totalThanhtiensauvat += Number(item.thanhtiensauvat) || 0;
             });
             customer.dateGroups = Array.from(dateMap.values()).sort((a, b) => {
                 if (!a.date && !b.date)
