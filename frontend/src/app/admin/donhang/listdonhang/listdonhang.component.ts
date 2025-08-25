@@ -97,6 +97,8 @@ export class ListDonhangComponent {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   @ViewChild('dialogImportExcelCu') dialogImportExcelCu!: TemplateRef<any>;
+  @ViewChild('ConfirmDongboDialog') confirmDongboDialog!: TemplateRef<any>;
+  @ViewChild('ConfirmDuplicateDialog') confirmDuplicateDialog!: TemplateRef<any>;
   filterValues: { [key: string]: string } = {};
   private _DonhangService: DonhangService = inject(DonhangService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
@@ -232,6 +234,7 @@ export class ListDonhangComponent {
             createdAt: true,
             tongvat: true,
             tongtien: true,
+            vat:true,
             type: true,
             sanpham: {
               select: {
@@ -258,6 +261,9 @@ export class ListDonhangComponent {
           status: v.status,
           createdAt: v.createdAt,
           updatedAt: v.updatedAt || v.createdAt,
+          tongtien:v.tongtien,
+          vat:v.vat,
+          tongvat:v.tongvat
         }));
       this.Listdonhang.set(donhangs);
       if (donhangs) {
@@ -661,10 +667,45 @@ export class ListDonhangComponent {
   // }
 
 
-    async Dongbogia() {
-    // Kiểm tra có đơn hàng nào được chọn không
+  /**
+   * Format date for display
+   */
+  formatDate(date: string | Date): string {
+    return new Date(date).toLocaleDateString('vi-VN');
+  }
+
+  /**
+   * Open duplicate confirmation dialog
+   */
+  openDuplicateDialog(duplicateData: any): Promise<string> {
+    return new Promise((resolve) => {
+      this.duplicateDialogData = duplicateData;
+      
+      const dialogRef = this.dialog.open(this.confirmDuplicateDialog, {
+        hasBackdrop: true,
+        disableClose: true,
+        width: '700px',
+        maxWidth: '95vw',
+        maxHeight: '90vh'
+      });
+      
+      dialogRef.afterClosed().subscribe((result) => {
+        this.duplicateDialogData = null;
+        resolve(result || 'skip');
+      });
+    });
+  }
+
+  async DongboVat() {
+    this.openDongboDialog();
+  }
+
+  /**
+   * Open sync confirmation dialog
+   */
+  openDongboDialog() {
     if (this.EditList.length === 0) {
-      this._snackBar.open('Không có đơn hàng nào để đồng bộ giá', '', {
+      this._snackBar.open('Không có đơn hàng nào để đồng bộ', '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
@@ -673,70 +714,138 @@ export class ListDonhangComponent {
       return;
     }
 
-    // Hiển thị dialog xác nhận với thông tin về batch processing
-    const batchSize = 5;
-    const totalBatches = Math.ceil(this.EditList.length / batchSize);
+    const dialogRef = this.dialog.open(this.confirmDongboDialog, {
+      hasBackdrop: true,
+      disableClose: true,
+      width: '600px',
+      maxWidth: '90vw'
+    });
     
-    const confirmDialog = confirm(`Bạn có chắc chắn muốn đồng bộ giá cho ${this.EditList.length} đơn hàng không?\n\nThao tác sẽ được thực hiện theo ${totalBatches} lần (mỗi lần ${batchSize} đơn hàng) để đảm bảo hiệu suất.\n\nLưu ý: Thao tác này sẽ cập nhật giá bán từ bảng giá tương ứng và tính lại tổng tiền của tất cả đơn hàng.`);
-    
-    if (!confirmDialog) {
-      return;
-    }
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === "true") {
+        this.executeDongboVat();
+      }
+    });
+  }
 
+  /**
+   * Execute the actual sync operation
+   */
+  async executeDongboVat() {
     this.isLoading.set(true);
     
     // Hiển thị progress snackbar
-    let progressSnackbar = this._snackBar.open(`Đang đồng bộ giá cho ${this.EditList.length} đơn hàng...`, 'Đang xử lý', {
-      duration: 0, // Không tự động đóng
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: ['snackbar-success'],
-    });
+    let progressSnackbar = this._snackBar.open(
+      `Đang đồng bộ giá và VAT cho ${this.EditList.length} đơn hàng...`, 
+      'Đang xử lý', 
+      {
+        duration: 0, // Không tự động đóng
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-info'],
+      }
+    );
 
     try {
-      const result = await this._DonhangService.DongboGia(this.EditList);
+      // Bước 1: Đồng bộ giá từ bảng giá
+      const priceResult = await this._DonhangService.DongboGia(this.EditList);
+      
+      if (!priceResult || priceResult.status !== 'success') {
+        throw new Error(priceResult?.message || 'Lỗi đồng bộ giá');
+      }
+
+      // Bước 2: Tính VAT cho các đơn hàng đã cập nhật giá
+      let vatUpdatedCount = 0;
+      let vatErrorCount = 0;
+      const vatErrors: string[] = [];
+
+      // Lấy lại dữ liệu đơn hàng mới nhất sau khi đồng bộ giá
+      await this.LoadData();
+
+      // Xử lý VAT cho từng đơn hàng trong EditList
+      for (const order of this.EditList) {
+        try {
+          // Tìm đơn hàng đã được cập nhật giá
+          const updatedOrder = this.dataSource.data.find(o => o.id === order.id);
+          const tongtien = Number(updatedOrder?.tongtien || order.tongtien) || 0;
+          const vatRate = Number(updatedOrder?.vat || order.vat) || 0.05; // Mặc định 5% nếu không có
+          const tongvat = tongtien * vatRate;
+
+          // Cập nhật VAT qua GraphQL
+          await this._GraphqlService.updateOne('donhang', 
+            { id: order.id }, 
+            { 
+              tongvat: Math.round(tongvat * 100) / 100, // Làm tròn 2 chữ số thập phân
+              vat: vatRate 
+            }
+          );
+
+          // Cập nhật trong danh sách local
+          order.tongvat = Math.round(tongvat * 100) / 100;
+          order.tongtien = tongtien;
+          vatUpdatedCount++;
+
+        } catch (error: any) {
+          console.error(`Error updating VAT for order ${order.madonhang}:`, error);
+          vatErrorCount++;
+          vatErrors.push(`${order.madonhang}: ${error.message || 'Lỗi không xác định'}`);
+        }
+      }
 
       // Đóng progress snackbar
       progressSnackbar.dismiss();
 
-      if (result && result.status === 'success') {
-        let message = result.message || 'Đồng bộ giá thành công';
+      // Hiển thị kết quả tổng hợp
+      if (priceResult.updatedCount > 0 || vatUpdatedCount > 0) {
+        let message = `✅ Đồng bộ hoàn tất!\n`;
         
-        // Thêm thông tin chi tiết nếu có
-        if (result.updatedCount !== undefined) {
-          const successRate = Math.round((result.updatedCount / result.totalProcessed) * 100);
-          message = `✅ Đồng bộ giá hoàn tất!\n📊 Kết quả: ${result.updatedCount}/${result.totalProcessed} đơn hàng (${successRate}%)`;
+        // Thông tin đồng bộ giá
+        if (priceResult.updatedCount !== undefined) {
+          const priceSuccessRate = Math.round((priceResult.updatedCount / priceResult.totalProcessed) * 100);
+          message += `📊 Giá: ${priceResult.updatedCount}/${priceResult.totalProcessed} đơn hàng (${priceSuccessRate}%)\n`;
           
-          if (result.errorCount > 0) {
-            message += `\n⚠️ Lỗi: ${result.errorCount} đơn hàng không thể cập nhật`;
+          if (priceResult.errorCount > 0) {
+            message += `⚠️ Lỗi giá: ${priceResult.errorCount} đơn hàng\n`;
           }
         }
 
+        // Thông tin đồng bộ VAT
+        const vatSuccessRate = Math.round((vatUpdatedCount / this.EditList.length) * 100);
+        message += `💰 VAT: ${vatUpdatedCount}/${this.EditList.length} đơn hàng (${vatSuccessRate}%)`;
+        
+        if (vatErrorCount > 0) {
+          message += `\n⚠️ Lỗi VAT: ${vatErrorCount} đơn hàng`;
+          console.warn('VAT sync errors:', vatErrors);
+        }
+
         this._snackBar.open(message, '✅ Thành công', {
-          duration: 6000,
+          duration: 8000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-success'],
         });
 
-        // Reload data sau khi sync thành công
+        // Refresh data để đồng bộ với server
         await this.LoadData();
+        
+        // Clear selection sau khi hoàn thành
         this.EditList = [];
       } else {
-        this._snackBar.open(result?.message || 'Đồng bộ giá thất bại', '❌ Lỗi', {
+        this._snackBar.open('❌ Không có đơn hàng nào được cập nhật', 'Đóng', {
           duration: 4000,
           horizontalPosition: 'end',
           verticalPosition: 'top',
           panelClass: ['snackbar-error'],
         });
       }
+
     } catch (error: any) {
-      console.error('Error syncing prices:', error);
+      console.error('Error syncing prices and VAT:', error);
       
       // Đóng progress snackbar nếu còn mở
       progressSnackbar.dismiss();
       
-      let errorMessage = 'Lỗi khi đồng bộ giá';
+      let errorMessage = 'Lỗi khi đồng bộ giá và VAT';
       
       // Xử lý các loại lỗi phổ biến
       if (error?.error?.message) {
@@ -761,12 +870,12 @@ export class ListDonhangComponent {
       this.isLoading.set(false);
     }
   }
-
-
+  
   dialog = inject(MatDialog);
   statusDetails: any[] = [];
   ListImportData: any[] = [];
   EditList: any[] = [];
+  duplicateDialogData: any = null;
 
   async ImporExcel(event: any) {
     this.isLoading.set(true);
@@ -942,17 +1051,13 @@ export class ListDonhangComponent {
         this.isLoading.set(false); // Stop loading while waiting for user input
         
         // Show confirmation dialog for duplicates
-        const duplicateMessage = this.formatDuplicateMessage(result.duplicates);
-        const userConfirmed = confirm(
-          `${result.message}\n\n${duplicateMessage}\n\nBạn có muốn tạo thêm đơn hàng mới cho các khách hàng này không?\n\n` +
-          `✅ Đồng ý: Tạo thêm đơn hàng mới với cùng khách hàng và ngày giao\n` +
-          `❌ Không: Bỏ qua các đơn hàng trùng lặp`
-        );
+        const userChoice = await this.openDuplicateDialog({
+          message: result.message,
+          duplicates: result.duplicates
+        });
         
         this.isLoading.set(true); // Resume loading for processing
-        
-        const userChoice = userConfirmed ? 'proceed' : 'skip';
-        const confirmedResult = await this._DonhangService.ImportDonhangCuConfirmed(result.pendingOrders, userChoice);
+        const confirmedResult = await this._DonhangService.ImportDonhangCuConfirmed(result.pendingOrders, userChoice as 'proceed' | 'skip');
         
         // Combine results from initial processing and confirmed processing
         const finalResult = {
@@ -1002,14 +1107,6 @@ export class ListDonhangComponent {
     // setTimeout(() => {
     //   window.location.reload();
     // }, 3000);
-  }
-
-  // 🎯 NEW METHOD: Format duplicate message for confirmation dialog
-  private formatDuplicateMessage(duplicates: any[]): string {
-    return duplicates.map((dup, index) => 
-      `${index + 1}. ${dup.customerName} - Ngày giao: ${new Date(dup.deliveryDate).toLocaleDateString('vi-VN')} ` +
-      `(Có ${dup.existingOrderCount} đơn hàng hiện tại, đơn mới có ${dup.newProductCount} sản phẩm)`
-    ).join('\n');
   }
 
   async ImportDonhang(items: any[]) {

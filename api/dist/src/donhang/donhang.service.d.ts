@@ -63,6 +63,7 @@ export declare class DonhangService {
         contentType: string;
     }>;
     private createCongnoExcelFile;
+    private groupDataByCustomerAndDate;
     private groupDataByCustomer;
     getchogiao(params: any): Promise<{
         idSP: string;

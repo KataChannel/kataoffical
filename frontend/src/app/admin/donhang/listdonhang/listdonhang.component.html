@@ -54,11 +54,17 @@
                     {{Listdonhang().length}} Đơn Hàng
                 </span>
                 <button mat-icon-button color="primary" 
-                        (click)="Dongbogia()" 
+                        (click)="DongboVat()" 
                         [disabled]="isLoading() || Listdonhang().length === 0"
                         matTooltip="Đồng bộ giá từ bảng giá cho tất cả đơn hàng">
                     <mat-icon>currency_exchange</mat-icon>
                 </button>
+                <!-- <button mat-button color="primary" 
+                        (click)="DongboVat()" 
+                        [disabled]="isLoading() || Listdonhang().length === 0"
+                        matTooltip="Đồng bộ VAT cho tất cả đơn hàng">
+                        VAT
+                </button> -->
                 <button *ngIf="EditList.length > 0" (click)="openDeleteDialog(DeleteDialog)"
                     class="flex flex-row items-center" color="warn" matTooltip="Xoá" mat-flat-button [disabled]="isLoading()">
                     @if (isLoading()) {
@@ -535,4 +541,145 @@
             </div>
         </div>
     </mat-dialog-content>
+</ng-template>
+
+<ng-template #ConfirmDongboDialog>
+    <div mat-dialog-title class="flex items-center space-x-2">
+        <mat-icon color="primary">currency_exchange</mat-icon>
+        <span class="font-semibold text-xl">Xác nhận đồng bộ giá và VAT</span>
+    </div>
+    
+    <mat-dialog-content class="mat-typography">
+        <div class="flex flex-col space-y-4 py-4">
+            <div class="flex items-start space-x-3 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                <mat-icon class="text-blue-600 mt-1">info</mat-icon>
+                <div class="flex-1">
+                    <h4 class="font-semibold text-blue-800 mb-2">Thông tin đồng bộ</h4>
+                    <p class="text-sm text-blue-700">
+                        Đồng bộ giá và VAT cho <strong class="font-semibold">{{EditList.length}} đơn hàng</strong> được chọn
+                    </p>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <h4 class="font-semibold text-gray-800">Thao tác sẽ thực hiện:</h4>
+                <ul class="space-y-2 text-sm text-gray-700">
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Cập nhật giá bán từ bảng giá tương ứng</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Tính lại tổng tiền của đơn hàng</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Tính lại VAT dựa trên tổng tiền và tỷ lệ VAT</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Cập nhật trường tongvat cho tất cả đơn hàng</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <mat-icon class="text-green-600 text-base mt-0.5">check_circle</mat-icon>
+                        <span>Lưu thay đổi vào cơ sở dữ liệu</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="flex items-start space-x-3 p-4 bg-amber-50 rounded-lg border-l-4 border-amber-400">
+                <mat-icon class="text-amber-600 mt-1">warning</mat-icon>
+                <div class="flex-1">
+                    <h4 class="font-semibold text-amber-800 mb-2">Lưu ý quan trọng</h4>
+                    <p class="text-sm text-amber-700">
+                        Thao tác này sẽ thay đổi dữ liệu hiện tại và không thể hoàn tác. 
+                        Vui lòng đảm bảo bạn đã kiểm tra kỹ trước khi thực hiện.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions class="border-t px-6 py-4" align="end">
+        <button mat-button mat-dialog-close="false" class="mr-2">
+            <mat-icon class="mr-1">cancel</mat-icon>
+            Hủy bỏ
+        </button>
+        <button mat-flat-button color="primary" mat-dialog-close="true">
+            <mat-icon class="mr-1">currency_exchange</mat-icon>
+            Xác nhận đồng bộ
+        </button>
+    </mat-dialog-actions>
+</ng-template>
+
+<ng-template #ConfirmDuplicateDialog>
+    <div mat-dialog-title class="flex items-center space-x-2">
+        <mat-icon color="warn">content_copy</mat-icon>
+        <span class="font-semibold text-xl">Phát hiện đơn hàng trùng lặp</span>
+    </div>
+    
+    <mat-dialog-content class="mat-typography">
+        <div class="flex flex-col space-y-4 py-4">
+            <div class="flex items-start space-x-3 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                <mat-icon class="text-yellow-600 mt-1">warning</mat-icon>
+                <div class="flex-1">
+                    <h4 class="font-semibold text-yellow-800 mb-2">Cảnh báo trùng lặp</h4>
+                    <p class="text-sm text-yellow-700" [innerHTML]="duplicateDialogData?.message"></p>
+                </div>
+            </div>
+            
+            <div class="space-y-3" *ngIf="duplicateDialogData?.duplicates?.length">
+                <h4 class="font-semibold text-gray-800">Chi tiết đơn hàng trùng lặp:</h4>
+                <div class="max-h-60 overflow-y-auto border rounded-lg">
+                    <div *ngFor="let dup of duplicateDialogData.duplicates; let i = index" 
+                         class="p-3 border-b last:border-b-0 bg-gray-50">
+                        <div class="flex items-start space-x-2">
+                            <span class="font-semibold text-sm text-gray-600">{{i + 1}}.</span>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-800">{{dup.customerName}}</p>
+                                <p class="text-sm text-gray-600">
+                                    Ngày giao: <span class="font-medium">{{formatDate(dup.deliveryDate)}}</span>
+                                </p>
+                                <p class="text-sm text-gray-600">
+                                    Có <span class="font-medium text-blue-600">{{dup.existingOrderCount}}</span> đơn hàng hiện tại, 
+                                    đơn mới có <span class="font-medium text-green-600">{{dup.newProductCount}}</span> sản phẩm
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <h4 class="font-semibold text-gray-800">Lựa chọn xử lý:</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="flex items-start space-x-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                        <mat-icon class="text-green-600 mt-1">add_circle</mat-icon>
+                        <div class="flex-1">
+                            <h5 class="font-medium text-green-800">Tạo thêm đơn hàng mới</h5>
+                            <p class="text-sm text-green-700">Tạo đơn hàng mới với cùng khách hàng và ngày giao</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-3 p-3 bg-red-50 rounded-lg border border-red-200">
+                        <mat-icon class="text-red-600 mt-1">cancel</mat-icon>
+                        <div class="flex-1">
+                            <h5 class="font-medium text-red-800">Bỏ qua đơn hàng trùng</h5>
+                            <p class="text-sm text-red-700">Không tạo đơn hàng mới cho các khách hàng trùng lặp</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </mat-dialog-content>
+    
+    <mat-dialog-actions class="border-t px-6 py-4" align="end">
+        <button mat-button mat-dialog-close="skip" class="mr-2">
+            <mat-icon class="mr-1">cancel</mat-icon>
+            Bỏ qua trùng lặp
+        </button>
+        <button mat-flat-button color="primary" mat-dialog-close="proceed">
+            <mat-icon class="mr-1">add_circle</mat-icon>
+            Tạo thêm đơn hàng mới
+        </button>
+    </mat-dialog-actions>
 </ng-template>

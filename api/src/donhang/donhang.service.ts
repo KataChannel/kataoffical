@@ -426,64 +426,119 @@ export class DonhangService {
     headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
     headerRow.height = 25;
 
-    // Group data by customer
-    const groupedData = this.groupDataByCustomer(data);
+    // Group data by customer and then by date
+    const groupedData = this.groupDataByCustomerAndDate(data);
     
     let currentRow = 2;
     const mergeRanges: any[] = [];
 
-    // Add data with customer grouping
+    // Add data with customer and date grouping
     for (const customerData of groupedData) {
-      const startRow = currentRow;
+      const customerStartRow = currentRow;
       
-      for (const item of customerData.items) {
-        const row = worksheet.getRow(currentRow);
+      for (const dateGroup of customerData.dateGroups) {
+        const dateStartRow = currentRow;
         
-        // Format date
-        const ngaygiao = item.ngaygiao ? new Date(item.ngaygiao) : null;
+        for (const item of dateGroup.items) {
+          const row = worksheet.getRow(currentRow);
+          
+          // Format date
+          const ngaygiao = item.ngaygiao ? new Date(item.ngaygiao) : null;
+          
+          row.values = {
+            ngaygiao: ngaygiao ? moment(ngaygiao).tz('Asia/Ho_Chi_Minh').format("DD/MM/YYYY") : '',
+            makhachhang: item.makhachhang || '',
+            tenkhachhang: item.tenkhachhang || '',
+            madonhang: item.madonhang || '',
+            mahang: item.mahang || '',
+            tenhang: item.tenhang || '',
+            dvt: item.dvt || '',
+            soluong: Number(item.soluong) || 0,
+            dongia: Number(item.dongia) || 0,
+            thanhtientruocvat: Number(item.thanhtientruocvat) || 0,
+            vat: Number(item.vat) || 0,
+            dongiavathoadon: Number(item.dongiavathoadon) || 0,
+            thanhtiensauvat: Number(item.thanhtiensauvat) || 0,
+            ghichu: item.ghichu || '',
+            tongtiensauvat: Number(item.tongtiensauvat) || 0
+          };
+
+          // Format number columns
+          ['soluong', 'dongia', 'thanhtientruocvat', 'dongiavathoadon', 'thanhtiensauvat', 'tongtiensauvat'].forEach(col => {
+            const cell = row.getCell(col);
+            cell.numFmt = '#,##0.00';
+            cell.alignment = { horizontal: 'right' };
+          });
+
+          ['vat'].forEach(col => {
+            const cell = row.getCell(col);
+            cell.numFmt = '0.00%';
+            cell.alignment = { horizontal: 'right' };
+          });
+
+          currentRow++;
+        }
+
+        const dateEndRow = currentRow - 1;
         
-        row.values = {
-          ngaygiao: ngaygiao ? moment(ngaygiao).tz('Asia/Ho_Chi_Minh').format("DD/MM/YYYY") : '',
-          makhachhang: item.makhachhang || '',
-          tenkhachhang: item.tenkhachhang || '',
-          madonhang: item.madonhang || '',
-          mahang: item.mahang || '',
-          tenhang: item.tenhang || '',
-          dvt: item.dvt || '',
-          soluong: Number(item.soluong) || 0,
-          dongia: Number(item.dongia) || 0,
-          thanhtientruocvat: Number(item.thanhtientruocvat) || 0,
-          vat: Number(item.vat) || 0,
-          dongiavathoadon: Number(item.dongiavathoadon) || 0,
-          thanhtiensauvat: Number(item.thanhtiensauvat) || 0,
-          ghichu: item.ghichu || '',
-          tongtiensauvat: Number(item.tongtiensauvat) || 0
-        };
+        // Add daily summary row
+        if (dateGroup.items.length > 0) {
+          const summaryRow = worksheet.getRow(currentRow);
+          summaryRow.values = {
+            ngaygiao: '',
+            makhachhang: '',
+            tenkhachhang: '',
+            madonhang: '',
+            mahang: '',
+            tenhang: `TỔNG NGÀY ${moment(dateGroup.date).format("DD/MM/YYYY")}`,
+            dvt: '',
+            soluong: '',
+            dongia: '',
+            thanhtientruocvat: dateGroup.totalThanhtientruocvat,
+            vat: '',
+            dongiavathoadon: '',
+            thanhtiensauvat: dateGroup.totalThanhtiensauvat,
+            ghichu: '',
+            tongtiensauvat: ''
+          };
 
-        // Format number columns
-        ['soluong', 'dongia', 'thanhtientruocvat', 'dongiavathoadon', 'thanhtiensauvat', 'tongtiensauvat'].forEach(col => {
-          const cell = row.getCell(col);
-          cell.numFmt = '#,##0.00';
-          cell.alignment = { horizontal: 'right' };
-        });
+          // Style summary row
+          summaryRow.font = { bold: true };
+          summaryRow.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'F0F0F0' }
+          };
 
-        ['vat'].forEach(col => {
-          const cell = row.getCell(col);
-          cell.numFmt = '0.00%';
-          cell.alignment = { horizontal: 'right' };
-        });
+          // Format summary numbers
+          ['thanhtientruocvat', 'thanhtiensauvat'].forEach(col => {
+            const cell = summaryRow.getCell(col);
+            cell.numFmt = '#,##0.00';
+            cell.alignment = { horizontal: 'right' };
+            cell.font = { bold: true };
+          });
 
-        currentRow++;
+          currentRow++;
+        }
+
+        // Create merge ranges for date grouping (merge ngaygiao column for same date)
+        if (dateEndRow > dateStartRow) {
+          const ngaygiaoColIndex = columns.findIndex(c => c.key === 'ngaygiao') + 1;
+          mergeRanges.push({
+            range: `${String.fromCharCode(64 + ngaygiaoColIndex)}${dateStartRow}:${String.fromCharCode(64 + ngaygiaoColIndex)}${dateEndRow}`,
+            value: dateGroup.items[0].ngaygiao ? moment(dateGroup.items[0].ngaygiao).tz('Asia/Ho_Chi_Minh').format("DD/MM/YYYY") : ''
+          });
+        }
       }
 
-      const endRow = currentRow - 1;
+      const customerEndRow = currentRow - 1;
       
       // Create merge ranges for customer info (only if multiple rows)
-      if (endRow > startRow) {
+      if (customerEndRow > customerStartRow) {
         ['makhachhang', 'tenkhachhang', 'tongtiensauvat'].forEach(col => {
           const colIndex = columns.findIndex(c => c.key === col) + 1;
           mergeRanges.push({
-            range: `${String.fromCharCode(64 + colIndex)}${startRow}:${String.fromCharCode(64 + colIndex)}${endRow}`,
+            range: `${String.fromCharCode(64 + colIndex)}${customerStartRow}:${String.fromCharCode(64 + colIndex)}${customerEndRow}`,
             value: customerData.items[0][col]
           });
         });
@@ -522,6 +577,67 @@ export class DonhangService {
       filename: filename,
       contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     };
+  }
+
+  /**
+   * Group data by customer and then by date (new helper method)
+   */
+  private groupDataByCustomerAndDate(data: any[]): any[] {
+    const customerMap = new Map();
+    
+    data.forEach(item => {
+      const customerKey = item.makhachhang || 'unknown';
+      
+      if (!customerMap.has(customerKey)) {
+        customerMap.set(customerKey, {
+          makhachhang: item.makhachhang,
+          tenkhachhang: item.tenkhachhang,
+          tongtiensauvat: 0,
+          items: [],
+          dateGroups: []
+        });
+      }
+      
+      const customer = customerMap.get(customerKey);
+      customer.items.push(item);
+      customer.tongtiensauvat += Number(item.thanhtiensauvat) || 0;
+    });
+    
+    // Group items by date within each customer
+    customerMap.forEach(customer => {
+      const dateMap = new Map();
+      
+      customer.items.forEach(item => {
+        const dateKey = item.ngaygiao ? moment(item.ngaygiao).format('YYYY-MM-DD') : 'no-date';
+        
+        if (!dateMap.has(dateKey)) {
+          dateMap.set(dateKey, {
+            date: item.ngaygiao,
+            items: [],
+            totalThanhtientruocvat: 0,
+            totalThanhtiensauvat: 0
+          });
+        }
+        
+        const dateGroup = dateMap.get(dateKey);
+        dateGroup.items.push(item);
+        dateGroup.totalThanhtientruocvat += Number(item.thanhtientruocvat) || 0;
+        dateGroup.totalThanhtiensauvat += Number(item.thanhtiensauvat) || 0;
+      });
+      
+      // Sort date groups by date
+      customer.dateGroups = Array.from(dateMap.values()).sort((a, b) => {
+        if (!a.date && !b.date) return 0;
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      });
+    });
+    
+    // Sort customers by name
+    return Array.from(customerMap.values()).sort((a, b) => 
+      (a.tenkhachhang || '').localeCompare(b.tenkhachhang || '')
+    );
   }
 
   /**
