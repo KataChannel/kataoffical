@@ -29,6 +29,9 @@ let DonhangController = class DonhangController {
     ImportDonhangOld(data) {
         return this.donhangService.ImportDonhangOld(data);
     }
+    ImportDonhangOldConfirmed(data) {
+        return this.donhangService.ImportDonhangOldConfirmed(data.pendingOrders, data.userChoice);
+    }
     ImportDonhang(data) {
         return this.donhangService.ImportDonhang(data);
     }
@@ -171,6 +174,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], DonhangController.prototype, "ImportDonhangOld", null);
+__decorate([
+    (0, common_1.Post)('importold/confirmed'),
+    (0, audit_decorator_1.Audit)({ entity: 'Import Donhang Cu Confirmed', action: client_1.AuditAction.CREATE, includeResponse: true }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], DonhangController.prototype, "ImportDonhangOldConfirmed", null);
 __decorate([
     (0, common_1.Post)('import'),
     (0, audit_decorator_1.Audit)({ entity: 'Import Donhang', action: client_1.AuditAction.CREATE, includeResponse: true }),

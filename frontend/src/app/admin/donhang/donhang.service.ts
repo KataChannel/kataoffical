@@ -37,13 +37,52 @@ export class DonhangService {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        if (!response.ok) {
-
+        
+        // 🎯 NEW LOGIC: Handle duplicate detection
+        if (data.status === 'duplicates_found') {
+          // Return special response for frontend to handle confirmation
+          return {
+            needsConfirmation: true,
+            message: data.message,
+            duplicates: data.duplicates,
+            pendingOrders: data.pendingOrders,
+            processResults: data.processResults
+          };
         }
-        // this.getAllDonhang()
+        
+        // Normal completion or other statuses
         return data;
     } catch (error) {
-        return console.error(error);
+        console.error('Error in ImportDonhangCu:', error);
+        throw error;
+    }
+  }
+
+  // 🎯 NEW METHOD: Handle confirmed duplicate orders
+  async ImportDonhangCuConfirmed(pendingOrders: any[], userChoice: 'proceed' | 'skip') {
+    try {
+      const options = {
+          method:'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ pendingOrders, userChoice }),
+        };
+        const response = await fetch(`${environment.APIURL}/donhang/importold/confirmed`, options);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        // Refresh the donhang list after successful import
+        if (data.status === 'completed' && data.success > 0) {
+          // this.getAllDonhang();
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('Error in ImportDonhangCuConfirmed:', error);
+        throw error;
     }
   }
   async ImportDonhang(dulieu: any) {

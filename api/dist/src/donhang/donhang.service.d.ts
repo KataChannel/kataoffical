@@ -352,9 +352,41 @@ export declare class DonhangService {
         tongvat: import("@prisma/client/runtime/library").Decimal;
     }>;
     ImportDonhangOld(dulieu: any): Promise<{
+        status: string;
+        message: string;
+        duplicates: {
+            customerName: any;
+            deliveryDate: any;
+            newProductCount: any;
+            existingOrderCount: any;
+            existingProductCounts: any;
+        }[];
+        processResults: {
+            success: number;
+            fail: number;
+            skip: number;
+            duplicates: any[];
+            errors: any[];
+        };
+        pendingOrders: any[];
+    } | {
         success: number;
         fail: number;
         skip: number;
+        duplicates: any[];
+        errors: any[];
+        status: string;
+        message: string;
+        processResults?: undefined;
+        pendingOrders?: undefined;
+    }>;
+    ImportDonhangOldConfirmed(pendingOrders: any[], userChoice: 'proceed' | 'skip'): Promise<{
+        success: number;
+        fail: number;
+        skip: number;
+        errors: any[];
+        status: string;
+        message: string;
     }>;
     ImportDonhang(data: any): Promise<{
         success: number;

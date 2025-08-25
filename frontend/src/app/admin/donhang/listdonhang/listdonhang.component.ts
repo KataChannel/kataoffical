@@ -914,6 +914,8 @@ export class ListDonhangComponent {
       const invalidItems = ListImportData.filter(
         (item) => !item.khachhangId || !item.ngaygiao
       );
+      console.log(ListImportData);
+      
       console.log('invalidItems', invalidItems);
 
       if (invalidItems.length > 0) {
@@ -932,18 +934,59 @@ export class ListDonhangComponent {
         );
         return;
       }
+      
       const result = await this._DonhangService.ImportDonhangCu(ListImportData);
-      this.dialog.closeAll();
-      this._snackBar.open(
-        `Nhập đơn hàng : Thành công ${result.success}, Thất bại ${result.fail}, Bỏ qua ${result.skip}. Reload Lại sau 3s`,
-        '',
-        {
-          duration: 5000,
-          horizontalPosition: 'end',
-          verticalPosition: 'top',
-          panelClass: ['snackbar-success'],
-        }
-      );
+      
+      // 🎯 NEW LOGIC: Handle duplicate confirmation
+      if (result.needsConfirmation) {
+        this.isLoading.set(false); // Stop loading while waiting for user input
+        
+        // Show confirmation dialog for duplicates
+        const duplicateMessage = this.formatDuplicateMessage(result.duplicates);
+        const userConfirmed = confirm(
+          `${result.message}\n\n${duplicateMessage}\n\nBạn có muốn tạo thêm đơn hàng mới cho các khách hàng này không?\n\n` +
+          `✅ Đồng ý: Tạo thêm đơn hàng mới với cùng khách hàng và ngày giao\n` +
+          `❌ Không: Bỏ qua các đơn hàng trùng lặp`
+        );
+        
+        this.isLoading.set(true); // Resume loading for processing
+        
+        const userChoice = userConfirmed ? 'proceed' : 'skip';
+        const confirmedResult = await this._DonhangService.ImportDonhangCuConfirmed(result.pendingOrders, userChoice);
+        
+        // Combine results from initial processing and confirmed processing
+        const finalResult = {
+          success: result.processResults.success + confirmedResult.success,
+          fail: result.processResults.fail + confirmedResult.fail,
+          skip: result.processResults.skip + confirmedResult.skip,
+          message: confirmedResult.message
+        };
+        
+        this.dialog.closeAll();
+        this._snackBar.open(
+          `${finalResult.message} - Tổng kết: Thành công ${finalResult.success}, Thất bại ${finalResult.fail}, Bỏ qua ${finalResult.skip}`,
+          '',
+          {
+            duration: 6000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-success'],
+          }
+        );
+      } else {
+        // Normal processing without duplicates
+        this.dialog.closeAll();
+        this._snackBar.open(
+          `Nhập đơn hàng : Thành công ${result.success}, Thất bại ${result.fail}, Bỏ qua ${result.skip}. Reload Lại sau 3s`,
+          '',
+          {
+            duration: 5000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top',
+            panelClass: ['snackbar-success'],
+          }
+        );
+      }
     } catch (importError: any) {
       console.error('Lỗi khi nhập đơn hàng:', importError);
       this._snackBar.open(`Lỗi khi nhập đơn hàng: ${importError.message}`, '', {
@@ -956,9 +999,17 @@ export class ListDonhangComponent {
     } finally {
       this.isLoading.set(false);
     }
-    setTimeout(() => {
-      window.location.reload();
-    }, 3000);
+    // setTimeout(() => {
+    //   window.location.reload();
+    // }, 3000);
+  }
+
+  // 🎯 NEW METHOD: Format duplicate message for confirmation dialog
+  private formatDuplicateMessage(duplicates: any[]): string {
+    return duplicates.map((dup, index) => 
+      `${index + 1}. ${dup.customerName} - Ngày giao: ${new Date(dup.deliveryDate).toLocaleDateString('vi-VN')} ` +
+      `(Có ${dup.existingOrderCount} đơn hàng hiện tại, đơn mới có ${dup.newProductCount} sản phẩm)`
+    ).join('\n');
   }
 
   async ImportDonhang(items: any[]) {

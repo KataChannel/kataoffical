@@ -21,6 +21,12 @@ export class DonhangController {
   ImportDonhangOld(@Body() data: any) {
     return this.donhangService.ImportDonhangOld(data);
   }
+  
+  @Post('importold/confirmed')
+  @Audit({entity: 'Import Donhang Cu Confirmed', action: AuditAction.CREATE, includeResponse: true})
+  ImportDonhangOldConfirmed(@Body() data: { pendingOrders: any[], userChoice: 'proceed' | 'skip' }) {
+    return this.donhangService.ImportDonhangOldConfirmed(data.pendingOrders, data.userChoice);
+  }
   @Post('import')
   @Audit({entity: 'Import Donhang', action: AuditAction.CREATE, includeResponse: true})
   ImportDonhang(@Body() data: any) {

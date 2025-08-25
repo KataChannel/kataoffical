@@ -832,6 +832,7 @@ let DonhangService = class DonhangService {
                     ngaygiao: new Date(v.ngaygiao) || new Date(),
                     khachhangId: v.khachhangId,
                     sanpham: validSanpham,
+                    originalData: v,
                 };
             }
             catch (error) {
@@ -840,34 +841,128 @@ let DonhangService = class DonhangService {
             }
         }));
         const validRawData = rawData.filter((item) => item !== null);
-        let success = 0;
-        let fail = 0;
-        let skip = 0;
-        for (const order of rawData) {
-            const startOfDay = this.getStartOfDay(order.ngaygiao);
-            const endOfDay = this.getEndOfDay(order.ngaygiao);
-            const existingOrder = await this.prisma.donhang.findFirst({
-                where: {
-                    khachhangId: order.khachhangId,
-                    ngaygiao: { gte: startOfDay, lte: endOfDay },
-                },
-                include: { sanpham: true },
-            });
-            if (existingOrder &&
-                existingOrder.sanpham.length === order.sanpham.length) {
-                skip++;
-                continue;
-            }
+        const duplicateChecks = [];
+        const processResults = {
+            success: 0,
+            fail: 0,
+            skip: 0,
+            duplicates: [],
+            errors: []
+        };
+        for (const order of validRawData) {
             try {
-                await this.create(order);
-                success++;
+                if (!order || !order.khachhangId || !order.ngaygiao) {
+                    processResults.fail++;
+                    processResults.errors.push({
+                        customer: order?.originalData?.tenkh || 'Unknown',
+                        error: 'Missing required data (khachhangId or ngaygiao)'
+                    });
+                    continue;
+                }
+                const startOfDay = this.getStartOfDay(order.ngaygiao);
+                const endOfDay = this.getEndOfDay(order.ngaygiao);
+                const existingOrders = await this.prisma.donhang.findMany({
+                    where: {
+                        khachhangId: order.khachhangId,
+                        ngaygiao: {
+                            gte: startOfDay,
+                            lte: endOfDay
+                        },
+                    },
+                    include: {
+                        sanpham: true,
+                        khachhang: true
+                    },
+                });
+                if (existingOrders.length > 0) {
+                    duplicateChecks.push({
+                        order: order,
+                        existingOrders: existingOrders,
+                        customerName: order.originalData?.tenkh || 'Unknown',
+                        deliveryDate: order.ngaygiao,
+                        newProductCount: order.sanpham.length,
+                        existingProductCounts: existingOrders.map(eo => eo.sanpham.length)
+                    });
+                }
+                else {
+                    try {
+                        await this.create(order);
+                        processResults.success++;
+                    }
+                    catch (createError) {
+                        console.error(`Lỗi tạo đơn hàng cho ${order.originalData?.tenkh}:`, createError);
+                        processResults.fail++;
+                        processResults.errors.push({
+                            customer: order.originalData?.tenkh,
+                            error: createError.message || 'Unknown error'
+                        });
+                    }
+                }
             }
-            catch (error) {
-                console.log(error);
-                fail++;
+            catch (checkError) {
+                console.error(`Lỗi kiểm tra đơn hàng cho ${order.originalData?.tenkh}:`, checkError);
+                processResults.fail++;
+                processResults.errors.push({
+                    customer: order.originalData?.tenkh,
+                    error: checkError.message || 'Check error'
+                });
             }
         }
-        return { success, fail, skip };
+        if (duplicateChecks.length > 0) {
+            return {
+                status: 'duplicates_found',
+                message: `Tìm thấy ${duplicateChecks.length} đơn hàng trùng ngày giao`,
+                duplicates: duplicateChecks.map(dup => ({
+                    customerName: dup.customerName,
+                    deliveryDate: dup.deliveryDate,
+                    newProductCount: dup.newProductCount,
+                    existingOrderCount: dup.existingOrders.length,
+                    existingProductCounts: dup.existingProductCounts
+                })),
+                processResults,
+                pendingOrders: duplicateChecks.map(dup => dup.order)
+            };
+        }
+        return {
+            status: 'completed',
+            message: `Import hoàn tất: ${processResults.success} thành công, ${processResults.fail} thất bại`,
+            ...processResults
+        };
+    }
+    async ImportDonhangOldConfirmed(pendingOrders, userChoice) {
+        const processResults = {
+            success: 0,
+            fail: 0,
+            skip: 0,
+            errors: []
+        };
+        if (userChoice === 'skip') {
+            processResults.skip = pendingOrders.length;
+            return {
+                status: 'skipped',
+                message: `Đã bỏ qua ${pendingOrders.length} đơn hàng trùng lặp`,
+                ...processResults
+            };
+        }
+        for (const order of pendingOrders) {
+            try {
+                await this.create(order);
+                processResults.success++;
+            }
+            catch (createError) {
+                console.error(`Lỗi tạo đơn hàng cho ${order.originalData?.tenkh}:`, createError);
+                processResults.fail++;
+                processResults.errors.push({
+                    customer: order.originalData?.tenkh,
+                    error: createError.message || 'Unknown error'
+                });
+            }
+        }
+        return {
+            status: 'completed',
+            message: `Import hoàn tất: ${processResults.success} thành công, ${processResults.fail} thất bại`,
+            ...processResults
+        };
     }
     async ImportDonhang(data) {
         const acc = {};
