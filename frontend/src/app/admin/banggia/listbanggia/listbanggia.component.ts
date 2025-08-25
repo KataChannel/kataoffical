@@ -108,46 +108,34 @@ export class ListBanggiaComponent {
   async ngOnInit(): Promise<void> {    
     try {
       // Lấy tất cả bảng giá sử dụng GraphQL
-      const banggiaData = await this._GraphqlService.findAll('banggia', {
-        select: {
-          id:true,
-          title: true,
-          mabanggia: true,
-          batdau: true,
-          ketthuc: true,
-          status: true,
-          createdAt: true,
-          khachhang: { select: { id: true, name: true } },
+      const banggiaData = await this._GraphqlService.findMany('banggia', {
+        include: {
+          khachhang: {select : { id: true, name: true }},
           sanpham: {
-            select: { id: true, sanphamId: true }
+            select : { id: true, sanphamId: true }
           },
         },
-        take: 99999,
-        aggressiveCache: true,
-        enableParallelFetch: true,
+        take:99999,
         orderBy: { createdAt: 'desc' }
       });
-      console.log(banggiaData);
-
-      const result = banggiaData.data.map((v)=>{
+      const result = banggiaData.map((v)=>{
         return {
           ...v,
           sanpham: v.sanpham.length,
           khachhang: v.khachhang.length
         }
       })  
-
       this.CountItem = result.length;
       this.dataSource = new MatTableDataSource(result);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
       this.initializeColumns();
       this.setupDrawer();
-      // this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-      // this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-      // this.paginator._intl.previousPageLabel = 'Về Trước';
-      // this.paginator._intl.firstPageLabel = 'Trang Đầu';
-      // this.paginator._intl.lastPageLabel = 'Trang Cuối';
+      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+      this.paginator._intl.previousPageLabel = 'Về Trước';
+      this.paginator._intl.firstPageLabel = 'Trang Đầu';
+      this.paginator._intl.lastPageLabel = 'Trang Cuối';
 
     } catch (error) {
       console.error('Lỗi khởi tạo danh sách bảng giá:', error);
