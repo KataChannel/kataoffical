@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { BanggiaService } from '../banggia.service';
+import { BanggiaService } from '../banggia-graphql.service'; // Sử dụng GraphQL service
 import { MatMenuModule } from '@angular/material/menu';
 import { excelSerialDateToJSDate, readExcelFile, readExcelFileNoWorker, writeExcelFile, writeExcelFileSheets } from '../../../shared/utils/exceldrive.utils';
 import { GoogleSheetService } from '../../../shared/googlesheets/googlesheets.service';
@@ -22,9 +22,11 @@ import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.util
 import moment from 'moment';
 import { SanphamService } from '../../sanpham/sanpham.service';
 import { KhachhangService } from '../../khachhang/khachhang.service';
+import { BanggiaService as BanggiaGraphqlService } from '../banggia-graphql.service';
 import { NhacungcapService } from '../../nhacungcap/nhacungcap.service';
 import { DonhangService } from '../../donhang/donhang.service';
 import { DathangService } from '../../dathang/dathang.service';
+import { GraphqlService } from '../../../shared/services/graphql.service';
 import { _isNumberValue } from '@angular/cdk/coercion';
 @Component({
   selector: 'app-listbanggia',
@@ -83,19 +85,17 @@ export class ListBanggiaComponent {
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
   filterValues: { [key: string]: string } = {};
 
-  private _BanggiaService: BanggiaService = inject(BanggiaService);
+  private _BanggiaGraphqlService: BanggiaGraphqlService = inject(BanggiaGraphqlService);
   private _SanphamService: SanphamService = inject(SanphamService);
   private _KhachhangService: KhachhangService = inject(KhachhangService);
   private _NhacungcapService: NhacungcapService = inject(NhacungcapService);
   private _DonhangService: DonhangService = inject(DonhangService);
   private _DathangService: DathangService = inject(DathangService);
-
+  private _GraphqlService: GraphqlService = inject(GraphqlService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
-  Listbanggia:any = this._BanggiaService.ListBanggia;
-  dataSource = new MatTableDataSource([]);
-  banggiaId:any = this._BanggiaService.banggiaId;
+  dataSource = new MatTableDataSource<any>([]);
   _snackBar: MatSnackBar = inject(MatSnackBar);
   CountItem: any = 0;
   isSearch: boolean = false;
@@ -112,38 +112,119 @@ export class ListBanggiaComponent {
     }
   }
   async ngOnInit(): Promise<void> {    
-    await this._BanggiaService.getAllBanggia();
-    this.CountItem = this.Listbanggia().length;
-    this.dataSource = new MatTableDataSource(this.Listbanggia());
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.initializeColumns();
-    this.setupDrawer();
-    this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
-    this.paginator._intl.nextPageLabel = 'Tiếp Theo';
-    this.paginator._intl.previousPageLabel = 'Về Trước';
-    this.paginator._intl.firstPageLabel = 'Trang Đầu';
-    this.paginator._intl.lastPageLabel = 'Trang Cuối';
+    try {
+      // Lấy tất cả bảng giá sử dụng GraphQL
+      const banggiaData = await this._GraphqlService.findMany('banggia', {
+        include: {
+          khachhang: {select : { id: true, name: true }},
+          sanpham: {
+            select : { id: true, sanphamId: true }
+          },
+        },
+        take:99999,
+        orderBy: { createdAt: 'desc' }
+      });
+      const result = banggiaData.map((v)=>{
+        return {
+          ...v,
+          sanpham: v.sanpham.length,
+          khachhang: v.khachhang.length
+        }
+      })  
+      this.CountItem = result.length;
+      this.dataSource = new MatTableDataSource(result);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      this.initializeColumns();
+      this.setupDrawer();
+      this.paginator._intl.itemsPerPageLabel = 'Số lượng 1 trang';
+      this.paginator._intl.nextPageLabel = 'Tiếp Theo';
+      this.paginator._intl.previousPageLabel = 'Về Trước';
+      this.paginator._intl.firstPageLabel = 'Trang Đầu';
+      this.paginator._intl.lastPageLabel = 'Trang Cuối';
+
+    } catch (error) {
+      console.error('Lỗi khởi tạo danh sách bảng giá:', error);
+    }
   }
   async refresh() {
-   await this._BanggiaService.getAllBanggia();
+    try {
+      // Lấy tất cả bảng giá sử dụng GraphQL
+      const banggiaData = await this._GraphqlService.findMany('banggia', {
+        include: {
+          banggiaKhachhang: {
+            include: {
+              khachhang: {
+                select: { id: true, title: true, ma: true }
+              }
+            }
+          },
+          banggiaSanpham: {
+            include: {
+              sanpham: {
+                select: { id: true, title: true, masp: true }
+              }
+            }
+          }
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      this.dataSource.data = banggiaData;
+      this.CountItem = banggiaData.length;
+
+    } catch (error) {
+      console.error('Lỗi làm mới danh sách bảng giá:', error);
+      this._snackBar.open('Có lỗi xảy ra khi làm mới danh sách', 'Đóng', {
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-error'],
+        duration: 3000
+      });
+    }
   }
   async Banggiamacdinh(item: any) {
-   const result = await this._SanphamService.Banggiamacdinh({banggiaid:item.id}); 
+    try {
+      // Cập nhật giá bán mặc định cho tất cả sản phẩm từ bảng giá này sử dụng GraphQL
+      const banggiaSanpham = await this._GraphqlService.findMany('banggiasanpham', {
+        where: { banggiaId: item.id },
+        include: {
+          sanpham: {
+            select: { id: true, masp: true, title: true }
+          }
+        }
+      });
 
-  if (result && result.status === 'success') {
-    this._snackBar.open(result.message, 'Đóng', {
-      horizontalPosition: "end",
-      verticalPosition: "top",
-      panelClass: ['snackbar-success'],
-    });
-  } else {
-    this._snackBar.open('Có lỗi xảy ra khi cập nhật giá bán', 'Đóng', {
-      horizontalPosition: "end",
-      verticalPosition: "top",
-      panelClass: ['snackbar-error'],
-    });
-  }
+      // Batch update giá bán cho tất cả sản phẩm
+      const updatePromises = banggiaSanpham.map((bgsp: any) => 
+        this._GraphqlService.updateOne('sanpham', 
+          { id: bgsp.sanphamId }, 
+          { giaban: bgsp.giaban }
+        )
+      );
+
+      await Promise.all(updatePromises);
+
+      this._snackBar.open(
+        `Đã cập nhật giá bán mặc định cho ${banggiaSanpham.length} sản phẩm từ bảng giá ${item.title}`, 
+        'Đóng', 
+        {
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-success'],
+          duration: 3000
+        }
+      );
+
+    } catch (error) {
+      console.error('Lỗi cập nhật giá bán mặc định:', error);
+      this._snackBar.open('Có lỗi xảy ra khi cập nhật giá bán', 'Đóng', {
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-error'],
+        duration: 3000
+      });
+    }
   }
   private initializeColumns(): void {
     this.Columns = Object.keys(this.ColumnName).map((key) => ({
@@ -195,7 +276,7 @@ export class ListBanggiaComponent {
   }
   @Debounce(300)
   doFilterHederColumn(event: any, column: any): void {
-    this.dataSource.filteredData = this.Listbanggia().filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
+    this.dataSource.filteredData = this.dataSource.data.filter((v: any) => removeVietnameseAccents(v[column]).includes(event.target.value.toLowerCase())||v[column].toLowerCase().includes(event.target.value.toLowerCase()));  
     const query = event.target.value.toLowerCase();  
   }
   ListFilter:any[] =[]
@@ -226,8 +307,8 @@ export class ListBanggiaComponent {
   }
   ResetFilter()
   {
-    this.ListFilter = this.Listbanggia();
-    this.dataSource.data = this.Listbanggia();
+    this.ListFilter = this.dataSource.data;
+    this.dataSource.data = this.dataSource.data;
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
@@ -241,7 +322,7 @@ export class ListBanggiaComponent {
   }
   ApplyFilterColum(menu:any)
   {    
-    this.dataSource.data = this.Listbanggia().filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
+    this.dataSource.data = this.dataSource.data.filter((v: any) => this.ListFilter.some((v1) => v1.id === v.id));
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     menu.closeMenu();
@@ -265,10 +346,11 @@ export class ListBanggiaComponent {
   }
   create(): void {
     this.drawer.open();
-    this._router.navigate(['admin/banggia', 0]);
+    this._router.navigate(['admin/banggia', 'new']);
   }
   goToDetail(item: any): void {
-     this._BanggiaService.setBanggiaId(item.id);
+    // Store banggia ID for detail view using GraphQL service
+    this._BanggiaGraphqlService.setBanggiaId(item.id);
     this.drawer.open();
     this._router.navigate(['admin/banggia', item.id]);
   }
@@ -304,83 +386,144 @@ convertDataToData1(
 }
 
 
-  DoImportData(data:any)
-  {
-    if (!data.SPBG || !data.BG || !data.BGKH) {
-      this._snackBar.open('SPBG hoặc BG hoặc BGKH không tồn tại', '', {
-        duration: 3000,
-        horizontalPosition: "end",
-        verticalPosition: "top",
-        panelClass: ['snackbar-error'],
-      });
-      return;
-    }
-    const ListBG = (data.BG || []).map((v: any) => ({
-      id: v.mabanggia,
-      mabanggia: v.mabanggia,
-      type: v.type,
-      batdau: moment(excelSerialDateToJSDate(v.batdau)).toDate(),
-      ketthuc: moment(excelSerialDateToJSDate(v.ketthuc)).toDate(),
-      ghichu: v.ghichu,
-      status: v.status,
-    })).filter((v: any) => v.mabanggia !== undefined && v.mabanggia !== null && v.mabanggia !== '');
-    
-    this._BanggiaService.ImportBanggia(ListBG);
-    const ListData = this.convertDataToData1(data.SPBG);
+  async DoImportData(data: any) {
+    try {
+      if (!data.SPBG || !data.BG || !data.BGKH) {
+        this._snackBar.open('SPBG hoặc BG hoặc BGKH không tồn tại', '', {
+          duration: 3000,
+          horizontalPosition: "end",
+          verticalPosition: "top",
+          panelClass: ['snackbar-error'],
+        });
+        return;
+      }
 
+      // Import bảng giá mới
+      const ListBG = (data.BG || []).map((v: any) => ({
+        mabanggia: v.mabanggia,
+        type: v.type,
+        batdau: moment(excelSerialDateToJSDate(v.batdau)).toDate(),
+        ketthuc: moment(excelSerialDateToJSDate(v.ketthuc)).toDate(),
+        ghichu: v.ghichu,
+        status: v.status,
+      })).filter((v: any) => v.mabanggia !== undefined && v.mabanggia !== null && v.mabanggia !== '');
 
-    this._BanggiaService.importSPBG(ListData);
-    const BGKH = (data.BGKH || []).map((v: any) => ({
+      // Tạo bảng giá mới sử dụng GraphQL
+      for (const bg of ListBG) {
+        await this._GraphqlService.createOne('banggia', {
+          mabanggia: bg.mabanggia,
+          type: bg.type,
+          batdau: bg.batdau,
+          ketthuc: bg.ketthuc,
+          ghichu: bg.ghichu,
+          status: bg.status
+        });
+      }
+
+      // Import sản phẩm bảng giá
+      const ListData = this.convertDataToData1(data.SPBG);
+      for (const item of ListData) {
+        await this._GraphqlService.createOne('banggiasanpham', item);
+      }
+
+      // Import khách hàng bảng giá
+      const BGKH = (data.BGKH || []).map((v: any) => ({
         mabanggia: v.mabanggia,
         name: v.name,
         makh: v.makh,
       }));
-    this._BanggiaService.importBGKH(BGKH);
-    this._snackBar.open('Import Thành Công', '', {
-      duration: 1000,
-      horizontalPosition: "end",
-      verticalPosition: "top",
-      panelClass: ['snackbar-success'],
-    });
+
+      for (const kh of BGKH) {
+        await this._GraphqlService.createOne('banggiaKhachhang', kh);
+      }
+
+      this._snackBar.open('Import Thành Công', '', {
+        duration: 3000,
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-success'],
+      });
+
+      // Refresh lại danh sách
+      await this.refresh();
+
+    } catch (error) {
+      console.error('Lỗi import dữ liệu:', error);
+      this._snackBar.open('Có lỗi xảy ra khi import dữ liệu', 'Đóng', {
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-error'],
+        duration: 3000
+      });
+    }
   }
 
   async ImportExcel(event: any) {
     const data = await readExcelFileNoWorker(event);
     this.DoImportData(data);
   }
-  async ExportExcel(data:any,title:any) {
-    await this._SanphamService.getAllSanpham()
-    const ListSP = this._SanphamService.ListSanpham()
+  async ExportExcel(data: any, title: any) {
+    try {
+      // Lấy tất cả sản phẩm sử dụng GraphQL
+      const ListSP = await this._GraphqlService.findMany('sanpham', {
+        select: { id: true, masp: true, title: true, giaban: true }
+      });
 
-    const result = this.convertToData3(data, ListSP)
+      const result = this.convertToData3(data, ListSP);
 
-    
-    await this._BanggiaService.getAllBanggia();
-    let Banggia = this._BanggiaService.ListBanggia();
-    const ListKH = Banggia.reduce((acc: any[], v: any) => {
-      if (Array.isArray(v.ListKH)) {
-        v.ListKH.forEach((kh: any) => {
-          acc.push({
-            mabanggia: v.mabanggia,
-            makh: kh.makh,
-            name: kh.name,
+      // Lấy tất cả bảng giá với khách hàng sử dụng GraphQL
+      const Banggia = await this._GraphqlService.findMany('banggia', {
+        include: {
+          banggiaKhachhang: {
+            include: {
+              khachhang: {
+                select: { id: true, ma: true, title: true }
+              }
+            }
+          }
+        }
+      });
+
+      const ListKH = Banggia.reduce((acc: any[], v: any) => {
+        if (Array.isArray(v.banggiaKhachhang)) {
+          v.banggiaKhachhang.forEach((bgkh: any) => {
+            acc.push({
+              mabanggia: v.mabanggia,
+              makh: bgkh.khachhang.ma,
+              name: bgkh.khachhang.title,
+            });
           });
-        });
-      }
-      return acc;
-    }, []);
-    Banggia = Banggia.map((v:any) => {
-      return {
-        mabanggia: v.mabanggia,
-        type: v.type,
-        batdau: moment(v.batdau).format('DD/MM/YYYY'),
-        ketthuc: moment(v.ketthuc).format('DD/MM/YYYY'),
-        ghichu: v.ghichu,
-        status: v.status,
-      };
-    });
-    writeExcelFileSheets({ 'SPBG': { data: result }, 'BG': { data: Banggia }, 'BGKH': { data: ListKH } }, title);
-}
+        }
+        return acc;
+      }, []);
+
+      const BanggiaExport = Banggia.map((v: any) => {
+        return {
+          mabanggia: v.mabanggia,
+          type: v.type,
+          batdau: moment(v.batdau).format('DD/MM/YYYY'),
+          ketthuc: moment(v.ketthuc).format('DD/MM/YYYY'),
+          ghichu: v.ghichu,
+          status: v.status,
+        };
+      });
+
+      writeExcelFileSheets({ 
+        'SPBG': { data: result }, 
+        'BG': { data: BanggiaExport }, 
+        'BGKH': { data: ListKH } 
+      }, title);
+
+    } catch (error) {
+      console.error('Lỗi export Excel:', error);
+      this._snackBar.open('Có lỗi xảy ra khi export dữ liệu', 'Đóng', {
+        horizontalPosition: "end",
+        verticalPosition: "top",
+        panelClass: ['snackbar-error'],
+        duration: 3000
+      });
+    }
+  }
   convertToData3(data: any, data2: any) {
     const pricingTables = new Set(data.map((item: any) => item.mabanggia));
     return data2.map((product: any) => ({

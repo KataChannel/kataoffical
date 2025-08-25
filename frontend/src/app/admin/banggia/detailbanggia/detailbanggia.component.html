@@ -2,13 +2,15 @@
   <button mat-icon-button color="primary" (click)="goBack()">
     <mat-icon>arrow_back</mat-icon>
   </button>
-  <div
+  <!-- <div
        [contentEditable]="true"
        (blur)="updateValue($event,null,DetailBanggia(), 'title','string')"
        class="p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"
-     >
+     > -->
+     <div class="p-2 min-w-28 font-bold focus:border focus:rounded-lg focus:border-blue-600 focus:bg-slate-100 focus:outline-none"> 
      {{ DetailBanggia()?.title || 'Không có dữ liệu' }}
-  </div>
+     </div>
+  <!-- </div> -->
   <div class="flex flex-row space-x-2 items-center">
     <mat-slide-toggle [(ngModel)]="DetailBanggia().isActive" [disabled]="!isEdit()">{{DetailBanggia().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
     <button mat-icon-button color="primary" (click)="CoppyDon()">
@@ -23,7 +25,7 @@
     <button mat-icon-button color="primary" *ngIf="!isEdit()" (click)="toggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
-    <button mat-icon-button color="warn" (click)="toggleDelete()">
+    <button *ngIf="banggiaId()!=='new'" mat-icon-button color="warn" (click)="toggleDelete()">
       <mat-icon>delete</mat-icon>
     </button>
   </div>
@@ -98,7 +100,7 @@
           [filterItem]="filterSanpham"
           [CountItems]="dataSource().filteredData.length"
           [fieldsearch]="'title'"
-          [ListItem]="_SanphamService.ListSanpham()"
+          [ListItem]="ListSanpham"
           (OutFilter)="DoOutFilter($event)"
            ></app-searchfilter>
 
@@ -111,7 +113,7 @@
           [filterItem]="filterKhachhang"
           [CountItems]="this.DetailBanggia()?.khachhang?.length"
           [fieldsearch]="'name'"
-          [ListItem]="_KhachhangService.ListKhachhang()"
+          [ListItem]="ListKhachhang"
           (OutFilter)="DoOutKhachhang($event)"
            ></app-searchfilter>
 

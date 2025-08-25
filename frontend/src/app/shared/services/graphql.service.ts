@@ -1374,22 +1374,22 @@ export class GraphqlService {
 
     const [sanpham, khachhang, tonkho, donhang] = await Promise.all([
       this.findAllSanpham({ 
-        take: 100, // Limit for dashboard
+        take: 9999, // Limit for dashboard
         aggressiveCache: true,
         ...options 
       }),
       this.findAllKhachhang({ 
-        take: 50,
+        take: 9999,
         aggressiveCache: true,
         ...options 
       }),
       this.findAllTonKho({ 
-        take: 200,
+        take: 9999,
         aggressiveCache: true,
         ...options 
       }),
       this.findAllDonhang({ 
-        take: 20,
+        take: 9999,
         aggressiveCache: true,
         ...options 
       })

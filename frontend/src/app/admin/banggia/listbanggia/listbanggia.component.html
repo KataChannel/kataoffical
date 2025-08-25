@@ -31,7 +31,7 @@
                 <button matTooltip="Tìm Kiếm" color="primary" (click)="isSearch = !isSearch" mat-icon-button>
                     <mat-icon>search</mat-icon>
                 </button>
-                <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(Listbanggia(),'Banggia')" color="primary" mat-icon-button>
+                <button matTooltip="Tải file excel Mẫu" (click)="ExportExcel(dataSource.data,'Banggia')" color="primary" mat-icon-button>
                     <mat-icon>file_download</mat-icon>
                 </button>
                 <button matTooltip="Tải lên file excel" (click)="uploadfile.click()" color="primary" mat-icon-button>
@@ -178,7 +178,7 @@
                 </ng-container>
                 }
                 <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100 {{banggiaId()==row.id?'!bg-slate-200':''}}"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="hover:bg-slate-100"></tr>
                 <tr class="mat-row" *matNoDataRow>
                     <td class="mat-cell p-4" colspan="4">Không tìm thấy</td>
                 </tr>
