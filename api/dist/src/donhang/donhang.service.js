@@ -440,6 +440,7 @@ let DonhangService = class DonhangService {
                     if (orderEndRow > orderStartRow) {
                         const makhachhangColIndex = columns.findIndex(c => c.key === 'makhachhang') + 1;
                         const tenkhachhangColIndex = columns.findIndex(c => c.key === 'tenkhachhang') + 1;
+                        const madonhangColIndex = columns.findIndex(c => c.key === 'madonhang') + 1;
                         mergeRanges.push({
                             range: `${String.fromCharCode(64 + makhachhangColIndex)}${orderStartRow}:${String.fromCharCode(64 + makhachhangColIndex)}${orderEndRow}`,
                             value: orderItems[0].makhachhang || ''
@@ -447,6 +448,10 @@ let DonhangService = class DonhangService {
                         mergeRanges.push({
                             range: `${String.fromCharCode(64 + tenkhachhangColIndex)}${orderStartRow}:${String.fromCharCode(64 + tenkhachhangColIndex)}${orderEndRow}`,
                             value: orderItems[0].tenkhachhang || ''
+                        });
+                        mergeRanges.push({
+                            range: `${String.fromCharCode(64 + madonhangColIndex)}${orderStartRow}:${String.fromCharCode(64 + madonhangColIndex)}${orderEndRow}`,
+                            value: orderItems[0].madonhang || ''
                         });
                     }
                 }

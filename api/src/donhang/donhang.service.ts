@@ -551,6 +551,7 @@ export class DonhangService {
           if (orderEndRow > orderStartRow) {
             const makhachhangColIndex = columns.findIndex(c => c.key === 'makhachhang') + 1;
             const tenkhachhangColIndex = columns.findIndex(c => c.key === 'tenkhachhang') + 1;
+            const madonhangColIndex = columns.findIndex(c => c.key === 'madonhang') + 1;
             
             // Merge makhachhang theo madonhang
             mergeRanges.push({
@@ -562,6 +563,12 @@ export class DonhangService {
             mergeRanges.push({
               range: `${String.fromCharCode(64 + tenkhachhangColIndex)}${orderStartRow}:${String.fromCharCode(64 + tenkhachhangColIndex)}${orderEndRow}`,
               value: orderItems[0].tenkhachhang || ''
+            });
+            
+            // Merge madonhang theo madonhang (giống logic trước đó)
+            mergeRanges.push({
+              range: `${String.fromCharCode(64 + madonhangColIndex)}${orderStartRow}:${String.fromCharCode(64 + madonhangColIndex)}${orderEndRow}`,
+              value: orderItems[0].madonhang || ''
             });
           }
         }
@@ -1497,6 +1504,7 @@ export class DonhangService {
 
     return { tong, tongvat, tongtien };
   }
+  
   async create(dto: any) {
 
     const maxOrderResult = await this.prisma.donhang.aggregate({
