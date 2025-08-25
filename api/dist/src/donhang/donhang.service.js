@@ -1789,26 +1789,30 @@ let DonhangService = class DonhangService {
                         ghichu: data.ghichu,
                         printCount: data.printCount,
                         isshowvat: data.isshowvat,
-                        sanpham: {
-                            deleteMany: {},
-                            create: data.sanpham.map((sp) => ({
-                                idSP: sp.id,
-                                ghichu: sp.ghichu,
-                                sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
-                                slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
-                                slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
-                                ttdat: parseFloat((sp.ttdat ?? 0).toFixed(3)),
-                                ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
-                                ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(3)),
-                                vat: parseFloat((sp.vat ?? 0).toFixed(3)),
-                                ttsauvat: parseFloat((sp.ttsauvat ?? 0).toFixed(3)),
-                            })),
-                        },
                     },
                     include: {
                         sanpham: true,
                     },
                 });
+                for (const sp of data.sanpham) {
+                    await prisma.donhangsanpham.updateMany({
+                        where: {
+                            donhangId: id,
+                            idSP: sp.id
+                        },
+                        data: {
+                            ghichu: sp.ghichu,
+                            sldat: parseFloat((sp.sldat ?? 0).toFixed(3)),
+                            slgiao: parseFloat((sp.slgiao ?? 0).toFixed(3)),
+                            slnhan: parseFloat((sp.slnhan ?? 0).toFixed(3)),
+                            ttdat: parseFloat((sp.ttdat ?? 0).toFixed(3)),
+                            ttgiao: parseFloat((sp.ttgiao ?? 0).toFixed(3)),
+                            ttnhan: parseFloat((sp.ttnhan ?? 0).toFixed(3)),
+                            vat: parseFloat((sp.vat ?? 0).toFixed(3)),
+                            ttsauvat: parseFloat((sp.ttsauvat ?? 0).toFixed(3)),
+                        },
+                    });
+                }
                 return updatedDonhang;
             });
         }

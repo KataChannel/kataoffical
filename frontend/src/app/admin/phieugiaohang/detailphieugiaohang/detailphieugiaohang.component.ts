@@ -253,6 +253,8 @@ export class DetailPhieugiaohangComponent implements OnInit, AfterViewInit {
 
   private async updatePhieugiaohang() {
     try {
+      console.log(this.DetailPhieugiaohang());
+      
       this.DetailPhieugiaohang().sanpham = this.DetailPhieugiaohang().sanpham.map((v:any)=>{
         v.ttgiao = Number(v.slgiao)*Number(v.giaban)||0;
         return v
