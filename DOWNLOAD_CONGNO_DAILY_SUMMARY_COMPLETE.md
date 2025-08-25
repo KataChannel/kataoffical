@@ -179,3 +179,106 @@ Tính năng mới cho phép:
 - **⚡ Performance tối ưu và backward compatible**
 
 Method `downloadcongnokhachhang` hiện cung cấp báo cáo chi tiết và tổng hợp theo ngày giao, giúp quản lý công nợ hiệu quả hơn.
+
+---
+
+## CẬP NHẬT MỚI NHẤT (25/08/2025): TÍNH TONGTIENSAUVAT THEO KHÁCH HÀNG VÀ NGÀY GIAO
+
+### Vấn đề trước đây:
+- `tongtiensauvat` được tính theo từng đơn hàng riêng biệt
+- Nếu 1 khách hàng có nhiều đơn hàng cùng ngày → hiển thị các giá trị `tongtiensauvat` khác nhau
+- Không phản ánh chính xác tổng công nợ theo ngày của khách hàng
+
+### Giải pháp mới:
+- `tongtiensauvat` được tính theo **combination (khách hàng + ngày giao)**
+- Tất cả items của cùng khách hàng trong cùng ngày sẽ có cùng giá trị `tongtiensauvat`
+- Phản ánh chính xác tổng công nợ hàng ngày
+
+### Thay đổi implementation:
+
+#### 1. Two-Phase Data Processing:
+```typescript
+// Phase 1: Flatten all order items without tongtiensauvat
+const flatItems = donhangs.flatMap((v: any) => {
+  return v.sanpham.map((v1: any) => {
+    // Calculate individual item totals
+    return {
+      // ... item data
+      thanhtiensauvat: thanhtiensauvat, // Individual item total
+      // tongtiensauvat will be calculated later
+    };
+  });
+});
+
+// Phase 2: Group by customer-date and calculate tongtiensauvat
+const customerDateMap = new Map();
+flatItems.forEach(item => {
+  const dateKey = item.ngaygiao ? moment(item.ngaygiao).format('YYYY-MM-DD') : 'no-date';
+  const customerKey = item.makhachhang || 'unknown';
+  const key = `${customerKey}_${dateKey}`;
+  
+  if (!customerDateMap.has(key)) {
+    customerDateMap.set(key, {
+      tongtiensauvat: 0,
+      items: []
+    });
+  }
+  
+  const group = customerDateMap.get(key);
+  group.tongtiensauvat += item.thanhtiensauvat;
+});
+```
+
+#### 2. Enhanced groupDataByCustomerAndDate:
+```typescript
+// Added tongtiensauvat tracking for date groups  
+if (!dateMap.has(dateKey)) {
+  dateMap.set(dateKey, {
+    date: item.ngaygiao,
+    items: [],
+    tongtiensauvat: 0  // NEW: Track total for this date group
+  });
+}
+
+const dateGroup = dateMap.get(dateKey);
+dateGroup.items.push(item);
+// Calculate tongtiensauvat for this date group
+dateGroup.tongtiensauvat += Number(item.thanhtiensauvat) || 0;
+```
+
+### Ví dụ cụ thể:
+
+**Tình huống**: Khách hàng ABC có 2 đơn hàng ngày 25/08/2025
+- Đơn hàng 1: 3 items tổng cộng 1,000,000 VND
+- Đơn hàng 2: 2 items tổng cộng 500,000 VND
+
+**Trước đây**:
+- 3 items đơn hàng 1 hiển thị `tongtiensauvat`: 1,000,000
+- 2 items đơn hàng 2 hiển thị `tongtiensauvat`: 500,000
+
+**Sau cập nhật**:
+- Cả 5 items đều hiển thị `tongtiensauvat`: 1,500,000 (tổng cho khách ABC ngày 25/08)
+
+### Lợi ích:
+
+1. **Báo cáo nhất quán**: Tất cả items cùng khách hàng cùng ngày có cùng giá trị total
+2. **Theo dõi công nợ chính xác**: Hiển thị đúng số tiền nợ hàng ngày của khách hàng  
+3. **Phân tích đơn giản hơn**: Dễ dàng hiểu được pattern công nợ theo ngày
+4. **Excel grouping có ý nghĩa**: Group theo khách hàng và ngày có thông tin tổng hợp đúng
+
+### Files đã chỉnh sửa:
+- `/api/src/donhang/donhang.service.ts`
+  - `downloadcongnokhachhang()` method - logic tính toán chính
+  - `groupDataByCustomerAndDate()` helper method - logic grouping
+
+### Testing:
+- ✅ Backend build thành công
+- ✅ Không có breaking changes
+- ✅ Giữ nguyên format Excel export
+- ✅ Enhanced business logic
+
+### Impact:
+- **Độ chính xác dữ liệu**: Phản ánh chính xác công nợ khách hàng theo ngày
+- **Business Logic**: Phù hợp với yêu cầu theo dõi công nợ thực tế
+- **User Experience**: Báo cáo rõ ràng và nhất quán trong Excel
+- **Maintenance**: Cấu trúc code sạch hơn với separation of concerns tốt hơn

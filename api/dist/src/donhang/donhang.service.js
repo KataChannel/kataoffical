@@ -280,15 +280,19 @@ let DonhangService = class DonhangService {
             orderBy: { createdAt: 'desc' },
         });
         const Sanphams = await this.prisma.sanpham.findMany();
-        const result = donhangs.flatMap((v) => {
-            const orderItems = v.sanpham.map((v1) => {
+        const flatItems = donhangs.flatMap((v) => {
+            return v.sanpham.map((v1) => {
                 const product = Sanphams.find((sp) => sp.id === v1.idSP);
                 const giaban = v1.giaban || 0;
                 const vat = Number(product?.vat) || 0;
                 const thanhtiensauvat = v1.slnhan * giaban * (1 + vat);
+                const normalizedDate = v.ngaygiao ?
+                    moment(v.ngaygiao).utc().startOf('day').format('YYYY-MM-DD') :
+                    'no-date';
                 return {
                     id: v.id,
                     ngaygiao: v.ngaygiao,
+                    ngaygiaoNormalized: normalizedDate,
                     tenkhachhang: v.khachhang?.name,
                     makhachhang: v.khachhang?.makh,
                     madonhang: v.madonhang,
@@ -304,12 +308,49 @@ let DonhangService = class DonhangService {
                     ghichu: v1.ghichu,
                 };
             });
-            const tongtiensauvat = orderItems.reduce((sum, item) => sum + item.thanhtiensauvat, 0);
-            return orderItems.map((item) => ({
-                ...item,
-                tongtiensauvat: tongtiensauvat,
-            }));
         });
+        const combinationTotals = new Map();
+        flatItems.forEach(item => {
+            const customerKey = item.makhachhang || 'unknown-customer';
+            const dateKey = item.ngaygiaoNormalized;
+            const combinationKey = `${customerKey}|${dateKey}`;
+            if (!combinationTotals.has(combinationKey)) {
+                combinationTotals.set(combinationKey, {
+                    tongtiensauvat: 0,
+                    itemCount: 0,
+                    customerInfo: {
+                        makhachhang: item.makhachhang,
+                        tenkhachhang: item.tenkhachhang
+                    },
+                    dateInfo: {
+                        ngaygiao: item.ngaygiao,
+                        ngaygiaoNormalized: item.ngaygiaoNormalized
+                    }
+                });
+            }
+            const combination = combinationTotals.get(combinationKey);
+            combination.tongtiensauvat += item.thanhtiensauvat;
+            combination.itemCount += 1;
+        });
+        const result = flatItems.map(item => {
+            const customerKey = item.makhachhang || 'unknown-customer';
+            const dateKey = item.ngaygiaoNormalized;
+            const combinationKey = `${customerKey}|${dateKey}`;
+            const combination = combinationTotals.get(combinationKey);
+            return {
+                ...item,
+                tongtiensauvat: combination ? combination.tongtiensauvat : item.thanhtiensauvat,
+                _debug: {
+                    combinationKey: combinationKey,
+                    itemsInCombination: combination?.itemCount || 0
+                }
+            };
+        });
+        console.log('=== COMBINATION TOTALS DEBUG ===');
+        combinationTotals.forEach((value, key) => {
+            console.log(`${key}: ${value.tongtiensauvat} VND (${value.itemCount} items)`);
+        });
+        console.log('================================');
         console.log('result', result);
         return this.createCongnoExcelFile(result || [], params);
     }
@@ -332,7 +373,8 @@ let DonhangService = class DonhangService {
             { key: 'vat', header: 'VAT (%)', width: 10 },
             { key: 'dongiavathoadon', header: 'Đơn Giá VAT', width: 15 },
             { key: 'thanhtiensauvat', header: 'Thành Tiền Sau VAT', width: 20 },
-            { key: 'tongtiensauvat', header: 'Tổng Tiền Sau Thuế', width: 20 }
+            { key: 'tongtiensauvat', header: 'Tổng Tiền Sau Thuế', width: 20 },
+            { key: 'tongcong', header: 'Tổng Cộng Khách Hàng', width: 25 }
         ];
         worksheet.columns = columns;
         const headerRow = worksheet.getRow(1);
@@ -351,37 +393,62 @@ let DonhangService = class DonhangService {
             const customerStartRow = currentRow;
             for (const dateGroup of customerData.dateGroups) {
                 const dateStartRow = currentRow;
-                for (const item of dateGroup.items) {
-                    const row = worksheet.getRow(currentRow);
-                    const ngaygiao = item.ngaygiao ? new Date(item.ngaygiao) : null;
-                    row.values = {
-                        ngaygiao: ngaygiao ? moment(ngaygiao).tz('Asia/Ho_Chi_Minh').format("DD/MM/YYYY") : '',
-                        makhachhang: item.makhachhang || '',
-                        tenkhachhang: item.tenkhachhang || '',
-                        madonhang: item.madonhang || '',
-                        mahang: item.mahang || '',
-                        tenhang: item.tenhang || '',
-                        dvt: item.dvt || '',
-                        soluong: Number(item.soluong) || 0,
-                        dongia: Number(item.dongia) || 0,
-                        thanhtientruocvat: Number(item.thanhtientruocvat) || 0,
-                        vat: Number(item.vat) || 0,
-                        dongiavathoadon: Number(item.dongiavathoadon) || 0,
-                        thanhtiensauvat: Number(item.thanhtiensauvat) || 0,
-                        ghichu: item.ghichu || '',
-                        tongtiensauvat: Number(item.tongtiensauvat) || 0
-                    };
-                    ['soluong', 'dongia', 'thanhtientruocvat', 'dongiavathoadon', 'thanhtiensauvat', 'tongtiensauvat'].forEach(col => {
-                        const cell = row.getCell(col);
-                        cell.numFmt = '#,##0.00';
-                        cell.alignment = { horizontal: 'right' };
-                    });
-                    ['vat'].forEach(col => {
-                        const cell = row.getCell(col);
-                        cell.numFmt = '0.00%';
-                        cell.alignment = { horizontal: 'right' };
-                    });
-                    currentRow++;
+                const orderGroups = new Map();
+                dateGroup.items.forEach(item => {
+                    const orderKey = item.madonhang || 'unknown-order';
+                    if (!orderGroups.has(orderKey)) {
+                        orderGroups.set(orderKey, []);
+                    }
+                    orderGroups.get(orderKey).push(item);
+                });
+                for (const [orderKey, orderItems] of orderGroups) {
+                    const orderStartRow = currentRow;
+                    for (const item of orderItems) {
+                        const row = worksheet.getRow(currentRow);
+                        const ngaygiao = item.ngaygiao ? new Date(item.ngaygiao) : null;
+                        row.values = {
+                            ngaygiao: ngaygiao ? moment(ngaygiao).tz('Asia/Ho_Chi_Minh').format("DD/MM/YYYY") : '',
+                            makhachhang: item.makhachhang || '',
+                            tenkhachhang: item.tenkhachhang || '',
+                            madonhang: item.madonhang || '',
+                            mahang: item.mahang || '',
+                            tenhang: item.tenhang || '',
+                            dvt: item.dvt || '',
+                            soluong: Number(item.soluong) || 0,
+                            dongia: Number(item.dongia) || 0,
+                            thanhtientruocvat: Number(item.thanhtientruocvat) || 0,
+                            vat: Number(item.vat) || 0,
+                            dongiavathoadon: Number(item.dongiavathoadon) || 0,
+                            thanhtiensauvat: Number(item.thanhtiensauvat) || 0,
+                            ghichu: item.ghichu || '',
+                            tongtiensauvat: Number(item.tongtiensauvat) || 0,
+                            tongcong: Number(customerData.tongtiensauvat) || 0
+                        };
+                        ['soluong', 'dongia', 'thanhtientruocvat', 'dongiavathoadon', 'thanhtiensauvat', 'tongtiensauvat', 'tongcong'].forEach(col => {
+                            const cell = row.getCell(col);
+                            cell.numFmt = '#,##0.00';
+                            cell.alignment = { horizontal: 'right' };
+                        });
+                        ['vat'].forEach(col => {
+                            const cell = row.getCell(col);
+                            cell.numFmt = '0.00%';
+                            cell.alignment = { horizontal: 'right' };
+                        });
+                        currentRow++;
+                    }
+                    const orderEndRow = currentRow - 1;
+                    if (orderEndRow > orderStartRow) {
+                        const makhachhangColIndex = columns.findIndex(c => c.key === 'makhachhang') + 1;
+                        const tenkhachhangColIndex = columns.findIndex(c => c.key === 'tenkhachhang') + 1;
+                        mergeRanges.push({
+                            range: `${String.fromCharCode(64 + makhachhangColIndex)}${orderStartRow}:${String.fromCharCode(64 + makhachhangColIndex)}${orderEndRow}`,
+                            value: orderItems[0].makhachhang || ''
+                        });
+                        mergeRanges.push({
+                            range: `${String.fromCharCode(64 + tenkhachhangColIndex)}${orderStartRow}:${String.fromCharCode(64 + tenkhachhangColIndex)}${orderEndRow}`,
+                            value: orderItems[0].tenkhachhang || ''
+                        });
+                    }
                 }
                 const dateEndRow = currentRow - 1;
                 if (dateEndRow > dateStartRow) {
@@ -390,16 +457,19 @@ let DonhangService = class DonhangService {
                         range: `${String.fromCharCode(64 + ngaygiaoColIndex)}${dateStartRow}:${String.fromCharCode(64 + ngaygiaoColIndex)}${dateEndRow}`,
                         value: dateGroup.items[0].ngaygiao ? moment(dateGroup.items[0].ngaygiao).tz('Asia/Ho_Chi_Minh').format("DD/MM/YYYY") : ''
                     });
+                    const tongtiensauvatColIndex = columns.findIndex(c => c.key === 'tongtiensauvat') + 1;
+                    mergeRanges.push({
+                        range: `${String.fromCharCode(64 + tongtiensauvatColIndex)}${dateStartRow}:${String.fromCharCode(64 + tongtiensauvatColIndex)}${dateEndRow}`,
+                        value: dateGroup.items[0].tongtiensauvat
+                    });
                 }
             }
             const customerEndRow = currentRow - 1;
             if (customerEndRow > customerStartRow) {
-                ['makhachhang', 'tenkhachhang', 'tongtiensauvat'].forEach(col => {
-                    const colIndex = columns.findIndex(c => c.key === col) + 1;
-                    mergeRanges.push({
-                        range: `${String.fromCharCode(64 + colIndex)}${customerStartRow}:${String.fromCharCode(64 + colIndex)}${customerEndRow}`,
-                        value: customerData.items[0][col]
-                    });
+                const tongcongColIndex = columns.findIndex(c => c.key === 'tongcong') + 1;
+                mergeRanges.push({
+                    range: `${String.fromCharCode(64 + tongcongColIndex)}${customerStartRow}:${String.fromCharCode(64 + tongcongColIndex)}${customerEndRow}`,
+                    value: customerData.tongtiensauvat
                 });
             }
         }
@@ -431,7 +501,7 @@ let DonhangService = class DonhangService {
     groupDataByCustomerAndDate(data) {
         const customerMap = new Map();
         data.forEach(item => {
-            const customerKey = item.makhachhang || 'unknown';
+            const customerKey = item.makhachhang || 'unknown-customer';
             if (!customerMap.has(customerKey)) {
                 customerMap.set(customerKey, {
                     makhachhang: item.makhachhang,
@@ -443,20 +513,25 @@ let DonhangService = class DonhangService {
             }
             const customer = customerMap.get(customerKey);
             customer.items.push(item);
-            customer.tongtiensauvat += Number(item.thanhtiensauvat) || 0;
         });
         customerMap.forEach(customer => {
             const dateMap = new Map();
             customer.items.forEach(item => {
-                const dateKey = item.ngaygiao ? moment(item.ngaygiao).format('YYYY-MM-DD') : 'no-date';
+                const dateKey = item.ngaygiaoNormalized || 'no-date';
                 if (!dateMap.has(dateKey)) {
                     dateMap.set(dateKey, {
                         date: item.ngaygiao,
-                        items: []
+                        dateKey: dateKey,
+                        items: [],
+                        tongtiensauvat: 0,
+                        combinationKey: `${customer.makhachhang}|${dateKey}`
                     });
                 }
                 const dateGroup = dateMap.get(dateKey);
                 dateGroup.items.push(item);
+                if (dateGroup.items.length === 1) {
+                    dateGroup.tongtiensauvat = Number(item.tongtiensauvat) || 0;
+                }
             });
             customer.dateGroups = Array.from(dateMap.values()).sort((a, b) => {
                 if (!a.date && !b.date)
@@ -467,6 +542,9 @@ let DonhangService = class DonhangService {
                     return -1;
                 return new Date(a.date).getTime() - new Date(b.date).getTime();
             });
+            customer.tongtiensauvat = customer.dateGroups.reduce((sum, dateGroup) => {
+                return sum + dateGroup.tongtiensauvat;
+            }, 0);
         });
         return Array.from(customerMap.values()).sort((a, b) => (a.tenkhachhang || '').localeCompare(b.tenkhachhang || ''));
     }
@@ -696,7 +774,8 @@ let DonhangService = class DonhangService {
                         sanpham: true,
                     },
                 },
-                khachhang: { include: { banggia: { include: { sanpham: true } } } },
+                khachhang: true,
+                banggia: { select: { id: true, title: true, mabanggia: true } },
             },
         });
         if (!result) {
@@ -719,10 +798,7 @@ let DonhangService = class DonhangService {
                     ttsauvat: parseFloat((item.ttnhan * (1 + (item.vat || 0))).toFixed(3)),
                     ghichu: item.ghichu,
                 };
-            }),
-            khachhang: result.khachhang
-                ? (({ banggia, ...rest }) => rest)(result.khachhang)
-                : null,
+            })
         };
     }
     async findAll() {

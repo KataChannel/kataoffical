@@ -170,7 +170,38 @@ export declare class DonhangController {
     }[]>;
     phieugiao(params: any): Promise<{
         sanpham: any[];
-        khachhang: any;
+        banggia: {
+            id: string;
+            title: string | null;
+            mabanggia: string | null;
+        } | null;
+        khachhang: {
+            id: string;
+            subtitle: string | null;
+            ghichu: string | null;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            email: string | null;
+            name: string | null;
+            diachi: string | null;
+            sdt: string | null;
+            namenn: string | null;
+            makh: string;
+            makhold: string | null;
+            mst: string | null;
+            gionhanhang: string | null;
+            quan: string | null;
+            phone: string | null;
+            address: string | null;
+            loaikh: string | null;
+            hiengia: boolean;
+            istitle2: boolean;
+            tenfile: string | null;
+            tenkh: string | null;
+            banggiaId: string | null;
+            isshowvat: boolean;
+        } | null;
         id: string;
         title: string | null;
         ghichu: string | null;

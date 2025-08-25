@@ -343,15 +343,24 @@ export class DonhangService {
     });
     
     const Sanphams = await this.prisma.sanpham.findMany();
-    const result = donhangs.flatMap((v: any) => {
-      const orderItems = v.sanpham.map((v1: any) => {
+    
+    // Step 1: Flatten all order items với thông tin cơ bản
+    const flatItems = donhangs.flatMap((v: any) => {
+      return v.sanpham.map((v1: any) => {
         const product = Sanphams.find((sp: any) => sp.id === v1.idSP);
         const giaban = v1.giaban || 0;
         const vat: any = Number(product?.vat) || 0;
         const thanhtiensauvat = v1.slnhan * giaban * (1 + vat);
+        
+        // Chuẩn hóa ngày giao để đảm bảo grouping chính xác
+        const normalizedDate = v.ngaygiao ? 
+          moment(v.ngaygiao).utc().startOf('day').format('YYYY-MM-DD') : 
+          'no-date';
+        
         return {
           id: v.id,
           ngaygiao: v.ngaygiao,
+          ngaygiaoNormalized: normalizedDate, // Thêm field để group chính xác
           tenkhachhang: v.khachhang?.name,
           makhachhang: v.khachhang?.makh,
           madonhang: v.madonhang,
@@ -367,19 +376,60 @@ export class DonhangService {
           ghichu: v1.ghichu,
         };
       });
-
-      // Calculate tongtiensauvat for the entire order
-      const tongtiensauvat = orderItems.reduce(
-        (sum, item) => sum + item.thanhtiensauvat,
-        0,
-      );
-
-      // Add tongtiensauvat to each item
-      return orderItems.map((item) => ({
-        ...item,
-        tongtiensauvat: tongtiensauvat,
-      }));
     });
+
+    // Step 2: Tính tongtiensauvat cho mỗi combination duy nhất (ngaygiao + khachhang)
+    const combinationTotals = new Map();
+    
+    flatItems.forEach(item => {
+      // Tạo key duy nhất cho combination (customer + date)
+      const customerKey = item.makhachhang || 'unknown-customer';
+      const dateKey = item.ngaygiaoNormalized;
+      const combinationKey = `${customerKey}|${dateKey}`;
+      
+      if (!combinationTotals.has(combinationKey)) {
+        combinationTotals.set(combinationKey, {
+          tongtiensauvat: 0,
+          itemCount: 0,
+          customerInfo: {
+            makhachhang: item.makhachhang,
+            tenkhachhang: item.tenkhachhang
+          },
+          dateInfo: {
+            ngaygiao: item.ngaygiao,
+            ngaygiaoNormalized: item.ngaygiaoNormalized
+          }
+        });
+      }
+      
+      const combination = combinationTotals.get(combinationKey);
+      combination.tongtiensauvat += item.thanhtiensauvat;
+      combination.itemCount += 1;
+    });
+
+    // Step 3: Apply tongtiensauvat cho từng item dựa trên combination
+    const result = flatItems.map(item => {
+      const customerKey = item.makhachhang || 'unknown-customer';
+      const dateKey = item.ngaygiaoNormalized;
+      const combinationKey = `${customerKey}|${dateKey}`;
+      const combination = combinationTotals.get(combinationKey);
+      
+      return {
+        ...item,
+        tongtiensauvat: combination ? combination.tongtiensauvat : item.thanhtiensauvat,
+        // Thêm debug info (có thể remove sau)
+        _debug: {
+          combinationKey: combinationKey,
+          itemsInCombination: combination?.itemCount || 0
+        }
+      };
+    });
+    
+    console.log('=== COMBINATION TOTALS DEBUG ===');
+    combinationTotals.forEach((value, key) => {
+      console.log(`${key}: ${value.tongtiensauvat} VND (${value.itemCount} items)`);
+    });
+    console.log('================================');
     console.log('result', result);
     
     // Group data by customer and create Excel file
@@ -410,7 +460,8 @@ export class DonhangService {
       { key: 'vat', header: 'VAT (%)', width: 10 },
       { key: 'dongiavathoadon', header: 'Đơn Giá VAT', width: 15 },
       { key: 'thanhtiensauvat', header: 'Thành Tiền Sau VAT', width: 20 },
-      { key: 'tongtiensauvat', header: 'Tổng Tiền Sau Thuế', width: 20 }
+      { key: 'tongtiensauvat', header: 'Tổng Tiền Sau Thuế', width: 20 },
+      { key: 'tongcong', header: 'Tổng Cộng Khách Hàng', width: 25 }
     ];
 
     worksheet.columns = columns;
@@ -439,44 +490,80 @@ export class DonhangService {
       for (const dateGroup of customerData.dateGroups) {
         const dateStartRow = currentRow;
         
-        for (const item of dateGroup.items) {
-          const row = worksheet.getRow(currentRow);
+        // Group items by madonhang within this date group
+        const orderGroups = new Map();
+        dateGroup.items.forEach(item => {
+          const orderKey = item.madonhang || 'unknown-order';
+          if (!orderGroups.has(orderKey)) {
+            orderGroups.set(orderKey, []);
+          }
+          orderGroups.get(orderKey).push(item);
+        });
+        
+        // Process each order group
+        for (const [orderKey, orderItems] of orderGroups) {
+          const orderStartRow = currentRow;
           
-          // Format date
-          const ngaygiao = item.ngaygiao ? new Date(item.ngaygiao) : null;
+          for (const item of orderItems) {
+            const row = worksheet.getRow(currentRow);
+            
+            // Format date
+            const ngaygiao = item.ngaygiao ? new Date(item.ngaygiao) : null;
+            
+            row.values = {
+              ngaygiao: ngaygiao ? moment(ngaygiao).tz('Asia/Ho_Chi_Minh').format("DD/MM/YYYY") : '',
+              makhachhang: item.makhachhang || '',
+              tenkhachhang: item.tenkhachhang || '',
+              madonhang: item.madonhang || '',
+              mahang: item.mahang || '',
+              tenhang: item.tenhang || '',
+              dvt: item.dvt || '',
+              soluong: Number(item.soluong) || 0,
+              dongia: Number(item.dongia) || 0,
+              thanhtientruocvat: Number(item.thanhtientruocvat) || 0,
+              vat: Number(item.vat) || 0,
+              dongiavathoadon: Number(item.dongiavathoadon) || 0,
+              thanhtiensauvat: Number(item.thanhtiensauvat) || 0,
+              ghichu: item.ghichu || '',
+              tongtiensauvat: Number(item.tongtiensauvat) || 0,
+              tongcong: Number(customerData.tongtiensauvat) || 0  // Tổng cộng của cả khách hàng
+            };
+
+            // Format number columns
+            ['soluong', 'dongia', 'thanhtientruocvat', 'dongiavathoadon', 'thanhtiensauvat', 'tongtiensauvat', 'tongcong'].forEach(col => {
+              const cell = row.getCell(col);
+              cell.numFmt = '#,##0.00';
+              cell.alignment = { horizontal: 'right' };
+            });
+
+            ['vat'].forEach(col => {
+              const cell = row.getCell(col);
+              cell.numFmt = '0.00%';
+              cell.alignment = { horizontal: 'right' };
+            });
+
+            currentRow++;
+          }
           
-          row.values = {
-            ngaygiao: ngaygiao ? moment(ngaygiao).tz('Asia/Ho_Chi_Minh').format("DD/MM/YYYY") : '',
-            makhachhang: item.makhachhang || '',
-            tenkhachhang: item.tenkhachhang || '',
-            madonhang: item.madonhang || '',
-            mahang: item.mahang || '',
-            tenhang: item.tenhang || '',
-            dvt: item.dvt || '',
-            soluong: Number(item.soluong) || 0,
-            dongia: Number(item.dongia) || 0,
-            thanhtientruocvat: Number(item.thanhtientruocvat) || 0,
-            vat: Number(item.vat) || 0,
-            dongiavathoadon: Number(item.dongiavathoadon) || 0,
-            thanhtiensauvat: Number(item.thanhtiensauvat) || 0,
-            ghichu: item.ghichu || '',
-            tongtiensauvat: Number(item.tongtiensauvat) || 0
-          };
-
-          // Format number columns
-          ['soluong', 'dongia', 'thanhtientruocvat', 'dongiavathoadon', 'thanhtiensauvat', 'tongtiensauvat'].forEach(col => {
-            const cell = row.getCell(col);
-            cell.numFmt = '#,##0.00';
-            cell.alignment = { horizontal: 'right' };
-          });
-
-          ['vat'].forEach(col => {
-            const cell = row.getCell(col);
-            cell.numFmt = '0.00%';
-            cell.alignment = { horizontal: 'right' };
-          });
-
-          currentRow++;
+          const orderEndRow = currentRow - 1;
+          
+          // Create merge ranges for customer info by madonhang
+          if (orderEndRow > orderStartRow) {
+            const makhachhangColIndex = columns.findIndex(c => c.key === 'makhachhang') + 1;
+            const tenkhachhangColIndex = columns.findIndex(c => c.key === 'tenkhachhang') + 1;
+            
+            // Merge makhachhang theo madonhang
+            mergeRanges.push({
+              range: `${String.fromCharCode(64 + makhachhangColIndex)}${orderStartRow}:${String.fromCharCode(64 + makhachhangColIndex)}${orderEndRow}`,
+              value: orderItems[0].makhachhang || ''
+            });
+            
+            // Merge tenkhachhang theo madonhang
+            mergeRanges.push({
+              range: `${String.fromCharCode(64 + tenkhachhangColIndex)}${orderStartRow}:${String.fromCharCode(64 + tenkhachhangColIndex)}${orderEndRow}`,
+              value: orderItems[0].tenkhachhang || ''
+            });
+          }
         }
 
         const dateEndRow = currentRow - 1;
@@ -490,19 +577,24 @@ export class DonhangService {
             range: `${String.fromCharCode(64 + ngaygiaoColIndex)}${dateStartRow}:${String.fromCharCode(64 + ngaygiaoColIndex)}${dateEndRow}`,
             value: dateGroup.items[0].ngaygiao ? moment(dateGroup.items[0].ngaygiao).tz('Asia/Ho_Chi_Minh').format("DD/MM/YYYY") : ''
           });
+          
+          // THÊM: Merge tongtiensauvat cho cùng ngày giao của cùng khách hàng
+          const tongtiensauvatColIndex = columns.findIndex(c => c.key === 'tongtiensauvat') + 1;
+          mergeRanges.push({
+            range: `${String.fromCharCode(64 + tongtiensauvatColIndex)}${dateStartRow}:${String.fromCharCode(64 + tongtiensauvatColIndex)}${dateEndRow}`,
+            value: dateGroup.items[0].tongtiensauvat
+          });
         }
       }
 
       const customerEndRow = currentRow - 1;
       
-      // Create merge ranges for customer info (only if multiple rows)
+      // THÊM: Merge tongcong cho toàn bộ khách hàng
       if (customerEndRow > customerStartRow) {
-        ['makhachhang', 'tenkhachhang', 'tongtiensauvat'].forEach(col => {
-          const colIndex = columns.findIndex(c => c.key === col) + 1;
-          mergeRanges.push({
-            range: `${String.fromCharCode(64 + colIndex)}${customerStartRow}:${String.fromCharCode(64 + colIndex)}${customerEndRow}`,
-            value: customerData.items[0][col]
-          });
+        const tongcongColIndex = columns.findIndex(c => c.key === 'tongcong') + 1;
+        mergeRanges.push({
+          range: `${String.fromCharCode(64 + tongcongColIndex)}${customerStartRow}:${String.fromCharCode(64 + tongcongColIndex)}${customerEndRow}`,
+          value: customerData.tongtiensauvat  // Tổng cộng của cả khách hàng
         });
       }
     }
@@ -542,19 +634,19 @@ export class DonhangService {
   }
 
   /**
-   * Group data by customer and then by date (new helper method)
+   * Group data by customer and then by date (updated with normalized date keys)
    */
   private groupDataByCustomerAndDate(data: any[]): any[] {
     const customerMap = new Map();
     
     data.forEach(item => {
-      const customerKey = item.makhachhang || 'unknown';
+      const customerKey = item.makhachhang || 'unknown-customer';
       
       if (!customerMap.has(customerKey)) {
         customerMap.set(customerKey, {
           makhachhang: item.makhachhang,
           tenkhachhang: item.tenkhachhang,
-          tongtiensauvat: 0,
+          tongtiensauvat: 0, // Sẽ được tính lại dựa trên từng date group
           items: [],
           dateGroups: []
         });
@@ -562,25 +654,34 @@ export class DonhangService {
       
       const customer = customerMap.get(customerKey);
       customer.items.push(item);
-      customer.tongtiensauvat += Number(item.thanhtiensauvat) || 0;
+      // KHÔNG tính tổng ở đây, sẽ tính từ date groups
     });
     
-    // Group items by date within each customer
+    // Group items by normalized date within each customer
     customerMap.forEach(customer => {
       const dateMap = new Map();
       
       customer.items.forEach(item => {
-        const dateKey = item.ngaygiao ? moment(item.ngaygiao).format('YYYY-MM-DD') : 'no-date';
+        // Sử dụng normalized date key giống như logic chính
+        const dateKey = item.ngaygiaoNormalized || 'no-date';
         
         if (!dateMap.has(dateKey)) {
           dateMap.set(dateKey, {
             date: item.ngaygiao,
-            items: []
+            dateKey: dateKey,
+            items: [],
+            tongtiensauvat: 0,
+            combinationKey: `${customer.makhachhang}|${dateKey}`
           });
         }
         
         const dateGroup = dateMap.get(dateKey);
         dateGroup.items.push(item);
+        // Sử dụng tongtiensauvat đã được tính trong main logic
+        // Chỉ cần lấy từ item đầu tiên vì tất cả items trong cùng combination có cùng giá trị
+        if (dateGroup.items.length === 1) {
+          dateGroup.tongtiensauvat = Number(item.tongtiensauvat) || 0;
+        }
       });
       
       // Sort date groups by date
@@ -590,6 +691,11 @@ export class DonhangService {
         if (!b.date) return -1;
         return new Date(a.date).getTime() - new Date(b.date).getTime();
       });
+      
+      // Tính tổng customer.tongtiensauvat từ các date groups (chỉ để hiển thị tổng cho customer)
+      customer.tongtiensauvat = customer.dateGroups.reduce((sum, dateGroup) => {
+        return sum + dateGroup.tongtiensauvat;
+      }, 0);
     });
     
     // Sort customers by name
@@ -891,7 +997,9 @@ export class DonhangService {
             sanpham: true,
           },
         },
-        khachhang: { include: { banggia: { include: { sanpham: true } } } },
+        khachhang: true,
+        // khachhang: { include: { banggia: { include: { sanpham: true } } } },
+        banggia: {select: {id:true,title:true,mabanggia:true}},
       },
     });
     if (!result) {
@@ -917,10 +1025,7 @@ export class DonhangService {
           ),
           ghichu: item.ghichu,
         };
-      }),
-      khachhang: result.khachhang
-        ? (({ banggia, ...rest }) => rest)(result.khachhang as any)
-        : null, // Xóa banggia
+      })
     };
   }
 
