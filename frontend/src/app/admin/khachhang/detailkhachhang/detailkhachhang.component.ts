@@ -119,10 +119,10 @@ export class DetailKhachhangComponent {
   }
   @Debounce(300)
   autoSubtitle() {
-    this.DetailKhachhang.update((v: any) => {
-      v.subtitle = removeVietnameseAccents(v.name);
-      return v;
-    });
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      subtitle: removeVietnameseAccents(v.name || '')
+    }));
   }
   private async createKhachhang() {
     try {
@@ -248,5 +248,112 @@ export class DetailKhachhangComponent {
 
   displayBanggia(banggia: any): string {
     return banggia ? `${banggia.title} - ${banggia.mabanggia}` : '';
+  }
+
+  // Methods để xử lý slide toggle changes
+  updateHiengia(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      hiengia: event.checked
+    }));
+  }
+
+  updateIstitle2(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      istitle2: event.checked
+    }));
+  }
+
+  updateIsshowvat(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      isshowvat: event.checked
+    }));
+  }
+
+  updateIsActive(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      isActive: event.checked
+    }));
+  }
+
+  // Methods để xử lý input changes
+  updateName(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      name: event.target.value
+    }));
+  }
+
+  updateSubtitle(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      subtitle: event.target.value
+    }));
+  }
+
+  updateTenfile(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      tenfile: event.target.value
+    }));
+  }
+
+  updateLoaikh(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      loaikh: event.value
+    }));
+  }
+
+  updateEmail(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      email: event.target.value
+    }));
+  }
+
+  updateSdt(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      sdt: event.target.value
+    }));
+  }
+
+  updateMst(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      mst: event.target.value
+    }));
+  }
+
+  updateGionhanhang(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      gionhanhang: event.target.value
+    }));
+  }
+
+  updateDiachi(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      diachi: event.target.value
+    }));
+  }
+
+  updateQuan(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      quan: event.target.value
+    }));
+  }
+
+  updateGhichu(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      ghichu: event.target.value
+    }));
   }
 }

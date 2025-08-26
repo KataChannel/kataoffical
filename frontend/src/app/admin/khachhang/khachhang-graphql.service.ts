@@ -157,7 +157,10 @@ export class KhachhangGraphqlService {
           }
         }
       };
-      const khachhang = await this._GraphqlService.findUnique('khachhang', {id},{include});
+      const khachhang = await this._GraphqlService.findUnique('khachhang', 
+        { id },
+        { include }
+      );
       console.log(khachhang);
 
       if (khachhang) {
@@ -186,6 +189,8 @@ export class KhachhangGraphqlService {
 
       const createData = {
         makh: dulieu.makh || this.generateMaKhachHang(),
+        subtitle: dulieu.subtitle || '',
+        tenfile: dulieu.tenfile || '',
         name: dulieu.name,
         diachi: dulieu.diachi || '',
         quan: dulieu.quan || '',
@@ -196,6 +201,9 @@ export class KhachhangGraphqlService {
         loaikh: dulieu.loaikh || 'banle',
         ghichu: dulieu.ghichu || '',
         isActive: dulieu.isActive !== false,
+        isshowvat: dulieu.isshowvat,
+        hiengia: dulieu.hiengia,
+        istitle2: dulieu.istitle2,
         banggiaId: dulieu.banggiaId || null
       };
 
@@ -217,12 +225,22 @@ export class KhachhangGraphqlService {
       // Refresh list
       await this.getAllKhachhang();
       
-      this._snackBar.open('Tạo khách hàng thành công', 'Đóng', { duration: 3000 });
+      this._snackBar.open('Tạo khách hàng thành công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
       return newKhachhang;
     } catch (error) {
       console.error('Lỗi tạo khách hàng:', error);
       this.error.set('Không thể tạo khách hàng');
-      this._snackBar.open('Lỗi tạo khách hàng', 'Đóng', { duration: 3000 });
+      this._snackBar.open('Lỗi tạo khách hàng', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
       throw error;
     } finally {
       this.loading.set(false);
@@ -239,6 +257,8 @@ export class KhachhangGraphqlService {
 
       const updateData = {
         name: dulieu.name,
+        subtitle: dulieu.subtitle,
+        tenfile: dulieu.tenfile,
         diachi: dulieu.diachi,
         quan: dulieu.quan,
         email: dulieu.email,
@@ -248,6 +268,9 @@ export class KhachhangGraphqlService {
         loaikh: dulieu.loaikh,
         ghichu: dulieu.ghichu,
         isActive: dulieu.isActive,
+        isshowvat: dulieu.isshowvat,
+        hiengia: dulieu.hiengia,
+        istitle2: dulieu.istitle2,
         banggiaId: dulieu.banggiaId
       };
 
@@ -262,7 +285,8 @@ export class KhachhangGraphqlService {
       };
 
       const updatedKhachhang = await this._GraphqlService.updateOne('khachhang', 
-        { where: { id }, data: updateData },
+        { id },
+        updateData,
         { include }
       );
 
@@ -271,12 +295,22 @@ export class KhachhangGraphqlService {
       // Refresh list
       await this.getAllKhachhang();
       
-      this._snackBar.open('Cập nhật khách hàng thành công', 'Đóng', { duration: 3000 });
+      this._snackBar.open('Cập nhật khách hàng thành công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
       return updatedKhachhang;
     } catch (error) {
       console.error('Lỗi cập nhật khách hàng:', error);
       this.error.set('Không thể cập nhật khách hàng');
-      this._snackBar.open('Lỗi cập nhật khách hàng', 'Đóng', { duration: 3000 });
+      this._snackBar.open('Lỗi cập nhật khách hàng', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
       throw error;
     } finally {
       this.loading.set(false);
@@ -292,17 +326,30 @@ export class KhachhangGraphqlService {
       this.error.set(null);
 
       // Soft delete by setting isActive = false
-      const deletedKhachhang = await this._GraphqlService.updateOne('khachhang',{ id }, { isActive: false  });
+      const deletedKhachhang = await this._GraphqlService.updateOne('khachhang', 
+        { id }, 
+        { isActive: false }
+      );
 
       // Refresh list
       await this.getAllKhachhang();
       
-      this._snackBar.open('Xóa khách hàng thành công', 'Đóng', { duration: 3000 });
+      this._snackBar.open('Xóa khách hàng thành công', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
       return deletedKhachhang;
     } catch (error) {
       console.error('Lỗi xóa khách hàng:', error);
       this.error.set('Không thể xóa khách hàng');
-      this._snackBar.open('Lỗi xóa khách hàng', 'Đóng', { duration: 3000 });
+      this._snackBar.open('Lỗi xóa khách hàng', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
       throw error;
     } finally {
       this.loading.set(false);
@@ -338,12 +385,22 @@ export class KhachhangGraphqlService {
       // Refresh list
       await this.getAllKhachhang();
       
-      this._snackBar.open(`Import thành công ${result.length} khách hàng`, 'Đóng', { duration: 3000 });
+      this._snackBar.open(`Import thành công ${result.length} khách hàng`, '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-success'],
+      });
       return result;
     } catch (error) {
       console.error('Lỗi import khách hàng:', error);
       this.error.set('Không thể import khách hàng');
-      this._snackBar.open('Lỗi import khách hàng', 'Đóng', { duration: 3000 });
+      this._snackBar.open('Lỗi import khách hàng', '', {
+        duration: 1000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
       throw error;
     } finally {
       this.loading.set(false);

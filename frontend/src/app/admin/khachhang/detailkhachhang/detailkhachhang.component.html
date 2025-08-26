@@ -4,7 +4,7 @@
   </button>
   <div class="font-bold">{{ DetailKhachhang()?.name || 'Không có dữ liệu' }}</div>
   <div class="flex flex-row space-x-2 items-center">
-    <mat-slide-toggle [(ngModel)]="DetailKhachhang().isActive" [disabled]="!isEdit()">{{DetailKhachhang().isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
+    <mat-slide-toggle [checked]="DetailKhachhang()?.isActive" (change)="updateIsActive($event)" [disabled]="!isEdit()">{{DetailKhachhang()?.isActive?'Hiển Thị':'Ẩn'}}</mat-slide-toggle>
     <button mat-icon-button color="primary" *ngIf="isEdit()" (click)="handleKhachhangAction()">
       <mat-icon>save</mat-icon>
     </button>
@@ -34,19 +34,19 @@
     <div class="w-full grid grid-cols-2 gap-4">
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Tên Khách Hàng</mat-label>
-        <input matInput [(ngModel)]="DetailKhachhang().name" (keyup)="autoSubtitle()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên Khách Hàng"/>
+        <input matInput [value]="DetailKhachhang()?.name || ''" (input)="updateName($event)" (keyup)="autoSubtitle()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên Khách Hàng"/>
       </mat-form-field>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Viết Tắt</mat-label>
-        <input matInput [(ngModel)]="DetailKhachhang().subtitle" [disabled]="!isEdit()" placeholder="Vui lòng nhập Viết Tắt"/>
+        <input matInput [value]="DetailKhachhang()?.subtitle || ''" (input)="updateSubtitle($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Viết Tắt"/>
       </mat-form-field>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Tên File</mat-label>
-        <input matInput [(ngModel)]="DetailKhachhang().tenfile" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên File"/>
+        <input matInput [value]="DetailKhachhang()?.tenfile || ''" (input)="updateTenfile($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên File"/>
       </mat-form-field>
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Loại Khách Hàng</mat-label>
-      <mat-select [(ngModel)]="DetailKhachhang().loaikh" [disabled]="!isEdit()">
+      <mat-select [value]="DetailKhachhang()?.loaikh" (selectionChange)="updateLoaikh($event)" [disabled]="!isEdit()">
         <mat-option *ngFor="let item of [{value:'khachsi',title:'Khách Sỉ'},{value:'khachle',title:'Khách Lẻ'}]" [value]="item.value">
           {{item.title}}
         </mat-option>
@@ -54,27 +54,27 @@
     </mat-form-field>
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Email</mat-label>
-      <input matInput [(ngModel)]="DetailKhachhang().email" [disabled]="!isEdit()" placeholder="Vui lòng nhập Email"/>
+      <input matInput [value]="DetailKhachhang()?.email || ''" (input)="updateEmail($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Email"/>
     </mat-form-field>
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Số Điện Thoại</mat-label>
-      <input matInput [(ngModel)]="DetailKhachhang().sdt" [disabled]="!isEdit()" placeholder="Vui lòng nhập Số Điện Thoại"/>
+      <input matInput [value]="DetailKhachhang()?.sdt || ''" (input)="updateSdt($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Số Điện Thoại"/>
     </mat-form-field>
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Mã Số Thuế</mat-label>
-      <input matInput [(ngModel)]="DetailKhachhang().mst" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Số Thuế"/>
+      <input matInput [value]="DetailKhachhang()?.mst || ''" (input)="updateMst($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Số Thuế"/>
     </mat-form-field>
     <mat-form-field appearance="outline" subscriptSizing="dynamic">
       <mat-label>Giờ Nhận Hàng</mat-label>
-      <input matInput [(ngModel)]="DetailKhachhang().gionhanhang" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giờ Nhận Hàng"/>
+      <input matInput [value]="DetailKhachhang()?.gionhanhang || ''" (input)="updateGionhanhang($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Giờ Nhận Hàng"/>
     </mat-form-field>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Địa Chỉ</mat-label>
-        <input matInput [(ngModel)]="DetailKhachhang().diachi" [disabled]="!isEdit()" placeholder="Vui lòng nhập Địa Chỉ"/>
+        <input matInput [value]="DetailKhachhang()?.diachi || ''" (input)="updateDiachi($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Địa Chỉ"/>
       </mat-form-field>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Quận</mat-label>
-        <input matInput [(ngModel)]="DetailKhachhang().quan" [disabled]="!isEdit()" placeholder="Vui lòng nhập Quận"/>
+        <input matInput [value]="DetailKhachhang()?.quan || ''" (input)="updateQuan($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Quận"/>
       </mat-form-field>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Bảng Giá</mat-label>
@@ -106,12 +106,12 @@
         (OutFilter)="DoOutFilter($event)"
       ></app-searchfilter> -->
 
-      <mat-slide-toggle color="primary" [(ngModel)]="DetailKhachhang().hiengia" [disabled]="!isEdit()">Hiện Giá</mat-slide-toggle>
-      <mat-slide-toggle color="primary" [(ngModel)]="DetailKhachhang().istitle2" [disabled]="!isEdit()">Hiện Tên Sản Phẩm 2</mat-slide-toggle>
-      <mat-slide-toggle color="primary" [(ngModel)]="DetailKhachhang().isshowvat" [disabled]="!isEdit()">Hiện VAT</mat-slide-toggle>
+      <mat-slide-toggle color="primary" [checked]="DetailKhachhang()?.hiengia" (change)="updateHiengia($event)" [disabled]="!isEdit()">Hiện Giá</mat-slide-toggle>
+      <mat-slide-toggle color="primary" [checked]="DetailKhachhang()?.istitle2" (change)="updateIstitle2($event)" [disabled]="!isEdit()">Hiện Tên Sản Phẩm 2</mat-slide-toggle>
+      <mat-slide-toggle color="primary" [checked]="DetailKhachhang()?.isshowvat" (change)="updateIsshowvat($event)" [disabled]="!isEdit()">Hiện VAT</mat-slide-toggle>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Ghi Chú</mat-label>
-        <textarea matInput [(ngModel)]="DetailKhachhang().ghichu" [disabled]="!isEdit()" placeholder="Vui lòng nhập Ghi Chú"></textarea>
+        <textarea matInput [value]="DetailKhachhang()?.ghichu || ''" (input)="updateGhichu($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Ghi Chú"></textarea>
       </mat-form-field>   
     </div>
   </ng-container>
