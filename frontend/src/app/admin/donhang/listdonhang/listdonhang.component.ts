@@ -209,47 +209,49 @@ export class ListDonhangComponent {
     this.isLoading.set(true);
     try {
        this._GraphqlService.clearCache('donhang');
-       const result =  await this._GraphqlService.findAll('donhang', {
-          enableParallelFetch:true,
-          maxConcurrency: 4,
-          batchSize: 3000,
-          take: 999999,
-          enableStreaming:true,
-          aggressiveCache: true,
-          orderBy: { createdAt: 'desc' },
-          where: {
-            ngaygiao: {
-              gte: this.SearchParams.Batdau,
-              lte: this.SearchParams.Ketthuc,
+      const result = await this._GraphqlService.findAll('donhang', {
+        enableParallelFetch: true,
+        maxConcurrency: 4,
+        batchSize: 3000,
+        take: 999999,
+        enableStreaming: true,
+        aggressiveCache: true,
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          madonhang: true,
+          ngaygiao: true,
+          ghichu: true,
+          isshowvat: true,
+          status: true,
+          createdAt: true,
+          tongvat: true,
+          tongtien: true,
+          vat: true,
+          type: true,
+          sanpham: {
+            select: {
+              sanpham: { select: { masp: true } },
             },
-            type: this.SearchParams.Type,
           },
-          select: {
-            id: true,
-            madonhang: true,
-            ngaygiao: true,
-            ghichu:true,
-            isshowvat: true,
-            status: true,
-            createdAt: true,
-            tongvat: true,
-            tongtien: true,
-            vat:true,
-            type: true,
-            sanpham: {
-              select: {
-                sanpham: { select: { masp: true } },
-              },
+          khachhang: {
+            select: {
+              makh: true,
+              name: true,
+              loaikh: true,
             },
-            khachhang:{
-              select: {
-                makh: true,
-                name: true,
-              },
-            }
+          }
+        },
+        where: {
+          ngaygiao: {
+            gte: this.SearchParams.Batdau,
+            lte: this.SearchParams.Ketthuc,
           },
-        })
-
+          khachhang: {
+              loaikh: this.SearchParams.Type,
+          },
+        },
+      })
         
       const donhangs = result.data.map((v: any) => ({
           id: v.id,

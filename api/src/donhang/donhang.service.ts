@@ -1254,6 +1254,7 @@ export class DonhangService {
                   ttdat: 0,
                   ttgiao: 0,
                   ttnhan: 0,
+                  ghichu:item.Remark || '',
                 };
               } catch (error) {
                 console.warn(

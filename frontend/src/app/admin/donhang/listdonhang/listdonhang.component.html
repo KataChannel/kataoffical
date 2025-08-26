@@ -83,8 +83,8 @@
                 <mat-select [(ngModel)]="SearchParams.Type" [ngModelOptions]="{standalone: true}"
                     (selectionChange)="onSelectionChange($event)">
                     @for (item of [
-                    {id:1,Title:'Đơn Sỉ',value:'donsi'},
-                    {id:2,Title:'Đơn Lẻ',value:'donle'},
+                    {id:1,Title:'Đơn Sỉ',value:'khachsi'},
+                    {id:2,Title:'Đơn Lẻ',value:'khachle'},
                     ]; track item) {
                     <mat-option [value]="item.value">{{item.Title}}</mat-option>
                     }
