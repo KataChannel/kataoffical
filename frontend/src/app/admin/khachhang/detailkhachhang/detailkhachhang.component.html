@@ -77,13 +77,23 @@
         <input matInput [(ngModel)]="DetailKhachhang().quan" [disabled]="!isEdit()" placeholder="Vui lòng nhập Quận"/>
       </mat-form-field>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
-      <mat-label>Bảng Giá</mat-label>
-      <mat-select [(ngModel)]="DetailKhachhang().banggiaId" [disabled]="!isEdit()">
-        <mat-option *ngFor="let item of _BanggiaService.ListBanggia()" [value]="item.id">
-          {{item.title}}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+        <mat-label>Bảng Giá</mat-label>
+        <input 
+          matInput 
+          [value]="getSelectedBanggiaTitle()"
+          [matAutocomplete]="autoBanggia"
+          [disabled]="!isEdit()"
+          (input)="onBanggiaInput($event)"
+          placeholder="Tìm kiếm bảng giá..."/>
+        <mat-autocomplete #autoBanggia="matAutocomplete" [displayWith]="displayBanggia">
+          <mat-option 
+            *ngFor="let item of filteredBanggia()" 
+            [value]="item"
+            (click)="onBanggiaSelected(item)">
+            {{item.title}} - {{item.mabanggia}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
 
       <!-- <app-searchfilter         
         [title]="'Bảng Giá'"

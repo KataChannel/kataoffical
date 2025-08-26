@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { KhachhangService } from '../khachhang.service';
+import { KhachhangGraphqlService } from '../khachhang-graphql.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { readExcelFile, writeExcelFile } from '../../../shared/utils/exceldrive.utils';
 import { ConvertDriveData, convertToSlug, GenId } from '../../../shared/utils/shared.utils';
@@ -23,6 +23,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SearchfilterComponent } from '../../../shared/common/searchfilter/searchfilter.component';
 import { environment } from '../../../../environments/environment.development';
 import { memoize, Debounce } from '../../../shared/utils/decorators';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { removeVietnameseAccents } from '../../../shared/utils/texttransfer.utils';
 
 @Component({
   selector: 'app-listkhachhang',
@@ -44,7 +46,8 @@ import { memoize, Debounce } from '../../../shared/utils/decorators';
     FormsModule,
     MatTooltipModule,
     MatDialogModule,
-    SearchfilterComponent
+    SearchfilterComponent,
+    MatProgressSpinnerModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -73,41 +76,64 @@ export class ListKhachhangComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild('drawer', { static: true }) drawer!: MatDrawer;
 
-  private _KhachhangService: KhachhangService = inject(KhachhangService);
+  // Updated to use GraphQL service
+  private _KhachhangService: KhachhangGraphqlService = inject(KhachhangGraphqlService);
   private _breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
   private _GoogleSheetService: GoogleSheetService = inject(GoogleSheetService);
   private _router: Router = inject(Router);
   private _dialog: MatDialog = inject(MatDialog);
   private _snackBar: MatSnackBar = inject(MatSnackBar);
 
+  // GraphQL reactive signals
   Listkhachhang = this._KhachhangService.ListKhachhang;
   page = this._KhachhangService.page;
   totalPages = this._KhachhangService.totalPages;
   total = this._KhachhangService.total;
   pageSize = this._KhachhangService.pageSize;
   khachhangId = this._KhachhangService.khachhangId;
-  dataSource:any = new MatTableDataSource([]);
+  loading = this._KhachhangService.loading;
+  error = this._KhachhangService.error;
+  
+  dataSource: any = new MatTableDataSource([]);
   EditList: any[] = [];
   isSearch = signal<boolean>(false);
-  searchParam:any={}
+  searchParam: any = {};
+
   constructor() {
+    // Reactive updates with GraphQL signals
     effect(() => {
-      this.dataSource.data = this.Listkhachhang();
+      const data = this.Listkhachhang();
+      this.dataSource.data = data;
       this.dataSource.sort = this.sort;
+      
+      // Cập nhật paginator với toàn bộ data (client-side pagination)
       if (this.paginator) {
-        this.paginator.pageIndex = this.page() - 1;
-        this.paginator.pageSize = this.pageSize();
-        this.paginator.length = this.total();
+        this.paginator.pageIndex = 0; // Reset về trang đầu
+        this.paginator.pageSize = data.length || 50; // Hiển thị tất cả hoặc mặc định 50
+        this.paginator.length = data.length; // Tổng số record
+      }
+    });
+
+    // Handle errors reactively
+    effect(() => {
+      const errorMessage = this.error();
+      if (errorMessage) {
+        this._snackBar.open(errorMessage, 'Đóng', { duration: 5000 });
       }
     });
   }
 
   async ngOnInit(): Promise<void> {
-    this._KhachhangService.listenKhachhangUpdates();
+    // Load tất cả data với GraphQL (không pagination)
     await this._KhachhangService.getAllKhachhang(this.searchParam);
     this.displayedColumns = Object.keys(this.ColumnName);
-    this.dataSource = new MatTableDataSource(this.Listkhachhang());
+    
+    // Setup datasource với toàn bộ data
+    const data = this.Listkhachhang();
+    this.dataSource = new MatTableDataSource(data);
     this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator; // Client-side pagination
+    
     this.initializeColumns();
     this.setupDrawer();
   }
@@ -120,16 +146,56 @@ export class ListKhachhangComponent implements OnInit {
     this.ColumnName = this.FilterColumns.reduce((acc, { key, value, isShow }) => 
       isShow ? { ...acc, [key]: value } : acc, {} as Record<string, string>);
   }
-  @Debounce(500)
-  applyFilter(event: Event) {
+  @Debounce(100)
+  async applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
-    if (!filterValue) {
-      this.searchParam = {};
-      this._KhachhangService.getKhachhangBy(this.searchParam);
+    
+    // Clear filter if search is empty
+    if (filterValue.length === 0) {
+      this.dataSource.filter = '';
       return;
     }
-    this.searchParam.subtitle = filterValue.trim().toLowerCase();
-    this._KhachhangService.getKhachhangBy(this.searchParam);
+    
+    // Show loading indicator
+    // this.isLoading.set(true);
+    
+    try {
+      // Use setTimeout to ensure UI updates before heavy computation
+      await new Promise(resolve => setTimeout(resolve, 0));
+      
+      const normalizedFilter = removeVietnameseAccents(filterValue.trim().toLowerCase());
+      
+      // Custom filter predicate to handle Vietnamese text search
+      this.dataSource.filterPredicate = (data: any, filter: string) => {
+        const dataStr = Object.keys(data).reduce((currentTerm: string, key: string) => {
+          return currentTerm + (data[key] ? data[key].toString().toLowerCase() : '') + '◬';
+        }, '').toLowerCase();
+        
+        const normalizedDataStr = removeVietnameseAccents(dataStr);
+        
+        // Search in both original and normalized text
+        return dataStr.includes(filter) || normalizedDataStr.includes(filter);
+      };
+      
+      this.dataSource.filter = normalizedFilter;
+      
+      // Reset to first page when filtering
+      if (this.paginator) {
+        this.paginator.firstPage();
+      }
+      
+    } catch (error) {
+      console.error('Error applying filter:', error);
+      this._snackBar.open('Lỗi khi tìm kiếm', '', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error'],
+      });
+    } finally {
+      // Hide loading indicator after filter is applied
+      // this.isLoading.set(false);
+    }
   }
 
   async getUpdatedCodeIds() {
@@ -253,7 +319,7 @@ export class ListKhachhangComponent implements OnInit {
 
   DeleteListItem(): void {
     this.EditList.forEach((item: any) => {
-      this._KhachhangService.DeleteKhachhang(item);
+      this._KhachhangService.deleteKhachhang(item.id);
     });
     this.EditList = [];
     this._snackBar.open('Xóa Thành Công', '', {
@@ -326,14 +392,14 @@ export class ListKhachhangComponent implements OnInit {
       const existingItem = existingKhachhang.find((v1: any) => v1.masp === v.masp);
       if (existingItem) {
         const updatedItem = { ...existingItem, ...v };
-        await this._KhachhangService.updateKhachhang(updatedItem);
+        await this._KhachhangService.updateKhachhang(updatedItem.id, updatedItem);
       } else {
-        await this._KhachhangService.CreateKhachhang(v);
+        await this._KhachhangService.createKhachhang(v);
       }
     }));
     await Promise.all(existingKhachhang
-      .filter(sp => !uniqueData.some((item: any) => item.masp === sp.masp))
-      .map(sp => this._KhachhangService.updateKhachhang({ ...sp, isActive: false }))
+      .filter((sp: any) => !uniqueData.some((item: any) => item.masp === sp.masp))
+      .map((sp: any) => this._KhachhangService.updateKhachhang(sp.id, { ...sp, isActive: false }))
     );
 
     this._snackBar.open('Cập Nhật Thành Công', '', {
@@ -368,32 +434,33 @@ export class ListKhachhangComponent implements OnInit {
   }
 
   async onPageSizeChange(size: number, menuHienthi: any) {
-    if (size > this.total()) {
-      this._snackBar.open(`Số lượng tối đa ${this.total()}`, '', {
-        duration: 1000,
-        horizontalPosition: 'end',
-        verticalPosition: 'top',
-        panelClass: ['snackbar-success'],
-      });
-      size = this.total();
-      this.searchParam.pageSize = size;
+    // Với việc load tất cả data, chỉ cần thay đổi pageSize của MatPaginator
+    if (this.paginator) {
+      this.paginator.pageSize = size;
+      this.paginator.firstPage(); // Reset về trang đầu
     }
-    this._KhachhangService.page.set(1);
-    this._KhachhangService.pageSize.set(size);
-    await this._KhachhangService.getAllKhachhang(this.searchParam,true);
+    
+    this._snackBar.open(`Hiển thị ${size} items mỗi trang`, '', {
+      duration: 1000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['snackbar-success'],
+    });
+    
     menuHienthi.closeMenu();
   }
+  
   async onPreviousPage(){
-    if (this.page() > 1) {
-      this._KhachhangService.page.set(this.page() - 1);
-      await this._KhachhangService.getAllKhachhang(this.searchParam,true);
+    // Client-side pagination - không cần gọi API
+    if (this.paginator && this.paginator.hasPreviousPage()) {
+      this.paginator.previousPage();
     }
   }
 
   async onNextPage(){
-    if (this.page() < this.totalPages()) {
-      this._KhachhangService.page.set(this.page() + 1);
-      await this._KhachhangService.getAllKhachhang(this.searchParam,true);
+    // Client-side pagination - không cần gọi API  
+    if (this.paginator && this.paginator.hasNextPage()) {
+      this.paginator.nextPage();
     }
   }
 }
