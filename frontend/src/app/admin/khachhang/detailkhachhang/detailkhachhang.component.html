@@ -37,6 +37,10 @@
         <input matInput [value]="DetailKhachhang()?.name || ''" (input)="updateName($event)" (keyup)="autoSubtitle()" [disabled]="!isEdit()" placeholder="Vui lòng nhập Tên Khách Hàng"/>
       </mat-form-field>
       <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Mã Khách Hàng</mat-label>
+        <input matInput [value]="DetailKhachhang()?.makho || ''" (input)="updateMakh($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Mã Khách Hàng"/>
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
         <mat-label>Viết Tắt</mat-label>
         <input matInput [value]="DetailKhachhang()?.subtitle || ''" (input)="updateSubtitle($event)" [disabled]="!isEdit()" placeholder="Vui lòng nhập Viết Tắt"/>
       </mat-form-field>

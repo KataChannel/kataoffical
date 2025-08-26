@@ -286,6 +286,12 @@ export class DetailKhachhangComponent {
       name: event.target.value
     }));
   }
+  updateMakh(event: any) {
+    this.DetailKhachhang.update((v: any) => ({
+      ...v,
+      makh: event.target.value
+    }));
+  }
 
   updateSubtitle(event: any) {
     this.DetailKhachhang.update((v: any) => ({
